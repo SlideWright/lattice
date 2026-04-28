@@ -1,0 +1,1891 @@
+# Marp Slide Deck Pipeline — Complete LLM Skill
+
+## What This Document Is
+
+Complete instructions for an LLM to create presentation decks using Marp-flavored Markdown as the single source of truth, with conversion to PDF, PPTX, and image sets. Covers design principles, 25 layout templates (plus 3 documented variants), CSS theme architecture, Mermaid diagram integration, rendering pipeline, and multi-format output.
+
+---
+
+# Part 1: Design Principles
+
+## 1.1 Visual Hierarchy (strict, never violated)
+
+```
+Display title (48-72px)
+  > Slide heading (32-42px)
+    > Subheading / card title (22-28px)
+      > Body content (16-20px)  ← smallest readable text
+        > Eyebrow labels / captions (11-13px)  ← orientation only
+          > Page numbers (9-11px)  ← reference only
+```
+
+Every level must be visibly distinct from adjacent levels. If two levels look the same size, the hierarchy is broken.
+
+Content text (16-20px) is the floor for readable text. Everything above it is bigger. Everything below it is not content — it's navigation or decoration.
+
+## 1.2 Spacing Scale
+
+All spacing uses an 8px base scale:
+
+| Token | Size | Usage |
+|-------|------|-------|
+| `--sp-xs` | 8px | Tight: inside compact cards |
+| `--sp-sm` | 16px | Default: between related elements |
+| `--sp-md` | 24px | Comfortable: between sections within a slide |
+| `--sp-lg` | 32px | Generous: between major blocks |
+| `--sp-xl` | 48px | Dramatic: slide padding from edges |
+| `--sp-2xl` | 64px | Maximum: title slide breathing room |
+
+Never use arbitrary values. Pick from the scale.
+
+## 1.3 Color Token System
+
+Every deck defines these base tokens. Slide classes inherit from them — they never define colors from scratch.
+
+| Token | Purpose |
+|-------|---------|
+| `--bg` | Slide background (light) |
+| `--bg-alt` | Card / container background |
+| `--bg-dark` | Dark slides (title, closing, dividers) |
+| `--border` | Card borders, dividers |
+| `--text-display` | Display titles on dark backgrounds |
+| `--text-heading` | Slide headings |
+| `--text-body` | Body content |
+| `--text-muted` | Labels, captions, page numbers |
+| `--accent` | Stat numbers, key highlights, accent lines |
+| `--accent-soft` | Accent tint for backgrounds |
+
+Accent colors for categories, levels, or themes extend this palette — they don't replace it.
+
+## 1.4 Typography Rules
+
+- One font stack for all outputs (HTML, PDF, PPTX, images)
+- Fonts must be available on Google Fonts
+- Define explicit PPTX fallback if exact font unavailable (e.g., Cormorant Garamond → Georgia)
+- Display/heading font: serif or distinctive sans
+- Body font: clean sans-serif
+- Mono font (optional): for labels, code, badges
+- Minimum body content: 16px
+- Minimum eyebrow/caption: 11px
+- Minimum page number: 9px
+- No text below 9px for any purpose
+
+### Font Pairing Suggestions
+
+| Style | Display Font | Body Font | Mono Font |
+|-------|-------------|-----------|-----------|
+| Warm editorial | Cormorant Garamond | Nunito Sans | — |
+| Modern refined | Playfair Display | Outfit | JetBrains Mono |
+| Clean corporate | Libre Baskerville | Source Sans 3 | — |
+| Contemporary | DM Serif Display | DM Sans | DM Mono |
+
+## 1.5 Content Limits
+
+- Maximum ~40 words of body text per slide
+- If content overflows, split into two slides — never shrink font
+- Diagrams should occupy at least 50% of slide area
+- One main idea per slide
+- Maximum 6 bullet points per list slide
+- Maximum 4 cards per grid slide
+- Maximum 6 steps per timeline
+- Maximum ~25 words in a quote slide
+
+## 1.6 Contrast & Readability
+
+- All text must have sufficient contrast against its background
+- Light text on dark backgrounds: use `--text-display`
+- Dark text on light backgrounds: use `--text-heading` / `--text-body`
+- Card text must contrast against `--bg-alt`, not just `--bg`
+- Never place muted-color text on similarly muted background
+- Test readability at actual presentation scale, not zoomed in
+
+## 1.7 Slide Structure
+
+- Dark bookend slides: title (first) and closing (last) use `--bg-dark`
+- Section dividers may also use `--bg-dark` or a strong accent
+- Content slides: light background using `--bg`
+- Consistent slide padding: 48-64px from all edges
+- Content must never overflow into page number zone
+- Page numbers: bottom-right, consistent across all slide types
+- Header: top area, consistent across content slides
+- Footer: bottom area, consistent across content slides
+
+## 1.8 Cards & Containers
+
+- All cards use rounded corners (border-radius: 10-16px)
+- Cards have visible but subtle borders using `--border`
+- Cards have internal padding (16-24px)
+- Optional subtle box-shadow (blur 8-16px, opacity 0.03-0.06)
+- Diagram containers: at least 0.8" margin from slide edges
+- Cards never touch slide edges — always padded inside
+- Card titles are bold, card body is regular weight
+
+## 1.9 Centering & Alignment
+
+- Title, divider, sub-topic, closing, quote, big-number slides: all content centered vertically and horizontally
+- Content and list slides: left-aligned or centered, consistent within the deck
+- Card grids: centered as a group on the slide
+- Stats rows: centered with even spacing
+- Diagrams: centered within their container
+- Nothing should feel off-center or floating to one side unless the layout explicitly calls for asymmetry (e.g., two-column, split panel)
+
+---
+
+# Part 2: Marp Directives
+
+## 2.1 Frontmatter
+
+```yaml
+---
+marp: true
+theme: uncover
+paginate: true
+html: true
+header: 'Deck Title or Brand'
+footer: 'Subtitle or Date'
+style: |
+  /* Full CSS theme here */
+---
+```
+
+## 2.2 Per-Slide Directives
+
+| Directive | Scope | Effect |
+|-----------|-------|--------|
+| `<!-- _class: X -->` | This slide only | CSS class on section |
+| `<!-- _paginate: false -->` | This slide only | Hide page number |
+| `<!-- _header: '' -->` | This slide only | Hide header |
+| `<!-- _footer: '' -->` | This slide only | Hide footer |
+| `<!-- header: 'New' -->` | This slide onward | Change header |
+| `<!-- footer: 'New' -->` | This slide onward | Change footer |
+
+Underscore prefix = this slide only. No underscore = this slide and all following.
+
+Title, divider, and closing slides should suppress header, footer, and pagination:
+
+```markdown
+<!-- _class: title -->
+<!-- _paginate: false -->
+<!-- _header: '' -->
+<!-- _footer: '' -->
+```
+
+## 2.3 Header & Footer CSS
+
+```css
+header {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+footer {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+```
+
+For the custom renderer (non-Marp CLI): parse header/footer from frontmatter, inject into each slide's HTML, position via CSS. Respect per-slide overrides.
+
+---
+
+# Part 3: Slide Hierarchy
+
+Slides in a deck follow this nesting:
+
+```
+Title (1 slide)
+  └─ Section Divider (marks major section boundary)
+       └─ Sub-Topic (introduces specific topic)
+            └─ Content slides (the material)
+       └─ Sub-Topic
+            └─ Content slides
+  └─ Section Divider
+       └─ Sub-Topic
+            └─ Content slides
+Closing (1 slide)
+```
+
+Not every deck needs all levels. A short deck might just be: Title → Content → Content → Closing. A long deck with multiple sections needs dividers and sub-topics for orientation.
+
+---
+
+# Part 4: Layout Templates
+
+All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: approximately 1160×600.
+
+25 templates plus 3 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+
+| Category | Templates | CSS class |
+|----------|-----------|-----------|
+| Structural | T1 Title, T2 Divider, T3 Sub-Topic, T19 Closing | `title` `divider` `subtopic` `closing` |
+| Text | T4 Content, T13 Quote, T15 List, T22 Criteria | `content` `quote` `list` `criteria` |
+| Text variant | T15v Tabular Inline | `list-tabular` |
+| Data | T5 Diagram, T7 Stats, T17 Big Number, T24 Compare Table | `diagram` `stats` `big-number` `compare-table` |
+| Cards | T8 Grid 2×2, T9 Grid 2+1, T10 Stacked, T11 Side-by-Side | `card-grid` `card-grid-2plus1` `cards-stacked` `cards-side` |
+| Cards cont. | T21 Three-Row Wide, T23 Verdict Grid | `cards-wide-3` `verdict-grid` |
+| Comparative | T12 Comparison, T20 Finding, T25 Featured | `comparison` `finding` `featured` |
+| Layout | T6 Two-Column, T14 Timeline, T18 Split Panel | `two-column` `timeline` `split-panel` |
+| Layout variant | T14v Step Cards | `steps` |
+| Visual | T16 Full-Bleed | `full-bleed` |
+
+## Template 1: Title (dark bookend)
+
+```
+┌──────────────────────────────────────┐
+│            [dark background]          │
+│                                       │
+│          EYEBROW LABEL                │
+│                                       │
+│       Display Title Here              │
+│       ─────── (accent line)           │
+│       Subtitle or tagline             │
+│                                       │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `title`
+
+**Marp directive:**
+```markdown
+<!-- _class: title -->
+<!-- _paginate: false -->
+<!-- _header: '' -->
+<!-- _footer: '' -->
+```
+
+- Background: `--bg-dark`
+- Centered vertically and horizontally
+- Eyebrow: 11px mono, letter-spaced, `--text-muted`
+- Title: 54-72px display font, `--text-display`
+- Accent line: 60px wide, 1px, `--accent`
+- Subtitle: 16px body font, `--text-muted`
+- No header, footer, or page number
+
+## Template 2: Section Divider
+
+```
+┌──────────────────────────────────────┐
+│            [dark or accent bg]        │
+│                                       │
+│    ┌──────┐                           │
+│    │  01  │   SECTION LABEL           │
+│    └──────┘                           │
+│              Section Title            │
+│              ───────                  │
+│                                       │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `divider`
+
+**Marp directive:**
+```markdown
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _header: '' -->
+<!-- _footer: '' -->
+```
+
+- Background: `--bg-dark` or accent-tinted
+- Strong visual signal: large section number (40-60px) in bordered box, or accent-colored left bar, or full background color change
+- Section label: 11px, uppercase, letter-spaced
+- Title: 42px display font, `--text-display` or `--text-heading`
+- Must be visually distinct from content slides — dividers should jump out when flipping through
+- No header, footer, or page number
+
+## Template 3: Sub-Topic
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│                                       │
+│          CATEGORY LABEL               │
+│          Topic Title                  │
+│                                       │
+│          Brief orienting sentence     │
+│          about what follows.          │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `subtopic`
+
+**Marp directive:**
+```markdown
+<!-- _class: subtopic -->
+```
+
+- Background: `--bg` (light — same as content slides)
+- Centered vertically and horizontally
+- Lighter than a divider — orients, doesn't announce
+- Eyebrow: 11px, `--text-muted`
+- Title: 36px, `--text-heading`
+- Description: 16-18px, `--text-body`, 1-2 sentences max
+- Header, footer, and page number visible
+
+## Template 4: Content (text only)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│                                       │
+│  LABEL                                │
+│  Slide Heading                        │
+│                                       │
+│  Body paragraph text here. Can be     │
+│  2-3 sentences maximum. Keep it       │
+│  focused on one idea.                 │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `content`
+
+**Marp directive:**
+```markdown
+<!-- _class: content -->
+```
+
+- Background: `--bg`
+- Left-aligned or centered (consistent within deck)
+- Heading: 36px, `--text-heading`
+- Body: 18-20px, `--text-body`, max 40 words
+
+## Template 5: Diagram (single)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│           LABEL                       │
+│         Diagram Title                 │
+│         subtitle text                 │
+│  ┌──────────────────────────────┐     │
+│  │                              │     │
+│  │      [diagram SVG/PNG]       │     │
+│  │                              │     │
+│  └──────────────────────────────┘     │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `diagram`
+
+**Marp directive:**
+```markdown
+<!-- _class: diagram -->
+```
+
+- Background: slightly different from `--bg` (use `--bg-alt` or warm-white) so diagram container stands out
+- Title + subtitle above the container
+- Diagram inside rounded-corner card (`--bg`, `--border`)
+- Diagram occupies ~60-70% of slide area
+- Container: 24-32px internal padding
+
+## Template 6: Two-Column (text + visual)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  ┌────────────┐  ┌───────────────┐   │
+│  │ Heading     │  │               │   │
+│  │             │  │   [visual /   │   │
+│  │ Body text   │  │    diagram /  │   │
+│  │ here.       │  │    image]     │   │
+│  │             │  │               │   │
+│  └────────────┘  └───────────────┘   │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `two-column`
+
+**Marp directive:**
+```markdown
+<!-- _class: two-column -->
+```
+
+- Left column: ~40% width, text content
+- Right column: ~55% width, visual content
+- 5% gap between columns
+- Both columns vertically centered
+
+## Template 7: Stats / KPI Row
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│           Stats Title                 │
+│           description                 │
+│                                       │
+│      42       5       4       6       │
+│    TOTAL   SHAPES  CLASSES  WIDE     │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `stats`
+
+**Marp directive:**
+```markdown
+<!-- _class: stats -->
+```
+
+- Stat numbers: 40-48px, display font, `--accent`
+- Stat labels: 9-11px, uppercase, letter-spaced, `--text-muted`
+- 3-5 stats in a horizontal row, evenly spaced
+- Description above: 16px, `--text-body`
+
+## Template 8: Card Grid (2×2)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│           Grid Title                  │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Card Title 1 │  │ Card Title 2 │  │
+│  │ content      │  │ content      │  │
+│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Card Title 3 │  │ Card Title 4 │  │
+│  │ content      │  │ content      │  │
+│  └──────────────┘  └──────────────┘  │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `card-grid`
+
+**Marp directive:**
+```markdown
+<!-- _class: card-grid -->
+```
+
+- 2×2 grid with 16px gaps
+- Cards: rounded corners, `--bg-alt`, `--border`
+- Card title: 16-18px bold
+- Card body: 14-16px, `--text-body`
+- Equal-width, equal-height cards
+
+## Template 9: Card Grid 2+1
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│           Grid Title                  │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Card Title 1 │  │ Card Title 2 │  │
+│  │ content      │  │ content      │  │
+│  └──────────────┘  └──────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ Card Title 3 (full width)       │  │
+│  │ content stretches across        │  │
+│  └─────────────────────────────────┘  │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `card-grid-2plus1`
+
+**Marp directive:**
+```markdown
+<!-- _class: card-grid-2plus1 -->
+```
+
+- Top row: two equal cards, 16px gap
+- Bottom row: one card spanning full width
+- Bottom card for summary, conclusion, or key takeaway
+- Same card styling as 2×2
+
+## Template 10: Two Cards Stacked (vertical)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│           Slide Title                 │
+│                                       │
+│  ┌─────────────────────────────────┐  │
+│  │ Card Title 1                    │  │
+│  │ content stretches full width    │  │
+│  └─────────────────────────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ Card Title 2                    │  │
+│  │ content stretches full width    │  │
+│  └─────────────────────────────────┘  │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `cards-stacked`
+
+**Marp directive:**
+```markdown
+<!-- _class: cards-stacked -->
+```
+
+- Two full-width cards stacked vertically
+- 16px gap between cards
+- Each card takes roughly equal vertical space
+- Sequential relationship: top leads to bottom
+- Good for problem/solution, setup/payoff, context/detail
+
+## Template 11: Two Cards Side-by-Side (horizontal)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│           Slide Title                 │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Card Title 1 │  │ Card Title 2 │  │
+│  │              │  │              │  │
+│  │ content      │  │ content      │  │
+│  │              │  │              │  │
+│  └──────────────┘  └──────────────┘  │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `cards-side`
+
+**Marp directive:**
+```markdown
+<!-- _class: cards-side -->
+```
+
+- Two equal cards side by side
+- 16px gap between cards
+- Each card takes roughly equal width and full available height
+- Parallel relationship: two topics shown together
+- No connector or arrow — use Template 12 if you need one
+- Good for two categories, two approaches, two perspectives
+
+## Template 12: Comparison (side by side with connector)
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│         Comparison Title              │
+│                                       │
+│  ┌──────────────┐     ┌──────────────┐│
+│  │ Before /     │  →  │ After /      ││
+│  │ Option A     │     │ Option B     ││
+│  │              │     │              ││
+│  └──────────────┘     └──────────────┘│
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `comparison`
+
+**Marp directive:**
+```markdown
+<!-- _class: comparison -->
+```
+
+- Same physical layout as Template 11 but with visual connector (arrow, "→", "vs", or line)
+- Implies transformation, contrast, or choice
+- Connector centered between cards: 20-24px, `--text-muted`
+- Cards are equal width
+
+## Template 13: Quote / Testimonial
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│                                       │
+│                                       │
+│       "Quote text goes here in        │
+│        italic display font,           │
+│        centered on the slide."        │
+│                                       │
+│              — Attribution            │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `quote`
+
+**Marp directive:**
+```markdown
+<!-- _class: quote -->
+```
+
+- Centered vertically and horizontally
+- Quote: 28-36px, italic, display font, `--text-heading`
+- Attribution: 14px, `--text-muted`, preceded by em dash
+- Optional: large decorative quotation mark (72px, `--border`) positioned behind or above
+- Max ~25 words in the quote
+
+## Template 14: Timeline / Process
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│             LABEL                     │
+│          Process Title                │
+│                                       │
+│     ●──────●──────●──────●           │
+│   Step 1  Step 2  Step 3  Step 4     │
+│   desc    desc    desc    desc       │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `timeline`
+
+**Marp directive:**
+```markdown
+<!-- _class: timeline -->
+```
+
+- Horizontal line with colored dots
+- Step labels below dots: 14-16px bold
+- Step descriptions: 13-14px, `--text-body`
+- 3-6 steps maximum
+- Dots colored with `--accent` or sequential accent colors
+
+## Template 15: List / Bullet Points
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│                                       │
+│  LABEL                                │
+│  List Heading                         │
+│                                       │
+│  •  First point clearly stated        │
+│  •  Second point with enough room     │
+│  •  Third point, well spaced          │
+│  •  Fourth point if needed            │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `list`
+
+**Marp directive:**
+```markdown
+<!-- _class: list -->
+```
+
+- Clean bullet list, not cards
+- Heading: 36px, `--text-heading`
+- Bullets: 18-20px, `--text-body`
+- Line height: 1.6-1.8 for comfortable reading
+- 4-6 items maximum
+- Bullet character styled in `--accent` or `--text-muted`
+- Indent from left edge: 48-64px
+
+## Template 16: Full-Bleed Visual
+
+```
+┌──────────────────────────────────────┐
+│                                       │
+│                                       │
+│          [image / visual              │
+│           fills 80%+ of              │
+│           the slide]                  │
+│                                       │
+│                                       │
+│  ┌─ caption or title overlay ──────┐  │
+│  └─────────────────────────────────┘  │
+│                                  1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `full-bleed`
+
+**Marp directive:**
+```markdown
+<!-- _class: full-bleed -->
+<!-- _paginate: false -->
+```
+
+- Image or visual dominates the slide
+- Small caption overlay at bottom: semi-transparent background, 13-14px text
+- Or: title overlay at top on semi-transparent bar
+- Page number still visible
+- Use for product photos, screenshots, reference images
+
+## Template 17: Big Number / Single Stat
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│                                       │
+│                                       │
+│              LABEL                    │
+│                                       │
+│              247                      │
+│                                       │
+│         description text              │
+│         below the number              │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `big-number`
+
+**Marp directive:**
+```markdown
+<!-- _class: big-number -->
+```
+
+- Centered vertically and horizontally
+- Number: 80-120px, display font, `--accent`
+- Label above: 11px, `--text-muted`, uppercase
+- Description below: 16-18px, `--text-body`, 1-2 sentences
+- The number IS the slide — everything else supports it
+
+## Template 18: Split Panel (colored sidebar)
+
+```
+┌──────────────────────────────────────┐
+│  ┌──────────┐                        │
+│  │ [colored │  CATEGORY LABEL        │
+│  │  panel]  │                        │
+│  │          │  Content heading       │
+│  │  LABEL   │                        │
+│  │          │  Body text or cards    │
+│  │  Panel   │  on the right side     │
+│  │  Title   │  of the slide.         │
+│  │          │                        │
+│  └──────────┘                   1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `split-panel`
+
+**Marp directive:**
+```markdown
+<!-- _class: split-panel -->
+```
+
+- Left panel: 30-35% width, accent or category color
+- Right panel: 65-70% width, `--bg`
+- Left panel contains: label, heading, optional large watermark number
+- Right panel contains: content, cards, description
+- Good for category-based slides where sidebar signals section
+
+## Template 19: Closing (dark bookend)
+
+```
+┌──────────────────────────────────────┐
+│            [dark background]          │
+│                                       │
+│                                       │
+│          BRAND / LABEL                │
+│          ─────── (accent line)        │
+│                                       │
+│       Closing statement or            │
+│       call to action in italic        │
+│                                       │
+│                                       │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `closing`
+
+**Marp directive:**
+```markdown
+<!-- _class: closing -->
+<!-- _paginate: false -->
+<!-- _header: '' -->
+<!-- _footer: '' -->
+```
+
+- Mirrors title slide structure
+- Background: `--bg-dark`
+- Statement: 22-28px, italic, display font, `--text-muted`
+- No header, footer, or page number
+
+## Template 20: Finding / Verdict
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL · FINDING 01                  │
+│  The heading states the finding.      │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ What worked  │  │ What blocked │  │
+│  │              │  │              │  │
+│  │ body text    │  │ body text    │  │
+│  └──────────────┘  └──────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ Secondary finding (full width)  │  │
+│  │ nuance, context, or data point  │  │
+│  └─────────────────────────────────┘  │
+│  ● Verdict — one sentence.            │
+│  footer                          4/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `finding`
+
+**Layout spec:**
+- `section.finding`: `display: flex; flex-direction: column; padding: 48px 64px 64px;`
+- Slide heading (`h2`): 28-32px — shorter than standard to give cards vertical room
+- Top card row: `display: flex; gap: 16px; flex: 1;` — each card `flex: 1`
+- Bottom card: full width, `margin-top: 16px; flex: 0 0 auto`
+- All cards: `background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px`
+- Card title (`strong` or `h4`): 15-16px bold, `color: var(--text-heading)`
+- Card body: 14-15px, `color: var(--text-body); line-height: 1.6`
+- Verdict line: `position: absolute; bottom: 32px; left: 64px; right: 64px; font-size: 13px; font-weight: 600; color: var(--accent)` — prepend a colored dot using `::before { content: '●'; margin-right: 8px; }`
+- For pass/fail semantics: define `--verdict-pass: #2d6a3f` and `--verdict-fail: #9b1c1c` and apply via modifier class (`.finding.pass`, `.finding.fail`)
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: finding -->
+
+## The in-process model performed well, but the operational burden is prohibitive.
+
+- What worked
+  - What worked
+  - Body text describing what succeeded. Keep to 2–3 sentences.
+- What blocked it
+  - What blocked it
+  - Body text describing the blocker. Keep to 2–3 sentences.
+- Secondary finding
+  - Secondary finding
+  - Full-width nuance, data point, or contextual note. One sentence preferred.
+
+*Not viable — one sentence verdict goes here.*
+```
+
+**How the renderer maps this:**
+- Top-level `- Card Title` → opens a card; sub-items populate card title and body
+- First two top-level items → top row (flex side-by-side)
+- Third top-level item → bottom full-width card
+- Final `*italic paragraph*` → verdict line (strip asterisks, render as verdict)
+- Alternatively, implement as a `findings` class with explicit HTML divs inside the slide for full control
+
+**When to use:** A finding has a clear go/no-go signal that must be visible at a glance. Top cards frame parallel perspectives (what worked vs. what blocked); bottom card adds secondary context; verdict line states the bottom line.
+
+---
+
+## Template 21: Three-Row Wide Cards
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL · CONTEXT                     │
+│  Slide heading goes here.             │
+│                                       │
+│  ┌─────────────────────────────────┐  │
+│  │ EYEBROW 01  Card Heading One    │  │
+│  │ Left column body.  Right col.   │  │
+│  └─────────────────────────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ EYEBROW 02  Card Heading Two    │  │
+│  │ Left column body.  Right col.   │  │
+│  └─────────────────────────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ EYEBROW 03  Card Heading Three  │  │
+│  │ Left column body.  Right col.   │  │
+│  └─────────────────────────────────┘  │
+│  footer                          6/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `three-wide`
+
+**Layout spec:**
+- `section.three-wide`: `display: flex; flex-direction: column; padding: 48px 64px;`
+- Slide heading (`h2`): 28-32px, `margin-bottom: 24px`
+- Cards container: `display: flex; flex-direction: column; gap: 12px; flex: 1`
+- Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; display: grid; grid-template-rows: auto 1fr; gap: 8px`
+- Card header row (eyebrow + heading side by side): `display: flex; align-items: baseline; gap: 16px`
+  - Eyebrow: `font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0`
+  - Card heading: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
+- Card body row: `display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px; color: var(--text-body); line-height: 1.6`
+- If two-column body is not needed, omit the inner grid — single column body is fine
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: three-wide -->
+
+## Slide heading goes here.
+
+- EYEBROW 01
+  - EYEBROW 01
+  - Card Heading One
+  - Left column body text here.
+  - Right column body text here.
+- EYEBROW 02
+  - EYEBROW 02
+  - Card Heading Two
+  - Left column body text here.
+  - Right column body text here.
+- EYEBROW 03
+  - EYEBROW 03
+  - Card Heading Three
+  - Left column body text here.
+  - Right column body text here.
+```
+
+**How the renderer maps this:**
+- Each top-level `- EYEBROW` → one card
+- Sub-item 1 (repeated eyebrow): eyebrow label
+- Sub-item 2: card heading
+- Sub-items 3–4: left and right body columns
+- If only sub-item 3 present: single-column body
+
+**When to use:** Three parallel items that each need internal structure — three risks, three failure modes, three options with sub-detail. Not for three items that fit as bullets (use T15) or three items that need comparison (use T24).
+
+---
+
+## Template 22: Numbered Criteria List
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Here is what the criteria are.       │
+│                                       │
+│  01  Criterion Title One              │
+│      Supporting description text.     │
+│                                       │
+│  02  Criterion Title Two              │
+│      Supporting description text.     │
+│                                       │
+│  03  Criterion Title Three            │
+│      Supporting description text.     │
+│                                       │
+│  04  Criterion Title Four             │
+│      Supporting description text.     │
+│                                       │
+│  footer                          8/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `criteria`
+
+**Layout spec:**
+- `section.criteria`: `display: flex; flex-direction: column; padding: 48px 64px`
+- Slide heading (`h2`): 32-36px, `margin-bottom: 32px`
+- Items list: `display: flex; flex-direction: column; gap: 24px; flex: 1; justify-content: center`
+- Each item: `display: grid; grid-template-columns: 72px 1fr; align-items: start; gap: 0`
+- Number cell: `font-family: var(--font-mono); font-size: 40-48px; font-weight: 700; color: var(--accent); line-height: 1; padding-right: 24px`
+- Text cell: `display: flex; flex-direction: column; gap: 4px; padding-top: 6px` (nudge down to align with top of number)
+  - Item title: `font-size: 17-19px; font-weight: 700; color: var(--text-heading)`
+  - Item description: `font-size: 14-16px; color: var(--text-body); line-height: 1.6`
+- Optional: thin `border-top: 1px solid var(--border)` above each item except the first
+- Numbers are display elements — do not use `<ol>` list semantics; build with `<div>` grid rows
+- 3-5 items maximum — if more, split across two slides
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: criteria -->
+
+## Here is what the criteria are.
+
+- 01
+  - 01
+  - Criterion Title One
+  - Supporting description text. One or two sentences maximum.
+- 02
+  - 02
+  - Criterion Title Two
+  - Supporting description text. One or two sentences maximum.
+- 03
+  - 03
+  - Criterion Title Three
+  - Supporting description text. One or two sentences maximum.
+```
+
+**How the renderer maps this:**
+- Each top-level `- NN` → one criteria row
+- Sub-item 1 (repeated number): the large display number
+- Sub-item 2: the criterion title
+- Sub-item 3: the description
+
+**When to use:** Ranked criteria, leadership principles, non-negotiable requirements, or any list where the items carry enough weight that a bullet point understates them. The number is a visual anchor, not a rank signal — reordering is fine.
+
+---
+
+## Template 23: Card Grid with Verdict Badges
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  We have four options.                │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Option 1     │  │ Option 2     │  │
+│  │ ✓In-proc ✕Ops│  │ ✕In-proc ✓Ops│  │
+│  │ description  │  │ description  │  │
+│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐* │
+│  │ Option 3     │  │ Option 4 ★  │  │
+│  │ ✓In-proc ✓Ops│  │ ✓In-proc ✓Ops│  │
+│  │ description  │  │ description  │  │
+│  └──────────────┘  └──────────────┘  │
+│  footer                          9/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `verdict-grid` (extends standard card grid)
+
+**Layout spec:**
+- Grid layout: identical to Template 8 (2×2, `display: grid; grid-template-columns: 1fr 1fr; gap: 16px`)
+- Each card: `background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px`
+- Card title: `font-size: 15-17px; font-weight: 700; color: var(--text-heading)`
+- Badge row: `display: flex; flex-wrap: wrap; gap: 6px`
+- Each badge: `display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 11px; font-weight: 600; border-radius: 999px; padding: 3px 8px`
+- Badge color variants — define these CSS classes:
+  - `.badge-pass`: `background: rgba(45,106,63,0.12); color: #2d6a3f`
+  - `.badge-fail`: `background: rgba(155,28,28,0.12); color: #9b1c1c`
+  - `.badge-warn`: `background: rgba(146,100,0,0.12); color: #925c00`
+- Preferred card modifier `.card-preferred`:
+  - `background: var(--accent-soft)` (or a light tint of `--accent` at 8-12% opacity)
+  - `border-color: var(--accent)`
+  - Card title: `color: var(--accent)`
+- All four cards remain equal size — the highlight is color only, not size change
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: verdict-grid -->
+
+## We have four options, and they are not equally viable.
+
+- Option 1 · Label
+  - Option 1 · Label
+  - pass:In-process fail:Independence fail:Ops fail:Availability fail:Path-to-prod
+  - The architectural model leadership wants, but the stand-up burden is prohibitive.
+- Option 2 · Label
+  - Option 2 · Label
+  - fail:In-process fail:Independence pass:Ops pass:Availability pass:Path-to-prod
+  - Consumed as delivered. Criterion relaxed is availability coupling.
+- Option 3 · Label
+  - Option 3 · Label
+  - pass:In-process pass:Independence fail:Ops pass:Availability fail:Path-to-prod
+  - Honors architecture and independence, at the cost of a dedicated platform capability.
+- Option 4 · Label *preferred*
+  - Option 4 · Label
+  - pass:In-process warn:Independence pass:Ops pass:Availability pass:Path-to-prod
+  - Co-develop the architecture needed. Same vendor, different engagement model.
+```
+
+**How the renderer maps this:**
+- Each top-level `- Card Title` → one card in the grid
+- Sub-item 1: card title (strip `*preferred*` flag → apply `.card-preferred` class if present)
+- Sub-item 2: badge string — parse `pass:Label`, `fail:Label`, `warn:Label` tokens into badge pills
+- Sub-item 3: card body description
+
+**When to use:** Option comparison, vendor evaluation, feature matrix where a recommended choice must be visible without hiding the tradeoffs. The badges let a reader scan all cards at once before reading any body text.
+
+---
+
+## Template 24: Comparison Table
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Here are the numbers side by side.   │
+│                                       │
+│  ┌──────────┬──────────┬──────────┐  │
+│  │          │ Option A │ Option B │  │
+│  ├──────────┼──────────┼──────────┤  │
+│  │ Row 1    │ ✓        │ ✕        │  │
+│  │ Row 2    │ ✕        │ ✓        │  │
+│  │ Row 3    │ ✓        │ ✓        │  │
+│  │ Row 4    │ ⚠        │ ✓        │  │
+│  └──────────┴──────────┴──────────┘  │
+│  Footnote text for scope caveats.     │
+│  footer                         11/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `compare-table`
+
+**Layout spec:**
+- `section.compare-table`: `display: flex; flex-direction: column; padding: 48px 64px`
+- Slide heading (`h2`): 28-34px, `margin-bottom: 20px`
+- Table wrapper: `flex: 1; overflow: hidden`
+- `table`: `width: 100%; border-collapse: collapse; font-size: 13-15px`
+- Header row (`thead th`): `font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-alt); padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border)`
+- First column (row labels, `td:first-child`): `font-weight: 600; color: var(--text-heading); width: 28%; padding: 10px 16px; border-bottom: 1px solid var(--border)`
+- Data cells (`td`): `padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text-body)`
+- Cell semantic tinting — apply via class on `<td>`:
+  - `.cell-pass`: `background: rgba(45,106,63,0.08); color: #2d6a3f`
+  - `.cell-fail`: `background: rgba(155,28,28,0.08); color: #9b1c1c`
+  - `.cell-warn`: `background: rgba(146,100,0,0.08); color: #925c00`
+  - No class: neutral, `color: var(--text-muted)`
+- Use background tint only — never bold fills that obscure text
+- Footnote paragraph after table: `font-size: 12px; font-style: italic; color: var(--text-muted); margin-top: 12px`
+- Maximum ~6 rows, ~5 columns before legibility breaks — split or simplify if more
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: compare-table -->
+
+## Here are the numbers side by side.
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Option A</th>
+      <th>Option B</th>
+      <th>Option C</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Runtime model</td>
+      <td class="cell-pass">In-process</td>
+      <td class="cell-fail">Out-of-process</td>
+      <td class="cell-pass">In-process</td>
+    </tr>
+    <tr>
+      <td>Availability coupling</td>
+      <td class="cell-pass">Contained</td>
+      <td class="cell-fail">Every app ≤ vendor</td>
+      <td class="cell-pass">Contained</td>
+    </tr>
+    <tr>
+      <td>Operational burden</td>
+      <td class="cell-fail">Heavy</td>
+      <td>Vendor-managed</td>
+      <td class="cell-warn">Shared</td>
+    </tr>
+  </tbody>
+</table>
+
+*Footnote: scope and timeline estimates are not included — this table covers architectural properties only.*
+```
+
+**Note:** This template requires `html: true` in the Marp frontmatter. The `<table>` is written directly in the markdown — Marp passes it through when HTML is enabled. Cell classes (`.cell-pass`, `.cell-fail`, `.cell-warn`) must be defined in the deck's CSS theme.
+
+**When to use:** Multi-vendor comparison, criteria matrix, architectural property grid. Use when the reader needs to scan both across a row (how one item compares across options) and down a column (what one option looks like in total). If you only need to compare two things, use T12 instead.
+
+---
+
+## Template 25: Featured Card + Sub-Grid
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Here is where the evidence points.   │
+│                                       │
+│  ┌─────────────────────────────────┐  │
+│  │ ── THE EVIDENCE FAVORS OPTION 4 │  │
+│  │                                 │  │
+│  │ Featured thesis here. This is   │  │
+│  │ the answer the slide asserts.   │  │
+│  └─────────────────────────────────┘  │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Sub Card 1   │  │ Sub Card 2   │  │
+│  │ Condition or │  │ Condition or │  │
+│  │ caveat.      │  │ fallback.    │  │
+│  └──────────────┘  └──────────────┘  │
+│  footer                         14/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `featured`
+
+**Layout spec:**
+- `section.featured`: `display: flex; flex-direction: column; padding: 48px 64px`
+- Slide heading (`h2`): 28-34px, `margin-bottom: 20px`
+- Featured card: `background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 24px 28px; margin-bottom: 20px`
+  - Featured label: `font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px` — prepend a short rule: use CSS `::before { content: '── '; }` or a `<span class="rule">── </span>`
+  - Featured body: `font-size: 17-20px; color: var(--text-body); line-height: 1.7; max 2-3 sentences`
+- Sub-card row: `display: flex; gap: 16px`
+  - Each sub-card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px`
+  - Sub-card title: `font-size: 15-16px; font-weight: 700; color: var(--accent)` (accent, not heading — signals it's subordinate to the featured label but still active)
+  - Sub-card body: `font-size: 14px; color: var(--text-body); line-height: 1.6; margin-top: 8px`
+- Hierarchy rule: featured card is larger, warmer, and has accent border — sub-cards are neutral. Never make all three areas equal weight.
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: featured -->
+
+## Applying the criteria, here is where the evidence points.
+
+- THE EVIDENCE FAVORS OPTION 4
+  - THE EVIDENCE FAVORS OPTION 4
+  - Capital One co-development honors in-process performance and operational footprint without a dedicated platform organization. Vendor independence is partially honored through the co-development model.
+- The path is not self-executing
+  - The path is not self-executing
+  - Converting stated willingness into a signed co-development engagement requires a senior-to-senior conversation.
+- Option 3 is the right fallback
+  - Option 3 is the right fallback
+  - If the engagement cannot be activated, Option 3 preserves the architectural direction. Falling back to Option 2 would abandon it.
+```
+
+**How the renderer maps this:**
+- First top-level item → featured card (label from sub-item 1, body from sub-item 2)
+- Remaining top-level items → sub-card row (equal width, one card per item)
+- Sub-item 1: sub-card title; sub-item 2: sub-card body
+
+**When to use:** Assessment with a clear recommended direction plus qualifications or fallback conditions. This template asserts a direction — do not use it for three equal options (use T8 or T23). Use it when the deck needs to say "here is the answer, and here is the nuance."
+
+---
+
+## Documented Variants
+
+These are named variations of existing templates. Use them when the base template almost fits but needs one structural addition.
+
+### Variant: T12 with Below Note
+
+Extends Template 12 (Comparison with connector). Adds a full-width framing paragraph below the two cards.
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Comparison Heading                   │
+│                                       │
+│  ┌──────────────┐     ┌──────────────┐│
+│  │ Card A       │  →  │ Card B       ││
+│  │ content      │     │ content      ││
+│  └──────────────┘     └──────────────┘│
+│                                       │
+│  Framing sentence that applies to     │
+│  both sides equally. Max 30 words.    │
+│                                       │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS addition to T12:**
+- After the card row: `margin-top: 20px`
+- Framing paragraph: `font-size: 15-17px; color: var(--text-body); line-height: 1.6; max-width: 800px`
+- The note sits below the cards with more margin above it than the gap between the cards — this signals it is a comment on the comparison, not a third card
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: comparison -->
+
+## Checkpoint I and Checkpoint II
+
+- Doing it well
+  - Doing it well
+  - You demonstrate the cognitive skill. The work is correct, clear, and complete.
+- →
+- Scaling the impact
+  - Scaling the impact
+  - Others benefit from the work. It's documented, adopted, durable, and reusable.
+
+The shift from I to II is where most engineers stall. Doing the cognitive work is necessary; making it durable and transferable is what earns the next level.
+```
+
+**How the renderer maps this:** Same as T12, except a trailing paragraph (not inside a list item) is rendered as the framing note below the cards.
+
+---
+
+### Variant: T14 Step Cards
+
+Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-width numbered step cards arranged horizontally.
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  How to use this tomorrow.            │
+│                                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────┐│
+│  │ STEP 01  │  │ STEP 02  │  │STEP 3││
+│  │          │  │          │  │      ││
+│  │ Step     │  │ Step     │  │ Step ││
+│  │ Title    │  │ Title    │  │Title ││
+│  │          │  │          │  │      ││
+│  │ desc     │  │ desc     │  │ desc ││
+│  └──────────┘  └──────────┘  └──────┘│
+│  footer                         12/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `steps` (instead of `timeline`)
+
+**Layout spec:**
+- `section.steps`: `display: flex; flex-direction: column; padding: 48px 64px`
+- Slide heading (`h2`): 32-36px, `margin-bottom: 32px`
+- Cards row: `display: flex; gap: 16px; flex: 1`
+- Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px`
+- Step badge: `font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted)` — sits at top of card
+- Step title: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
+- Step body: `font-size: 14px; color: var(--text-body); line-height: 1.6; flex: 1`
+- No connecting line — left-to-right card order implies sequence
+- 2-4 steps; for 5-6 steps, use dot-on-line (T14 base) where labels are shorter
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: steps -->
+
+## How to use this tomorrow.
+
+- Step 01
+  - Step 01
+  - Name your level
+  - Find the verb that describes how you think today. Be honest — most operate across two adjacent levels.
+- Step 02
+  - Step 02
+  - Pick the next verb
+  - Choose one example problem from the next level. Make it concrete, time-bound, and tied to real work.
+- Step 03
+  - Step 03
+  - Collect the evidence
+  - Design docs, ADRs, before/after metrics, postmortems — artifacts that prove the shift happened.
+```
+
+**How the renderer maps this:** Each top-level item → one card. Sub-item 1: step badge; sub-item 2: step title; sub-item 3: step body.
+
+**When to use:** Steps that need more content than a dot label can hold. Use dot-on-line (T14) for light orientation with short labels; use step cards when each step needs a title plus a sentence of description.
+
+---
+
+### Variant: T15 Tabular Inline
+
+Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Growth is a change in thinking.      │
+│                                       │
+│  01  Remember  Recall facts & syntax  Feature / Task      │
+│  02  Understand Explain behavior      Component / Module  │
+│  03  Apply     Use patterns           Service / Product   │
+│  04  Analyze   Decompose boundaries   System / Platform   │
+│  05  Evaluate  Judge against strategy Org / Multi-domain  │
+│  06  Create    Synthesize frameworks  Enterprise          │
+│                                       │
+│  footer                          3/19 │
+└──────────────────────────────────────┘
+```
+
+**CSS class:** `list-tabular` (or add `tabular` modifier to `list`)
+
+**Layout spec:**
+- `section.list-tabular ul`: `list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px`
+- Each `li`: `display: grid; grid-template-columns: [varies by content]; align-items: baseline; gap: 0 20px`
+- Define column widths explicitly — e.g. `grid-template-columns: 40px 140px 1fr 200px` for number + verb + description + scope
+- Number column: `font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent)`
+- Verb column: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
+- Description column: `font-size: 15-16px; color: var(--text-body)`
+- Metadata column(s): `font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); text-align: right`
+- Use CSS grid — never use spaces or tabs to fake alignment
+- Maximum 2 metadata columns on the right; if more structure is needed, use T24 (Comparison Table)
+
+**Marp markdown source:**
+
+```markdown
+<!-- _class: list-tabular -->
+
+## Growth is a change in thinking, not title.
+
+- `01` **Remember** Recall facts, syntax, rules *Feature / Task*
+- `02` **Understand** Explain behavior & dependencies *Component / Module*
+- `03` **Apply** Use patterns in new contexts *Service / Product*
+- `04` **Analyze** Decompose across boundaries *System / Platform*
+- `05` **Evaluate** Judge options against strategy *Org / Multi-domain*
+- `06` **Create** Synthesize new frameworks *Enterprise / Ecosystem*
+```
+
+**How the renderer maps this:** Each `li` is parsed for inline patterns: backtick code → number column; bold → verb column; plain text → description column; italic → metadata column. The renderer places each token into the grid column in order. Alternatively, use explicit `<span class="col-N">` wrappers inside each `li` for precise control.
+
+**When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T24 if readers need to scan down columns as much as across rows.
+
+---
+
+# Part 5: Mermaid Diagram Integration
+
+## 5.1 Diagrams in Markdown
+
+Always use `<div class="mermaid">`, NOT fenced code blocks. Fenced blocks rely on Marp's built-in Mermaid which is unreliable in PDF export.
+
+```html
+<div class="mermaid-box">
+<div class="mermaid">
+mindmap
+  root{{Root}}
+    [Category]
+      (Item)
+</div>
+</div>
+```
+
+For the PDF pipeline, these divs are for browser preview only. The actual PDF uses pre-rendered SVGs.
+
+## 5.2 Node Shapes Reference
+
+| Syntax | Shape | Use For |
+|--------|-------|---------|
+| `root` | Default | Auto |
+| `((Text))` | Circle | Emphasis nodes |
+| `(Text)` | Rounded rectangle | Leaf nodes / items |
+| `[Text]` | Square | Category nodes |
+| `{{Text}}` | Hexagon | Root / group nodes |
+| `)Text(` | Cloud | Ideas / concepts |
+| `))Text((` | Bang | Alerts / highlights |
+
+Use different shapes for different hierarchy levels to aid visual scanning.
+
+## 5.3 Mermaid Theme Matching
+
+Match the Mermaid theme variables to the slide CSS palette:
+
+```
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '<--bg-alt value>',
+  'primaryTextColor': '<--text-heading value>',
+  'primaryBorderColor': '<--border value>',
+  'lineColor': '<--text-muted value>',
+  'secondaryColor': '<--bg value>',
+  'tertiaryColor': '<--bg value>',
+  'fontFamily': '<--font-body value>',
+  'fontSize': '14px'
+}}}%%
+```
+
+---
+
+# Part 6: Rendering Pipeline
+
+## 6.1 Architecture
+
+```
+Source:     deck.md (Marp markdown + CSS theme)
+                │
+    ┌───────────┼───────────┐
+    │           │           │
+    ▼           │           │
+ .mmd files     │           │
+ (extracted)    │           │
+    │           │           │
+    ▼           │           │
+ .svg files     │           │
+ (via mmdc)     │           │
+    │           │           │
+    ├──► .png   │           │
+    │  (sharp)  │           │
+    │    │      ▼           │
+    │    │   deck.html      │
+    │    │   (SVGs inline)  │
+    │    │      │           │
+    │    │      ▼           │
+    │    │   deck.pdf       │
+    │    │   (Puppeteer)    │
+    │    │      │           │
+    │    │      ▼           │
+    │    │   slide-*.jpg    │
+    │    │   (pdftoppm)     │
+    │    │                  │
+    │    ▼                  │
+    │  deck.pptx            │
+    │  (PptxGenJS + PNGs)   │
+    └───────────────────────┘
+```
+
+## 6.2 Architecture Decisions
+
+**Why not Marp CLI?** Sandboxed LLM environments often lack network access. The custom renderer handles the subset of Markdown the deck uses. If Marp CLI IS available, use it — but don't depend on it.
+
+**Why Puppeteer/Playwright for PDF?** The decks use CSS-driven layouts that LaTeX cannot reproduce. The PDF must be pixel-identical to the browser render.
+
+**Why pre-render Mermaid to SVG?** JavaScript-dependent diagrams fail during PDF print. Pre-rendered SVGs are static content that Puppeteer prints reliably.
+
+**Why SVG to PNG for PPTX?** PowerPoint does not natively render SVG. PNG is universally supported.
+
+## 6.3 Prerequisites Check
+
+```bash
+# Required tools
+which node && node --version
+which npx
+which mmdc && mmdc --version
+which pdftoppm
+
+# Find Chrome binary (STORE THIS PATH)
+CHROME_PATH=$(find /home/claude/.cache/puppeteer -name "chrome" -type f 2>/dev/null | grep chrome-linux64 | head -1)
+echo "Chrome: $CHROME_PATH"
+
+# If no Puppeteer Chrome, check Playwright
+PLAYWRIGHT_CHROME=$(find /home/claude/.cache -path "*/chromium*/chrome" -type f 2>/dev/null | head -1)
+echo "Playwright Chrome: $PLAYWRIGHT_CHROME"
+
+# npm packages
+for pkg in pptxgenjs sharp @mermaid-js/mermaid-cli; do
+  ls /home/claude/.npm-global/lib/node_modules/$pkg 2>/dev/null && echo "$pkg: found" || echo "$pkg: MISSING"
+done
+```
+
+## 6.4 Step 1: Render Mermaid Diagrams
+
+### Create Puppeteer Config
+
+```bash
+CHROME_PATH=$(find /home/claude/.cache/puppeteer -name "chrome" -type f | grep chrome-linux64 | head -1)
+
+cat > /home/claude/puppeteer-config.json << EOF
+{
+  "executablePath": "$CHROME_PATH",
+  "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+}
+EOF
+```
+
+### Create .mmd Files
+
+```bash
+cat > /home/claude/diagram1.mmd << 'EOF'
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#EDE6D8',
+  'primaryTextColor': '#3A342C',
+  'primaryBorderColor': '#D4C5A0',
+  'lineColor': '#B0A898',
+  'fontFamily': 'Nunito Sans, sans-serif',
+  'fontSize': '14px'
+}}}%%
+mindmap
+  root{{Root}}
+    [Category]
+      (Item)
+EOF
+```
+
+### Render to SVG
+
+```bash
+mmdc -i /home/claude/diagram1.mmd \
+     -o /home/claude/diagrams/diagram1.svg \
+     -b transparent \
+     -p /home/claude/puppeteer-config.json
+```
+
+### Convert SVG to PNG
+
+```javascript
+const sharp = require('/home/claude/.npm-global/lib/node_modules/sharp');
+const path = require('path');
+
+async function convert(name) {
+  await sharp(path.join('/home/claude/diagrams', `${name}.svg`), { density: 200 })
+    .png()
+    .toFile(path.join('/home/claude/diagrams', `${name}.png`));
+}
+
+const diagrams = ['diagram1', 'diagram2'];
+Promise.all(diagrams.map(convert)).catch(console.error);
+```
+
+## 6.5 Step 2: Build HTML
+
+The HTML file must:
+- Set `@page { size: 1280px 720px; margin: 0; }` for 16:9 slides
+- Use `page-break-after: always` on each slide element
+- Embed pre-rendered SVGs directly (read SVG file contents, insert into HTML)
+- Include all CSS inline
+- Load fonts via Google Fonts `<link>` tag
+- NOT require any JavaScript execution
+
+```bash
+SVG1=$(cat /home/claude/diagrams/diagram1.svg)
+
+cat > /home/claude/deck.html << HTMLEOF
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=FONTS&display=swap" rel="stylesheet">
+<style>
+@page { size: 1280px 720px; margin: 0; }
+.slide {
+  width: 1280px; height: 720px;
+  page-break-after: always;
+}
+/* Full CSS theme */
+</style>
+</head>
+<body>
+<div class="slide slide-title"><!-- content --></div>
+<div class="slide slide-diagram">
+  <div class="mermaid-box">$SVG1</div>
+</div>
+</body>
+</html>
+HTMLEOF
+```
+
+### Alternative: Custom Markdown-to-HTML Renderer
+
+For pure-Markdown decks with no HTML divs, write a renderer that parses Marp markdown directly:
+
+```javascript
+const fs = require('fs');
+const md = fs.readFileSync('deck.md', 'utf8');
+const css = fs.readFileSync('theme.css', 'utf8');
+
+// Strip frontmatter, split slides, parse markdown, wrap in HTML
+// See Part 8 for renderer requirements
+```
+
+## 6.6 Step 3: Render PDF
+
+### With Puppeteer
+
+```javascript
+const puppeteer = require('/home/claude/.npm-global/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer');
+const path = require('path');
+
+(async () => {
+  const browser = await puppeteer.launch({
+    executablePath: CHROME_PATH,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: 'new'
+  });
+  const page = await browser.newPage();
+  await page.goto('file://' + path.resolve('/home/claude/deck.html'), {
+    waitUntil: 'networkidle0', timeout: 30000
+  });
+  await page.pdf({
+    path: '/home/claude/deck.pdf',
+    width: '1280px', height: '720px',
+    printBackground: true,
+    preferCSSPageSize: true
+  });
+  await browser.close();
+})();
+```
+
+### With Playwright
+
+```javascript
+const { chromium } = require('playwright');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('file:///home/claude/deck.html', { waitUntil: 'networkidle' });
+  await page.pdf({
+    path: '/home/claude/deck.pdf',
+    width: '1280px', height: '720px',
+    printBackground: true
+  });
+  await browser.close();
+})();
+```
+
+### Critical PDF Settings
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| `printBackground` | `true` | Background colors won't render without this |
+| `preferCSSPageSize` | `true` | Respects `@page` dimensions (Puppeteer only) |
+| `waitUntil` | `networkidle0` / `networkidle` | Ensures Google Fonts load |
+| `width` / `height` | `1280px` / `720px` | 16:9 slide dimensions |
+
+## 6.7 Step 4: Convert to Images
+
+```bash
+mkdir -p /home/claude/slides
+pdftoppm -jpeg -r 200 /home/claude/deck.pdf /home/claude/slides/slide
+ls /home/claude/slides/slide-*.jpg
+```
+
+Filenames are zero-padded: `slide-1.jpg` for <10 pages, `slide-01.jpg` for 10-99. Always use `ls` to find actual filenames.
+
+## 6.8 Step 5: Convert to PPTX
+
+```javascript
+const pptxgen = require("pptxgenjs");
+
+const pres = new pptxgen();
+pres.layout = "LAYOUT_16x9";  // 10" × 5.625"
+
+// Mirror CSS palette
+const C = { bg: "F5F0E8", text: "3A342C", accent: "8B6914", /* ... */ };
+
+// Title slide
+const s1 = pres.addSlide();
+s1.background = { fill: C.text };
+s1.addText("Title", { x: 0, y: 2, w: 10, h: 1, fontSize: 54, fontFace: "Georgia", color: C.bg, align: "center" });
+
+// Diagram slide with embedded PNG
+const sN = pres.addSlide();
+sN.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+  x: 0.8, y: 1.9, w: 8.4, h: 3.3,
+  fill: { color: C.bg }, line: { color: C.border, width: 1 }, rectRadius: 0.12
+});
+sN.addImage({
+  path: "/home/claude/diagrams/diagram1.png",
+  x: 1.2, y: 2.0, w: 7.6, h: 3.0,
+  sizing: { type: "contain", w: 7.6, h: 3.0 }
+});
+
+pres.writeFile({ fileName: "/home/claude/deck.pptx" });
+```
+
+### PPTX Layout Reference
+
+| Element | Position (inches) |
+|---------|------------------|
+| Category label | x:0, y:0.4, w:10, align:center |
+| Slide title | x:0, y:0.8, w:10, align:center |
+| Subtitle | x:0, y:1.4, w:10, align:center |
+| Diagram container | x:0.8, y:1.9, w:8.4, h:3.3 |
+| Diagram image | x:1.2, y:2.0, w:7.6, h:3.0 |
+| Body text | x:1.5, y:2.2, w:7, h:varies |
+| Stat number | fontSize:40, fontFace:"Georgia" |
+| Stat label | fontSize:9, charSpacing:2 |
+| Page number | x:8.8, y:5.1, w:1, align:right |
+
+### PPTX Tips
+
+- Use `sizing: { type: "contain" }` for images
+- Use `charSpacing` not `letterSpacing` (silently ignored)
+- Use `rectRadius` on `ROUNDED_RECTANGLE` for cards
+- Set `margin: 0` on text boxes when aligning with shapes
+- Use `breakLine: true` in text arrays for multi-line
+- Never use unicode bullets — use `bullet: true`
+
+## 6.9 Step 6: Deliver
+
+```bash
+cp /home/claude/deck.md /mnt/user-data/outputs/
+cp /home/claude/deck.pdf /mnt/user-data/outputs/
+cp /home/claude/deck.pptx /mnt/user-data/outputs/
+cp /home/claude/slides/*.jpg /mnt/user-data/outputs/
+# Present via present_files tool
+```
+
+---
+
+# Part 7: Custom Renderer Requirements
+
+When Marp CLI is unavailable, the custom renderer must handle:
+
+## From Frontmatter
+
+- `marp: true` — confirm it's a Marp deck
+- `theme` — ignored (CSS is inline)
+- `paginate` — true/false, controls page number rendering
+- `html` — true, enables HTML passthrough
+- `header` — string, persistent header text
+- `footer` — string, persistent footer text
+- `style` — CSS block, inline into `<style>` tag
+
+## From Slide Content
+
+- Slide splitting on `\n---\n`
+- Class directives: `<!-- _class: X -->` → class on `<section>`
+- Pagination override: `<!-- _paginate: false -->`
+- Header/footer overrides (both `_` and non-`_` variants)
+- Markdown: headings, paragraphs, lists (2 levels), blockquotes, horizontal rules, inline bold/italic/code
+- HTML passthrough: `<div>`, `<span>`, `<script>`, etc.
+
+## Into HTML Output
+
+- Each slide as `<section>` with class attribute
+- Page number injected unless suppressed
+- Header/footer injected unless suppressed
+- CSS inlined in `<style>` tag
+- Google Fonts loaded via `<link>` tag
+
+## What the Renderer Does NOT Handle
+
+- Tables (use cards instead)
+- Ordered lists (use unordered with manual numbering)
+- Images (embed as HTML `<img>`)
+- Links (not clickable in PDF/PPTX)
+- Nesting beyond 2 levels
+- Marp-specific sizing directives (`w:`, `h:`, `bg:`)
+
+## CSS Element Order Dependency
+
+CSS themes use positional selectors (`p:first-of-type`, `p:nth-of-type(2)`, `ul > li:first-child`) to style elements by position. **Reordering elements in the Markdown breaks layout.** Document the required element order for each slide class in a per-deck companion file.
+
+---
+
+# Part 8: Workflow Checklist
+
+```
+□ Create Marp markdown source (deck.md) with CSS theme in frontmatter
+□ Find Chrome binary path (Puppeteer or Playwright)
+□ Create Puppeteer config (puppeteer-config.json)
+□ Extract Mermaid blocks to .mmd files (if any diagrams)
+□ Render .mmd → .svg using mmdc with puppeteer config
+□ Convert .svg → .png using sharp (for PPTX embedding)
+□ Build HTML with embedded SVGs and full CSS inline
+□ Render HTML → PDF using Puppeteer or Playwright
+□ Convert PDF → image set using pdftoppm
+□ Build PPTX using PptxGenJS with embedded PNGs
+□ Copy all outputs to /mnt/user-data/outputs/
+□ Present files to user
+```
+
+---
+
+# Part 9: Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `mmdc` fails with `EISDIR` | `-p` flag needs a JSON file path, not a directory |
+| PDF has no background colors | Add `printBackground: true` |
+| Fonts don't render in PDF | Use `waitUntil: 'networkidle0'`, ensure Google Fonts `<link>` in HTML |
+| SVGs don't appear in PPTX | Convert to PNG first using `sharp` |
+| `pdftoppm` filename padding | Auto-pads by page count — use `ls` to find files |
+| Puppeteer Chrome not found | `find /home/claude/.cache/puppeteer -name "chrome" -type f` |
+| npm packages not found | Use full paths: `require('/home/claude/.npm-global/lib/...')` |
+| Mermaid theme not applying | Include `%%{init: {...}}%%` at top of each `.mmd` |
+| `str_replace` match fails | Always `view` file before editing — previous edits make views stale |
+| Font size cascade | Use `px` values, not `em` — base section font-size affects `em` |
+| Slide splitter eating `---` | Use `***` or `___` for horizontal rules inside slides |
+| `charSpacing` in PPTX | Use `charSpacing`, not `letterSpacing` (silently ignored) |
+| Google Fonts offline | Download fonts, use `@font-face` instead of `@import` |
+| Heading overflow | Shorten text or widen column — never shrink font |
+| Double bullets in PPTX | Never use unicode `•` — use `bullet: true` |
+| Content overflows into page number | Increase bottom padding or reduce content |
+| Cards touching slide edges | Add minimum 48px padding from all edges |
+
+---
+
+# Part 10: File Naming Convention
+
+```
+project_deck.md             Marp markdown source
+project_deck.html           Intermediate HTML (debugging)
+project_deck.pdf            Final PDF
+project_deck.pptx           PowerPoint version
+project_slide-01.jpg        Individual slide images
+puppeteer-config.json       Puppeteer Chrome config
+diagrams/                   Mermaid .mmd, .svg, .png files
+```

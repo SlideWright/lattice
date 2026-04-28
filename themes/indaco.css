@@ -1,0 +1,525 @@
+/* @theme indaco
+ * @size 16:9 1280px 720px
+ *
+/* Lattice · Indaco palette
+ * ────────────────────────────────────────────────────────────────────────
+ * The default Lattice palette — cool indigo. Pale-cool surfaces with
+ * saturated brand navy borders and dark slate ink. Saturated red is
+ * reserved for alarm states (gantt critical, error fills) — every other
+ * surface in this palette stays pale so the deck reads as ink-on-paper.
+ *
+ * This file is the canonical palette template: copy it to
+ * themes/<name>.css and edit the tokens to author a new palette.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text color (#0A1628) on every light surface. No auto-
+ *      inversion logic is relied upon; every text variable below is
+ *      set explicitly.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)      — primary / secondary / tertiary, used
+ *                                 directly by flowchart, sequence, class,
+ *                                 state, ER, quadrant, and most layouts.
+ *        Mid-tone band (L≈60)  — cScale0..11, fed at L≈60 because
+ *                                 Mermaid's kanban renderer applies a
+ *                                 lighten step that brings emitted fills
+ *                                 to L≈68-73 (pale enough for dark text).
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Saturated brand navy #1F4A6E reads on every fill.
+ *        b. Alarm signal. Saturated red #C20000 only on critBkgColor
+ *           and errorBkgColor — never on routine fills.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on. Decorative tokens (borders, hairlines,
+ *      muted chrome, spectrum gradient) are WCAG-exempt per design.
+ *
+ * Layout consumption
+ * ──────────────────
+ * lattice.css references every variable below by name. When you
+ * author a new palette, define every variable in this file — layouts
+ * that rely on a missing variable will fall back to the cascade root
+ * (typically resulting in unstyled black-on-white rendering, which
+ * makes missing tokens easy to spot during palette development).
+ *
+ * Mermaid theme extension
+ * ───────────────────────
+ * Per-diagram Mermaid CSS overrides live in this same file (below the
+ * :root block). Lattice's renderer extracts both the :root tokens and
+ * the additional CSS rules from this single palette file at build time.
+ * See THEMING.md for the per-diagram override surface and Mermaid
+ * parser limits.
+ */
+
+@import 'lattice';
+
+:root {
+  /* ── Lattice brand axis (single source of truth for brand color) ── */
+  --brand-blue-deep:  #003D66;  /* dark canvas, bg-dark                  */
+  --brand-blue-mid:   #006FA8;  /* accent, text-label — 5.47:1 bg AA     */
+  --brand-blue:       #009BE4;  /* decorative spectrum only              */
+  --brand-green-deep: #2F6B12;  /* pass signal — 6.50:1 on white         */
+  --brand-green:      #6CB516;  /* decorative spectrum endpoint          */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       #FFFFFF;          /* canvas — pure white                    */
+  --bg-alt:   #F2F5FA;          /* card fill — cool blue-white            */
+  --bg-dark:  var(--brand-blue-deep); /* dark panels / title / divider   */
+  --border:   #E4EAF2;          /* hairline rule — decorative             */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;      /* on dark surfaces — 11.29:1 on bg-dark  */
+  --text-heading: #0A1628;      /* near-black slate  — 18.13:1 on bg      */
+  --text-body:    #1E3A5F;      /* corporate navy    — 11.50:1 on bg      */
+  --text-label:   var(--brand-blue-mid); /* eyebrows — 5.47:1 bg AA       */
+  --text-muted:   #6B7F9A;      /* chrome / secondary — DECORATIVE        */
+
+  /* ── Brand accent ─────────────────────────────────────────────────── */
+  --accent:      var(--brand-blue-mid); /* text/borders — 5.47:1 on bg AA */
+  --accent-soft: #EFF6FC;       /* pale blue panel — accent reads 5.02:1  */
+
+  /* ── Semantic signals ─────────────────────────────────────────────── */
+  --pass: var(--brand-green-deep); /* 6.50:1 on bg AA */
+  --fail: #991B1B;               /* 8.31:1 on bg AAA */
+  --warn: #92400E;               /* 7.09:1 on bg AAA */
+  --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+
+  /* ── Dark-panel ramp ──────────────────────────────────────────────── */
+  --bg-warm-mid:   #002847;     /* divider panels (deep) — decorative     */
+  --bg-warm-light: #00558C;     /* accent panels (lighter) — decorative   */
+  --code-text:     #CBD9E8;     /* code text on dark — 7.87:1 on bg-dark  */
+
+  /* ── Spectrum ribbon — navy → bright blue → green ─────────────────── */
+  --spectrum: linear-gradient(
+    90deg,
+    var(--brand-blue-deep) 0%,
+    var(--brand-blue)      55%,
+    var(--brand-green)     100%
+  );
+
+  /* ── Derived on-dark tints ────────────────────────────────────────── */
+  --on-dark-primary:   color-mix(in srgb, white 92%, transparent);
+  --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
+  --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);
+  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+  --overlay-dark:      color-mix(in srgb, var(--bg-dark) 82%, transparent);
+}
+
+/* ── Dark-variant tokens ───────────────────────────────────────────────
+ * Used by section.dark in lattice.css to reskin the slide canvas
+ * for cover/divider/closing layouts that need a dark background.
+ * The slide rule remaps the main tokens to these dark values, so the
+ * same layout structure works on either canvas. */
+:root {
+  --dark-bg:           #001D33;
+  --dark-bg-alt:       #002847;
+  --dark-border:       #0F3A5F;
+  --dark-text-heading: #FFFFFF;
+  --dark-text-body:    #CBD9E8;
+  --dark-text-muted:   #6B7F9A;
+  --dark-text-label:   #A0B8D0;
+  --dark-text-display: #FFFFFF;
+}
+
+/* ── highlight.js syntax tokens ────────────────────────────────────────
+ * Code-block syntax colors. These render on the dark code background
+ * (--bg-dark from the main palette) so they are picked to clear AA
+ * against that surface. Adjust per palette to match your brand. */
+:root {
+  --hljs-comment:    #6B5D4F;
+  --hljs-keyword:    #8B9FD4;
+  --hljs-number:     #D4A85A;
+  --hljs-string:     #A8C47A;
+  --hljs-title:      #C87A5A;
+  --hljs-variable:   #D4A85A;
+  --hljs-punctuation:#A69882;
+}
+
+/* ── Mermaid color extensions ──────────────────────────────────────────
+ * Colors used only by Mermaid diagram rendering that don't appear in
+ * slide layouts. Mid-tone hues for cScale/git-graph categorical
+ * coloring, pie chart cycle slots, quadrant chart fills, and a few
+ * Mermaid-specific accents. The renderer reads these alongside the
+ * core palette tokens to derive the Mermaid `themeVariables` object;
+ * the mapping (which Mermaid key gets which token) lives in lattice.js
+ * as structural metadata. */
+:root {
+  /* Pale primary/secondary used by flowchart node fills, sequence
+   * actor backgrounds, and other primary-style diagram surfaces.
+   * Distinct from --bg-alt because Mermaid's primaryColor needs to
+   * differ from cluster backgrounds for visual hierarchy. */
+  --mermaid-primary-color:   #DCE9F5;  /* pale brand blue */
+  --mermaid-secondary-color: #DDF0E8;  /* pale brand green */
+
+  /* Pie cycle pale tints (slots 3-6, paired with primary/secondary
+   * for slots 1-2 and 11-12). Each slice gets a distinct pale hue
+   * so categorical distinction reads at low saturation. */
+  --mermaid-pie-purple:  #E5DEEB;
+  --mermaid-pie-orange:  #F5E6D8;
+  --mermaid-pie-teal:    #D9EFEE;
+  --mermaid-pie-rose:    #F2DEE2;
+
+  /* Borders and lines — saturated brand navy and near-black.
+   * mermaid-border is the universal fill border (reads on every
+   * pale fill including white). mermaid-line is for edges/arrows. */
+  --mermaid-border: #1F4A6E;  /* saturated brand navy */
+  --mermaid-line:   #1A1A1A;  /* near-black */
+
+  /* Mid-tone categorical palette (L≈60). Fed to cScale and gitN.
+   * Mermaid kanban applies a lighten step that brings these to L≈70
+   * (pale enough for dark text). Mindmap uses them directly with
+   * themeCSS overrides above. */
+  --mermaid-mid-blue:    #5C9DD3;
+  --mermaid-mid-green:   #6FB89A;
+  --mermaid-mid-purple:  #8E7BAF;
+  --mermaid-mid-orange:  #D4A271;
+  --mermaid-mid-teal:    #6BBDB8;
+  --mermaid-mid-rose:    #C57E8B;
+  --mermaid-mid-slate:   #9AA8B8;
+  --mermaid-mid-mauve:   #B8939F;
+
+  /* Pie cycle extension (slots 7-12 use these distinct light hues
+   * since pie keeps the deck-wide pale-with-dark-text contract). */
+  --mermaid-pie-yellow:  #F4EFD8;
+  --mermaid-pie-red:     #F2DCDC;
+  --mermaid-pie-slate:   #E0E4EA;
+  --mermaid-pie-sage:    #D8E5DC;
+  --mermaid-pie-violet:  #EAE0EC;
+
+  /* Quadrant fills (one pale tint per quadrant) and their dark text. */
+  --mermaid-quadrant-1-fill: #EBF7E3;
+  --mermaid-quadrant-2-fill: #E6F0FF;
+  --mermaid-quadrant-3-fill: #FFF8E1;
+  --mermaid-quadrant-4-fill: #F0EBF7;
+  --mermaid-quadrant-1-text: #2D5E18;
+  --mermaid-quadrant-2-text: #004A8A;
+  --mermaid-quadrant-3-text: #7A5200;
+  --mermaid-quadrant-4-text: #3D2050;
+
+  /* Gantt task-state fills. taskBkg uses --bg-alt-* from main palette;
+   * the rest are Mermaid-specific. critBkg keeps saturated red as the
+   * deck's only alarm signal. */
+  --mermaid-gantt-active:        #F5E6D8;
+  --mermaid-gantt-active-border: #92400E;
+  --mermaid-gantt-done:          #E0E4EA;
+  --mermaid-gantt-done-border:   #475569;
+  --mermaid-gantt-critical:      #C20000;
+  --mermaid-gantt-critical-border:#8B0000;
+  --mermaid-gantt-today:         #F6C700;
+  --mermaid-gantt-grid:          #E0E4EA;
+
+  /* Note (sequence diagram) — yellow tint with yellow border, the
+   * one yellow accent in the deck. Not a brand color; signals "aside". */
+  --mermaid-note-bg:     #FFFBE6;
+  --mermaid-note-border: #F6C700;
+
+  /* Error state — saturated red, paired with white text. The deck's
+   * one alarm color, used by errorBkgColor across all diagrams. */
+  --mermaid-error-bg:    #C20000;
+  --mermaid-error-text:  #FFFFFF;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * MERMAID THEME CSS
+ * ════════════════════════════════════════════════════════════════════════
+ * Everything below the sentinel below is extracted by lattice.js at build
+ * time and injected as the Mermaid themeCSS parameter (alongside
+ * themeVariables derived from the palette tokens above).
+ *
+ * Per-diagram Mermaid CSS overrides for diagrams that ignore the
+ * themeVariables API or have hardcoded internal palettes. Each rule
+ * below addresses a real Mermaid limitation observed during development;
+ * none are speculative. See THEMING.md for the catalogue of Mermaid
+ * theming surfaces and parser limits.
+ *
+ * The sentinel comment below is parsed by lattice.js — do not move or
+ * rename. Everything after it is loaded as Mermaid themeCSS.
+ * ════════════════════════════════════════════════════════════════════════ */
+/* ===== MERMAID THEME CSS ===== */
+
+  /* ────────────────────────────────────────────────────────────────────
+   * Mermaid theme overrides — only for diagrams that ignore themeVariables
+   * or have absent-feature gaps. Each rule below addresses a specific
+   * Mermaid behaviour, not a contract violation.
+   * ──────────────────────────────────────────────────────────────────── */
+
+  /* ── JOURNEY ──
+   * Journey ignores cScale entirely; its renderer hardcodes X11 named
+   * colors (#191970 midnight blue, #4B0082 indigo, etc.). Override the
+   * section-N classes directly to pull them onto the brand palette.
+   * Section bars and task tiles inherit the same color per section, so
+   * we set both the section bar and task fills, plus dark text on each.
+   */
+  .journey-section, .journey-section rect, .section0 rect, .section1 rect, .section2 rect {
+    fill: #DCE9F5 !important;
+  }
+  .journey-section text, .section0 text, .section1 text, .section2 text {
+    fill: #0A1628 !important;
+    font-weight: 600 !important;
+  }
+  .task0 rect, .task-type-0 rect { fill: #DCE9F5 !important; }
+  .task1 rect, .task-type-1 rect { fill: #DDF0E8 !important; }
+  .task2 rect, .task-type-2 rect { fill: #E5DEEB !important; }
+  .task-type-0 text, .task-type-1 text, .task-type-2 text,
+  .task0 text, .task1 text, .task2 text {
+    fill: #0A1628 !important;
+  }
+  .legend text { fill: #0A1628 !important; }
+
+  /* ── MINDMAP ──
+   * Mindmap reads cScale verbatim with no transformation. Our cScale
+   * inputs are mid-tone (L≈60) so kanban lighten lands well, but
+   * mindmap renders them at full saturation. Override mindmap level
+   * fills to pale tints; dark text reads on every level.
+   */
+  .mindmap-node[class*="section-0"] rect,
+  .mindmap-node[class*="section-0"] circle,
+  .mindmap-node[class*="section-0"] polygon,
+  .mindmap-node[class*="section-0"] path { fill: #DCE9F5 !important; }
+  .mindmap-node[class*="section-1"] rect,
+  .mindmap-node[class*="section-1"] circle,
+  .mindmap-node[class*="section-1"] polygon,
+  .mindmap-node[class*="section-1"] path { fill: #DDF0E8 !important; }
+  .mindmap-node[class*="section-2"] rect,
+  .mindmap-node[class*="section-2"] circle,
+  .mindmap-node[class*="section-2"] polygon,
+  .mindmap-node[class*="section-2"] path { fill: #E5DEEB !important; }
+  .mindmap-node[class*="section-3"] rect,
+  .mindmap-node[class*="section-3"] circle,
+  .mindmap-node[class*="section-3"] polygon,
+  .mindmap-node[class*="section-3"] path { fill: #F5E6D8 !important; }
+  .mindmap-node[class*="section-4"] rect,
+  .mindmap-node[class*="section-4"] circle,
+  .mindmap-node[class*="section-4"] polygon,
+  .mindmap-node[class*="section-4"] path { fill: #D9EFEE !important; }
+  /* Root node: Mermaid emits classes "section-root" AND "section--1"
+   * (note double-dash = minus one). Both have hardcoded fills:
+   *   .section-root → #C20000 (red — alarm color, wrong for root)
+   *   .section--1   → #5C9DD3 (cScale1 mid-blue)
+   * Override both to pale brand blue with dark text for the contract. */
+  .section-root rect,
+  .section-root circle,
+  .section-root polygon,
+  .section-root path,
+  .section--1 rect,
+  .section--1 circle,
+  .section--1 polygon,
+  .section--1 path { fill: #DCE9F5 !important; }
+  .section-root text, .section-root span,
+  .section--1 text,  .section--1 span {
+    fill: #0A1628 !important;
+    color: #0A1628 !important;
+  }
+  .mindmap-node text, .mindmap-node tspan, .mindmap-node foreignObject * {
+    fill: #0A1628 !important;
+    color: #0A1628 !important;
+  }
+
+  /* ── KANBAN ──
+   * Kanban applies its own lighten step to cScale inputs. With our mid-tone
+   * cScale (L≈60), kanban emits at L≈68-73 — visibly darker than other
+   * pale-band diagrams (mindmap, journey, c4 at L≈90). Override directly
+   * to bring kanban onto the same band. The selectors below match the
+   * actual rendered kanban output: .cluster.section-N rect.
+   */
+  .cluster.section-1 rect, .section-1 rect { fill: #DCE9F5 !important; stroke: #1F4A6E !important; }
+  .cluster.section-2 rect, .section-2 rect { fill: #DDF0E8 !important; stroke: #1F4A6E !important; }
+  .cluster.section-3 rect, .section-3 rect { fill: #E5DEEB !important; stroke: #1F4A6E !important; }
+  .cluster.section-4 rect, .section-4 rect { fill: #F5E6D8 !important; stroke: #1F4A6E !important; }
+  /* Kanban tickets — distinct from any column color. Cards live inside the
+   * .items group of each .cluster.section-N; force them to neutral near-white
+   * so a ticket reads as "card on swim-lane" rather than as a color-coded
+   * category. The .items selector is unique to kanban and won't affect
+   * flowchart node fills (which are .node directly under the SVG root, not
+   * under .items). */
+  .cluster .items .node rect.basic.label-container,
+  .cluster .items .node .label-container,
+  .items .node rect.basic.label-container,
+  .items .node .label-container {
+    fill: #FFFFFF !important;
+    stroke: #1F4A6E !important;
+  }
+
+  /* Flowchart node fill coverage — extends Mermaid default to label-container shapes */
+  .node .label-container,
+  .node .basic.label-container,
+  .node .outer-path {
+    fill: #DCE9F5 !important;
+    stroke: #1F4A6E !important;
+  }
+
+  /* ── GITGRAPH ARROW FILLS ──
+   * Mermaid's gitgraph emits .arrow0..N with a "stroke" declaration but no
+   * "fill". SVG path elements default fill to black when not specified,
+   * so the curved branch transitions render as solid black wedges. Force
+   * fill: none so only the stroke shows.
+   */
+  .arrow, .arrow0, .arrow1, .arrow2, .arrow3, .arrow4,
+  .arrow5, .arrow6, .arrow7 {
+    fill: none !important;
+  }
+
+  /* Gitgraph branch label pills — pale fills, dark text. The git0..7 vars
+   * drive both the dot/line color (mid-tone for tracing) AND the label box
+   * fill, but those two needs conflict. Override label backgrounds only.
+   * Mermaid emits class="branchLabelBkg labelN" on the label rect AND a
+   * separate auto-generated .labelN { fill: ... } rule with !important.
+   * To win: target the compound class which has higher specificity than
+   * Mermaid's single-class rule. */
+  rect.branchLabelBkg.label0 { fill: #DCE9F5 !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label1 { fill: #DDF0E8 !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label2 { fill: #E5DEEB !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label3 { fill: #F5E6D8 !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label4 { fill: #D9EFEE !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label5 { fill: #F2DEE2 !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label6 { fill: #F4EFD8 !important; stroke: #1F4A6E !important; }
+  rect.branchLabelBkg.label7 { fill: #F2DCDC !important; stroke: #1F4A6E !important; }
+  g.branchLabel text, .branchLabel text { fill: #0A1628 !important; }
+
+  /* Treemap leaf rectangles — pale per-cycle hues (matches quadrant approach).
+   * Mermaid emits .treemapNode (group containers), .treemapLeaf (leaves),
+   * .treemapSection (root regions), and .leaf0x..7x (cycle classes on the
+   * leaf-group <g>). Each leaf cycle gets a distinct pale hue from the
+   * deck's six-color pastel palette so categorical distinction reads.
+   * Section containers stay near-white so they recede behind the colored
+   * tiles. The g.leafNx rect.treemapLeaf compound selector is more specific
+   * than the generic .treemapNode rect rule, so per-cycle hues win. */
+  .treemapSection rect, .treemapNode rect { fill: #F2F5FA !important; stroke: #1F4A6E !important; }
+  g.leaf0x rect.treemapLeaf { fill: #DCE9F5 !important; stroke: #1F4A6E !important; }
+  g.leaf1x rect.treemapLeaf { fill: #DDF0E8 !important; stroke: #1F4A6E !important; }
+  g.leaf2x rect.treemapLeaf { fill: #E5DEEB !important; stroke: #1F4A6E !important; }
+  g.leaf3x rect.treemapLeaf { fill: #F5E6D8 !important; stroke: #1F4A6E !important; }
+  g.leaf4x rect.treemapLeaf { fill: #D9EFEE !important; stroke: #1F4A6E !important; }
+  g.leaf5x rect.treemapLeaf { fill: #F2DEE2 !important; stroke: #1F4A6E !important; }
+  g.leaf6x rect.treemapLeaf { fill: #DCE9F5 !important; stroke: #1F4A6E !important; }
+  g.leaf7x rect.treemapLeaf { fill: #DDF0E8 !important; stroke: #1F4A6E !important; }
+  rect.treemapLeaf { fill-opacity: 1 !important; }
+  .treemapLabel, .treemapNode text, .treemapLeaf text { fill: #0A1628 !important; }
+
+  /* ── C4 ──
+   * C4 has a hardcoded official palette (#08427B, #1168BD, etc.) that
+   * ignores themeVariables. Override the box fills to brand pales and
+   * the text within to dark slate.
+   */
+  .person, .person_ext { fill: #DCE9F5 !important; stroke: #1F4A6E !important; }
+  .system, .system_ext { fill: #DDF0E8 !important; stroke: #1F4A6E !important; }
+  .container, .container_ext { fill: #E5DEEB !important; stroke: #1F4A6E !important; }
+  .component, .component_ext { fill: #F5E6D8 !important; stroke: #1F4A6E !important; }
+  .person text, .system text, .container text, .component text,
+  .person_ext text, .system_ext text, .container_ext text, .component_ext text,
+  text.legendW, text.legendT { fill: #0A1628 !important; }
+
+  /* ── RADAR ──
+   * No per-curve theme variables exist. Both curves render gray by
+   * default. Force distinct brand colors with semi-transparent fills
+   * so overlap stays visible. Also re-skin the concentric grid rings
+   * (.radarGraticule) from default light gray to a pale brand tint
+   * so the diagram chrome matches the rest of the deck rather than
+   * looking like a default test render. */
+  .radarGraticule {
+    fill: #DCE9F5 !important;
+    fill-opacity: 0.25 !important;
+    stroke: #1F4A6E !important;
+    stroke-opacity: 0.20 !important;
+    stroke-width: 1 !important;
+  }
+  .radarAxisLine {
+    stroke: #1F4A6E !important;
+    stroke-width: 1.5 !important;
+    stroke-opacity: 0.5 !important;
+  }
+  .radarCurve-0 {
+    fill: #006FA8 !important;
+    fill-opacity: 0.30 !important;
+    stroke: #006FA8 !important;
+    stroke-width: 2.5 !important;
+  }
+  .radarCurve-1 {
+    fill: #BD5000 !important;
+    fill-opacity: 0.30 !important;
+    stroke: #BD5000 !important;
+    stroke-width: 2.5 !important;
+  }
+  .radarLegendBox-0 { fill: #006FA8 !important; }
+  .radarLegendBox-1 { fill: #BD5000 !important; }
+  .radarAxisLabel {
+    fill: #0A1628 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+  .radarLegendText, .radarTitle { fill: #0A1628 !important; }
+
+  /* ── VENN ──
+   * Match quadrant approach: full-opacity pale fills with strong navy
+   * stroke. Mermaid's default puts inline style="fill-opacity: 0.1"
+   * on each circle path; that opacity inherits down to text. Force
+   * fill-opacity: 1 on the path AND on text so labels render at full
+   * #0A1628 instead of being multiplied by 0.1 (which is what made
+   * them appear gray). Pale fills come from the deck's six-color
+   * pastel palette so set distinction reads without saturation wash.
+   */
+  .venn-set-0, g.venn-set-0 path, .venn-set-0 path {
+    fill: #DCE9F5 !important;
+    fill-opacity: 1 !important;
+    stroke: #1F4A6E !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  .venn-set-1, g.venn-set-1 path, .venn-set-1 path {
+    fill: #DDF0E8 !important;
+    fill-opacity: 1 !important;
+    stroke: #1F4A6E !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  .venn-set-2, g.venn-set-2 path, .venn-set-2 path {
+    fill: #E5DEEB !important;
+    fill-opacity: 1 !important;
+    stroke: #1F4A6E !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  /* Text — force full opacity AND dark fill, override Mermaid's inline
+   * style="fill: rgb(N,N,N); ..." plus the inherited fill-opacity. */
+  .venn-area text, text.label, text.label tspan, .label tspan {
+    fill: #0A1628 !important;
+    fill-opacity: 1 !important;
+    paint-order: normal !important;
+    stroke: none !important;
+    stroke-width: 0 !important;
+    font-weight: 500 !important;
+  }
+  /* Intersection regions — Mermaid emits these as transparent paths
+   * inside <g class="venn-area venn-intersection">. With our circles
+   * at full opacity (instead of the original 0.25), overlap regions
+   * are no longer visible through color stacking. Add a subtle navy
+   * tint plus a dashed navy outline so intersection lenses read as
+   * "this is the shared region" without competing with the circle
+   * colors. */
+  .venn-intersection path, g.venn-intersection path {
+    fill: #1F4A6E !important;
+    fill-opacity: 0.08 !important;
+    stroke: #1F4A6E !important;
+    stroke-width: 1.5 !important;
+    stroke-dasharray: 4 3 !important;
+    stroke-opacity: 0.7 !important;
+  }
+
+  /* ── ISHIKAWA ──
+   * Branch heads use an internal palette baked into the renderer. Force
+   * a pale fill with dark text so contrast clears AA.
+   */
+  .ishikawa-head-label { fill: #0A1628 !important; font-weight: 600 !important; }
+  .ishikawa-label.cause, .ishikawa-label.align { fill: #0A1628 !important; }
+  .ishikawa-spine, .ishikawa-arrow, .ishikawa-branch, .ishikawa-sub-branch {
+    stroke: #1A1A1A !important;
+  }
+
+  /* ── GANTT ──
+   * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor
+   * for some bar widths. Force dark text in the outside-the-bar margin.
+   */
+  .taskTextOutsideLeft, .taskTextOutsideRight { fill: #0A1628 !important; }

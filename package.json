@@ -1,0 +1,54 @@
+{
+  "name": "@slidewright/lattice",
+  "version": "1.0.0",
+  "description": "A Marp-based slide deck system for boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout. Lattice is the engine layer of the SlideWright deck system.",
+  "keywords": [
+    "marp",
+    "slides",
+    "presentation",
+    "markdown",
+    "pdf",
+    "mermaid",
+    "deck",
+    "theme",
+    "design-system",
+    "slidewright"
+  ],
+  "homepage": "https://github.com/slidewright/lattice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slidewright/lattice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slidewright/lattice/issues"
+  },
+  "license": "MIT",
+  "author": "SlideWright",
+  "main": "lattice.js",
+  "files": [
+    "lattice.js",
+    "lattice-runtime.js",
+    "lattice.css",
+    "themes/",
+    "README.md",
+    "SKILL.md",
+    "THEMING.md",
+    "EDITORIAL.md",
+    "ARCHITECTURE.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:gallery": "node lattice.js examples/gallery.md lattice.css examples/gallery.pdf",
+    "build:mermaid": "node lattice.js examples/mermaid-gallery.md lattice.css examples/mermaid-gallery.pdf",
+    "build": "npm run build:gallery && npm run build:mermaid",
+    "test": "node smoke-test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0",
+    "@mermaid-js/mermaid-cli": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,789 @@
+
+/*
+ * @theme lattice
+ * @size 16:9 1280px 720px
+ *
+ * Lattice — Marp slide layout engine.
+ * Layouts are palette-blind: every color token is consumed via var()
+ * and resolved by the active palette.
+ *
+ * Architecture
+ * ────────────
+ *   lattice.css       layouts + structural tokens (this file, the engine)
+ *   themes/indaco.css cool indigo palette
+ *   themes/cuoio.css  warm leather palette
+ *
+ * Usage
+ * ─────
+ * Authors set `theme: indaco` or `theme: cuoio` in front matter. Each
+ * palette imports lattice (`@import 'lattice'`) and supplies color
+ * tokens. `theme: lattice` alone renders unstyled (no palette loaded) —
+ * a useful diagnostic for verifying var() fallback behaviour.
+ *
+ * To author a new palette, copy themes/indaco.css to themes/<name>.css,
+ * change the @theme directive, and edit the tokens. This file does not
+ * need to change.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Color tokens are defined by the active palette (themes/<name>.css),
+   * loaded before this file. The variables below are structural and
+   * shared across palettes — fonts, spacing, sizing, line-heights,
+   * Marp chrome bridges. A palette can override any of these by
+   * declaring them in its own :root block. */
+
+  /* ── Fonts ────────────────────────────────────────────────────────── */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Outfit', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+
+  /* ── Spacing scale ────────────────────────────────────────────────── */
+  --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
+
+  /* ── Font sizes ───────────────────────────────────────────────────── */
+  --fs-label:13px; --fs-xs:12px; --fs-sm:15px; --fs-body:16px; --fs-md:18px;
+  --fs-emphasis:17px; --fs-content:19px; --fs-lg:22px; --fs-xl:30px; --fs-2xl:34px;
+  --fs-3xl:48px; --fs-display:60px; --fs-stat:52px; --fs-quote:80px;
+  --fs-hero:110px; --fs-watermark:180px;
+
+  /* ── Radii / line-heights ─────────────────────────────────────────── */
+  --radius-sm:8px; --radius-md:12px; --radius-lg:14px;
+  --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
+
+  /* ── Marp chrome mappings (read by Marp's pagination/header/footer) ── */
+  --marp-slide-pagination-color: var(--text-muted);
+  --marp-slide-pagination-font-size: var(--fs-label);
+  --marp-slide-header-color:  var(--text-muted);
+  --marp-slide-footer-color:  var(--text-muted);
+}
+
+/* ── BASE ── */
+section {
+  width:1280px; height:720px; box-sizing:border-box; overflow:hidden; position:relative;
+  display:flex; flex-direction:column;
+  padding:var(--sp-xl) var(--sp-2xl); padding-top:88px; padding-bottom:88px;
+  background: var(--bg); color:var(--text-body);
+  font-family:var(--font-body); font-size:var(--fs-md); line-height:var(--lh-base);
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  border-top: 4px solid; border-image-source: var(--spectrum); border-image-slice: 1;
+}
+
+section h1 { font-family:var(--font-display); font-size:var(--fs-display); font-weight:700; color:var(--text-display); line-height:var(--lh-tight); margin:0; border:none; }
+section h2 { font-family:var(--font-display); font-size:var(--fs-2xl); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm) 0; border:none; }
+section h3 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-xs) 0; }
+section h4 { font-family:var(--font-body); font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
+section h5 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-sm) 0; }
+section p { margin:0 0 var(--sp-xs) 0; }
+section strong { color:var(--text-heading); font-weight:600; }
+section em { font-style:italic; }
+section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:2px 6px; border-radius:4px; color:var(--accent); }
+section pre code { background:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
+section hr { border:none; height:2px; background:var(--spectrum); border-radius:2px; width:72px; margin:var(--sp-sm) auto; }
+section ul { list-style:none; padding:0; margin:0; }
+section ol { padding:0; margin:0; }
+section blockquote { margin:0; padding:0; border:none; }
+
+/* ── KEY INSIGHT ──────────────────────────────────────────────
+ * Any trailing > blockquote on a content-bearing layout renders
+ * as a warm filled panel — Option C styling.
+ * Excluded layouts handle blockquote themselves:
+ *   quote, two-column, featured (primary content), finding (verdict)
+ */
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote {
+  background:var(--accent-soft);
+  border:1px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-xs) var(--sp-md);
+  margin-top:var(--sp-sm);
+  flex-shrink:0;
+}
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::before {
+  content:'KEY INSIGHT';
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+  margin-bottom:6px;
+}
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote p {
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-style:italic;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+  margin:0;
+}
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote ul {
+  list-style:none;
+  padding:0; margin:0;
+  display:flex; flex-direction:column; gap:6px;
+}
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li {
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-style:italic;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+  padding-left:var(--sp-md);
+  position:relative;
+}
+section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li::before {
+  content:'—';
+  position:absolute; left:0;
+  color:var(--accent);
+  font-style:normal;
+}
+section img { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section header {
+  position:absolute; top:24px; left:30px; right:30px;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  letter-spacing:0.10em; text-transform:uppercase; text-align:left;
+  color:var(--marp-slide-header-color, var(--text-muted));
+}
+section footer {
+  position:absolute; bottom:24px; left:30px; right:80px;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  letter-spacing:0.06em; text-align:left;
+  color:var(--marp-slide-footer-color, var(--text-muted));
+}
+section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; letter-spacing:0.06em; margin:0; text-align:left !important; }
+
+/* ── TITLE ── */
+section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.title { border-top: none; }
+section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.title h1 { font-size:var(--fs-display); color:var(--text-display) !important; margin-bottom:var(--sp-xs); text-align:center; }
+section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
+
+/* ── DIVIDER ── */
+section.divider { background:var(--bg-dark); padding-left:120px; justify-content:center; align-items:flex-start; }
+section.divider { border-top: none; }
+section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--spectrum); }
+section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
+section.divider h1 { font-size:var(--fs-3xl); color:var(--text-display); max-width:800px; line-height:var(--lh-tight); }
+
+/* ── SUBTOPIC ── */
+section.subtopic { justify-content:center; align-items:center; }
+section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
+section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
+section.subtopic p  { font-size:var(--fs-emphasis); max-width:600px; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+
+/* ── CONTENT ── */
+section.content h3 { margin-bottom:4px; }
+section.content h2 { margin-bottom:var(--sp-sm); }
+section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed); }
+section.content { justify-content:flex-start; }
+
+/* ── DIAGRAM ──
+ * ### eyebrow  ## heading  *italic subtitle*  ```mermaid block
+ * The mermaid-svg fills flex:1 automatically.
+ */
+section.diagram { align-items:center; }
+section.diagram h3 { margin-bottom:4px; }
+section.diagram h2 { font-size:var(--fs-xl); margin-bottom:4px; }
+section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bottom:var(--sp-sm); }
+section.diagram .mermaid-svg, section.diagram .mermaid { flex:1; }
+section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+
+/* ── TWO-COLUMN ──
+ * ### eyebrow  ## heading  p body  > blockquote = right panel
+ * h3 spans full width, h2+p go left, blockquote goes right.
+ */
+section.two-column { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto 1fr; column-gap:var(--sp-lg); }
+section.two-column h3 { grid-column:1 / -1; grid-row:1; margin-bottom:4px; }
+section.two-column h2 { grid-column:1; grid-row:2; font-size:var(--fs-xl); margin-bottom:var(--sp-xs); align-self:end; }
+section.two-column > p { grid-column:1; grid-row:3; font-size:var(--fs-body); line-height:var(--lh-relaxed); align-self:start; }
+section.two-column > blockquote {
+  grid-column:2; grid-row:2 / 4;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:var(--sp-md);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted);
+  text-align:center; margin:0;
+}
+section.two-column > blockquote p { font-size:var(--fs-label); color:var(--text-muted); margin:0; font-style:normal; }
+
+/* ── STATS ──
+ * ## heading  p intro  ol with: **number** label text
+ * Post-processor wraps into .stats-row > .stat-item > .stat-num + .stat-label
+ */
+section.stats { justify-content:center; align-items:center; }
+section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
+section.stats h3 { margin-bottom:4px; }
+section.stats > p, section.stats > em { font-size:var(--fs-body); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
+section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
+section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
+section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
+
+/* ── CARD-GRID ──
+ * ## heading  ul with 4 li items
+ * Marp CLI path:  section > ul > li  (native HTML)
+ * lattice.js path: section > .card-grid-inner > .card  (post-processed)
+ */
+section.card-grid h2 { margin-bottom:var(--sp-sm); }
+section.card-grid { display:flex; flex-direction:column; }
+section.cards-side { display:flex; flex-direction:column; }
+/* — Marp CLI native path — */
+section.card-grid > ul,
+section.cards-side > ul {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:var(--sp-md); flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.card-grid > ul { grid-auto-rows:1fr; }
+section.card-grid > ul > li,
+section.cards-side > ul > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
+}
+section.card-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+/* — lattice.js post-processed path — */
+section.card-grid .card-grid-inner {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
+}
+section.card-grid .card,
+section.cards-side .card {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
+}
+section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
+
+/* ── CARDS-STACKED ──
+ * ## heading  p card1  p card2
+ */
+section.cards-stacked h2 { margin-bottom:var(--sp-sm); }
+section.cards-stacked > p {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  margin:0; flex:1;
+}
+section.cards-stacked > p + p { margin-top:var(--sp-md); }
+
+/* ── COMPARISON ──
+ * ## heading  ul with 2 li — post-processor wraps into .comparison-inner with → connector
+ * Optional trailing p for below-note
+ */
+section.comparison { }
+section.comparison h2 { margin-bottom:var(--sp-md); }
+section.comparison .comparison-inner { display:flex; align-items:stretch; flex:1; }
+section.comparison .comparison-inner .card {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+}
+section.comparison .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-lg); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+.below-note { margin-top:var(--sp-md); padding-top:var(--sp-sm); flex-shrink:0; position:relative; }
+.below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
+.below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.comparison > p:last-child { margin-top:var(--sp-md); padding-top:var(--sp-sm); border-top:2px solid var(--text-muted) !important; flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── QUOTE ──
+ * > blockquote  p attribution
+ */
+section.quote { justify-content:center; align-items:center; }
+section.quote blockquote { position:relative; }
+section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-quote); color:var(--border); line-height:0.6; display:block; margin-bottom:var(--sp-xs); }
+section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); max-width:820px; line-height:var(--lh-snug); margin-bottom:var(--sp-md); text-align:center; }
+section.quote > p { font-size:var(--fs-xs); color:var(--text-label); margin:0; text-align:center; }
+
+/* ── TIMELINE ──
+ * ## heading  ol with items: **label** \n description
+ * CSS draws dots and the connecting line via ol::before and li::before
+ */
+section.timeline { justify-content:center; align-items:center; }
+section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
+section.timeline ol {
+  list-style:none; counter-reset:none;
+  display:flex; justify-content:space-between;
+  width:100%; position:relative;
+  padding:0 var(--sp-xl); box-sizing:border-box; margin:0;
+}
+section.timeline ol::before {
+  content:''; position:absolute; top:11px;
+  left:80px; right:80px; height:3px;
+  background:var(--spectrum); border-radius:2px;
+}
+section.timeline ol li {
+  display:flex; flex-direction:column; align-items:center;
+  width:180px; text-align:center; position:relative; z-index:1;
+}
+section.timeline ol li::before {
+  content:''; width:24px; height:24px; border-radius:50%;
+  background:var(--accent); border:3px solid var(--bg);
+  box-shadow:0 0 0 1px var(--border); margin-bottom:14px; flex-shrink:0;
+}
+section.timeline ol li strong { font-size:var(--fs-sm); font-weight:700; color:var(--text-heading); display:block; margin-bottom:4px; }
+section.timeline ol li em { font-size:var(--fs-label); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
+
+/* ── LIST ──
+ * ## heading  - item with optional   - sub-description
+ */
+section.list h2 { margin-bottom:var(--sp-md); }
+section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ul li { font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
+section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
+section.list ul li ul li { font-size:var(--fs-sm); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
+section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
+section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
+
+/* ── LIST-TABULAR ──
+ * ## heading  ol with items: each rendered as 4-column row
+ * **num** *verb* description `meta`
+ */
+section.list-tabular h2 { margin-bottom:var(--sp-md); }
+section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:flex-start; }
+section.list-tabular ol li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-body); line-height:var(--lh-base); }
+section.list-tabular ol li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
+section.list-tabular ol li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); }
+section.list-tabular ol li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ── FULL-BLEED ──
+ * ## heading placeholder  *caption text*
+ * CSS fills background, h2 is centred placeholder, em becomes caption bar
+ */
+section.full-bleed { padding:0; position:relative; }
+section.full-bleed { border-top: none; }
+section.full-bleed h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-xs); color:var(--on-dark-watermark); font-weight:400; letter-spacing:0.1em; background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; }
+section.full-bleed em { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-xs); color:var(--on-dark-primary); font-style:normal; display:block; z-index:1; }
+
+/* ── BIG-NUMBER ──
+ * ##### eyebrow  # number  p description
+ */
+section.big-number { justify-content:center; align-items:center; }
+section.big-number h5 { margin-bottom:var(--sp-sm); }
+section.big-number h1 { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; margin-bottom:var(--sp-sm); text-align:center; }
+section.big-number p { font-size:var(--fs-md); max-width:560px; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+
+/* ── SPLIT-PANEL ──
+ * ## left-heading  p left-intro  - bullet list right panel
+ * ### right-eyebrow before bullets
+ */
+section.split-panel { padding:0; flex-direction:row; }
+section.split-panel { border-top: none; }
+section.split-panel h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
+section.split-panel h5 { font-size:var(--fs-label); color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
+section.split-panel .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
+section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-dark-watermark); }
+section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-dark-watermark); top:40px; left:20px; line-height:1; pointer-events:none; }
+section.split-panel .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
+section.split-panel .panel-right h3 { margin-bottom:4px; }
+section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-sm); }
+section.split-panel ul { display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; }
+section.split-panel ul li { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel ul li strong { color:var(--text-heading); display:block; margin-bottom:3px; }
+
+/* ── CLOSING ── */
+section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.closing { border-top: none; }
+section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
+section.closing hr { margin:0 auto var(--sp-md); }
+section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:700px; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:540px; margin:0 auto; text-align:center; }
+
+/* ── FINDING ──
+ * ### eyebrow  ## heading
+ * #### card1-title  p card1-body  #### card2-title  p card2-body
+ * > blockquote = verdict line
+ * CSS pairs each h4+p as a card, puts them side by side, blockquote pins to bottom
+ */
+section.finding { }
+section.finding h3 { margin-bottom:4px; }
+section.finding h2 { font-size:var(--fs-xl); line-height:var(--lh-tight); margin-bottom:var(--sp-sm); }
+section.finding .finding-top { display:flex; gap:var(--sp-md); flex:1; min-height:0; }
+section.finding .finding-top .card { flex:1; overflow:auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; }
+section.finding blockquote {
+  flex-shrink:0;
+  background:var(--accent-soft); border:1px solid var(--accent);
+  border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md);
+  margin-top:var(--sp-sm); margin-bottom:0;
+}
+section.finding blockquote::before {
+  content:'KEY INSIGHT';
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+  margin-bottom:4px;
+}
+section.finding blockquote p {
+  font-family:var(--font-display); font-size:var(--fs-md);
+  font-style:italic; color:var(--text-heading);
+  line-height:var(--lh-snug); margin:0;
+}
+section.finding blockquote.pass, section.finding blockquote.pass p { color:var(--pass); border-color:var(--pass); background:color-mix(in srgb, var(--pass) 8%, white); }
+section.finding blockquote.fail, section.finding blockquote.fail p { color:var(--fail); border-color:var(--fail); background:color-mix(in srgb, var(--fail) 8%, white); }
+section.finding blockquote.warn, section.finding blockquote.warn p { color:var(--warn); border-color:var(--warn); background:color-mix(in srgb, var(--warn) 8%, white); }
+
+/* ── CARDS-WIDE-3 ──
+ * ## heading  then 3× pairs: ### eyebrow·heading  p body
+ * CSS stacks them vertically, each full width
+ */
+section.cards-wide-3 h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.cards-wide-3 .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
+section.cards-wide-3 .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide-3 .wide-card-header { display:flex; align-items:baseline; gap:var(--sp-sm); }
+section.cards-wide-3 .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
+section.cards-wide-3 .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
+section.cards-wide-3 .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); }
+
+/* ── CRITERIA ──
+ * ## heading  ol with: li **title**  nested ul > li description
+ * CSS counter provides large accent number, strong = title, nested li = desc
+ */
+section.criteria h2 { margin-bottom:var(--sp-md); }
+section.criteria ol {
+  list-style:none; counter-reset:crit-counter;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1; justify-content:flex-start; margin:0; padding:0;
+}
+section.criteria ol > li {
+  counter-increment:crit-counter;
+  display:grid; grid-template-columns:80px 1fr; align-items:start;
+}
+section.criteria ol > li::before {
+  content:counter(crit-counter, decimal-leading-zero);
+  font-family:var(--font-mono); font-size:var(--fs-2xl); font-weight:700;
+  color:var(--accent); line-height:1; padding-top:5px;
+}
+section.criteria .crit-body { display:flex; flex-direction:column; }
+section.criteria .crit-body strong {
+  display:block; font-size:var(--fs-emphasis); font-weight:700;
+  color:var(--text-heading); margin-bottom:4px; padding-top:2px;
+}
+section.criteria .crit-body ul { list-style:none; padding:0; margin:4px 0 0 0; }
+section.criteria .crit-body ul li {
+  font-size:var(--fs-body); color:var(--text-label); line-height:var(--lh-base);
+  counter-increment:none;
+}
+section.criteria .crit-body ul li::before { display:none !important; content:none !important; }
+
+/* ── VERDICT-GRID ──
+ * ## heading  then 4× pairs: ### tool-name  p badges+body
+ */
+section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
+section.verdict-grid .grid-verdict { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:var(--sp-sm); flex:1; }
+section.verdict-grid .vcard { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.verdict-grid .vcard:last-child { background:var(--accent-soft); border-color:var(--accent); }
+section.verdict-grid .vcard:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid .vcard-title { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
+section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); }
+section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body); line-height:var(--lh-snug); }
+.badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; }
+.badge.pass { background:var(--pass-bg); color:var(--pass); }
+.badge.fail { background:var(--fail-bg); color:var(--fail); }
+.badge.warn { background:var(--warn-bg); color:var(--warn); }
+.badge-row { display:flex; flex-wrap:wrap; gap:5px; }
+
+/* ── COMPARE-TABLE ──
+ * ## heading  markdown table  p note
+ */
+section.compare-table h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.compare-table table { width:100%; border-collapse:collapse; font-size:var(--fs-xs); flex:1; }
+section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); background:var(--bg-alt); padding:10px var(--sp-sm); text-align:left; border-bottom:2px solid var(--border); }
+section.compare-table td { padding:10px var(--sp-sm); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:middle; font-size:var(--fs-body); }
+section.compare-table td:first-child { font-weight:600; color:var(--text-heading); width:26%; }
+section.compare-table > p { font-size:var(--fs-label); font-style:italic; color:var(--text-muted); margin-top:var(--sp-md); padding-top:var(--sp-sm); }
+
+/* ── FEATURED ──
+ * ## heading  > blockquote featured card  ### sub1-title  p sub1-body  ### sub2-title  p sub2-body
+ */
+section.featured h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.featured > blockquote { background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; margin-bottom:var(--sp-sm); }
+section.featured > blockquote p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; }
+section.featured > blockquote strong { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:var(--sp-xs); }
+section.featured .sub-row { display:flex; gap:var(--sp-sm); flex:1; }
+section.featured .sub-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; }
+section.featured .sub-card h3 { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); text-transform:none; letter-spacing:0; }
+section.featured .sub-card p  { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+
+/* ── STEPS ──
+ * ## heading  ol with: **Step N title** \n body text
+ */
+section.steps h2 { margin-bottom:var(--sp-md); }
+section.steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
+section.steps ol li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; }
+section.steps ol li:not(:last-child)::after {
+  content:'';
+  position:absolute;
+  right:calc(-1 * var(--sp-xl) / 2);
+  top:50%; transform:translate(50%, -50%);
+  width:0; height:0;
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-left:10px solid var(--border);
+  z-index:1;
+}
+section.steps ol li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.steps ol li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); display:block; }
+section.steps ol li p { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); flex:1; margin:0; }
+
+/* ── IMAGE LAYOUTS ── */
+section.image-right { padding-right:calc(50% + var(--sp-lg)); }
+section.image-right::before { content:'[ Image · right half ]'; position:absolute; right:var(--sp-2xl); top:var(--sp-2xl); bottom:var(--sp-2xl); width:calc(50% - var(--sp-lg) - var(--sp-2xl)); display:flex; align-items:center; justify-content:center; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); }
+section.image-right h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-right p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+section.image-left { padding-left:calc(50% + var(--sp-lg)); }
+section.image-left::before { content:'[ Image · left half ]'; position:absolute; left:var(--sp-2xl); top:var(--sp-2xl); bottom:var(--sp-2xl); width:calc(50% - var(--sp-lg) - var(--sp-2xl)); display:flex; align-items:center; justify-content:center; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); }
+section.image-left h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-left p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+section.image-full { padding:0; }
+section.image-full { border-top: none; }
+section.image-full footer { display:none; }
+section.image-full h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--on-dark-watermark); background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; border:none; }
+section.image-full p:last-child { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); color:var(--on-dark-secondary); margin:0; z-index:1; }
+
+/* ── DARK VARIANT ──
+ * Reskins the slide canvas using --dark-* tokens defined in the active
+ * palette. The same layout structure works on either canvas. */
+section.dark {
+  --bg:           var(--dark-bg);
+  --bg-alt:       var(--dark-bg-alt);
+  --border:       var(--dark-border);
+  --text-heading: var(--dark-text-heading);
+  --text-body:    var(--dark-text-body);
+  --text-muted:   var(--dark-text-muted);
+  --text-label:   var(--dark-text-label);
+  --text-display: var(--dark-text-display);
+  background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
+}
+section.dark { border-top: none; }
+
+/* ── CODE ──
+ * ### eyebrow  ## heading  *subtitle*  ```lang block
+ */
+section.code { }
+section.code h3 { margin-bottom:4px; }
+section.code h2 { margin-bottom:var(--sp-xs); }
+section.code > em { font-size:var(--fs-sm); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
+section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; }
+
+/* ── CODE-COMPARE ──
+ * ## heading  ### left-label  ```block  ### right-label  ```block
+ * CSS arranges the two h3+pre pairs side by side
+ */
+section.code-compare { }
+section.code-compare h2 { margin-bottom:var(--sp-sm); }
+section.code-compare .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
+section.code-compare .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.code-compare .code-col h3 {
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
+  margin-bottom:var(--sp-xs);
+}
+section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; }
+
+/* ── highlight.js theme ── */
+section pre.hljs { background:var(--bg-dark); padding:var(--sp-sm) var(--sp-md); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
+section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
+section .hljs-comment, section .hljs-quote { color:var(--hljs-comment); font-style:italic; }
+section .hljs-keyword, section .hljs-selector-tag, section .hljs-addition { color:var(--hljs-keyword); }
+section .hljs-number, section .hljs-literal, section .hljs-built_in, section .hljs-builtin-name { color:var(--hljs-number); }
+section .hljs-string, section .hljs-doctag, section .hljs-regexp { color:var(--hljs-string); }
+section .hljs-title, section .hljs-section, section .hljs-function, section .hljs-class .hljs-title { color:var(--hljs-title); }
+section .hljs-variable, section .hljs-template-variable, section .hljs-attr, section .hljs-attribute, section .hljs-tag { color:var(--hljs-variable); }
+section .hljs-punctuation, section .hljs-operator { color:var(--hljs-punctuation); }
+section .hljs-params { color:var(--code-text); }
+section .hljs-emphasis { font-style:italic; }
+section .hljs-strong { font-weight:700; }
+
+/* ── Mermaid ── */
+/* .mermaid-svg = CLI path (lattice.js pre-renders to SVG wrapper)
+   .mermaid     = runtime path (lattice-runtime.js + Mermaid CDN in preview) */
+.mermaid-svg, .mermaid { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
+.mermaid-svg svg, .mermaid svg { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+ * MARP VS CODE PREVIEW FALLBACKS
+ * ══════════════════════════════════════════════════════════════════════════════
+ * lattice.js post-processes markdown into custom scaffold HTML (.card-grid-inner,
+ * .stats-row, .comparison-inner, etc.) before PDF render.
+ * The Marp VS Code extension uses Marp's own renderer, which emits standard
+ * HTML (ul/li, ol/li, strong, h4, pre…) with no scaffold wrappers.
+ *
+ * Each rule below uses :not(:has(<scaffold-selector>)) so it fires ONLY when
+ * the scaffold is absent (Marp preview) and is a no-op in CLI output.
+ * CSS :has() is supported in Chromium 105+ (Electron used by the Marp extension).
+ */
+
+/* ── STATS ──────────────────────────────────────────────────────────────────
+ * ol > li(<strong>num</strong> label) → mimic .stats-row > .stat-item         */
+section.stats:not(:has(.stats-row)) ol {
+  display:flex; justify-content:center; gap:var(--sp-2xl);
+  list-style:none; padding:0; margin:0;
+}
+section.stats:not(:has(.stats-row)) ol > li {
+  display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
+}
+section.stats:not(:has(.stats-row)) ol > li > strong {
+  font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700;
+  color:var(--accent); line-height:1; display:block;
+  letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
+}
+
+/* ── CARD-GRID ───────────────────────────────────────────────────────────────
+ * ul > li → mimic .card-grid-inner > .card  (also covers cards-side)          */
+section.card-grid:not(:has(.card-grid-inner)) ul,
+section.cards-side:not(:has(.card-grid-inner)) ul {
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
+}
+section.card-grid:not(:has(.card-grid-inner)) ul > li,
+section.cards-side:not(:has(.card-grid-inner)) ul > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
+}
+section.card-grid:not(:has(.card-grid-inner)) ul > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.card-grid-inner)) ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+
+/* ── COMPARISON ──────────────────────────────────────────────────────────────
+ * ul > li (2 items) → side-by-side cards with CSS-generated → connector       */
+section.comparison:not(:has(.comparison-inner)) ul {
+  display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
+  list-style:none; padding:0; margin:0; position:relative;
+}
+section.comparison:not(:has(.comparison-inner)) ul::before {
+  content:'→';
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  font-size:var(--fs-lg); color:var(--text-muted);
+  background:var(--bg); padding:2px 8px; border-radius:4px; z-index:1;
+}
+section.comparison:not(:has(.comparison-inner)) ul > li {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+}
+
+/* ── VERDICT-GRID ────────────────────────────────────────────────────────────
+ * ul > li(<strong>title</strong> body) → mimic .grid-verdict > .vcard         */
+section.verdict-grid:not(:has(.grid-verdict)) ul {
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+  gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
+}
+section.verdict-grid:not(:has(.grid-verdict)) ul > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:18px 22px;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+}
+section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); }
+section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid:not(:has(.grid-verdict)) ul > li > strong { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block; }
+section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child > strong { color:var(--accent); }
+
+/* ── FEATURED ────────────────────────────────────────────────────────────────
+ * ul > li(<strong>title</strong> body) → mimic .sub-row > .sub-card           */
+section.featured:not(:has(.sub-row)) ul {
+  display:flex; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
+}
+section.featured:not(:has(.sub-row)) ul > li {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column;
+}
+section.featured:not(:has(.sub-row)) ul > li > strong {
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  display:block; margin-bottom:var(--sp-xs);
+}
+
+/* ── CARDS-WIDE-3 ────────────────────────────────────────────────────────────
+ * ol > li(<strong>eyebrow · heading</strong> body) → mimic .three-stack > .wide-card
+ * Note: eyebrow/heading split not possible in CSS; both render as bold text.   */
+section.cards-wide-3:not(:has(.three-stack)) ol {
+  display:flex; flex-direction:column; gap:12px; flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.cards-wide-3:not(:has(.three-stack)) ol > li {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) 22px;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+}
+section.cards-wide-3:not(:has(.three-stack)) ol > li > strong {
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block;
+}
+
+/* ── CRITERIA ────────────────────────────────────────────────────────────────
+ * li > strong + ul siblings (no .crit-body wrapper) → explicit grid placement */
+section.criteria:not(:has(.crit-body)) ol > li { grid-template-rows:auto auto; }
+section.criteria:not(:has(.crit-body)) ol > li::before { grid-column:1; grid-row:1 / 3; }
+section.criteria:not(:has(.crit-body)) ol > li > strong {
+  grid-column:2; grid-row:1;
+  display:block; font-size:var(--fs-emphasis); font-weight:700;
+  color:var(--text-heading); margin-bottom:4px; padding-top:2px;
+}
+section.criteria:not(:has(.crit-body)) ol > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:4px 0 0 0; }
+section.criteria:not(:has(.crit-body)) ol > li > ul li { font-size:var(--fs-body); color:var(--text-label); line-height:var(--lh-base); }
+section.criteria:not(:has(.crit-body)) ol > li > ul li::before { display:none !important; content:none !important; }
+
+/* ── SPLIT-PANEL degraded fallback ──────────────────────────────────────────
+ * Without .panel-left/.panel-right DOM split, renders as a styled column.
+ * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
+section.split-panel:not(:has(.panel-left)) {
+  flex-direction:column; padding:var(--sp-xl) var(--sp-2xl);
+}
+section.split-panel:not(:has(.panel-left)) h2 { color:var(--accent); font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.split-panel:not(:has(.panel-left)) h5 { color:var(--text-muted); }
+section.split-panel:not(:has(.panel-left)) ul > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:14px 18px;
+  font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug);
+}
+section.split-panel:not(:has(.panel-left)) ul > li strong { color:var(--text-heading); display:block; margin-bottom:3px; }
+
+/* ── FINDING degraded fallback ───────────────────────────────────────────────
+ * Without .finding-top, h4+p pairs render as stacked card tiles.
+ * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
+section.finding:not(:has(.finding-top)) h4 {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md) var(--radius-md) 0 0;
+  padding:var(--sp-xs) var(--sp-md); margin:var(--sp-sm) 0 0 0;
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+}
+section.finding:not(:has(.finding-top)) h4 + p {
+  background:var(--bg-alt); border:1px solid var(--border); border-top:none;
+  border-radius:0 0 var(--radius-md) var(--radius-md);
+  padding:var(--sp-xs) var(--sp-md); margin:0;
+  font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug);
+}
+
+/* ── CODE-COMPARE degraded fallback ─────────────────────────────────────────
+ * Without .code-cols, h3+pre pairs stack vertically.
+ * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
+section.code-compare:not(:has(.code-cols)) pre { flex:1; min-height:0; }
+
+/* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
+ * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
+ * the same hairline-rule treatment for layouts that use it.                   */
+section.card-grid:not(:has(.below-note)) > p:last-child,
+section.comparison:not(:has(.below-note)) > p:last-child,
+section.verdict-grid:not(:has(.below-note)) > p:last-child,
+section.featured:not(:has(.below-note)) > p:last-child,
+section.finding:not(:has(.below-note)) > p:last-child,
+section.criteria:not(:has(.below-note)) > p:last-child,
+section.cards-wide-3:not(:has(.below-note)) > p:last-child {
+  margin-top:var(--sp-md); padding-top:var(--sp-sm); flex-shrink:0;
+  position:relative; font-size:var(--fs-body); color:var(--text-body);
+  line-height:var(--lh-relaxed); margin-bottom:0;
+}
+section.card-grid:not(:has(.below-note)) > p:last-child::before,
+section.comparison:not(:has(.below-note)) > p:last-child::before,
+section.verdict-grid:not(:has(.below-note)) > p:last-child::before,
+section.featured:not(:has(.below-note)) > p:last-child::before,
+section.finding:not(:has(.below-note)) > p:last-child::before,
+section.criteria:not(:has(.below-note)) > p:last-child::before,
+section.cards-wide-3:not(:has(.below-note)) > p:last-child::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(to right, var(--accent), transparent);
+}

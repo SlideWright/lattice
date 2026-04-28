@@ -1,0 +1,58 @@
+/* @theme cuoio
+ * @size 16:9 1280px 720px
+ *
+/* Palette · Cuoio
+ * Warm cream + leather. Variant theme: extends lattice (layouts + tokens)
+ * and overrides palette tokens. Tokens not redefined here fall through to
+ * lattice's defaults — useful during palette development to see what's
+ * still inherited.
+ */
+
+@import 'lattice';
+
+:root {
+  /* Raw palette */
+  --bg: #faf7f2;
+  --bg-alt: #f3ede4;
+  --bg-dark: #1e1a15;
+  --border: #e0d8cc;
+  --text-display: #faf7f2;
+  --text-heading: #1e1a15;
+  --text-body: #6b5d4f;
+  --text-muted: #a69882;
+  --text-label: #7a6b59;
+  --accent: #8b6914;
+  --accent-soft: #f5efe0;
+  --pass: #2d6a3f;
+  --fail: #9b1c1c;
+  --warn: #925c00;
+  --bg-warm-mid: #3a2e20;
+  --bg-warm-light: #5b4a30;
+  --code-text: #c4b8a8;
+
+  /* Derived tints */
+  --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+  --on-dark-primary: color-mix(in srgb, white 90%, transparent);
+  --on-dark-secondary: color-mix(in srgb, white 65%, transparent);
+  --on-dark-ghost: color-mix(in srgb, white 30%, transparent);
+  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+  --overlay-dark: color-mix(in srgb, var(--bg-dark) 82%, transparent);
+
+  /* Spectrum bar (composed of palette hues) */
+  --spectrum: linear-gradient(
+    90deg,
+    #5b86b8,
+    #7b72c0,
+    #a8628a,
+    #c45d5d,
+    #d08c42,
+    #b8a032
+  );
+
+  /* Marp chrome mappings */
+  --marp-slide-pagination-color: var(--text-muted);
+  --marp-slide-header-color: var(--text-muted);
+  --marp-slide-footer-color: var(--text-muted);
+}
