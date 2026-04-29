@@ -135,13 +135,13 @@
  * (--bg-dark from the main palette) so they are picked to clear AA
  * against that surface. Adjust per palette to match your brand. */
 :root {
-  --hljs-comment:    #6B5D4F;
-  --hljs-keyword:    #8B9FD4;
-  --hljs-number:     #D4A85A;
-  --hljs-string:     #A8C47A;
-  --hljs-title:      #C87A5A;
-  --hljs-variable:   #D4A85A;
-  --hljs-punctuation:#A69882;
+  --hljs-comment:    #5B9EC2;  /* muted sky — ~4.5:1 on bg-dark, clearly secondary */
+  --hljs-keyword:    #A5D4F0;  /* pale sky — import/const/await                    */
+  --hljs-number:     #8FD08A;  /* brand-green family — numbers & built-ins         */
+  --hljs-string:     #8FD08A;  /* brand-green family — string literals             */
+  --hljs-title:      #FFFFFF;  /* white — class & function names, max contrast     */
+  --hljs-variable:   #A5D4F0;  /* same as keyword — attrs/template vars            */
+  --hljs-punctuation:#5B7F9B;  /* subdued navy-blue — decorative braces/dots       */
 }
 
 /* ── Mermaid color extensions ──────────────────────────────────────────
