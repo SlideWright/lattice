@@ -57,8 +57,6 @@
 
   function initAndRun() {
     transformVerdictGridBadges();
-    transformFeaturedSubcards();
-    transformListTabular();
     const mermaid = globalScope.mermaid;
     if (!mermaid) return false;
 
@@ -344,66 +342,6 @@
                            : 'badge fail';
           const label = text.replace(/^\[[x~\s]\]\s*/, '');
           li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
-        }
-      }
-    }
-  }
-
-  /**
-   * Transforms featured sub-card lists in VS Code preview.
-   * Handles nested format: - **Title** / - body text
-   * Also handles legacy inline: - **Title** — body text
-   * Mirrors the lattice.js processor: wraps sub-cards in .sub-row > .sub-card.
-   */
-  function transformFeaturedSubcards() {
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.featured')) {
-      if (section.querySelector('.sub-row')) continue; // lattice.js already ran
-      const ul = section.querySelector(':scope > ul');
-      if (!ul) continue;
-      const subCards = [...ul.children].map(li => {
-        const strong = li.querySelector(':scope > strong');
-        const title = strong ? strong.textContent.trim() : '';
-        const innerUl = li.querySelector(':scope > ul');
-        let bodyHtml;
-        if (innerUl) {
-          bodyHtml = innerUl.querySelector(':scope > li')?.innerHTML?.trim() || '';
-        } else {
-          bodyHtml = li.innerHTML.replace(/<strong>[\s\S]*?<\/strong>/i, '').trim();
-        }
-        const div = document.createElement('div');
-        div.className = 'sub-card';
-        div.innerHTML = `<h3>${title}</h3><p>${bodyHtml}</p>`;
-        return div;
-      });
-      const subRow = document.createElement('div');
-      subRow.className = 'sub-row';
-      subCards.forEach(sc => subRow.appendChild(sc));
-      ul.replaceWith(subRow);
-    }
-  }
-
-  /**
-   * Flattens list-tabular nested list items in VS Code preview.
-   * Nested format: **name** / - description / - _meta_
-   * Extracts description and meta from inner ul, appends as direct li children
-   * so the 4-column CSS grid layout works correctly.
-   */
-  function transformListTabular() {
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.list-tabular')) {
-      for (const li of section.querySelectorAll('ol > li')) {
-        const innerUl = li.querySelector(':scope > ul');
-        if (!innerUl) continue; // already flat
-        const innerItems = [...innerUl.querySelectorAll(':scope > li')];
-        const descHtml = innerItems[0]?.innerHTML?.trim() || '';
-        const metaHtml = innerItems[1]?.innerHTML?.trim() || '';
-        innerUl.remove();
-        if (descHtml) li.insertAdjacentHTML('beforeend', descHtml);
-        if (metaHtml) {
-          const em = document.createElement('em');
-          em.innerHTML = metaHtml.replace(/<\/?em>/gi, '');
-          li.appendChild(em);
         }
       }
     }
