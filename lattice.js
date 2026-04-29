@@ -1093,7 +1093,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: title, closing, quote, big-number, subtopic, divider (centred layouts
   // where the trailing p IS the main content, not a footnote).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','full-bleed','image-full','split-panel','content','image-right','image-left','two-column','timeline','diagram','stats','code'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','two-column','timeline','diagram','stats','code'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

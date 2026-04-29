@@ -337,7 +337,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 | Comparative | T12 Comparison, T20 Finding, T25 Featured | `comparison` `finding` `featured` |
 | Layout | T6 Two-Column, T14 Timeline, T18 Split Panel | `two-column` `timeline` `split-panel` |
 | Layout variant | T14v Step Cards | `steps` |
-| Visual | T16 Full-Bleed | `full-bleed` |
+| Visual | T16 Full-Bleed Visual | `image-full` |
 
 ## Template 1: Title (dark bookend)
 
@@ -864,11 +864,11 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 └──────────────────────────────────────┘
 ```
 
-**CSS class:** `full-bleed`
+**CSS class:** `image-full`
 
 **Marp directive:**
 ```markdown
-<!-- _class: full-bleed -->
+<!-- _class: image-full -->
 <!-- _paginate: false -->
 ```
 

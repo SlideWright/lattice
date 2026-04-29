@@ -217,13 +217,13 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: full-bleed -->
-<!-- _footer: "Full-canvas visual · full-bleed" -->
+<!-- _class: image-full -->
+<!-- _footer: "Full-bleed visual · image-full" -->
 <!-- _paginate: false -->
 
 ## [ Dashboard screenshot · Signal Brief — Week 24 ]
 
-_Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday_
+Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 
 ---
 

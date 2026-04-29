@@ -411,17 +411,7 @@ section.list-tabular ol > li > ul > li { font-size:var(--fs-body); color:var(--t
 section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
 section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
 
-/* ── FULL-BLEED ──
- * ## heading placeholder  *caption text*
- * CSS fills background, h2 is centred placeholder, em becomes caption bar
- */
-section.full-bleed { padding:0; position:relative; }
-section.full-bleed { border-top: none; }
-section.full-bleed h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-xs); color:var(--on-dark-watermark); font-weight:400; letter-spacing:0.1em; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 120px no-repeat, linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; }
-section.full-bleed em { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-xs); color:var(--on-dark-primary); font-style:normal; display:block; z-index:1; }
-section.full-bleed header,
-section.full-bleed footer { left:auto; right:30px; text-align:right; color:var(--on-dark-primary); }
-section.full-bleed footer { bottom:var(--sp-sm); font-family:var(--font-body); font-size:var(--fs-xs); font-weight:400; letter-spacing:0; z-index:2; }
+
 
 /* ── BIG-NUMBER ──
  * ##### eyebrow  - number\n  - description
