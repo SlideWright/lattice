@@ -626,13 +626,12 @@ section.steps ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body)
 section.steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── IMAGE LAYOUTS ──
- * image-right = default (image right, text left)
- * image-left  = modifier (image left, text right) — only overrides 2 props  */
-section.image-right { padding-right:calc(50% + var(--sp-lg)); }
-section.image-left  { padding-left: calc(50% + var(--sp-lg)); }
+ * _class: image       → image right, text left (default)
+ * _class: image left  → image left, text right (Marp adds both classes)  */
+section.image { padding-right:calc(50% + var(--sp-lg)); }
+section.image.left { padding-right:0; padding-left:calc(50% + var(--sp-lg)); }
 /* Shared placeholder — brand dark gradient + image icon */
-section.image-right::before,
-section.image-left::before {
+section.image::before {
   content:'';
   position:absolute; top:var(--sp-2xl); bottom:var(--sp-2xl);
   width:calc(50% - var(--sp-lg) - var(--sp-2xl));
@@ -641,12 +640,12 @@ section.image-left::before {
     linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-warm-mid) 50%, var(--bg-warm-light) 100%);
   border-radius:var(--radius-md);
 }
-/* Position: right by default, left when modifier present */
-section.image-right::before { right:var(--sp-2xl); }
-section.image-left::before  { left: var(--sp-2xl); }
-/* Shared typography */
-section.image-right h2, section.image-left h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
-section.image-right p,  section.image-left p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+/* Position: right by default, left when .left modifier present */
+section.image::before       { right:var(--sp-2xl); }
+section.image.left::before  { right:auto; left:var(--sp-2xl); }
+/* Typography */
+section.image h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
 section.image-full { padding:0; }
 section.image-full { border-top: none; }
 section.image-full footer { display:none; }

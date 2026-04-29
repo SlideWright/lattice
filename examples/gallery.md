@@ -525,25 +525,25 @@ token = kms.encrypt(
 
 ---
 
-<!-- _class: image-right -->
-<!-- _footer: "Text left, image right · image-right" -->
+<!-- _class: image -->
+<!-- _footer: "Text left, image right · image" -->
 
-### Layout · Image Right
+### Layout · Image
 
 ## Images sit naturally beside text when you need visual evidence.
 
-Use `![bg right](url)` with `image-right` — the default. Image fills the right half, text takes the left.
+Use `_class: image` with `![bg right](url)` — image-right is the default. Add `left` to flip: `_class: image left`.
 
 ---
 
-<!-- _class: image-left -->
-<!-- _footer: "Image left, text right · image-left" -->
+<!-- _class: image left -->
+<!-- _footer: "Image left, text right · image left" -->
 
 ### Layout · Image Left
 
 ## Lead with the image, follow with the argument.
 
-Add `image-left` alongside `![bg left](url)` to flip the layout. Only the position changes — the structure is identical.
+Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the padding and placeholder position change — everything else is shared.
 
 ---
 
