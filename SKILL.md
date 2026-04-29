@@ -1746,16 +1746,28 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ## Template 26: Image (text + background photo)
 
+### Default (photo right)
 ```
 ┌───────────────────────────────────────┐
 │  header                               │
-│  LABEL                                │
-│  Heading line here.                   │
-│                                       │
-│  Body text alongside the image.       │
-│                                       │
-│                     [image fills      │
-│                      right half]      │
+│  LABEL             ┌───────────────┐  │
+│  Heading           │               │  │
+│                    │   [ photo ]   │  │
+│  Body text here.   │               │  │
+│                    └───────────────┘  │
+│  footer                          1/19 │
+└───────────────────────────────────────┘
+```
+
+### Variant: photo left
+```
+┌───────────────────────────────────────┐
+│  header                               │
+│  ┌───────────────┐  LABEL             │
+│  │               │  Heading           │
+│  │   [ photo ]   │                    │
+│  │               │  Body text here.   │
+│  └───────────────┘                    │
 │  footer                          1/19 │
 └───────────────────────────────────────┘
 ```
