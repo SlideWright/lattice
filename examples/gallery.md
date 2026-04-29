@@ -266,6 +266,7 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Structured intake performed above expectations — volume and latency were not concerns.
 
+
 - **What worked**
   - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
 - **What required tuning**
