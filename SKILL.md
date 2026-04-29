@@ -707,18 +707,20 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 
 Inline `` `code` `` spans behave differently depending on where they appear inside a card.
 
-**Card header (title line)** — Code placed at the end of the card title (`- Title \`tag\``) renders as a **pill on its own line below the title**, not inline with it. This is caused by Chromium's anonymous block construction when an `<li>` contains both inline text and a block child (`<ul>`). Use this for version numbers, status indicators, and category labels:
+**Card header (title line)** — To keep code **inline** with the card title, wrap the entire header in `**...**`:
 
 ```markdown
-- Signal Intake `v2.4`
+- **Signal Intake `v2.4`**
   - Body text.
-- Scoring Model `configurable`
+- **Scoring Model `configurable`**
   - Body text.
 ```
 
-Visual result: bold card title on line 1, accent-colored pill (with `--border` outline) on line 2, body text below.
+Visual result: bold card title and accent-colored code pill on the same line.
 
-**Card body text** — Code placed within body bullet text renders **inline** within the prose, as expected:
+> **Why the bold wrapper is required**: Inside Marp's SVG foreignObject rendering context, Chromium separates adjacent text nodes and inline elements into distinct rendering boxes when the parent `<li>` also contains a block child (`<ul>`). The `**...**` wrapper creates a `<strong>` element with `display:block` that has no block-level children, so text and code remain properly inline within it. Without the wrapper, the code pill appears on its own line below the title text.
+
+**Card body text** — Code placed within body bullet text renders **inline** within the prose without any special wrapper:
 
 ```markdown
 - Card Title
