@@ -235,16 +235,6 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 ---
 
-<!-- _class: image-full dark -->
-<!-- _footer: "Full-bleed dark variant · image-full dark" -->
-<!-- _paginate: false -->
-
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
-
-Weekly Signal Brief — add `dark` for the brand gradient placeholder
-
----
-
 <!-- _class: big-number -->
 <!-- _footer: "Hero stat · big-number" -->
 
