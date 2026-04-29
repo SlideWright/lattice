@@ -103,13 +103,13 @@ _Measured against pre-framework baseline, same teams, same market conditions._
 
 ## The framework has four components.
 
-- **Signal Intake**
+- Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
-- **Scoring Model**
+- Scoring Model
   - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
-- **Decision Log**
+- Decision Log
   - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
-- **Calibration Loop**
+- Calibration Loop
   - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
 
 ---
@@ -119,11 +119,11 @@ _Measured against pre-framework baseline, same teams, same market conditions._
 
 ## Signal Intake produces three outputs.
 
-1. **Weekly Signal Brief**
+1. Weekly Signal Brief
    - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
-2. **Anomaly Alerts**
+2. Anomaly Alerts
    - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.
-3. **Monthly Signal Index**
+3. Monthly Signal Index
    - The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
 
 ---
@@ -144,9 +144,9 @@ _Measured against pre-framework baseline, same teams, same market conditions._
 
 ## Two intake modes for different signal types.
 
-- **Structured Intake**
+- Structured Intake
   - Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
-- **Unstructured Intake**
+- Unstructured Intake
   - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.
 
 ---
@@ -156,9 +156,9 @@ _Measured against pre-framework baseline, same teams, same market conditions._
 
 ## Scoring model: before and after the calibration loop.
 
-- **Before Calibration**
+- Before Calibration
   - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.
-- **After Calibration**
+- After Calibration
   - Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
 
 The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.
@@ -179,15 +179,15 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## How a decision moves through the framework.
 
-1. **Signal Logged**
+1. Signal Logged
    - _Owner classifies and submits to intake queue_
-2. **Scored**
+2. Scored
    - _Model applies current weights, generates score_
-3. **Brief Published**
+3. Brief Published
    - _Signal appears in weekly brief with rank_
-4. **Decision Logged**
+4. Decision Logged
    - _PM records rationale, signals, predicted outcome_
-5. **Retrospective**
+5. Retrospective
    - _Outcome scored, weights updated accordingly_
 
 ---
@@ -280,13 +280,13 @@ _Viable as designed — NLP classification requires a 2-week warm-up period on n
 
 ## Key insight works on any card-bearing layout.
 
-- **Signal Intake**
+- Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
-- **Scoring Model**
+- Scoring Model
   - Each signal scored on three dimensions: confidence, recency, and strategic relevance.
-- **Decision Log**
+- Decision Log
   - Every decision recorded with the signals that informed it and the criteria applied.
-- **Calibration Loop**
+- Calibration Loop
   - Monthly retrospective that compares predicted outcomes to actual outcomes.
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
@@ -379,11 +379,11 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Applying the criteria to the tools — here is where the evidence points.
 
-- **The evidence favors Tool D**
+- The evidence favors Tool D
   - Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.
-- **The path is not self-executing**
+- The path is not self-executing
   - Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.
-- **The Decision Log is the hardest part**
+- The Decision Log is the hardest part
   - Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.
 
 ---
@@ -393,9 +393,9 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Two options with a connector and an explanatory note below.
 
-- **Option A · Label**
+- Option A · Label
   - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- **Option B · Label**
+- Option B · Label
   - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
 
 The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
@@ -407,13 +407,13 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ## How to roll this out across your organization.
 
-1. **Pick one team and one decision type**
+1. Pick one team and one decision type
    - Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.
-2. **Log everything, decide nothing differently**
+2. Log everything, decide nothing differently
    - In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.
-3. **Run your first retrospective**
+3. Run your first retrospective
    - At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.
-4. **Expand to a second team**
+4. Expand to a second team
    - With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.
 
 ---
