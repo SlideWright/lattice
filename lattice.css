@@ -112,9 +112,8 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::
   margin-bottom:6px;
 }
 section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote p {
-  font-family:var(--font-display);
-  font-size:var(--fs-lg);
-  font-style:italic;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
@@ -125,9 +124,8 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote u
   display:flex; flex-direction:column; gap:6px;
 }
 section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li {
-  font-family:var(--font-display);
-  font-size:var(--fs-lg);
-  font-style:italic;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   padding-left:var(--sp-md);
@@ -510,8 +508,8 @@ section.finding blockquote::before {
   margin-bottom:4px;
 }
 section.finding blockquote p {
-  font-family:var(--font-display); font-size:var(--fs-md);
-  font-style:italic; color:var(--text-heading);
+  font-family:var(--font-body); font-size:var(--fs-body);
+  color:var(--text-heading);
   line-height:var(--lh-snug); margin:0;
 }
 section.finding blockquote.pass, section.finding blockquote.pass p { color:var(--pass); border-color:var(--pass); background:color-mix(in srgb, var(--pass) 8%, white); }
