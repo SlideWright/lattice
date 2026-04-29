@@ -716,7 +716,7 @@ Inline `` `code` `` spans render correctly in both card title lines and body tex
   - Body text.
 ```
 
-Visual result: bold card title on the left, accent-colored code pill right-aligned on the same row. The pill is compact and pill-shaped. Body text spans full card width below.
+Visual result: bold card title on the left, compact pill badge right-aligned on the same row. The badge uses `--text-body` color, `--text-muted` border, and `--bg` background (matching verdict-grid pill style) — distinct from the accent-colored body code. Body text spans full card width below.
 
 > **How it works**: The card `<li>` uses `grid-template-columns: 1fr auto`. Marp's Chromium rendering places the title text node in column 1 (`1fr`) and the `<code>` element is explicitly pinned to `grid-column:2; grid-row:1` via CSS, keeping them on the same visual row despite Chromium's anonymous block box behavior in SVG foreignObject context. The body `<ul>` carries `grid-column: 1 / -1` so it spans the full card width on the next row.
 
