@@ -343,7 +343,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 1: Title (dark bookend)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │            [dark background]          │
 │                                       │
 │          EYEBROW LABEL                │
@@ -352,7 +352,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 │       ─────── (accent line)           │
 │       Subtitle or tagline             │
 │                                       │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `title`
@@ -376,7 +376,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 2: Section Divider
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │            [dark or accent bg]        │
 │                                       │
 │    ┌──────┐                           │
@@ -385,7 +385,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 │              Section Title            │
 │              ───────                  │
 │                                       │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `divider`
@@ -408,7 +408,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 3: Sub-Topic
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
 │          CATEGORY LABEL               │
@@ -418,7 +418,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 │          about what follows.          │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `subtopic`
@@ -439,7 +439,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 4: Content (text only)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
 │  LABEL                                │
@@ -450,7 +450,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 │  focused on one idea.                 │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `content`
@@ -468,7 +468,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 5: Diagram (single)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │           LABEL                       │
 │         Diagram Title                 │
@@ -479,7 +479,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 │  │                              │     │
 │  └──────────────────────────────┘     │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `diagram`
@@ -498,18 +498,20 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 6: Two-Column (text + visual)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
-│  ┌────────────┐  ┌───────────────┐   │
+│  ┌────────────┐  ┌───────────────┐    │
+
 │  │ Heading     │  │               │   │
 │  │             │  │   [visual /   │   │
 │  │ Body text   │  │    diagram /  │   │
 │  │ here.       │  │    image]     │   │
 │  │             │  │               │   │
-│  └────────────┘  └───────────────┘   │
+│  └────────────┘  └───────────────┘    │
+
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `two-column`
@@ -527,17 +529,18 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 7: Stats / KPI Row
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │           Stats Title                 │
 │           description                 │
 │                                       │
 │      42       5       4       6       │
-│    TOTAL   SHAPES  CLASSES  WIDE     │
+│    TOTAL   SHAPES  CLASSES  WIDE      │
+
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `stats`
@@ -555,21 +558,29 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ## Template 8: Card Grid (2×2)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │           Grid Title                  │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Card Title 1 │  │ Card Title 2 │  │
-│  │ content      │  │ content      │  │
-│  └──────────────┘  └──────────────┘  │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Card Title 3 │  │ Card Title 4 │  │
-│  │ content      │  │ content      │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Card Title 1 │  │ Card Title 2 │   │
+
+│  │ content      │  │ content      │   │
+
+│  └──────────────┘  └──────────────┘   │
+
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Card Title 3 │  │ Card Title 4 │   │
+
+│  │ content      │  │ content      │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `card-grid`
@@ -606,21 +617,25 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 9: Card Grid 2+1
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │           Grid Title                  │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Card Title 1 │  │ Card Title 2 │  │
-│  │ content      │  │ content      │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Card Title 1 │  │ Card Title 2 │   │
+
+│  │ content      │  │ content      │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  ┌─────────────────────────────────┐  │
 │  │ Card Title 3 (full width)       │  │
 │  │ content stretches across        │  │
 │  └─────────────────────────────────┘  │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `card-grid-2plus1`
@@ -644,7 +659,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 10: Two Cards Stacked (vertical)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │           Slide Title                 │
@@ -658,7 +673,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 │  │ content stretches full width    │  │
 │  └─────────────────────────────────┘  │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-stacked`
@@ -677,19 +692,25 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 11: Two Cards Side-by-Side (horizontal)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │           Slide Title                 │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Card Title 1 │  │ Card Title 2 │  │
-│  │              │  │              │  │
-│  │ content      │  │ content      │  │
-│  │              │  │              │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Card Title 1 │  │ Card Title 2 │   │
+
+│  │              │  │              │   │
+
+│  │ content      │  │ content      │   │
+
+│  │              │  │              │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-side`
@@ -715,7 +736,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 12: Comparison (side by side with connector)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │         Comparison Title              │
@@ -727,7 +748,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 │  └──────────────┘     └──────────────┘│
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `comparison`
@@ -755,7 +776,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 13: Quote / Testimonial
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
 │                                       │
@@ -766,7 +787,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 │              — Attribution            │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `quote`
@@ -785,17 +806,20 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 14: Timeline / Process
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
 │          Process Title                │
 │                                       │
-│     ●──────●──────●──────●           │
-│   Step 1  Step 2  Step 3  Step 4     │
-│   desc    desc    desc    desc       │
+│     ●──────●──────●──────●            │
+
+│   Step 1  Step 2  Step 3  Step 4      │
+
+│   desc    desc    desc    desc        │
+
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `timeline`
@@ -821,7 +845,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 ## Template 15: List / Bullet Points
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
 │  LABEL                                │
@@ -833,7 +857,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 │  •  Fourth point if needed            │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `list`
@@ -856,13 +880,13 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 One class, two authoring modes — caption is optional.
 
 ```
-┌──────────────────────────────────────┐   ┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐   ┌───────────────────────────────────────┐
 │                                       │   │                                       │
 │         [full-bleed image]            │   │         [full-bleed image]            │
 │                                       │   │                                       │
-│                                       │   │  ┌─ caption text ─────────────────┐  │
+│                                       │   │  ┌─ caption text ──────────────────┐  │
 │                                  1/19 │   │  └─────────────────────────────────┘  │
-└──────────────────────────────────────┘   └──────────────────────────────────────┘
+└───────────────────────────────────────┘   └───────────────────────────────────────┘
    No caption                                 With caption
 ```
 
@@ -894,7 +918,7 @@ Caption text that appears as an overlay bar at the bottom.
 ## Template 17: Big Number / Single Stat
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
 │                                       │
@@ -906,7 +930,7 @@ Caption text that appears as an overlay bar at the bottom.
 │         below the number              │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `big-number`
@@ -934,7 +958,7 @@ Caption text that appears as an overlay bar at the bottom.
 ## Template 18: Split Panel (colored sidebar)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │ header                                │
 │ ┌──────────┐                          │
 │ │ EYEBROW  │  SECTION HEADING         │
@@ -946,9 +970,10 @@ Caption text that appears as an overlay bar at the bottom.
 │ │ Panel    │  ┌──────────────────┐    │
 │ │ Title    │  │ Card Title 2     │    │
 │ └──────────┘  │ body text        │    │
-│              └──────────────────┘    │
+│              └──────────────────┘     │
+
 │              footer              1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `split-panel`
@@ -991,7 +1016,7 @@ Optional intro paragraph.
 ## Template 19: Closing (dark bookend)
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │            [dark background]          │
 │                                       │
 │                                       │
@@ -1002,7 +1027,7 @@ Optional intro paragraph.
 │       call to action in italic        │
 │                                       │
 │                                       │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `closing`
@@ -1024,23 +1049,29 @@ Optional intro paragraph.
 ## Template 20: Finding / Verdict
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
-│  LABEL · FINDING 01                  │
+│  LABEL · FINDING 01                   │
+
 │  The heading states the finding.      │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ What worked  │  │ What blocked │  │
-│  │              │  │              │  │
-│  │ body text    │  │ body text    │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ What worked  │  │ What blocked │   │
+
+│  │              │  │              │   │
+
+│  │ body text    │  │ body text    │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  ┌─────────────────────────────────┐  │
 │  │ Secondary finding (full width)  │  │
 │  │ nuance, context, or data point  │  │
 │  └─────────────────────────────────┘  │
 │  ● Verdict — one sentence.            │
 │  footer                          4/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `finding`
@@ -1087,25 +1118,25 @@ Optional intro paragraph.
 ## Template 21: Three-Row Wide Cards
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL · CONTEXT                      │
 │  Slide heading goes here.             │
 │                                       │
 │  ┌─────────────────────────────────┐  │
-│  │ [1]  Card Heading One             │  │
-│  │       body text for this card.   │  │
+│  │ [1]  Card Heading One           │  │
+│  │       body text for this card.  │  │
 │  └─────────────────────────────────┘  │
 │  ┌─────────────────────────────────┐  │
-│  │ [2]  Card Heading Two             │  │
-│  │       body text for this card.   │  │
+│  │ [2]  Card Heading Two           │  │
+│  │       body text for this card.  │  │
 │  └─────────────────────────────────┘  │
 │  ┌─────────────────────────────────┐  │
-│  │ [3]  Card Heading Three           │  │
-│  │       body text for this card.   │  │
+│  │ [3]  Card Heading Three         │  │
+│  │       body text for this card.  │  │
 │  └─────────────────────────────────┘  │
 │  footer                          6/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-wide-3`
@@ -1147,7 +1178,7 @@ Optional intro paragraph.
 ## Template 22: Numbered Criteria List
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Here is what the criteria are.       │
@@ -1165,7 +1196,7 @@ Optional intro paragraph.
 │      Supporting description text.     │
 │                                       │
 │  footer                          8/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `criteria`
@@ -1213,23 +1244,32 @@ Optional intro paragraph.
 ## Template 23: Card Grid with Verdict Badges
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  We have four options.                │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Option 1     │  │ Option 2     │  │
-│  │ ✓In-proc ✕Ops│  │ ✕In-proc ✓Ops│  │
-│  │ description  │  │ description  │  │
-│  └──────────────┘  └──────────────┘  │
-│  ┌──────────────┐  ┌──────────────┐* │
-│  │ Option 3     │  │ Option 4 ★  │  │
-│  │ ✓In-proc ✓Ops│  │ ✓In-proc ✓Ops│  │
-│  │ description  │  │ description  │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Option 1     │  │ Option 2     │   │
+
+│  │ ✓In-proc ✕Ops│  │ ✕In-proc ✓Ops│   │
+
+│  │ description  │  │ description  │   │
+
+│  └──────────────┘  └──────────────┘   │
+
+│  ┌──────────────┐  ┌──────────────┐*  │
+
+│  │ Option 3     │  │ Option 4 ★   │   │
+│  │ ✓In-proc ✓Ops│  │ ✓In-proc ✓Ops│   │
+
+│  │ description  │  │ description  │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  footer                          9/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `verdict-grid` (extends standard card grid)
@@ -1297,22 +1337,30 @@ Optional intro paragraph.
 ## Template 24: Comparison Table
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Here are the numbers side by side.   │
 │                                       │
-│  ┌──────────┬──────────┬──────────┐  │
-│  │          │ Option A │ Option B │  │
-│  ├──────────┼──────────┼──────────┤  │
-│  │ Row 1    │ ✓        │ ✕        │  │
-│  │ Row 2    │ ✕        │ ✓        │  │
-│  │ Row 3    │ ✓        │ ✓        │  │
-│  │ Row 4    │ ⚠        │ ✓        │  │
-│  └──────────┴──────────┴──────────┘  │
+│  ┌──────────┬──────────┬──────────┐   │
+
+│  │          │ Option A │ Option B │   │
+
+│  ├──────────┼──────────┼──────────┤   │
+
+│  │ Row 1    │ ✓        │ ✕        │   │
+
+│  │ Row 2    │ ✕        │ ✓        │   │
+
+│  │ Row 3    │ ✓        │ ✓        │   │
+
+│  │ Row 4    │ ⚠        │ ✓        │   │
+
+│  └──────────┴──────────┴──────────┘   │
+
 │  Footnote text for scope caveats.     │
 │  footer                         11/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `compare-table`
@@ -1384,7 +1432,7 @@ Optional intro paragraph.
 ## Template 25: Featured Card + Sub-Grid
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Here is where the evidence points.   │
@@ -1396,13 +1444,18 @@ Optional intro paragraph.
 │  │ the answer the slide asserts.   │  │
 │  └─────────────────────────────────┘  │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Sub Card 1   │  │ Sub Card 2   │  │
-│  │ Condition or │  │ Condition or │  │
-│  │ caveat.      │  │ fallback.    │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Sub Card 1   │  │ Sub Card 2   │   │
+
+│  │ Condition or │  │ Condition or │   │
+
+│  │ caveat.      │  │ fallback.    │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  footer                         14/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `featured`
@@ -1449,21 +1502,25 @@ Optional intro paragraph.
 Any card-bearing layout that ends with a trailing `> blockquote` renders it as a **Key Insight panel** — an accent-tinted bar that pins below the card content.
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Grid Title                           │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐  │
-│  │ Card Title 1 │  │ Card Title 2 │  │
-│  │ body text    │  │ body text    │  │
-│  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐   │
+
+│  │ Card Title 1 │  │ Card Title 2 │   │
+
+│  │ body text    │  │ body text    │   │
+
+│  └──────────────┘  └──────────────┘   │
+
 │  ┌─────────────────────────────────┐  │
 │  │ KEY INSIGHT                     │  │
 │  │ The key insight text here.      │  │
 │  └─────────────────────────────────┘  │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **Layouts that support Key Insight:** `card-grid`, `cards-side`, `comparison`, `list`, `criteria`, `cards-wide-3`, `finding`, `steps`, `split-panel`
@@ -1523,21 +1580,21 @@ These are named variations of existing templates. Use them when the base templat
 Extends Template 12 (Comparison with connector). Adds a full-width framing paragraph below the two cards.
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Comparison Heading                   │
 │                                       │
-│  ┌──────────────┐     ┌──────────────┐│
-│  │ Card A       │  →  │ Card B       ││
-│  │ content      │     │ content      ││
-│  └──────────────┘     └──────────────┘│
+│  ┌─────────────┐     ┌─────────────┐  │
+│  │ Card A      │  →  │ Card B      │  │
+│  │ content     │     │ content     │  │
+│  └─────────────┘     └─────────────┘  │
 │                                       │
 │  Framing sentence that applies to     │
 │  both sides equally. Max 30 words.    │
 │                                       │
 │  footer                          1/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS addition to T12:**
@@ -1569,21 +1626,21 @@ Optional framing sentence below the cards.
 Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-width numbered step cards arranged horizontally.
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  How to roll this out.                │
 │                                       │
-│  ┌─────────┐ ❯ ┌─────────┐ ❯ ┌─────────┐  │
-│  │ STEP 01 │   │ STEP 02 │   │ STEP 03 │  │
-│  │         │   │         │   │         │  │
-│  │ Step    │   │ Step    │   │ Step    │  │
-│  │ Title   │   │ Title   │   │ Title   │  │
-│  │         │   │         │   │         │  │
-│  │ body    │   │ body    │   │ body    │  │
-│  └─────────┘   └─────────┘   └─────────┘  │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐  │
+│  │ STEP 01 │ │ STEP 02 │ │ STEP 03 │  │
+│  │         │ │         │ │         │  │
+│  │ Step    │ │ Step    │ │ Step    │  │
+│  │ Title   │ │ Title   │ │ Title   │  │
+│  │         │ │         │ │         │  │
+│  │ body    │ │ body    │ │ body    │  │
+│  └─────────┘ └─────────┘ └─────────┘  │
 │  footer                         12/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `steps`
@@ -1624,20 +1681,20 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
 
 ```
-┌──────────────────────────────────────┐
+┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
 │  Growth is a change in thinking.      │
 │                                       │
-│  01  Remember  Recall facts & syntax  Feature / Task      │
-│  02  Understand Explain behavior      Component / Module  │
-│  03  Apply     Use patterns           Service / Product   │
-│  04  Analyze   Decompose boundaries   System / Platform   │
-│  05  Evaluate  Judge against strategy Org / Multi-domain  │
-│  06  Create    Synthesize frameworks  Enterprise          │
+│ 01  Remember    Recall facts  Feature │
+│ 02  Understand  Explain it    Module  │
+│ 03  Apply       Use patterns  Service │
+│ 04  Analyze     Decompose     System  │
+│ 05  Evaluate    Judge option  Org     │
+│ 06  Create      Synthesize    Entrp.  │
 │                                       │
 │  footer                          3/19 │
-└──────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `list-tabular` (or add `tabular` modifier to `list`)
