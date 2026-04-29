@@ -82,10 +82,10 @@ If either returns a version number, use Marp CLI. Only use `lattice.js` when bot
 ```
 Display title (48-72px)
   > Slide heading (32-42px)
-    > Subheading / card title (22-28px)
-      > Body content (16-20px)  ← smallest readable text
-        > Eyebrow labels / captions (11-13px)  ← orientation only
-          > Page numbers (9-11px)  ← reference only
+    > Subheading / card title (18px)
+      > Body content (16px)  ← smallest readable text
+        > Eyebrow labels / captions (13px)  ← orientation only
+          > Page numbers (13px)  ← reference only
 ```
 
 Every level must be visibly distinct from adjacent levels. If two levels look the same size, the hierarchy is broken.
@@ -188,7 +188,8 @@ Accent colors for categories, levels, or themes extend this palette — they don
 - Optional subtle box-shadow (blur 8-16px, opacity 0.03-0.06)
 - Diagram containers: at least 0.8" margin from slide edges
 - Cards never touch slide edges — always padded inside
-- Card titles are bold, card body is regular weight
+- Card headers are auto-bolded by CSS on all card layouts — no `**...**` required in the Markdown. Writing `**text**` still works as a compatibility shim (it becomes a `<strong>` which CSS suppresses the redundant bold on)
+- Card body is regular weight
 
 ## 1.9 Centering & Alignment
 
@@ -578,11 +579,11 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: card-grid -->
 ```
 
-**Markdown format** — nested list, no em dash:
+**Markdown format** — nested list, card header is auto-bolded by CSS:
 ```markdown
-- **Card Title**
+- Card Title
   - Body text for this card.
-- **Another Title**
+- Another Title
   - Body text for the second card.
 ```
 Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
@@ -590,15 +591,17 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 > **Indentation rule:** When using `ol`, the sublist must be indented **3 spaces** (to clear the `1. ` prefix). 2 spaces breaks the nesting — Markdown treats it as a sibling list, not a child list.
 >
 > ```markdown
-> 1. **Title**
+> 1. Card Title
 >    - Body text.   ← 3 spaces ✓
 > ```
 
-- 2×2 grid with 16px gaps
-- Cards: rounded corners, `--bg-alt`, `--border`
-- Card title: 16px bold, `--text-heading`
-- Card body: 16px, `--text-body`
-- Equal-width, equal-height cards
+- 2×2 grid with 24px (`--sp-md`) gaps
+- Cards: `--bg-alt` fill, `--border` border, `--radius-md` corner radius
+- Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS, no `**...**` needed
+- Card body (nested list): 16px (`--fs-body`), `--text-body`
+- Equal-width, equal-height cards; last odd card spans full width automatically
+- **Numbered cards** (`ol` source): flush top-left corner badge — accent background, white mono number, `--radius-md 0 --radius-sm 0` corners; card `padding-top` is automatically increased to clear the badge
+- Trailing `> blockquote` on this layout renders as a **Key Insight** panel (see Key Insight feature below)
 
 ## Template 9: Card Grid 2+1
 
@@ -627,13 +630,13 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 <!-- _class: card-grid-2plus1 -->
 ```
 
-**Markdown format** — same nested list format as `card-grid`:
+**Markdown format** — same nested list format as `card-grid` (auto-bold, no `**...**` required):
 ```markdown
-- **Card Title**
+- Card Title
   - Body text.
 ```
 
-- Top row: two equal cards, 16px gap
+- Top row: two equal cards, 24px gap
 - Bottom row: one card spanning full width
 - Bottom card for summary, conclusion, or key takeaway
 - Same card styling as 2×2
@@ -696,14 +699,14 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 <!-- _class: cards-side -->
 ```
 
-**Markdown format** — same nested list format as `card-grid`:
+**Markdown format** — same nested list format as `card-grid` (auto-bold, no `**...**` required):
 ```markdown
-- **Card Title**
+- Card Title
   - Body text.
 ```
 
 - Two equal cards side by side
-- 16px gap between cards
+- 24px gap between cards
 - Each card takes roughly equal width and full available height
 - Parallel relationship: two topics shown together
 - No connector or arrow — use Template 12 if you need one
@@ -734,11 +737,11 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 <!-- _class: comparison -->
 ```
 
-**Markdown format** — same nested list format as `card-grid` (exactly 2 items):
+**Markdown format** — same nested list format as `card-grid`, exactly 2 items (auto-bold, no `**...**` required):
 ```markdown
-- **Before / Option A**
+- Before / Option A
   - Body text describing this side.
-- **After / Option B**
+- After / Option B
   - Body text describing this side.
 ```
 
@@ -746,7 +749,8 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - Implies transformation, contrast, or choice
 - Connector: `❯` at 30px (`--fs-xl`), `--text-muted`
 - Cards are equal width
-- Card title: bold, `--text-heading`; card body: 16px, `--text-body`
+- Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS
+- Card body (nested list): 16px (`--fs-body`), `--text-body`
 
 ## Template 13: Quote / Testimonial
 
@@ -804,14 +808,14 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - Horizontal line with colored dots
 - Use `ol` for numbered sequential steps (circles show 1, 2, 3…)
 - Use `ul` for non-sequential milestones (plain dot circles)
-- Each item: `**Label**` on its own line, then `- *description*` as nested list
+- Each item: label on its own line, then `- description` as nested list (italic is optional but common)
 - 3–6 steps maximum
 - Example authoring:
 ```markdown
-1. **Signal Logged**
-   - *Owner classifies and submits to intake queue*
-2. **Scored**
-   - *Model applies current weights, generates score*
+1. Signal Logged
+   - Owner classifies and submits to intake queue
+2. Scored
+   - Model applies current weights, generates score
 ```
 
 ## Template 15: List / Bullet Points
@@ -931,16 +935,19 @@ Caption text that appears as an overlay bar at the bottom.
 
 ```
 ┌──────────────────────────────────────┐
-│  ┌──────────┐                        │
-│  │ [colored │  CATEGORY LABEL        │
-│  │  panel]  │                        │
-│  │          │  Content heading       │
-│  │  LABEL   │                        │
-│  │          │  Body text or cards    │
-│  │  Panel   │  on the right side     │
-│  │  Title   │  of the slide.         │
-│  │          │                        │
-│  └──────────┘                   1/19 │
+│ header                                │
+│ ┌──────────┐                          │
+│ │ EYEBROW  │  SECTION HEADING         │
+│ │          │                          │
+│ │ [accent  │  ┌──────────────────┐    │
+│ │  panel]  │  │ Card Title 1     │    │
+│ │          │  │ body text        │    │
+│ │          │  └──────────────────┘    │
+│ │ Panel    │  ┌──────────────────┐    │
+│ │ Title    │  │ Card Title 2     │    │
+│ └──────────┘  │ body text        │    │
+│              └──────────────────┘    │
+│              footer              1/19 │
 └──────────────────────────────────────┘
 ```
 
@@ -951,13 +958,13 @@ Caption text that appears as an overlay bar at the bottom.
 <!-- _class: split-panel -->
 ```
 
-- Left panel: 30-35% width, accent or category color
-- Right panel: 65-70% width, `--bg`
-- Left panel contains: label, heading, optional large watermark number
-- Right panel contains: content, cards, description
-- Good for category-based slides where sidebar signals section
-- **Card authoring**: nested list in right column — `- **Title**` then `  - description` → stacked card tiles
-- Supports both `ul` (no badge) and `ol` (number badge) for top-level cards
+- Left panel: 34% width, full-height accent color background
+- Right panel: 66% width, `--bg`
+- Left panel contains: `h5` eyebrow label pinned top-left, `h2` title pinned bottom-left
+- Right panel contains: `h3` subheading, optional `p` intro, then `ul`/`ol` card tiles
+- Good for category-based slides where sidebar signals section or dimension
+- **Card headers**: auto-bolded by CSS, no `**...**` required
+- Supports both `ul` (no badge) and `ol` (flush top-left corner badge)
 - **Authoring pattern:**
 
 ```markdown
@@ -967,19 +974,19 @@ Caption text that appears as an overlay bar at the bottom.
 
 ### Section heading
 
-Body text or intro paragraph.
+Optional intro paragraph.
 
-- **Card Title**
-  - Card body — description or supporting detail.
-- **Card Title**
-  - Card body.
+1. Card Title
+   - Card body — description or supporting detail.
+2. Card Title
+   - Card body.
 ```
 
 - `h5` = left panel eyebrow (faint, top)
 - `h2` = left panel title (white, bottom)
 - `h3` = right panel subheading
 - `p` = right panel intro text
-- `ul/ol > li > **strong** + nested ul/ol > li` = stacked card tiles
+- `ol > li` = stacked card tiles with flush corner badge; `ul > li` = stacked card tiles without badge
 
 ## Template 19: Closing (dark bookend)
 
@@ -1010,7 +1017,8 @@ Body text or intro paragraph.
 
 - Mirrors title slide structure
 - Background: `--bg-dark`
-- Statement: 22-28px, italic, display font, `--text-muted`
+- Statement (`p` below the heading): 16px (`--fs-body`) italic, `--on-dark-secondary`
+- Heading (`h2`): 48px display font, `--text-display`
 - No header, footer, or page number
 
 ## Template 20: Finding / Verdict
@@ -1055,25 +1063,22 @@ Body text or intro paragraph.
 
 ## The in-process model performed well, but the operational burden is prohibitive.
 
-- What worked
-  - What worked
+- **What worked**
   - Body text describing what succeeded. Keep to 2–3 sentences.
-- What blocked it
-  - What blocked it
+- **What blocked it**
   - Body text describing the blocker. Keep to 2–3 sentences.
-- Secondary finding
-  - Secondary finding
+- **Secondary finding**
   - Full-width nuance, data point, or contextual note. One sentence preferred.
 
 *Not viable — one sentence verdict goes here.*
 ```
 
 **How the renderer maps this:**
-- Top-level `- Card Title` → opens a card; sub-items populate card title and body
+- Each `- **Title**` → opens a card; `**Title**` becomes the bold card header; nested list items form the card body
 - First two top-level items → top row (flex side-by-side)
-- Third top-level item → bottom full-width card
-- Final `*italic paragraph*` → verdict line (strip asterisks, render as verdict)
-- Alternatively, implement as a `findings` class with explicit HTML divs inside the slide for full control
+- Third top-level item (when present, odd count) → bottom full-width card spanning both columns
+- Final `*italic paragraph*` → verdict line with `●` accent dot prepended
+- Note: `**...**` is required for `finding` — the CSS uses `li > strong` as the card header selector
 
 **When to use:** A finding has a clear go/no-go signal that must be visible at a glance. Top cards frame parallel perspectives (what worked vs. what blocked); bottom card adds secondary context; verdict line states the bottom line.
 
@@ -1084,70 +1089,58 @@ Body text or intro paragraph.
 ```
 ┌──────────────────────────────────────┐
 │  header                               │
-│  LABEL · CONTEXT                     │
+│  LABEL · CONTEXT                      │
 │  Slide heading goes here.             │
 │                                       │
 │  ┌─────────────────────────────────┐  │
-│  │ EYEBROW 01  Card Heading One    │  │
-│  │ Left column body.  Right col.   │  │
+│  │ [1]  Card Heading One             │  │
+│  │       body text for this card.   │  │
 │  └─────────────────────────────────┘  │
 │  ┌─────────────────────────────────┐  │
-│  │ EYEBROW 02  Card Heading Two    │  │
-│  │ Left column body.  Right col.   │  │
+│  │ [2]  Card Heading Two             │  │
+│  │       body text for this card.   │  │
 │  └─────────────────────────────────┘  │
 │  ┌─────────────────────────────────┐  │
-│  │ EYEBROW 03  Card Heading Three  │  │
-│  │ Left column body.  Right col.   │  │
+│  │ [3]  Card Heading Three           │  │
+│  │       body text for this card.   │  │
 │  └─────────────────────────────────┘  │
 │  footer                          6/19 │
 └──────────────────────────────────────┘
 ```
 
-**CSS class:** `three-wide`
+**CSS class:** `cards-wide-3`
 
 **Layout spec:**
-- `section.three-wide`: `display: flex; flex-direction: column; padding: 48px 64px;`
-- Slide heading (`h2`): 28-32px, `margin-bottom: 24px`
+- `section.cards-wide-3`: flex column, 48px 64px padding
 - Cards container: `display: flex; flex-direction: column; gap: 12px; flex: 1`
-- Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; display: grid; grid-template-rows: auto 1fr; gap: 8px`
-- Card header row (eyebrow + heading side by side): `display: flex; align-items: baseline; gap: 16px`
-  - Eyebrow: `font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0`
-  - Card heading: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
-- Card body row: `display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px; color: var(--text-body); line-height: 1.6`
-- If two-column body is not needed, omit the inner grid — single column body is fine
+- Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: --radius-md; padding: --sp-sm --sp-md; display: flex; flex-direction: column; gap: --sp-xs`
+- Card header row: `**Title**` (`strong`) displayed with inline numbered badge before it
+  - Badge: `content: counter(wide-counter)` — mono pill, 16px, accent background, white text
+  - Title: 16px (`--fs-body`) bold, `--text-heading`
+- Card body (`ul > li`): 15px (`--fs-sm`), `--text-body`, full width
+- Note: `**...**` is required for `cards-wide-3` — the CSS uses `li > strong` for the header and `strong::before` for the badge
 
 **Marp markdown source:**
-
 ```markdown
-<!-- _class: three-wide -->
+<!-- _class: cards-wide-3 -->
 
-## Slide heading goes here.
+## Three scoring failure modes found in the pilot.
 
-- EYEBROW 01
-  - EYEBROW 01
-  - Card Heading One
-  - Left column body text here.
-  - Right column body text here.
-- EYEBROW 02
-  - EYEBROW 02
-  - Card Heading Two
-  - Left column body text here.
-  - Right column body text here.
-- EYEBROW 03
-  - EYEBROW 03
-  - Card Heading Three
-  - Left column body text here.
-  - Right column body text here.
+1. **Recency dominance**
+   - High-recency noise crowding out durable signal. Teams set recency weight above 50% without empirical backing.
+2. **Source concentration**
+   - Single-customer signals inflating confidence scores. One vocal customer is not a market signal.
+3. **Outcome misclassification**
+   - PMs logging predicted outcomes that were too vague to score. Ambiguous outcomes cannot be calibrated.
 ```
 
 **How the renderer maps this:**
-- Each top-level `- EYEBROW` → one card
-- Sub-item 1 (repeated eyebrow): eyebrow label
-- Sub-item 2: card heading
-- Sub-items 3–4: left and right body columns
-- If only sub-item 3 present: single-column body
+- Each `1. **Title**` → one wide card; the numbered badge (1, 2, 3…) is auto-generated by CSS counter on `strong::before`
+- `**Title**` → card header (bold, with inline badge)
+- Nested `- body` → card body text
+- `**...**` is required, not optional — the CSS targets `li > strong` as the header selector
 
-**When to use:** Three parallel items that each need internal structure — three risks, three failure modes, three options with sub-detail. Not for three items that fit as bullets (use T15) or three items that need comparison (use T24).
+**When to use:** Three parallel items that each need a title and a sentence of body context — three risks, three failure modes, three design constraints. Not for three items that fit as bullets (use T15) or three items that need comparison (use T24).
 
 ---
 
@@ -1195,27 +1188,23 @@ Body text or intro paragraph.
 ```markdown
 <!-- _class: criteria -->
 
-## Here is what the criteria are.
+## Four requirements every decision system must meet.
 
-- 01
-  - 01
-  - Criterion Title One
-  - Supporting description text. One or two sentences maximum.
-- 02
-  - 02
-  - Criterion Title Two
-  - Supporting description text. One or two sentences maximum.
-- 03
-  - 03
-  - Criterion Title Three
-  - Supporting description text. One or two sentences maximum.
+- **Speed**
+  - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
+- **Auditability**
+  - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
+- **Adoption**
+  - If the team won’t use it weekly, calibration never runs and the model never improves.
+- **Calibration**
+  - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
 ```
 
 **How the renderer maps this:**
-- Each top-level `- NN` → one criteria row
-- Sub-item 1 (repeated number): the large display number
-- Sub-item 2: the criterion title
-- Sub-item 3: the description
+- The sequence number (01, 02…) is auto-generated by CSS counter — do not author it in the Markdown
+- Each `- **Title**` → one criteria row; `**...**` is required (CSS targets `li > strong` for the title)
+- Nested `- description` → supporting text, 16px (`--fs-body`), `--text-body`
+- 3–5 items maximum; if more, split across two slides
 
 **When to use:** Ranked criteria, leadership principles, non-negotiable requirements, or any list where the items carry enough weight that a bullet point understates them. The number is a visual anchor, not a rank signal — reordering is fine.
 
@@ -1268,29 +1257,38 @@ Body text or intro paragraph.
 
 ## We have four options, and they are not equally viable.
 
-- Option 1 · Label
-  - Option 1 · Label
-  - pass:In-process fail:Independence fail:Ops fail:Availability fail:Path-to-prod
+- **Option 1 · Label**
+  - [x] In-process
+  - [ ] Independence
+  - [ ] Ops
+  - [ ] Availability
   - The architectural model leadership wants, but the stand-up burden is prohibitive.
-- Option 2 · Label
-  - Option 2 · Label
-  - fail:In-process fail:Independence pass:Ops pass:Availability pass:Path-to-prod
+- **Option 2 · Label**
+  - [ ] In-process
+  - [ ] Independence
+  - [x] Ops
+  - [x] Availability
   - Consumed as delivered. Criterion relaxed is availability coupling.
-- Option 3 · Label
-  - Option 3 · Label
-  - pass:In-process pass:Independence fail:Ops pass:Availability fail:Path-to-prod
+- **Option 3 · Label**
+  - [x] In-process
+  - [x] Independence
+  - [ ] Ops
+  - [x] Availability
   - Honors architecture and independence, at the cost of a dedicated platform capability.
-- Option 4 · Label *preferred*
-  - Option 4 · Label
-  - pass:In-process warn:Independence pass:Ops pass:Availability pass:Path-to-prod
+- **Option 4 · Label**
+  - [x] In-process
+  - [~] Independence
+  - [x] Ops
+  - [x] Availability
   - Co-develop the architecture needed. Same vendor, different engagement model.
 ```
 
 **How the renderer maps this:**
-- Each top-level `- Card Title` → one card in the grid
-- Sub-item 1: card title (strip `*preferred*` flag → apply `.card-preferred` class if present)
-- Sub-item 2: badge string — parse `pass:Label`, `fail:Label`, `warn:Label` tokens into badge pills
-- Sub-item 3: card body description
+- Each `- **Card Title**` → one card in the grid
+- `**...**` is required (CSS targets `li > strong` for the card title)
+- `[x]` → pass badge (green); `[ ]` → fail badge (red); `[~]` → warn badge (amber)
+- Last nested `li` (after all badge items) → card body description
+- Last card in the grid gets accent-soft highlight automatically (`li:last-child` rule)
 
 **When to use:** Option comparison, vendor evaluation, feature matrix where a recommended choice must be visible without hiding the tradeoffs. The badges let a reader scan all cards at once before reading any body text.
 
@@ -1428,23 +1426,91 @@ Body text or intro paragraph.
 
 ## Applying the criteria, here is where the evidence points.
 
-- THE EVIDENCE FAVORS OPTION 4
-  - THE EVIDENCE FAVORS OPTION 4
-  - Capital One co-development honors in-process performance and operational footprint without a dedicated platform organization. Vendor independence is partially honored through the co-development model.
+- The evidence favors this approach
+  - Featured card body — the assertion the slide makes. Two to three sentences maximum.
 - The path is not self-executing
-  - The path is not self-executing
-  - Converting stated willingness into a signed co-development engagement requires a senior-to-senior conversation.
-- Option 3 is the right fallback
-  - Option 3 is the right fallback
-  - If the engagement cannot be activated, Option 3 preserves the architectural direction. Falling back to Option 2 would abandon it.
+  - First qualification or condition that the reader needs to act on.
+- Option B is the right fallback
+  - Second qualification or fallback condition.
 ```
 
 **How the renderer maps this:**
-- First top-level item → featured card (label from sub-item 1, body from sub-item 2)
-- Remaining top-level items → sub-card row (equal width, one card per item)
-- Sub-item 1: sub-card title; sub-item 2: sub-card body
+- First top-level `li` → featured card (accent-soft background, accent border); card title is auto-bolded by CSS
+- Remaining `li` items → sub-card row (equal width); sub-card titles also auto-bolded by CSS
+- No `**...**` required — all card headers are auto-bolded
+- Nested `ul/ol > li` → card body text
 
 **When to use:** Assessment with a clear recommended direction plus qualifications or fallback conditions. This template asserts a direction — do not use it for three equal options (use T8 or T23). Use it when the deck needs to say "here is the answer, and here is the nuance."
+
+---
+
+## Feature: Key Insight Panel
+
+Any card-bearing layout that ends with a trailing `> blockquote` renders it as a **Key Insight panel** — an accent-tinted bar that pins below the card content.
+
+```
+┌──────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Grid Title                           │
+│                                       │
+│  ┌──────────────┐  ┌──────────────┐  │
+│  │ Card Title 1 │  │ Card Title 2 │  │
+│  │ body text    │  │ body text    │  │
+│  └──────────────┘  └──────────────┘  │
+│  ┌─────────────────────────────────┐  │
+│  │ KEY INSIGHT                     │  │
+│  │ The key insight text here.      │  │
+│  └─────────────────────────────────┘  │
+│  footer                          1/19 │
+└──────────────────────────────────────┘
+```
+
+**Layouts that support Key Insight:** `card-grid`, `cards-side`, `comparison`, `list`, `criteria`, `cards-wide-3`, `finding`, `steps`, `split-panel`
+
+**Styling:**
+- Panel: `--accent-soft` background, `1px solid var(--accent)` border, `--radius-md` corners
+- "KEY INSIGHT" eyebrow: 13px (`--fs-label`) mono, bold, letter-spaced, `--accent` color
+- Body text: 16px (`--fs-body`) body font, `--text-heading` color, not italic
+
+**Marp markdown source:**
+```markdown
+<!-- _class: card-grid -->
+
+## Slide heading.
+
+- Card Title 1
+  - Card body.
+- Card Title 2
+  - Card body.
+
+> The key insight text that ties the cards together. One sentence preferred.
+```
+
+**Note:** The blockquote must be the **last element** on the slide (or the last element before a trailing paragraph). The `finding` layout uses the same pattern; its Key Insight panel also accepts semantic coloring via the layout's verdict line.
+
+## Feature: Below-Note
+
+A trailing plain paragraph (not a blockquote) on any card-bearing layout renders as a **below-note** — body-sized contextual text with a hairline gradient rule above it, visually separate from the card content.
+
+```markdown
+<!-- _class: card-grid -->
+
+## Slide heading.
+
+- Card Title 1
+  - Card body.
+- Card Title 2
+  - Card body.
+
+This is a below-note. It appears below the cards with a hairline rule above it.
+```
+
+**Layouts that support below-note:** `card-grid`, `comparison`, `verdict-grid`, `featured`, `finding`, `criteria`, `cards-wide-3`
+
+- Rule: hairline gradient from `--accent` to transparent
+- Text: 16px (`--fs-body`), `--text-body`
+- Use for source attribution, scope caveats, or a single sentence of additional context
 
 ---
 
@@ -1506,57 +1572,50 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 ┌──────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
-│  How to use this tomorrow.            │
+│  How to roll this out.                │
 │                                       │
-│  ┌──────────┐  ┌──────────┐  ┌──────┐│
-│  │ STEP 01  │  │ STEP 02  │  │STEP 3││
-│  │          │  │          │  │      ││
-│  │ Step     │  │ Step     │  │ Step ││
-│  │ Title    │  │ Title    │  │Title ││
-│  │          │  │          │  │      ││
-│  │ desc     │  │ desc     │  │ desc ││
-│  └──────────┘  └──────────┘  └──────┘│
+│  ┌─────────┐ ❯ ┌─────────┐ ❯ ┌─────────┐  │
+│  │ STEP 01 │   │ STEP 02 │   │ STEP 03 │  │
+│  │         │   │         │   │         │  │
+│  │ Step    │   │ Step    │   │ Step    │  │
+│  │ Title   │   │ Title   │   │ Title   │  │
+│  │         │   │         │   │         │  │
+│  │ body    │   │ body    │   │ body    │  │
+│  └─────────┘   └─────────┘   └─────────┘  │
 │  footer                         12/19 │
 └──────────────────────────────────────┘
 ```
 
-**CSS class:** `steps` (instead of `timeline`)
+**CSS class:** `steps`
 
 **Layout spec:**
-- `section.steps`: `display: flex; flex-direction: column; padding: 48px 64px`
-- Slide heading (`h2`): 32-36px, `margin-bottom: 32px`
-- Cards row: `display: flex; gap: 16px; flex: 1`
-- Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px`
-- Step badge: `font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted)` — sits at top of card
-- Step title: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
-- Step body: `font-size: 14px; color: var(--text-body); line-height: 1.6; flex: 1`
-- No connecting line — left-to-right card order implies sequence
-- 2-4 steps; for 5-6 steps, use dot-on-line (T14 base) where labels are shorter
+- Each `li`: flex column card with `--bg-alt` fill, `--border` border, `--radius-md` corners
+- **STEP badge**: auto-generated by CSS — `STEP 01`, `STEP 02`… — 13px mono, letter-spaced, `--text-muted`; do **not** author it in the Markdown
+- Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS, no `**...**` required
+- Card body (nested `ul/ol > li` or `p`): 16px (`--fs-body`), `--text-body`
+- `❯` chevron connectors between cards: CSS-generated, not authored
+- 2–4 cards; use T14 (dot-on-line) for 5–6 steps with shorter labels
+- Use `ol` (not `ul`) to get the auto-generated `STEP 01` badge
 
 **Marp markdown source:**
-
 ```markdown
 <!-- _class: steps -->
 
-## How to use this tomorrow.
+## How to roll this out across your organization.
 
-- Step 01
-  - Step 01
-  - Name your level
-  - Find the verb that describes how you think today. Be honest — most operate across two adjacent levels.
-- Step 02
-  - Step 02
-  - Pick the next verb
-  - Choose one example problem from the next level. Make it concrete, time-bound, and tied to real work.
-- Step 03
-  - Step 03
-  - Collect the evidence
-  - Design docs, ADRs, before/after metrics, postmortems — artifacts that prove the shift happened.
+1. Pick one team and one decision type
+   - Start with a team that already has a regular prioritization rhythm.
+2. Log everything, decide nothing differently
+   - In the first month, do not change how you make decisions. Log only.
+3. Run your first retrospective
+   - At day 30, score the logged decisions against outcomes. You will find patterns.
+4. Expand to a second team
+   - With one retrospective complete, you have evidence. Use it.
 ```
 
-**How the renderer maps this:** Each top-level item → one card. Sub-item 1: step badge; sub-item 2: step title; sub-item 3: step body.
+**How the renderer maps this:** Each `ol > li` → one step card. The first text line is the step title (auto-bolded by CSS). Nested `ul/ol > li` items form the card body. The `STEP 01` badge and `❯` chevron connectors are CSS-generated — do not author them in the Markdown.
 
-**When to use:** Steps that need more content than a dot label can hold. Use dot-on-line (T14) for light orientation with short labels; use step cards when each step needs a title plus a sentence of description.
+**When to use:** Steps that need more content than a dot label can hold. Use dot-on-line (T14) for light orientation with short labels; use step cards when each step needs a title plus a sentence of description. Use `ol` to activate the `STEP 01` eyebrow badge.
 
 ---
 
