@@ -238,11 +238,11 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
 
-1. **Confidence**
+1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
-1. **Recency**
+1. Recency
    - Time-decay applied from signal date to scoring date. Half-life is team-configurable.
-1. **Strategic Relevance**
+1. Strategic Relevance
    - Manual score from the signal owner. Ranges 1–5. Requires justification above 4.
 
 ---
