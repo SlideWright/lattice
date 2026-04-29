@@ -52,8 +52,8 @@
   --radius-sm:8px; --radius-md:12px; --radius-lg:14px;
   --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
 
-  /* ── Marp chrome mappings (read by Marp's pagination/header/footer) ── */
-  --marp-slide-pagination-color: var(--text-muted);
+  /* ── Marp chrome mappings ── */
+  --marp-slide-pagination-color:     var(--text-muted);
   --marp-slide-pagination-font-size: var(--fs-label);
   --marp-slide-header-color:  var(--text-muted);
   --marp-slide-footer-color:  var(--text-muted);
@@ -67,6 +67,7 @@ section {
   background: var(--bg); color:var(--text-body);
   font-family:var(--font-body); font-size:var(--fs-md); line-height:var(--lh-base);
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
   border-top: 4px solid; border-image-source: var(--spectrum); border-image-slice: 1;
 }
 
@@ -152,6 +153,7 @@ section footer {
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
 section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; letter-spacing:0.06em; margin:0; text-align:left !important; }
+section::after { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; letter-spacing:0.06em; color:var(--text-muted); bottom:24px; right:30px; padding:0; }
 
 /* ── TITLE ── */
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
@@ -164,7 +166,7 @@ section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis);
 /* ── DIVIDER ── */
 section.divider { background:var(--bg-dark); padding-left:120px; justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
-section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--spectrum); }
+section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--spectrum-vertical, var(--spectrum)); }
 section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
 section.divider h1 { font-size:var(--fs-3xl); color:var(--text-display); max-width:800px; line-height:var(--lh-tight); }
 
@@ -223,30 +225,45 @@ section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat)
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
 /* ── CARD-GRID ──
- * ## heading  ul with 4 li items
- * Marp CLI path:  section > ul > li  (native HTML)
+ * Markdown: outer ul/ol, each li has **Title** + nested ul/ol with body text.
+ * Marp CLI path:  section > ul/ol > li  (native HTML)
  * lattice.js path: section > .card-grid-inner > .card  (post-processed)
  */
 section.card-grid h2 { margin-bottom:var(--sp-sm); }
 section.card-grid { display:flex; flex-direction:column; }
 section.cards-side { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.card-grid > ul,
-section.cards-side > ul {
+section.card-grid > ul, section.card-grid > ol,
+section.cards-side > ul, section.cards-side > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.card-grid > ul { grid-auto-rows:1fr; }
-section.card-grid > ul > li,
-section.cards-side > ul > li {
+section.card-grid > ul, section.card-grid > ol { grid-auto-rows:1fr; }
+section.card-grid > ul > li, section.card-grid > ol > li,
+section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-direction:column;
 }
-section.card-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.card-grid > ul > li:last-child:nth-child(odd),
+section.card-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+/* — card title + body (nested list) — */
+section.card-grid > ul > li > strong, section.card-grid > ol > li > strong,
+section.cards-side > ul > li > strong, section.cards-side > ol > li > strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.card-grid > ul > li > ul, section.card-grid > ul > li > ol,
+section.card-grid > ol > li > ul, section.card-grid > ol > li > ol,
+section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
+section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.card-grid > ul > li > ul > li, section.card-grid > ul > li > ol > li,
+section.card-grid > ol > li > ul > li, section.card-grid > ol > li > ol > li,
+section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
+section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
 /* — lattice.js post-processed path — */
-section.card-grid .card-grid-inner {
+section.card-grid .card-grid-inner,
+section.card-grid .card-grid-inner--ordered,
+section.cards-side .card-grid-inner,
+section.cards-side .card-grid-inner--ordered {
   display:grid; grid-template-columns:1fr 1fr;
   grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
 }
@@ -257,6 +274,20 @@ section.cards-side .card {
   display:flex; flex-direction:column;
 }
 section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.card-grid .card > strong, section.cards-side .card > strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.card-grid .card > ul, section.card-grid .card > ol,
+section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.card-grid .card > ul > li, section.card-grid .card > ol > li,
+section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+/* — numbered cards (ol source) — */
+section.card-grid > ol, section.cards-side > ol { counter-reset:card; }
+section.card-grid > ol > li, section.cards-side > ol > li { counter-increment:card; }
+section.card-grid > ol > li > strong, section.cards-side > ol > li > strong { display:flex; align-items:center; gap:8px; }
+section.card-grid > ol > li > strong::before, section.cards-side > ol > li > strong::before { content:counter(card); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border:none; outline:none; border-radius:6px; padding:3px 9px; }
+section.card-grid .card-grid-inner--ordered, section.cards-side .card-grid-inner--ordered { counter-reset:card; }
+section.card-grid .card-grid-inner--ordered > .card, section.cards-side .card-grid-inner--ordered > .card { counter-increment:card; }
+section.card-grid .card-grid-inner--ordered > .card > strong, section.cards-side .card-grid-inner--ordered > .card > strong { display:flex; align-items:center; gap:8px; }
+section.card-grid .card-grid-inner--ordered > .card > strong::before, section.cards-side .card-grid-inner--ordered > .card > strong::before { content:counter(card); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border:none; outline:none; border-radius:6px; padding:3px 9px; }
 
 /* ── CARDS-STACKED ──
  * ## heading  p card1  p card2
@@ -270,8 +301,8 @@ section.cards-stacked > p {
 section.cards-stacked > p + p { margin-top:var(--sp-md); }
 
 /* ── COMPARISON ──
- * ## heading  ul with 2 li — post-processor wraps into .comparison-inner with → connector
- * Optional trailing p for below-note
+ * Nested list format: 2 li, each with **Title** + sublist body.
+ * Optional trailing p for below-note.
  */
 section.comparison { }
 section.comparison h2 { margin-bottom:var(--sp-md); }
@@ -279,50 +310,76 @@ section.comparison .comparison-inner { display:flex; align-items:stretch; flex:1
 section.comparison .comparison-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
 }
-section.comparison .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-lg); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
-.below-note { margin-top:var(--sp-md); padding-top:var(--sp-sm); flex-shrink:0; position:relative; }
+section.comparison .comparison-inner .card > strong { display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.comparison .comparison-inner .card > ul,
+section.comparison .comparison-inner .card > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.comparison .comparison-inner .card > ul > li,
+section.comparison .comparison-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.comparison .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+.below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.comparison > p:last-child { margin-top:var(--sp-md); padding-top:var(--sp-sm); border-top:2px solid var(--text-muted) !important; flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.comparison > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── QUOTE ──
  * > blockquote  p attribution
  */
 section.quote { justify-content:center; align-items:center; }
-section.quote blockquote { position:relative; }
-section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-quote); color:var(--border); line-height:0.6; display:block; margin-bottom:var(--sp-xs); }
-section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); max-width:820px; line-height:var(--lh-snug); margin-bottom:var(--sp-md); text-align:center; }
-section.quote > p { font-size:var(--fs-xs); color:var(--text-label); margin:0; text-align:center; }
+section.quote blockquote {
+  position:relative;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.07);
+  padding:var(--sp-lg) var(--sp-xl);
+  max-width:820px; width:100%;
+}
+section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
+section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
+section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
+section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); color:var(--text-muted); text-align:center; }
 
 /* ── TIMELINE ──
- * ## heading  ol with items: **label** \n description
- * CSS draws dots and the connecting line via ol::before and li::before
+ * ol = numbered circles (sequential steps)
+ * ul = plain dot circles (non-sequential)
+ * Each li: **Label** on its own line, then - *description* as nested ul
  */
 section.timeline { justify-content:center; align-items:center; }
 section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
-section.timeline ol {
-  list-style:none; counter-reset:none;
+section.timeline > :is(ol,ul) {
+  list-style:none;
   display:flex; justify-content:space-between;
   width:100%; position:relative;
   padding:0 var(--sp-xl); box-sizing:border-box; margin:0;
 }
-section.timeline ol::before {
-  content:''; position:absolute; top:11px;
-  left:80px; right:80px; height:3px;
-  background:var(--spectrum); border-radius:2px;
+section.timeline > :is(ol,ul)::before {
+  content:''; position:absolute; top:13px;
+  left:calc(var(--sp-xl) + 90px); right:calc(var(--sp-xl) + 90px);
+  height:3px; background:var(--spectrum); border-radius:2px;
 }
-section.timeline ol li {
+section.timeline > :is(ol,ul) > li {
   display:flex; flex-direction:column; align-items:center;
   width:180px; text-align:center; position:relative; z-index:1;
 }
-section.timeline ol li::before {
-  content:''; width:24px; height:24px; border-radius:50%;
+section.timeline > ol { counter-reset:timeline-counter; }
+section.timeline > ol > li::before {
+  counter-increment:timeline-counter;
+  content:counter(timeline-counter);
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%;
+  background:var(--accent); color:var(--on-dark-primary);
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; line-height:1;
+  margin-bottom:14px; flex-shrink:0;
+}
+section.timeline > ul > li::before {
+  content:''; display:block; width:26px; height:26px; border-radius:50%;
   background:var(--accent); border:3px solid var(--bg);
   box-shadow:0 0 0 1px var(--border); margin-bottom:14px; flex-shrink:0;
 }
-section.timeline ol li strong { font-size:var(--fs-sm); font-weight:700; color:var(--text-heading); display:block; margin-bottom:4px; }
-section.timeline ol li em { font-size:var(--fs-label); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
+section.timeline > :is(ol,ul) > li > strong { font-size:var(--fs-sm); font-weight:700; color:var(--text-heading); display:block; margin-bottom:4px; }
+section.timeline > :is(ol,ul) > li > ul { list-style:none; padding:0; margin:0; }
+section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-label); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
 /* ── LIST ──
  * ## heading  - item with optional   - sub-description
@@ -355,21 +412,25 @@ section.full-bleed { padding:0; position:relative; }
 section.full-bleed { border-top: none; }
 section.full-bleed h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-xs); color:var(--on-dark-watermark); font-weight:400; letter-spacing:0.1em; background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; }
 section.full-bleed em { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-xs); color:var(--on-dark-primary); font-style:normal; display:block; z-index:1; }
+section.full-bleed header,
+section.full-bleed footer { left:auto; right:30px; text-align:right; color:var(--on-dark-primary); }
+section.full-bleed footer { bottom:var(--sp-sm); font-family:var(--font-body); font-size:var(--fs-xs); font-weight:400; letter-spacing:0; z-index:2; }
 
 /* ── BIG-NUMBER ──
- * ##### eyebrow  # number  p description
+ * ##### eyebrow  - number\n  - description
  */
 section.big-number { justify-content:center; align-items:center; }
 section.big-number h5 { margin-bottom:var(--sp-sm); }
-section.big-number h1 { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; margin-bottom:var(--sp-sm); text-align:center; }
-section.big-number p { font-size:var(--fs-md); max-width:560px; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
+section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
+section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
+section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:560px; margin:0 auto; }
 
 /* ── SPLIT-PANEL ──
  * ## left-heading  p left-intro  - bullet list right panel
  * ### right-eyebrow before bullets
  */
 section.split-panel { padding:0; flex-direction:row; }
-section.split-panel { border-top: none; }
 section.split-panel h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
 section.split-panel h5 { font-size:var(--fs-label); color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
 section.split-panel .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
@@ -377,10 +438,21 @@ section.split-panel .panel-left::before { content:''; position:absolute; top:0; 
 section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-dark-watermark); top:40px; left:20px; line-height:1; pointer-events:none; }
 section.split-panel .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
 section.split-panel .panel-right h3 { margin-bottom:4px; }
-section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-sm); }
-section.split-panel ul { display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; }
-section.split-panel ul li { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug); }
-section.split-panel ul li strong { color:var(--text-heading); display:block; margin-bottom:3px; }
+section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; list-style:none; padding:0; margin:0; }
+section.split-panel ol { counter-reset:panel-counter; }
+section.split-panel :is(ul,ol) > li { display:flex; flex-direction:column; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel ol > li { counter-increment:panel-counter; }
+section.split-panel :is(ul,ol) > li > strong { color:var(--text-heading); display:block; margin-bottom:4px; }
+section.split-panel ol > li > strong { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+section.split-panel ol > li > strong::before { content:counter(panel-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border:none; outline:none; border-radius:6px; padding:3px 9px; }
+section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; }
+section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+section.split-panel {
+  --marp-slide-header-color: var(--on-dark-secondary);
+  --marp-slide-footer-color: var(--on-dark-secondary);
+}
 
 /* ── CLOSING ── */
 section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
@@ -426,6 +498,8 @@ section.finding blockquote p {
 section.finding blockquote.pass, section.finding blockquote.pass p { color:var(--pass); border-color:var(--pass); background:color-mix(in srgb, var(--pass) 8%, white); }
 section.finding blockquote.fail, section.finding blockquote.fail p { color:var(--fail); border-color:var(--fail); background:color-mix(in srgb, var(--fail) 8%, white); }
 section.finding blockquote.warn, section.finding blockquote.warn p { color:var(--warn); border-color:var(--warn); background:color-mix(in srgb, var(--warn) 8%, white); }
+section.finding .verdict { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; color:var(--accent); line-height:1.4; }
+section.finding .verdict-dot { margin-right:6px; }
 
 /* ── CARDS-WIDE-3 ──
  * ## heading  then 3× pairs: ### eyebrow·heading  p body
@@ -433,39 +507,47 @@ section.finding blockquote.warn, section.finding blockquote.warn p { color:var(-
  */
 section.cards-wide-3 h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.cards-wide-3 .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
-section.cards-wide-3 .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.cards-wide-3 .wide-card-header { display:flex; align-items:baseline; gap:var(--sp-sm); }
+section.cards-wide-3 .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide-3 .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
 section.cards-wide-3 .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
 section.cards-wide-3 .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.cards-wide-3 .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); }
+section.cards-wide-3 .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide-3 .three-stack.ordered { counter-reset:wide-counter; }
+section.cards-wide-3 .three-stack.ordered .wide-card { counter-increment:wide-counter; }
+section.cards-wide-3 .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide-3 .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
 
 /* ── CRITERIA ──
- * ## heading  ol with: li **title**  nested ul > li description
- * CSS counter provides large accent number, strong = title, nested li = desc
+ * ## heading  ol or ul — li **title** [optional nested ul > li description]
+ * CSS counter provides leading-zero number (01 02…) regardless of list type.
+ * Use ul when order is semantic-free; ol when order carries meaning.
  */
 section.criteria h2 { margin-bottom:var(--sp-md); }
-section.criteria ol {
+section.criteria > :is(ol, ul) {
   list-style:none; counter-reset:crit-counter;
   display:flex; flex-direction:column; gap:var(--sp-sm);
-  flex:1; justify-content:flex-start; margin:0; padding:0;
+  flex:1; justify-content:space-between; margin:0; padding:0;
 }
-section.criteria ol > li {
+section.criteria > :is(ol, ul) > li {
   counter-increment:crit-counter;
-  display:grid; grid-template-columns:80px 1fr; align-items:start;
+  display:flex; align-items:center; gap:var(--sp-md); flex:1;
+  container-type:size;
 }
-section.criteria ol > li::before {
+section.criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
-  font-family:var(--font-mono); font-size:var(--fs-2xl); font-weight:700;
-  color:var(--accent); line-height:1; padding-top:5px;
+  flex-shrink:0; align-self:stretch;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:55cqh; font-weight:700;
+  color:var(--accent); line-height:1;
 }
-section.criteria .crit-body { display:flex; flex-direction:column; }
+section.criteria .crit-body { flex:1; display:flex; flex-direction:column; justify-content:center; }
 section.criteria .crit-body strong {
   display:block; font-size:var(--fs-emphasis); font-weight:700;
-  color:var(--text-heading); margin-bottom:4px; padding-top:2px;
+  color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria .crit-body ul { list-style:none; padding:0; margin:4px 0 0 0; }
+section.criteria .crit-body ul { list-style:none; padding:0; margin:0; }
 section.criteria .crit-body ul li {
-  font-size:var(--fs-body); color:var(--text-label); line-height:var(--lh-base);
+  font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base);
   counter-increment:none;
 }
 section.criteria .crit-body ul li::before { display:none !important; content:none !important; }
@@ -481,10 +563,10 @@ section.verdict-grid .vcard:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.verdict-grid .vcard-title { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
 section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); }
 section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body); line-height:var(--lh-snug); }
-.badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; }
-.badge.pass { background:var(--pass-bg); color:var(--pass); }
-.badge.fail { background:var(--fail-bg); color:var(--fail); }
-.badge.warn { background:var(--warn-bg); color:var(--warn); }
+.badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge.pass::before { content:"✓"; color:var(--pass); font-weight:700; }
+.badge.fail::before { content:"✗"; color:var(--fail); font-weight:700; }
+.badge.warn::before { content:"~"; color:var(--warn); font-weight:700; }
 .badge-row { display:flex; flex-wrap:wrap; gap:5px; }
 
 /* ── COMPARE-TABLE ──
@@ -636,53 +718,111 @@ section.stats:not(:has(.stats-row)) ol > li > strong {
 }
 
 /* ── CARD-GRID ───────────────────────────────────────────────────────────────
- * ul > li → mimic .card-grid-inner > .card  (also covers cards-side)          */
-section.card-grid:not(:has(.card-grid-inner)) ul,
-section.cards-side:not(:has(.card-grid-inner)) ul {
+ * ul/ol > li (nested list format) → mimic .card-grid-inner > .card             */
+section.card-grid:not(:has(.card-grid-inner)) > ul,
+section.card-grid:not(:has(.card-grid-inner)) > ol,
+section.cards-side:not(:has(.card-grid-inner)) > ul,
+section.cards-side:not(:has(.card-grid-inner)) > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
-section.card-grid:not(:has(.card-grid-inner)) ul > li,
-section.cards-side:not(:has(.card-grid-inner)) ul > li {
+section.card-grid:not(:has(.card-grid-inner)) > ul > li,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-direction:column;
 }
-section.card-grid:not(:has(.card-grid-inner)) ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.card-grid-inner)) ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.card-grid:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.card-grid:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > strong,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > strong,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul,
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul > li,
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol > li,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul > li,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol > li,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul > li,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol > li,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul > li,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+/* — numbered cards (ol source, VS Code fallback) — */
+section.card-grid:not(:has(.card-grid-inner)) > ol, section.cards-side:not(:has(.card-grid-inner)) > ol { counter-reset:card; }
+section.card-grid:not(:has(.card-grid-inner)) > ol > li, section.cards-side:not(:has(.card-grid-inner)) > ol > li { counter-increment:card; }
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > strong,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > strong { display:flex; align-items:center; gap:8px; }
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > strong::before,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > strong::before { content:counter(card); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border:none; outline:none; border-radius:6px; padding:3px 9px; }
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
- * ul > li (2 items) → side-by-side cards with CSS-generated → connector       */
-section.comparison:not(:has(.comparison-inner)) ul {
+ * ul/ol > li (nested list format) → side-by-side cards with → connector         */
+section.comparison:not(:has(.comparison-inner)) > ul,
+section.comparison:not(:has(.comparison-inner)) > ol {
   display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
   list-style:none; padding:0; margin:0; position:relative;
 }
-section.comparison:not(:has(.comparison-inner)) ul::before {
-  content:'→';
+section.comparison:not(:has(.comparison-inner)) > ul::before,
+section.comparison:not(:has(.comparison-inner)) > ol::before {
+  content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-size:var(--fs-lg); color:var(--text-muted);
+  font-size:var(--fs-xl); color:var(--text-muted);
   background:var(--bg); padding:2px 8px; border-radius:4px; z-index:1;
 }
-section.comparison:not(:has(.comparison-inner)) ul > li {
+section.comparison:not(:has(.comparison-inner)) > ul > li,
+section.comparison:not(:has(.comparison-inner)) > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
 }
+section.comparison:not(:has(.comparison-inner)) > ul > li > strong,
+section.comparison:not(:has(.comparison-inner)) > ol > li > strong { display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.comparison:not(:has(.comparison-inner)) > ul > li > ul,
+section.comparison:not(:has(.comparison-inner)) > ul > li > ol,
+section.comparison:not(:has(.comparison-inner)) > ol > li > ul,
+section.comparison:not(:has(.comparison-inner)) > ol > li > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.comparison:not(:has(.comparison-inner)) > ul > li > ul > li,
+section.comparison:not(:has(.comparison-inner)) > ul > li > ol > li,
+section.comparison:not(:has(.comparison-inner)) > ol > li > ul > li,
+section.comparison:not(:has(.comparison-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
- * ul > li(<strong>title</strong> body) → mimic .grid-verdict > .vcard         */
-section.verdict-grid:not(:has(.grid-verdict)) ul {
+ * Nested-list format: ul > li(strong title + ul(badge items + last = body))
+ * All selectors use > from section root to prevent outer card styles from
+ * cascading into the nested badge/body items. */
+section.verdict-grid:not(:has(.grid-verdict)) > ul {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
 }
-section.verdict-grid:not(:has(.grid-verdict)) ul > li {
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px;
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); }
-section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid:not(:has(.grid-verdict)) ul > li > strong { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block; }
-section.verdict-grid:not(:has(.grid-verdict)) ul > li:last-child > strong { color:var(--accent); }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > strong { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > strong { color:var(--accent); }
+/* Inner ul = badge row */
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:0; align-content:flex-start; }
+/* Badge items (all but last nested li) — neutral pill matching .badge base style */
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+/* Marp CLI path (plugin ran): strip outer-li styling so .badge span shows through cleanly */
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
+/* Body text (last nested li) — reset all inherited card styles */
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
  * ul > li(<strong>title</strong> body) → mimic .sub-row > .sub-card           */
@@ -707,56 +847,97 @@ section.cards-wide-3:not(:has(.three-stack)) ol {
 }
 section.cards-wide-3:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) 22px;
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > strong {
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block;
-}
+section.cards-wide-3:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
+section.cards-wide-3:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
+section.cards-wide-3:not(:has(.three-stack)) ol > li > strong { display:flex; align-items:center; gap:8px; font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.cards-wide-3:not(:has(.three-stack)) ol > li > strong::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide-3:not(:has(.three-stack)) ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.cards-wide-3:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
- * li > strong + ul siblings (no .crit-body wrapper) → explicit grid placement */
-section.criteria:not(:has(.crit-body)) ol > li { grid-template-rows:auto auto; }
-section.criteria:not(:has(.crit-body)) ol > li::before { grid-column:1; grid-row:1 / 3; }
-section.criteria:not(:has(.crit-body)) ol > li > strong {
+ * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
+ * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+  display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
+  column-gap:var(--sp-md); row-gap:0; align-content:center;
+}
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1;
   display:block; font-size:var(--fs-emphasis); font-weight:700;
-  color:var(--text-heading); margin-bottom:4px; padding-top:2px;
+  color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria:not(:has(.crit-body)) ol > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:4px 0 0 0; }
-section.criteria:not(:has(.crit-body)) ol > li > ul li { font-size:var(--fs-body); color:var(--text-label); line-height:var(--lh-base); }
-section.criteria:not(:has(.crit-body)) ol > li > ul li::before { display:none !important; content:none !important; }
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:0; }
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
 
-/* ── SPLIT-PANEL degraded fallback ──────────────────────────────────────────
- * Without .panel-left/.panel-right DOM split, renders as a styled column.
- * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
+/* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
+ * Recreates the two-column layout purely in CSS without DOM transformation.
+ * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
+ * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
 section.split-panel:not(:has(.panel-left)) {
-  flex-direction:column; padding:var(--sp-xl) var(--sp-2xl);
+  display:grid;
+  grid-template-columns:34% 1fr;
+  grid-template-rows:auto auto 1fr;
+  padding:0; position:relative;
 }
-section.split-panel:not(:has(.panel-left)) h2 { color:var(--accent); font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
-section.split-panel:not(:has(.panel-left)) h5 { color:var(--text-muted); }
-section.split-panel:not(:has(.panel-left)) ul > li {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:14px 18px;
-  font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug);
+section.split-panel:not(:has(.panel-left))::before {
+  content:''; position:absolute;
+  top:0; left:0; bottom:0; width:34%;
+  background:var(--accent); z-index:0;
 }
-section.split-panel:not(:has(.panel-left)) ul > li strong { color:var(--text-heading); display:block; margin-bottom:3px; }
+section.split-panel:not(:has(.panel-left)) h5 {
+  grid-column:1; grid-row:1 / -1; align-self:start;
+  padding:var(--sp-xl) var(--sp-lg) 0;
+  z-index:1; position:relative;
+  color:rgba(255,255,255,0.65); margin:0;
+}
+section.split-panel:not(:has(.panel-left)) h2 {
+  grid-column:1; grid-row:1 / -1; align-self:end;
+  padding:0 var(--sp-lg) var(--sp-xl);
+  z-index:1; position:relative;
+  color:white; font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
+}
+section.split-panel:not(:has(.panel-left)) h3 {
+  grid-column:2; grid-row:1;
+  padding:var(--sp-xl) var(--sp-xl) 0 var(--sp-lg); margin:0;
+}
+section.split-panel:not(:has(.panel-left)) p {
+  grid-column:2; grid-row:2;
+  padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
+  grid-column:2; grid-row:3;
+  padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  list-style:none; margin:0;
+}
 
-/* ── FINDING degraded fallback ───────────────────────────────────────────────
- * Without .finding-top, h4+p pairs render as stacked card tiles.
- * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
-section.finding:not(:has(.finding-top)) h4 {
+/* ── FINDING CSS-grid fallback ───────────────────────────────────────────────
+ * ul > li(**title** + nested ul > li body) → side-by-side cards, last odd = full-width
+ * *italic* trailing paragraph → verdict line with ● dot */
+section.finding:not(:has(.finding-top)) > ul {
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
+}
+section.finding:not(:has(.finding-top)) > ul > li:last-child:nth-child(odd) { grid-column:1/-1; }
+section.finding:not(:has(.finding-top)) > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md) var(--radius-md) 0 0;
-  padding:var(--sp-xs) var(--sp-md); margin:var(--sp-sm) 0 0 0;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:flex; flex-direction:column;
 }
-section.finding:not(:has(.finding-top)) h4 + p {
-  background:var(--bg-alt); border:1px solid var(--border); border-top:none;
-  border-radius:0 0 var(--radius-md) var(--radius-md);
-  padding:var(--sp-xs) var(--sp-md); margin:0;
-  font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-snug);
+section.finding:not(:has(.finding-top)) > ul > li > strong {
+  display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs);
 }
+section.finding:not(:has(.finding-top)) > ul > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.finding:not(:has(.finding-top)) > ul > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+/* verdict from *italic* paragraph */
+section.finding:not(:has(.finding-top)) > p:last-of-type { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; line-height:1.4; }
+section.finding:not(:has(.finding-top)) > p:last-of-type em { font-style:normal; color:var(--accent); }
+section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'● '; }
 
 /* ── CODE-COMPARE degraded fallback ─────────────────────────────────────────
  * Without .code-cols, h3+pre pairs stack vertically.
@@ -766,24 +947,24 @@ section.code-compare:not(:has(.code-cols)) pre { flex:1; min-height:0; }
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
  * the same hairline-rule treatment for layouts that use it.                   */
-section.card-grid:not(:has(.below-note)) > p:last-child,
-section.comparison:not(:has(.below-note)) > p:last-child,
-section.verdict-grid:not(:has(.below-note)) > p:last-child,
-section.featured:not(:has(.below-note)) > p:last-child,
-section.finding:not(:has(.below-note)) > p:last-child,
-section.criteria:not(:has(.below-note)) > p:last-child,
-section.cards-wide-3:not(:has(.below-note)) > p:last-child {
-  margin-top:var(--sp-md); padding-top:var(--sp-sm); flex-shrink:0;
+section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
+section.comparison:not(:has(.below-note)) > :is(ul, ol) + p,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
+section.finding:not(:has(.below-note)) > blockquote + p,
+section.criteria:not(:has(.below-note)) > :is(ul, ol) + p,
+section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p {
+  margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
   position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
-section.card-grid:not(:has(.below-note)) > p:last-child::before,
-section.comparison:not(:has(.below-note)) > p:last-child::before,
-section.verdict-grid:not(:has(.below-note)) > p:last-child::before,
-section.featured:not(:has(.below-note)) > p:last-child::before,
-section.finding:not(:has(.below-note)) > p:last-child::before,
-section.criteria:not(:has(.below-note)) > p:last-child::before,
-section.cards-wide-3:not(:has(.below-note)) > p:last-child::before {
+section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
+section.comparison:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
+section.finding:not(:has(.below-note)) > blockquote + p::before,
+section.criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }

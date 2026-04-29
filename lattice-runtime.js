@@ -56,6 +56,7 @@
   }
 
   function initAndRun() {
+    transformVerdictGridBadges();
     const mermaid = globalScope.mermaid;
     if (!mermaid) return false;
 
@@ -314,6 +315,36 @@
     }
 
     return true;
+  }
+
+  /**
+   * Transforms verdict-grid badge items in VS Code preview (no Marp plugin).
+   * Finds [x]/[~]/[ ] prefixed li items inside section.verdict-grid, strips
+   * the prefix, and wraps the label in <span class="badge pass|warn|fail">.
+   * Idempotent — skips li items that already contain a .badge span.
+   */
+  function transformVerdictGridBadges() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.verdict-grid')) {
+      if (section.querySelector('.grid-verdict')) continue; // Marp CLI plugin already ran
+      for (const outerLi of section.querySelectorAll(':scope > ul > li')) {
+        const innerUl = outerLi.querySelector(':scope > ul');
+        if (!innerUl) continue;
+        const innerItems = [...innerUl.children];
+        // Last item is body text — skip it; all others are badge items
+        const badgeItems = innerItems.slice(0, -1);
+        for (const li of badgeItems) {
+          if (li.querySelector('.badge')) continue; // already transformed
+          const text = li.textContent.trim();
+          if (!/^\[/.test(text)) continue;
+          const badgeClass = text.startsWith('[x]') ? 'badge pass'
+                           : text.startsWith('[~]') ? 'badge warn'
+                           : 'badge fail';
+          const label = text.replace(/^\[[x~\s]\]\s*/, '');
+          li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
+        }
+      }
+    }
   }
 
   function startObserver() {

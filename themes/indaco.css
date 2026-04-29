@@ -99,6 +99,12 @@
     var(--brand-blue)      55%,
     var(--brand-green)     100%
   );
+  --spectrum-vertical: linear-gradient(
+    180deg,
+    var(--brand-blue-deep) 0%,
+    var(--brand-blue)      55%,
+    var(--brand-green)     100%
+  );
 
   /* ── Derived on-dark tints ────────────────────────────────────────── */
   --on-dark-primary:   color-mix(in srgb, white 92%, transparent);

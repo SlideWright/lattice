@@ -50,9 +50,19 @@
     #d08c42,
     #b8a032
   );
+  --spectrum-vertical: linear-gradient(
+    180deg,
+    #5b86b8,
+    #7b72c0,
+    #a8628a,
+    #c45d5d,
+    #d08c42,
+    #b8a032
+  );
 
   /* Marp chrome mappings */
-  --marp-slide-pagination-color: var(--text-muted);
+  --marp-slide-pagination-color:     var(--text-muted);
+  --marp-slide-pagination-font-size: var(--fs-label);
   --marp-slide-header-color: var(--text-muted);
   --marp-slide-footer-color: var(--text-muted);
 }

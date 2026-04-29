@@ -781,24 +781,67 @@ function parseSlide(raw, index) {
 
   const cls = classAttr;
 
-  // card-grid: wrap ul into .card-grid-inner, each li becomes a .card
+  // card-grid: wrap ul/ol into .card-grid-inner, each top-level li becomes a .card.
+  // Uses depth tracking to handle nested lists (li > ul/ol for body text).
   // handles 2 cards (1 row), 3 cards (2+1 via CSS :last-child:nth-child(odd)), 4 cards (2×2)
   // card-grid-2plus1 and cards-side both consolidate here
   if (cls.includes('card-grid') || cls.includes('cards-side')) {
-    html = html.replace(/<ul>([\s\S]*?)<\/ul>/g, (_, inner) => {
-      const cards = inner.replace(/<li>([\s\S]*?)<\/li>/g, (__, content) =>
-        `<div class="card">${content}</div>`);
-      return `<div class="card-grid-inner">${cards}</div>`;
-    });
+    const listMatch = html.match(/<(ul|ol)>/);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
+      const listStart = html.indexOf(openList);
+      // Walk forward tracking nesting depth to find the matching close tag
+      let depth = 0, pos = listStart, listEnd = -1;
+      while (pos < html.length) {
+        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
+        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
+        else pos++;
+      }
+      if (listEnd !== -1) {
+        const inner = html.slice(listStart + openList.length, listEnd);
+        // Extract top-level <li> items by tracking nesting depth
+        const items = [];
+        let liDepth = 0, liStart = -1, i = 0;
+        while (i < inner.length) {
+          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
+          else i++;
+        }
+        const cards = items.map(c => `<div class="card">${c}</div>`).join('');
+        const innerClass = listTag === 'ol' ? 'card-grid-inner card-grid-inner--ordered' : 'card-grid-inner';
+        html = html.slice(0, listStart) + `<div class="${innerClass}">${cards}</div>` + html.slice(listEnd + closeList.length);
+      }
+    }
   }
 
-  // comparison: wrap ul, 2 li as cards with → connector between, optional trailing p
+  // comparison: wrap ul/ol, 2 li as cards with → connector between, optional trailing p
   if (cls.includes('comparison') && !cls.includes('code')) {
-    html = html.replace(/<ul>([\s\S]*?)<\/ul>/g, (_, inner) => {
-      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-      const cards = items.map(c => `<div class="card">${c}</div>`);
-      return `<div class="comparison-inner">${cards[0]}<div class="connector">→</div>${cards[1] || ''}</div>`;
-    });
+    const listMatch = html.match(/<(ul|ol)>/);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
+      const listStart = html.indexOf(openList);
+      let depth = 0, pos = listStart, listEnd = -1;
+      while (pos < html.length) {
+        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
+        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
+        else pos++;
+      }
+      if (listEnd !== -1) {
+        const inner = html.slice(listStart + openList.length, listEnd);
+        const items = [];
+        let liDepth = 0, liStart = -1, i = 0;
+        while (i < inner.length) {
+          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
+          else i++;
+        }
+        const cards = items.map(c => `<div class="card">${c}</div>`);
+        const inner_html = `<div class="comparison-inner">${cards[0]}<div class="connector">❯</div>${cards[1] || ''}</div>`;
+        html = html.slice(0, listStart) + inner_html + html.slice(listEnd + closeList.length);
+      }
+    }
   }
 
   // stats: wrap ol, each li becomes a stat-item with h1 number + span label
@@ -816,14 +859,33 @@ function parseSlide(raw, index) {
     });
   }
 
-  // verdict-grid: wrap ul, each li becomes a vcard. Last vcard is highlighted via CSS :last-child.
+  // verdict-grid: ul > li(strong title + ul(badge items + last body)) → grid-verdict
   if (cls.includes('verdict-grid')) {
-    html = html.replace(/<ul>([\s\S]*?)<\/ul>/g, (_, inner) => {
-      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-      const vcards = items.map((content) => {
-        const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
+    // Greedy match on outer ul so nested uls don't split the match
+    html = html.replace(/<ul>([\s\S]*)<\/ul>/, (_, outerInner) => {
+      // Nested-list format: each top-level li has <strong>title + inner <ul>
+      const nestedRe = /<li>\s*<strong>([\s\S]*?)<\/strong>([\s\S]*?)<\/ul>\s*<\/li>/g;
+      const nestedMatches = [...outerInner.matchAll(nestedRe)];
+      if (nestedMatches.length > 0) {
+        const vcards = nestedMatches.map(m => {
+          const title = m[1];
+          const nestedItems = [...m[2].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(n => n[1].trim());
+          const badgeItems = nestedItems.slice(0, -1);
+          const bodyText = nestedItems[nestedItems.length - 1] ?? '';
+          const badges = badgeItems.map(b => {
+            const bc = /^\[x\]/.test(b) ? 'badge pass' : /^\[~\]/.test(b) ? 'badge warn' : 'badge fail';
+            const label = b.replace(/^\[[x~\s]\]\s*/, '');
+            return `<span class="${bc}">${label}</span>`;
+          }).join('');
+          return `<div class="vcard"><div class="vcard-title">${title}</div><div class="badge-row">${badges}</div><div class="vcard-body">${bodyText}</div></div>`;
+        });
+        return `<div class="grid-verdict">${vcards.join('')}</div>`;
+      }
+      // Legacy flat format: li > strong + inline text
+      const vcards = [...outerInner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => {
+        const titleMatch = m[1].match(/<strong>(.*?)<\/strong>/);
         const title = titleMatch ? titleMatch[1] : '';
-        const body = content.replace(/<strong>.*?<\/strong>/, '').trim();
+        const body = m[1].replace(/<strong>.*?<\/strong>/, '').trim();
         return `<div class="vcard"><div class="vcard-title">${title}</div><div class="vcard-body">${body}</div></div>`;
       });
       return `<div class="grid-verdict">${vcards.join('')}</div>`;
@@ -858,40 +920,70 @@ function parseSlide(raw, index) {
     html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${h5}${h2}</div><div class="panel-right">${rest}</div>`;
   }
 
-  // cards-wide-3: wrap ol, each li becomes a wide-card with eyebrow·heading + body
+  // cards-wide-3: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
   if (cls.includes('cards-wide-3')) {
-    html = html.replace(/<ol>([\s\S]*?)<\/ol>/g, (_, inner) => {
+    html = html.replace(/<(ol|ul)>([\s\S]*?)<\/\1>/g, (_, tag, inner) => {
+      const isOrdered = tag === 'ol';
       const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
+      let counter = 0;
       const cards = items.map(content => {
-        // Format: <strong>Failure 01 · Title</strong> body text
+        counter++;
         const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
         if (!strongMatch) return `<div class="wide-card"><div class="wide-card-body"><span>${content}</span></div></div>`;
-        const headerText = strongMatch[1];
-        const dotIdx = headerText.indexOf(' · ');
-        const eyebrow = dotIdx > -1 ? headerText.slice(0, dotIdx) : '';
-        const heading  = dotIdx > -1 ? headerText.slice(dotIdx + 3) : headerText;
-        const body = content.replace(strongMatch[0], '').trim();
-        return `<div class="wide-card"><div class="wide-card-header"><span class="wide-card-eyebrow">${eyebrow}</span><span class="wide-card-heading">${heading}</span></div><div class="wide-card-body"><span>${body}</span></div></div>`;
+        const heading = strongMatch[1];
+        // Support nested <ul><li>body</li></ul> (preferred) or inline text body
+        const nestedUl = content.match(/<ul>([\s\S]*?)<\/ul>/);
+        let bodyHtml;
+        if (nestedUl) {
+          const bodyItems = [...nestedUl[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
+          bodyHtml = bodyItems.map(b => `<span>${b}</span>`).join('');
+        } else {
+          bodyHtml = `<span>${content.replace(strongMatch[0], '').trim()}</span>`;
+        }
+        const badgeHtml = isOrdered
+          ? `<span class="wide-card-badge">${counter}</span>`
+          : '';
+        return `<div class="wide-card"><div class="wide-card-header">${badgeHtml}<span class="wide-card-heading">${heading}</span></div><div class="wide-card-body">${bodyHtml}</div></div>`;
       });
-      return `<div class="three-stack">${cards.join('')}</div>`;
+      const orderedClass = isOrdered ? ' ordered' : '';
+      return `<div class="three-stack${orderedClass}">${cards.join('')}</div>`;
     });
   }
 
-  // finding: pair each h4+p into .card divs in .finding-top, blockquote = verdict
+  // finding: build .finding-top scaffold from ul-based or legacy h4+p authoring
   if (cls.includes('finding') && !cls.includes('cards')) {
-    // Extract h3 eyebrow, h2 heading, blockquote verdict
     const h3Match = html.match(/(<h3>[\s\S]*?<\/h3>)/);
     const h2Match = html.match(/(<h2>[\s\S]*?<\/h2>)/);
-    const bqMatch = html.match(/(<blockquote>[\s\S]*?<\/blockquote>)/);
     const h3El = h3Match ? h3Match[1] : '';
     const h2El = h2Match ? h2Match[1] : '';
-    const bqEl = bqMatch ? bqMatch[1] : '';
-    // Remove those elements, leaving just h4+p pairs
-    let rest = html.replace(h3El, '').replace(h2El, '').replace(bqEl, '');
-    // Split into h4+p card pairs
-    const cardParts = rest.split(/(?=<h4>)/).filter(s => s.trim());
-    const cards = cardParts.map(part => `<div class="card">${part.trim()}</div>`).join('');
-    html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${bqEl}`;
+    if (/<ul>/.test(html) && !/<h4>/.test(html)) {
+      // ul-based authoring: li > strong + nested ul > li body, *em* verdict
+      const emMatch = html.match(/<p><em>([\s\S]*?)<\/em><\/p>/);
+      const bqMatch = html.match(/(<blockquote>[\s\S]*?<\/blockquote>)/);
+      const verdictEl = emMatch
+        ? `<p class="verdict"><span class="verdict-dot">●</span>${emMatch[1]}</p>`
+        : (bqMatch ? bqMatch[1] : '');
+      const ulMatch = html.match(/<ul>([\s\S]*)<\/ul>/);
+      if (ulMatch) {
+        const liChunks = ulMatch[1].split(/(?=<li>)/).filter(s => s.trim());
+        const cards = liChunks.map(chunk => {
+          const titleMatch = chunk.match(/<strong>([\s\S]*?)<\/strong>/);
+          const bodyMatch  = chunk.match(/<ul>[\s\S]*?<li>([\s\S]*?)<\/li>/);
+          const title = titleMatch ? `<h4>${titleMatch[1]}</h4>` : '';
+          const body  = bodyMatch  ? `<p>${bodyMatch[1]}</p>`    : '';
+          return `<div class="card">${title}${body}</div>`;
+        }).join('');
+        html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${verdictEl}`;
+      }
+    } else {
+      // Legacy h4+p authoring (blockquote = verdict/key-insight)
+      const bqMatch = html.match(/(<blockquote>[\s\S]*?<\/blockquote>)/);
+      const bqEl = bqMatch ? bqMatch[1] : '';
+      let rest = html.replace(h3El, '').replace(h2El, '').replace(bqEl, '');
+      const cardParts = rest.split(/(?=<h4>)/).filter(s => s.trim());
+      const cards = cardParts.map(part => `<div class="card">${part.trim()}</div>`).join('');
+      html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${bqEl}`;
+    }
   }
 
   // code-compare: pair each h3+pre into .code-col divs inside .code-cols
@@ -990,10 +1082,11 @@ section { position: relative; }
   position: absolute;
   bottom: 24px;
   right:  30px;
-  color:     var(--marp-slide-pagination-color, var(--text-muted, #A69882));
-  font-size: var(--marp-slide-pagination-font-size, var(--fs-label, 11px));
-  font-family: var(--font-mono, monospace);
-  font-weight: 500;
+  color:        var(--marp-slide-pagination-color, var(--text-muted, #A69882));
+  font-size:    var(--marp-slide-pagination-font-size, var(--fs-label, 13px));
+  font-family:  var(--font-mono, monospace);
+  font-weight:  500;
+  letter-spacing: 0.06em;
   z-index: 20;
 }
 `;

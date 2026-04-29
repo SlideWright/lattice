@@ -14,7 +14,7 @@ header: "Lattice · Layout Gallery"
 
 # From Signal to Strategy
 
-*A decision framework for product leaders navigating market uncertainty*
+_A decision framework for product leaders navigating market uncertainty_
 
 ---
 
@@ -57,7 +57,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ## How signals move from input to decision.
 
-*Four-stage processing pipeline — weekly cadence*
+_Four-stage processing pipeline — weekly cadence_
 
 ```mermaid
 flowchart LR
@@ -89,7 +89,7 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## Six months of results across four product teams.
 
-*Measured against pre-framework baseline, same teams, same market conditions.*
+_Measured against pre-framework baseline, same teams, same market conditions._
 
 1. **73%** faster close
 2. **4.2×** signal recall
@@ -103,10 +103,14 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## The framework has four components.
 
-- **Signal Intake** — Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
-- **Scoring Model** — Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
-- **Decision Log** — Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
-- **Calibration Loop** — Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
+- **Signal Intake**
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- **Scoring Model**
+  - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- **Decision Log**
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- **Calibration Loop**
+  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
 
 ---
 
@@ -115,9 +119,12 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## Signal Intake produces three outputs.
 
-- **Weekly Signal Brief** — A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
-- **Anomaly Alerts** — Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.
-- **Monthly Signal Index** — The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
+1. **Weekly Signal Brief**
+   - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
+2. **Anomaly Alerts**
+   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.
+3. **Monthly Signal Index**
+   - The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
 
 ---
 
@@ -137,8 +144,10 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## Two intake modes for different signal types.
 
-- **Structured Intake** — Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
-- **Unstructured Intake** — Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.
+- **Structured Intake**
+  - Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
+- **Unstructured Intake**
+  - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.
 
 ---
 
@@ -147,8 +156,10 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## Scoring model: before and after the calibration loop.
 
-- **Before Calibration** — Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.
-- **After Calibration** — Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
+- **Before Calibration**
+  - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.
+- **After Calibration**
+  - Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
 
 The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.
 
@@ -168,11 +179,16 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## How a decision moves through the framework.
 
-1. **Signal Logged** — *Owner classifies and submits to intake queue*
-2. **Scored** — *Model applies current weights, generates score*
-3. **Brief Published** — *Signal appears in weekly brief with rank*
-4. **Decision Logged** — *PM records rationale, signals, predicted outcome*
-5. **Retrospective** — *Outcome scored, weights updated accordingly*
+1. **Signal Logged**
+   - _Owner classifies and submits to intake queue_
+2. **Scored**
+   - _Model applies current weights, generates score_
+3. **Brief Published**
+   - _Signal appears in weekly brief with rank_
+4. **Decision Logged**
+   - _PM records rationale, signals, predicted outcome_
+5. **Retrospective**
+   - _Outcome scored, weights updated accordingly_
 
 ---
 
@@ -207,7 +223,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## [ Dashboard screenshot · Signal Brief — Week 24 ]
 
-*Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday*
+_Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday_
 
 ---
 
@@ -216,9 +232,8 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ##### Calibration Result · 6-Month Pilot
 
-# 14×
-
-Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.
+- 14x
+  - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.
 
 ---
 
@@ -233,9 +248,12 @@ Return on signal investment — measured as decisions that reached the right out
 
 The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
 
-- **Confidence** — How many independent sources corroborate the signal. Ranges 1–5.
-- **Recency** — Time-decay applied from signal date to scoring date. Half-life is team-configurable.
-- **Strategic Relevance** — Manual score from the signal owner. Ranges 1–5. Requires justification above 4.
+1. **Confidence**
+   - How many independent sources corroborate the signal. Ranges 1–5.
+1. **Recency**
+   - Time-decay applied from signal date to scoring date. Half-life is team-configurable.
+1. **Strategic Relevance**
+   - Manual score from the signal owner. Ranges 1–5. Requires justification above 4.
 
 ---
 
@@ -247,7 +265,7 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Next step is a working session, not a debate.
 
-*Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.*
+_Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit._
 
 ---
 
@@ -258,15 +276,12 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Structured intake performed above expectations — volume and latency were not concerns.
 
-#### What worked
+- **What worked**
+  - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
+- **What required tuning**
+  - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
 
-API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
-
-#### What required tuning
-
-NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
-
-> Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.
+_Viable as designed — NLP classification requires a 2-week warm-up period on new deployments._
 
 ---
 
@@ -275,10 +290,14 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## Key insight works on any card-bearing layout.
 
-- **Signal Intake** — Weekly structured collection across customer conversations, market data, and competitive moves.
-- **Scoring Model** — Each signal scored on three dimensions: confidence, recency, and strategic relevance.
-- **Decision Log** — Every decision recorded with the signals that informed it and the criteria applied.
-- **Calibration Loop** — Monthly retrospective that compares predicted outcomes to actual outcomes.
+- **Signal Intake**
+  - Weekly structured collection across customer conversations, market data, and competitive moves.
+- **Scoring Model**
+  - Each signal scored on three dimensions: confidence, recency, and strategic relevance.
+- **Decision Log**
+  - Every decision recorded with the signals that informed it and the criteria applied.
+- **Calibration Loop**
+  - Monthly retrospective that compares predicted outcomes to actual outcomes.
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
@@ -291,9 +310,12 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## Three scoring failure modes found in the pilot.
 
-1. **Failure 01 · Recency dominance** — High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
-2. **Failure 02 · Source concentration** — Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
-3. **Failure 03 · Outcome misclassification** — PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
+1. **Recency dominance**
+   - High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
+2. **Source concentration**
+   - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
+3. **Outcome misclassification**
+   - PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
 
 ---
 
@@ -302,10 +324,14 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## Four requirements every decision system must meet.
 
-1. **Speed** — Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
-2. **Auditability** — Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
-3. **Adoption** — If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
-4. **Calibration** — The system must improve over time. A static scoring model is a spreadsheet with extra steps.
+- **Speed**
+  - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
+- **Auditability**
+  - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
+- **Adoption**
+  - If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
+- **Calibration**
+  - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
 
 ---
 
@@ -314,10 +340,30 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## We evaluated four intake tools against the criteria.
 
-- **Tool A · Chorus** ✓ Speed · ✗ Auditability · ✓ Adoption · ✗ Calibration — Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
-- **Tool B · Productboard** ✗ Speed · ✓ Auditability · ✓ Adoption · ✗ Calibration — Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.
-- **Tool C · Notion** ✓ Speed · ✓ Auditability · ✗ Adoption · ✗ Calibration — Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
-- **Tool D · Sprig + Decision Log** ✓ Speed · ✓ Auditability · ✓ Adoption · ✓ Calibration — Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.
+- **Tool A · Chorus**
+  - [x] Speed
+  - [ ] Auditability
+  - [x] Adoption
+  - [ ] Calibration
+  - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
+- **Tool B · Productboard**
+  - [ ] Speed
+  - [x] Auditability
+  - [x] Adoption
+  - [ ] Calibration
+  - Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.
+- **Tool C · Notion**
+  - [x] Speed
+  - [x] Auditability
+  - [~] Adoption
+  - [ ] Calibration
+  - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
+- **Tool D · Sprig + Decision Log**
+  - [x] Speed
+  - [x] Auditability
+  - [x] Adoption
+  - [x] Calibration
+  - Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.
 
 ---
 
@@ -326,15 +372,15 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## The four tools side by side.
 
-| Criterion | Chorus | Productboard | Notion | Sprig + Log |
-|---|---|---|---|---|
-| Speed | ✓ | ✗ | ✓ | ✓ |
-| Auditability | ✗ | ✓ | ✓ | ✓ |
-| Adoption | ✓ | ✓ | ✗ | ✓ |
-| Calibration | ✗ | ✗ | ✗ | ✓ |
-| Setup time | 1 day | 3–4 weeks | 40+ hours | Same day |
+| Criterion    | Chorus | Productboard | Notion    | Sprig + Log |
+| ------------ | ------ | ------------ | --------- | ----------- |
+| Speed        | ✓      | ✗            | ✓         | ✓           |
+| Auditability | ✗      | ✓            | ✓         | ✓           |
+| Adoption     | ✓      | ✓            | ✗         | ✓           |
+| Calibration  | ✗      | ✗            | ✗         | ✓           |
+| Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
 
-*Evaluated against the same four teams and the same 90-minute weekly budget constraint.*
+_Evaluated against the same four teams and the same 90-minute weekly budget constraint._
 
 ---
 
@@ -355,8 +401,10 @@ NPS verbatim classification had an 18% error rate in the first two weeks. Requir
 
 ## Two options with a connector and an explanatory note below.
 
-- **Option A · Label** — Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- **Option B · Label** — Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
+- **Option A · Label**
+  - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
+- **Option B · Label**
+  - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
 
 The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
 
@@ -379,12 +427,12 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ## The six signal dimensions, what they measure, and how they are scored.
 
-1. **Confidence** — Number of independent sources corroborating the signal — *1–5 · Auto-scored*
-2. **Recency** — Time-decay from signal date, configurable half-life — *0.0–1.0 · Auto-scored*
-3. **Relevance** — Alignment to current strategic bets, owner-scored — *1–5 · Manual*
-4. **Reach** — Number of customers or segments affected — *1–5 · Auto-scored*
-5. **Effort** — Engineering and design cost to act on the signal — *1–5 · Manual*
-6. **Confidence delta** — Change in confidence score since last scoring cycle — *−5 to +5 · Auto*
+1. **Confidence** — Number of independent sources corroborating the signal — _1–5 · Auto-scored_
+2. **Recency** — Time-decay from signal date, configurable half-life — _0.0–1.0 · Auto-scored_
+3. **Relevance** — Alignment to current strategic bets, owner-scored — _1–5 · Manual_
+4. **Reach** — Number of customers or segments affected — _1–5 · Auto-scored_
+5. **Effort** — Engineering and design cost to act on the signal — _1–5 · Manual_
+6. **Confidence delta** — Change in confidence score since last scoring cycle — _−5 to +5 · Auto_
 
 ---
 
@@ -408,18 +456,18 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 
 ## The tokenization call is three lines of application code.
 
-*JavaScript · SDK v2 interface*
+_JavaScript · SDK v2 interface_
 
 ```javascript
-import { TokenVault } from '@company/token-sdk';
+import { TokenVault } from "@company/token-sdk";
 
-const vault = new TokenVault({ keyFile: './vault.key' });
+const vault = new TokenVault({ keyFile: "./vault.key" });
 
 // Tokenize at ingestion
-const token = await vault.tokenize(ssn, { field: 'ssn', tenant: 'acme' });
+const token = await vault.tokenize(ssn, { field: "ssn", tenant: "acme" });
 
 // Detokenize only at point of use — every call is logged
-const plaintext = await vault.detokenize(token, { requestor: 'claims-svc' });
+const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 ```
 
 ---

@@ -1,0 +1,12 @@
+node_modules/
+
+# Marp / build outputs
+*.pptx
+*.pdf
+
+# LibreOffice lock files
+.~lock.*#
+
+# macOS
+.DS_Store
+

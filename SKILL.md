@@ -4,6 +4,75 @@
 
 Complete instructions for an LLM to create presentation decks using Marp-flavored Markdown as the single source of truth, with conversion to PDF, PPTX, and image sets. Covers design principles, 25 layout templates (plus 3 documented variants), CSS theme architecture, Mermaid diagram integration, rendering pipeline, and multi-format output.
 
+**This file is the source of truth for visual output.** All three rendering modes below are expected to produce output faithful to the specifications here. When output from any mode deviates from this spec, the spec wins — not the renderer.
+
+---
+
+## Rendering Modes
+
+Lattice decks can be rendered in three ways. The same `.md` source file works in all three — no source changes needed.
+
+### Mode 1 — VS Code + Marp Extension (preview and export)
+
+Install the [Marp for VS Code](https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode) extension. Open any `.md` file with `marp: true` in the frontmatter. The extension renders a live preview in the editor. Export from the command palette: **Marp: Export slide deck** → choose PDF, HTML, PPTX, or PNG/JPEG.
+
+- Theme files must be registered in VS Code settings (`markdown.marp.themes`).
+- Pagination is rendered by Marp's engine via `section::after`.
+- Some post-processing scaffolding (e.g., `.comparison-inner`, `.card-grid-inner`) is **not** applied by the Marp extension — VS Code fallback CSS rules in `lattice.css` handle these layouts directly from the raw `ul`/`ol` HTML. The output is functionally correct but does not go through the same DOM transformation as the CLI path.
+
+### Mode 2 — Marp CLI (preferred for production output)
+
+Use when `marp` or `npx @marp-team/marp-cli` is available in the environment.
+
+```bash
+# HTML
+npx @marp-team/marp-cli deck.md --theme-set themes/indaco.css lattice.css --html --output output.html
+
+# PDF
+npx @marp-team/marp-cli deck.md --theme-set themes/indaco.css lattice.css --pdf --output output.pdf
+
+# PPTX
+npx @marp-team/marp-cli deck.md --theme-set themes/indaco.css lattice.css --pptx --output output.pptx
+
+# Images (one PNG per slide)
+npx @marp-team/marp-cli deck.md --theme-set themes/indaco.css lattice.css --images png --output output/
+```
+
+Marp CLI is the canonical renderer. Its PDF output is the reference against which all other modes are calibrated.
+
+### Mode 3 — lattice.js emulator (LLM environments without Marp CLI)
+
+`lattice.js` is a Node.js renderer that emulates Marp CLI output using Puppeteer. Use it when `marp-cli` is not available in the current environment.
+
+```bash
+node lattice.js examples/gallery.md lattice.css output.pdf
+```
+
+`lattice.js` post-processes the markdown into the same scaffold HTML that Marp CLI produces (`.card-grid-inner`, `.comparison-inner`, `.stats-row`, etc.), then renders via headless Chrome to PDF. It is not identical to Marp CLI — it is an approximation. Known differences:
+
+- Mermaid diagrams may fail to render if `mmdc` (Mermaid CLI) is not installed; a placeholder is shown instead.
+- Font rendering and PDF compression differ slightly from Puppeteer vs. Marp's Chromium build.
+- PPTX output is not supported — PDF and HTML only.
+
+### Choosing a mode
+
+| Situation | Use |
+|-----------|-----|
+| Developing or reviewing in VS Code | Mode 1 (Marp Extension) |
+| Producing final PDF/HTML/PPTX for delivery | Mode 2 (Marp CLI) |
+| LLM environment without Marp CLI installed | Mode 3 (lattice.js) |
+| Verifying layout spec compliance | Mode 2 preferred, Mode 3 acceptable |
+
+**Check for Marp CLI first.** Before falling back to `lattice.js`, verify availability:
+
+```bash
+npx @marp-team/marp-cli --version
+# or
+marp --version
+```
+
+If either returns a version number, use Marp CLI. Only use `lattice.js` when both commands fail.
+
 ---
 
 # Part 1: Design Principles
@@ -67,7 +136,7 @@ Accent colors for categories, levels, or themes extend this palette — they don
 - Mono font (optional): for labels, code, badges
 - Minimum body content: 16px
 - Minimum eyebrow/caption: 11px
-- Minimum page number: 9px
+- Page number: 13px — same size as footer/eyebrow labels (`--fs-label`)
 - No text below 9px for any purpose
 
 ### Font Pairing Suggestions
@@ -106,9 +175,10 @@ Accent colors for categories, levels, or themes extend this palette — they don
 - Content slides: light background using `--bg`
 - Consistent slide padding: 48-64px from all edges
 - Content must never overflow into page number zone
-- Page numbers: bottom-right, consistent across all slide types
+- Page numbers: bottom-right, `bottom:24px; right:30px` — same vertical anchor as footer (`bottom:24px; left:30px`)
+- Page number font, size, weight, letter-spacing, and color are identical to the footer
 - Header: top area, consistent across content slides
-- Footer: bottom area, consistent across content slides
+- Footer: bottom-left, consistent across content slides
 
 ## 1.8 Cards & Containers
 
@@ -170,24 +240,60 @@ Title, divider, and closing slides should suppress header, footer, and paginatio
 <!-- _footer: '' -->
 ```
 
-## 2.3 Header & Footer CSS
+## 2.3 Header, Footer & Pagination CSS
+
+All three chrome elements share the same font, size, weight, and color. They differ only in position.
 
 ```css
-header {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+section header {
+  position: absolute; top: 24px; left: 30px; right: 30px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);    /* 13px */
+  font-weight: 500;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-footer {
-  font-family: var(--font-body);
-  font-size: 11px;
+section footer {
+  position: absolute; bottom: 24px; left: 30px; right: 80px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);    /* 13px */
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* Pagination — Marp CLI renders via section::after pseudo-element.
+   The custom renderer (lattice.js) renders via .marp-slide-pagination span.
+   Both are overridden to match footer exactly. */
+section::after {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);    /* 13px — same as footer */
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  bottom: 24px;                  /* same vertical anchor as footer */
+  right: 30px;
+  padding: 0;                    /* REQUIRED: cancels Marp's padding:inherit which
+                                    inherits section's padding-bottom:88px and
+                                    pushes the number 88px above its anchor */
+}
+
+.marp-slide-pagination {         /* custom renderer span (lattice.js) */
+  position: absolute;
+  bottom: 24px; right: 30px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
 }
 ```
+
+**Critical:** `padding: 0` on `section::after` is mandatory. Marp's base rule sets `padding: inherit`, which inherits the section's `padding-bottom: 88px`, causing the page number to appear ~88px above its `bottom` anchor in the VS Code preview and Marp CLI HTML output.
+
+**CSS variables:** `--marp-slide-pagination-color` and `--marp-slide-pagination-font-size` are defined in `:root` for reference but are **not** consumed by Marp's engine `section::after` rule. Font and color must be set directly on `section::after` and `.marp-slide-pagination`.
 
 For the custom renderer (non-Marp CLI): parse header/footer from frontmatter, inject into each slide's HTML, position via CSS. Respect per-slide overrides.
 
@@ -472,10 +578,26 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: card-grid -->
 ```
 
+**Markdown format** — nested list, no em dash:
+```markdown
+- **Card Title**
+  - Body text for this card.
+- **Another Title**
+  - Body text for the second card.
+```
+Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
+
+> **Indentation rule:** When using `ol`, the sublist must be indented **3 spaces** (to clear the `1. ` prefix). 2 spaces breaks the nesting — Markdown treats it as a sibling list, not a child list.
+>
+> ```markdown
+> 1. **Title**
+>    - Body text.   ← 3 spaces ✓
+> ```
+
 - 2×2 grid with 16px gaps
 - Cards: rounded corners, `--bg-alt`, `--border`
-- Card title: 16-18px bold
-- Card body: 14-16px, `--text-body`
+- Card title: 16px bold, `--text-heading`
+- Card body: 16px, `--text-body`
 - Equal-width, equal-height cards
 
 ## Template 9: Card Grid 2+1
@@ -503,6 +625,12 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 **Marp directive:**
 ```markdown
 <!-- _class: card-grid-2plus1 -->
+```
+
+**Markdown format** — same nested list format as `card-grid`:
+```markdown
+- **Card Title**
+  - Body text.
 ```
 
 - Top row: two equal cards, 16px gap
@@ -568,6 +696,12 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: cards-side -->
 ```
 
+**Markdown format** — same nested list format as `card-grid`:
+```markdown
+- **Card Title**
+  - Body text.
+```
+
 - Two equal cards side by side
 - 16px gap between cards
 - Each card takes roughly equal width and full available height
@@ -600,10 +734,19 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: comparison -->
 ```
 
-- Same physical layout as Template 11 but with visual connector (arrow, "→", "vs", or line)
+**Markdown format** — same nested list format as `card-grid` (exactly 2 items):
+```markdown
+- **Before / Option A**
+  - Body text describing this side.
+- **After / Option B**
+  - Body text describing this side.
+```
+
+- Same physical layout as Template 11 but with visual connector (`❯` chevron) centered between cards
 - Implies transformation, contrast, or choice
-- Connector centered between cards: 20-24px, `--text-muted`
+- Connector: `❯` at 30px (`--fs-xl`), `--text-muted`
 - Cards are equal width
+- Card title: bold, `--text-heading`; card body: 16px, `--text-body`
 
 ## Template 13: Quote / Testimonial
 
@@ -659,10 +802,17 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 ```
 
 - Horizontal line with colored dots
-- Step labels below dots: 14-16px bold
-- Step descriptions: 13-14px, `--text-body`
-- 3-6 steps maximum
-- Dots colored with `--accent` or sequential accent colors
+- Use `ol` for numbered sequential steps (circles show 1, 2, 3…)
+- Use `ul` for non-sequential milestones (plain dot circles)
+- Each item: `**Label**` on its own line, then `- *description*` as nested list
+- 3–6 steps maximum
+- Example authoring:
+```markdown
+1. **Signal Logged**
+   - *Owner classifies and submits to intake queue*
+2. **Scored**
+   - *Model applies current weights, generates score*
+```
 
 ## Template 15: List / Bullet Points
 
@@ -758,6 +908,15 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 - Label above: 11px, `--text-muted`, uppercase
 - Description below: 16-18px, `--text-body`, 1-2 sentences
 - The number IS the slide — everything else supports it
+- Authoring: nested list — `- 14×` then `  - description`
+
+**Example:**
+```markdown
+##### Eyebrow Label
+
+- 14×
+  - Return on signal investment — one or two sentences of context.
+```
 
 ## Template 18: Split Panel (colored sidebar)
 
@@ -788,6 +947,30 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 - Left panel contains: label, heading, optional large watermark number
 - Right panel contains: content, cards, description
 - Good for category-based slides where sidebar signals section
+- **Card authoring**: nested list in right column — `- **Title**` then `  - description` → stacked card tiles
+- Supports both `ul` (no badge) and `ol` (number badge) for top-level cards
+- **Authoring pattern:**
+
+```markdown
+##### Section Label
+
+## Slide Title
+
+### Section heading
+
+Body text or intro paragraph.
+
+- **Card Title**
+  - Card body — description or supporting detail.
+- **Card Title**
+  - Card body.
+```
+
+- `h5` = left panel eyebrow (faint, top)
+- `h2` = left panel title (white, bottom)
+- `h3` = right panel subheading
+- `p` = right panel intro text
+- `ul/ol > li > **strong** + nested ul/ol > li` = stacked card tiles
 
 ## Template 19: Closing (dark bookend)
 
@@ -1292,17 +1475,14 @@ Extends Template 12 (Comparison with connector). Adds a full-width framing parag
 ```markdown
 <!-- _class: comparison -->
 
-## Checkpoint I and Checkpoint II
+## Heading
 
-- Doing it well
-  - Doing it well
-  - You demonstrate the cognitive skill. The work is correct, clear, and complete.
-- →
-- Scaling the impact
-  - Scaling the impact
-  - Others benefit from the work. It's documented, adopted, durable, and reusable.
+- **Option A**
+  - Body text for the left card.
+- **Option B**
+  - Body text for the right card.
 
-The shift from I to II is where most engineers stall. Doing the cognitive work is necessary; making it durable and transferable is what earns the next level.
+Optional framing sentence below the cards.
 ```
 
 **How the renderer maps this:** Same as T12, except a trailing paragraph (not inside a list item) is rendered as the framing note below the cards.
