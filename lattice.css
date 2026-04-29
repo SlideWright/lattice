@@ -652,7 +652,7 @@ section.image-full footer { display:none; }
 section.image-full h2 {
   position:absolute; top:0; left:0; right:0;
   text-align:center; margin:0;
-  padding:var(--sp-sm) var(--sp-lg);
+  padding:var(--sp-xs) var(--sp-lg);
   background:rgba(0,0,0,0.42); color:rgba(255,255,255,0.9);
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400;
   letter-spacing:0.1em; text-transform:uppercase;
@@ -660,8 +660,9 @@ section.image-full h2 {
 }
 section.image-full p:last-of-type {
   position:absolute; bottom:0; left:0; right:0; margin:0;
+  display:flex; align-items:center; min-height:2.4em;
   background:rgba(0,0,0,0.58); color:rgba(255,255,255,0.85);
-  padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); z-index:1;
+  padding:var(--sp-xs) var(--sp-lg); font-size:var(--fs-body); z-index:1;
 }
 
 /* ── DARK VARIANT ──
