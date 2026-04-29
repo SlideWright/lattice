@@ -587,12 +587,12 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
 section.compare-table > p { font-size:var(--fs-label); font-style:italic; color:var(--text-muted); margin-top:var(--sp-md); padding-top:var(--sp-sm); }
 
 /* ── FEATURED ──
- * ## heading  > blockquote featured card  ### sub1-title  p sub1-body  ### sub2-title  p sub2-body
+ * ## heading  ul: first li = .feat-card hero, rest = .sub-row > .sub-card
  */
 section.featured h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
-section.featured > blockquote { background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; margin-bottom:var(--sp-sm); }
-section.featured > blockquote p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; }
-section.featured > blockquote strong { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:var(--sp-xs); }
+section.featured .feat-card { background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; margin-bottom:var(--sp-sm); }
+section.featured .feat-card h3 { font-weight:700; letter-spacing:0.12em; color:var(--accent); margin-bottom:var(--sp-xs); }
+section.featured .feat-card p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; }
 section.featured .sub-row { display:flex; gap:var(--sp-sm); flex:1; }
 section.featured .sub-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; }
 section.featured .sub-card h3 { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); text-transform:none; letter-spacing:0; }
@@ -837,22 +837,33 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { w
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
- * > ul > li(<strong>title</strong> + nested ul body) → mimic .sub-row > .sub-card */
-section.featured:not(:has(.sub-row)) > ul {
-  display:flex; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
+ * First li → .feat-card hero; rest → .sub-row > .sub-card                    */
+section.featured:not(:has(.feat-card)) > ul {
+  display:flex; flex-wrap:wrap; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; align-content:flex-start;
 }
-section.featured:not(:has(.sub-row)) > ul > li {
+/* First item — featured hero card */
+section.featured:not(:has(.feat-card)) > ul > li:first-child {
+  flex:0 0 100%; background:var(--accent-soft); border:1px solid var(--accent);
+  border-radius:var(--radius-md); padding:var(--sp-sm) 26px;
+}
+section.featured:not(:has(.feat-card)) > ul > li:first-child > strong {
+  font-weight:700; letter-spacing:0.12em; color:var(--accent); display:block; margin-bottom:var(--sp-xs);
+}
+section.featured:not(:has(.feat-card)) > ul > li:first-child > ul { list-style:none; padding:0; margin:0; }
+section.featured:not(:has(.feat-card)) > ul > li:first-child > ul > li { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); }
+/* Sub-card items */
+section.featured:not(:has(.feat-card)) > ul > li:not(:first-child) {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column;
 }
-section.featured:not(:has(.sub-row)) > ul > li > strong {
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-  display:block; margin-bottom:var(--sp-xs);
+section.featured:not(:has(.feat-card)) > ul > li:not(:first-child) > strong {
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block; margin-bottom:var(--sp-xs);
 }
-/* Nested list format: body text in sub-list */
-section.featured:not(:has(.sub-row)) > ul > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.featured:not(:has(.sub-row)) > ul > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
-section.featured:not(:has(.sub-row)) > ul > li > ul > li::before { display:none !important; content:none !important; }
+section.featured:not(:has(.feat-card)) > ul > li:not(:first-child) > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.featured:not(:has(.feat-card)) > ul > li:not(:first-child) > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+/* Suppress list markers */
+section.featured:not(:has(.feat-card)) > ul > li::before { display:none !important; content:none !important; }
+section.featured:not(:has(.feat-card)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── CARDS-WIDE-3 ────────────────────────────────────────────────────────────
  * ol > li(<strong>eyebrow · heading</strong> body) → mimic .three-stack > .wide-card

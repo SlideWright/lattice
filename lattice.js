@@ -892,9 +892,7 @@ function parseSlide(raw, index) {
     });
   }
 
-  // featured: blockquote = featured card, ul items = sub-cards
-  // Supports: - **Title** / nested - body  (preferred)
-  //       or: - **Title** — inline body    (legacy)
+  // featured: first list item = .feat-card (accent hero), rest = .sub-row > .sub-card
   if (cls.includes('featured')) {
     const ulIdx = html.indexOf('<ul>');
     if (ulIdx !== -1) {
@@ -915,10 +913,9 @@ function parseSlide(raw, index) {
           else if (ulInner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(ulInner.slice(liStart, i)); liStart = -1; } i += 5; }
           else i++;
         }
-        const subCards = items.map(content => {
+        const extractCard = (content) => {
           const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
           const title = titleMatch ? titleMatch[1] : '';
-          // Prefer nested <ul><li>body</li></ul>; fall back to inline text
           const innerUlIdx = content.indexOf('<ul>');
           let body;
           if (innerUlIdx !== -1) {
@@ -927,9 +924,16 @@ function parseSlide(raw, index) {
           } else {
             body = content.replace(/<strong>.*?<\/strong>/, '').trim();
           }
+          return { title, body };
+        };
+        const [first, ...rest] = items;
+        const { title: featTitle, body: featBody } = extractCard(first);
+        const featCard = `<div class="feat-card"><h3>${featTitle}</h3><p>${featBody}</p></div>`;
+        const subCards = rest.map(content => {
+          const { title, body } = extractCard(content);
           return `<div class="sub-card"><h3>${title}</h3><p>${body}</p></div>`;
         });
-        html = html.slice(0, ulIdx) + `<div class="sub-row">${subCards.join('')}</div>` + html.slice(ulEnd + 5);
+        html = html.slice(0, ulIdx) + featCard + `<div class="sub-row">${subCards.join('')}</div>` + html.slice(ulEnd + 5);
       }
     }
   }

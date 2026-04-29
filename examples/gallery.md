@@ -389,8 +389,8 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Applying the criteria to the tools — here is where the evidence points.
 
-> **The evidence favors Tool D** — Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.
-
+- **The evidence favors Tool D**
+  - Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.
 - **The path is not self-executing**
   - Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.
 - **The Decision Log is the hardest part**
