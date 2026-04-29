@@ -354,6 +354,30 @@ The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and render
 
 **Exception — `split-panel`:** the left accent panel requires `h5` for structural grid placement (the CSS pins `h5` to the top-left of the colored panel). Use `h5` there as documented in T18.
 
+## Subtitle Labels
+
+Many templates carry an optional short descriptor line immediately below the main heading — a **subtitle**. It adds context, a process label, or a qualifying clause without becoming a second heading.
+
+**Authoring syntax:** a paragraph containing only a single inline code span, placed immediately below the heading:
+
+```markdown
+## How signals move from input to decision.
+
+`Four-stage processing pipeline — weekly cadence`
+```
+
+```markdown
+# From Signal to Strategy
+
+`A decision framework for product leaders navigating market uncertainty`
+```
+
+The CSS detects `h* + p:has(> code:only-child)` and renders the code element as body-font italic in `--text-muted` — no pill, no mono, no uppercase. Layout-specific `> p` rules (diagram, stats, title, closing, subtopic) already govern the container's size, weight, and color; the subtitle block only strips the pill and applies italic.
+
+This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descriptors — both are valid Markdown, but the inline-code form is more explicit about intent and keeps the two roles visually distinguishable in the source.
+
+**What stays as `_em_`:** verdict lines (finding template), table footnotes, body prose that happens to be italic. These are not subtitles.
+
 | Category | Templates | CSS class |
 |----------|-----------|-----------|
 | Structural | T1 Title, T2 Divider, T3 Sub-Topic, T19 Closing | `title` `divider` `subtopic` `closing` |
@@ -609,7 +633,7 @@ Body text for the left column. One to two sentences.
 
 ## Six months of results across four product teams.
 
-_Measured against pre-framework baseline._
+`Measured against pre-framework baseline.`
 
 1. **73%** faster close
 2. **4.2×** signal recall
@@ -618,7 +642,7 @@ _Measured against pre-framework baseline._
 ```
 - `h3` = eyebrow
 - `h2` = heading
-- `_em_` paragraph = italic description, centered below heading
+- `` `inline code` `` paragraph = italic subtitle, centered below heading
 - `ol > li`: `**number**` = stat value; remaining text = label
 
 ## Template 8: Card Grid (2×2)

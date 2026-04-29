@@ -14,7 +14,7 @@ header: "Lattice · Layout Gallery"
 
 # From Signal to Strategy
 
-_A decision framework for product leaders navigating market uncertainty_
+`A decision framework for product leaders navigating market uncertainty`
 
 ---
 
@@ -57,7 +57,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ## How signals move from input to decision.
 
-_Four-stage processing pipeline — weekly cadence_
+`Four-stage processing pipeline — weekly cadence`
 
 ```mermaid
 flowchart LR
@@ -89,7 +89,7 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ## Six months of results across four product teams.
 
-_Measured against pre-framework baseline, same teams, same market conditions._
+`Measured against pre-framework baseline, same teams, same market conditions.`
 
 1. **73%** faster close
 2. **4.2×** signal recall
@@ -232,7 +232,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## Scoring Model Deep Dive
 
-##### Section 02
+`Section 02`
 
 ### What this section covers
 
@@ -255,7 +255,7 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Next step is a working session, not a debate.
 
-_Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit._
+`Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.`
 
 ---
 
@@ -332,7 +332,7 @@ _Viable as designed — NLP classification requires a 2-week warm-up period on n
 
 - **Tool A · Chorus**
   - [x] Speed
-  - [ ] Auditability
+  - [~] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
@@ -518,7 +518,7 @@ token = kms.encrypt(
 <!-- _class: image -->
 <!-- _footer: "Text left, image right · image" -->
 
-### Layout · Image
+`Layout · Image`
 
 ## Images sit naturally beside text when you need visual evidence.
 
@@ -541,7 +541,7 @@ Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the p
 <!-- _footer: "Image full · image-full" -->
 <!-- _paginate: false -->
 
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
+## [ Dashboard screenshot · Signal Brief — With Caption ]
 
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 
@@ -562,7 +562,7 @@ Add `dark` alongside any class — palette remaps automatically
 <!-- _class: content dark -->
 <!-- _footer: "Dark variant — prose · content dark" -->
 
-### Dark Variant · Content
+`Dark Variant · Content`
 
 ## The token system handles dark without per-element overrides.
 
@@ -574,7 +574,7 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 <!-- _footer: "Image full dark · image-full dark" -->
 <!-- _paginate: false -->
 
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
+## [ Dashboard screenshot · Signal Brief — Dark ]
 
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 

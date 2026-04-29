@@ -140,6 +140,52 @@ section.dark p:has(> code:only-child):has(+ h5) > code { color: var(--on-dark-se
 /* Centered eyebrow for subtopic */
 section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
+/* ── SUBTITLE (inline-code paragraph after heading) ──────────────────────────
+ * A paragraph whose only child is an inline code span, placed immediately
+ * after any heading, is promoted to an italic subtitle — body font, muted
+ * color, no code pill. Mirror of the eyebrow pattern (code before heading).
+ *
+ * The base `section > p` rules per layout already handle container spacing and
+ * color via cascade; this block only strips the pill and applies italic.
+ * `color:inherit` picks up whatever color the layout sets on the <p>.
+ *
+ * Usage:
+ *   ## Slide Heading
+ *
+ *   `Four-stage processing pipeline — weekly cadence`
+ */
+section h1 + p:has(> code:only-child),
+section h2 + p:has(> code:only-child),
+section h3 + p:has(> code:only-child),
+section h4 + p:has(> code:only-child),
+section h5 + p:has(> code:only-child) {
+  color: var(--text-muted);
+}
+section h1 + p:has(> code:only-child) > code,
+section h2 + p:has(> code:only-child) > code,
+section h3 + p:has(> code:only-child) > code,
+section h4 + p:has(> code:only-child) > code,
+section h5 + p:has(> code:only-child) > code {
+  font-family: var(--font-body);
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+/* Dark bookend slides are always dark but don't carry .dark — set explicitly */
+section.title   h1 + p:has(> code:only-child),
+section.title   h2 + p:has(> code:only-child),
+section.divider h1 + p:has(> code:only-child),
+section.divider h2 + p:has(> code:only-child),
+section.closing h1 + p:has(> code:only-child),
+section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* .dark modifier: --text-muted is already remapped by section.dark, so no extra rule needed */
+/* Centered subtitle for subtopic */
+section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
+
 /* ── KEY INSIGHT ──────────────────────────────────────────────
  * Any trailing > blockquote on a content-bearing layout renders
  * as a warm filled panel — Option C styling.
@@ -235,7 +281,7 @@ section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed);
 section.content { justify-content:flex-start; }
 
 /* ── DIAGRAM ──
- * ### eyebrow  ## heading  *italic subtitle*  ```mermaid block
+ * ### eyebrow  ## heading  `italic subtitle`  ```mermaid block
  * The mermaid-svg fills flex:1 automatically.
  */
 section.diagram { align-items:center; }
