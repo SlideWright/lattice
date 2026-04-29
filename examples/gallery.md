@@ -217,34 +217,6 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: image-full -->
-<!-- _footer: "Full-bleed, no caption · image-full" -->
-<!-- _paginate: false -->
-
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
-
----
-
-<!-- _class: image-full -->
-<!-- _footer: "Full-bleed with caption · image-full" -->
-<!-- _paginate: false -->
-
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
-
-Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
-
----
-
-<!-- _class: image-full dark -->
-<!-- _footer: "Full-bleed dark variant · image-full dark" -->
-<!-- _paginate: false -->
-
-## [ Dashboard screenshot · Signal Brief — Week 24 ]
-
-Weekly Signal Brief — use `image-full dark` for the brand dark gradient placeholder
-
----
-
 <!-- _class: big-number -->
 <!-- _footer: "Hero stat · big-number" -->
 
@@ -565,15 +537,6 @@ Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the p
 
 ---
 
-<!-- _class: image-full -->
-<!-- _paginate: false -->
-
-## Caption overlays the image at the bottom.
-
-Omit the trailing paragraph for no caption — the image fills the slide edge to edge.
-
----
-
 <!-- _class: divider dark -->
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
@@ -596,6 +559,17 @@ Omit the trailing paragraph for no caption — the image fills the slide edge to
 All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`, `--border` — that remap when `dark` is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.
 
 ---
+
+<!-- _class: image-full dark -->
+<!-- _footer: "Full-bleed with caption · image-full" -->
+<!-- _paginate: false -->
+
+## [ Dashboard screenshot · Signal Brief — Week 24 ]
+
+Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
+
+---
+
 
 <!-- _class: list dark -->
 <!-- _footer: "Dark variant — list · list dark" -->
