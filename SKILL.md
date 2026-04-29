@@ -170,6 +170,7 @@ Accent colors for categories, levels, or themes extend this palette — they don
 
 ## 1.7 Slide Structure
 
+- **Spectrum bar:** every content slide has a 4px rainbow gradient border at the very top (`border-top: 4px solid; border-image-source: var(--spectrum); border-image-slice: 1`). Dark slides (`title`, `divider`, `closing`) suppress this (`border-top: none`) and instead render a 1px top spectrum line via `background` if the `dark` modifier is used.
 - Dark bookend slides: title (first) and closing (last) use `--bg-dark`
 - Section dividers may also use `--bg-dark` or a strong accent
 - Content slides: light background using `--bg`
@@ -333,7 +334,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 | Text | T4 Content, T13 Quote, T15 List, T22 Criteria | `content` `quote` `list` `criteria` |
 | Text variant | T15v Tabular Inline | `list-tabular` |
 | Data | T5 Diagram, T7 Stats, T17 Big Number, T24 Compare Table | `diagram` `stats` `big-number` `compare-table` |
-| Cards | T8 Grid 2×2, T9 Grid 2+1, T10 Stacked, T11 Side-by-Side | `card-grid` `card-grid-2plus1` `cards-stacked` `cards-side` |
+| Cards | T8 Grid 2×2, T9 Grid 2+1, T10 Stacked, T11 Side-by-Side | `card-grid` `cards-stacked` `cards-side` |
 | Cards cont. | T21 Three-Row Wide, T23 Verdict Grid | `cards-wide-3` `verdict-grid` |
 | Comparative | T12 Comparison, T20 Finding, T25 Featured | `comparison` `finding` `featured` |
 | Layout | T6 Two-Column, T14 Timeline, T18 Split Panel | `two-column` `timeline` `split-panel` |
@@ -401,9 +402,18 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 - Background: `--bg-dark` or accent-tinted
 - Strong visual signal: large section number (40-60px) in bordered box, or accent-colored left bar, or full background color change
 - Section label: 11px, uppercase, letter-spaced
-- Title: 42px display font, `--text-display` or `--text-heading`
+- Title: 48px (`--fs-3xl`) display font, `--text-display`
 - Must be visually distinct from content slides — dividers should jump out when flipping through
 - No header, footer, or page number
+
+**Marp markdown source:**
+```markdown
+##### Section 01 · Foundations
+
+# Section Title Goes Here
+```
+- `h5` = eyebrow label (faint, uppercase, top)
+- `h1` = section title (large, display font)
 
 ## Template 3: Sub-Topic
 
@@ -432,8 +442,8 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 - Centered vertically and horizontally
 - Lighter than a divider — orients, doesn't announce
 - Eyebrow: 11px, `--text-muted`
-- Title: 36px, `--text-heading`
-- Description: 16-18px, `--text-body`, 1-2 sentences max
+- Title: 48px (`--fs-3xl`), `--text-heading`
+- Description: 16-18px, `--text-body`; use `_em_` for the italic subtitle; 1-2 sentences max
 - Header, footer, and page number visible
 
 ## Template 4: Content (text only)
@@ -519,10 +529,25 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: two-column -->
 ```
 
-- Left column: ~40% width, text content
-- Right column: ~55% width, visual content
-- 5% gap between columns
-- Both columns vertically centered
+- Two equal columns (`1fr 1fr`), column gap `--sp-lg` (32px)
+- `h3` spans full width above both columns
+- `h2` + `p` go into the left column
+- `> blockquote` goes into the right column as a visual placeholder panel
+
+**Marp markdown source:**
+```markdown
+### Eyebrow Label
+
+## Slide Heading
+
+Body text for the left column. One to two sentences.
+
+> Visual: description of the diagram, screenshot, or image to place here
+```
+- `h3` = full-width eyebrow
+- `h2` = left column heading
+- `p` = left column body
+- `> blockquote` = right panel (rendered as a `--bg-alt` card with centered muted text)
 
 ## Template 7: Stats / KPI Row
 
@@ -547,10 +572,28 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 <!-- _class: stats -->
 ```
 
-- Stat numbers: 40-48px, display font, `--accent`
-- Stat labels: 9-11px, uppercase, letter-spaced, `--text-muted`
+- Stat numbers: 52px (`--fs-stat`), body font (Outfit), `--accent`
+- Stat labels: 13px (`--fs-label`), uppercase, letter-spaced, `--text-label`
 - 3-5 stats in a horizontal row, evenly spaced
-- Description above: 16px, `--text-body`
+- Description above: 16px, italic, `--text-label`
+
+**Marp markdown source:**
+```markdown
+### Impact · Pilot Results
+
+## Six months of results across four product teams.
+
+_Measured against pre-framework baseline._
+
+1. **73%** faster close
+2. **4.2×** signal recall
+3. **18** decisions logged
+4. **91%** team alignment
+```
+- `h3` = eyebrow
+- `h2` = heading
+- `_em_` paragraph = italic description, centered below heading
+- `ol > li`: `**number**` = stat value; remaining text = label
 
 ## Template 8: Card Grid (2×2)
 
@@ -623,23 +666,24 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `card-grid-2plus1`
+**CSS class:** `card-grid`
 
 **Marp directive:**
 ```markdown
-<!-- _class: card-grid-2plus1 -->
+<!-- _class: card-grid -->
 ```
 
-**Markdown format** — same nested list format as `card-grid` (auto-bold, no `**...**` required):
+**Markdown format** — same nested list format as `card-grid`, exactly 3 items:
 ```markdown
 - Card Title
   - Body text.
 ```
 
-- Top row: two equal cards, 24px gap
-- Bottom row: one card spanning full width
+- Top row: two equal cards, 24px gap — automatic from 2-column grid
+- Bottom row: one card spanning full width — automatic (`li:last-child:nth-child(odd)` rule)
 - Bottom card for summary, conclusion, or key takeaway
 - Same card styling as 2×2
+- **No separate class needed** — `card-grid` handles 2, 3, and 4 items automatically
 
 ## Template 10: Two Cards Stacked (vertical)
 
@@ -779,7 +823,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - Centered vertically and horizontally
 - Quote: 28-36px, italic, display font, `--text-heading`
 - Attribution: 14px, `--text-muted`, preceded by em dash
-- Optional: large decorative quotation mark (72px, `--border`) positioned behind or above
+- Decorative opening/closing quote marks: 48px (`--fs-3xl`), `--text-muted`, rendered via `::before`/`::after` on the blockquote
 - Max ~25 words in the quote
 
 ## Template 14: Timeline / Process
@@ -843,27 +887,52 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 <!-- _class: list -->
 ```
 
-- Clean bullet list, not cards
-- Heading: 36px, `--text-heading`
-- Bullets: 18-20px, `--text-body`
-- Line height: 1.6-1.8 for comfortable reading
+- Items render as card-like rows: `--bg-alt` fill, `--border` border, 3px `--accent` left bar, `--radius-md` corners — not plain text bullets
+- Heading: 36px (`--fs-2xl`), `--text-heading`
+- Item text: 18px (`--fs-md`), `--text-body`, `--lh-base`
 - 4-6 items maximum
-- Bullet character styled in `--accent` or `--text-muted`
-- Indent from left edge: 48-64px
+- Optional nested `- sub-description` under each item renders in smaller muted text
+- **`ol` variant**: items get a leading-zero counter (`01`, `02`…) in `--accent` mono, rendered as a grid row — use when order matters
+
+**Marp markdown source (ul):**
+```markdown
+- First point clearly stated.
+- Second point with enough room.
+- Third point, well spaced.
+```
+
+**Marp markdown source (ol, numbered):**
+```markdown
+1. You have a regular prioritization cadence.
+2. At least one person owns signal collection.
+3. Leadership has agreed to log decisions.
+```
 
 ## Template 16: Image Full
 
 One class, two authoring modes — caption is optional.
 
+### Without caption
 ```
-┌───────────────────────────────────────┐   ┌───────────────────────────────────────┐
-│                                       │   │                                       │
-│             [image-full]              │   │             [image-full]              │
-│                                       │   │                                       │
-│                                       │   │  ┌─ caption text ──────────────────┐  │
-│                                       │   │  └─────────────────────────────────┘  │
-└───────────────────────────────────────┘   └───────────────────────────────────────┘
-   No caption                                 With caption
+┌───────────────────────────────────────┐
+│                header                 │
+│             [image-full]              │
+│                                       │
+│                                       │
+│                                       │
+└───────────────────────────────────────┘
+```
+
+### With caption
+```
+
+┌───────────────────────────────────────┐
+│                header                 │
+│             [image-full]              │
+│                                       │
+│  ┌─ caption text ──────────────────┐  │
+│  └─────────────────────────────────┘  │
+└───────────────────────────────────────┘
 ```
 
 **CSS class:** `image-full`
@@ -1287,6 +1356,7 @@ Optional intro paragraph.
 - Each `- **Card Title**` → one card in the grid
 - `**...**` is required (CSS targets `li > strong` for the card title)
 - `[x]` → pass badge (green); `[ ]` → fail badge (red); `[~]` → warn badge (amber)
+- **Badge colors (green/red/amber) render only in the Marp CLI / lattice.js path.** The VS Code preview shows all badges as neutral pills (`--bg` fill, `--text-muted` border).
 - Last nested `li` (after all badge items) → card body description
 - Last card in the grid gets accent-soft highlight automatically (`li:last-child` rule)
 
@@ -1671,6 +1741,193 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 **How the renderer maps this:** Each `li` is parsed for inline patterns: backtick code → number column; bold → verb column; plain text → description column; italic → metadata column. The renderer places each token into the grid column in order. Alternatively, use explicit `<span class="col-N">` wrappers inside each `li` for precise control.
 
 **When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T24 if readers need to scan down columns as much as across rows.
+
+---
+
+## Template 26: Image (text + background photo)
+
+```
+┌───────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Heading line here.                   │
+│                                       │
+│  Body text alongside the image.       │
+│                                       │
+│                     [image fills      │
+│                      right half]      │
+│  footer                          1/19 │
+└───────────────────────────────────────┘
+```
+
+**CSS class:** `image` (default: image right) · `image left` (image left)
+
+**Marp directive:**
+```markdown
+<!-- _class: image -->
+```
+
+- Text occupies left half; background image fills right half
+- Use `image left` modifier to flip: image left, text right
+- Text padding auto-adjusted so content never overlaps the photo
+
+**Marp markdown source:**
+```markdown
+<!-- _class: image -->
+
+### Layout · Image
+
+## Images sit naturally beside text when you need visual evidence.
+
+Use `_class: image` with `![bg right](url)` — image-right is the default.
+
+![bg right](path/to/photo.jpg)
+```
+
+```markdown
+<!-- _class: image left -->
+
+### Layout · Image Left
+
+## Flip the image to the left when the composition benefits.
+
+![bg left](path/to/photo.jpg)
+```
+
+- `h3` = eyebrow label
+- `h2` = heading
+- `p` = body text
+- `![bg right](url)` / `![bg left](url)` = Marp background image directive
+
+---
+
+## Template 27: Code
+
+```
+┌───────────────────────────────────────┐
+│  header                               │
+│  LABEL                                │
+│  Slide Heading                        │
+│  Language · Context label             │
+│  ┌─────────────────────────────────┐  │
+│  │ // code block fills remaining   │  │
+│  │ // space below                  │  │
+│  └─────────────────────────────────┘  │
+│  footer                          1/19 │
+└───────────────────────────────────────┘
+```
+
+**CSS class:** `code`
+
+**Marp directive:**
+```markdown
+<!-- _class: code -->
+```
+
+- Code block (`pre/code`) fills all remaining vertical space after the headings
+- Dark code background (`#001D33`) with spectrum-colored bottom bar accent
+- Monospace font (`--font-mono`), small size (`--fs-sm`), light text (`#C5D8F5`)
+
+**Marp markdown source:**
+```markdown
+<!-- _class: code -->
+
+### Implementation · Token Pipeline
+
+## The tokenization call is three lines of application code.
+
+### JavaScript · SDK v2 interface
+
+```javascript
+const tokens = await client.tokenize(input, {
+  model: 'signal-v2',
+  format: 'compact',
+});
+```
+```
+
+- `h3` (first) = eyebrow
+- `h2` = heading
+- `_em_` paragraph (optional) = italic subtitle
+- `h3` (second) = language/context label above the code block
+- Fenced code block = the code (fills remaining space)
+
+---
+
+## Template 28: Code Compare
+
+```
+┌───────────────────────────────────────┐
+│  header                               │
+│  LABEL          Heading               │
+│  ┌──────────────┐  ┌──────────────┐   │
+│  │ Left label   │  │ Right label  │   │
+│  │              │  │              │   │
+│  │ // code      │  │ // code      │   │
+│  │              │  │              │   │
+│  └──────────────┘  └──────────────┘   │
+│  footer                          1/19 │
+└───────────────────────────────────────┘
+```
+
+**CSS class:** `code-compare`
+
+**Marp directive:**
+```markdown
+<!-- _class: code-compare -->
+```
+
+- Two equal code columns (`1fr 1fr`), gap `--sp-md`
+- Each column: label (`h3`) above a code block (`pre`)
+- Same dark code style as `code` template
+
+**Marp markdown source:**
+```markdown
+<!-- _class: code-compare -->
+
+### Before & After · Key Distribution
+
+## File-distributed keys versus vault-integrated keys.
+
+### Before · File-distributed
+
+```python
+SECRET_KEY = os.environ["SECRET_KEY"]
+hmac.new(SECRET_KEY, payload)
+```
+
+### After · HSM / KMS integrated
+
+```python
+signature = vault.sign(payload, key_id="prod-hmac-v3")
+```
+```
+
+- `h3` (first) = eyebrow (spans both columns)
+- `h2` = heading (spans both columns)
+- `h3` (second) = left column label
+- First code block = left column
+- `h3` (third) = right column label
+- Second code block = right column
+
+---
+
+## Dark Modifier
+
+**Applies to any layout class.** Add `dark` alongside the layout class to switch the slide to a dark palette using the theme's dark color tokens.
+
+**Marp directive:**
+```markdown
+<!-- _class: content dark -->
+<!-- _class: list dark -->
+<!-- _class: divider dark -->
+<!-- _class: image-full dark -->
+```
+
+- Retokens: `--bg`, `--bg-alt`, `--border`, `--text-*` all switch to `var(--dark-*)` values
+- Spectrum bar changes: instead of a 4px solid top border, dark slides render a 1px spectrum line as a CSS `background` at the top
+- Use for mid-deck emphasis slides, impactful data reveals, or transitional moments
+- Gallery uses: `content dark`, `list dark`, `cards-stacked dark`, `divider dark`, `image-full dark`
 
 ---
 
