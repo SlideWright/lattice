@@ -1110,6 +1110,18 @@ section.split-panel:not(:has(.panel-left)) p {
   padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
   font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
 }
+/* Code-only paragraph (section label) in split-panel → redirect to left dark panel,
+ * centered between h5 (top) and h2 (bottom). Overrides the general p rule above.
+ * The eyebrow block already strips the pill; we only need to supply left-panel color. */
+section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) {
+  grid-column:1; grid-row:1 / -1; align-self:center;
+  padding:0 var(--sp-lg);
+  z-index:1; position:relative;
+  color:var(--on-dark-secondary);
+}
+section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) > code {
+  color:var(--on-dark-secondary);
+}
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
   grid-column:2; grid-row:3;
   padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
