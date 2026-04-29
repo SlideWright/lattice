@@ -154,19 +154,27 @@ section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
  *   `Section 01 · Foundations`
  *
  *   # Section Title
+ *
+ *   `Eyebrow Label`        ← also valid before a list (e.g. big-number)
+ *
+ *   - 14×
  */
 section p:has(> code:only-child):has(+ h1),
 section p:has(> code:only-child):has(+ h2),
 section p:has(> code:only-child):has(+ h3),
 section p:has(> code:only-child):has(+ h4),
-section p:has(> code:only-child):has(+ h5) {
+section p:has(> code:only-child):has(+ h5),
+section p:has(> code:only-child):has(+ ul),
+section p:has(> code:only-child):has(+ ol) {
   margin: 0 0 4px 0;
 }
 section p:has(> code:only-child):has(+ h1) > code,
 section p:has(> code:only-child):has(+ h2) > code,
 section p:has(> code:only-child):has(+ h3) > code,
 section p:has(> code:only-child):has(+ h4) > code,
-section p:has(> code:only-child):has(+ h5) > code {
+section p:has(> code:only-child):has(+ h5) > code,
+section p:has(> code:only-child):has(+ ul) > code,
+section p:has(> code:only-child):has(+ ol) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 600;
@@ -189,7 +197,9 @@ section.dark p:has(> code:only-child):has(+ h1) > code,
 section.dark p:has(> code:only-child):has(+ h2) > code,
 section.dark p:has(> code:only-child):has(+ h3) > code,
 section.dark p:has(> code:only-child):has(+ h4) > code,
-section.dark p:has(> code:only-child):has(+ h5) > code { color: var(--on-dark-secondary); }
+section.dark p:has(> code:only-child):has(+ h5) > code,
+section.dark p:has(> code:only-child):has(+ ul) > code,
+section.dark p:has(> code:only-child):has(+ ol) > code { color: var(--on-dark-secondary); }
 /* Centered eyebrow for subtopic */
 section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 

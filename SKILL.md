@@ -332,7 +332,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 
 Many templates show a small label above the main heading — called an **eyebrow**. It identifies section, category, or slide type at a glance.
 
-**Authoring syntax:** a paragraph containing only a single inline code span, placed immediately above the heading:
+**Authoring syntax:** a paragraph containing only a single inline code span, placed immediately above the heading **or above a list** (e.g. `big-number`). The eyebrow is optional — omit it if no label is needed:
 
 ```markdown
 `Section 01 · Foundations`
@@ -344,6 +344,13 @@ Many templates show a small label above the main heading — called an **eyebrow
 `Context · Competitive Dynamics`
 
 ## Slide Heading
+```
+
+```markdown
+`Calibration Result · 6-Month Pilot`
+
+- 14×
+  - Description text.
 ```
 
 The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and renders the code element as a mono uppercase label — same appearance as the `h3` used for eyebrows on content slides, but without touching the heading hierarchy. This makes eyebrows **markdown-lint compliant**: a `<p>` containing code is not a heading and cannot violate heading-order rules.
