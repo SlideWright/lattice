@@ -77,21 +77,43 @@ section h3 { font-family:var(--font-mono); font-size:var(--fs-label); font-weigh
 section h4 { font-family:var(--font-body); font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
 section h5 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-sm) 0; }
 
+section p { margin:0 0 var(--sp-xs) 0; }
+section strong { color:var(--text-heading); font-weight:600; }
+section em { font-style:italic; }
+section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:2px 6px; border-radius:4px; color:var(--accent); }
+section pre code { background:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
+section hr { border:none; height:2px; background:var(--spectrum); border-radius:2px; width:72px; margin:var(--sp-sm) auto; }
+section ul { list-style:none; padding:0; margin:0; }
+section ol { padding:0; margin:0; }
+section blockquote { margin:0; padding:0; border:none; }
+
 /* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
  * A paragraph whose only child is an inline code span, placed immediately
  * before any heading, is promoted to an eyebrow label — same visual style as
  * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
  * rules). h5 remains available for structural use (e.g. split-panel).
  *
+ * Selector uses an explicit comma list (not :has() inside :is()) for broadest
+ * Chromium compatibility — :has() nested in :is() is unreliable in VS Code's
+ * Marp preview engine.
+ *
  * Usage:
  *   `Section 01 · Foundations`
  *
  *   # Section Title
  */
-section p:has(> code:only-child):is(:has(+ h1), :has(+ h2), :has(+ h3), :has(+ h4), :has(+ h5)) {
+section p:has(> code:only-child):has(+ h1),
+section p:has(> code:only-child):has(+ h2),
+section p:has(> code:only-child):has(+ h3),
+section p:has(> code:only-child):has(+ h4),
+section p:has(> code:only-child):has(+ h5) {
   margin: 0 0 4px 0;
 }
-section p:has(> code:only-child):is(:has(+ h1), :has(+ h2), :has(+ h3), :has(+ h4), :has(+ h5)) > code {
+section p:has(> code:only-child):has(+ h1) > code,
+section p:has(> code:only-child):has(+ h2) > code,
+section p:has(> code:only-child):has(+ h3) > code,
+section p:has(> code:only-child):has(+ h4) > code,
+section p:has(> code:only-child):has(+ h5) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 600;
@@ -103,21 +125,20 @@ section p:has(> code:only-child):is(:has(+ h1), :has(+ h2), :has(+ h3), :has(+ h
   border-radius: 0;
 }
 /* Dark bookend overrides */
-section.title   p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code,
-section.divider p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code { color: var(--on-dark-secondary); }
-section.closing p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code { color: var(--on-dark-ghost); }
+section.title   p:has(> code:only-child):has(+ h1) > code,
+section.title   p:has(> code:only-child):has(+ h2) > code,
+section.divider p:has(> code:only-child):has(+ h1) > code,
+section.divider p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-secondary); }
+section.closing p:has(> code:only-child):has(+ h1) > code,
+section.closing p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-ghost); }
+/* Dark modifier (any layout + dark class) */
+section.dark p:has(> code:only-child):has(+ h1) > code,
+section.dark p:has(> code:only-child):has(+ h2) > code,
+section.dark p:has(> code:only-child):has(+ h3) > code,
+section.dark p:has(> code:only-child):has(+ h4) > code,
+section.dark p:has(> code:only-child):has(+ h5) > code { color: var(--on-dark-secondary); }
 /* Centered eyebrow for subtopic */
-section.subtopic p:has(> code:only-child):is(:has(+ h2)) { text-align: center; }
-
-section p { margin:0 0 var(--sp-xs) 0; }
-section strong { color:var(--text-heading); font-weight:600; }
-section em { font-style:italic; }
-section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:2px 6px; border-radius:4px; color:var(--accent); }
-section pre code { background:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
-section hr { border:none; height:2px; background:var(--spectrum); border-radius:2px; width:72px; margin:var(--sp-sm) auto; }
-section ul { list-style:none; padding:0; margin:0; }
-section ol { padding:0; margin:0; }
-section blockquote { margin:0; padding:0; border:none; }
+section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
 /* ── KEY INSIGHT ──────────────────────────────────────────────
  * Any trailing > blockquote on a content-bearing layout renders
