@@ -968,10 +968,22 @@ section.finding:not(:has(.finding-top)) > p:last-of-type { flex-shrink:0; margin
 section.finding:not(:has(.finding-top)) > p:last-of-type em { font-style:normal; color:var(--accent); }
 section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'● '; }
 
-/* ── CODE-COMPARE degraded fallback ─────────────────────────────────────────
- * Without .code-cols, h3+pre pairs stack vertically.
- * True side-by-side layout requires DOM transformation (lattice-runtime.js). */
-section.code-compare:not(:has(.code-cols)) pre { flex:1; min-height:0; }
+/* ── CODE-COMPARE fallback ───────────────────────────────────────────────────
+ * When .code-cols is absent (CLI image / VS Code), rebuild two columns from   *
+ * the raw DOM: eyebrow-h3 → spans both; h2 → spans both;                     *
+ * h3(2)+pre(1) → col-1; h3(3)+pre(2) → col-2.                               */
+section.code-compare:not(:has(.code-cols)) {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto auto 1fr;
+  gap:0 var(--sp-md);
+}
+section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.code-compare:not(:has(.code-cols)) > h2                 { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(2)  { grid-column:1; grid-row:3; margin-bottom:var(--sp-xs); }
+section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(3)  { grid-column:2; grid-row:3; margin-bottom:var(--sp-xs); }
+section.code-compare:not(:has(.code-cols)) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.code-compare:not(:has(.code-cols)) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
