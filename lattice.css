@@ -160,6 +160,7 @@ section h3 + p:has(> code:only-child),
 section h4 + p:has(> code:only-child),
 section h5 + p:has(> code:only-child) {
   color: var(--text-muted);
+  font-size: var(--fs-md);
 }
 section h1 + p:has(> code:only-child) > code,
 section h2 + p:has(> code:only-child) > code,
