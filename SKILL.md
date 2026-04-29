@@ -705,20 +705,22 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 
 **Inline code in card headers and body text:**
 
-Inline `` `code` `` spans behave differently depending on where they appear inside a card.
+Inline `` `code` `` spans render correctly in both card title lines and body text with no special wrapper required.
 
-**Card header (title line)** — To keep code **inline** with the card title, wrap the entire header in `**...**`:
+**Card header (title line)** — Write inline code directly after the title text:
 
 ```markdown
-- **Signal Intake `v2.4`**
+- Signal Intake `v2.4`
   - Body text.
-- **Scoring Model `configurable`**
+- Scoring Model `configurable`
   - Body text.
 ```
 
-Visual result: bold card title and accent-colored code pill on the same line.
+Visual result: bold card title on the left, accent-colored code pill right-aligned on the same row. The pill is compact and pill-shaped. Body text spans full card width below.
 
-> **Why the bold wrapper is required**: Inside Marp's SVG foreignObject rendering context, Chromium separates adjacent text nodes and inline elements into distinct rendering boxes when the parent `<li>` also contains a block child (`<ul>`). The `**...**` wrapper creates a `<strong>` element with `display:block` that has no block-level children, so text and code remain properly inline within it. Without the wrapper, the code pill appears on its own line below the title text.
+> **How it works**: The card `<li>` uses `grid-template-columns: 1fr auto`. Marp's Chromium rendering places the title text node in column 1 (`1fr`) and the `<code>` element is explicitly pinned to `grid-column:2; grid-row:1` via CSS, keeping them on the same visual row despite Chromium's anonymous block box behavior in SVG foreignObject context. The body `<ul>` carries `grid-column: 1 / -1` so it spans the full card width on the next row.
+
+> **Backwards compat**: `**Title `code`**` (bold wrapper) still works — `<strong>` becomes a single block grid item spanning both columns, with text and code flowing inline inside it.
 
 **Card body text** — Code placed within body bullet text renders **inline** within the prose without any special wrapper:
 

@@ -362,19 +362,24 @@ section.card-grid > ul > li, section.card-grid > ol > li,
 section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column;
+  display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
 section.card-grid > ul > li:last-child:nth-child(odd),
 section.card-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
 section.card-grid > ul > li > strong,
-section.cards-side > ul > li > strong { display:block; }
+section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
+/* — inline code badge pinned to title row — */
+section.card-grid > ul > li > code,
+section.card-grid > ol > li > code,
+section.cards-side > ul > li > code,
+section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
 /* — card body (nested list) — */
 section.card-grid > ul > li > ul, section.card-grid > ul > li > ol,
 section.card-grid > ol > li > ul, section.card-grid > ol > li > ol,
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
-section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.card-grid > ul > li > ul > li, section.card-grid > ul > li > ol > li,
 section.card-grid > ol > li > ul > li, section.card-grid > ol > li > ol > li,
 section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
@@ -391,13 +396,14 @@ section.card-grid .card,
 section.cards-side .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column;
+  display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
 section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.card-grid .card > strong, section.cards-side .card > strong { display:block; }
+section.card-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
+section.card-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
 section.card-grid .card > ul, section.card-grid .card > ol,
-section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.card-grid .card > ul > li, section.card-grid .card > ol > li,
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner badge via absolute ::before — */
@@ -577,11 +583,11 @@ section.split-panel .panel-right h3 { margin-bottom:4px; }
 section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
 section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; list-style:none; padding:0; margin:0; }
 section.split-panel ol { counter-reset:panel-counter; }
-section.split-panel :is(ul,ol) > li { display:flex; flex-direction:column; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel ol > li { counter-increment:panel-counter; position:relative; padding-top:calc(14px + 30px); overflow:visible; }
 section.split-panel ol > li::before { content:counter(panel-counter); position:absolute; top:0; left:0; padding:5px 12px; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); }
 section.split-panel :is(ul,ol) > li > strong { display:block; }
-section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; }
+section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; width:100%; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
 section.split-panel {
@@ -921,7 +927,7 @@ section.cards-side:not(:has(.card-grid-inner)) > ul > li,
 section.cards-side:not(:has(.card-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column; gap:var(--sp-xs);
+  display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
 section.card-grid:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
@@ -929,7 +935,11 @@ section.card-grid:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd
 section.cards-side:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
 section.cards-side:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > strong,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong { display:block; }
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.card-grid:not(:has(.card-grid-inner)) > ul > li > code,
+section.card-grid:not(:has(.card-grid-inner)) > ol > li > code,
+section.cards-side:not(:has(.card-grid-inner)) > ul > li > code,
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul,
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol,
 section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul,
@@ -937,7 +947,7 @@ section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol,
 section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul,
 section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol,
 section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:0; flex:1; }
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul > li,
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol > li,
 section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul > li,
@@ -980,7 +990,7 @@ section.comparison:not(:has(.comparison-inner)) > ul > li,
 section.comparison:not(:has(.comparison-inner)) > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column;
+  display:grid; align-content:start; justify-items:start;
   font-weight:700; color:var(--text-heading);
 }
 section.comparison:not(:has(.comparison-inner)) > ul > li > strong,
@@ -988,7 +998,7 @@ section.comparison:not(:has(.comparison-inner)) > ol > li > strong { display:blo
 section.comparison:not(:has(.comparison-inner)) > ul > li > ul,
 section.comparison:not(:has(.comparison-inner)) > ul > li > ol,
 section.comparison:not(:has(.comparison-inner)) > ol > li > ul,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.comparison:not(:has(.comparison-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
 section.comparison:not(:has(.comparison-inner)) > ul > li > ul > li,
 section.comparison:not(:has(.comparison-inner)) > ul > li > ol > li,
 section.comparison:not(:has(.comparison-inner)) > ol > li > ul > li,
