@@ -10,7 +10,7 @@ header: "Lattice · Layout Gallery"
 <!-- _paginate: false -->
 <!-- _footer: "Title slide · title" -->
 
-##### Product Strategy · Q3 2025
+`Product Strategy · Q3 2025`
 
 # From Signal to Strategy
 
@@ -22,7 +22,7 @@ _A decision framework for product leaders navigating market uncertainty_
 <!-- _paginate: false -->
 <!-- _footer: "Section break · divider" -->
 
-##### Section 01 · Foundations
+`Section 01 · Foundations`
 
 # The landscape has shifted. Here is what that means for us.
 
@@ -31,7 +31,7 @@ _A decision framework for product leaders navigating market uncertainty_
 <!-- _class: subtopic -->
 <!-- _footer: "Centered orientation · subtopic" -->
 
-##### Module 02
+`Module 02`
 
 ## Before we score signals, we need to agree on what a signal is.
 
@@ -220,7 +220,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 <!-- _class: big-number -->
 <!-- _footer: "Hero stat · big-number" -->
 
-##### Calibration Result · 6-Month Pilot
+`Calibration Result · 6-Month Pilot`
 
 - 14x
   - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.
@@ -251,7 +251,7 @@ The scoring model is the most configurable component. This section covers the th
 <!-- _footer: "Dark closing bookend · closing" -->
 <!-- _paginate: false -->
 
-##### What Would Help Us Move Forward
+`What Would Help Us Move Forward`
 
 ## Next step is a working session, not a debate.
 
@@ -551,11 +551,11 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
 
-##### Dark Variant · Any Layout Class
+`Dark Variant · Any Layout Class`
 
 # The dark modifier works on any layout.
 
-##### Add `dark` alongside any class — palette remaps automatically
+Add `dark` alongside any class — palette remaps automatically
 
 ---
 

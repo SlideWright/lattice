@@ -76,6 +76,39 @@ section h2 { font-family:var(--font-display); font-size:var(--fs-2xl); font-weig
 section h3 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-xs) 0; }
 section h4 { font-family:var(--font-body); font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
 section h5 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-sm) 0; }
+
+/* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
+ * A paragraph whose only child is an inline code span, placed immediately
+ * before any heading, is promoted to an eyebrow label — same visual style as
+ * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
+ * rules). h5 remains available for structural use (e.g. split-panel).
+ *
+ * Usage:
+ *   `Section 01 · Foundations`
+ *
+ *   # Section Title
+ */
+section p:has(> code:only-child):is(:has(+ h1), :has(+ h2), :has(+ h3), :has(+ h4), :has(+ h5)) {
+  margin: 0 0 4px 0;
+}
+section p:has(> code:only-child):is(:has(+ h1), :has(+ h2), :has(+ h3), :has(+ h4), :has(+ h5)) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+/* Dark bookend overrides */
+section.title   p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code,
+section.divider p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code { color: var(--on-dark-secondary); }
+section.closing p:has(> code:only-child):is(:has(+ h1), :has(+ h2)) > code { color: var(--on-dark-ghost); }
+/* Centered eyebrow for subtopic */
+section.subtopic p:has(> code:only-child):is(:has(+ h2)) { text-align: center; }
+
 section p { margin:0 0 var(--sp-xs) 0; }
 section strong { color:var(--text-heading); font-weight:600; }
 section em { font-style:italic; }

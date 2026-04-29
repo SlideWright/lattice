@@ -328,6 +328,32 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 
 25 templates plus 3 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
 
+## Eyebrow Labels
+
+Many templates show a small label above the main heading — called an **eyebrow**. It identifies section, category, or slide type at a glance.
+
+**Authoring syntax:** a paragraph containing only a single inline code span, placed immediately above the heading:
+
+```markdown
+`Section 01 · Foundations`
+
+# Section Title
+```
+
+```markdown
+`Context · Competitive Dynamics`
+
+## Slide Heading
+```
+
+The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and renders the code element as a mono uppercase label — same appearance as the `h3` used for eyebrows on content slides, but without touching the heading hierarchy. This makes eyebrows **markdown-lint compliant**: a `<p>` containing code is not a heading and cannot violate heading-order rules.
+
+**Styling:** `--font-mono`, 13px (`--fs-label`), 600 weight, 0.18em letter-spacing, uppercase, `--text-muted`. Dark bookend slides (title, divider, closing) override the color to `--on-dark-secondary` / `--on-dark-ghost` automatically.
+
+**`h3` eyebrows** (used in content, diagram, two-column, stats, etc.) are equally valid and retain their existing role. The inline-code pattern is used specifically on slides where only `h1` or `h2` appears — avoiding the lint error that `h5` would cause when placed before those levels.
+
+**Exception — `split-panel`:** the left accent panel requires `h5` for structural grid placement (the CSS pins `h5` to the top-left of the colored panel). Use `h5` there as documented in T18.
+
 | Category | Templates | CSS class |
 |----------|-----------|-----------|
 | Structural | T1 Title, T2 Divider, T3 Sub-Topic, T19 Closing | `title` `divider` `subtopic` `closing` |
@@ -408,11 +434,11 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 
 **Marp markdown source:**
 ```markdown
-##### Section 01 · Foundations
+`Section 01 · Foundations`
 
 # Section Title Goes Here
 ```
-- `h5` = eyebrow label (faint, uppercase, top)
+- `` `inline code` `` = eyebrow label (faint, uppercase, top)
 - `h1` = section title (large, display font)
 
 ## Template 3: Sub-Topic
@@ -994,7 +1020,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 **Example:**
 ```markdown
-##### Eyebrow Label
+`Eyebrow Label`
 
 - 14×
   - Return on signal investment — one or two sentences of context.
@@ -1029,7 +1055,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 - Left panel: 34% width, full-height accent color background
 - Right panel: 66% width, `--bg`
-- Left panel contains: `h5` eyebrow label pinned top-left, `h2` title pinned bottom-left
+- Left panel contains: `h5` eyebrow label pinned top-left (**required — CSS places `h5` in the accent panel via grid; inline-code eyebrow pattern does not apply here**), `h2` title pinned bottom-left
 - Right panel contains: `h3` subheading, optional `p` intro, then `ul`/`ol` card tiles
 - Good for category-based slides where sidebar signals section or dimension
 - **Card headers**: auto-bolded by CSS, no `**...**` required
