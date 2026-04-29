@@ -474,7 +474,7 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 
 ## The tokenization call is three lines of application code.
 
-_JavaScript · SDK v2 interface_
+### JavaScript · SDK v2 interface
 
 ```javascript
 import { TokenVault } from "@company/token-sdk";
@@ -532,7 +532,7 @@ token = kms.encrypt(
 
 ## Images sit naturally beside text when you need visual evidence.
 
-Use the bg-right directive in Marp markdown. The image-right class reserves the left half for text. Works with image-left too — just swap the directive.
+Use `![bg right](url)` with `image-right` — the default. Image fills the right half, text takes the left.
 
 ---
 
@@ -543,7 +543,7 @@ Use the bg-right directive in Marp markdown. The image-right class reserves the 
 
 ## Lead with the image, follow with the argument.
 
-Use `![bg left](url)` and `image-left` class. Text fills the right half. Useful when the image is the primary anchor and the text supports it.
+Add `image-left` alongside `![bg left](url)` to flip the layout. Only the position changes — the structure is identical.
 
 ---
 
