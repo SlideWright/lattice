@@ -338,7 +338,7 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 | Comparative | T12 Comparison, T20 Finding, T25 Featured | `comparison` `finding` `featured` |
 | Layout | T6 Two-Column, T14 Timeline, T18 Split Panel | `two-column` `timeline` `split-panel` |
 | Layout variant | T14v Step Cards | `steps` |
-| Visual | T16 Full-Bleed Visual | `image-full` |
+| Visual | T16 Full-Image | `image-full` |
 
 ## Template 1: Title (dark bookend)
 
@@ -851,14 +851,14 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - Bullet character styled in `--accent` or `--text-muted`
 - Indent from left edge: 48-64px
 
-## Template 16: Full-Bleed Visual
+## Template 16: Full-Image
 
 One class, two authoring modes — caption is optional.
 
 ```
 ┌───────────────────────────────────────┐   ┌───────────────────────────────────────┐
 │                                       │   │                                       │
-│         [full-bleed image]            │   │         [full-bleed image]            │
+│           [full-image]                │   │           [full-image]                │
 │                                       │   │                                       │
 │                                       │   │  ┌─ caption text ──────────────────┐  │
 │                                  1/19 │   │  └─────────────────────────────────┘  │
@@ -1454,10 +1454,10 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 │  LABEL                                │
 │  Grid Title                           │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Card Title 1 │  │ Card Title 2 │   │
-│  │ body text    │  │ body text    │   │
-│  └──────────────┘  └──────────────┘   │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Card Title 1 │   │ Card Title 2 │  │
+│  │ body text    │   │ body text    │  │
+│  └──────────────┘   └──────────────┘  │
 │  ┌─────────────────────────────────┐  │
 │  │ KEY INSIGHT                     │  │
 │  │ The key insight text here.      │  │
