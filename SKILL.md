@@ -352,7 +352,7 @@ The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and render
 
 **`h3` eyebrows** (used in content, diagram, two-column, stats, etc.) are equally valid and retain their existing role. The inline-code pattern is used specifically on slides where only `h1` or `h2` appears — avoiding the lint error that `h5` would cause when placed before those levels.
 
-**Exception — `split-panel`:** the left accent panel requires `h5` for structural grid placement (the CSS pins `h5` to the top-left of the colored panel). Use `h5` there as documented in T18.
+**Note on `split-panel`:** the inline-code eyebrow paragraph is placed **between `h2` and `h3`** in the source. The CSS grid fallback routes it to the left dark panel automatically. (`h5` is no longer required here.)
 
 ## Subtitle Labels
 
@@ -1079,7 +1079,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 - Left panel: 34% width, full-height accent color background
 - Right panel: 66% width, `--bg`
-- Left panel contains: `h5` eyebrow label pinned top-left (**required — CSS places `h5` in the accent panel via grid; inline-code eyebrow pattern does not apply here**), `h2` title pinned bottom-left
+- Left panel contains: inline-code eyebrow paragraph centered between the title (h2, bottom) and the top of the panel — use `` `Section Label` `` placed **between `h2` and `h3`** in the source. The CSS routes it to the left panel automatically. (`h5` is still accepted but deprecated in favor of the lint-safe inline-code pattern.)
 - Right panel contains: `h3` subheading, optional `p` intro, then `ul`/`ol` card tiles
 - Good for category-based slides where sidebar signals section or dimension
 - **Card headers**: auto-bolded by CSS, no `**...**` required
@@ -1087,9 +1087,9 @@ Caption text that appears as an overlay bar at the bottom.
 - **Authoring pattern:**
 
 ```markdown
-##### Section Label
-
 ## Slide Title
+
+`Section Label`
 
 ### Section heading
 
@@ -1101,7 +1101,7 @@ Optional intro paragraph.
    - Card body.
 ```
 
-- `h5` = left panel eyebrow (faint, top)
+- `` `inline code` `` paragraph = left panel eyebrow (mono uppercase, faint, centered)
 - `h2` = left panel title (white, bottom)
 - `h3` = right panel subheading
 - `p` = right panel intro text

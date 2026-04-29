@@ -1110,9 +1110,9 @@ section.split-panel:not(:has(.panel-left)) p {
   padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
   font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
 }
-/* Code-only paragraph (section label) in split-panel → redirect to left dark panel,
- * centered between h5 (top) and h2 (bottom). Overrides the general p rule above.
- * The eyebrow block already strips the pill; we only need to supply left-panel color. */
+/* Code-only paragraph (eyebrow / section label) → left dark panel, centered.
+ * Overrides the general p rule above; color must be set explicitly on both
+ * the <p> (for inheritance by > code) and directly on > code (for cascade). */
 section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) {
   grid-column:1; grid-row:1 / -1; align-self:center;
   padding:0 var(--sp-lg);
