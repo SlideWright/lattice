@@ -663,7 +663,8 @@ section.code { }
 section.code h3 { margin-bottom:4px; }
 section.code h2 { margin-bottom:var(--sp-xs); }
 section.code > em { font-size:var(--fs-sm); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
-section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; }
+section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--bg-dark); padding:var(--sp-sm) var(--sp-md); box-sizing:border-box; }
+section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
 /* ── CODE-COMPARE ──
  * ## heading  ### left-label  ```block  ### right-label  ```block
@@ -678,7 +679,8 @@ section.code-compare .code-col h3 {
   letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
   margin-bottom:var(--sp-xs);
 }
-section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; }
+section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--bg-dark); padding:var(--sp-sm) var(--sp-md); box-sizing:border-box; }
+section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
 /* ── highlight.js theme ── */
 section pre.hljs { background:var(--bg-dark); padding:var(--sp-sm) var(--sp-md); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
