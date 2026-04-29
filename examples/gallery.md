@@ -537,6 +537,16 @@ Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the p
 
 ---
 
+<!-- _class: image-full -->
+<!-- _footer: "Image full · image-full" -->
+<!-- _paginate: false -->
+
+## [ Dashboard screenshot · Signal Brief — Week 24 ]
+
+Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
+
+---
+
 <!-- _class: divider dark -->
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
@@ -561,7 +571,7 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 ---
 
 <!-- _class: image-full dark -->
-<!-- _footer: "Full-bleed with caption · image-full" -->
+<!-- _footer: "Image full dark · image-full dark" -->
 <!-- _paginate: false -->
 
 ## [ Dashboard screenshot · Signal Brief — Week 24 ]
@@ -569,7 +579,6 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 
 ---
-
 
 <!-- _class: list dark -->
 <!-- _footer: "Dark variant — list · list dark" -->
