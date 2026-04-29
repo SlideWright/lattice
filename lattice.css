@@ -87,11 +87,64 @@ section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
+/* ── SUBTITLE (inline-code paragraph after heading) ──────────────────────────
+ * A paragraph whose only child is an inline code span, placed immediately
+ * after any heading, is promoted to an italic subtitle — body font, muted
+ * color, no code pill.
+ *
+ * Cascade order note: the EYEBROW block below has identical specificity (0,1,4).
+ * When a code paragraph is sandwiched between two headings (hN → p → hN), both
+ * rules match. Because EYEBROW is declared AFTER SUBTITLE, it wins by source
+ * order — no :not() guard required (and :not(:has()) is unreliable in Marp's
+ * Chromium version anyway).
+ *
+ * Usage:
+ *   ## Slide Heading
+ *
+ *   `Four-stage processing pipeline — weekly cadence`
+ */
+section h1 + p:has(> code:only-child),
+section h2 + p:has(> code:only-child),
+section h3 + p:has(> code:only-child),
+section h4 + p:has(> code:only-child),
+section h5 + p:has(> code:only-child) {
+  color: var(--text-muted);
+  font-size: var(--fs-md);
+}
+section h1 + p:has(> code:only-child) > code,
+section h2 + p:has(> code:only-child) > code,
+section h3 + p:has(> code:only-child) > code,
+section h4 + p:has(> code:only-child) > code,
+section h5 + p:has(> code:only-child) > code {
+  font-family: var(--font-body);
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+/* Dark bookend slides are always dark but don't carry .dark — set explicitly */
+section.title   h1 + p:has(> code:only-child),
+section.title   h2 + p:has(> code:only-child),
+section.divider h1 + p:has(> code:only-child),
+section.divider h2 + p:has(> code:only-child),
+section.closing h1 + p:has(> code:only-child),
+section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* .dark modifier: --text-muted is already remapped by section.dark, no extra rule needed */
+/* Centered subtitle for subtopic */
+section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
+
 /* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
  * A paragraph whose only child is an inline code span, placed immediately
  * before any heading, is promoted to an eyebrow label — same visual style as
  * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
  * rules). h5 remains available for structural use (e.g. split-panel).
+ *
+ * Declared AFTER the subtitle block — same specificity (0,1,4), so source
+ * order ensures eyebrow wins when a code paragraph is sandwiched between two
+ * headings (hN → p → hN). The subtitle block handles pure post-heading labels.
  *
  * Selector uses an explicit comma list (not :has() inside :is()) for broadest
  * Chromium compatibility — :has() nested in :is() is unreliable in VS Code's
@@ -139,53 +192,6 @@ section.dark p:has(> code:only-child):has(+ h4) > code,
 section.dark p:has(> code:only-child):has(+ h5) > code { color: var(--on-dark-secondary); }
 /* Centered eyebrow for subtopic */
 section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
-
-/* ── SUBTITLE (inline-code paragraph after heading) ──────────────────────────
- * A paragraph whose only child is an inline code span, placed immediately
- * after any heading, is promoted to an italic subtitle — body font, muted
- * color, no code pill. Mirror of the eyebrow pattern (code before heading).
- *
- * Guard: :not(:has(+ :is(h1,h2,h3,h4,h5))) excludes the sandwich pattern
- * (hN → p → hN) so a code paragraph that is also an eyebrow for the next
- * heading is not double-styled. The eyebrow block handles that case.
- *
- * Usage:
- *   ## Slide Heading
- *
- *   `Four-stage processing pipeline — weekly cadence`
- */
-section h1 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section h3 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section h4 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section h5 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) {
-  color: var(--text-muted);
-  font-size: var(--fs-md);
-}
-section h1 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) > code,
-section h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) > code,
-section h3 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) > code,
-section h4 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) > code,
-section h5 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) > code {
-  font-family: var(--font-body);
-  font-size: inherit;
-  font-style: italic;
-  font-weight: inherit;
-  color: inherit;
-  background: none;
-  padding: 0;
-  border-radius: 0;
-}
-/* Dark bookend slides are always dark but don't carry .dark — set explicitly */
-section.title   h1 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section.title   h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section.divider h1 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section.divider h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section.closing h1 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))),
-section.closing h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) { color: var(--on-dark-secondary); }
-/* .dark modifier: --text-muted is already remapped by section.dark, so no extra rule needed */
-/* Centered subtitle for subtopic */
-section.subtopic h2 + p:has(> code:only-child):not(:has(+ :is(h1,h2,h3,h4,h5))) { text-align: center; }
 
 /* ── KEY INSIGHT ──────────────────────────────────────────────
  * Any trailing > blockquote on a content-bearing layout renders
