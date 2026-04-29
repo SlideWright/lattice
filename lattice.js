@@ -933,7 +933,7 @@ function parseSlide(raw, index) {
           const { title, body } = extractCard(content);
           return `<div class="sub-card"><h3>${title}</h3><p>${body}</p></div>`;
         });
-        html = html.slice(0, ulIdx) + featCard + `<div class="sub-row">${subCards.join('')}</div>` + html.slice(ulEnd + 5);
+        html = html.slice(0, ulIdx) + `<div class="feat-layout">${featCard}<div class="sub-row">${subCards.join('')}</div></div>` + html.slice(ulEnd + 5);
       }
     }
   }
