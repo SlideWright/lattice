@@ -636,11 +636,38 @@ section.image.left::before  { right:auto; left:var(--sp-2xl); }
 /* Typography */
 section.image h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
 section.image p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
-section.image-full { padding:0; }
-section.image-full { border-top: none; }
+/* ── IMAGE-FULL ──
+ * Default: light placeholder — respects deck theme
+ * dark modifier: brand gradient placeholder
+ * h2 = title overlay, centred at top  (small bar, not full-slide fill)
+ * Trailing p = optional caption bar at bottom */
+section.image-full {
+  padding:0; border-top:none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='%236B7280' stroke-width='2.5' opacity='0.35'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='%236B7280' stroke-width='2.5' opacity='0.35'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='%236B7280' stroke-width='2.5' stroke-linejoin='round' opacity='0.35'/%3E%3C/svg%3E") center / 120px no-repeat,
+    var(--bg-alt);
+}
+section.image-full.dark {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 120px no-repeat,
+    linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-warm-mid) 50%, var(--bg-warm-light) 100%);
+}
+section.image-full header,
 section.image-full footer { display:none; }
-section.image-full h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--on-dark-watermark); background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 120px no-repeat, linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; border:none; }
-section.image-full p:last-of-type { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); color:var(--on-dark-secondary); margin:0; z-index:1; }
+section.image-full h2 {
+  position:absolute; top:0; left:0; right:0;
+  text-align:center; margin:0;
+  padding:var(--sp-sm) var(--sp-lg);
+  background:rgba(0,0,0,0.42); color:rgba(255,255,255,0.9);
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400;
+  letter-spacing:0.1em; text-transform:uppercase;
+  z-index:1;
+}
+section.image-full p:last-of-type {
+  position:absolute; bottom:0; left:0; right:0; margin:0;
+  background:rgba(0,0,0,0.58); color:rgba(255,255,255,0.85);
+  padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); z-index:1;
+}
 
 /* ── DARK VARIANT ──
  * Reskins the slide canvas using --dark-* tokens defined in the active
