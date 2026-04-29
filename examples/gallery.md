@@ -218,7 +218,15 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 ---
 
 <!-- _class: image-full -->
-<!-- _footer: "Full-bleed visual · image-full" -->
+<!-- _footer: "Full-bleed, no caption · image-full" -->
+<!-- _paginate: false -->
+
+## [ Dashboard screenshot · Signal Brief — Week 24 ]
+
+---
+
+<!-- _class: image-full -->
+<!-- _footer: "Full-bleed with caption · image-full" -->
 <!-- _paginate: false -->
 
 ## [ Dashboard screenshot · Signal Brief — Week 24 ]
@@ -552,7 +560,7 @@ Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the p
 
 ## Caption overlays the image at the bottom.
 
-Use image-full for full-bleed visuals with a text anchor. No text competes with the image — just a caption bar.
+Omit the trailing paragraph for no caption — the image fills the slide edge to edge.
 
 ---
 

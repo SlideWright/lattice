@@ -849,34 +849,43 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 
 ## Template 16: Full-Bleed Visual
 
+One class, two authoring modes — caption is optional.
+
 ```
-┌──────────────────────────────────────┐
-│                                       │
-│                                       │
-│          [image / visual              │
-│           fills 80%+ of              │
-│           the slide]                  │
-│                                       │
-│                                       │
-│  ┌─ caption or title overlay ──────┐  │
-│  └─────────────────────────────────┘  │
-│                                  1/19 │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────┐   ┌──────────────────────────────────────┐
+│                                       │   │                                       │
+│         [full-bleed image]            │   │         [full-bleed image]            │
+│                                       │   │                                       │
+│                                       │   │  ┌─ caption text ─────────────────┐  │
+│                                  1/19 │   │  └─────────────────────────────────┘  │
+└──────────────────────────────────────┘   └──────────────────────────────────────┘
+   No caption                                 With caption
 ```
 
 **CSS class:** `image-full`
 
-**Marp directive:**
+**Without caption:**
 ```markdown
 <!-- _class: image-full -->
 <!-- _paginate: false -->
+
+## [ Placeholder text shown in draft mode ]
 ```
 
-- Image or visual dominates the slide
-- Small caption overlay at bottom: semi-transparent background, 13-14px text
-- Or: title overlay at top on semi-transparent bar
-- Page number still visible
-- Use for product photos, screenshots, reference images
+**With caption:**
+```markdown
+<!-- _class: image-full -->
+<!-- _paginate: false -->
+
+## [ Placeholder text shown in draft mode ]
+
+Caption text that appears as an overlay bar at the bottom.
+```
+
+- Caption bar is controlled by a trailing paragraph — include it or omit it
+- The `## heading` text is the draft placeholder; replaced by the real image at `![bg](url)`
+- `footer` is hidden — use the trailing paragraph for attribution instead
+- Use for product screenshots, reference images, full-canvas visuals
 
 ## Template 17: Big Number / Single Stat
 

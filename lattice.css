@@ -640,7 +640,7 @@ section.image-full { padding:0; }
 section.image-full { border-top: none; }
 section.image-full footer { display:none; }
 section.image-full h2 { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--on-dark-watermark); background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 120px no-repeat, linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-warm-mid) 50%,var(--bg-warm-light) 100%); margin:0; border:none; }
-section.image-full p:last-child { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); color:var(--on-dark-secondary); margin:0; z-index:1; }
+section.image-full p:last-of-type { position:absolute; bottom:0; left:0; right:0; background:var(--overlay-dark); padding:var(--sp-sm) var(--sp-lg); font-size:var(--fs-body); color:var(--on-dark-secondary); margin:0; z-index:1; }
 
 /* ── DARK VARIANT ──
  * Reskins the slide canvas using --dark-* tokens defined in the active
