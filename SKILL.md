@@ -703,6 +703,33 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - **Numbered cards** (`ol` source): flush top-left corner badge — accent background, white mono number, `--radius-md 0 --radius-sm 0` corners; card `padding-top` is automatically increased to clear the badge
 - Trailing `> blockquote` on this layout renders as a **Key Insight** panel (see Key Insight feature below)
 
+**Inline code in card headers and body text:**
+
+Inline `` `code` `` spans behave differently depending on where they appear inside a card.
+
+**Card header (title line)** — Code placed at the end of the card title (`- Title \`tag\``) renders as a **pill on its own line below the title**, not inline with it. This is caused by Chromium's anonymous block construction when an `<li>` contains both inline text and a block child (`<ul>`). Use this for version numbers, status indicators, and category labels:
+
+```markdown
+- Signal Intake `v2.4`
+  - Body text.
+- Scoring Model `configurable`
+  - Body text.
+```
+
+Visual result: bold card title on line 1, accent-colored pill (with `--border` outline) on line 2, body text below.
+
+**Card body text** — Code placed within body bullet text renders **inline** within the prose, as expected:
+
+```markdown
+- Card Title
+  - Average latency: `4 min` from ingestion to scored entry.
+  - Every prioritization change above `P2` must carry a rationale.
+```
+
+Visual result: accent-colored monospace pill appearing inline within the sentence.
+
+> **Do not use inline code as a standalone line inside a card body** — a body bullet that contains only `` `code` `` and nothing else will be promoted to an eyebrow label by the subtitle/eyebrow rules. Mix it with surrounding prose.
+
 ## Template 9: Card Grid 2+1
 
 ```
