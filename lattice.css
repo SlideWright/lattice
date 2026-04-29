@@ -399,10 +399,17 @@ section.list ol li::before { content:counter(list-counter, decimal-leading-zero)
  */
 section.list-tabular h2 { margin-bottom:var(--sp-md); }
 section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:flex-start; }
-section.list-tabular ol li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-body); line-height:var(--lh-base); }
-section.list-tabular ol li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
-section.list-tabular ol li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); }
-section.list-tabular ol li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-body); line-height:var(--lh-base); }
+section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
+section.list-tabular ol > li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); }
+section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* VS Code / CLI fallback: nested format before runtime flattening.
+ * display:contents makes the inner ul transparent to the parent grid, so its
+ * li children become grid items and slot into columns 3 (desc) and 4 (meta). */
+section.list-tabular ol > li > ul { display:contents; }
+section.list-tabular ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); }
+section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
+section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FULL-BLEED ──
  * ## heading placeholder  *caption text*
@@ -596,8 +603,8 @@ section.featured .sub-card p  { font-size:var(--fs-sm); color:var(--text-body); 
  */
 section.steps h2 { margin-bottom:var(--sp-md); }
 section.steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
-section.steps ol li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; }
-section.steps ol li:not(:last-child)::after {
+section.steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; }
+section.steps ol > li:not(:last-child)::after {
   content:'';
   position:absolute;
   right:calc(-1 * var(--sp-xl) / 2);
@@ -608,9 +615,14 @@ section.steps ol li:not(:last-child)::after {
   border-left:10px solid var(--border);
   z-index:1;
 }
-section.steps ol li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
-section.steps ol li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); display:block; }
-section.steps ol li p { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); flex:1; margin:0; }
+section.steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.steps ol > li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); display:block; }
+section.steps ol > li p { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.steps ol > li:not(:has(> ul)) > p { flex:1; }
+/* Nested list format: - body text under each step */
+section.steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.steps ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+section.steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── IMAGE LAYOUTS ── */
 section.image-right { padding-right:calc(50% + var(--sp-lg)); }
@@ -825,18 +837,22 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { w
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
- * ul > li(<strong>title</strong> body) → mimic .sub-row > .sub-card           */
-section.featured:not(:has(.sub-row)) ul {
+ * > ul > li(<strong>title</strong> + nested ul body) → mimic .sub-row > .sub-card */
+section.featured:not(:has(.sub-row)) > ul {
   display:flex; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
 }
-section.featured:not(:has(.sub-row)) ul > li {
+section.featured:not(:has(.sub-row)) > ul > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column;
 }
-section.featured:not(:has(.sub-row)) ul > li > strong {
+section.featured:not(:has(.sub-row)) > ul > li > strong {
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
   display:block; margin-bottom:var(--sp-xs);
 }
+/* Nested list format: body text in sub-list */
+section.featured:not(:has(.sub-row)) > ul > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.featured:not(:has(.sub-row)) > ul > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+section.featured:not(:has(.sub-row)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── CARDS-WIDE-3 ────────────────────────────────────────────────────────────
  * ol > li(<strong>eyebrow · heading</strong> body) → mimic .three-stack > .wide-card

@@ -893,17 +893,45 @@ function parseSlide(raw, index) {
   }
 
   // featured: blockquote = featured card, ul items = sub-cards
+  // Supports: - **Title** / nested - body  (preferred)
+  //       or: - **Title** — inline body    (legacy)
   if (cls.includes('featured')) {
-    html = html.replace(/<ul>([\s\S]*?)<\/ul>/g, (_, inner) => {
-      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-      const subCards = items.map(content => {
-        const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
-        const title = titleMatch ? titleMatch[1] : '';
-        const body = content.replace(/<strong>.*?<\/strong>/, '').trim();
-        return `<div class="sub-card"><h3>${title}</h3><p>${body}</p></div>`;
-      });
-      return `<div class="sub-row">${subCards.join('')}</div>`;
-    });
+    const ulIdx = html.indexOf('<ul>');
+    if (ulIdx !== -1) {
+      // Depth-aware scan to find the matching </ul>
+      let depth = 0, pos = ulIdx, ulEnd = -1;
+      while (pos < html.length) {
+        if (html.startsWith('<ul>', pos))       { depth++; pos += 4; }
+        else if (html.startsWith('</ul>', pos)) { depth--; if (depth === 0) { ulEnd = pos; break; } pos += 5; }
+        else pos++;
+      }
+      if (ulEnd !== -1) {
+        const ulInner = html.slice(ulIdx + 4, ulEnd);
+        // Depth-aware: collect top-level <li> contents
+        const items = [];
+        let liDepth = 0, liStart = -1, i = 0;
+        while (i < ulInner.length) {
+          if (ulInner.startsWith('<li>', i))       { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (ulInner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(ulInner.slice(liStart, i)); liStart = -1; } i += 5; }
+          else i++;
+        }
+        const subCards = items.map(content => {
+          const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
+          const title = titleMatch ? titleMatch[1] : '';
+          // Prefer nested <ul><li>body</li></ul>; fall back to inline text
+          const innerUlIdx = content.indexOf('<ul>');
+          let body;
+          if (innerUlIdx !== -1) {
+            const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
+            body = innerLiMatch ? innerLiMatch[1].trim() : '';
+          } else {
+            body = content.replace(/<strong>.*?<\/strong>/, '').trim();
+          }
+          return `<div class="sub-card"><h3>${title}</h3><p>${body}</p></div>`;
+        });
+        html = html.slice(0, ulIdx) + `<div class="sub-row">${subCards.join('')}</div>` + html.slice(ulEnd + 5);
+      }
+    }
   }
 
   // split-panel: h2+h5 go in panel-left, everything after in panel-right
@@ -1011,16 +1039,49 @@ function parseSlide(raw, index) {
     });
   }
 
-  // timeline: ol li — strong = label, em = description
-  // (already handled by CSS selectors, no post-processing needed)
-
-  // steps: ol already renders correctly via CSS counter + strong + p
-  // list-tabular: ol li — strong = verb, em = meta
+  // steps: ol already renders correctly via CSS counter + strong
+  // list-tabular: nested format — **name** / - description / - _meta_
+  // Flatten nested ul into: <li><strong>name</strong>description<em>meta</em></li>
   if (cls.includes('list-tabular')) {
-    html = html.replace(/<li>([\s\S]*?)<\/li>/g, (_, content) => {
-      // strong = verb, em = meta, plain text = desc
-      return `<li>${content}</li>`;
-    });
+    const olIdx = html.indexOf('<ol>');
+    if (olIdx !== -1) {
+      let depth = 0, pos = olIdx, olEnd = -1;
+      while (pos < html.length) {
+        if (html.startsWith('<ol>', pos))       { depth++; pos += 4; }
+        else if (html.startsWith('</ol>', pos)) { depth--; if (depth === 0) { olEnd = pos; break; } pos += 5; }
+        else pos++;
+      }
+      if (olEnd !== -1) {
+        const olInner = html.slice(olIdx + 4, olEnd);
+        const processedItems = [];
+        let liDepth = 0, liStart = -1, i = 0;
+        while (i < olInner.length) {
+          if (olInner.startsWith('<li>', i))       { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (olInner.startsWith('</li>', i)) {
+            liDepth--;
+            if (liDepth === 0 && liStart !== -1) {
+              const content = olInner.slice(liStart, i);
+              const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
+              const innerUlIdx = content.indexOf('<ul>');
+              if (strongMatch && innerUlIdx !== -1) {
+                const name = strongMatch[1];
+                // Inner items have no further nesting — non-greedy regex is safe
+                const innerItems = [...content.slice(innerUlIdx).matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1].trim());
+                const desc = innerItems[0] || '';
+                const meta = innerItems[1] || '';
+                processedItems.push(`<li><strong>${name}</strong>${desc}${meta}</li>`);
+              } else {
+                processedItems.push(`<li>${content}</li>`);
+              }
+              liStart = -1;
+            }
+            i += 5;
+          }
+          else i++;
+        }
+        html = html.slice(0, olIdx + 4) + '\n' + processedItems.join('\n') + '\n' + html.slice(olEnd);
+      }
+    }
   }
 
   // ── Universal below-note ─────────────────────────────────────────────────────

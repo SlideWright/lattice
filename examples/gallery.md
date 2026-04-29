@@ -391,8 +391,10 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 > **The evidence favors Tool D** — Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.
 
-- **The path is not self-executing** — Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.
-- **The Decision Log is the hardest part** — Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.
+- **The path is not self-executing**
+  - Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.
+- **The Decision Log is the hardest part**
+  - Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.
 
 ---
 
@@ -415,10 +417,14 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ## How to roll this out across your organization.
 
-1. **Pick one team and one decision type** — Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.
-2. **Log everything, decide nothing differently** — In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.
-3. **Run your first retrospective** — At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.
-4. **Expand to a second team** — With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.
+1. **Pick one team and one decision type**
+   - Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.
+2. **Log everything, decide nothing differently**
+   - In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.
+3. **Run your first retrospective**
+   - At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.
+4. **Expand to a second team**
+   - With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.
 
 ---
 
@@ -427,12 +433,24 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ## The six signal dimensions, what they measure, and how they are scored.
 
-1. **Confidence** — Number of independent sources corroborating the signal — _1–5 · Auto-scored_
-2. **Recency** — Time-decay from signal date, configurable half-life — _0.0–1.0 · Auto-scored_
-3. **Relevance** — Alignment to current strategic bets, owner-scored — _1–5 · Manual_
-4. **Reach** — Number of customers or segments affected — _1–5 · Auto-scored_
-5. **Effort** — Engineering and design cost to act on the signal — _1–5 · Manual_
-6. **Confidence delta** — Change in confidence score since last scoring cycle — _−5 to +5 · Auto_
+1. **Confidence**
+   - Number of independent sources corroborating the signal
+   - _1–5 · Auto-scored_
+2. **Recency**
+   - Time-decay from signal date, configurable half-life
+   - _0.0–1.0 · Auto-scored_
+3. **Relevance**
+   - Alignment to current strategic bets, owner-scored
+   - _1–5 · Manual_
+4. **Reach**
+   - Number of customers or segments affected
+   - _1–5 · Auto-scored_
+5. **Effort**
+   - Engineering and design cost to act on the signal
+   - _1–5 · Manual_
+6. **Confidence delta**
+   - Change in confidence score since last scoring cycle
+   - _−5 to +5 · Auto_
 
 ---
 
