@@ -374,7 +374,9 @@ section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
 section.card-grid > ul > li > code,
 section.card-grid > ol > li > code,
 section.cards-side > ul > li > code,
-section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
+section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.card-grid > ul > li > ul, section.card-grid > ul > li > ol,
 section.card-grid > ol > li > ul, section.card-grid > ol > li > ol,
@@ -401,7 +403,9 @@ section.cards-side .card {
 }
 section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.card-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.card-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
+section.card-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.card-grid .card > ul, section.card-grid .card > ol,
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.card-grid .card > ul > li, section.card-grid .card > ol > li,
@@ -939,7 +943,9 @@ section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong { display:bloc
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > code,
 section.card-grid:not(:has(.card-grid-inner)) > ol > li > code,
 section.cards-side:not(:has(.card-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs); }
+section.cards-side:not(:has(.card-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul,
 section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol,
 section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul,
