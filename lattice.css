@@ -269,8 +269,8 @@ section footer {
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
-section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; letter-spacing:0.06em; margin:0; text-align:left !important; }
-section::after { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; color:var(--text-muted); bottom:24px; right:30px; padding:0; }
+section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; margin:0; text-align:left !important; }
+section::after { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; color:var(--marp-slide-footer-color, var(--text-muted)); bottom:24px; right:30px; padding:0; }
 
 /* ── TITLE ── */
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
