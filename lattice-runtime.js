@@ -213,55 +213,67 @@
   }
 
   let scheduledRunHandle = null;
-  function scheduleRun(reason) {
+  let pendingSections = new Set();
+
+  function scheduleRun(section) {
+    // Accumulate the changed section so initAndRun can scope the re-render to
+    // only that section's diagrams. Multiple sections can accumulate within a
+    // single debounce window (e.g. find-and-replace touches several slides).
+    if (section instanceof Element) pendingSections.add(section);
     // Trailing-edge debounce: reset the timer on every call so rapid mutations
-    // from a single Marp re-render all consolidate into one run that fires
-    // after the last change settles. Leading-edge would run at the first
-    // mutation, but Marp may still be updating remaining sections at that point.
+    // from a single Marp re-render burst settle before initAndRun fires once.
     if (scheduledRunHandle) clearTimeout(scheduledRunHandle);
     scheduledRunHandle = setTimeout(() => {
       scheduledRunHandle = null;
-      initAndRun();
+      const targets = pendingSections.size > 0 ? [...pendingSections] : null;
+      pendingSections = new Set();
+      initAndRun(targets);
     }, 200);
   }
 
-  function upgradeFences() {
-    for (const codeEl of document.querySelectorAll(
-      [
-        "pre > code.language-mermaid",
-        "pre > code[class*='language-mermaid']",
-        "marp-pre > code.language-mermaid",
-        "marp-pre > code[class*='language-mermaid']",
-      ].join(","),
-    )) {
-      const wrapper = codeEl.parentElement;
-      if (!wrapper) continue;
+  function upgradeFences(roots) {
+    // roots: optional array of elements to scope the search.
+    // null / undefined → search the whole document (initial load, retry loop).
+    const searchRoots = (roots && roots.length > 0) ? roots : [document];
+    const FENCE_SELECTOR = [
+      "pre > code.language-mermaid",
+      "pre > code[class*='language-mermaid']",
+      "marp-pre > code.language-mermaid",
+      "marp-pre > code[class*='language-mermaid']",
+    ].join(",");
+    for (const root of searchRoots) {
+      for (const codeEl of root.querySelectorAll(FENCE_SELECTOR)) {
+        const wrapper = codeEl.parentElement;
+        if (!wrapper) continue;
 
-      // If the fence was already upgraded/replaced, skip.
-      if (wrapper.dataset.llMermaidUpgraded === "1") continue;
+        // If the fence was already upgraded/replaced, skip.
+        if (wrapper.dataset.llMermaidUpgraded === "1") continue;
 
-      const source = codeEl.textContent || "";
+        const source = codeEl.textContent || "";
 
-      // Marp preview/export wraps fences in <marp-pre> or <pre is="marp-pre" data-auto-scaling>
-      // which can apply downscaling transforms. Replace the wrapper with a plain <div>
-      // so our normal layout CSS (width, max-width, centering) can win.
-      const replacement = document.createElement("div");
-      replacement.className = "mermaid";
-      replacement.textContent = source;
-      replacement.dataset.llMermaidUpgraded = "1";
-      // Preserve source so we can restore it if Mermaid clears it on a parse error.
-      replacement.dataset.llSource = source;
+        // Marp preview/export wraps fences in <marp-pre> or <pre is="marp-pre" data-auto-scaling>
+        // which can apply downscaling transforms. Replace the wrapper with a plain <div>
+        // so our normal layout CSS (width, max-width, centering) can win.
+        const replacement = document.createElement("div");
+        replacement.className = "mermaid";
+        replacement.textContent = source;
+        replacement.dataset.llMermaidUpgraded = "1";
+        // Preserve source so we can restore it if Mermaid clears it on a parse error.
+        replacement.dataset.llSource = source;
 
-      wrapper.replaceWith(replacement);
+        wrapper.replaceWith(replacement);
+      }
     }
   }
 
-  function initAndRun() {
+  function initAndRun(targets) {
     transformVerdictGridBadges();
     const mermaid = globalScope.mermaid;
     if (!mermaid) return false;
 
-    upgradeFences();
+    // When targets are provided (observer-driven), only upgrade fences within
+    // those sections. For initial load / retry loop (no targets), upgrade globally.
+    upgradeFences(targets);
 
     // Guard: don't lock the config until the theme's CSS custom properties are
     // actually resolved. On the first tick in Marp's webview, getComputedStyle
@@ -316,33 +328,52 @@
       globalScope.__llMermaidConfigured = true;
     }
 
+    // Build the exact set of elements to render.
+    // When targets are provided (observer-driven, scoped re-render), collect
+    // only the unprocessed .mermaid elements within those sections via
+    // mermaid.run({ nodes }). This avoids touching diagrams in other sections
+    // that already rendered correctly.
+    // When no targets (initial load, retry loop), use querySelector globally.
+    const UNRENDERED = ".mermaid:not([data-processed]):not([data-ll-mermaid-static])";
+    let runOpts;
+    if (targets) {
+      const nodes = [];
+      for (const section of targets) {
+        for (const el of section.querySelectorAll(UNRENDERED)) {
+          nodes.push(el);
+        }
+      }
+      // Nothing new to render in the affected sections — skip the run.
+      if (nodes.length === 0) return true;
+      runOpts = { nodes, suppressErrors: true };
+    } else {
+      runOpts = { querySelector: UNRENDERED, suppressErrors: true };
+    }
+
     // mermaid.run() is async — it marks elements data-processed synchronously
     // then renders each one as a Promise chain. Running restoration in .then()
     // ensures we only restore diagrams that genuinely failed (no SVG injected),
     // not ones that are still mid-render when restoration would run synchronously.
     const _runPromise = (() => {
       try {
-        return mermaid.run({
-          querySelector:
-            ".mermaid:not([data-processed]):not([data-ll-mermaid-static])",
-          suppressErrors: true,
-        });
+        return mermaid.run(runOpts);
       } catch (_err) {
         return Promise.resolve();
       }
     })();
 
     // Restore source text for any diagram that failed to render.
-    // Runs after the run Promise resolves so elements without an SVG are
-    // genuinely failed, not still in-flight. Mermaid clears innerHTML before
-    // rendering; restoring textContent lets the :not(:has(svg)) CSS fallback
-    // display the raw source as a styled code block instead of a blank area.
+    // Scope the restoration to target sections when available — no reason to
+    // scan sections that were not part of this run.
+    const restoreRoots = targets ?? [document];
     Promise.resolve(_runPromise).then(() => {
-      for (const el of document.querySelectorAll(
-        ".mermaid[data-processed]:not([data-ll-mermaid-static])"
-      )) {
-        if (!el.querySelector("svg") && el.dataset.llSource) {
-          el.textContent = el.dataset.llSource;
+      for (const root of restoreRoots) {
+        for (const el of root.querySelectorAll(
+          ".mermaid[data-processed]:not([data-ll-mermaid-static])"
+        )) {
+          if (!el.querySelector("svg") && el.dataset.llSource) {
+            el.textContent = el.dataset.llSource;
+          }
         }
       }
     });
@@ -425,7 +456,11 @@
         for (const node of m.addedNodes) {
           if (!(node instanceof HTMLElement)) continue;
           if (node.matches(FENCE_SELECTOR) || node.querySelector(FENCE_SELECTOR)) {
-            scheduleRun("fence-added");
+            // Walk up to the containing <section> so initAndRun can scope the
+            // re-render to only that section's diagrams, leaving all other
+            // already-rendered diagrams untouched.
+            const section = node.closest("section") ?? node;
+            scheduleRun(section);
             return; // one scheduleRun per mutation batch is enough
           }
         }
