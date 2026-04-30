@@ -214,8 +214,11 @@
 
   let scheduledRunHandle = null;
   function scheduleRun(reason) {
-    // Debounce: avoid running Mermaid for every keystroke / micro DOM update.
-    if (scheduledRunHandle) return;
+    // Trailing-edge debounce: reset the timer on every call so rapid mutations
+    // from a single Marp re-render all consolidate into one run that fires
+    // after the last change settles. Leading-edge would run at the first
+    // mutation, but Marp may still be updating remaining sections at that point.
+    if (scheduledRunHandle) clearTimeout(scheduledRunHandle);
     scheduledRunHandle = setTimeout(() => {
       scheduledRunHandle = null;
       initAndRun();
@@ -382,32 +385,49 @@
     if (globalScope.__llMermaidObserverStarted) return;
     globalScope.__llMermaidObserverStarted = true;
 
+    // Only watch for Marp-originated code fence additions.
+    //
+    // What we must NOT observe:
+    //   .mermaid additions — those are created by upgradeFences() running
+    //     inside initAndRun(). Observing them causes a self-triggering second
+    //     run 200 ms after every upgrade: mermaid.run() is async so the second
+    //     run's .then() restoration fires while the first is still rendering,
+    //     and the element — which has data-processed but no SVG yet — gets its
+    //     source text restored, interfering with the in-progress render.
+    //   SVG / text node additions — Mermaid's own rendering inserts SVG child
+    //     elements and text nodes. These are non-HTMLElement nodes so they pass
+    //     the instanceof guard, but including them via characterData: true would
+    //     create constant noise on every render.
+    //   characterData mutations — Marp re-renders via childList (section
+    //     replacement), never by patching text nodes inside existing code fences.
+    //     characterData: true fires on every SVG text node Mermaid creates and
+    //     every other dynamic text change on the page. Pure noise.
+    //
+    // What we MUST observe:
+    //   pre > code.language-mermaid    — Marp CLI / HTML export output
+    //   marp-pre > code.language-mermaid — Marp VS Code preview output
+    //   (and the [class*=] variants for non-standard class strings)
+    //
+    // When Marp re-renders a slide in VS Code preview it replaces the <section>
+    // entirely (or its innerHTML). The mutation addedNodes will be the new
+    // <section> (or its direct children). querySelector on those nodes finds
+    // the new code fences and triggers a re-run.
+    const FENCE_SELECTOR = [
+      "pre > code.language-mermaid",
+      "pre > code[class*='language-mermaid']",
+      "marp-pre > code.language-mermaid",
+      "marp-pre > code[class*='language-mermaid']",
+    ].join(",");
+
     const observer = new MutationObserver((mutations) => {
-      // Only schedule a run when a Mermaid-relevant node is added/changed.
       for (const m of mutations) {
-        if (m.type === "childList") {
-          for (const node of m.addedNodes) {
-            if (!(node instanceof HTMLElement)) continue;
-
-            if (
-              node.matches?.(
-                ".mermaid, pre > code.language-mermaid, marp-pre > code.language-mermaid, code.language-mermaid",
-              ) ||
-              node.querySelector?.(
-                ".mermaid, pre > code.language-mermaid, marp-pre > code.language-mermaid, code.language-mermaid",
-              )
-            ) {
-              scheduleRun("dom-added");
-              return;
-            }
+        if (m.type !== "childList") continue;
+        for (const node of m.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches(FENCE_SELECTOR) || node.querySelector(FENCE_SELECTOR)) {
+            scheduleRun("fence-added");
+            return; // one scheduleRun per mutation batch is enough
           }
-        }
-
-        // If Marp updates the text inside an existing code fence, characterData
-        // mutations can fire (depending on renderer). Schedule a rerun.
-        if (m.type === "characterData") {
-          scheduleRun("dom-text");
-          return;
         }
       }
     });
@@ -415,7 +435,7 @@
     observer.observe(document.body, {
       subtree: true,
       childList: true,
-      characterData: true,
+      // characterData intentionally omitted — see comment above
     });
   }
 
