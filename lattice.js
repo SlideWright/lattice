@@ -157,8 +157,8 @@ const MERMAID_VAR_MAP = {
   background:               { var: 'bg' },
 
   // Primary/secondary/tertiary fills (pale band)
-  primaryColor:             { var: 'primary-color' },
-  secondaryColor:           { var: 'secondary-color' },
+  primaryColor:             { var: 'mermaid-primary-color' },
+  secondaryColor:           { var: 'mermaid-secondary-color' },
   tertiaryColor:            { var: 'bg-alt' },
   primaryBorderColor:       { var: 'mermaid-border' },
   secondaryBorderColor:     { var: 'mermaid-border' },
@@ -182,7 +182,7 @@ const MERMAID_VAR_MAP = {
   labelBackground:          { var: 'bg' },
 
   // Main background paths
-  mainBkg:                  { var: 'primary-color' },
+  mainBkg:                  { var: 'mermaid-primary-color' },
   nodeBorder:               { var: 'mermaid-border' },
   nodeTextColor:            { var: 'text-heading' },
   clusterBkg:               { var: 'bg-alt' },
@@ -203,17 +203,17 @@ const MERMAID_VAR_MAP = {
   cScale11:                 { var: 'mermaid-mid-rose' },
 
   // fillType (subgraph / mindmap-level fills, pale band)
-  fillType0: { var: 'primary-color' },
-  fillType1: { var: 'secondary-color' },
-  fillType2: { var: 'pie-purple' },
-  fillType3: { var: 'pie-orange' },
-  fillType4: { var: 'pie-teal' },
-  fillType5: { var: 'pie-rose' },
-  fillType6: { var: 'primary-color' },
-  fillType7: { var: 'secondary-color' },
+  fillType0: { var: 'mermaid-primary-color' },
+  fillType1: { var: 'mermaid-secondary-color' },
+  fillType2: { var: 'mermaid-pie-purple' },
+  fillType3: { var: 'mermaid-pie-orange' },
+  fillType4: { var: 'mermaid-pie-teal' },
+  fillType5: { var: 'mermaid-pie-rose' },
+  fillType6: { var: 'mermaid-primary-color' },
+  fillType7: { var: 'mermaid-secondary-color' },
 
   // Sequence diagram
-  actorBkg:                 { var: 'primary-color' },
+  actorBkg:                 { var: 'mermaid-primary-color' },
   actorBorder:              { var: 'mermaid-border' },
   actorTextColor:           { var: 'text-heading' },
   actorLineColor:           { var: 'mermaid-line' },
@@ -222,7 +222,7 @@ const MERMAID_VAR_MAP = {
   labelBoxBkgColor:         { var: 'bg-alt' },
   labelBoxBorderColor:      { var: 'mermaid-border' },
   activationBorderColor:    { var: 'mermaid-border' },
-  activationBkgColor:       { var: 'primary-color' },
+  activationBkgColor:       { var: 'mermaid-primary-color' },
   sequenceNumberColor:      { var: 'text-heading' },
 
   // Notes (yellow accent — category-distinct)
@@ -235,18 +235,18 @@ const MERMAID_VAR_MAP = {
   errorTextColor:           { var: 'mermaid-error-text' },
 
   // Pie chart (pale palette — unified contract)
-  pie1:  { var: 'primary-color' },
-  pie2:  { var: 'secondary-color' },
-  pie3:  { var: 'pie-purple' },
-  pie4:  { var: 'pie-orange' },
-  pie5:  { var: 'pie-teal' },
-  pie6:  { var: 'pie-rose' },
+  pie1:  { var: 'mermaid-primary-color' },
+  pie2:  { var: 'mermaid-secondary-color' },
+  pie3:  { var: 'mermaid-pie-purple' },
+  pie4:  { var: 'mermaid-pie-orange' },
+  pie5:  { var: 'mermaid-pie-teal' },
+  pie6:  { var: 'mermaid-pie-rose' },
   pie7:  { var: 'mermaid-pie-yellow' },
   pie8:  { var: 'mermaid-pie-red' },
   pie9:  { var: 'mermaid-pie-slate' },
   pie10: { var: 'mermaid-pie-sage' },
   pie11: { var: 'mermaid-pie-violet' },
-  pie12: { var: 'primary-color' },
+  pie12: { var: 'mermaid-primary-color' },
   pieTitleTextSize:    { literal: '18px' },
   pieTitleTextColor:   { var: 'text-heading' },
   pieSectionTextSize:  { literal: '14px' },
@@ -262,8 +262,8 @@ const MERMAID_VAR_MAP = {
   // Gantt (pale bars, dark text, alarm-only saturation)
   sectionBkgColor:        { var: 'bg-alt' },
   altSectionBkgColor:     { var: 'bg' },
-  sectionBkgColor2:       { var: 'primary-color' },
-  taskBkgColor:           { var: 'primary-color' },
+  sectionBkgColor2:       { var: 'mermaid-primary-color' },
+  taskBkgColor:           { var: 'mermaid-primary-color' },
   taskTextColor:          { var: 'text-heading' },
   taskTextLightColor:     { var: 'text-heading' },
   taskTextOutsideColor:   { var: 'text-heading' },
@@ -333,58 +333,6 @@ const MERMAID_VAR_MAP = {
   }},
 };
 
-// ── CSS variable name aliases ─────────────────────────────────────────────
-// The map above uses short role names. The palette CSS file uses longer
-// names like --primary-color, --bg, --bg-alt, --text-heading. This alias
-// table connects the two. Add new aliases when introducing a new palette
-// role in themes/<n>.css.
-const CSS_VAR_ALIASES = {
-  'bg':                'bg',
-  'bg-alt':            'bg-alt',
-  'text-heading':      'text-heading',
-  'primary-color':     'mermaid-primary-color',
-  'secondary-color':   'mermaid-secondary-color',
-  'pie-purple':        'mermaid-pie-purple',
-  'pie-orange':        'mermaid-pie-orange',
-  'pie-teal':          'mermaid-pie-teal',
-  'pie-rose':          'mermaid-pie-rose',
-  'mermaid-line':      'mermaid-line',
-  'mermaid-border':    'mermaid-border',
-  'mermaid-mid-blue':       'mermaid-mid-blue',
-  'mermaid-mid-green':      'mermaid-mid-green',
-  'mermaid-mid-purple':     'mermaid-mid-purple',
-  'mermaid-mid-orange':     'mermaid-mid-orange',
-  'mermaid-mid-teal':       'mermaid-mid-teal',
-  'mermaid-mid-rose':       'mermaid-mid-rose',
-  'mermaid-mid-slate':      'mermaid-mid-slate',
-  'mermaid-mid-mauve':      'mermaid-mid-mauve',
-  'mermaid-pie-yellow':     'mermaid-pie-yellow',
-  'mermaid-pie-red':        'mermaid-pie-red',
-  'mermaid-pie-slate':      'mermaid-pie-slate',
-  'mermaid-pie-sage':       'mermaid-pie-sage',
-  'mermaid-pie-violet':     'mermaid-pie-violet',
-  'mermaid-quadrant-1-fill': 'mermaid-quadrant-1-fill',
-  'mermaid-quadrant-2-fill': 'mermaid-quadrant-2-fill',
-  'mermaid-quadrant-3-fill': 'mermaid-quadrant-3-fill',
-  'mermaid-quadrant-4-fill': 'mermaid-quadrant-4-fill',
-  'mermaid-quadrant-1-text': 'mermaid-quadrant-1-text',
-  'mermaid-quadrant-2-text': 'mermaid-quadrant-2-text',
-  'mermaid-quadrant-3-text': 'mermaid-quadrant-3-text',
-  'mermaid-quadrant-4-text': 'mermaid-quadrant-4-text',
-  'mermaid-gantt-active':         'mermaid-gantt-active',
-  'mermaid-gantt-active-border':  'mermaid-gantt-active-border',
-  'mermaid-gantt-done':           'mermaid-gantt-done',
-  'mermaid-gantt-done-border':    'mermaid-gantt-done-border',
-  'mermaid-gantt-critical':       'mermaid-gantt-critical',
-  'mermaid-gantt-critical-border':'mermaid-gantt-critical-border',
-  'mermaid-gantt-today':          'mermaid-gantt-today',
-  'mermaid-gantt-grid':           'mermaid-gantt-grid',
-  'mermaid-note-bg':              'mermaid-note-bg',
-  'mermaid-note-border':          'mermaid-note-border',
-  'mermaid-error-bg':             'mermaid-error-bg',
-  'mermaid-error-text':           'mermaid-error-text',
-};
-
 // ── Resolver: parses CSS custom properties from the palette file ─────────
 // Walks every :root { ... } block and extracts --variable-name: #hex pairs,
 // then resolves any var() references one level deep. Returns a flat hex map.
@@ -413,14 +361,9 @@ function resolveMermaidThemeVars(paletteVars) {
   const resolve = (entry) => {
     if (entry.literal !== undefined) return entry.literal;
     if (entry.var !== undefined) {
-      const cssVar = CSS_VAR_ALIASES[entry.var];
-      if (!cssVar) {
-        console.warn(`  ⚠ Mermaid theme references undefined role: ${entry.var}`);
-        return '#000000';
-      }
-      const val = paletteVars[cssVar];
+      const val = paletteVars[entry.var];
       if (!val) {
-        console.warn(`  ⚠ Palette missing CSS variable: --${cssVar} (for Mermaid role ${entry.var})`);
+        console.warn(`  ⚠ Palette missing CSS variable: --${entry.var}`);
         return '#000000';
       }
       return val;
@@ -442,6 +385,26 @@ function resolveMermaidThemeVars(paletteVars) {
 
 const PALETTE_VARS = parsePaletteVars(paletteCSS);
 const MERMAID_THEME_VARS = resolveMermaidThemeVars(PALETTE_VARS);
+
+// ── Post-process themeCSS: resolve var() and strip section scope prefix ──────
+// The theme file writes themeCSS selectors prefixed with 'section ' (for
+// preview path isolation — each slide section scopes its own diagram styles
+// so rules from one theme cannot bleed into slides rendered by another theme).
+// The mmdc path injects themeCSS inside the SVG's own <style> tag where there
+// is no wrapping <section> element; strip the prefix so bare class selectors
+// reach the SVG DOM. Also expand var(--name) to literal hex values because
+// Mermaid's %%{init}%% parser requires resolved literals in themeCSS.
+function resolveVarsInThemeCSS(css, paletteVars) {
+  return css.replace(/var\(--([a-z0-9-]+)\)/gi, (_, name) => {
+    const val = paletteVars[name];
+    if (!val) console.warn(`  ⚠ themeCSS references undefined CSS variable: --${name}`);
+    return val ?? `var(--${name})`;
+  });
+}
+if (MERMAID_THEME_CSS) {
+  MERMAID_THEME_CSS = resolveVarsInThemeCSS(MERMAID_THEME_CSS, PALETTE_VARS)
+    .replace(/\bsection (?=[.#\[a-zA-Z*])/g, '');
+}
 
 // ── Puppeteer config — chrome auto-detection ─────────────────────────────
 // The renderer shells out to mmdc (mermaid-cli) which uses puppeteer to
@@ -605,6 +568,7 @@ function parseInline(t) {
   return t
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+    .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, '<em>$1</em>')
     .replace(/`(.+?)`/g,       '<code>$1</code>');
 }
 
@@ -637,8 +601,9 @@ function parseSlide(raw, index) {
 
   // ── Marp background image syntax ─────────────────────────────────────────
   // Handles: ![bg right](url), ![bg left](url), ![bg](url)
+  // Anchored to line start (^) so inline backtick code containing ![bg...] is not consumed.
   let bgImageHtml = '';
-  raw = raw.replace(/!\[bg(?:\s+(right|left))?\]\(([^)]+)\)/g, (_, side, url) => {
+  raw = raw.replace(/^!\[bg(?:\s+(right|left))?\]\(([^)]+)\)/gm, (_, side, url) => {
     const pos = side === 'right' ? 'right:0;top:0;bottom:0;width:50%;'
               : side === 'left'  ? 'left:0;top:0;bottom:0;width:50%;'
               : 'inset:0;';
@@ -914,15 +879,27 @@ function parseSlide(raw, index) {
           else i++;
         }
         const extractCard = (content) => {
-          const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
-          const title = titleMatch ? titleMatch[1] : '';
+          const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
           const innerUlIdx = content.indexOf('<ul>');
-          let body;
-          if (innerUlIdx !== -1) {
-            const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
-            body = innerLiMatch ? innerLiMatch[1].trim() : '';
+          let title, body;
+          if (strongMatch) {
+            title = strongMatch[1];
+            if (innerUlIdx !== -1) {
+              const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
+              body = innerLiMatch ? innerLiMatch[1].trim() : '';
+            } else {
+              body = content.replace(strongMatch[0], '').trim();
+            }
           } else {
-            body = content.replace(/<strong>.*?<\/strong>/, '').trim();
+            // No <strong>: title is all content before first <ul>, body is inside nested <li>
+            if (innerUlIdx !== -1) {
+              title = content.slice(0, innerUlIdx).trim();
+              const innerLiMatch = content.slice(innerUlIdx).match(/<li>([\s\S]*?)<\/li>/);
+              body = innerLiMatch ? innerLiMatch[1].trim() : '';
+            } else {
+              title = '';
+              body = content.trim();
+            }
           }
           return { title, body };
         };
@@ -938,18 +915,22 @@ function parseSlide(raw, index) {
     }
   }
 
-  // split-panel: h2+h5 go in panel-left, everything after in panel-right
+  // split-panel: h2+h5+code-only-p go in panel-left, everything after in panel-right
   if (cls.includes('split-panel')) {
     const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
     const h5Match = html.match(/<h5>([\s\S]*?)<\/h5>/);
+    // Code-only paragraph (e.g. `Section 02`) → left panel, matching the CSS fallback
+    const codePMatch = html.match(/<p><code>[^<]+<\/code><\/p>/);
     const h2 = h2Match ? h2Match[0] : '';
     const h5 = h5Match ? h5Match[0] : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
     const watermarkLetter = h2Match ? h2Match[1].trim()[0] : 'S';
     const rest = html
-      .replace(h2Match ? h2Match[0] : '', '')
-      .replace(h5Match ? h5Match[0] : '', '')
+      .replace(h2, '')
+      .replace(h5, '')
+      .replace(codeP, '')
       .trim();
-    html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${h5}${h2}</div><div class="panel-right">${rest}</div>`;
+    html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${codeP}${h5}${h2}</div><div class="panel-right">${rest}</div>`;
   }
 
   // cards-wide-3: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
@@ -972,9 +953,9 @@ function parseSlide(raw, index) {
         } else {
           bodyHtml = `<span>${content.replace(strongMatch[0], '').trim()}</span>`;
         }
-        const badgeHtml = isOrdered
-          ? `<span class="wide-card-badge">${counter}</span>`
-          : '';
+        // CSS .three-stack.ordered .wide-card-header::before already generates the counter
+        // via counter(wide-counter) — do not inject a redundant span here.
+        const badgeHtml = '';
         return `<div class="wide-card"><div class="wide-card-header">${badgeHtml}<span class="wide-card-heading">${heading}</span></div><div class="wide-card-body">${bodyHtml}</div></div>`;
       });
       const orderedClass = isOrdered ? ' ordered' : '';
@@ -997,12 +978,24 @@ function parseSlide(raw, index) {
         : (bqMatch ? bqMatch[1] : '');
       const ulMatch = html.match(/<ul>([\s\S]*)<\/ul>/);
       if (ulMatch) {
-        const liChunks = ulMatch[1].split(/(?=<li>)/).filter(s => s.trim());
-        const cards = liChunks.map(chunk => {
+        // Depth-aware top-level <li> extraction (naive split breaks on nested lists)
+        const ulContent = ulMatch[1];
+        const findingItems = [];
+        let fliDepth = 0, fliStart = -1, fi = 0;
+        while (fi < ulContent.length) {
+          if (ulContent.startsWith('<li>', fi))       { if (fliDepth === 0) fliStart = fi + 4; fliDepth++; fi += 4; }
+          else if (ulContent.startsWith('</li>', fi)) { fliDepth--; if (fliDepth === 0 && fliStart !== -1) { findingItems.push(ulContent.slice(fliStart, fi)); fliStart = -1; } fi += 5; }
+          else fi++;
+        }
+        const cards = findingItems.map(chunk => {
           const titleMatch = chunk.match(/<strong>([\s\S]*?)<\/strong>/);
-          const bodyMatch  = chunk.match(/<ul>[\s\S]*?<li>([\s\S]*?)<\/li>/);
+          const bodyUlIdx  = chunk.indexOf('<ul>');
           const title = titleMatch ? `<h4>${titleMatch[1]}</h4>` : '';
-          const body  = bodyMatch  ? `<p>${bodyMatch[1]}</p>`    : '';
+          let body = '';
+          if (bodyUlIdx !== -1) {
+            const innerLiMatch = chunk.slice(bodyUlIdx).match(/<li>([\s\S]*?)<\/li>/);
+            body = innerLiMatch ? `<p>${innerLiMatch[1]}</p>` : '';
+          }
           return `<div class="card">${title}${body}</div>`;
         }).join('');
         html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${verdictEl}`;
@@ -1018,29 +1011,52 @@ function parseSlide(raw, index) {
     }
   }
 
-  // code-compare: pair each h3+pre into .code-col divs inside .code-cols
-  // Structure: h3(eyebrow) h2(heading) h3(left-label) pre h3(right-label) pre
-  // Split AFTER h2, pair remaining h3+pre chunks as columns
+  // code-compare: pair each p>code+pre into .code-col divs inside .code-cols
+  // Structure: [p>code(eyebrow)] h2(heading) p>code(left-label) pre p>code(right-label) pre
+  // Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
+  // Eyebrow = p>code appearing before h2 (at start of html); column labels = p>code after h2.
   if (cls.includes('code-compare')) {
-    const h3EyeMatch = html.match(/^(<h3>[\s\S]*?<\/h3>)/);
-    const h2Match    = html.match(/(<h2>[\s\S]*?<\/h2>)/);
-    const h3Eye = h3EyeMatch ? h3EyeMatch[1] : '';
-    const h2El  = h2Match    ? h2Match[1]    : '';
-    // Remove eyebrow h3 and h2, leaving the two col h3+pre pairs
+    const eyeMatch = html.match(/^(<p><code>[\s\S]*?<\/code><\/p>)/);
+    const h2Match  = html.match(/(<h2>[\s\S]*?<\/h2>)/);
+    const eyeEl = eyeMatch ? eyeMatch[1] : '';
+    const h2El  = h2Match  ? h2Match[1]  : '';
+    // Remove eyebrow and h2, leaving the two col p>code+pre pairs
     let rest = html;
-    if (h3Eye) rest = rest.replace(h3Eye, '');
+    if (eyeEl) rest = rest.replace(eyeEl, '');
     if (h2El)  rest = rest.replace(h2El,  '');
-    // Split on h3 to get col pairs, filter empties
-    const parts = rest.split(/(?=<h3>)/).filter(s => s.trim());
+    // Split on p>code to get column pairs, filter empties
+    const parts = rest.split(/(?=<p><code>)/).filter(s => s.trim());
     const cols = parts.map(p => `<div class="code-col">${p.trim()}</div>`).join('');
-    html = `${h3Eye}${h2El}<div class="code-cols">${cols}</div>`;
+    html = `${eyeEl}${h2El}<div class="code-cols">${cols}</div>`;
   }
 
-  // criteria: ol li — wrap strong+ul into .crit-body div
+  // criteria: wrap each top-level li content in .crit-body (depth-aware — non-greedy
+  // regex breaks on nested lists since it stops at the first </li>)
   if (cls.includes('criteria')) {
-    html = html.replace(/<li>([\s\S]*?)<\/li>/g, (_, content) => {
-      return `<li><div class="crit-body">${content}</div></li>`;
-    });
+    const critListMatch = html.match(/<(ul|ol)>/);
+    if (critListMatch) {
+      const critTag = critListMatch[1];
+      const critOpen = `<${critTag}>`, critClose = `</${critTag}>`;
+      const critStart = html.indexOf(critOpen);
+      let cdepth = 0, cpos = critStart, critEnd = -1;
+      while (cpos < html.length) {
+        if (html.startsWith(critOpen, cpos))  { cdepth++; cpos += critOpen.length; }
+        else if (html.startsWith(critClose, cpos)) { cdepth--; if (cdepth === 0) { critEnd = cpos; break; } cpos += critClose.length; }
+        else cpos++;
+      }
+      if (critEnd !== -1) {
+        const critInner = html.slice(critStart + critOpen.length, critEnd);
+        const critItems = [];
+        let cliDepth = 0, cliStart = -1, ci = 0;
+        while (ci < critInner.length) {
+          if (critInner.startsWith('<li>', ci))       { if (cliDepth === 0) cliStart = ci + 4; cliDepth++; ci += 4; }
+          else if (critInner.startsWith('</li>', ci)) { cliDepth--; if (cliDepth === 0 && cliStart !== -1) { critItems.push(critInner.slice(cliStart, ci)); cliStart = -1; } ci += 5; }
+          else ci++;
+        }
+        const wrappedCrit = critItems.map(c => `<li><div class="crit-body">${c}</div></li>`).join('');
+        html = html.slice(0, critStart + critOpen.length) + wrappedCrit + html.slice(critEnd);
+      }
+    }
   }
 
   // steps: ol already renders correctly via CSS counter + strong

@@ -279,13 +279,30 @@ section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.title h1 { font-size:var(--fs-display); color:var(--text-display) !important; margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
 section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
+/* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
+ * Overrides the general subtitle rule (italic, body font) for section.title only. */
+section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 4px 0; }
+section.title h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 /* ── DIVIDER ── */
 section.divider { background:var(--bg-dark); padding-left:120px; justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--spectrum-vertical, var(--spectrum)); }
 section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
-section.divider h1 { font-size:var(--fs-3xl); color:var(--text-display); max-width:800px; line-height:var(--lh-tight); }
+section.divider h1,
+section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:800px; line-height:var(--lh-tight); }
 
 /* ── SUBTOPIC ── */
 section.subtopic { justify-content:center; align-items:center; }
@@ -307,7 +324,12 @@ section.diagram { align-items:center; }
 section.diagram h3 { margin-bottom:4px; }
 section.diagram h2 { font-size:var(--fs-xl); margin-bottom:4px; }
 section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bottom:var(--sp-sm); }
-section.diagram .mermaid-svg, section.diagram .mermaid { flex:1; }
+/* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
+   Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
+   query the container width before rendering. width:100% on a freshly-inserted flex child
+   can resolve to 0 before the browser commits a layout pass.
+   1280px section − 2 × var(--sp-2xl) padding = 1152px. */
+section.diagram .mermaid-svg, section.diagram .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
 section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
 
 /* ── TWO-COLUMN ──
@@ -582,14 +604,26 @@ section.split-panel h5 { font-size:var(--fs-label); color:var(--on-dark-secondar
 section.split-panel .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-dark-watermark); }
 section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-dark-watermark); top:40px; left:20px; line-height:1; pointer-events:none; }
+/* Code-only paragraph (eyebrow / section label) in the processed panel-left:
+ * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
+section.split-panel .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-dark-secondary); }
+section.split-panel .panel-left > p:has(> code:only-child) > code { color:var(--on-dark-secondary); background:none; border:none; padding:0; border-radius:0; }
+/* h5 eyebrow in processed panel-left: mirror the fallback grid's align-self:start. */
+section.split-panel .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
 section.split-panel .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
 section.split-panel .panel-right h3 { margin-bottom:4px; }
 section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
-section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; list-style:none; padding:0; margin:0; }
+section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
 section.split-panel ol { counter-reset:panel-counter; }
 section.split-panel :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
-section.split-panel ol > li { counter-increment:panel-counter; position:relative; padding-top:calc(14px + 30px); overflow:visible; }
-section.split-panel ol > li::before { content:counter(panel-counter); position:absolute; top:0; left:0; padding:5px 12px; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); }
+section.split-panel ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:46px 1fr; grid-auto-rows:auto; column-gap:10px; justify-items:stretch; padding:0; overflow:hidden; border:none; }
+section.split-panel ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-dark-primary,#fff); font-family:var(--font-mono); font-size:1.5rem; font-weight:800; }
+section.split-panel ol > li > strong,
+section.split-panel ol > li > span,
+section.split-panel ol > li > p,
+section.split-panel ol > li > em { grid-column:2; padding:9px 16px 3px; margin:0; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel ol > li > :is(strong,span,p,em):last-child { padding-bottom:9px; }
+section.split-panel ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 16px 9px; }
 section.split-panel :is(ul,ol) > li > strong { display:block; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; width:100%; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
@@ -851,40 +885,33 @@ section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hi
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
 /* ── CODE-COMPARE ──
- * ## heading  ### left-label  ```block  ### right-label  ```block
- * CSS arranges the two h3+pre pairs side by side
+ * `eyebrow(opt)` ## heading  `left-label` ```block  `right-label` ```block
+ * Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
+ * CSS arranges the two p>code+pre pairs side by side.
  */
 section.code-compare { }
 section.code-compare h2 { margin-bottom:var(--sp-sm); }
 section.code-compare .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
 section.code-compare .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.code-compare .code-col h3 {
+/* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
+section.code-compare .code-col p:has(> code:only-child),
+section.code-compare h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.code-compare .code-col p:has(> code:only-child) > code,
+section.code-compare h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
   letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
-  margin-bottom:var(--sp-xs);
+  background:none; border:none; padding:0; border-radius:0;
 }
 section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
 section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
-
-/* ── highlight.js theme ── */
-section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
-section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
-section .hljs-comment, section .hljs-quote { color:var(--hljs-comment); font-style:italic; }
-section .hljs-keyword, section .hljs-selector-tag, section .hljs-addition { color:var(--hljs-keyword); }
-section .hljs-number, section .hljs-literal, section .hljs-built_in, section .hljs-builtin-name { color:var(--hljs-number); }
-section .hljs-string, section .hljs-doctag, section .hljs-regexp { color:var(--hljs-string); }
-section .hljs-title, section .hljs-section, section .hljs-function, section .hljs-class .hljs-title { color:var(--hljs-title); }
-section .hljs-variable, section .hljs-template-variable, section .hljs-attr, section .hljs-attribute, section .hljs-tag { color:var(--hljs-variable); }
-section .hljs-punctuation, section .hljs-operator { color:var(--hljs-punctuation); }
-section .hljs-params { color:var(--code-text); }
-section .hljs-emphasis { font-style:italic; }
-section .hljs-strong { font-weight:700; }
 
 /* ── Mermaid ── */
 /* .mermaid-svg = CLI path (lattice.js pre-renders to SVG wrapper)
    .mermaid     = runtime path (lattice-runtime.js + Mermaid CDN in preview) */
 .mermaid-svg, .mermaid { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
 .mermaid-svg svg, .mermaid svg { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
+/* Fallback: before Mermaid renders (or on render failure), show source as styled code block instead of unstyled floating text. :not(:has(svg)) stops matching once the SVG is injected, so normal flex layout takes over automatically. */
+.mermaid:not(:has(svg)) { display:block; font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); white-space:pre; overflow:auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; color:var(--text-body); }
 
 /* ══════════════════════════════════════════════════════════════════════════════
  * MARP VS CODE PREVIEW FALLBACKS
@@ -1040,13 +1067,21 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { disp
  * First li → hero col (50%); rest → column of sub-cards (50%)               */
 section.featured:not(:has(.feat-layout)) > ul {
   display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:var(--sp-sm);
-  flex:1; list-style:none; padding:0; margin:0;
+  flex:1; min-height:0; list-style:none; padding:0; margin:0;
 }
 /* First item — featured hero card, spans both rows (full column height) */
 section.featured:not(:has(.feat-layout)) > ul > li:first-child {
   grid-row:1 / -1; background:var(--accent-soft); border:1px solid var(--accent);
   border-radius:var(--radius-md); padding:var(--sp-sm) 26px;
+  display:flex; flex-direction:column; justify-content:start;
   font-weight:700; letter-spacing:0.12em; color:var(--accent);
+  position:relative; overflow:hidden;
+}
+section.featured:not(:has(.feat-layout)) > ul > li:first-child::after {
+  content:'✧'; position:absolute; top:8px; right:8px;
+  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
+  font-family:var(--font-body); font-weight:400; letter-spacing:0;
+  pointer-events:none;
 }
 section.featured:not(:has(.feat-layout)) > ul > li:first-child > strong { display:block; }
 section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
@@ -1179,21 +1214,45 @@ section.finding:not(:has(.finding-top)) > p:last-of-type em { font-style:normal;
 section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'● '; }
 
 /* ── CODE-COMPARE fallback ───────────────────────────────────────────────────
- * When .code-cols is absent (CLI image / VS Code), rebuild two columns from   *
- * the raw DOM: eyebrow-h3 → spans both; h2 → spans both;                     *
- * h3(2)+pre(1) → col-1; h3(3)+pre(2) → col-2.                               */
+ * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
+ * Optional eyebrow = p>code placed before h2 (identical to other slide types).
+ *
+ * Detection: :has(> p ~ h2) = "a direct-child p precedes h2 as a sibling" = eyebrow present.
+ * Marp injects <header> into every section, so :has(> h2:first-child) is unreliable.
+ * :has(> p ~ h2) is not nested :has() — p and h2 are both direct child refs.
+ *
+ * Without eyebrow: h2 row1; p(1) col1 row2; p(2) col2 row2; pre(1/2) row3; bq row4
+ * With eyebrow:    p(1)=eyebrow row1; h2 row2; p(2) col1 row3; p(3) col2 row3; pre(1/2) row4; bq row5 */
+
+/* Shared grid shell */
 section.code-compare:not(:has(.code-cols)) {
   display:grid;
   grid-template-columns:1fr 1fr;
-  grid-template-rows:auto auto auto 1fr;
   gap:0 var(--sp-md);
 }
-section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
-section.code-compare:not(:has(.code-cols)) > h2                 { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
-section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(2)  { grid-column:1; grid-row:3; margin-bottom:var(--sp-xs); }
-section.code-compare:not(:has(.code-cols)) > h3:nth-of-type(3)  { grid-column:2; grid-row:3; margin-bottom:var(--sp-xs); }
-section.code-compare:not(:has(.code-cols)) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
-section.code-compare:not(:has(.code-cols)) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+
+/* ── WITHOUT eyebrow (no p precedes h2 among siblings) ── */
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) {
+  grid-template-rows:auto auto 1fr auto;
+}
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
+section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+
+/* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) {
+  grid-template-rows:auto auto auto 1fr auto;
+}
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs

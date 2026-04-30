@@ -500,11 +500,11 @@ const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 <!-- _class: code-compare -->
 <!-- _footer: "Two code blocks · code-compare" -->
 
-### Before & After · Key Distribution
+`Before & After · Key Distribution`
 
 ## File-distributed keys versus vault-integrated keys.
 
-### Before · File-distributed
+`Before · File-distributed`
 
 ```python
 # Key material on disk — anyone with
@@ -516,7 +516,7 @@ cipher = AES(key)
 token = cipher.encrypt(ssn)
 ```
 
-### After · HSM / KMS integrated
+`After · HSM / KMS integrated`
 
 ```python
 # Key never leaves the HSM —
@@ -624,5 +624,7 @@ The pattern here is the same as any page of written argument — claim, then sup
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
+<!-- markdownlint-disable MD033 -->
+<link rel="stylesheet" href="../lattice.css">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>

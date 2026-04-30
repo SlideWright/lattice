@@ -66,3 +66,350 @@
   --marp-slide-header-color: var(--text-muted);
   --marp-slide-footer-color: var(--text-muted);
 }
+
+/* ── highlight.js syntax tokens ────────────────────────────────────────
+ * Warm earth palette adapted for Cuoio's dark code block background
+ * (--bg-dark: #1e1a15, dark brown + earthy spectrum ribbon at bottom).
+ * Warm ambers, terracottas, and muted teals provide contrast against
+ * the dark brown without importing the cool Night Owl palette used by
+ * the indaco theme. */
+:root {
+  --hljs-comment:    #7A6A58;  /* muted warm brown, italic               */
+  --hljs-keyword:    #D4A04A;  /* warm amber-gold, italic                */
+  --hljs-built_in:   #8EBA6A;  /* warm lime-green — built-ins            */
+  --hljs-number:     #D48A6A;  /* warm orange-rust                       */
+  --hljs-literal:    #C05A6A;  /* warm rose-pink — booleans/null         */
+  --hljs-string:     #C8885A;  /* warm terracotta                        */
+  --hljs-title:      #D4B868;  /* warm amber-yellow, italic              */
+  --hljs-type:       #7ABAB0;  /* muted teal — cool contrast on warm bg  */
+  --hljs-variable:   #8EBA6A;  /* warm lime-green — variables            */
+  --hljs-params:     #7ABAB0;  /* muted teal-mint — parameters           */
+  --hljs-tag:        #7ABAB0;  /* muted teal — HTML tags / names         */
+  --hljs-punctuation:#C8B8A0;  /* warm taupe — operators, punctuation    */
+}
+
+section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
+section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#D6C4A8; background:none; padding:0; display:block; }
+/* comments */
+section .hljs-comment { color:var(--hljs-comment); font-style:italic; }
+section .hljs-quote { color:#8A7060; font-style:italic; }
+/* keywords — italic per warm Night Owl style */
+section .hljs-keyword, section .hljs-template-tag,
+section .hljs-selector-pseudo, section .hljs-selector-attr,
+section .hljs-variable.language_ { color:var(--hljs-keyword); font-style:italic; }
+/* built-ins and variables */
+section .hljs-built_in, section .hljs-builtin-name { color:var(--hljs-built_in); font-style:italic; }
+section .hljs-variable, section .hljs-template-variable,
+section .hljs-addition, section .hljs-selector-class { color:var(--hljs-variable); }
+/* numbers */
+section .hljs-number { color:var(--hljs-number); }
+/* booleans, null */
+section .hljs-literal { color:var(--hljs-literal); }
+/* strings */
+section .hljs-string, section .hljs-meta-string { color:var(--hljs-string); }
+/* regexp */
+section .hljs-regexp { color:#7ABAB0; }
+/* function/class names — warm amber-yellow, italic */
+section .hljs-title, section .hljs-title.function_,
+section .hljs-function, section .hljs-section { color:var(--hljs-title); font-style:italic; }
+/* class definitions */
+section .hljs-title.class_, section .hljs-title.class_.inherited__,
+section .hljs-class { color:#E8C880; }
+/* types */
+section .hljs-type, section .hljs-symbol,
+section .hljs-meta, section .hljs-meta-keyword { color:var(--hljs-type); }
+/* params */
+section .hljs-params { color:var(--hljs-params); }
+/* tags, attrs, names */
+section .hljs-tag, section .hljs-name, section .hljs-attr,
+section .hljs-doctag, section .hljs-code { color:var(--hljs-tag); }
+section .hljs-attribute { color:#9AC8C2; }
+/* CSS selectors */
+section .hljs-selector-tag { color:#D48A6A; }
+section .hljs-selector-id { color:#D4B868; }
+/* punctuation, operators */
+section .hljs-punctuation, section .hljs-operator { color:var(--hljs-punctuation); }
+/* subst */
+section .hljs-subst { color:#B85040; }
+/* diff */
+section .hljs-deletion { color:#C85040; font-style:italic; }
+/* markup */
+section .hljs-bullet { color:#D6C4A8; }
+section .hljs-formula { color:var(--hljs-keyword); }
+section .hljs-link { color:#C8885A; }
+section .hljs-emphasis { font-style:italic; }
+section .hljs-strong { font-weight:700; }
+
+/* ── Mermaid color extensions ──────────────────────────────────────────
+ * Warm earth pigment palette. Tonal ladder for large surfaces (kanban
+ * columns, mindmap levels, treemap containers): cream → deeper cream.
+ * Saturated pigments reserved for small accent marks (cScale/git dots
+ * via themeVariables, radar curves via themeCSS). */
+:root {
+  /* Pale fills for primary/secondary surfaces (node fills, actor bkgs) */
+  --mermaid-primary-color:   #F3EDE4;  /* node fill — warm cream */
+  --mermaid-secondary-color: #E0D8CC;  /* container fill — deeper cream */
+
+  /* Pale tints for the 6-slot pie cycle and per-diagram overrides */
+  --mermaid-pie-purple:  #EAE6F0;  /* pale iris tint */
+  --mermaid-pie-orange:  #F5EDE0;  /* pale gold wash */
+  --mermaid-pie-teal:    #E0EAEC;  /* pale petrol tint */
+  --mermaid-pie-rose:    #F0E6EC;  /* pale rose tint */
+
+  /* Borders and lines */
+  --mermaid-border: #8B7E6D;  /* deep taupe — reads on every pale fill */
+  --mermaid-line:   #6B5D4F;  /* warm brown ink — edges and arrows */
+
+  /* Mid-tone categorical palette — 6 earth pigments (for cScale/git) */
+  --mermaid-mid-blue:    #3E5C6B;  /* petrol */
+  --mermaid-mid-green:   #6E7A3A;  /* moss */
+  --mermaid-mid-purple:  #4F4770;  /* iris */
+  --mermaid-mid-orange:  #8B6914;  /* gold */
+  --mermaid-mid-teal:    #3E7A6B;  /* dark teal */
+  --mermaid-mid-rose:    #76394C;  /* rose */
+  --mermaid-mid-slate:   #7A6B59;  /* text-label */
+  --mermaid-mid-mauve:   #6E4558;  /* deeper rose */
+
+  /* Pie cycle extension (slots 7-12, distinct warm tints) */
+  --mermaid-pie-yellow:  #F5EDE0;  /* pale gold wash */
+  --mermaid-pie-red:     #F0E0E0;  /* pale sienna wash */
+  --mermaid-pie-slate:   #E8E4DE;  /* pale taupe */
+  --mermaid-pie-sage:    #E4EAD8;  /* pale moss */
+  --mermaid-pie-violet:  #E8E4F0;  /* pale iris */
+
+  /* Quadrant fills — four-step tonal ladder */
+  --mermaid-quadrant-1-fill: #F5EFE0;
+  --mermaid-quadrant-2-fill: #F3EDE4;
+  --mermaid-quadrant-3-fill: #E8DECF;
+  --mermaid-quadrant-4-fill: #E0D8CC;
+  --mermaid-quadrant-1-text: #1E1A15;
+  --mermaid-quadrant-2-text: #1E1A15;
+  --mermaid-quadrant-3-text: #1E1A15;
+  --mermaid-quadrant-4-text: #1E1A15;
+
+  /* Gantt task-state fills */
+  --mermaid-gantt-active:         #8B6914;  /* gold task bars */
+  --mermaid-gantt-active-border:  #6B5D4F;  /* warm brown ink */
+  --mermaid-gantt-done:           #E0D8CC;  /* secondary cream */
+  --mermaid-gantt-done-border:    #A69882;  /* muted taupe */
+  --mermaid-gantt-critical:       #9b1c1c;  /* --fail */
+  --mermaid-gantt-critical-border:#7A1212;
+  --mermaid-gantt-today:          #8B6914;  /* gold today-line */
+  --mermaid-gantt-grid:           #E0D8CC;
+
+  /* Notes — warm parchment tint */
+  --mermaid-note-bg:     #F5EFE0;
+  --mermaid-note-border: #8B6914;  /* gold */
+
+  /* Error state */
+  --mermaid-error-bg:    #9b1c1c;
+  --mermaid-error-text:  #FAF7F2;  /* canvas cream */
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * MERMAID THEME CSS
+ * ════════════════════════════════════════════════════════════════════════
+ * Everything below the sentinel is extracted by lattice.js at build time
+ * and injected as the Mermaid themeCSS parameter for the mmdc CLI path.
+ * Selectors are prefixed with 'section ' for Marp preview isolation —
+ * each slide section scopes its own diagram rules so cuoio and indaco
+ * cannot cross-contaminate when both theme files are in scope.
+ * lattice.js strips the prefix before injection into the SVG context.
+ * ════════════════════════════════════════════════════════════════════════ */
+/* ===== MERMAID THEME CSS ===== */
+
+  /* ── JOURNEY ── */
+  section .journey-section, section .journey-section rect, section .section0 rect, section .section1 rect, section .section2 rect {
+    fill: var(--mermaid-primary-color) !important;
+  }
+  section .journey-section text, section .section0 text, section .section1 text, section .section2 text {
+    fill: var(--text-heading) !important;
+    font-weight: 600 !important;
+  }
+  section .task0 rect, section .task-type-0 rect { fill: var(--mermaid-primary-color) !important; }
+  section .task1 rect, section .task-type-1 rect { fill: var(--mermaid-secondary-color) !important; }
+  section .task2 rect, section .task-type-2 rect { fill: var(--mermaid-pie-purple) !important; }
+  section .task-type-0 text, section .task-type-1 text, section .task-type-2 text,
+  section .task0 text, section .task1 text, section .task2 text {
+    fill: var(--text-heading) !important;
+  }
+  section .legend text { fill: var(--text-heading) !important; }
+
+  /* ── MINDMAP ── */
+  section .mindmap-node[class*="section-0"] rect,
+  section .mindmap-node[class*="section-0"] circle,
+  section .mindmap-node[class*="section-0"] polygon,
+  section .mindmap-node[class*="section-0"] path { fill: var(--mermaid-primary-color) !important; }
+  section .mindmap-node[class*="section-1"] rect,
+  section .mindmap-node[class*="section-1"] circle,
+  section .mindmap-node[class*="section-1"] polygon,
+  section .mindmap-node[class*="section-1"] path { fill: var(--mermaid-secondary-color) !important; }
+  section .mindmap-node[class*="section-2"] rect,
+  section .mindmap-node[class*="section-2"] circle,
+  section .mindmap-node[class*="section-2"] polygon,
+  section .mindmap-node[class*="section-2"] path { fill: var(--mermaid-pie-purple) !important; }
+  section .mindmap-node[class*="section-3"] rect,
+  section .mindmap-node[class*="section-3"] circle,
+  section .mindmap-node[class*="section-3"] polygon,
+  section .mindmap-node[class*="section-3"] path { fill: var(--mermaid-pie-orange) !important; }
+  section .mindmap-node[class*="section-4"] rect,
+  section .mindmap-node[class*="section-4"] circle,
+  section .mindmap-node[class*="section-4"] polygon,
+  section .mindmap-node[class*="section-4"] path { fill: var(--mermaid-pie-teal) !important; }
+  section .section-root rect, section .section-root circle,
+  section .section-root polygon, section .section-root path,
+  section .section--1 rect, section .section--1 circle,
+  section .section--1 polygon,
+  section .section--1 path { fill: var(--mermaid-primary-color) !important; }
+  section .section-root text, section .section-root span,
+  section .section--1 text,  section .section--1 span {
+    fill: var(--text-heading) !important;
+    color: var(--text-heading) !important;
+  }
+  section .mindmap-node text, section .mindmap-node tspan, section .mindmap-node foreignObject * {
+    fill: var(--text-heading) !important;
+    color: var(--text-heading) !important;
+  }
+
+  /* ── KANBAN ── */
+  section .cluster.section-1 rect, section .section-1 rect { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .cluster.section-2 rect, section .section-2 rect { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .cluster.section-3 rect, section .section-3 rect { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
+  section .cluster.section-4 rect, section .section-4 rect { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  section .cluster .items .node rect.basic.label-container,
+  section .cluster .items .node .label-container,
+  section .items .node rect.basic.label-container,
+  section .items .node .label-container {
+    fill: var(--bg) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+
+  /* Flowchart node fill coverage */
+  section .node .label-container,
+  section .node .basic.label-container,
+  section .node .outer-path {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+
+  /* ── GITGRAPH ARROW FILLS ── */
+  section .arrow, section .arrow0, section .arrow1, section .arrow2, section .arrow3, section .arrow4,
+  section .arrow5, section .arrow6, section .arrow7 {
+    fill: none !important;
+  }
+
+  /* Gitgraph branch label pills */
+  section rect.branchLabelBkg.label0 { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label1 { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label2 { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label3 { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label4 { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label5 { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label6 { fill: var(--mermaid-pie-yellow) !important; stroke: var(--mermaid-border) !important; }
+  section rect.branchLabelBkg.label7 { fill: var(--mermaid-pie-red) !important; stroke: var(--mermaid-border) !important; }
+  section g.branchLabel text, section .branchLabel text { fill: var(--text-heading) !important; }
+
+  /* ── TREEMAP ── */
+  section .treemapSection rect, section .treemapNode rect { fill: var(--bg-alt) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf0x rect.treemapLeaf { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf1x rect.treemapLeaf { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf2x rect.treemapLeaf { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf3x rect.treemapLeaf { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf4x rect.treemapLeaf { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf5x rect.treemapLeaf { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf6x rect.treemapLeaf { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section g.leaf7x rect.treemapLeaf { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section rect.treemapLeaf { fill-opacity: 1 !important; }
+  section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--text-heading) !important; }
+
+  /* ── C4 ── */
+  section .person, section .person_ext { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .system, section .system_ext { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .container, section .container_ext { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
+  section .component, section .component_ext { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  section .person text, section .system text, section .container text, section .component text,
+  section .person_ext text, section .system_ext text, section .container_ext text, section .component_ext text,
+  section text.legendW, section text.legendT { fill: var(--text-heading) !important; }
+
+  /* ── RADAR ── cuoio curves: gold + petrol (earth pigment pair) */
+  section .radarGraticule {
+    fill: var(--mermaid-primary-color) !important;
+    fill-opacity: 0.25 !important;
+    stroke: var(--mermaid-border) !important;
+    stroke-opacity: 0.20 !important;
+    stroke-width: 1 !important;
+  }
+  section .radarAxisLine {
+    stroke: var(--mermaid-border) !important;
+    stroke-width: 1.5 !important;
+    stroke-opacity: 0.5 !important;
+  }
+  section .radarCurve-0 {
+    fill: var(--mermaid-mid-orange) !important;
+    fill-opacity: 0.30 !important;
+    stroke: var(--mermaid-mid-orange) !important;
+    stroke-width: 2.5 !important;
+  }
+  section .radarCurve-1 {
+    fill: var(--mermaid-mid-blue) !important;
+    fill-opacity: 0.30 !important;
+    stroke: var(--mermaid-mid-blue) !important;
+    stroke-width: 2.5 !important;
+  }
+  section .radarLegendBox-0 { fill: var(--mermaid-mid-orange) !important; }
+  section .radarLegendBox-1 { fill: var(--mermaid-mid-blue) !important; }
+  section .radarAxisLabel {
+    fill: var(--text-heading) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+  section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
+
+  /* ── VENN ── */
+  section .venn-set-0, section g.venn-set-0 path, section .venn-set-0 path {
+    fill: var(--mermaid-primary-color) !important;
+    fill-opacity: 1 !important;
+    stroke: var(--mermaid-border) !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  section .venn-set-1, section g.venn-set-1 path, section .venn-set-1 path {
+    fill: var(--mermaid-secondary-color) !important;
+    fill-opacity: 1 !important;
+    stroke: var(--mermaid-border) !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  section .venn-set-2, section g.venn-set-2 path, section .venn-set-2 path {
+    fill: var(--mermaid-pie-purple) !important;
+    fill-opacity: 1 !important;
+    stroke: var(--mermaid-border) !important;
+    stroke-width: 2 !important;
+    stroke-opacity: 1 !important;
+  }
+  section .venn-area text, section text.label, section text.label tspan, section .label tspan {
+    fill: var(--text-heading) !important;
+    fill-opacity: 1 !important;
+    paint-order: normal !important;
+    stroke: none !important;
+    stroke-width: 0 !important;
+    font-weight: 500 !important;
+  }
+  section .venn-intersection path, section g.venn-intersection path {
+    fill: var(--mermaid-border) !important;
+    fill-opacity: 0.08 !important;
+    stroke: var(--mermaid-border) !important;
+    stroke-width: 1.5 !important;
+    stroke-dasharray: 4 3 !important;
+    stroke-opacity: 0.7 !important;
+  }
+
+  /* ── ISHIKAWA ── */
+  section .ishikawa-head-label { fill: var(--text-heading) !important; font-weight: 600 !important; }
+  section .ishikawa-label.cause, section .ishikawa-label.align { fill: var(--text-heading) !important; }
+  section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, section .ishikawa-sub-branch {
+    stroke: var(--mermaid-line) !important;
+  }
+
+  /* ── GANTT ── */
+  section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
