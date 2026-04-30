@@ -331,6 +331,10 @@ section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bo
    1280px section − 2 × var(--sp-2xl) padding = 1152px. */
 section.diagram .mermaid-svg, section.diagram .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
 section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+/* Key Insight panel on diagram slides must stretch full-width to match every
+   other layout. section.diagram uses align-items:center which would shrink
+   the blockquote to fit-content; align-self:stretch overrides that. */
+section.diagram > blockquote { align-self:stretch; }
 
 /* ── TWO-COLUMN ──
  * ### eyebrow  ## heading  p body  > blockquote = right panel
@@ -910,8 +914,11 @@ section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--
    .mermaid     = runtime path (lattice-runtime.js + Mermaid CDN in preview) */
 .mermaid-svg, .mermaid { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
 .mermaid-svg svg, .mermaid svg { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
-/* Fallback: before Mermaid renders (or on render failure), show source as styled code block instead of unstyled floating text. :not(:has(svg)) stops matching once the SVG is injected, so normal flex layout takes over automatically. */
-.mermaid:not(:has(svg)) { display:block; font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); white-space:pre; overflow:auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; color:var(--text-body); }
+/* Fallback: before Mermaid renders (or on render failure), show source as styled code block instead of unstyled floating text. :not(:has(svg)) stops matching once the SVG is injected, so normal flex layout takes over automatically.
+   white-space:pre-wrap prevents long diagram lines from overflowing the slide;
+   overflow:hidden avoids scrollbar chrome in a presentation context;
+   color:var(--text-heading) gives the highest available contrast for readability. */
+.mermaid:not(:has(svg)) { display:block; font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); white-space:pre-wrap; overflow:hidden; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; color:var(--text-heading); }
 
 /* ══════════════════════════════════════════════════════════════════════════════
  * MARP VS CODE PREVIEW FALLBACKS

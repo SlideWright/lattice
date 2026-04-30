@@ -313,28 +313,36 @@
       globalScope.__llMermaidConfigured = true;
     }
 
-    try {
-      mermaid.run({
-        querySelector:
-          ".mermaid:not([data-processed]):not([data-ll-mermaid-static])",
-        suppressErrors: true,
-      });
-    } catch (_err) {
-      // fail soft
-    }
+    // mermaid.run() is async — it marks elements data-processed synchronously
+    // then renders each one as a Promise chain. Running restoration in .then()
+    // ensures we only restore diagrams that genuinely failed (no SVG injected),
+    // not ones that are still mid-render when restoration would run synchronously.
+    const _runPromise = (() => {
+      try {
+        return mermaid.run({
+          querySelector:
+            ".mermaid:not([data-processed]):not([data-ll-mermaid-static])",
+          suppressErrors: true,
+        });
+      } catch (_err) {
+        return Promise.resolve();
+      }
+    })();
 
     // Restore source text for any diagram that failed to render.
-    // Mermaid clears the element's innerHTML before attempting render, so if
-    // the render fails (suppressErrorRendering:true skips the error SVG), the
-    // .mermaid div ends up empty with data-processed set. Restoring textContent
-    // lets the :not(:has(svg)) CSS fallback show the raw source as a code block.
-    for (const el of document.querySelectorAll(
-      ".mermaid[data-processed]:not([data-ll-mermaid-static])"
-    )) {
-      if (!el.querySelector("svg") && el.dataset.llSource && !el.textContent.trim()) {
-        el.textContent = el.dataset.llSource;
+    // Runs after the run Promise resolves so elements without an SVG are
+    // genuinely failed, not still in-flight. Mermaid clears innerHTML before
+    // rendering; restoring textContent lets the :not(:has(svg)) CSS fallback
+    // display the raw source as a styled code block instead of a blank area.
+    Promise.resolve(_runPromise).then(() => {
+      for (const el of document.querySelectorAll(
+        ".mermaid[data-processed]:not([data-ll-mermaid-static])"
+      )) {
+        if (!el.querySelector("svg") && el.dataset.llSource) {
+          el.textContent = el.dataset.llSource;
+        }
       }
-    }
+    });
 
     return true;
   }
