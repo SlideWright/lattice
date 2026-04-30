@@ -388,10 +388,27 @@ section .hljs-strong { font-weight:700; }
    * to bring kanban onto the same band. The selectors below match the
    * actual rendered kanban output: .cluster.section-N rect.
    */
-  section .cluster.section-1 rect, section .section-1 rect { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .cluster.section-2 rect, section .section-2 rect { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .cluster.section-3 rect, section .section-3 rect { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
-  section .cluster.section-4 rect, section .section-4 rect { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  /* section-0..N: covers timeline, journey, and kanban.
+   * Timeline uses section-0 for its first period; kanban starts at section-1.
+   * All six colour slots are listed so longer timelines also stay on-brand. */
+  section .cluster.section-0 rect, section .section-0 rect,
+  section .section-0 path, section .section-0 circle { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+  section .cluster.section-1 rect, section .section-1 rect,
+  section .section-1 path, section .section-1 circle { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+  section .cluster.section-2 rect, section .section-2 rect,
+  section .section-2 path, section .section-2 circle { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
+  section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+  section .cluster.section-3 rect, section .section-3 rect,
+  section .section-3 path, section .section-3 circle { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
+  section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+  section .cluster.section-4 rect, section .section-4 rect,
+  section .section-4 path, section .section-4 circle { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
+  section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+  section .cluster.section-5 rect, section .section-5 rect,
+  section .section-5 path, section .section-5 circle { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
+  section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
   /* Kanban tickets — distinct from any column color. Cards live inside the
    * .items group of each .cluster.section-N; force them to neutral near-white
    * so a ticket reads as "card on swim-lane" rather than as a color-coded

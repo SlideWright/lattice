@@ -24,7 +24,12 @@
   // caused every preview to show cuoio colors regardless of the active theme.
   function buildMermaidThemeVars() {
     if (typeof document === 'undefined') return {};
-    const s = getComputedStyle(document.documentElement);
+    // Marp scopes CSS custom properties to <section> elements, not :root.
+    // Reading from document.documentElement always returns empty strings for
+    // theme tokens. Use the first section in the DOM so getComputedStyle sees
+    // the cascade from the Marp-scoped rule that actually defines these vars.
+    const scopeEl = document.querySelector('section') ?? document.documentElement;
+    const s = getComputedStyle(scopeEl);
     const v = (name) => s.getPropertyValue('--' + name).trim();
 
     const bg      = v('bg');
@@ -254,6 +259,16 @@
     if (!mermaid) return false;
 
     upgradeFences();
+
+    // Guard: don't lock the config until the theme's CSS custom properties are
+    // actually resolved. On the first tick in Marp's webview, getComputedStyle
+    // may return empty strings for --mermaid-* vars if the stylesheet hasn't
+    // been applied yet. An empty primaryColor causes Mermaid to fall back to
+    // its built-in base defaults (#fff4dd yellow), which cascades into yellow
+    // clusters and wrong cScale values. Check one sentinel var — if it's empty,
+    // skip initialization this tick (the retry loop will catch it next tick).
+    const _sentinelColor = buildMermaidThemeVars().primaryColor;
+    if (!globalScope.__llMermaidConfigured && !_sentinelColor) return false;
 
     if (!globalScope.__llMermaidConfigured) {
       mermaid.initialize({
