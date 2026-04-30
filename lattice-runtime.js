@@ -241,6 +241,8 @@
       replacement.className = "mermaid";
       replacement.textContent = source;
       replacement.dataset.llMermaidUpgraded = "1";
+      // Preserve source so we can restore it if Mermaid clears it on a parse error.
+      replacement.dataset.llSource = source;
 
       wrapper.replaceWith(replacement);
     }
@@ -257,7 +259,8 @@
       mermaid.initialize({
         startOnLoad: false,
         theme: "base",
-        securityLevel: "loose", // Required to allow HTML (e.g. <br/>) in node labels; htmlLabels:true alone is not sufficient.
+        securityLevel: "loose",        // Required to allow HTML (e.g. <br/>) in node labels; htmlLabels:true alone is not sufficient.
+        suppressErrorRendering: true,  // Don't render Mermaid's own error SVG on parse failure — it uses a fixed 2412×512 viewBox with content at x=1440 that overflows and appears in the upper-right corner. We restore the source text below so the :not(:has(svg)) CSS fallback shows the raw diagram code as a styled code block instead.
         layout: "tidy-tree",
         htmlLabels: true,
         markdownAutoWrap: false, // Marp doesn't support line breaks in code fences, so disable Mermaid's auto-wrapping to avoid unexpected formatting changes.
@@ -303,6 +306,19 @@
       });
     } catch (_err) {
       // fail soft
+    }
+
+    // Restore source text for any diagram that failed to render.
+    // Mermaid clears the element's innerHTML before attempting render, so if
+    // the render fails (suppressErrorRendering:true skips the error SVG), the
+    // .mermaid div ends up empty with data-processed set. Restoring textContent
+    // lets the :not(:has(svg)) CSS fallback show the raw source as a code block.
+    for (const el of document.querySelectorAll(
+      ".mermaid[data-processed]:not([data-ll-mermaid-static])"
+    )) {
+      if (!el.querySelector("svg") && el.dataset.llSource && !el.textContent.trim()) {
+        el.textContent = el.dataset.llSource;
+      }
     }
 
     return true;
