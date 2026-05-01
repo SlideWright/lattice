@@ -1,20 +1,64 @@
-/* Last & Ledger — Mermaid bootstrap (minimal)
-   Goal: fenced ```mermaid blocks render in Marp previews.
-
-   Mermaid expects something like: <pre class="mermaid">graph TD ...</pre>
-   Marp preview emits: <marp-pre><code class="language-mermaid">...</code></marp-pre>
-   We upgrade those wrappers + run Mermaid after DOMContentLoaded.
-*/
+/* Last & Ledger — Mermaid bootstrap
+ *
+ * Goal: render ```mermaid fenced blocks consistently across all three contexts
+ * where Lattice decks live.
+ *
+ * ─── Deployment contexts ─────────────────────────────────────────────────
+ * 1. Standalone HTML  (e.g. examples/gallery.html)
+ *      Mermaid script tag + this file load at the bottom of <body>.
+ *      DOM is fully built before we run; observer rarely fires after init.
+ *
+ * 2. Marp VS Code preview  (marp-team.marp-vscode extension)
+ *      VS Code's webview re-renders the markdown preview on every edit using
+ *      morphdom-style DOM diffing. When a slide changes, Marp typically emits
+ *      a fresh <section> and morphdom replaces the old subtree → childList
+ *      mutation. The observer below schedules a scoped re-render for that
+ *      section only, leaving every other already-rendered diagram alone.
+ *
+ * 3. Marp CLI HTML export  (`marp -o deck.html deck.md`)
+ *      Diagrams may already be pre-rendered to inline SVG by lattice.js. Such
+ *      nodes carry data-ll-mermaid-static="1" and we skip them everywhere.
+ *
+ * ─── Why the wrapper is replaced (not just renamed) ──────────────────────
+ * Marp wraps fences in <marp-pre data-auto-scaling> which applies a downscale
+ * transform via shadow DOM. Replacing the wrapper with a plain <div class=
+ * "mermaid"> escapes the transform and lets normal layout CSS govern size.
+ * As a side benefit it forces morphdom into a node-replacement code path on
+ * future edits (the new <pre> never matches our existing <div>), which is why
+ * a childList-only observer is sufficient — no characterData watching needed.
+ *
+ * ─── Element lifecycle / data-attribute contract ─────────────────────────
+ *   data-ll-mermaid-upgraded="1"  on the <div.mermaid> we created (idempotency)
+ *   data-ll-source="…"            preserved fence source (parse-fail fallback)
+ *   data-ll-mermaid-static="1"    CLI-prerendered SVG; never touch
+ *   data-processed="true"         set by Mermaid synchronously at run start
+ *
+ * Because data-processed is set BEFORE the async render finishes, restoration
+ * (which checks for a missing <svg>) must wait on the run promise.
+ */
 
 (function () {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
   if (globalScope.__llMermaidBootstrapLoaded) return;
   globalScope.__llMermaidBootstrapLoaded = true;
 
-  // Marp preview often re-renders slide DOM on edit without a full page reload.
-  // A one-shot DOMContentLoaded init can miss newly inserted fences, making Mermaid
-  // appear to "randomly" stop rendering. We keep a lightweight observer that
-  // schedules Mermaid runs when Mermaid fences/containers are added/changed.
+  // ─── Selectors used in multiple places ──────────────────────────────────
+  // Code-fence wrappers Marp produces in any of its output modes.
+  const FENCE_SELECTOR = [
+    "pre > code.language-mermaid",
+    "pre > code[class*='language-mermaid']",
+    "marp-pre > code.language-mermaid",
+    "marp-pre > code[class*='language-mermaid']",
+  ].join(",");
+
+  // .mermaid divs that we created and Mermaid has not yet touched.
+  // Excludes CLI-prerendered diagrams (data-ll-mermaid-static).
+  const UNRENDERED_SELECTOR =
+    ".mermaid:not([data-processed]):not([data-ll-mermaid-static])";
+
+  // .mermaid divs Mermaid has touched but that have no SVG (parse failure).
+  const FAILED_SELECTOR =
+    ".mermaid[data-processed]:not([data-ll-mermaid-static])";
 
   // ── Build Mermaid themeVariables from the active theme's CSS custom properties ──
   // Reads computed values from the loaded theme CSS file (indaco.css, cuoio.css, …)
@@ -212,89 +256,122 @@
     };
   }
 
-  let scheduledRunHandle = null;
-  let pendingSections = new Set();
-
-  function scheduleRun(section) {
-    // Accumulate the changed section so initAndRun can scope the re-render to
-    // only that section's diagrams. Multiple sections can accumulate within a
-    // single debounce window (e.g. find-and-replace touches several slides).
-    if (section instanceof Element) pendingSections.add(section);
-    // Trailing-edge debounce: reset the timer on every call so rapid mutations
-    // from a single Marp re-render burst settle before initAndRun fires once.
-    if (scheduledRunHandle) clearTimeout(scheduledRunHandle);
-    scheduledRunHandle = setTimeout(() => {
-      scheduledRunHandle = null;
-      const targets = pendingSections.size > 0 ? [...pendingSections] : null;
-      pendingSections = new Set();
-      initAndRun(targets);
-    }, 200);
+  // ─── Cached theme variables ─────────────────────────────────────────────
+  // buildMermaidThemeVars() reads ~45 CSS custom properties via
+  // getComputedStyle, which is non-trivial. The retry loop calls initAndRun
+  // up to 40× before the observer takes over; recomputing on every call adds
+  // measurable cost in the Marp webview. Once we have a non-empty result
+  // (sentinel: primaryColor) we lock it in — themes don't swap mid-session,
+  // and Mermaid's themeVariables are fixed at initialize() time anyway.
+  let _themeVarsCache = null;
+  function getThemeVars() {
+    if (_themeVarsCache) return _themeVarsCache;
+    const v = buildMermaidThemeVars();
+    if (v && v.primaryColor) _themeVarsCache = v;
+    return v;
   }
 
+  // ─── Scheduling ─────────────────────────────────────────────────────────
+  // Trailing-edge debounce. A burst of mutations from a single Marp
+  // re-render settles into one initAndRun call once the dust clears.
+  let scheduledRunHandle = null;
+  let pendingSections = new Set();
+  const DEBOUNCE_MS = 200;
+
+  function scheduleRun(section) {
+    if (section instanceof Element) pendingSections.add(section);
+    if (scheduledRunHandle) clearTimeout(scheduledRunHandle);
+    scheduledRunHandle = setTimeout(flushScheduled, DEBOUNCE_MS);
+  }
+
+  function flushScheduled() {
+    scheduledRunHandle = null;
+    // Drop sections that were detached before the debounce fired (Marp can
+    // replace a slide twice in quick succession; the older reference is
+    // orphaned). Operating on detached nodes is harmless but wasteful.
+    const targets = [];
+    for (const s of pendingSections) {
+      if (s.isConnected) targets.push(s);
+    }
+    pendingSections = new Set();
+    initAndRun(targets.length > 0 ? targets : null);
+  }
+
+  // ─── Fence upgrade ──────────────────────────────────────────────────────
+  // Replace Marp's fence wrappers (<pre>, <marp-pre>) with a plain
+  // <div class="mermaid"> Mermaid will render in place. Idempotent — every
+  // upgraded div carries data-ll-mermaid-upgraded so re-running is a no-op.
+  //
+  // roots: optional array of elements to scope the search to those subtrees.
+  //        null/undefined → whole document (initial load + retry loop).
   function upgradeFences(roots) {
-    // roots: optional array of elements to scope the search.
-    // null / undefined → search the whole document (initial load, retry loop).
     const searchRoots = (roots && roots.length > 0) ? roots : [document];
-    const FENCE_SELECTOR = [
-      "pre > code.language-mermaid",
-      "pre > code[class*='language-mermaid']",
-      "marp-pre > code.language-mermaid",
-      "marp-pre > code[class*='language-mermaid']",
-    ].join(",");
     for (const root of searchRoots) {
       for (const codeEl of root.querySelectorAll(FENCE_SELECTOR)) {
         const wrapper = codeEl.parentElement;
         if (!wrapper) continue;
-
-        // If the fence was already upgraded/replaced, skip.
         if (wrapper.dataset.llMermaidUpgraded === "1") continue;
 
         const source = codeEl.textContent || "";
-
-        // Marp preview/export wraps fences in <marp-pre> or <pre is="marp-pre" data-auto-scaling>
-        // which can apply downscaling transforms. Replace the wrapper with a plain <div>
-        // so our normal layout CSS (width, max-width, centering) can win.
         const replacement = document.createElement("div");
         replacement.className = "mermaid";
         replacement.textContent = source;
         replacement.dataset.llMermaidUpgraded = "1";
-        // Preserve source so we can restore it if Mermaid clears it on a parse error.
+        // Preserve source for the parse-failure fallback (see initAndRun).
         replacement.dataset.llSource = source;
-
         wrapper.replaceWith(replacement);
       }
     }
   }
 
+  // ─── Mermaid lifecycle ──────────────────────────────────────────────────
+  // initAndRun is the single entry point that drives Mermaid. It is
+  // idempotent and safe to call repeatedly; each call only acts on the
+  // unrendered subset of diagrams within `targets` (or the whole document
+  // when targets is null).
+  //
+  // Returns true once Mermaid is configured AND a run was dispatched (or
+  // there was nothing left to render). The retry loop uses this to stop
+  // ticking after the initial render succeeds.
+  let _mermaidConfigured = false;
+
   function initAndRun(targets) {
     transformVerdictGridBadges();
+
     const mermaid = globalScope.mermaid;
     if (!mermaid) return false;
 
-    // When targets are provided (observer-driven), only upgrade fences within
-    // those sections. For initial load / retry loop (no targets), upgrade globally.
+    // Only walk the document/affected sections to upgrade fences.
     upgradeFences(targets);
 
-    // Guard: don't lock the config until the theme's CSS custom properties are
-    // actually resolved. On the first tick in Marp's webview, getComputedStyle
-    // may return empty strings for --mermaid-* vars if the stylesheet hasn't
-    // been applied yet. An empty primaryColor causes Mermaid to fall back to
-    // its built-in base defaults (#fff4dd yellow), which cascades into yellow
-    // clusters and wrong cScale values. Check one sentinel var — if it's empty,
-    // skip initialization this tick (the retry loop will catch it next tick).
-    const _sentinelColor = buildMermaidThemeVars().primaryColor;
-    if (!globalScope.__llMermaidConfigured && !_sentinelColor) return false;
+    // Sentinel guard: in the Marp webview, the first tick can race the
+    // stylesheet load and getComputedStyle returns "" for every --mermaid-*
+    // var. Locking themeVariables to empty strings makes Mermaid fall back
+    // to its own #fff4dd default → yellow clusters cascade into wrong cScale
+    // values. Wait until at least primaryColor resolves.
+    const themeVars = getThemeVars();
+    if (!_mermaidConfigured && (!themeVars || !themeVars.primaryColor)) {
+      return false;
+    }
 
-    if (!globalScope.__llMermaidConfigured) {
+    if (!_mermaidConfigured) {
       mermaid.initialize({
         startOnLoad: false,
         theme: "base",
-        securityLevel: "loose",        // Required to allow HTML (e.g. <br/>) in node labels; htmlLabels:true alone is not sufficient.
-        suppressErrorRendering: true,  // Don't render Mermaid's own error SVG on parse failure — it uses a fixed 2412×512 viewBox with content at x=1440 that overflows and appears in the upper-right corner. We restore the source text below so the :not(:has(svg)) CSS fallback shows the raw diagram code as a styled code block instead.
+        // securityLevel:"loose" is required to allow HTML (e.g. <br/>) inside
+        // node labels; htmlLabels:true alone is not sufficient.
+        securityLevel: "loose",
+        // Don't render Mermaid's own error SVG on parse failure: it uses a
+        // fixed 2412×512 viewBox with content at x=1440 that overflows the
+        // slide. Our :not(:has(svg)) CSS fallback shows the raw source as a
+        // styled code block instead — see lattice.css.
+        suppressErrorRendering: true,
         layout: "tidy-tree",
         htmlLabels: true,
-        markdownAutoWrap: false, // Marp doesn't support line breaks in code fences, so disable Mermaid's auto-wrapping to avoid unexpected formatting changes.
-        themeVariables: buildMermaidThemeVars(),
+        // Marp can't represent line breaks inside fenced code blocks, so
+        // disable Mermaid's auto-wrap to keep label text predictable.
+        markdownAutoWrap: false,
+        themeVariables: themeVars,
         quadrantChart: {
           titleFontSize: 24,
           pointTextPadding: 20,
@@ -305,72 +382,55 @@
           xAxisLabelFontSize: 22,
         },
         flowchart: {
-          // Render flowcharts at intrinsic size, not stretched to container.
-          // useMaxWidth:true scales the SVG's viewBox to fit 100% width, which
-          // makes small-viewBox diagrams blow up and large ones shrink — giving
-          // visually inconsistent sizing across the deck. false = intrinsic
-          // pixel size; the slide-level h2 handles the title (SVG title is
-          // suppressed by CSS in the slide context but retained for exports).
+          // useMaxWidth:true scales the SVG viewBox to 100% container width,
+          // which makes small diagrams blow up and large ones shrink. false
+          // keeps intrinsic size and gives consistent visual weight across
+          // the deck.
           useMaxWidth: false,
           htmlLabels: true,
-          // Adds internal breathing room between node border and label.
-          // (Only used by Mermaid's newer flowchart renderer, but harmless otherwise.)
           padding: 15,
-          subGraphTitleMargin: {
-            top: 10,
-            bottom: 100,
-          },
-          // Reduce aggressive label wrapping in flowcharts.
-          // Default is 200; larger values keep short phrases on one line.
+          subGraphTitleMargin: { top: 10, bottom: 100 },
+          // Default 200 wraps short labels too aggressively for dense decks.
           wrappingWidth: 480,
         },
       });
-      globalScope.__llMermaidConfigured = true;
+      _mermaidConfigured = true;
     }
 
-    // Build the exact set of elements to render.
-    // When targets are provided (observer-driven, scoped re-render), collect
-    // only the unprocessed .mermaid elements within those sections via
-    // mermaid.run({ nodes }). This avoids touching diagrams in other sections
-    // that already rendered correctly.
-    // When no targets (initial load, retry loop), use querySelector globally.
-    const UNRENDERED = ".mermaid:not([data-processed]):not([data-ll-mermaid-static])";
+    // Build the render set.
+    //   targets present  → mermaid.run({ nodes }) — scoped, leaves other
+    //                      sections' rendered diagrams completely untouched.
+    //   targets null     → mermaid.run({ querySelector }) — global scan for
+    //                      first-time / retry-loop / observer-less runs.
     let runOpts;
     if (targets) {
       const nodes = [];
       for (const section of targets) {
-        for (const el of section.querySelectorAll(UNRENDERED)) {
+        for (const el of section.querySelectorAll(UNRENDERED_SELECTOR)) {
           nodes.push(el);
         }
       }
-      // Nothing new to render in the affected sections — skip the run.
       if (nodes.length === 0) return true;
       runOpts = { nodes, suppressErrors: true };
     } else {
-      runOpts = { querySelector: UNRENDERED, suppressErrors: true };
+      runOpts = { querySelector: UNRENDERED_SELECTOR, suppressErrors: true };
     }
 
-    // mermaid.run() is async — it marks elements data-processed synchronously
-    // then renders each one as a Promise chain. Running restoration in .then()
-    // ensures we only restore diagrams that genuinely failed (no SVG injected),
-    // not ones that are still mid-render when restoration would run synchronously.
-    const _runPromise = (() => {
-      try {
-        return mermaid.run(runOpts);
-      } catch (_err) {
-        return Promise.resolve();
-      }
-    })();
+    // mermaid.run is async: it stamps data-processed="true" synchronously
+    // and renders each node via a Promise chain. Restoring source text in
+    // .then() ensures we only restore diagrams that genuinely failed (no
+    // <svg> child after the run completes), not ones still mid-render.
+    let runPromise;
+    try {
+      runPromise = mermaid.run(runOpts);
+    } catch (_err) {
+      runPromise = Promise.resolve();
+    }
 
-    // Restore source text for any diagram that failed to render.
-    // Scope the restoration to target sections when available — no reason to
-    // scan sections that were not part of this run.
     const restoreRoots = targets ?? [document];
-    Promise.resolve(_runPromise).then(() => {
+    Promise.resolve(runPromise).then(() => {
       for (const root of restoreRoots) {
-        for (const el of root.querySelectorAll(
-          ".mermaid[data-processed]:not([data-ll-mermaid-static])"
-        )) {
+        for (const el of root.querySelectorAll(FAILED_SELECTOR)) {
           if (!el.querySelector("svg") && el.dataset.llSource) {
             el.textContent = el.dataset.llSource;
           }
@@ -386,69 +446,56 @@
    * Finds [x]/[~]/[ ] prefixed li items inside section.verdict-grid, strips
    * the prefix, and wraps the label in <span class="badge pass|warn|fail">.
    * Idempotent — skips li items that already contain a .badge span.
+   *
+   * Lives here because the runtime script is the only JS that ships with
+   * decks in every deployment context; moving it out would require a second
+   * <script> tag in every template. Kept self-contained so it can be lifted
+   * later if a separate badge-transform module emerges.
    */
   function transformVerdictGridBadges() {
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.verdict-grid')) {
-      if (section.querySelector('.grid-verdict')) continue; // Marp CLI plugin already ran
-      for (const outerLi of section.querySelectorAll(':scope > ul > li')) {
-        const innerUl = outerLi.querySelector(':scope > ul');
+    if (typeof document === "undefined") return;
+    for (const section of document.querySelectorAll("section.verdict-grid")) {
+      if (section.querySelector(".grid-verdict")) continue; // Marp CLI plugin already ran
+      for (const outerLi of section.querySelectorAll(":scope > ul > li")) {
+        const innerUl = outerLi.querySelector(":scope > ul");
         if (!innerUl) continue;
         const innerItems = [...innerUl.children];
-        // Last item is body text — skip it; all others are badge items
+        // Last item is body text — skip it; all others are badge items.
         const badgeItems = innerItems.slice(0, -1);
         for (const li of badgeItems) {
-          if (li.querySelector('.badge')) continue; // already transformed
+          if (li.querySelector(".badge")) continue;
           const text = li.textContent.trim();
           if (!/^\[/.test(text)) continue;
-          const badgeClass = text.startsWith('[x]') ? 'badge pass'
-                           : text.startsWith('[~]') ? 'badge warn'
-                           : 'badge fail';
-          const label = text.replace(/^\[[x~\s]\]\s*/, '');
+          const badgeClass = text.startsWith("[x]") ? "badge pass"
+                           : text.startsWith("[~]") ? "badge warn"
+                           : "badge fail";
+          const label = text.replace(/^\[[x~\s]\]\s*/, "");
           li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
         }
       }
     }
   }
 
+  // ─── MutationObserver: live-edit support ────────────────────────────────
+  // The observer's only job is to notice newly-inserted Mermaid fences and
+  // hand the containing <section> off to scheduleRun for a scoped re-render.
+  //
+  // Why childList only (no characterData):
+  //   Marp's preview re-render arrives via morphdom diffing. Because we
+  //   replaced the original <pre> with a <div class="mermaid">, morphdom
+  //   sees a tag mismatch when the new HTML arrives and replaces the entire
+  //   subtree → childList mutation. characterData would only fire if Marp
+  //   patched a text node inside an existing fence-wrapper, which the tag
+  //   replacement makes impossible. Adding it back floods us with noise
+  //   from every SVG <text> Mermaid creates during its own render.
+  //
+  // Why we don't watch .mermaid additions:
+  //   We create them inside upgradeFences, which is called from initAndRun.
+  //   Watching them would self-trigger a second initAndRun 200ms later; the
+  //   second run's restoration phase fires while the first is still rendering
+  //   and clobbers the in-progress SVG with restored source text.
   function startObserver() {
     if (typeof MutationObserver === "undefined") return;
-    if (globalScope.__llMermaidObserverStarted) return;
-    globalScope.__llMermaidObserverStarted = true;
-
-    // Only watch for Marp-originated code fence additions.
-    //
-    // What we must NOT observe:
-    //   .mermaid additions — those are created by upgradeFences() running
-    //     inside initAndRun(). Observing them causes a self-triggering second
-    //     run 200 ms after every upgrade: mermaid.run() is async so the second
-    //     run's .then() restoration fires while the first is still rendering,
-    //     and the element — which has data-processed but no SVG yet — gets its
-    //     source text restored, interfering with the in-progress render.
-    //   SVG / text node additions — Mermaid's own rendering inserts SVG child
-    //     elements and text nodes. These are non-HTMLElement nodes so they pass
-    //     the instanceof guard, but including them via characterData: true would
-    //     create constant noise on every render.
-    //   characterData mutations — Marp re-renders via childList (section
-    //     replacement), never by patching text nodes inside existing code fences.
-    //     characterData: true fires on every SVG text node Mermaid creates and
-    //     every other dynamic text change on the page. Pure noise.
-    //
-    // What we MUST observe:
-    //   pre > code.language-mermaid    — Marp CLI / HTML export output
-    //   marp-pre > code.language-mermaid — Marp VS Code preview output
-    //   (and the [class*=] variants for non-standard class strings)
-    //
-    // When Marp re-renders a slide in VS Code preview it replaces the <section>
-    // entirely (or its innerHTML). The mutation addedNodes will be the new
-    // <section> (or its direct children). querySelector on those nodes finds
-    // the new code fences and triggers a re-run.
-    const FENCE_SELECTOR = [
-      "pre > code.language-mermaid",
-      "pre > code[class*='language-mermaid']",
-      "marp-pre > code.language-mermaid",
-      "marp-pre > code[class*='language-mermaid']",
-    ].join(",");
 
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
@@ -456,49 +503,55 @@
         for (const node of m.addedNodes) {
           if (!(node instanceof HTMLElement)) continue;
           if (node.matches(FENCE_SELECTOR) || node.querySelector(FENCE_SELECTOR)) {
-            // Walk up to the containing <section> so initAndRun can scope the
-            // re-render to only that section's diagrams, leaving all other
-            // already-rendered diagrams untouched.
+            // Walk to the containing <section> so the re-render is scoped to
+            // just that slide. If the addedNode is itself outside any section
+            // (rare: header/footer mutations), fall back to the node itself.
             const section = node.closest("section") ?? node;
             scheduleRun(section);
-            return; // one scheduleRun per mutation batch is enough
+            return; // one schedule per mutation batch is enough
           }
         }
       }
     });
 
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-      // characterData intentionally omitted — see comment above
-    });
+    observer.observe(document.body, { subtree: true, childList: true });
   }
 
+  // ─── Entry point ────────────────────────────────────────────────────────
+  // Marp's webview can deliver the slide DOM after our script runs, and the
+  // Mermaid script can finish loading after DOMContentLoaded. We tick
+  // initAndRun up to 40 × 100ms (4s) plus one extra pass at 700ms, then
+  // hand off to the observer. The retry loop short-circuits as soon as
+  // Mermaid is configured AND no unrendered fences remain — there's no
+  // value in scanning the whole document 40 times once everything's drawn.
   function runWithRetries() {
     let attempts = 0;
-    const maxAttempts = 40; // ~4s
+    const maxAttempts = 40;
     const delayMs = 100;
 
     const tick = () => {
       attempts += 1;
-      initAndRun();
+      const ok = initAndRun();
+      // Stop early once we've configured Mermaid and there is nothing left
+      // to render globally. The observer takes over from here.
+      if (ok && _mermaidConfigured &&
+          !document.querySelector(UNRENDERED_SELECTOR) &&
+          !document.querySelector(FENCE_SELECTOR)) {
+        return;
+      }
       if (attempts >= maxAttempts) return;
       setTimeout(tick, delayMs);
     };
 
     tick();
-    // One extra pass later for late-rendered slide DOM.
-    setTimeout(initAndRun, 700);
-
-    // Keep Mermaid responsive to Marp live preview edits.
+    // One late pass for slide DOM that arrived after the retry window.
+    setTimeout(() => initAndRun(), 700);
     startObserver();
   }
 
   if (typeof document === "undefined") return;
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", runWithRetries, {
-      once: true,
-    });
+    document.addEventListener("DOMContentLoaded", runWithRetries, { once: true });
   } else {
     runWithRetries();
   }
