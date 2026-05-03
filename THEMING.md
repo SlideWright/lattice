@@ -197,6 +197,16 @@ The current overrides cover:
 - **Gantt** — `taskTextOutsideLeft/Right` ignores `taskTextOutsideColor`
   in some renderer paths. Override forces dark text in the outside-bar
   margin. Documented Mermaid bug.
+- **Diagram titles (all types)** — Mermaid renders its own `title`
+  directive (or YAML frontmatter `title:`) inside the SVG, doubling up
+  with the slide's `## heading`. The palette suppresses the in-SVG title
+  for every diagram type with a CSS class on the title element:
+  `.titleText` (gantt), `.pieTitleText` (pie), `.radarTitle` (radar),
+  `.packetTitle` (packet), and the `[class$="TitleText"]` safety net
+  (flowchart, class, ER, requirement, gitgraph). Six types render bare
+  `<text>` titles with no class (sequence, journey, C4, quadrant,
+  timeline, xy-chart) and remain visible — see references/mermaid.md
+  §5.4 for the full convention and the diagnostic recipe.
 
 ## Mermaid parser limits
 

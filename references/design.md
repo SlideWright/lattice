@@ -195,38 +195,36 @@ section footer {
   color: var(--text-muted);
 }
 
-/* Pagination — Marp CLI renders via section::after pseudo-element.
-   The custom renderer (lattice.js) renders via .marp-slide-pagination span.
-   Both are overridden to match footer exactly. */
-section::after {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label); /* 13px — same as footer */
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  bottom: 24px; /* same vertical anchor as footer */
-  right: 30px;
-  padding: 0; /* REQUIRED: cancels Marp's padding:inherit which
-                                    inherits section's padding-bottom:88px and
-                                    pushes the number 88px above its anchor */
+/* Pagination — single mechanism across both rendering paths.
+   The Marp CLI engine emits `data-marpit-pagination="N"` on each <section>;
+   the custom renderer (lattice.js) emits the identical attribute. Both paths
+   render the page number via the same `section::after` pseudo-element rule. */
+section[data-marpit-pagination]::after {
+  content: attr(data-marpit-pagination);
 }
-
-.marp-slide-pagination {
-  /* custom renderer span (lattice.js) */
-  position: absolute;
-  bottom: 24px;
-  right: 30px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
+section::after {
+  position: absolute !important;
+  bottom: 24px !important;          /* same vertical anchor as footer */
+  right: 30px !important;
+  padding: 0 !important;            /* REQUIRED: cancels Marp scaffold's
+                                       padding:inherit (would otherwise inherit
+                                       section's padding-bottom:88px and push
+                                       the number ~88px above its anchor) */
+  margin: 0 !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--fs-label) !important;   /* 13px — same as footer */
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.06em !important;
+  color: var(--text-muted) !important;
 }
 ```
 
-**Critical:** `padding: 0` on `section::after` is mandatory. Marp's base rule sets `padding: inherit`, which inherits the section's `padding-bottom: 88px`, causing the page number to appear ~88px above its `bottom` anchor in the VS Code preview and Marp CLI HTML output.
+**Critical — !important is deliberate.** Marp's scaffold CSS injects `section::after { padding: inherit; }` and font defaults that load *after* the theme stylesheet at equal specificity, so the cascade order favours the scaffold. `!important` on padding, position, and font properties is the override that makes the theme rule win regardless of load order. This is one of the few places in the system where `!important` is the right tool.
 
-**CSS variables:** `--marp-slide-pagination-color` and `--marp-slide-pagination-font-size` are defined in `:root` for reference but are **not** consumed by Marp's engine `section::after` rule. Font and color must be set directly on `section::after` and `.marp-slide-pagination`.
+**Single mechanism — no DOM span.** Earlier versions of lattice.js injected a `<span class="marp-slide-pagination">N</span>` element with its own positioning CSS, creating two divergent pagination paths. That has been removed: lattice.js now emits the same `data-marpit-pagination` attribute Marp CLI does, and the single `section::after` rule handles both. Any new pagination styling lives on `section::after` only.
+
+**CSS variables:** `--marp-slide-pagination-color` and `--marp-slide-pagination-font-size` are defined in `:root` for reference but the values above are set directly so the !important overrides apply. Update both if the variables are ever wired through.
 
 For the custom renderer (non-Marp CLI): parse header/footer from frontmatter, inject into each slide's HTML, position via CSS. Respect per-slide overrides.
 

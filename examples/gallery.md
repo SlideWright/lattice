@@ -60,6 +60,9 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 `Four-stage processing pipeline — weekly cadence`
 
 ```mermaid
+---
+title: processing pipeline — weekly cadence
+---
 flowchart LR
   A["Raw Signals"] --> B["Classify"]
   B --> C["Score & Weight"]
@@ -625,6 +628,5 @@ The pattern here is the same as any page of written argument — claim, then sup
      The build script (lattice.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
-<link rel="stylesheet" href="../lattice.css">
 <script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>

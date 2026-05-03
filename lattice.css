@@ -270,7 +270,25 @@ section footer {
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
 section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; margin:0; text-align:left !important; }
-section::after { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; color:var(--marp-slide-footer-color, var(--text-muted)); bottom:24px; right:30px; padding:0; }
+/* section::after — Marp's native pagination pseudo-element.
+   Marp's scaffold CSS sets `section::after { padding: inherit; }`, which inherits the
+   section's bottom padding (~88px) and pushes the page number above where bottom:24px
+   would otherwise place it. The scaffold loads after our theme in the cascade, so at
+   equal specificity it wins. !important here is the deliberate override. Font properties
+   are also !important because the scaffold sets defaults that don't match our footer. */
+section::after {
+  position:absolute !important;
+  bottom:24px !important;
+  right:30px !important;
+  padding:0 !important;
+  margin:0 !important;
+  font-family:var(--font-mono) !important;
+  font-size:var(--fs-label) !important;
+  font-weight:500 !important;
+  line-height:1 !important;
+  letter-spacing:0.06em !important;
+  color:var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted))) !important;
+}
 
 /* ── TITLE ── */
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
@@ -329,7 +347,12 @@ section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bo
    query the container width before rendering. width:100% on a freshly-inserted flex child
    can resolve to 0 before the browser commits a layout pass.
    1280px section − 2 × var(--sp-2xl) padding = 1152px. */
-section.diagram .mermaid-svg, section.diagram .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
+section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
+/* Source <pre> in pending/error states occupies the same slot as the rendered
+ * diagram so the slide layout does not reflow when the diagram swaps in. */
+section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
+  flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
+}
 section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
 /* Key Insight panel on diagram slides must stretch full-width to match every
    other layout. section.diagram uses align-items:center which would shrink
@@ -741,11 +764,18 @@ section.criteria .crit-body ul li::before { display:none !important; content:non
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
 section.verdict-grid .grid-verdict { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:var(--sp-sm); flex:1; }
 section.verdict-grid .vcard { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.verdict-grid .vcard:last-child { background:var(--accent-soft); border-color:var(--accent); }
+section.verdict-grid .vcard:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
+section.verdict-grid .vcard:last-child::after {
+  content:'✧'; position:absolute; top:8px; right:8px;
+  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
+  font-family:var(--font-body); font-weight:400; letter-spacing:0;
+  pointer-events:none;
+}
 section.verdict-grid .vcard:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.verdict-grid .vcard-title { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); }
+section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); padding-right:2.5rem; }
 section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body); line-height:var(--lh-snug); }
+section.verdict-grid .vcard:last-child .vcard-body { padding-right:2.5rem; }
 .badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass::before { content:"✓"; color:var(--pass); font-weight:700; }
 .badge.fail::before { content:"✗"; color:var(--fail); font-weight:700; }
@@ -756,10 +786,10 @@ section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body
  * ## heading  markdown table  p note
  */
 section.compare-table h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
-section.compare-table table { width:100%; border-collapse:collapse; font-size:var(--fs-xs); flex:1; }
-section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); background:var(--bg-alt); padding:10px var(--sp-sm); text-align:left; border-bottom:2px solid var(--border); }
-section.compare-table td { padding:10px var(--sp-sm); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:middle; font-size:var(--fs-body); }
-section.compare-table td:first-child { font-weight:600; color:var(--text-heading); width:26%; }
+section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-xs); flex:1; }
+section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); background:var(--bg-alt); padding:8px var(--sp-xs); text-align:left; border-bottom:2px solid var(--border); word-wrap:break-word; overflow-wrap:break-word; }
+section.compare-table td { padding:8px var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; }
+section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 section.compare-table > p { font-size:var(--fs-label); font-style:italic; color:var(--text-muted); margin-top:var(--sp-md); padding-top:var(--sp-sm); }
 
 /* ── FEATURED ──
@@ -767,9 +797,15 @@ section.compare-table > p { font-size:var(--fs-label); font-style:italic; color:
  */
 section.featured h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; }
-section.featured .feat-card h3 { font-weight:700; letter-spacing:0.12em; color:var(--accent); margin-bottom:var(--sp-xs); }
-section.featured .feat-card p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; }
+section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; position:relative; overflow:hidden; }
+section.featured .feat-card::after {
+  content:'✧'; position:absolute; top:8px; right:8px;
+  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
+  font-family:var(--font-body); font-weight:400; letter-spacing:0;
+  pointer-events:none;
+}
+section.featured .feat-card h3 { font-weight:700; letter-spacing:0.12em; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:2.5rem; }
+section.featured .feat-card p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:2.5rem; }
 section.featured .sub-row { display:grid; grid-auto-rows:1fr; gap:var(--sp-sm); }
 section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; }
 section.featured .sub-card h3 { font-size:var(--fs-md); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); text-transform:none; letter-spacing:0; }
@@ -910,15 +946,159 @@ section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); ove
 section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
 /* ── Mermaid ── */
-/* .mermaid-svg = CLI path (lattice.js pre-renders to SVG wrapper)
-   .mermaid     = runtime path (lattice-runtime.js + Mermaid CDN in preview) */
-.mermaid-svg, .mermaid { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
-.mermaid-svg svg, .mermaid svg { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
-/* Fallback: before Mermaid renders (or on render failure), show source as styled code block instead of unstyled floating text. :not(:has(svg)) stops matching once the SVG is injected, so normal flex layout takes over automatically.
-   white-space:pre-wrap prevents long diagram lines from overflowing the slide;
-   overflow:hidden avoids scrollbar chrome in a presentation context;
-   color:var(--text-heading) gives the highest available contrast for readability. */
-.mermaid:not(:has(svg)) { display:block; font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); white-space:pre-wrap; overflow:hidden; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; color:var(--text-heading); }
+/* .mermaid-svg = CLI path (lattice.js pre-renders into a wrapper).
+   Runtime path (lattice-runtime.js) does NOT wrap the original
+   `<pre is="marp-pre"><code class="language-mermaid">`. Marp's <pre> is
+   a direct flex child of <section> with auto-scaling — wrapping it
+   broke that. Instead the runtime marks state on the <pre> itself and
+   inserts a sibling `<div class="mermaid">` (SVG target) and, on
+   failure, a sibling `<div class="mermaid-error">`. */
+.mermaid-svg                             { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
+section.diagram > .mermaid               { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
+.mermaid-svg svg,
+section.diagram > .mermaid svg           { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
+
+/* Visibility states keyed off `data-mermaid-state` on the <pre>.
+ *
+ * Pending/error states keep the source `<pre>` visible so the author has
+ * perspective on what's being rendered (and can see the source-of-truth
+ * if rendering fails). The `<pre>` is hidden ONLY once we have a
+ * successful SVG in the sibling.
+ *
+ * Rules are intentionally UNSCOPED — `data-mermaid-state` is only ever set
+ * by our runtime, so this cannot affect unrelated <pre> blocks. */
+:is(pre, marp-pre)[data-mermaid-state] + .mermaid                  { display:none; }
+:is(pre, marp-pre)[data-mermaid-state="rendered"]                  { display:none; }
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid       { display:flex; }
+
+/* Base (theme-agnostic) styling for the source <pre> in pending/error states.
+ * Structural only: layout, sizing, font, whitespace. No background, no
+ * border, no fill colors — those belong in the per-theme stylesheet
+ * (see `section.diagram > pre` in themes/indaco.css etc.). The selector
+ * pair covers two paths: (1) any pre inside section.diagram (slide host,
+ * styling applies even before the runtime tags it), and (2) any pre
+ * tagged by the runtime in a non-slide host. `:not([data-mermaid-state=
+ * "rendered"])` steps aside once the SVG sibling takes over. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) {
+  margin:0 !important;
+  padding:var(--sp-sm) var(--sp-md) !important;
+  background:none !important;
+  border:none !important;
+  border-radius:var(--radius-md) !important;
+  overflow:auto;
+  box-sizing:border-box;
+  /* Match the rendered .mermaid container so the slot doesn't reflow when the
+   * diagram swaps in. Slide hosts override via the more-specific
+   * `section.diagram > :is(pre, marp-pre)` rule above (flex:1 + slide width). */
+  width:1152px; height:480px;
+  max-width:100%;
+}
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) > code {
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  line-height:var(--lh-base);
+  background:none !important;
+  border:none !important;
+  padding:0 !important;
+  display:block;
+  white-space:pre;
+}
+/* Suppress per-token hljs coloring inside the source <pre>. Marp registers
+ * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
+ * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
+ * the per-theme `section .hljs-*` rules paints a JavaScript-style highlight
+ * on what is really our diagram source — visually noisy and semantically
+ * misleading (mermaid is not a programming language). Force every hljs span
+ * to inherit the flat code color so the block reads as a plain code block. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"],
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  color:inherit;
+  font-style:inherit;
+  font-weight:inherit;
+  background:none !important;
+}
+
+/* Default container size for non-slide hosts (plain markdown preview,
+ * standalone HTML pages). Mermaid reads getBoundingClientRect() before
+ * rendering and, for diagram types with useMaxWidth:true, scales the SVG
+ * to that width. We give the container fixed pixel dimensions so it has
+ * a deterministic box even when no flex parent provides one.
+ *
+ * The slide-context rule below (`section.diagram > .mermaid`) is more
+ * specific and overrides these inside Marp slides. */
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid {
+  align-items:center; justify-content:center;
+  width:1152px; height:480px;
+  max-width:100%;
+  box-sizing:border-box;
+}
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid > svg {
+  max-width:100%; max-height:100%; display:block;
+}
+
+/* Themed parser-error block. Uses the same fail-soft palette as .verdict
+ * and .badge.fail so it feels native to the deck. Width matches the
+ * source <pre> / rendered .mermaid container so the error sits flush with
+ * the diagram slot above it. Height is intrinsic — errors are short. */
+.mermaid-error {
+  margin-top:var(--sp-sm);
+  padding:var(--sp-xs) var(--sp-md);
+  background:color-mix(in srgb, var(--fail) 8%, var(--bg-alt));
+  border:1px solid var(--fail);
+  border-radius:var(--radius-md);
+  font-size:var(--fs-sm);
+  line-height:var(--lh-snug);
+  color:var(--text-body);
+  display:flex; flex-direction:column; gap:4px;
+  flex:0 0 auto;
+  width:1152px; max-width:100%;
+  box-sizing:border-box;
+}
+section.diagram > .mermaid-error {
+  width:calc(1280px - 2 * var(--sp-2xl));
+}
+section.diagram > .mermaid-error-label,
+.mermaid-error-label {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--fail);
+}
+.mermaid-error-msg    { font-family:var(--font-mono); color:var(--text-heading); }
+.mermaid-error-detail {
+  margin:0; padding:var(--sp-xs) var(--sp-sm);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  line-height:var(--lh-snug);
+  color:var(--text-muted);
+  white-space:pre-wrap; overflow:auto;
+  max-height:160px;
+}
+
+/* Diagram title suppression — the slide's `## heading` is the canonical title.
+   Mermaid renders its own title (from frontmatter `title:` or in-body `title`)
+   inside the SVG, which doubles up with the slide heading. Class names below
+   are verified from rendered output (Mermaid 11.14), not guessed.
+   Known gap: sequence, journey, C4, quadrant, timeline, xy-chart render bare
+   <text> titles with no class — those cannot be class-targeted and remain
+   visible. See references/mermaid.md §5.3 for the diagnostic recipe. */
+section.diagram .mermaid-svg svg .titleText,
+section.diagram > .mermaid svg .titleText,
+section.diagram .mermaid-svg svg .pieTitleText,
+section.diagram > .mermaid svg .pieTitleText,
+section.diagram .mermaid-svg svg .radarTitle,
+section.diagram > .mermaid svg .radarTitle,
+section.diagram .mermaid-svg svg .packetTitle,
+section.diagram > .mermaid svg .packetTitle,
+section.diagram .mermaid-svg svg [class$="TitleText"],
+section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
  * MARP VS CODE PREVIEW FALLBACKS
@@ -1056,10 +1236,16 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px;
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child::after {
+  content:'✧'; position:absolute; top:8px; right:8px;
+  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
+  font-family:var(--font-body); font-weight:400; letter-spacing:0;
+  pointer-events:none;
+}
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > strong { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); display:block; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > strong { color:var(--accent); }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > strong { color:var(--accent); padding-right:2.5rem; }
 /* Inner ul = badge row */
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill matching .badge base style */
@@ -1068,6 +1254,7 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-chil
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset all inherited card styles */
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
@@ -1090,9 +1277,9 @@ section.featured:not(:has(.feat-layout)) > ul > li:first-child::after {
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child > strong { display:block; }
+section.featured:not(:has(.feat-layout)) > ul > li:first-child > strong { display:block; padding-right:2.5rem; }
 section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul > li { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); font-weight:400; letter-spacing:0; }
+section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul > li { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); font-weight:400; letter-spacing:0; padding-right:2.5rem; }
 /* Sub-card items — column 2, each row */
 section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) {
   background:var(--bg-alt); border:1px solid var(--border);

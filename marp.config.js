@@ -51,6 +51,28 @@ function verdictGridBadges(markdown) {
   });
 }
 
+const mermaidLanguage = require("./lib/mermaid-hljs");
+
+/**
+ * Teach marp-core's bundled highlight.js about Mermaid syntax so fenced
+ * ```mermaid blocks get hljs token spans at SSR time. The default
+ * `marp.highlighter` returns the empty string for unknown languages, which
+ * caused mermaid sources to render as raw plaintext when the runtime fails
+ * (or has not yet been able to render) the diagram. Once the language is
+ * registered, marp's existing highlighter logic picks it up automatically
+ * via `hljs.getLanguage('mermaid')`.
+ *
+ * Idempotent: re-running the engine hook is a no-op because hljs throws on
+ * duplicate registrations and we suppress it.
+ */
+function registerMermaidHljs(marp) {
+  try {
+    if (!marp.highlightjs.getLanguage("mermaid")) {
+      marp.highlightjs.registerLanguage("mermaid", mermaidLanguage);
+    }
+  } catch (_e) { /* already registered */ }
+}
+
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
   themeSet: [
@@ -61,5 +83,8 @@ module.exports = {
   html: true,
   allowLocalFiles: true,
   imageScale: 3,
-  engine: ({ marp }) => marp.use(splitPanelCounter).use(verdictGridBadges),
+  engine: ({ marp }) => {
+    registerMermaidHljs(marp);
+    return marp.use(splitPanelCounter).use(verdictGridBadges);
+  },
 };

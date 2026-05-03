@@ -496,9 +496,19 @@ function renderMermaid(definition) {
     themeVariables: MERMAID_THEME_VARS,
     themeCSS: css,
   };
-  const themed = hasInit
-    ? definition
-    : `%%{init: ${JSON.stringify(initObj)}}%%\n${definition}`;
+  // Mermaid requires YAML frontmatter (--- ... ---) to be the FIRST thing in
+  // the source. If the diagram opens with frontmatter, inject %%{init}%%
+  // AFTER the closing fence; otherwise prepend it normally.
+  const initDirective = `%%{init: ${JSON.stringify(initObj)}}%%`;
+  let themed;
+  if (hasInit) {
+    themed = definition;
+  } else {
+    const fmMatch = definition.match(/^---\n[\s\S]*?\n---\n/);
+    themed = fmMatch
+      ? `${fmMatch[0]}${initDirective}\n${definition.slice(fmMatch[0].length)}`
+      : `${initDirective}\n${definition}`;
+  }
 
   const tmpDir    = fs.mkdtempSync(path.join(os.tmpdir(), 'mmd-'));
   const inFile    = path.join(tmpDir, 'diagram.mmd');
@@ -1119,30 +1129,35 @@ function parseSlide(raw, index) {
 
   // ── Assemble section — matching Marp v4 HTML output ───────────────────────
   // Marp produces:
-  //   <section id="N" class="..." data-marpit-slide="N" style="--marp-slide:N;">
+  //   <section id="N" class="..." data-marpit-slide="N"
+  //            data-marpit-pagination="N" style="--marp-slide:N;">
   //     <header><p>text</p></header>   ← only when header is set
   //     [content]
   //     <footer><p>text</p></footer>   ← only when footer is set
-  //     <span class="marp-slide-pagination">N</span>  ← when paginate:true
   //   </section>
+  //
+  // Pagination is rendered via the native Marp mechanism: a CSS pseudo-element
+  // `section::after { content: attr(data-marpit-pagination); }` fed by the
+  // data attribute on the section itself. We do NOT inject a real DOM element —
+  // that would create two pagination paths (Marp CLI vs lattice.js) with
+  // divergent positioning. Single mechanism, single CSS rule.
 
   const slideNum   = index + 1;
   const styleAttr  = bgColor
     ? ` style="--marp-slide:${slideNum};background-color:${bgColor};"`
     : ` style="--marp-slide:${slideNum};"`;
+  const paginAttr  = paginate ? ` data-marpit-pagination="${slideNum}"` : '';
 
   const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
   const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
-  const paginEl    = paginate ? `<span class="marp-slide-pagination">${slideNum}</span>` : '';
 
   return [
     `<section id="${slideNum}" class="${classAttr}"`,
-    ` data-marpit-slide="${slideNum}"${styleAttr}>`,
+    ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
     headerEl,
     bgImageHtml,
     html,
     footerEl,
-    paginEl,
     `</section>`
   ].join('');
 }
@@ -1152,23 +1167,21 @@ const slides = rawSlides.map((s, i) => parseSlide(s, i));
 // ── Marp-equivalent CSS for pagination and header/footer ────────────────────
 // Marp injects these styles itself; we reproduce them here since we're
 // not running through marp-core.
+//
+// Pagination uses the native Marp mechanism: the section carries a
+// `data-marpit-pagination="N"` attribute, and `section::after` consumes it
+// as the pseudo-element content. All visual styling (font, color, position)
+// lives in lattice.css on `section::after` — see the !important block there.
+// We only need the `content` rule here so the page number actually renders.
 const marpSystemCss = `
-/* Marp system styles — pagination only.
-   Header/footer positioning is defined in lattice.css so both the CLI
-   and the Marp VS Code preview use identical coordinates. */
+/* Marp system styles — pagination content binding.
+   Header/footer positioning + section::after typography live in lattice.css
+   so both the CLI and the Marp VS Code preview share identical coordinates. */
 
 section { position: relative; }
 
-.marp-slide-pagination {
-  position: absolute;
-  bottom: 24px;
-  right:  30px;
-  color:        var(--marp-slide-pagination-color, var(--text-muted, #A69882));
-  font-size:    var(--marp-slide-pagination-font-size, var(--fs-label, 13px));
-  font-family:  var(--font-mono, monospace);
-  font-weight:  500;
-  letter-spacing: 0.06em;
-  z-index: 20;
+section[data-marpit-pagination]::after {
+  content: attr(data-marpit-pagination);
 }
 `;
 

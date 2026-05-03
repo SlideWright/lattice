@@ -12,9 +12,9 @@ footer: "Mermaid 11.14 · rendered with Lattice theme"
 <!-- _footer: '' -->
 <!-- _header: '' -->
 
-##### Mermaid 11.14 · Lattice Theme
-
 # Every Mermaid diagram, one slide each.
+
+`Mermaid 11.14 · Lattice Theme`
 
 *A reference gallery of the 26 diagram types Mermaid supports, rendered with the Lattice palette so you can see what each one looks like in production.*
 
@@ -24,7 +24,7 @@ footer: "Mermaid 11.14 · rendered with Lattice theme"
 
 ## How this gallery is organised.
 
-##### Orientation · How to use this deck
+`Orientation · How to use this deck`
 
 ### Three groups, twenty-six diagrams
 
@@ -46,19 +46,22 @@ Stable diagrams render with full theme control. Experimental ones marked 🔥 ma
 <!-- _paginate: false -->
 <!-- _footer: '' -->
 
-##### Group 01 · Stable diagrams
+`Group 01 · Stable diagrams`
 
-# The fifteen well-supported types.
+## The fifteen well-supported types.
 
 ---
 
 <!-- _class: diagram -->
 
-### 01 · Flowchart
+`01 · Flowchart`
 
 ## Boxes and arrows. The most-used diagram type.
 
 ```mermaid
+---
+title: Codebook distribution
+---
 flowchart LR
   A{{"AWS CloudHSM"}} --> B(["Control Plane"])
   B -->|"signed codebook"| C["Consuming App"]
@@ -72,11 +75,14 @@ flowchart LR
 
 <!-- _class: diagram -->
 
-### 02 · Sequence Diagram
+`02 · Sequence Diagram`
 
 ## Actors and signals over time.
 
 ```mermaid
+---
+title: Tokenize call sequence
+---
 sequenceDiagram
   participant App
   participant SDK
@@ -95,11 +101,14 @@ sequenceDiagram
 
 <!-- _class: diagram -->
 
-### 03 · Class Diagram
+`03 · Class Diagram`
 
 ## UML classes with attributes, methods, and inheritance.
 
 ```mermaid
+---
+title: Tokenization SDK class model
+---
 classDiagram
   class TokenizationSDK {
     -Codebook codebook
@@ -126,13 +135,16 @@ classDiagram
 
 <!-- _class: diagram -->
 
-### 04 · State Diagram
+`04 · State Diagram`
 
 ## A finite state machine.
 
 ```mermaid
+---
+title: Approval state machine
+---
 stateDiagram-v2
-  [*] --> Draft
+  [*] --> Drafta
   Draft --> Submitted: submit
   Submitted --> Approved: approve
   Submitted --> Rejected: reject
@@ -147,11 +159,14 @@ stateDiagram-v2
 
 <!-- _class: diagram -->
 
-### 05 · Entity Relationship Diagram
+`05 · Entity Relationship Diagram`
 
 ## Database tables and their relationships.
 
 ```mermaid
+---
+title: Tenant codebook schema
+---
 erDiagram
   TENANT ||--o{ CODEBOOK : "issues"
   CODEBOOK ||--|{ DEK_VERSION : "wraps"
@@ -179,13 +194,13 @@ erDiagram
 
 <!-- _class: diagram -->
 
-### 06 · User Journey
+`06 · User Journey`
 
 ## Steps and the emotional state at each one.
 
 ```mermaid
 journey
-  title Tokenization SDK Adoption
+  title Tokenization SDK Adoptionaa
   section Discovery
     Read architecture doc: 4: Engineer
     Talk to platform team: 5: Engineer, Platform
@@ -204,7 +219,7 @@ journey
 
 <!-- _class: diagram -->
 
-### 07 · Gantt
+`07 · Gantt`
 
 ## Tasks across a timeline, with dependencies.
 
@@ -229,7 +244,7 @@ gantt
 
 <!-- _class: diagram -->
 
-### 08 · Pie Chart
+`08 · Pie Chart`
 
 ## Proportions of a whole.
 
@@ -249,7 +264,7 @@ pie showData
 
 <!-- _class: diagram -->
 
-### 09 · Quadrant Chart
+`09 · Quadrant Chart`
 
 ## Two-axis priority scatter.
 
@@ -275,11 +290,14 @@ quadrantChart
 
 <!-- _class: diagram -->
 
-### 10 · Requirement Diagram
+`10 · Requirement Diagram`
 
 ## SysML-style requirements with traceability.
 
 ```mermaid
+---
+title: HSM custody requirements
+---
 requirementDiagram
   requirement non_exportable_kek {
     id: 1
@@ -310,11 +328,14 @@ requirementDiagram
 
 <!-- _class: diagram -->
 
-### 11 · GitGraph
+`11 · GitGraph`
 
 ## Branching, merging, tags.
 
 ```mermaid
+---
+title: Release branch history
+---
 gitGraph
   commit id: "init"
   commit id: "add SDK"
@@ -335,7 +356,7 @@ gitGraph
 
 <!-- _class: diagram -->
 
-### 12 · C4 Diagram
+`12 · C4 Diagram`
 
 ## Software architecture at four zoom levels.
 
@@ -359,7 +380,7 @@ C4Context
 
 <!-- _class: diagram -->
 
-### 13 · Mindmap
+`13 · Mindmap`
 
 ## Hierarchical brainstorm.
 
@@ -393,7 +414,7 @@ mindmap
 
 <!-- _class: diagram -->
 
-### 14 · Timeline
+`14 · Timeline`
 
 ## Events on a horizontal axis.
 
@@ -425,7 +446,7 @@ timeline
 
 <!-- _class: content -->
 
-### 15 · ZenUML
+`15 · ZenUML`
 
 ## A simpler sequence-diagram dialect.
 
@@ -452,7 +473,7 @@ zenuml
 <!-- _paginate: false -->
 <!-- _footer: '' -->
 
-##### Group 02 · Experimental diagrams
+`Group 02 · Experimental diagrams`
 
 # The eleven new types marked 🔥.
 
@@ -460,7 +481,7 @@ zenuml
 
 <!-- _class: diagram -->
 
-### 16 · Sankey 🔥
+`16 · Sankey 🔥`
 
 ## Flow volumes between nodes.
 
@@ -480,7 +501,7 @@ Spending,Other,150
 
 <!-- _class: diagram -->
 
-### 17 · XY Chart 🔥
+`17 · XY Chart 🔥`
 
 ## Bar and line chart on a numeric axis.
 
@@ -499,7 +520,7 @@ xychart-beta
 
 <!-- _class: diagram -->
 
-### 18 · Block Diagram 🔥
+`18 · Block Diagram 🔥`
 
 ## Tile layout for system blocks.
 
@@ -517,7 +538,7 @@ block-beta
 
 <!-- _class: diagram -->
 
-### 19 · Packet 🔥
+`19 · Packet 🔥`
 
 ## Bit-level packet layout.
 
@@ -537,7 +558,7 @@ title TLS Record header
 
 <!-- _class: diagram -->
 
-### 20 · Kanban 🔥
+`20 · Kanban 🔥`
 
 ## A board with swim-lane columns.
 
@@ -562,7 +583,7 @@ kanban
 
 <!-- _class: diagram -->
 
-### 21 · Architecture 🔥
+`21 · Architecture 🔥`
 
 ## Cloud-architecture style with services and groups.
 
@@ -584,7 +605,7 @@ architecture-beta
 
 <!-- _class: diagram -->
 
-### 22 · Radar 🔥
+`22 · Radar 🔥`
 
 ## Multi-axis polar chart.
 
@@ -602,7 +623,7 @@ radar-beta
 
 <!-- _class: diagram -->
 
-### 23 · Treemap 🔥
+`23 · Treemap 🔥`
 
 ## Nested rectangles sized by value.
 
@@ -628,7 +649,7 @@ treemap-beta
 
 <!-- _class: diagram -->
 
-### 24 · Venn 🔥
+`24 · Venn 🔥`
 
 ## Set overlap.
 
@@ -647,7 +668,7 @@ venn-beta
 
 <!-- _class: diagram -->
 
-### 25 · Ishikawa 🔥
+`25 · Ishikawa 🔥`
 
 ## Fishbone cause-and-effect.
 
@@ -674,7 +695,7 @@ fishbone
 
 <!-- _class: diagram -->
 
-### 26 · TreeView 🔥
+`26 · TreeView 🔥`
 
 ## Indented file-tree style hierarchy.
 
@@ -697,7 +718,7 @@ treeView-beta
 <!-- _footer: '' -->
 <!-- _header: '' -->
 
-##### Mermaid 11.14 · Lattice Theme
+`Mermaid 11.14 · Lattice Theme`
 
 ## Twenty-six diagrams, one theme.
 

@@ -45,10 +45,13 @@
     "test": "node smoke-test.js"
   },
   "dependencies": {
-    "puppeteer": "^23.0.0",
-    "@mermaid-js/mermaid-cli": "^11.0.0"
+    "@mermaid-js/mermaid-cli": "^11.0.0",
+    "puppeteer": "^23.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.3.1"
   }
 }

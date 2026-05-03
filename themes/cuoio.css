@@ -90,6 +90,18 @@
 
 section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
 section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#D6C4A8; background:none; padding:0; display:block; }
+
+/* Diagram source <pre> in pending/error states. Structural rules live in
+ * lattice.css; this rule contributes the on-theme color and overrides
+ * Marp's bundled `section pre { background:var(--color-foreground) }` and
+ * `section code { background:var(--color-dimmed); color:var(--color-background) }`
+ * defaults from the marpit base theme. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  background: none !important;
+  color: var(--text-muted) !important;
+}
 /* comments */
 section .hljs-comment { color:var(--hljs-comment); font-style:italic; }
 section .hljs-quote { color:#8A7060; font-style:italic; }
@@ -217,6 +229,23 @@ section .hljs-strong { font-weight:700; }
  * lattice.js strips the prefix before injection into the SVG context.
  * ════════════════════════════════════════════════════════════════════════ */
 /* ===== MERMAID THEME CSS ===== */
+
+  /* ── DIAGRAM TITLE SUPPRESSION ──
+   * The slide's `## heading` is the canonical title. Hide Mermaid's own
+   * title (frontmatter `title:` or in-body `title`) so the audience sees one
+   * source of truth, not two. Class names verified from rendered SVG output
+   * (Mermaid 11.14). Known gap: sequence, journey, C4, quadrant, timeline,
+   * xy-chart render bare <text> titles with no class — those cannot be
+   * class-targeted from CSS and will still render. See references/mermaid.md
+   * §5.3 for the diagnostic recipe when Mermaid adds new diagram types.
+   * Parser-safe: no nested comments, no `>` combinator, attribute selectors
+   * with brackets are accepted (already used by the mindmap section rules).
+   */
+  section .titleText,
+  section .pieTitleText,
+  section .radarTitle,
+  section .packetTitle,
+  section [class$="TitleText"] { display: none; }
 
   /* ── JOURNEY ── */
   section .journey-section, section .journey-section rect, section .section0 rect, section .section1 rect, section .section2 rect {
@@ -430,3 +459,119 @@ section .hljs-strong { font-weight:700; }
 
   /* ── GANTT ── */
   section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
+
+  /* ── JOURNEY · ACTOR FACES + STROKES ──
+   * See indaco.css for the full rationale. Mirror the same overrides
+   * with cuoio palette tokens so the diagram-coverage stays in sync
+   * across themes. */
+  section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section circle.face {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section path.mouth, section line.mouth { stroke: var(--mermaid-line) !important; }
+  section circle.actor-0 { fill: var(--mermaid-primary-color)   !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-1 { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-2 { fill: var(--mermaid-pie-purple)      !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-3 { fill: var(--mermaid-pie-orange)      !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-4 { fill: var(--mermaid-pie-teal)        !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-5 { fill: var(--mermaid-pie-rose)        !important; stroke: var(--mermaid-border) !important; }
+  section .legend > title, section title { fill: var(--text-heading) !important; }
+  section rect.section0, section rect.section1, section rect.section2,
+  section rect.task0, section rect.task1, section rect.task2,
+  section rect[class*="section-type-"], section rect[class*="task-type-"],
+  section rect.journey-section, section rect.task {
+    stroke: var(--mermaid-border) !important;
+  }
+
+  /* ── C4 — INNER ELEMENT COVERAGE ── (see indaco.css for rationale) */
+  section g[class*="person"] > rect, section g[class*="system"] > rect,
+  section g[class*="container"] > rect, section g[class*="component"] > rect,
+  section g[class*="boundary"] > rect, section g[class*="node-bkg"] > rect {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section svg:has(g[class*="person"]) text,
+  section svg:has(g[class*="person"]) tspan,
+  section svg:has(g[class*="system"]) text,
+  section svg:has(g[class*="system"]) tspan {
+    fill: var(--text-heading) !important;
+  }
+  section svg:has(g[class*="person"]) line,
+  section svg:has(g[class*="person"]) path:not([class]),
+  section svg:has(g[class*="system"]) line,
+  section svg:has(g[class*="system"]) path:not([class]) {
+    stroke: var(--mermaid-line) !important;
+  }
+
+  /* ── MINDMAP + TIMELINE CONNECTOR LINES ── */
+  section line.node-line-, section line[class*="node-line-"] {
+    stroke: var(--mermaid-line) !important;
+    stroke-width: 1.5 !important;
+  }
+
+  /* ── SANKEY ── (see indaco.css for rationale) */
+  section g.nodes g.node rect, section g.node > rect {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.node-labels text, section g.nodes text { fill: var(--text-heading) !important; }
+  section g.link path, section g.links path {
+    stroke: var(--mermaid-line) !important;
+    stroke-opacity: 0.20 !important;
+    fill: none !important;
+  }
+
+  /* ── PACKET ── */
+  section rect.packetBlock {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section text.packetLabel, section text.packetByte, section text.packetTitle {
+    fill: var(--text-heading) !important;
+  }
+
+  /* ── ARCHITECTURE ── (see indaco.css for rationale) */
+  section g.architecture-groups rect:not(.background):not(.node-bkg),
+  section g.architecture-services rect:not(.background):not(.node-bkg),
+  section g.architecture-service rect:not(.background):not(.node-bkg) {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.architecture-groups path.edge,
+  section g.architecture-edges path.edge {
+    stroke: var(--mermaid-line) !important;
+    stroke-width: 1.5 !important;
+  }
+  section g.architecture-groups svg path,
+  section g.architecture-groups svg circle,
+  section g.architecture-groups svg ellipse,
+  section g.architecture-groups svg line,
+  section g.architecture-service svg path,
+  section g.architecture-service svg circle,
+  section g.architecture-service svg ellipse,
+  section g.architecture-service svg line {
+    fill: var(--mermaid-border) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.architecture-groups svg path[style*="fill: none"],
+  section g.architecture-groups svg circle[style*="fill: none"],
+  section g.architecture-groups svg ellipse[style*="fill: none"],
+  section g.architecture-groups svg line[style*="fill: none"],
+  section g.architecture-service svg path[style*="fill: none"],
+  section g.architecture-service svg circle[style*="fill: none"],
+  section g.architecture-service svg ellipse[style*="fill: none"],
+  section g.architecture-service svg line[style*="fill: none"] {
+    fill: none !important;
+  }
+  section g.architecture-groups text, section g.architecture-groups tspan,
+  section g.architecture-service text, section g.architecture-service tspan {
+    fill: var(--text-heading) !important;
+  }
+
+  /* ── ER ROW-RECT EVEN/ODD ── */
+  section g.row-rect-even > path { fill: var(--bg-alt) !important; }
+  section g.row-rect-odd > path  { fill: #FFFFFF !important; }

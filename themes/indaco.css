@@ -151,6 +151,18 @@
 
 section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
 section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#d6deeb; background:none; padding:0; display:block; }
+
+/* Diagram source <pre> in pending/error states. Structural rules live in
+ * lattice.css; this rule contributes the on-theme color and overrides
+ * Marp's bundled `section pre { background:var(--color-foreground) }` and
+ * `section code { background:var(--color-dimmed); color:var(--color-background) }`
+ * defaults from the marpit base theme. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  background: none !important;
+  color: var(--text-muted) !important;
+}
 /* comments */
 section .hljs-comment { color:var(--hljs-comment); font-style:italic; }
 section .hljs-quote { color:#697098; font-style:italic; }
@@ -231,6 +243,11 @@ section .hljs-strong { font-weight:700; }
   --mermaid-border: #1F4A6E;  /* saturated brand navy */
   --mermaid-line:   #1A1A1A;  /* near-black */
 
+  /* Cross-deck contrast accent. Used for radar's second curve where a
+   * single warm hue against the pale-blue band reads better than a
+   * second pale tint. Tokenizing keeps it auditable. */
+  --mermaid-accent-warm: #BD5000;
+
   /* Mid-tone categorical palette (L≈60). Fed to cScale and gitN.
    * Mermaid kanban applies a lighten step that brings these to L≈70
    * (pale enough for dark text). Mindmap uses them directly with
@@ -302,6 +319,23 @@ section .hljs-strong { font-weight:700; }
  * rename. Everything after it is loaded as Mermaid themeCSS.
  * ════════════════════════════════════════════════════════════════════════ */
 /* ===== MERMAID THEME CSS ===== */
+
+  /* ── DIAGRAM TITLE SUPPRESSION ──
+   * The slide's `## heading` is the canonical title. Hide Mermaid's own
+   * title (frontmatter `title:` or in-body `title`) so the audience sees one
+   * source of truth, not two. Class names verified from rendered SVG output
+   * (Mermaid 11.14). Known gap: sequence, journey, C4, quadrant, timeline,
+   * xy-chart render bare <text> titles with no class — those cannot be
+   * class-targeted from CSS and will still render. See references/mermaid.md
+   * §5.3 for the diagnostic recipe when Mermaid adds new diagram types.
+   * Parser-safe: no nested comments, no `>` combinator, attribute selectors
+   * with brackets are accepted (already used by the mindmap section rules).
+   */
+  section .titleText,
+  section .pieTitleText,
+  section .radarTitle,
+  section .packetTitle,
+  section [class$="TitleText"] { display: none; }
 
   /* ────────────────────────────────────────────────────────────────────
    * Mermaid theme overrides — only for diagrams that ignore themeVariables
@@ -518,13 +552,13 @@ section .hljs-strong { font-weight:700; }
     stroke-width: 2.5 !important;
   }
   section .radarCurve-1 {
-    fill: #BD5000 !important;
+    fill: var(--mermaid-accent-warm) !important;
     fill-opacity: 0.30 !important;
-    stroke: #BD5000 !important;
+    stroke: var(--mermaid-accent-warm) !important;
     stroke-width: 2.5 !important;
   }
   section .radarLegendBox-0 { fill: #006FA8 !important; }
-  section .radarLegendBox-1 { fill: #BD5000 !important; }
+  section .radarLegendBox-1 { fill: var(--mermaid-accent-warm) !important; }
   section .radarAxisLabel {
     fill: var(--text-heading) !important;
     font-weight: 600 !important;
@@ -603,3 +637,226 @@ section .hljs-strong { font-weight:700; }
    * for some bar widths. Force dark text in the outside-the-bar margin.
    */
   section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
+
+  /* ── JOURNEY · ACTOR FACES + STROKES ──
+   * The journey renderer draws actor avatars: a body circle (no class), a
+   * head circle.face (cornsilk #FFF8DC by default), eyes, a path.mouth +
+   * line.mouth at #666666, plus per-actor circle.actor-N marker pills
+   * filled with X11 named colors (darkseagreen #8FBC8F, lawngreen #7CFC00,
+   * cyan #00FFFF). The .journey-section/.task overrides above only address
+   * section bands and task tiles; everything in the actor row falls back
+   * to the renderer's gray-and-vivid defaults. Force the entire avatar
+   * cluster onto the brand palette and replace the X11 cycle with the
+   * deck's six pale tints.
+   *
+   * Section/task strokes are also #666666 by default — the rules above
+   * set fill but not stroke. Add stroke overrides to bring the borders
+   * onto the same saturated brand navy as the rest of the deck. */
+  /* Actor body circles have no class; the only reliable journey-scope
+   * anchor is path.mouth (unique to journey actors). Use :has() to scope
+   * unclassed circles to journey SVGs only. */
+  section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section circle.face {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section path.mouth, section line.mouth {
+    stroke: var(--mermaid-line) !important;
+  }
+  section circle.actor-0 { fill: var(--mermaid-primary-color)   !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-1 { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-2 { fill: var(--mermaid-pie-purple)      !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-3 { fill: var(--mermaid-pie-orange)      !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-4 { fill: var(--mermaid-pie-teal)        !important; stroke: var(--mermaid-border) !important; }
+  section circle.actor-5 { fill: var(--mermaid-pie-rose)        !important; stroke: var(--mermaid-border) !important; }
+  /* Legend titles inherit the actor color via <title> SVG element; force
+   * their text-bearing tspans to read on the brand palette instead. */
+  section .legend > title, section title { fill: var(--text-heading) !important; }
+  /* Section-band and task-tile strokes — the stray-color audit revealed
+   * Mermaid 11 emits these as the elements themselves (rect.task.task-type-0)
+   * not as descendants. Earlier rules set fill via the correct selectors
+   * already; this rule patches strokes by targeting the rect directly. */
+  section rect.section0, section rect.section1, section rect.section2,
+  section rect.task0, section rect.task1, section rect.task2,
+  section rect[class*="section-type-"], section rect[class*="task-type-"],
+  section rect.journey-section, section rect.task {
+    stroke: var(--mermaid-border) !important;
+  }
+
+  /* ── C4 — INNER ELEMENT COVERAGE ──
+   * The .person/.system/.container/.component overrides above target the
+   * outer box classes, but C4's renderer also emits unclassed <rect> nodes
+   * (legend boxes, headers) at #08427B/#1168BD/#999999 with paired strokes
+   * #073B6F/#3C7FC0/#8A8A8A, plus #444444 text/lines. The compound C4 SVG
+   * has nested <rect> elements that aren't on the .person/.system class.
+   * Force every C4 rect onto the brand pale fill + brand navy stroke, and
+   * every C4 text/tspan onto the brand text color. The c4 wrapper element
+   * is .c4Diagram or the SVG root has class containing "c4" — but Mermaid
+   * 11 doesn't always emit a wrapping class, so we anchor on the same
+   * .person/.system/.container ancestors plus a generic catchall using
+   * the C4-specific text classes (.legendW, .legendT). */
+  /* C4 emits group classes like .person-man, .person-woman, .system-other,
+   * .container-db, .component-queue, .boundary, etc. — much wider than
+   * the bare .person/.system/.container/.component classes targeted by
+   * the earlier rules. Catch the entire C4 cycle via prefix match. */
+  section g[class*="person"] > rect, section g[class*="system"] > rect,
+  section g[class*="container"] > rect, section g[class*="component"] > rect,
+  section g[class*="boundary"] > rect, section g[class*="node-bkg"] > rect {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  /* All text/lines/paths inside any C4 SVG. Anchor via :has(g[class*="person"])
+   * to scope only to C4 trees (won't accidentally match other diagrams
+   * that happen to have .person somewhere). */
+  section svg:has(g[class*="person"]) text,
+  section svg:has(g[class*="person"]) tspan,
+  section svg:has(g[class*="system"]) text,
+  section svg:has(g[class*="system"]) tspan {
+    fill: var(--text-heading) !important;
+  }
+  section svg:has(g[class*="person"]) line,
+  section svg:has(g[class*="person"]) path:not([class]),
+  section svg:has(g[class*="system"]) line,
+  section svg:has(g[class*="system"]) path:not([class]) {
+    stroke: var(--mermaid-line) !important;
+  }
+  /* C4 legend box — Mermaid emits an unclassed <rect> as the legend bg.
+   * Targeting via .legendW/.legendT siblings via :has() isn't safe yet;
+   * we instead style the legend text to read dark, leaving the outer
+   * unclassed rect's default fill alone since it's behind brand text. */
+  section text.legendW, section text.legendT, section .legend text, section .legend tspan {
+    fill: var(--text-heading) !important;
+  }
+
+  /* ── MINDMAP CONNECTOR LINES ──
+   * Mermaid emits .node-line- (no trailing index) for mindmap connector
+   * paths and applies an internal lighten step to cScale, producing
+   * #679DD1, #AFBF95, #C88FA6, #CB8A8E etc. — close to the brand palette
+   * but inconsistent. Force all mindmap connector strokes to the deck's
+   * single line color so connectors recede behind the colored nodes.
+   * (The line.node-line-N selectors live alongside the mindmap node
+   * fills above for proximity, but live here to keep the pattern with
+   * other connector overrides.) */
+  section line.node-line-, section line[class*="node-line-"] {
+    stroke: var(--mermaid-line) !important;
+    stroke-width: 1.5 !important;
+  }
+
+  /* ── TIMELINE CONNECTOR LINES ──
+   * Same pattern as mindmap: line.node-line-N (with index 0, 1, -1, …)
+   * uses Mermaid's lightened cScale. Replaced above by the
+   * line[class*="node-line-"] selector — this comment block is a marker
+   * for future maintainers; no separate rule needed. */
+
+  /* ── SANKEY ──
+   * Mermaid sankey hardcodes the Tableau-10 categorical palette
+   * (#4E79A7, #F28E2C, #E15759, #76B7B2, #59A14F, #EDC949, #AF7AA1, …)
+   * for both node fills and link gradients (path stroke uses
+   * url(#linearGradient-N) referencing inline <linearGradient> defs that
+   * pick from the same Tableau set). The .node group has no per-cycle
+   * class on the rect — Mermaid's only signal is element order. We
+   * style every node rect with the brand pale band (single hue is fine;
+   * sankey distinguishes flows by width, not by color) and force link
+   * paths onto the brand line color, dropping the inline gradient
+   * reference. The fill-opacity drop on links keeps the diagram readable
+   * by tracing through node boundaries.
+   */
+  section g.nodes g.node rect, section g.node > rect {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.node-labels text, section g.nodes text {
+    fill: var(--text-heading) !important;
+  }
+  section g.link path, section g.links path {
+    stroke: var(--mermaid-line) !important;
+    stroke-opacity: 0.20 !important;
+    fill: none !important;
+  }
+
+  /* ── PACKET ──
+   * Packet hardcodes #EFEFEF rect fills and #000000 text. Pull onto the
+   * brand pale-blue + dark slate. The compound .packetByte selector
+   * matches both .packetByte.start and .packetByte.end. */
+  section rect.packetBlock {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section text.packetLabel, section text.packetByte, section text.packetTitle {
+    fill: var(--text-heading) !important;
+  }
+
+  /* ── ARCHITECTURE ──
+   * The architecture-beta renderer draws each service as an outer rect
+   * with inline style="fill:#087ebf" (a hardcoded Mermaid blue), inside
+   * which white icon glyphs (path/circle/ellipse/line) are drawn with
+   * inline stroke:#fff. The user-readable label (text + tspan) sits
+   * outside the colored rect. Replace the bright blue service fill with
+   * the brand pale, keep the white icon glyphs (white reads on any pale
+   * background of the brand pastel band), and recolor edges from #777
+   * to the deck's line color. !important wins over inline styles per
+   * CSS spec, so the unclassed inline-styled rects are reachable.
+   *
+   * The g.architecture-service > rect has no class but is the only
+   * unclassed rect inside the architecture group; target via the
+   * :scope-style ancestor selector. Glyphs (path/circle/ellipse/line)
+   * inside g.architecture-service stay white (they're meant to be
+   * legible against the now-pale service background; pale-on-pale
+   * fails, so leave the white glyphs as-is — they read as foreground
+   * marks against the brand pale fill the way they read against bright
+   * blue). */
+  /* The audit traced the bright-blue rect to g.architecture-groups (NOT
+   * g.architecture-service); each service is wrapped in nested <g><svg><g>
+   * scaffolding inside the groups container. Target descendants of the
+   * groups wrapper plus the per-service wrapper for full coverage. */
+  section g.architecture-groups rect:not(.background):not(.node-bkg),
+  section g.architecture-services rect:not(.background):not(.node-bkg),
+  section g.architecture-service rect:not(.background):not(.node-bkg) {
+    fill: var(--mermaid-primary-color) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.architecture-groups path.edge,
+  section g.architecture-edges path.edge {
+    stroke: var(--mermaid-line) !important;
+    stroke-width: 1.5 !important;
+  }
+  /* Glyphs inside services: re-skin from white to brand navy so they read
+   * on the pale fill. The inline style="fill:#fff" or "stroke:#fff" is
+   * overridden by !important. */
+  section g.architecture-groups svg path,
+  section g.architecture-groups svg circle,
+  section g.architecture-groups svg ellipse,
+  section g.architecture-groups svg line,
+  section g.architecture-service svg path,
+  section g.architecture-service svg circle,
+  section g.architecture-service svg ellipse,
+  section g.architecture-service svg line {
+    fill: var(--mermaid-border) !important;
+    stroke: var(--mermaid-border) !important;
+  }
+  section g.architecture-groups svg path[style*="fill: none"],
+  section g.architecture-groups svg circle[style*="fill: none"],
+  section g.architecture-groups svg ellipse[style*="fill: none"],
+  section g.architecture-groups svg line[style*="fill: none"],
+  section g.architecture-service svg path[style*="fill: none"],
+  section g.architecture-service svg circle[style*="fill: none"],
+  section g.architecture-service svg ellipse[style*="fill: none"],
+  section g.architecture-service svg line[style*="fill: none"] {
+    fill: none !important;
+  }
+  section g.architecture-groups text, section g.architecture-groups tspan,
+  section g.architecture-service text, section g.architecture-service tspan {
+    fill: var(--text-heading) !important;
+  }
+
+  /* ── ER ROW-RECT EVEN/ODD ──
+   * The ER renderer alternates row backgrounds via .row-rect-even and
+   * .row-rect-odd <path> elements. Mermaid 11 derives one of them by
+   * lightening the primary, producing #F0F5FB (close to but distinct
+   * from --bg-alt #F2F5FA) which the audit flagged as an off-palette
+   * stray. Pin both bands to palette tokens for deterministic output. */
+  section g.row-rect-even > path { fill: var(--bg-alt) !important; }
+  section g.row-rect-odd > path  { fill: #FFFFFF !important; }
