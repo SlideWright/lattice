@@ -655,6 +655,15 @@ section.split-panel :is(ul,ol) > li > strong { display:block; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; width:100%; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+/* Trailing ul after the main list = optional metadata footer (Audience, Intent).
+ * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
+ * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
+ * no rule fires, panel renders as before. */
+section.split-panel .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:4px; flex:0 0 auto; list-style:none; padding-inline-start:0; }
+section.split-panel .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-panel {
   --marp-slide-header-color: var(--on-dark-secondary);
   --marp-slide-footer-color: var(--on-dark-secondary);
@@ -1336,7 +1345,7 @@ section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { disp
 section.split-panel:not(:has(.panel-left)) {
   display:grid;
   grid-template-columns:34% 1fr;
-  grid-template-rows:auto auto 1fr;
+  grid-template-rows:auto auto 1fr auto;
   padding:0; position:relative;
 }
 section.split-panel:not(:has(.panel-left))::before {
@@ -1383,6 +1392,27 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
   padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
   list-style:none; margin:0;
 }
+/* Optional metadata footer: a trailing ul placed *after* the main list in the
+ * source. Lands in row 4 of the fallback grid, pinned to the bottom of the
+ * right column with a divider above. Card styling is reset on its <li>. */
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul {
+  grid-column:2; grid-row:4;
+  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  margin:0; border-top:1px solid var(--border);
+  list-style:none; display:flex; flex-direction:column; gap:4px;
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
+  display:block;
+  background:none; border:none; border-radius:0;
+  padding:0; margin:0;
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-snug);
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
+  font-weight:700; color:var(--text-heading); margin-right:0.4em;
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
 /* ── FINDING CSS-grid fallback ───────────────────────────────────────────────
  * ul > li(**title** + nested ul > li body) → side-by-side cards, last odd = full-width

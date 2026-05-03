@@ -869,6 +869,7 @@ Optional intro paragraph.
 - `h3` = right panel subheading
 - `p` = right panel intro text
 - `ol > li` = stacked card tiles with flush corner badge; `ul > li` = stacked card tiles without badge
+- **Optional metadata footer** = a trailing `ul` placed *after* the main `ol`/`ul`. Renders pinned to the bottom of the right panel with a divider line above. Authored as `**Label** · body` items — typical use: audience, intent, scope, or other framing labels. Absent → panel renders as before.
 
 ## Template 19: Closing (dark bookend)
 
