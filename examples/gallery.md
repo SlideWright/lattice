@@ -712,6 +712,53 @@ The left card is struck through to read as the option considered then dropped; t
 
 ---
 
+<!-- _class: cards-grid three -->
+<!-- _footer: "Modifier — cards-grid three · cards-grid three" -->
+
+`Modifier · cards-grid three`
+
+## Three switches the grid from 2 columns to 3 columns.
+
+- **Codebook**
+  - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry. The codebook is the unit of distribution.
+- **DEK**
+  - Data encryption key. Wrapped by a KEK; lives plaintext only inside native SDK memory. Never leaves the host.
+- **KEK**
+  - Key encryption key. Lives in the HSM, never exported. The crypto-shred operation on a tenant is a single HSM op against its KEK.
+
+---
+
+<!-- _class: cards-grid four compact -->
+<!-- _footer: "Modifier — cards-grid four · cards-grid four compact" -->
+
+`Modifier · cards-grid four`
+
+## Four switches to 4 columns; pair with compact for visual balance.
+
+- **Sense**
+  - Signals are observed, never invented. Inputs are written down before they are interpreted.
+- **Score**
+  - A signal becomes data once it carries a number. Calibration is against outcomes, not intuition.
+- **Decide**
+  - A decision is a signal plus a deadline. Without a deadline it is an opinion.
+- **Review**
+  - The retrospective closes the loop on the score that earned the decision. The model improves only here.
+
+---
+
+<!-- _class: cards-stack horizontal -->
+<!-- _footer: "Modifier — cards-stack horizontal · cards-stack horizontal" -->
+
+`Modifier · cards-stack horizontal`
+
+## Horizontal flips cards-stack from a vertical stack to a row.
+
+- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
+- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+- **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

@@ -160,7 +160,7 @@ const mermaidPages = pageCount(path.join(EXAMPLES, 'mermaid-gallery.pdf'));
 if (galleryPages === -1) {
   console.log('  ⚠ pdfinfo not available; skipping page count check');
 } else {
-  check('gallery.pdf has 49 pages', galleryPages === 49, `got ${galleryPages}`);
+  check('gallery.pdf has 52 pages', galleryPages === 52, `got ${galleryPages}`);
   check('mermaid-gallery.pdf has 31 pages', mermaidPages === 31, `got ${mermaidPages}`);
 }
 

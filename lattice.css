@@ -1665,3 +1665,56 @@ section.compare-prose.vertical .compare-prose-inner .connector {
   font-size: var(--fs-2xl);
 }
 
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — cards-grid shape modifiers
+ * Reference: proposals.md §2.2 cards-grid
+ *
+ *   three — three columns instead of two
+ *   four  — four columns instead of two
+ *
+ * Both selectors target both the marp-cli path (section.cards-grid > ul/ol)
+ * and the lattice.js path (.cards-grid-inner). The 2+1 last-child rule
+ * (`:last-child:nth-child(odd)` spanning all columns) is reset to auto so
+ * three-card decks render as 3 cards in 1 row, not 2 + 1 spanning.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+section.cards-grid.three > ul,
+section.cards-grid.three > ol,
+section.cards-grid.three .cards-grid-inner,
+section.cards-grid.three .cards-grid-inner--ordered {
+  grid-template-columns: repeat(3, 1fr);
+}
+section.cards-grid.three > ul > li:last-child:nth-child(odd),
+section.cards-grid.three > ol > li:last-child:nth-child(odd),
+section.cards-grid.three .cards-grid-inner > .card:last-child:nth-child(odd) {
+  grid-column: auto;
+}
+
+section.cards-grid.four > ul,
+section.cards-grid.four > ol,
+section.cards-grid.four .cards-grid-inner,
+section.cards-grid.four .cards-grid-inner--ordered {
+  grid-template-columns: repeat(4, 1fr);
+}
+section.cards-grid.four > ul > li:last-child:nth-child(odd),
+section.cards-grid.four > ol > li:last-child:nth-child(odd),
+section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
+  grid-column: auto;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — cards-stack horizontal
+ * Reference: proposals.md §2.2 cards-stack
+ *
+ * Default cards-stack flows the cards as a vertical stack (one per row).
+ * `horizontal` flips to a horizontal row, useful when cards are short and
+ * the slide reads left-to-right rather than top-to-bottom.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+section.cards-stack.horizontal > ul,
+section.cards-stack.horizontal > ol,
+section.cards-stack.horizontal .cards-stack-inner {
+  flex-direction: row;
+  align-items: stretch;
+}
+

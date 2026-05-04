@@ -186,6 +186,28 @@ Four modifiers name the editorial intent of a two-card comparison. The post-proc
 
 `decision` is the most common variant in real decks — it names the "considered then chose" pattern directly.
 
+#### `cards-grid` shape modifiers
+
+Two modifiers tune the column count. Default is two columns.
+
+| Modifier | Effect                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| `three`  | three equal columns instead of two. The 2+1 last-child span rule is reset to `auto`.           |
+| `four`   | four equal columns instead of two. Pair with `compact` so the cards retain breathing room.     |
+
+```markdown
+<!-- _class: cards-grid three -->            → three equal columns
+<!-- _class: cards-grid four compact -->     → four columns, tightened spacing
+```
+
+#### `cards-stack horizontal`
+
+Flips the stack direction from vertical (cards as rows) to horizontal (cards as a row of columns). Use when the cards are short claims that read left-to-right and the audience scans across rather than down.
+
+```markdown
+<!-- _class: cards-stack horizontal -->
+```
+
 ## Template 1: Title (dark bookend)
 
 ```
