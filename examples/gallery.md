@@ -521,24 +521,28 @@ token = kms.encrypt(
 ---
 
 <!-- _class: image -->
-<!-- _footer: "Text left, image right · image" -->
+<!-- _footer: "Real image · image" -->
 
 `Layout · Image`
 
-## Images sit naturally beside text when you need visual evidence.
+## Image right is the default — text leads, evidence follows.
 
-Use `_class: image` with `![bg right](url)` — image-right is the default. Add `left` to flip: `_class: image left`.
+A landscape asset in a half-canvas slot. The image preserves its native aspect ratio; the lattice pattern frames whatever bands remain. No cropping, ever — authors see the image they dropped in.
+
+![bg right fit](sample-image.svg)
 
 ---
 
 <!-- _class: image left -->
-<!-- _footer: "Image left, text right · image left" -->
+<!-- _footer: "Real image · image left" -->
 
 `Layout · Image Left`
 
 ## Lead with the image, follow with the argument.
 
-Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the padding and placeholder position change — everything else is shared.
+A portrait asset in a half-canvas slot — the image fits proportionally, and the lattice pattern shows through on either side. Same rule, different aspect.
+
+![bg left fit](sample-image-portrait.svg)
 
 ---
 
@@ -546,9 +550,11 @@ Add `left` to the class: `_class: image left` with `![bg left](url)`. Only the p
 <!-- _footer: "Image full · image-full" -->
 <!-- _paginate: false -->
 
-## [ Dashboard screenshot · Signal Brief — With Caption ]
+## Signal Pipeline · Reference Visualization
 
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
+
+![bg fit](sample-image.svg)
 
 ---
 
@@ -579,9 +585,11 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 <!-- _footer: "Image full dark · image-full dark" -->
 <!-- _paginate: false -->
 
-## [ Dashboard screenshot · Signal Brief — Dark ]
+## [ Signal Pipeline · Portrait Asset — Dark ]
 
-Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
+A tall asset on a wide canvas — the lattice pattern frames the image on the left and right, replacing dead space with brand chrome.
+
+![bg fit](sample-image-portrait.svg)
 
 ---
 

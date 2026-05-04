@@ -615,14 +615,27 @@ function parseSlide(raw, index) {
   raw = raw.replace(/<!--.*?-->/gs, '').trim();
 
   // ── Marp background image syntax ─────────────────────────────────────────
-  // Handles: ![bg right](url), ![bg left](url), ![bg](url)
+  // Handles: ![bg right](url), ![bg left](url), ![bg](url) and the same with
+  // a `fit` keyword in any position (![bg right fit], ![bg fit right], etc.).
+  // The `fit` keyword is Marp-native and switches the preview's
+  // background-size from cover→contain; we accept it here so the same source
+  // renders identically in VS Code Marp preview and in our build pipeline.
+  // Capture the entire keyword blob then parse inside the callback —
+  // capturing inside a quantified group resets on each iteration in JS.
   // Anchored to line start (^) so inline backtick code containing ![bg...] is not consumed.
   let bgImageHtml = '';
-  raw = raw.replace(/^!\[bg(?:\s+(right|left))?\]\(([^)]+)\)/gm, (_, side, url) => {
+  raw = raw.replace(/^!\[bg((?:\s+\w+)*)\]\(([^)]+)\)/gm, (_, kw, url) => {
+    const side = /\bright\b/.test(kw) ? 'right'
+               : /\bleft\b/.test(kw)  ? 'left'
+               : null;
     const pos = side === 'right' ? 'right:0;top:0;bottom:0;width:50%;'
               : side === 'left'  ? 'left:0;top:0;bottom:0;width:50%;'
               : 'inset:0;';
-    bgImageHtml = `<div style="position:absolute;${pos}background:url('${url}') center/cover no-repeat;z-index:0;"></div>`;
+    // <img> with object-fit:contain reliably letterboxes both raster photos
+    // and SVGs across Chromium PDF rendering. z-index:-1 places the image
+    // above the section's lattice-pattern background but below all
+    // non-positioned content (header, h2, p, footer).
+    bgImageHtml = `<div style="position:absolute;${pos}z-index:-1;overflow:hidden;"><img src="${url}" style="width:100%;height:100%;object-fit:contain;display:block;" alt=""/></div>`;
     return '';
   });
 

@@ -807,41 +807,59 @@ section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--tex
 section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── IMAGE LAYOUTS ──
- * _class: image       → image right, text left (default)
- * _class: image left  → image left, text right (Marp adds both classes)  */
-section.image { padding-right:calc(50% + var(--sp-lg)); }
-section.image.left { padding-right:0; padding-left:calc(50% + var(--sp-lg)); }
-/* Shared placeholder — brand dark gradient + image icon */
-section.image::before {
-  content:'';
-  position:absolute; top:var(--sp-2xl); bottom:var(--sp-2xl);
-  width:calc(50% - var(--sp-lg) - var(--sp-2xl));
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 80px no-repeat,
-    linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-warm-mid) 50%, var(--bg-warm-light) 100%);
-  border-radius:var(--radius-md);
+ * Two layouts share one placeholder: a tiled lattice-pattern SVG —
+ * rhombic cells with a gold dot at each centre. The pattern repeats
+ * at its native 80×80 cell, so it looks identical at any container
+ * size and never lands on fractional-pixel boundaries.
+ *
+ *   _class: image       → text left, image right (default)
+ *   _class: image left  → text right, image left
+ *   _class: image-full  → image fills the canvas
+ *
+ * Authors replace the placeholder by adding a Marp background image:
+ *   ![bg right](photo.jpg)   ![bg left](photo.jpg)   ![bg](photo.jpg)
+ * The figure Marp emits paints over the section background; the
+ * placeholder simply disappears. No pseudo-element, no z-order
+ * trick, no inset arithmetic. */
+section.image,
+section.image-full {
+  /* Create a stacking context so the bg-image div's z-index:-1
+   * goes behind sibling content (header, h2, p, footer) but NOT
+   * behind the section's own background painting. Without this,
+   * the section's solid --bg layer hides the image entirely. */
+  isolation: isolate;
+  --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='%23006FA8' stroke-width='1' opacity='0.3'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.6'/></svg>");
 }
-/* Position: right by default, left when .left modifier present */
-section.image::before       { right:var(--sp-2xl); }
-section.image.left::before  { right:auto; left:var(--sp-2xl); }
-/* Typography */
+section.image.dark,
+section.image-full.dark {
+  --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='white' stroke-width='1' opacity='0.18'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.5'/></svg>");
+}
+/* Half-canvas image: hard 50% gradient covers the text side; pattern
+ * fills the slide underneath. Pattern + cover meet at exactly 50% —
+ * same line Marp's ![bg right]/![bg left] figure paints to. */
+section.image {
+  padding-right: calc(50% + var(--sp-lg));
+  background:
+    linear-gradient(to right, var(--bg) 50%, transparent 50%),
+    var(--lattice-pattern);
+}
+section.image.left {
+  padding-right: 0;
+  padding-left: calc(50% + var(--sp-lg));
+  background:
+    linear-gradient(to left, var(--bg) 50%, transparent 50%),
+    var(--lattice-pattern);
+}
 section.image h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
 section.image p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
 /* ── IMAGE-FULL ──
- * Default (light): white canvas + brand-blue icon · accent-soft header + caption bars
- * dark modifier:   brand dark gradient + white icon · dark overlay bars
- * Real image (![bg](url)) replaces the background; overlays stay.
- * h2 = title bar at top · trailing p = optional caption bar at bottom */
+ * Pattern fills the whole canvas; ![bg](url) replaces it.
+ * h2 = title bar at top · trailing p = optional caption bar at bottom.
+ * The dark canvas comes from --bg, which the .dark rule below remaps. */
 section.image-full {
-  padding:0; border-top:none;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='%23006FA8' stroke-width='2.5' opacity='0.5'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='%23006FA8' stroke-width='2.5' opacity='0.5'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='%23006FA8' stroke-width='2.5' stroke-linejoin='round' opacity='0.5'/%3E%3C/svg%3E") center / 120px no-repeat,
-    var(--bg);
-}
-section.image-full.dark {
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect x='4' y='4' width='72' height='72' rx='6' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Ccircle cx='26' cy='26' r='9' fill='none' stroke='white' stroke-width='2.5' opacity='0.3'/%3E%3Cpolyline points='4,60 28,36 46,52 60,36 76,60' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round' opacity='0.3'/%3E%3C/svg%3E") center / 120px no-repeat,
-    linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-warm-mid) 50%, var(--bg-warm-light) 100%);
+  padding: 0;
+  border-top: none;
+  background: var(--lattice-pattern), var(--bg);
 }
 section.image-full header,
 section.image-full footer { display:none; }

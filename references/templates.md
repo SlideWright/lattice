@@ -1549,9 +1549,9 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ## Images sit naturally beside text when you need visual evidence.
 
-Use `_class: image` with `![bg right](url)` — image-right is the default.
+Use `_class: image` with `![bg right fit](url)` — image-right is the default. The `fit` keyword tells Marp's renderer (and ours) to letterbox the image inside its slot rather than crop it.
 
-![bg right](path/to/photo.jpg)
+![bg right fit](path/to/photo.jpg)
 ```
 
 ```markdown
@@ -1561,13 +1561,24 @@ Use `_class: image` with `![bg right](url)` — image-right is the default.
 
 ## Flip the image to the left when the composition benefits.
 
-![bg left](path/to/photo.jpg)
+![bg left fit](path/to/photo.jpg)
 ```
 
 - `` `inline code` `` paragraph = eyebrow label
 - `h2` = heading
 - `p` = body text
-- `![bg right](url)` / `![bg left](url)` = Marp background image directive
+- `![bg right fit](url)` / `![bg left fit](url)` = Marp background image directive
+
+**Image sizing — proportions are always preserved.**
+
+Always include the `fit` keyword (`![bg right fit](url)`). It tells Marp to letterbox the image inside its slot at native aspect ratio, never cropped or distorted. Without `fit`, Marp's default is `cover`, which crops arbitrary photos. Whatever bands remain show the lattice pattern as intentional brand framing.
+
+| Layout | Slot aspect | Ideal source |
+|---|---|---|
+| `image` / `image left` | ≈ 8 : 9 (half of 16 : 9 canvas) | 640 × 720, or any 8 : 9 portrait-ish photo |
+| `image-full` | 16 : 9 | 1280 × 720, or any wide landscape |
+
+Bring whatever you have. A square crop in a half-canvas slot will show small top/bottom bands. A portrait photo on a full canvas will show wide left/right bands. Both look intentional — the lattice frames the image instead of dead space.
 
 ---
 
