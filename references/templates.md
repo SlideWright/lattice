@@ -139,6 +139,34 @@ Replaces the default rainbow top-stripe with a solid accent-colour stripe and ti
 <!-- _class: closing accent -->
 ```
 
+### Layout-specific modifiers
+
+#### `list-steps` family
+
+Eight modifiers tune the step badge and the strip orientation. They compose along two independent axes — **prefix word** and **counter format** — plus an orthogonal **orientation** flag.
+
+| Modifier    | Effect                                                       |
+| ----------- | ------------------------------------------------------------ |
+| `phase`     | badge prefix becomes `PHASE 01`, `PHASE 02`, …               |
+| `stage`     | badge prefix becomes `STAGE 01`, `STAGE 02`, …               |
+| `milestone` | badge prefix becomes `MILESTONE 01`, …                       |
+| `rank`      | badge prefix becomes `RANK 01`, …                            |
+| `tier`      | badge prefix becomes `TIER 01`, …                            |
+| `lettered`  | counter format becomes `A`, `B`, `C` (composes with prefix)  |
+| `roman`     | counter format becomes `I`, `II`, `III` (composes with prefix) |
+| `vertical`  | strip orientation flips column → row; arrow becomes down-arrow |
+
+Default prefix is `STEP`; default format is decimal-leading-zero (`01`, `02`, …). Examples:
+
+```markdown
+<!-- _class: list-steps phase -->            → PHASE 01, PHASE 02, PHASE 03
+<!-- _class: list-steps milestone lettered -->→ MILESTONE A, MILESTONE B, MILESTONE C
+<!-- _class: list-steps tier roman -->        → TIER I, TIER II, TIER III
+<!-- _class: list-steps vertical compact -->  → vertical strip with compact spacing
+```
+
+The vertical orientation pairs well with `compact` for 3-step decks where each step needs body-paragraph room.
+
 ## Template 1: Title (dark bookend)
 
 ```

@@ -1520,3 +1520,59 @@ section.accent.dark {
 }
 section.accent.dark h2 { color: var(--accent); }
 
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — list-steps family
+ * Reference: proposals.md §2.2 list-steps
+ *
+ * Renames the prefix word on the step badge ("STEP 01" → "PHASE 01") and
+ * swaps the counter format. Two axes compose cleanly:
+ *
+ *   prefix word: phase · stage · milestone · rank · tier   (default: STEP)
+ *   format     : lettered · roman                          (default: decimal-leading-zero)
+ *
+ * The prefix word lives in `--step-prefix` so any combination of class
+ * flags resolves through the same three ::before rules, one per format.
+ * `vertical` switches the strip from a horizontal flex row to a column
+ * with a down-arrow connector.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+section.list-steps.phase     { --step-prefix: 'PHASE '; }
+section.list-steps.stage     { --step-prefix: 'STAGE '; }
+section.list-steps.milestone { --step-prefix: 'MILESTONE '; }
+section.list-steps.rank      { --step-prefix: 'RANK '; }
+section.list-steps.tier      { --step-prefix: 'TIER '; }
+
+section.list-steps:is(.phase, .stage, .milestone, .rank, .tier) ol > li::before {
+  content: var(--step-prefix) counter(step-counter, decimal-leading-zero);
+}
+section.list-steps.lettered ol > li::before {
+  content: var(--step-prefix, 'STEP ') counter(step-counter, upper-alpha);
+}
+section.list-steps.roman ol > li::before {
+  content: var(--step-prefix, 'STEP ') counter(step-counter, upper-roman);
+}
+
+/* vertical: stack steps as rows instead of columns. The horizontal
+ * right-pointing connector arrow becomes a down-pointing arrow centered
+ * on the bottom edge of each non-last card. Cards size to content rather
+ * than stretching equally so a 3-4 step deck fits the canvas. */
+section.list-steps.vertical ol {
+  flex-direction: column;
+  gap: var(--sp-md);
+  align-items: stretch;
+  flex: 0 1 auto;
+}
+section.list-steps.vertical ol > li {
+  flex: 0 0 auto;
+}
+section.list-steps.vertical ol > li:not(:last-child)::after {
+  right: 50%;
+  top: auto;
+  bottom: calc(-1 * var(--sp-md) / 2);
+  transform: translate(50%, 50%);
+  border-top: 10px solid var(--border);
+  border-bottom: none;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+}
+

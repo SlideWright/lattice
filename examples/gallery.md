@@ -618,6 +618,54 @@ A tall asset on a wide canvas — the lattice pattern frames the image on the le
 
 ---
 
+<!-- _class: list-steps phase -->
+<!-- _footer: "Modifier — list-steps phase · list-steps phase" -->
+
+`Modifier · list-steps phase`
+
+## The phase modifier renames the prefix word from STEP to PHASE.
+
+1. Architecture
+   - The first phase scopes the technical surface — what we build, what we buy, what we defer. Output is an architecture decision record signed by the platform owner.
+2. Pilot
+   - One internal team, one workload, one quarter. The phase ends when the integration is in production and the on-call rota covers it.
+3. Rollout
+   - Five teams in two months. The phase ends when no team needs handholding and incident volume is at or below pre-rollout baseline.
+
+---
+
+<!-- _class: list-steps milestone lettered -->
+<!-- _footer: "Modifier — list-steps milestone lettered · list-steps milestone lettered" -->
+
+`Modifier · list-steps milestone lettered`
+
+## Modifiers compose: milestone renames the word, lettered swaps the format.
+
+1. Codebook signing in production
+   - The HSM-anchored signing pipeline runs end-to-end. The first signed codebook installs cleanly on a real client.
+2. Multi-tenant DEKs
+   - One codebook can carry distinct DEKs per tenant without per-tenant rebuilds. Crypto-shred is a single HSM op.
+3. Per-purpose codebooks
+   - Authoring a codebook scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
+
+---
+
+<!-- _class: list-steps vertical compact -->
+<!-- _footer: "Modifier — list-steps vertical · list-steps vertical compact" -->
+
+`Modifier · list-steps vertical`
+
+## Vertical stacks the steps as rows; the connector becomes a down-arrow.
+
+1. Sense
+   - Inputs are signals. Signals are observed, never invented. The first step is to write down what you see, not what you conclude.
+2. Score
+   - A signal becomes data once it carries a number. The score is calibrated against outcomes, not against intuition.
+3. Decide
+   - A decision is a signal plus a deadline. Without the deadline it is an opinion, not a decision. The retrospective closes the loop on the score that earned it.
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
