@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mermaid Dynamic Observer</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  </head>
+  <body>
+    <h2>Dynamic Mermaid Rendering</h2>
+    <p>Type a new Mermaid diagram into the DOM to observe dynamic rendering:</p>
+    <!-- Example Mermaid Div (to be typed or modified dynamically) -->
+    <div
+      contenteditable="true"
+      class="mermaid"
+      style="border: 1px solid #ccc; padding: 10px"
+    >
+      graph TD
+      A[Start] --> B{Is it working?} 
+      B -->|Yes| C[Celebrate] 
+      B -->|No| D[Fix it] 
+      D --> B
+    </div>
+    <script>
+      // Initialize Mermaid
+      mermaid.initialize({ startOnLoad: false });
+
+      // Function to observe and render Mermaid diagrams dynamically
+      function observeMermaidElements() {
+        const targetNode = document.body;
+
+        // Function to render Mermaid diagrams for a given element
+        const renderMermaidDiagram = (element) => {
+          console.log('Rendering Mermaid diagram:', element);
+          mermaid.run({ nodes: [element] }); // Render the specific Mermaid element
+        };
+
+        // Process all existing Mermaid divs on load
+        const processExistingMermaidDivs = () => {
+          const mermaidDivs = document.querySelectorAll('div.mermaid');
+          mermaidDivs.forEach((div) => renderMermaidDiagram(div));
+        };
+
+        // MutationObserver callback
+        const observerCallback = (mutationsList) => {
+          mutationsList.forEach((mutation) => {
+            // Handle added nodes
+            if (mutation.type === 'childList') {
+              mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === 1 && node.classList.contains('mermaid')) {
+                  renderMermaidDiagram(node);
+                }
+              });
+            }
+            // Handle attribute changes (like class updates)
+            if (mutation.type === 'attributes') {
+              const target = mutation.target;
+              if (target.classList.contains('mermaid')) {
+                renderMermaidDiagram(target);
+              }
+            }
+            // Handle changes in content of a Mermaid div
+            if (mutation.type === 'characterData' || mutation.type === 'childList') {
+              const parentNode = mutation.target.parentNode;
+              if (parentNode && parentNode.classList.contains('mermaid')) {
+                renderMermaidDiagram(parentNode);
+              }
+            }
+          });
+        };
+
+        // Set up MutationObserver
+        const observer = new MutationObserver(observerCallback);
+
+        // Start observing the body for changes
+        observer.observe(targetNode, {
+          childList: true, // Observe added/removed nodes
+          attributes: true, // Observe class attribute changes
+          subtree: true, // Observe all descendants
+          characterData: true, // Observe content changes
+          attributeFilter: ['class'], // Specifically observe class changes
+        });
+
+        // Render existing Mermaid divs on load
+        processExistingMermaidDivs();
+      }
+
+      // Start observing
+      observeMermaidElements();
+    </script>
+  </body>
+</html>
