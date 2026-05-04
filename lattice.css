@@ -1576,3 +1576,92 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-right: 10px solid transparent;
 }
 
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — compare-prose family
+ * Reference: proposals.md §2.2 compare-prose
+ *
+ * Names the intent of a two-card comparison:
+ *   chosen   — the right card is the choice (accent edge + tinted bg)
+ *   rejected — the right card is the option dropped (muted + struck title)
+ *   decision — both: left rejected, right chosen, with a stronger connector
+ *   vertical — stack the two cards vertically; connector flipped to down
+ *
+ * Targets the second `.card` as the verdict slot because the post-processor
+ * always emits left-then-right; authors put the considered option first and
+ * the choice second. Composes with cross-cutting modifiers (compact, dark).
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* chosen: second card is the winner */
+section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
+section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
+  border-color: var(--accent);
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+}
+section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
+section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
+  color: var(--accent);
+}
+
+/* rejected: second card (or, when composed with decision, the first) is the
+ * option that was considered then dropped. Muted body + struck title. */
+section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) > strong {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+  color: var(--text-muted);
+}
+section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) {
+  opacity: 0.72;
+}
+
+/* decision composes chosen (right) with rejected (left). The decision flag
+ * adds left-card de-emphasis and a stronger connector with a label. */
+section.compare-prose.decision .compare-prose-inner .card:nth-child(1) > strong {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+  color: var(--text-muted);
+}
+section.compare-prose.decision .compare-prose-inner .card:nth-child(1) {
+  opacity: 0.72;
+}
+section.compare-prose.decision .compare-prose-inner .connector {
+  font-size: var(--fs-2xl);
+  color: var(--accent);
+  font-weight: 700;
+  position: relative;
+  z-index: 2;
+}
+section.compare-prose.decision .compare-prose-inner .connector::after {
+  content: 'DECISION';
+  position: absolute;
+  top: calc(50% + 1.4em);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* vertical: stack cards. The flex row becomes a column; connector loses its
+ * inline padding and rotates 90°. The cards take auto-height so 2 long-body
+ * cards fit naturally. */
+section.compare-prose.vertical .compare-prose-inner {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sp-sm);
+}
+section.compare-prose.vertical .compare-prose-inner .card {
+  flex: 0 1 auto;
+}
+section.compare-prose.vertical .compare-prose-inner .connector {
+  padding: 0;
+  transform: rotate(90deg);
+  font-size: var(--fs-2xl);
+}
+

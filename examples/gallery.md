@@ -666,6 +666,52 @@ A tall asset on a wide canvas — the lattice pattern frames the image on the le
 
 ---
 
+<!-- _class: compare-prose chosen -->
+<!-- _footer: "Modifier — compare-prose chosen · compare-prose chosen" -->
+
+`Modifier · compare-prose chosen`
+
+## Chosen flags the right-hand card as the winner.
+
+- **Vault round-trip**
+  - Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.
+- **In-process codebook**
+  - Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.
+
+The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
+
+---
+
+<!-- _class: compare-prose decision -->
+<!-- _footer: "Modifier — compare-prose decision · compare-prose decision" -->
+
+`Modifier · compare-prose decision`
+
+## Decision composes chosen + rejected with a labelled connector.
+
+- **Buy a vendor**
+  - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.
+- **Build in-house**
+  - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
+
+The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
+
+---
+
+<!-- _class: compare-prose vertical -->
+<!-- _footer: "Modifier — compare-prose vertical · compare-prose vertical" -->
+
+`Modifier · compare-prose vertical`
+
+## Vertical stacks the two cards; the arrow connector rotates 90°.
+
+- **Before — manual rotation**
+  - Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.
+- **After — version-floor rotation**
+  - The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

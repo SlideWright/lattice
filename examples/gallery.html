@@ -2448,6 +2448,95 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-right: 10px solid transparent;
 }
 
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — compare-prose family
+ * Reference: proposals.md §2.2 compare-prose
+ *
+ * Names the intent of a two-card comparison:
+ *   chosen   — the right card is the choice (accent edge + tinted bg)
+ *   rejected — the right card is the option dropped (muted + struck title)
+ *   decision — both: left rejected, right chosen, with a stronger connector
+ *   vertical — stack the two cards vertically; connector flipped to down
+ *
+ * Targets the second `.card` as the verdict slot because the post-processor
+ * always emits left-then-right; authors put the considered option first and
+ * the choice second. Composes with cross-cutting modifiers (compact, dark).
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* chosen: second card is the winner */
+section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
+section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
+  border-color: var(--accent);
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+}
+section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
+section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
+  color: var(--accent);
+}
+
+/* rejected: second card (or, when composed with decision, the first) is the
+ * option that was considered then dropped. Muted body + struck title. */
+section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) > strong {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+  color: var(--text-muted);
+}
+section.compare-prose.rejected .compare-prose-inner .card:nth-child(3) {
+  opacity: 0.72;
+}
+
+/* decision composes chosen (right) with rejected (left). The decision flag
+ * adds left-card de-emphasis and a stronger connector with a label. */
+section.compare-prose.decision .compare-prose-inner .card:nth-child(1) > strong {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-muted);
+  color: var(--text-muted);
+}
+section.compare-prose.decision .compare-prose-inner .card:nth-child(1) {
+  opacity: 0.72;
+}
+section.compare-prose.decision .compare-prose-inner .connector {
+  font-size: var(--fs-2xl);
+  color: var(--accent);
+  font-weight: 700;
+  position: relative;
+  z-index: 2;
+}
+section.compare-prose.decision .compare-prose-inner .connector::after {
+  content: 'DECISION';
+  position: absolute;
+  top: calc(50% + 1.4em);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* vertical: stack cards. The flex row becomes a column; connector loses its
+ * inline padding and rotates 90°. The cards take auto-height so 2 long-body
+ * cards fit naturally. */
+section.compare-prose.vertical .compare-prose-inner {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sp-sm);
+}
+section.compare-prose.vertical .compare-prose-inner .card {
+  flex: 0 1 auto;
+}
+section.compare-prose.vertical .compare-prose-inner .connector {
+  padding: 0;
+  transform: rotate(90deg);
+  font-size: var(--fs-2xl);
+}
+
 
 
 /* Marp system styles — pagination content binding.
@@ -2536,9 +2625,12 @@ token = kms.encrypt(
 <section id="41" class="list-steps phase" data-marpit-slide="41" data-marpit-pagination="41" style="--marp-slide:41;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · list-steps phase</code></p><h2>The phase modifier renames the prefix word from STEP to PHASE.</h2><ol><li>Architecture<ul><li>The first phase scopes the technical surface — what we build, what we buy, what we defer. Output is an architecture decision record signed by the platform owner.</li></ul></li><li>Pilot<ul><li>One internal team, one workload, one quarter. The phase ends when the integration is in production and the on-call rota covers it.</li></ul></li><li>Rollout<ul><li>Five teams in two months. The phase ends when no team needs handholding and incident volume is at or below pre-rollout baseline.</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Modifier — list-steps phase · list-steps phase</div></footer></section>
 <section id="42" class="list-steps milestone lettered" data-marpit-slide="42" data-marpit-pagination="42" style="--marp-slide:42;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · list-steps milestone lettered</code></p><h2>Modifiers compose: milestone renames the word, lettered swaps the format.</h2><ol><li>Codebook signing in production<ul><li>The HSM-anchored signing pipeline runs end-to-end. The first signed codebook installs cleanly on a real client.</li></ul></li><li>Multi-tenant DEKs<ul><li>One codebook can carry distinct DEKs per tenant without per-tenant rebuilds. Crypto-shred is a single HSM op.</li></ul></li><li>Per-purpose codebooks<ul><li>Authoring a codebook scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Modifier — list-steps milestone lettered · list-steps milestone lettered</div></footer></section>
 <section id="43" class="list-steps vertical compact" data-marpit-slide="43" data-marpit-pagination="43" style="--marp-slide:43;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · list-steps vertical</code></p><h2>Vertical stacks the steps as rows; the connector becomes a down-arrow.</h2><ol><li>Sense<ul><li>Inputs are signals. Signals are observed, never invented. The first step is to write down what you see, not what you conclude.</li></ul></li><li>Score<ul><li>A signal becomes data once it carries a number. The score is calibrated against outcomes, not against intuition.</li></ul></li><li>Decide<ul><li>A decision is a signal plus a deadline. Without the deadline it is an opinion, not a decision. The retrospective closes the loop on the score that earned it.</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Modifier — list-steps vertical · list-steps vertical compact</div></footer></section>
-<section id="44" class="cards-grid compact" data-marpit-slide="44" data-marpit-pagination="44" style="--marp-slide:44;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
-<section id="45" class="content loose" data-marpit-slide="45" data-marpit-pagination="45" style="--marp-slide:45;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
-<section id="46" class="closing accent" data-marpit-slide="46" style="--marp-slide:46;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<section id="44" class="compare-prose chosen" data-marpit-slide="44" data-marpit-pagination="44" style="--marp-slide:44;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compare-prose chosen</code></p><h2>Chosen flags the right-hand card as the winner.</h2><div class="compare-prose-inner"><div class="card"><strong>Vault round-trip</strong><ul><li>Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.</li></ul></div><div class="connector">❯</div><div class="card"><strong>In-process codebook</strong><ul><li>Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.</li></ul></div></div><div class="below-note"><p>The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.</p></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compare-prose chosen · compare-prose chosen</div></footer></section>
+<section id="45" class="compare-prose decision" data-marpit-slide="45" data-marpit-pagination="45" style="--marp-slide:45;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compare-prose decision</code></p><h2>Decision composes chosen + rejected with a labelled connector.</h2><div class="compare-prose-inner"><div class="card"><strong>Buy a vendor</strong><ul><li>Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.</li></ul></div><div class="connector">❯</div><div class="card"><strong>Build in-house</strong><ul><li>Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.</li></ul></div></div><div class="below-note"><p>The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.</p></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compare-prose decision · compare-prose decision</div></footer></section>
+<section id="46" class="compare-prose vertical" data-marpit-slide="46" data-marpit-pagination="46" style="--marp-slide:46;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compare-prose vertical</code></p><h2>Vertical stacks the two cards; the arrow connector rotates 90°.</h2><div class="compare-prose-inner"><div class="card"><strong>Before — manual rotation</strong><ul><li>Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.</li></ul></div><div class="connector">❯</div><div class="card"><strong>After — version-floor rotation</strong><ul><li>The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compare-prose vertical · compare-prose vertical</div></footer></section>
+<section id="47" class="cards-grid compact" data-marpit-slide="47" data-marpit-pagination="47" style="--marp-slide:47;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
+<section id="48" class="content loose" data-marpit-slide="48" data-marpit-pagination="48" style="--marp-slide:48;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
+<section id="49" class="closing accent" data-marpit-slide="49" style="--marp-slide:49;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
 <footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
 </body></html>

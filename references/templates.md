@@ -167,6 +167,25 @@ Default prefix is `STEP`; default format is decimal-leading-zero (`01`, `02`, �
 
 The vertical orientation pairs well with `compact` for 3-step decks where each step needs body-paragraph room.
 
+#### `compare-prose` family
+
+Four modifiers name the editorial intent of a two-card comparison. The post-processor always emits left-then-right; authors put the option considered first and the choice second.
+
+| Modifier   | Effect                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------- |
+| `chosen`   | right card is the winner — accent left-edge, accent-tinted background, accent title.                   |
+| `rejected` | right card is the option dropped — title struck-through, body muted.                                    |
+| `decision` | composes both: left card de-emphasised, right card emphasised, connector amplified and labelled `DECISION`. |
+| `vertical` | stack the two cards vertically; arrow connector rotates 90°. For long-body comparisons.                 |
+
+```markdown
+<!-- _class: compare-prose chosen -->     → right card emphasised
+<!-- _class: compare-prose decision -->   → left struck through, right emphasised, arrow labelled
+<!-- _class: compare-prose vertical -->   → cards stacked, arrow rotated
+```
+
+`decision` is the most common variant in real decks — it names the "considered then chose" pattern directly.
+
 ## Template 1: Title (dark bookend)
 
 ```
