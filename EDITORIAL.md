@@ -109,7 +109,7 @@ followed by a colon, every item follows the same pattern.
 
 ## Card titles
 
-When using card-grid, comparison, finding, or similar layouts where
+When using cards-grid, compare-prose, featured, or similar layouts where
 each card has a short title, the titles should be **noun phrases of
 similar weight**. Not sentences (the H2 is the sentence). Not a mix of
 noun phrases and verb phrases.
@@ -128,11 +128,11 @@ Parallel structure helps the reader scan the cards as a set.
 
 ## Eyebrows over preambles
 
-Mono-uppercase eyebrows (`### CONTEXT · Why this matters`) carry
-positioning information without using a sentence to do it. Use an
-eyebrow to say where the slide sits in the argument. Don't open the
-body with "In this section we'll discuss..." — the eyebrow already
-told the reader.
+Mono-uppercase eyebrows (`` `Context · Why this matters` `` as an inline-code
+paragraph above the heading) carry positioning information without using a
+sentence to do it. Use an eyebrow to say where the slide sits in the
+argument. Don't open the body with "In this section we'll discuss..." —
+the eyebrow already told the reader.
 
 ## Closing slide style
 

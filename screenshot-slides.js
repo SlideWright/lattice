@@ -2,9 +2,13 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-// CLI args: node screenshot-slides.js [html-path] [out-dir]
+// CLI args: node screenshot-slides.js [html-path] [out-dir] [slide-index|all]
+//   slide-index: 1-based; if provided, screenshots only that slide.
+//   all (default): screenshots every slide.
 const htmlFile = process.argv[2] || '/tmp/lattice-out.html';
 const outDir   = process.argv[3] || '/tmp/lattice-slides';
+const which    = process.argv[4] || 'all';
+const onlyIdx  = which === 'all' ? null : parseInt(which, 10);
 
 // Try to find puppeteer in multiple locations
 function loadPuppeteer() {
@@ -38,7 +42,16 @@ function loadPuppeteer() {
 
   fs.mkdirSync(outDir, { recursive: true });
 
-  for (let i = 0; i < sections.length; i++) {
+  const indices = onlyIdx
+    ? [onlyIdx - 1].filter(i => i >= 0 && i < sections.length)
+    : sections.map((_, i) => i);
+
+  if (onlyIdx && indices.length === 0) {
+    console.error(`Slide ${onlyIdx} out of range (1..${sections.length})`);
+    process.exit(1);
+  }
+
+  for (const i of indices) {
     const num = String(i + 1).padStart(3, '0');
     const outPath = path.join(outDir, `${num}.png`);
     const box = await sections[i].boundingBox();

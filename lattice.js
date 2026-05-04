@@ -524,11 +524,16 @@ function renderMermaid(definition) {
   // we delete any stale output between tries.
   const MAX_ATTEMPTS = 3;
   let lastError = null;
+  // Resolve mmdc binary explicitly — falls back to bare 'mmdc' on PATH if the
+  // local install is missing. Direct `node lattice.js` doesn't include
+  // node_modules/.bin in PATH the way `npm run` does.
+  const localMmdc = path.join(__dirname, 'node_modules', '.bin', 'mmdc');
+  const mmdcBin   = fs.existsSync(localMmdc) ? localMmdc : 'mmdc';
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       if (fs.existsSync(outSvg)) fs.unlinkSync(outSvg);
       execSync(
-        `mmdc -i "${inFile}" -o "${outSvg}" --backgroundColor transparent --puppeteerConfigFile "${cfgFile}"`,
+        `"${mmdcBin}" -i "${inFile}" -o "${outSvg}" --backgroundColor transparent --puppeteerConfigFile "${cfgFile}"`,
         { stdio: 'pipe' }
       );
       if (!fs.existsSync(outSvg) || fs.statSync(outSvg).size === 0) {
@@ -756,11 +761,11 @@ function parseSlide(raw, index) {
 
   const cls = classAttr;
 
-  // card-grid: wrap ul/ol into .card-grid-inner, each top-level li becomes a .card.
+  // cards-grid: wrap ul/ol into .cards-grid-inner, each top-level li becomes a .card.
   // Uses depth tracking to handle nested lists (li > ul/ol for body text).
   // handles 2 cards (1 row), 3 cards (2+1 via CSS :last-child:nth-child(odd)), 4 cards (2×2)
-  // card-grid-2plus1 and cards-side both consolidate here
-  if (cls.includes('card-grid') || cls.includes('cards-side')) {
+  // cards-grid-2plus1 and cards-side both consolidate here
+  if (cls.includes('cards-grid') || cls.includes('cards-side')) {
     const listMatch = html.match(/<(ul|ol)>/);
     if (listMatch) {
       const listTag = listMatch[1];
@@ -784,14 +789,44 @@ function parseSlide(raw, index) {
           else i++;
         }
         const cards = items.map(c => `<div class="card">${c}</div>`).join('');
-        const innerClass = listTag === 'ol' ? 'card-grid-inner card-grid-inner--ordered' : 'card-grid-inner';
+        const innerClass = listTag === 'ol' ? 'cards-grid-inner cards-grid-inner--ordered' : 'cards-grid-inner';
         html = html.slice(0, listStart) + `<div class="${innerClass}">${cards}</div>` + html.slice(listEnd + closeList.length);
       }
     }
   }
 
-  // comparison: wrap ul/ol, 2 li as cards with → connector between, optional trailing p
-  if (cls.includes('comparison') && !cls.includes('code')) {
+  // cards-stack: flat ul/ol → .cards-stack-inner; each li becomes a .card.
+  // Distinct from cards-grid: titles are inlined inside the card (no nested list for body),
+  // so a typical li reads like: **Title.** body prose continues here.
+  if (cls.includes('cards-stack')) {
+    const listMatch = html.match(/<(ul|ol)>/);
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
+      const listStart = html.indexOf(openList);
+      let depth = 0, pos = listStart, listEnd = -1;
+      while (pos < html.length) {
+        if (html.startsWith(openList, pos)) { depth++; pos += openList.length; }
+        else if (html.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
+        else pos++;
+      }
+      if (listEnd !== -1) {
+        const inner = html.slice(listStart + openList.length, listEnd);
+        const items = [];
+        let liDepth = 0, liStart = -1, i = 0;
+        while (i < inner.length) {
+          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
+          else i++;
+        }
+        const cards = items.map(c => `<div class="card">${c}</div>`).join('');
+        html = html.slice(0, listStart) + `<div class="cards-stack-inner">${cards}</div>` + html.slice(listEnd + closeList.length);
+      }
+    }
+  }
+
+  // compare-prose: wrap ul/ol, 2 li as cards with → connector between, optional trailing p
+  if (cls.includes('compare-prose')) {
     const listMatch = html.match(/<(ul|ol)>/);
     if (listMatch) {
       const listTag = listMatch[1];
@@ -813,7 +848,7 @@ function parseSlide(raw, index) {
           else i++;
         }
         const cards = items.map(c => `<div class="card">${c}</div>`);
-        const inner_html = `<div class="comparison-inner">${cards[0]}<div class="connector">❯</div>${cards[1] || ''}</div>`;
+        const inner_html = `<div class="compare-prose-inner">${cards[0]}<div class="connector">❯</div>${cards[1] || ''}</div>`;
         html = html.slice(0, listStart) + inner_html + html.slice(listEnd + closeList.length);
       }
     }
@@ -943,8 +978,8 @@ function parseSlide(raw, index) {
     html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${codeP}${h5}${h2}</div><div class="panel-right">${rest}</div>`;
   }
 
-  // cards-wide-3: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
-  if (cls.includes('cards-wide-3')) {
+  // cards-wide: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
+  if (cls.includes('cards-wide')) {
     html = html.replace(/<(ol|ul)>([\s\S]*?)<\/\1>/g, (_, tag, inner) => {
       const isOrdered = tag === 'ol';
       const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
@@ -973,59 +1008,11 @@ function parseSlide(raw, index) {
     });
   }
 
-  // finding: build .finding-top scaffold from ul-based or legacy h4+p authoring
-  if (cls.includes('finding') && !cls.includes('cards')) {
-    const h3Match = html.match(/(<h3>[\s\S]*?<\/h3>)/);
-    const h2Match = html.match(/(<h2>[\s\S]*?<\/h2>)/);
-    const h3El = h3Match ? h3Match[1] : '';
-    const h2El = h2Match ? h2Match[1] : '';
-    if (/<ul>/.test(html) && !/<h4>/.test(html)) {
-      // ul-based authoring: li > strong + nested ul > li body, *em* verdict
-      const emMatch = html.match(/<p><em>([\s\S]*?)<\/em><\/p>/);
-      const bqMatch = html.match(/(<blockquote>[\s\S]*?<\/blockquote>)/);
-      const verdictEl = emMatch
-        ? `<p class="verdict"><span class="verdict-dot">●</span>${emMatch[1]}</p>`
-        : (bqMatch ? bqMatch[1] : '');
-      const ulMatch = html.match(/<ul>([\s\S]*)<\/ul>/);
-      if (ulMatch) {
-        // Depth-aware top-level <li> extraction (naive split breaks on nested lists)
-        const ulContent = ulMatch[1];
-        const findingItems = [];
-        let fliDepth = 0, fliStart = -1, fi = 0;
-        while (fi < ulContent.length) {
-          if (ulContent.startsWith('<li>', fi))       { if (fliDepth === 0) fliStart = fi + 4; fliDepth++; fi += 4; }
-          else if (ulContent.startsWith('</li>', fi)) { fliDepth--; if (fliDepth === 0 && fliStart !== -1) { findingItems.push(ulContent.slice(fliStart, fi)); fliStart = -1; } fi += 5; }
-          else fi++;
-        }
-        const cards = findingItems.map(chunk => {
-          const titleMatch = chunk.match(/<strong>([\s\S]*?)<\/strong>/);
-          const bodyUlIdx  = chunk.indexOf('<ul>');
-          const title = titleMatch ? `<h4>${titleMatch[1]}</h4>` : '';
-          let body = '';
-          if (bodyUlIdx !== -1) {
-            const innerLiMatch = chunk.slice(bodyUlIdx).match(/<li>([\s\S]*?)<\/li>/);
-            body = innerLiMatch ? `<p>${innerLiMatch[1]}</p>` : '';
-          }
-          return `<div class="card">${title}${body}</div>`;
-        }).join('');
-        html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${verdictEl}`;
-      }
-    } else {
-      // Legacy h4+p authoring (blockquote = verdict/key-insight)
-      const bqMatch = html.match(/(<blockquote>[\s\S]*?<\/blockquote>)/);
-      const bqEl = bqMatch ? bqMatch[1] : '';
-      let rest = html.replace(h3El, '').replace(h2El, '').replace(bqEl, '');
-      const cardParts = rest.split(/(?=<h4>)/).filter(s => s.trim());
-      const cards = cardParts.map(part => `<div class="card">${part.trim()}</div>`).join('');
-      html = `${h3El}${h2El}<div class="finding-top">${cards}</div>${bqEl}`;
-    }
-  }
-
-  // code-compare: pair each p>code+pre into .code-col divs inside .code-cols
+  // compare-code: pair each p>code+pre into .code-col divs inside .code-cols
   // Structure: [p>code(eyebrow)] h2(heading) p>code(left-label) pre p>code(right-label) pre
   // Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
   // Eyebrow = p>code appearing before h2 (at start of html); column labels = p>code after h2.
-  if (cls.includes('code-compare')) {
+  if (cls.includes('compare-code')) {
     const eyeMatch = html.match(/^(<p><code>[\s\S]*?<\/code><\/p>)/);
     const h2Match  = html.match(/(<h2>[\s\S]*?<\/h2>)/);
     const eyeEl = eyeMatch ? eyeMatch[1] : '';
@@ -1042,7 +1029,7 @@ function parseSlide(raw, index) {
 
   // criteria: wrap each top-level li content in .crit-body (depth-aware — non-greedy
   // regex breaks on nested lists since it stops at the first </li>)
-  if (cls.includes('criteria')) {
+  if (cls.includes('list-criteria')) {
     const critListMatch = html.match(/<(ul|ol)>/);
     if (critListMatch) {
       const critTag = critListMatch[1];
@@ -1119,7 +1106,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: title, closing, quote, big-number, subtopic, divider (centred layouts
   // where the trailing p IS the main content, not a footnote).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','two-column','timeline','diagram','stats','code'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','timeline','diagram','stats','code'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

@@ -73,6 +73,11 @@ lines. Its job is:
    slide: read frontmatter directives (`_class`, `_paginate`, etc.),
    render the body via a small markdown-it-compatible converter, apply
    per-class scaffolding (header, footer, pagination ::after).
+   Structured layouts (`cards-grid`, `cards-stack`, `compare-prose`,
+   `featured`, `split-panel`, `stats`, etc. — full list in
+   [references/templates.md](references/templates.md#layout-inventory-structured-vs-unstructured))
+   rewrite their `ul`/`ol` body into purpose-built DOM the CSS targets;
+   unstructured layouts pass through as plain semantic HTML.
 5. Emit one HTML file. Inline `<style>` contains the palette CSS and
    the Marp theme CSS, in that order.
 6. Hand the HTML to Puppeteer. Print to PDF at 1280×720 with the

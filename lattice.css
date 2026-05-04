@@ -166,7 +166,8 @@ section p:has(> code:only-child):has(+ h3),
 section p:has(> code:only-child):has(+ h4),
 section p:has(> code:only-child):has(+ h5),
 section p:has(> code:only-child):has(+ ul),
-section p:has(> code:only-child):has(+ ol) {
+section p:has(> code:only-child):has(+ ol),
+section p:has(> code:only-child):has(+ pre) {
   margin: 0 0 4px 0;
 }
 section p:has(> code:only-child):has(+ h1) > code,
@@ -175,7 +176,8 @@ section p:has(> code:only-child):has(+ h3) > code,
 section p:has(> code:only-child):has(+ h4) > code,
 section p:has(> code:only-child):has(+ h5) > code,
 section p:has(> code:only-child):has(+ ul) > code,
-section p:has(> code:only-child):has(+ ol) > code {
+section p:has(> code:only-child):has(+ ol) > code,
+section p:has(> code:only-child):has(+ pre) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 600;
@@ -201,7 +203,8 @@ section.dark p:has(> code:only-child):has(+ h3) > code,
 section.dark p:has(> code:only-child):has(+ h4) > code,
 section.dark p:has(> code:only-child):has(+ h5) > code,
 section.dark p:has(> code:only-child):has(+ ul) > code,
-section.dark p:has(> code:only-child):has(+ ol) > code { color: var(--on-dark-secondary); }
+section.dark p:has(> code:only-child):has(+ ol) > code,
+section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-secondary); }
 /* Centered eyebrow for subtopic */
 section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
@@ -209,9 +212,9 @@ section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
  * Any trailing > blockquote on a content-bearing layout renders
  * as a warm filled panel — Option C styling.
  * Excluded layouts handle blockquote themselves:
- *   quote, two-column, featured (primary content), finding (verdict)
+ *   quote, featured (primary content)
  */
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote {
+section:not(.quote):not(.featured) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -219,7 +222,7 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::before {
+section:not(.quote):not(.featured) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
   font-size:var(--fs-label);
@@ -230,19 +233,19 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::
   display:block;
   margin-bottom:6px;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote p {
+section:not(.quote):not(.featured) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote ul {
+section:not(.quote):not(.featured) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:6px;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li {
+section:not(.quote):not(.featured) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
@@ -250,7 +253,7 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote l
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li::before {
+section:not(.quote):not(.featured) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -359,24 +362,6 @@ section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(-
    the blockquote to fit-content; align-self:stretch overrides that. */
 section.diagram > blockquote { align-self:stretch; }
 
-/* ── TWO-COLUMN ──
- * ### eyebrow  ## heading  p body  > blockquote = right panel
- * h3 spans full width, h2+p go left, blockquote goes right.
- */
-section.two-column { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto 1fr; column-gap:var(--sp-lg); }
-section.two-column h3 { grid-column:1 / -1; grid-row:1; margin-bottom:4px; }
-section.two-column h2 { grid-column:1; grid-row:2; font-size:var(--fs-xl); margin-bottom:var(--sp-xs); align-self:end; }
-section.two-column > p { grid-column:1; grid-row:3; font-size:var(--fs-body); line-height:var(--lh-relaxed); align-self:start; }
-section.two-column > blockquote {
-  grid-column:2; grid-row:2 / 4;
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:var(--sp-md);
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted);
-  text-align:center; margin:0;
-}
-section.two-column > blockquote p { font-size:var(--fs-label); color:var(--text-muted); margin:0; font-style:normal; }
-
 /* ── STATS ──
  * ## heading  p intro  ol with: **number** label text
  * Post-processor wraps into .stats-row > .stat-item > .stat-num + .stat-label
@@ -390,94 +375,94 @@ section.stats .stat-item { display:flex; flex-direction:column; align-items:cent
 section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
-/* ── CARD-GRID ──
+/* ── CARDS-GRID ──
  * Markdown: outer ul/ol — li first line is card header, auto-bold by CSS.
  *   Bold by convention: no manual **...** required. Nested ul/ol is body text.
  * Marp CLI path:  section > ul/ol > li  (native HTML)
- * lattice.js path: section > .card-grid-inner > .card  (post-processed)
+ * lattice.js path: section > .cards-grid-inner > .card  (post-processed)
  */
-section.card-grid h2 { margin-bottom:var(--sp-sm); }
-section.card-grid { display:flex; flex-direction:column; }
+section.cards-grid h2 { margin-bottom:var(--sp-sm); }
+section.cards-grid { display:flex; flex-direction:column; }
 section.cards-side { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.card-grid > ul, section.card-grid > ol,
+section.cards-grid > ul, section.cards-grid > ol,
 section.cards-side > ul, section.cards-side > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.card-grid > ul, section.card-grid > ol { grid-auto-rows:1fr; }
-section.card-grid > ul > li, section.card-grid > ol > li,
+section.cards-grid > ul, section.cards-grid > ol { grid-auto-rows:1fr; }
+section.cards-grid > ul > li, section.cards-grid > ol > li,
 section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid > ul > li:last-child:nth-child(odd),
-section.card-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid > ul > li:last-child:nth-child(odd),
+section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.card-grid > ul > li > strong,
+section.cards-grid > ul > li > strong,
 section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
 /* — inline code badge pinned to title row — */
-section.card-grid > ul > li > code,
-section.card-grid > ol > li > code,
+section.cards-grid > ul > li > code,
+section.cards-grid > ol > li > code,
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
-section.card-grid > ul > li > ul, section.card-grid > ul > li > ol,
-section.card-grid > ol > li > ul, section.card-grid > ol > li > ol,
+section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
+section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol,
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
 section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid > ul > li > ul > li, section.card-grid > ul > li > ol > li,
-section.card-grid > ol > li > ul > li, section.card-grid > ol > li > ol > li,
+section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li,
 section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
 section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
-section.card-grid .card-grid-inner,
-section.card-grid .card-grid-inner--ordered,
-section.cards-side .card-grid-inner,
-section.cards-side .card-grid-inner--ordered {
+section.cards-grid .cards-grid-inner,
+section.cards-grid .cards-grid-inner--ordered,
+section.cards-side .cards-grid-inner,
+section.cards-side .cards-grid-inner--ordered {
   display:grid; grid-template-columns:1fr 1fr;
   grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
 }
-section.card-grid .card,
+section.cards-grid .card,
 section.cards-side .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.card-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.card-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
+section.cards-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.card-grid .card > ul, section.card-grid .card > ol,
+section.cards-grid .card > ul, section.cards-grid .card > ol,
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid .card > ul > li, section.card-grid .card > ol > li,
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li,
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner badge via absolute ::before — */
-section.card-grid > ol, section.cards-side > ol { counter-reset:card; }
-section.card-grid > ol > li, section.cards-side > ol > li {
+section.cards-grid > ol, section.cards-side > ol { counter-reset:card; }
+section.cards-grid > ol > li, section.cards-side > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid > ol > li::before, section.cards-side > ol > li::before {
+section.cards-grid > ol > li::before, section.cards-side > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
   color:var(--on-dark-primary,#fff); background:var(--accent);
 }
-section.card-grid .card-grid-inner--ordered, section.cards-side .card-grid-inner--ordered { counter-reset:card; }
-section.card-grid .card-grid-inner--ordered > .card, section.cards-side .card-grid-inner--ordered > .card {
+section.cards-grid .cards-grid-inner--ordered, section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
+section.cards-grid .cards-grid-inner--ordered > .card, section.cards-side .cards-grid-inner--ordered > .card {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid .card-grid-inner--ordered > .card::before, section.cards-side .card-grid-inner--ordered > .card::before {
+section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-side .cards-grid-inner--ordered > .card::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -485,39 +470,53 @@ section.card-grid .card-grid-inner--ordered > .card::before, section.cards-side 
   color:var(--on-dark-primary,#fff); background:var(--accent);
 }
 
-/* ── CARDS-STACKED ──
- * ## heading  p card1  p card2
+/* ── CARDS-STACK ──
+ * Structured: flat ul/ol → .cards-stack-inner > .card.
+ * Each card holds inline-title prose: **Title.** body continues.
+ *
+ * Two parallel selector chains, same shape as cards-grid:
+ *   marp-cli path: section.cards-stack > ul/ol > li        (raw markdown)
+ *   lattice.js path: section.cards-stack .cards-stack-inner > .card  (post-processed)
  */
-section.cards-stacked h2 { margin-bottom:var(--sp-sm); }
-section.cards-stacked > p {
+section.cards-stack { display:flex; flex-direction:column; }
+section.cards-stack h2 { margin-bottom:var(--sp-sm); }
+
+/* shared visual contract — both raw and post-processed */
+section.cards-stack > ul, section.cards-stack > ol,
+section.cards-stack .cards-stack-inner {
+  display:flex; flex-direction:column; gap:var(--sp-md);
+  flex:1; list-style:none; margin:0; padding:0;
+}
+section.cards-stack > ul > li, section.cards-stack > ol > li,
+section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  margin:0; flex:1;
+  margin:0; flex:1; list-style:none;
 }
-section.cards-stacked > p + p { margin-top:var(--sp-md); }
+section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
 
 /* ── COMPARISON ──
  * Nested list format: 2 li, each with **Title** + sublist body.
  * Optional trailing p for below-note.
  */
-section.comparison { }
-section.comparison h2 { margin-bottom:var(--sp-md); }
-section.comparison .comparison-inner { display:flex; align-items:stretch; flex:1; }
-section.comparison .comparison-inner .card {
+section.compare-prose { }
+section.compare-prose h2 { margin-bottom:var(--sp-md); }
+section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
+section.compare-prose .compare-prose-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   font-weight:700; color:var(--text-heading);
 }
-section.comparison .comparison-inner .card > strong { display:block; }
-section.comparison .comparison-inner .card > ul,
-section.comparison .comparison-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
-section.comparison .comparison-inner .card > ul > li,
-section.comparison .comparison-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.comparison .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+section.compare-prose .compare-prose-inner .card > strong { display:block; }
+section.compare-prose .compare-prose-inner .card > ul,
+section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.compare-prose .compare-prose-inner .card > ul > li,
+section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.comparison > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── QUOTE ──
  * > blockquote  p attribution
@@ -677,95 +676,56 @@ section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:700px; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:540px; margin:0 auto; text-align:center; }
 
-/* ── FINDING ──
- * ### eyebrow  ## heading
- * #### card1-title  p card1-body  #### card2-title  p card2-body
- * > blockquote = verdict line
- * CSS pairs each h4+p as a card, puts them side by side, blockquote pins to bottom
- */
-section.finding { }
-section.finding h3 { margin-bottom:4px; }
-section.finding h2 { font-size:var(--fs-xl); line-height:var(--lh-tight); margin-bottom:var(--sp-sm); }
-section.finding .finding-top { display:flex; gap:var(--sp-md); flex:1; min-height:0; }
-section.finding .finding-top .card { flex:1; overflow:auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; }
-section.finding blockquote {
-  flex-shrink:0;
-  background:var(--accent-soft); border:1px solid var(--accent);
-  border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md);
-  margin-top:var(--sp-sm); margin-bottom:0;
-}
-section.finding blockquote::before {
-  content:'KEY INSIGHT';
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--accent);
-  display:block;
-  margin-bottom:4px;
-}
-section.finding blockquote p {
-  font-family:var(--font-body); font-size:var(--fs-body);
-  color:var(--text-heading);
-  line-height:var(--lh-snug); margin:0;
-}
-section.finding blockquote.pass, section.finding blockquote.pass p { color:var(--pass); border-color:var(--pass); background:color-mix(in srgb, var(--pass) 8%, white); }
-section.finding blockquote.fail, section.finding blockquote.fail p { color:var(--fail); border-color:var(--fail); background:color-mix(in srgb, var(--fail) 8%, white); }
-section.finding blockquote.warn, section.finding blockquote.warn p { color:var(--warn); border-color:var(--warn); background:color-mix(in srgb, var(--warn) 8%, white); }
-section.finding .verdict { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; color:var(--accent); line-height:1.4; }
-section.finding .verdict-dot { margin-right:6px; }
-
-/* ── CARDS-WIDE-3 ──
+/* ── CARDS-WIDE ──
  * ## heading  then 3× pairs: ### eyebrow·heading  p body
  * CSS stacks them vertically, each full width
  */
-section.cards-wide-3 h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
-section.cards-wide-3 .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
-section.cards-wide-3 .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.cards-wide-3 .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide-3 .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
-section.cards-wide-3 .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.cards-wide-3 .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
-section.cards-wide-3 .three-stack.ordered { counter-reset:wide-counter; }
-section.cards-wide-3 .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide-3 .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
-section.cards-wide-3 .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.cards-wide .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
+section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
+section.cards-wide .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
+section.cards-wide .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
+section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
+section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
 
 /* ── CRITERIA ──
  * ## heading  ol or ul — li **title** [optional nested ul > li description]
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
-section.criteria h2 { margin-bottom:var(--sp-md); }
-section.criteria > :is(ol, ul) {
+section.list-criteria h2 { margin-bottom:var(--sp-md); }
+section.list-criteria > :is(ol, ul) {
   list-style:none; counter-reset:crit-counter;
   display:flex; flex-direction:column; gap:var(--sp-sm);
   flex:1; justify-content:space-between; margin:0; padding:0;
 }
-section.criteria > :is(ol, ul) > li {
+section.list-criteria > :is(ol, ul) > li {
   counter-increment:crit-counter;
   display:flex; align-items:center; gap:var(--sp-md); flex:1;
   container-type:size;
 }
-section.criteria > :is(ol, ul) > li::before {
+section.list-criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-mono); font-size:55cqh; font-weight:700;
   color:var(--accent); line-height:1;
 }
-section.criteria .crit-body { flex:1; display:flex; flex-direction:column; justify-content:center; }
-section.criteria .crit-body strong {
+section.list-criteria .crit-body { flex:1; display:flex; flex-direction:column; justify-content:center; }
+section.list-criteria .crit-body strong {
   display:block; font-size:var(--fs-emphasis); font-weight:700;
   color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria .crit-body ul { list-style:none; padding:0; margin:0; }
-section.criteria .crit-body ul li {
+section.list-criteria .crit-body ul { list-style:none; padding:0; margin:0; }
+section.list-criteria .crit-body ul li {
   font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base);
   counter-increment:none;
 }
-section.criteria .crit-body ul li::before { display:none !important; content:none !important; }
+section.list-criteria .crit-body ul li::before { display:none !important; content:none !important; }
 
 /* ── VERDICT-GRID ──
  * ## heading  then 4× pairs: ### tool-name  p badges+body
@@ -823,10 +783,10 @@ section.featured .sub-card p  { font-size:var(--fs-body); color:var(--text-body)
 /* ── STEPS ──
  * ## heading  ol with: **Step N title** \n body text
  */
-section.steps h2 { margin-bottom:var(--sp-md); }
-section.steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
-section.steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-md); font-weight:700; color:var(--text-heading); }
-section.steps ol > li:not(:last-child)::after {
+section.list-steps h2 { margin-bottom:var(--sp-md); }
+section.list-steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
+section.list-steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-md); font-weight:700; color:var(--text-heading); }
+section.list-steps ol > li:not(:last-child)::after {
   content:'';
   position:absolute;
   right:calc(-1 * var(--sp-xl) / 2);
@@ -837,14 +797,14 @@ section.steps ol > li:not(:last-child)::after {
   border-left:10px solid var(--border);
   z-index:1;
 }
-section.steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
-section.steps ol > li strong { display:block; }
-section.steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
-section.steps ol > li:not(:has(> ul)) > p { flex:1; }
+section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.list-steps ol > li strong { display:block; }
+section.list-steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
 /* Nested list format: - body text under each step */
-section.steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.steps ol > li > ul > li::before { display:none !important; content:none !important; }
+section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── IMAGE LAYOUTS ──
  * _class: image       → image right, text left (default)
@@ -933,26 +893,26 @@ section.code > em { font-size:var(--fs-sm); color:var(--text-label); margin-bott
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
-/* ── CODE-COMPARE ──
+/* ── COMPARE-CODE ──
  * `eyebrow(opt)` ## heading  `left-label` ```block  `right-label` ```block
  * Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
  * CSS arranges the two p>code+pre pairs side by side.
  */
-section.code-compare { }
-section.code-compare h2 { margin-bottom:var(--sp-sm); }
-section.code-compare .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
-section.code-compare .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.compare-code { }
+section.compare-code h2 { margin-bottom:var(--sp-sm); }
+section.compare-code .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
+section.compare-code .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
 /* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
-section.code-compare .code-col p:has(> code:only-child),
-section.code-compare h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
-section.code-compare .code-col p:has(> code:only-child) > code,
-section.code-compare h2 ~ p:has(> code:only-child) > code {
+section.compare-code .code-col p:has(> code:only-child),
+section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.compare-code .code-col p:has(> code:only-child) > code,
+section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
   letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
   background:none; border:none; padding:0; border-radius:0;
 }
-section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
-section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
+section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
+section.compare-code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
 /* ── Mermaid ── */
 /* .mermaid-svg = CLI path (lattice.js pre-renders into a wrapper).
@@ -1112,8 +1072,8 @@ section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 /* ══════════════════════════════════════════════════════════════════════════════
  * MARP VS CODE PREVIEW FALLBACKS
  * ══════════════════════════════════════════════════════════════════════════════
- * lattice.js post-processes markdown into custom scaffold HTML (.card-grid-inner,
- * .stats-row, .comparison-inner, etc.) before PDF render.
+ * lattice.js post-processes markdown into custom scaffold HTML (.cards-grid-inner,
+ * .stats-row, .compare-prose-inner, etc.) before PDF render.
  * The Marp VS Code extension uses Marp's own renderer, which emits standard
  * HTML (ul/li, ol/li, strong, h4, pre…) with no scaffold wrappers.
  *
@@ -1139,61 +1099,61 @@ section.stats:not(:has(.stats-row)) ol > li > strong {
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 
-/* ── CARD-GRID ───────────────────────────────────────────────────────────────
- * ul/ol > li (nested list format) → mimic .card-grid-inner > .card             */
-section.card-grid:not(:has(.card-grid-inner)) > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ol {
+/* ── CARDS-GRID ───────────────────────────────────────────────────────────────
+ * ul/ol > li (nested list format) → mimic .cards-grid-inner > .card             */
+section.cards-grid:not(:has(.cards-grid-inner)) > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.card-grid:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > strong,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > code,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > code,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
-section.card-grid:not(:has(.card-grid-inner)) > ol, section.cards-side:not(:has(.card-grid-inner)) > ol { counter-reset:card; }
-section.card-grid:not(:has(.card-grid-inner)) > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol, section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid:not(:has(.card-grid-inner)) > ol > li::before,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li::before {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1203,35 +1163,35 @@ section.cards-side:not(:has(.card-grid-inner)) > ol > li::before {
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → side-by-side cards with → connector         */
-section.comparison:not(:has(.comparison-inner)) > ul,
-section.comparison:not(:has(.comparison-inner)) > ol {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol {
   display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
   list-style:none; padding:0; margin:0; position:relative;
 }
-section.comparison:not(:has(.comparison-inner)) > ul::before,
-section.comparison:not(:has(.comparison-inner)) > ol::before {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
   content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   font-size:var(--fs-xl); color:var(--text-muted);
   background:var(--bg); padding:2px 8px; border-radius:4px; z-index:1;
 }
-section.comparison:not(:has(.comparison-inner)) > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; align-content:start; justify-items:start;
   font-weight:700; color:var(--text-heading);
 }
-section.comparison:not(:has(.comparison-inner)) > ul > li > strong,
-section.comparison:not(:has(.comparison-inner)) > ol > li > strong { display:block; }
-section.comparison:not(:has(.comparison-inner)) > ul > li > ul,
-section.comparison:not(:has(.comparison-inner)) > ul > li > ol,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ul,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
-section.comparison:not(:has(.comparison-inner)) > ul > li > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ul > li > ol > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > strong,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > strong { display:block; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
  * Nested-list format: ul > li(strong title + ul(badge items + last = body))
@@ -1302,44 +1262,44 @@ section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul > li {
 section.featured:not(:has(.feat-layout)) > ul > li::before { display:none !important; content:none !important; }
 section.featured:not(:has(.feat-layout)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
-/* ── CARDS-WIDE-3 ────────────────────────────────────────────────────────────
+/* ── CARDS-WIDE ────────────────────────────────────────────────────────────
  * ol > li(<strong>eyebrow · heading</strong> body) → mimic .three-stack > .wide-card
  * Note: eyebrow/heading split not possible in CSS; both render as bold text.   */
-section.cards-wide-3:not(:has(.three-stack)) ol {
+section.cards-wide:not(:has(.three-stack)) ol {
   display:flex; flex-direction:column; gap:12px; flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.cards-wide-3:not(:has(.three-stack)) ol > li {
+section.cards-wide:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.cards-wide-3:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > strong { display:flex; align-items:center; gap:8px; font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > strong::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
+section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
+section.cards-wide:not(:has(.three-stack)) ol > li > strong { display:flex; align-items:center; gap:8px; font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.cards-wide:not(:has(.three-stack)) ol > li > strong::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide:not(:has(.three-stack)) ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
  * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
  * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
   display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
   column-gap:var(--sp-md); row-gap:0; align-content:center;
 }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1;
   display:block; font-size:var(--fs-emphasis); font-weight:700;
   color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:0; }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:0; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
 
 /* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
- * Recreates the two-column layout purely in CSS without DOM transformation.
+ * Pure-CSS rendering without DOM transformation.
  * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
  * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
 section.split-panel:not(:has(.panel-left)) {
@@ -1414,30 +1374,7 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
-/* ── FINDING CSS-grid fallback ───────────────────────────────────────────────
- * ul > li(**title** + nested ul > li body) → side-by-side cards, last odd = full-width
- * *italic* trailing paragraph → verdict line with ● dot */
-section.finding:not(:has(.finding-top)) > ul {
-  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
-  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
-}
-section.finding:not(:has(.finding-top)) > ul > li:last-child:nth-child(odd) { grid-column:1/-1; }
-section.finding:not(:has(.finding-top)) > ul > li {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column;
-}
-section.finding:not(:has(.finding-top)) > ul > li > strong {
-  display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs);
-}
-section.finding:not(:has(.finding-top)) > ul > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.finding:not(:has(.finding-top)) > ul > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
-/* verdict from *italic* paragraph */
-section.finding:not(:has(.finding-top)) > p:last-of-type { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; line-height:1.4; }
-section.finding:not(:has(.finding-top)) > p:last-of-type em { font-style:normal; color:var(--accent); }
-section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'● '; }
-
-/* ── CODE-COMPARE fallback ───────────────────────────────────────────────────
+/* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
  * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
  * Optional eyebrow = p>code placed before h2 (identical to other slide types).
  *
@@ -1449,56 +1386,54 @@ section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'�
  * With eyebrow:    p(1)=eyebrow row1; h2 row2; p(2) col1 row3; p(3) col2 row3; pre(1/2) row4; bq row5 */
 
 /* Shared grid shell */
-section.code-compare:not(:has(.code-cols)) {
+section.compare-code:not(:has(.code-cols)) {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:0 var(--sp-md);
 }
 
 /* ── WITHOUT eyebrow (no p precedes h2 among siblings) ── */
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) {
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
   grid-template-rows:auto auto 1fr auto;
 }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
 
 /* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) {
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
   grid-template-rows:auto auto auto 1fr auto;
 }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
  * the same hairline-rule treatment for layouts that use it.                   */
-section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.comparison:not(:has(.below-note)) > :is(ul, ol) + p,
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.finding:not(:has(.below-note)) > blockquote + p,
-section.criteria:not(:has(.below-note)) > :is(ul, ol) + p,
-section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p {
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
   position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
-section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.comparison:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p::before,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p::before,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.finding:not(:has(.below-note)) > blockquote + p::before,
-section.criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
-section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p::before {
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }

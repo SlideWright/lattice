@@ -113,17 +113,19 @@ view_image /tmp/marp-slides/019.png      ← reference
 view_image /tmp/lattice-slides/019.png   ← candidate
 ```
 
-**Prioritize by layout class.** From the manifest, collect all slides whose class includes any of these — these are the layouts with JS post-processor logic most likely to diverge:
+**Prioritize by layout class.** From the manifest, collect all slides whose class includes any of these — these are the **structured layouts** with JS post-processor logic most likely to diverge (full list and definition: [templates.md → Layout Inventory](./templates.md#layout-inventory-structured-vs-unstructured)):
 
-| Class keyword  | Why it's risky                             |
-| -------------- | ------------------------------------------ |
-| `split-panel`  | Code-p and h5 placement in panel-left      |
-| `featured`     | extractCard plain-text title fallback      |
-| `finding`      | Depth-aware nested `<li>` extraction       |
-| `criteria`     | Depth-aware `<li>` + `.crit-body` wrapping |
-| `cards-wide-3` | Ordered badge vs CSS counter               |
-| `comparison`   | `.comparison-inner` scaffold               |
-| `image`        | `![bg]` anchor stripping                   |
+| Class keyword       | Why it's risky                             |
+| ------------------- | ------------------------------------------ |
+| `split-panel`       | Code-p and h5 placement in panel-left      |
+| `featured`          | extractCard plain-text title fallback      |
+| `list-criteria`     | Depth-aware `<li>` + `.crit-body` wrapping |
+| `cards-wide`        | Ordered badge vs CSS counter               |
+| `cards-stack`       | Inline `**Title.**` parsing inside `.card` |
+| `compare-prose`     | `.compare-prose-inner` scaffold            |
+| `compare-code`      | Two-block `.code-cols` wrapping            |
+| `verdict-grid`      | Nested `<ul>` → badge rows                 |
+| `image`             | `![bg]` anchor stripping                   |
 
 ## 11.5 Inspecting Generated HTML for a Specific Slide
 

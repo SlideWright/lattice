@@ -10,11 +10,11 @@ header: "Lattice · Layout Gallery"
 <!-- _paginate: false -->
 <!-- _footer: "Title slide · title" -->
 
-`Product Strategy · Q3 2025`
-
 # From Signal to Strategy
 
-`A decision framework for product leaders navigating market uncertainty`
+`Product Strategy · Q3 2025`
+
+A decision framework for product leaders navigating market uncertainty
 
 ---
 
@@ -24,7 +24,7 @@ header: "Lattice · Layout Gallery"
 
 `Section 01 · Foundations`
 
-# The landscape has shifted. Here is what that means for us.
+## The landscape has shifted. Here is what that means for us.
 
 ---
 
@@ -42,7 +42,7 @@ The word is overloaded. We use it to mean anything from a customer complaint to 
 <!-- _class: content -->
 <!-- _footer: "Single-idea prose · content" -->
 
-### Context · Competitive Dynamics
+`Context · Competitive Dynamics`
 
 ## The window for differentiation is narrowing.
 
@@ -53,7 +53,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 <!-- _class: diagram -->
 <!-- _footer: "Component diagram · diagram" -->
 
-### Architecture · Signal Pipeline
+`Architecture · Signal Pipeline`
 
 ## How signals move from input to decision.
 
@@ -72,23 +72,10 @@ flowchart LR
 
 ---
 
-<!-- _class: two-column -->
-<!-- _footer: "Text + visual split · two-column" -->
-
-### Overview · Framework Design
-
-## Built for speed without sacrificing rigor.
-
-The framework was designed around a hard constraint: product decisions must close in 72 hours or the opportunity cost of delay exceeds the cost of a suboptimal decision. Every component is optimized for that window.
-
-> Visual: decision velocity vs. decision quality scatter plot — 72-hour decision window highlighted
-
----
-
 <!-- _class: stats -->
 <!-- _footer: "KPI numbers · stats" -->
 
-### Impact · Pilot Results
+`Impact · Pilot Results`
 
 ## Six months of results across four product teams.
 
@@ -101,8 +88,8 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ---
 
-<!-- _class: card-grid -->
-<!-- _footer: "2×2 card grid · card-grid" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "2×2 card grid · cards-grid" -->
 
 ## The framework has four components.
 
@@ -117,8 +104,8 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ---
 
-<!-- _class: card-grid -->
-<!-- _footer: "Inline code in cards · card-grid" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "Inline code in cards · cards-grid" -->
 
 ## Code in card headers and body text.
 
@@ -133,8 +120,8 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ---
 
-<!-- _class: card-grid -->
-<!-- _footer: "2 top + 1 bottom · card-grid" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "2 top + 1 bottom · cards-grid" -->
 
 ## Signal Intake produces three outputs.
 
@@ -147,19 +134,18 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ---
 
-<!-- _class: cards-stacked -->
-<!-- _footer: "Vertical card stack · cards-stacked" -->
+<!-- _class: cards-stack -->
+<!-- _footer: "Vertical card stack · cards-stack" -->
 
 ## Two failure modes the framework is designed to prevent.
 
-**False signal amplification.** A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
-
-**Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
+- **False signal amplification.** A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
+- **Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
 
 ---
 
-<!-- _class: card-grid -->
-<!-- _footer: "Side-by-side cards · card-grid" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "Side-by-side cards · cards-grid" -->
 
 ## Two intake modes for different signal types.
 
@@ -170,8 +156,8 @@ The framework was designed around a hard constraint: product decisions must clos
 
 ---
 
-<!-- _class: comparison -->
-<!-- _footer: "Two options + connector · comparison" -->
+<!-- _class: compare-prose -->
+<!-- _footer: "Two options + connector · compare-prose" -->
 
 ## Scoring model: before and after the calibration loop.
 
@@ -278,25 +264,24 @@ The scoring model is the most configurable component. This section covers the th
 
 ---
 
-<!-- _class: finding -->
-<!-- _footer: "Finding + key insight · finding" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "Finding + key insight · cards-grid" -->
 
-### Finding 01 · Structured Intake
+`Finding 01 · Structured Intake`
 
 ## Structured intake performed above expectations — volume and latency were not concerns.
-
 
 - **What worked**
   - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
 - **What required tuning**
   - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
 
-_Viable as designed — NLP classification requires a 2-week warm-up period on new deployments._
+> Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.
 
 ---
 
-<!-- _class: card-grid -->
-<!-- _footer: "Key insight + below-note · card-grid" -->
+<!-- _class: cards-grid -->
+<!-- _footer: "Key insight + below-note · cards-grid" -->
 
 ## Key insight works on any card-bearing layout.
 
@@ -315,8 +300,8 @@ _Viable as designed — NLP classification requires a 2-week warm-up period on n
 
 ---
 
-<!-- _class: cards-wide-3 -->
-<!-- _footer: "3 full-width cards · cards-wide-3" -->
+<!-- _class: cards-wide -->
+<!-- _footer: "3 full-width cards · cards-wide" -->
 
 ## Three scoring failure modes found in the pilot.
 
@@ -329,8 +314,8 @@ _Viable as designed — NLP classification requires a 2-week warm-up period on n
 
 ---
 
-<!-- _class: criteria -->
-<!-- _footer: "Numbered criteria · criteria" -->
+<!-- _class: list-criteria -->
+<!-- _footer: "Numbered criteria · list-criteria" -->
 
 ## Four requirements every decision system must meet.
 
@@ -408,8 +393,8 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ---
 
-<!-- _class: comparison -->
-<!-- _footer: "Two options + connector · comparison" -->
+<!-- _class: compare-prose -->
+<!-- _footer: "Two options + connector · compare-prose" -->
 
 ## Two options with a connector and an explanatory note below.
 
@@ -422,8 +407,8 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ---
 
-<!-- _class: steps -->
-<!-- _footer: "Horizontal steps · steps" -->
+<!-- _class: list-steps -->
+<!-- _footer: "Horizontal steps · list-steps" -->
 
 ## How to roll this out across your organization.
 
@@ -469,7 +454,7 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 <!-- _header: "Lattice · Layout Gallery" -->
 <!-- _footer: "Header stays uppercase · footer renders as written" -->
 
-### Header And Footer
+`Header And Footer`
 
 ## Header stays uppercase — footer renders as written.
 
@@ -480,11 +465,11 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-### Implementation · Token Pipeline
+`Implementation · Token Pipeline`
 
 ## The tokenization call is three lines of application code.
 
-### JavaScript · SDK v2 interface
+`JavaScript · SDK v2 interface`
 
 ```javascript
 import { TokenVault } from "@company/token-sdk";
@@ -500,8 +485,8 @@ const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 
 ---
 
-<!-- _class: code-compare -->
-<!-- _footer: "Two code blocks · code-compare" -->
+<!-- _class: compare-code -->
+<!-- _footer: "Two code blocks · compare-code" -->
 
 `Before & After · Key Distribution`
 
@@ -549,7 +534,7 @@ Use `_class: image` with `![bg right](url)` — image-right is the default. Add 
 <!-- _class: image left -->
 <!-- _footer: "Image left, text right · image left" -->
 
-### Layout · Image Left
+`Layout · Image Left`
 
 ## Lead with the image, follow with the argument.
 
@@ -603,7 +588,7 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 <!-- _class: list dark -->
 <!-- _footer: "Dark variant — list · list dark" -->
 
-### Dark Variant · List
+`Dark Variant · List`
 
 ## The card stack renders cleanly on dark backgrounds.
 
@@ -613,16 +598,15 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 ---
 
-<!-- _class: cards-stacked dark -->
-<!-- _footer: "Dark variant — stacked cards · cards-stacked dark" -->
+<!-- _class: cards-stack dark -->
+<!-- _footer: "Dark variant — stacked cards · cards-stack dark" -->
 
-### Dark Variant · Cards Stacked
+`Dark Variant · Cards Stacked`
 
 ## Two-card layouts work equally well inverted to dark.
 
-The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
-
-The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
+- The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
+- The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice.js) pre-renders Mermaid to SVG at build time

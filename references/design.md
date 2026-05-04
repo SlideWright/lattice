@@ -122,7 +122,7 @@ Accent colors for categories, levels, or themes extend this palette — they don
 - Card grids: centered as a group on the slide
 - Stats rows: centered with even spacing
 - Diagrams: centered within their container
-- Nothing should feel off-center or floating to one side unless the layout explicitly calls for asymmetry (e.g., two-column, split panel)
+- Nothing should feel off-center or floating to one side unless the layout explicitly calls for asymmetry (e.g., split panel, image)
 
 ---
 

@@ -2,7 +2,26 @@
 
 All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: approximately 1160×600.
 
-25 templates plus 3 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+26 templates plus 3 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+
+## Layout Inventory: Structured vs Unstructured
+
+Every layout falls into one of two categories. The distinction matters because it changes what the source markdown looks like and where bugs are most likely to live.
+
+**Structured layouts** are post-processed by `lattice.js`: a flat `ul`/`ol` (sometimes with nested children) is rewritten into purpose-built DOM (`.card`, `.stat-item`, `.vcard`, `.feat-card`, `.compare-prose-inner`, `.panel-left`/`.panel-right`, etc.). The CSS targets that generated structure. Authors write a list; the post-processor turns it into the layout.
+
+**Unstructured layouts** are rendered by CSS alone from the semantic markdown that Marp emits. No DOM rewriting happens — the headings, paragraphs, and lists you write are the headings, paragraphs, and lists the CSS styles.
+
+| Category     | Class                                                                                                                                           | Post-processor                  |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice.js` rewrites DOM |
+| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `image left`, `image-full`, `code`         | no — CSS-only                   |
+
+Modifiers (`dark`, image variants like `image left`, etc.) compose with both categories.
+
+**Authoring implication:** every structured layout has a single canonical list shape documented in its template entry. Deviating from that shape (wrong list type, wrong nesting depth, missing `**Title.**` marker, etc.) causes the post-processor to fall back to the raw list rendering, which the CSS does not style. When a structured slide looks wrong, check the source list shape first.
+
+**Audit implication:** structured layouts are where `lattice.js` and `marp-cli` are most likely to diverge — see [audit.md §11.4](./audit.md#114-comparison-workflow).
 
 ## Eyebrow Labels
 
@@ -29,11 +48,11 @@ Many templates show a small label above the main heading — called an **eyebrow
   - Description text.
 ```
 
-The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and renders the code element as a mono uppercase label — same appearance as the `h3` used for eyebrows on content slides, but without touching the heading hierarchy. This makes eyebrows **markdown-lint compliant**: a `<p>` containing code is not a heading and cannot violate heading-order rules.
+The CSS detects this pattern (`p:has(> code:only-child) + h1/h2/…`) and renders the code element as a mono uppercase label, without touching the heading hierarchy. This makes eyebrows **markdown-lint compliant**: a `<p>` containing code is not a heading and cannot violate heading-order rules.
 
 **Styling:** `--font-mono`, 13px (`--fs-label`), 600 weight, 0.18em letter-spacing, uppercase, `--text-muted`. Dark bookend slides (title, divider, closing) override the color to `--on-dark-secondary` / `--on-dark-ghost` automatically.
 
-**`h3` eyebrows** (used in content, diagram, two-column, stats, etc.) are equally valid and retain their existing role. The inline-code pattern is used specifically on slides where only `h1` or `h2` appears — avoiding the lint error that `h5` would cause when placed before those levels.
+**The inline-code paragraph is the universal eyebrow pattern** across every layout. `h3` is reserved for genuine structural sub-headings (notably the left-panel rubric in `split-panel`) and is no longer used as a label. Standardising on the inline-code form keeps eyebrows markdown-lint compliant on every slide regardless of the heading levels that follow.
 
 **Note on `split-panel`:** the inline-code eyebrow paragraph is placed **between `h2` and `h3`** in the source. The CSS grid fallback routes it to the left dark panel automatically. (`h5` is no longer required here.)
 
@@ -57,20 +76,20 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 
 **Exception — `title` layout:** On `title` slides the inline-code paragraph after `h1` is claimed by the eyebrow rule (see Eyebrow Labels exception above), leaving no inline-code slot for a subtitle. The subtitle on a `title` slide is therefore a plain paragraph placed immediately after the eyebrow: `h1 → p:has(> code:only-child) → p`. CSS on `section.title h1 + p:has(> code:only-child) + p` styles it as the subtitle (italic, `--on-dark-secondary`). No backticks, no `_em_`.
 
-**What stays as `_em_`:** verdict lines (finding template), table footnotes, body prose that happens to be italic. These are not subtitles.
+**What stays as `_em_`:** table footnotes and body prose that happens to be italic. These are not subtitles.
 
 | Category       | Templates                                               | CSS class                                      |
 | -------------- | ------------------------------------------------------- | ---------------------------------------------- |
-| Structural     | T1 Title, T2 Divider, T3 Sub-Topic, T19 Closing         | `title` `divider` `subtopic` `closing`         |
-| Text           | T4 Content, T13 Quote, T15 List, T22 Criteria           | `content` `quote` `list` `criteria`            |
-| Text variant   | T15v Tabular Inline                                     | `list-tabular`                                 |
-| Data           | T5 Diagram, T7 Stats, T17 Big Number, T24 Compare Table | `diagram` `stats` `big-number` `compare-table` |
-| Cards          | T8 Grid 2×2, T9 Grid 2+1, T10 Stacked, T11 Side-by-Side | `card-grid` `cards-stacked` `cards-side`       |
-| Cards cont.    | T21 Three-Row Wide, T23 Verdict Grid                    | `cards-wide-3` `verdict-grid`                  |
-| Comparative    | T12 Comparison, T20 Finding, T25 Featured               | `comparison` `finding` `featured`              |
-| Layout         | T6 Two-Column, T14 Timeline, T18 Split Panel            | `two-column` `timeline` `split-panel`          |
-| Layout variant | T14v Step Cards                                         | `steps`                                        |
-| Visual         | T16 Image Full                                          | `image-full`                                   |
+| Structural     | T1 Title, T2 Divider, T3 Sub-Topic, T18 Closing         | `title` `divider` `subtopic` `closing`         |
+| Text           | T4 Content, T12 Quote, T14 List, T20 Criteria           | `content` `quote` `list` `list-criteria`            |
+| Text variant   | T14v Tabular Inline                                     | `list-tabular`                                 |
+| Data           | T5 Diagram, T6 Stats, T16 Big Number, T22 Compare Table | `diagram` `stats` `big-number` `compare-table` |
+| Cards          | T7 Grid 2×2, T8 Grid 2+1, T9 Stacked, T10 Side-by-Side  | `cards-grid` `cards-stack` `cards-side`       |
+| Cards cont.    | T19 Three-Row Wide, T21 Verdict Grid                    | `cards-wide` `verdict-grid`                  |
+| Comparative    | T11 Comparison, T23 Featured                            | `compare-prose` `featured`                        |
+| Layout         | T13 Timeline, T17 Split Panel                           | `timeline` `split-panel`          |
+| Layout variant | T13v Step Cards                                         | `list-steps`                                        |
+| Visual         | T15 Image Full                                          | `image-full`                                   |
 
 ## Template 1: Title (dark bookend)
 
@@ -258,54 +277,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 - Diagram occupies ~60-70% of slide area
 - Container: 24-32px internal padding
 
-## Template 6: Two-Column (text + visual)
-
-```
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  ┌────────────┐  ┌───────────────┐    │
-│  │ Heading     │  │               │   │
-│  │             │  │   [visual /   │   │
-│  │ Body text   │  │    diagram /  │   │
-│  │ here.       │  │    image]     │   │
-│  │             │  │               │   │
-│  └────────────┘  └───────────────┘    │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
-```
-
-**CSS class:** `two-column`
-
-**Marp directive:**
-
-```markdown
-<!-- _class: two-column -->
-```
-
-- Two equal columns (`1fr 1fr`), column gap `--sp-lg` (32px)
-- `h3` spans full width above both columns
-- `h2` + `p` go into the left column
-- `> blockquote` goes into the right column as a visual placeholder panel
-
-**Marp markdown source:**
-
-```markdown
-### Eyebrow Label
-
-## Slide Heading
-
-Body text for the left column. One to two sentences.
-
-> Visual: description of the diagram, screenshot, or image to place here
-```
-
-- `h3` = full-width eyebrow
-- `h2` = left column heading
-- `p` = left column body
-- `> blockquote` = right panel (rendered as a `--bg-alt` card with centered muted text)
-
-## Template 7: Stats / KPI Row
+## Template 6: Stats / KPI Row
 
 ```
 ┌───────────────────────────────────────┐
@@ -337,7 +309,7 @@ Body text for the left column. One to two sentences.
 **Marp markdown source:**
 
 ```markdown
-### Impact · Pilot Results
+`Impact · Pilot Results`
 
 ## Six months of results across four product teams.
 
@@ -349,12 +321,12 @@ Body text for the left column. One to two sentences.
 4. **91%** team alignment
 ```
 
-- `h3` = eyebrow
+- `` `inline code` `` paragraph above `h2` = eyebrow
 - `h2` = heading
-- `` `inline code` `` paragraph = italic subtitle, centered below heading
+- `` `inline code` `` paragraph after `h2` = italic subtitle, centered below heading
 - `ol > li`: `**number**` = stat value; remaining text = label
 
-## Template 8: Card Grid (2×2)
+## Template 7: Card Grid (2×2)
 
 ```
 ┌───────────────────────────────────────┐
@@ -374,12 +346,12 @@ Body text for the left column. One to two sentences.
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `card-grid`
+**CSS class:** `cards-grid`
 
 **Marp directive:**
 
 ```markdown
-<!-- _class: card-grid -->
+<!-- _class: cards-grid -->
 ```
 
 **Markdown format** — nested list, card header is auto-bolded by CSS:
@@ -439,7 +411,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 > **Do not use inline code as a standalone line inside a card body** — a body bullet that contains only `` `code` `` and nothing else will be promoted to an eyebrow label by the subtitle/eyebrow rules. Mix it with surrounding prose.
 
-## Template 9: Card Grid 2+1
+## Template 8: Card Grid 2+1
 
 ```
 ┌───────────────────────────────────────┐
@@ -459,15 +431,15 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `card-grid`
+**CSS class:** `cards-grid`
 
 **Marp directive:**
 
 ```markdown
-<!-- _class: card-grid -->
+<!-- _class: cards-grid -->
 ```
 
-**Markdown format** — same nested list format as `card-grid`, exactly 3 items:
+**Markdown format** — same nested list format as `cards-grid`, exactly 3 items:
 
 ```markdown
 - Card Title
@@ -478,9 +450,9 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - Bottom row: one card spanning full width — automatic (`li:last-child:nth-child(odd)` rule)
 - Bottom card for summary, conclusion, or key takeaway
 - Same card styling as 2×2
-- **No separate class needed** — `card-grid` handles 2, 3, and 4 items automatically
+- **No separate class needed** — `cards-grid` handles 2, 3, and 4 items automatically
 
-## Template 10: Two Cards Stacked (vertical)
+## Template 9: Two Cards Stacked (vertical)
 
 ```
 ┌───────────────────────────────────────┐
@@ -500,21 +472,35 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `cards-stacked`
+**CSS class:** `cards-stack`
 
 **Marp directive:**
 
 ```markdown
-<!-- _class: cards-stacked -->
+<!-- _class: cards-stack -->
 ```
 
+**Marp markdown source:**
+
+```markdown
+<!-- _class: cards-stack -->
+
+## Two failure modes the framework is designed to prevent.
+
+- **False signal amplification.** A single loud voice — one enterprise customer, one analyst report — dominates the decision without being weighed against the full signal set.
+- **Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from.
+```
+
+- `h2` = heading
+- Flat `ul`/`ol` — each top-level `li` becomes a card
+- **Inline title contract:** `**Title.**` (bold, period-terminated) at the start of the `li` reads as the card title; body prose continues on the same line. Distinct from `cards-grid` where the title sits on its own line above a nested body list.
 - Two full-width cards stacked vertically
 - 16px gap between cards
 - Each card takes roughly equal vertical space
 - Sequential relationship: top leads to bottom
 - Good for problem/solution, setup/payoff, context/detail
 
-## Template 11: Two Cards Side-by-Side (horizontal)
+## Template 10: Two Cards Side-by-Side (horizontal)
 
 ```
 ┌───────────────────────────────────────┐
@@ -540,7 +526,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 <!-- _class: cards-side -->
 ```
 
-**Markdown format** — same nested list format as `card-grid` (auto-bold, no `**...**` required):
+**Markdown format** — same nested list format as `cards-grid` (auto-bold, no `**...**` required):
 
 ```markdown
 - Card Title
@@ -554,7 +540,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - No connector or arrow — use Template 12 if you need one
 - Good for two categories, two approaches, two perspectives
 
-## Template 12: Comparison (side by side with connector)
+## Template 11: Comparison (side by side with connector)
 
 ```
 ┌───────────────────────────────────────┐
@@ -572,15 +558,15 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `comparison`
+**CSS class:** `compare-prose`
 
 **Marp directive:**
 
 ```markdown
-<!-- _class: comparison -->
+<!-- _class: compare-prose -->
 ```
 
-**Markdown format** — same nested list format as `card-grid`, exactly 2 items (auto-bold, no `**...**` required):
+**Markdown format** — same nested list format as `cards-grid`, exactly 2 items (auto-bold, no `**...**` required):
 
 ```markdown
 - Before / Option A
@@ -596,7 +582,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS
 - Card body (nested list): 16px (`--fs-body`), `--text-body`
 
-## Template 13: Quote / Testimonial
+## Template 12: Quote / Testimonial
 
 ```
 ┌───────────────────────────────────────┐
@@ -627,7 +613,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - Decorative opening/closing quote marks: 48px (`--fs-3xl`), `--text-muted`, rendered via `::before`/`::after` on the blockquote
 - Max ~25 words in the quote
 
-## Template 14: Timeline / Process
+## Template 13: Timeline / Process
 
 ```
 ┌───────────────────────────────────────┐
@@ -665,7 +651,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
    - Model applies current weights, generates score
 ```
 
-## Template 15: List / Bullet Points
+## Template 14: List / Bullet Points
 
 ```
 ┌───────────────────────────────────────┐
@@ -714,7 +700,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 3. Leadership has agreed to log decisions.
 ```
 
-## Template 16: Image Full
+## Template 15: Image Full
 
 One class, two authoring modes — caption is optional.
 
@@ -770,7 +756,7 @@ Caption text that appears as an overlay bar at the bottom.
 - `footer` is hidden — use the trailing paragraph for attribution instead
 - Use for product screenshots, reference images, full-canvas visuals
 
-## Template 17: Big Number / Single Stat
+## Template 16: Big Number / Single Stat
 
 ```
 ┌───────────────────────────────────────┐
@@ -812,7 +798,7 @@ Caption text that appears as an overlay bar at the bottom.
   - Return on signal investment — one or two sentences of context.
 ```
 
-## Template 18: Split Panel (colored sidebar)
+## Template 17: Split Panel (colored sidebar)
 
 ```
 ┌───────────────────────────────────────┐
@@ -842,7 +828,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 - Left panel: 34% width, full-height accent color background
 - Right panel: 66% width, `--bg`
-- Left panel contains: inline-code eyebrow paragraph centered between the title (h2, bottom) and the top of the panel — use `` `Section Label` `` placed **between `h2` and `h3`** in the source. The CSS routes it to the left panel automatically. (`h5` is still accepted but deprecated in favor of the lint-safe inline-code pattern.)
+- Left panel contains: inline-code eyebrow paragraph centered between the title (h2, bottom) and the top of the panel — use `` `Section Label` `` placed **between `h2` and `h3`** in the source. The CSS routes it to the left panel automatically.
 - Right panel contains: `h3` subheading, optional `p` intro, then `ul`/`ol` card tiles
 - Good for category-based slides where sidebar signals section or dimension
 - **Card headers**: auto-bolded by CSS, no `**...**` required
@@ -871,7 +857,7 @@ Optional intro paragraph.
 - `ol > li` = stacked card tiles with flush corner badge; `ul > li` = stacked card tiles without badge
 - **Optional metadata footer** = a trailing `ul` placed *after* the main `ol`/`ul`. Renders pinned to the bottom of the right panel with a divider line above. Authored as `**Label** · body` items — typical use: audience, intent, scope, or other framing labels. Absent → panel renders as before.
 
-## Template 19: Closing (dark bookend)
+## Template 18: Closing (dark bookend)
 
 ```
 ┌───────────────────────────────────────┐
@@ -905,72 +891,7 @@ Optional intro paragraph.
 - Heading (`h2`): 48px display font, `--text-display`
 - No header, footer, or page number
 
-## Template 20: Finding / Verdict
-
-```
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL · FINDING 01                   │
-│  The heading states the finding.      │
-│                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ What worked  │  │ What blocked │   │
-│  │              │  │              │   │
-│  │ body text    │  │ body text    │   │
-│  └──────────────┘  └──────────────┘   │
-│  ┌─────────────────────────────────┐  │
-│  │ Secondary finding (full width)  │  │
-│  │ nuance, context, or data point  │  │
-│  └─────────────────────────────────┘  │
-│  ● Verdict — one sentence.            │
-│  footer                          4/19 │
-└───────────────────────────────────────┘
-```
-
-**CSS class:** `finding`
-
-**Layout spec:**
-
-- `section.finding`: `display: flex; flex-direction: column; padding: 48px 64px 64px;`
-- Slide heading (`h2`): 28-32px — shorter than standard to give cards vertical room
-- Top card row: `display: flex; gap: 16px; flex: 1;` — each card `flex: 1`
-- Bottom card: full width, `margin-top: 16px; flex: 0 0 auto`
-- All cards: `background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px`
-- Card title (`strong` or `h4`): 15-16px bold, `color: var(--text-heading)`
-- Card body: 14-15px, `color: var(--text-body); line-height: 1.6`
-- Verdict line: `position: absolute; bottom: 32px; left: 64px; right: 64px; font-size: 13px; font-weight: 600; color: var(--accent)` — prepend a colored dot using `::before { content: '●'; margin-right: 8px; }`
-- For pass/fail semantics: define `--verdict-pass: #2d6a3f` and `--verdict-fail: #9b1c1c` and apply via modifier class (`.finding.pass`, `.finding.fail`)
-
-**Marp markdown source:**
-
-```markdown
-<!-- _class: finding -->
-
-## The in-process model performed well, but the operational burden is prohibitive.
-
-- **What worked**
-  - Body text describing what succeeded. Keep to 2–3 sentences.
-- **What blocked it**
-  - Body text describing the blocker. Keep to 2–3 sentences.
-- **Secondary finding**
-  - Full-width nuance, data point, or contextual note. One sentence preferred.
-
-_Not viable — one sentence verdict goes here._
-```
-
-**How the renderer maps this:**
-
-- Each `- **Title**` → opens a card; `**Title**` becomes the bold card header; nested list items form the card body
-- First two top-level items → top row (flex side-by-side)
-- Third top-level item (when present, odd count) → bottom full-width card spanning both columns
-- Final `*italic paragraph*` → verdict line with `●` accent dot prepended
-- Note: `**...**` is required for `finding` — the CSS uses `li > strong` as the card header selector
-
-**When to use:** A finding has a clear go/no-go signal that must be visible at a glance. Top cards frame parallel perspectives (what worked vs. what blocked); bottom card adds secondary context; verdict line states the bottom line.
-
----
-
-## Template 21: Three-Row Wide Cards
+## Template 19: Three-Row Wide Cards
 
 ```
 ┌───────────────────────────────────────┐
@@ -994,23 +915,23 @@ _Not viable — one sentence verdict goes here._
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `cards-wide-3`
+**CSS class:** `cards-wide`
 
 **Layout spec:**
 
-- `section.cards-wide-3`: flex column, 48px 64px padding
+- `section.cards-wide`: flex column, 48px 64px padding
 - Cards container: `display: flex; flex-direction: column; gap: 12px; flex: 1`
 - Each card: `flex: 1; background: var(--bg-alt); border: 1px solid var(--border); border-radius: --radius-md; padding: --sp-sm --sp-md; display: flex; flex-direction: column; gap: --sp-xs`
 - Card header row: `**Title**` (`strong`) displayed with inline numbered badge before it
   - Badge: `content: counter(wide-counter)` — mono pill, 16px, accent background, white text
   - Title: 16px (`--fs-body`) bold, `--text-heading`
 - Card body (`ul > li`): 15px (`--fs-sm`), `--text-body`, full width
-- Note: `**...**` is required for `cards-wide-3` — the CSS uses `li > strong` for the header and `strong::before` for the badge
+- Note: `**...**` is required for `cards-wide` — the CSS uses `li > strong` for the header and `strong::before` for the badge
 
 **Marp markdown source:**
 
 ```markdown
-<!-- _class: cards-wide-3 -->
+<!-- _class: cards-wide -->
 
 ## Three scoring failure modes found in the pilot.
 
@@ -1029,11 +950,11 @@ _Not viable — one sentence verdict goes here._
 - Nested `- body` → card body text
 - `**...**` is required, not optional — the CSS targets `li > strong` as the header selector
 
-**When to use:** Three parallel items that each need a title and a sentence of body context — three risks, three failure modes, three design constraints. Not for three items that fit as bullets (use T15) or three items that need comparison (use T24).
+**When to use:** Three parallel items that each need a title and a sentence of body context — three risks, three failure modes, three design constraints. Not for three items that fit as bullets (use T14) or three items that need comparison (use T22).
 
 ---
 
-## Template 22: Numbered Criteria List
+## Template 20: Numbered Criteria List
 
 ```
 ┌───────────────────────────────────────┐
@@ -1057,11 +978,11 @@ _Not viable — one sentence verdict goes here._
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `criteria`
+**CSS class:** `list-criteria`
 
 **Layout spec:**
 
-- `section.criteria`: `display: flex; flex-direction: column; padding: 48px 64px`
+- `section.list-criteria`: `display: flex; flex-direction: column; padding: 48px 64px`
 - Slide heading (`h2`): 32-36px, `margin-bottom: 32px`
 - Items list: `display: flex; flex-direction: column; gap: 24px; flex: 1; justify-content: center`
 - Each item: `display: grid; grid-template-columns: 72px 1fr; align-items: start; gap: 0`
@@ -1076,7 +997,7 @@ _Not viable — one sentence verdict goes here._
 **Marp markdown source:**
 
 ```markdown
-<!-- _class: criteria -->
+<!-- _class: list-criteria -->
 
 ## Four requirements every decision system must meet.
 
@@ -1101,7 +1022,7 @@ _Not viable — one sentence verdict goes here._
 
 ---
 
-## Template 23: Card Grid with Verdict Badges
+## Template 21: Card Grid with Verdict Badges
 
 ```
 ┌───────────────────────────────────────┐
@@ -1188,7 +1109,7 @@ _Not viable — one sentence verdict goes here._
 
 ---
 
-## Template 24: Comparison Table
+## Template 22: Comparison Table
 
 ```
 ┌───────────────────────────────────────┐
@@ -1272,11 +1193,11 @@ _Footnote: scope and timeline estimates are not included — this table covers a
 
 **Note:** This template requires `html: true` in the Marp frontmatter. The `<table>` is written directly in the markdown — Marp passes it through when HTML is enabled. Cell classes (`.cell-pass`, `.cell-fail`, `.cell-warn`) must be defined in the deck's CSS theme.
 
-**When to use:** Multi-vendor comparison, criteria matrix, architectural property grid. Use when the reader needs to scan both across a row (how one item compares across options) and down a column (what one option looks like in total). If you only need to compare two things, use T12 instead.
+**When to use:** Multi-vendor comparison, criteria matrix, architectural property grid. Use when the reader needs to scan both across a row (how one item compares across options) and down a column (what one option looks like in total). If you only need to compare two things, use T11 instead.
 
 ---
 
-## Template 25: Featured Card + Sub-Grid
+## Template 23: Featured Card + Sub-Grid
 
 ```
 ┌───────────────────────────────────────┐
@@ -1337,7 +1258,7 @@ _Footnote: scope and timeline estimates are not included — this table covers a
 - No `**...**` required — all card headers are auto-bolded
 - Nested `ul/ol > li` → card body text
 
-**When to use:** Assessment with a clear recommended direction plus qualifications or fallback conditions. This template asserts a direction — do not use it for three equal options (use T8 or T23). Use it when the deck needs to say "here is the answer, and here is the nuance."
+**When to use:** Assessment with a clear recommended direction plus qualifications or fallback conditions. This template asserts a direction — do not use it for three equal options (use T7 or T21). Use it when the deck needs to say "here is the answer, and here is the nuance."
 
 ---
 
@@ -1363,7 +1284,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 └───────────────────────────────────────┘
 ```
 
-**Layouts that support Key Insight:** `card-grid`, `cards-side`, `comparison`, `list`, `criteria`, `cards-wide-3`, `finding`, `steps`, `split-panel`
+**Layouts that support Key Insight:** `cards-grid`, `cards-side`, `compare-prose`, `list`, `list-criteria`, `cards-wide`, `list-steps`, `split-panel`
 
 **Styling:**
 
@@ -1374,7 +1295,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 **Marp markdown source:**
 
 ```markdown
-<!-- _class: card-grid -->
+<!-- _class: cards-grid -->
 
 ## Slide heading.
 
@@ -1386,14 +1307,14 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 > The key insight text that ties the cards together. One sentence preferred.
 ```
 
-**Note:** The blockquote must be the **last element** on the slide (or the last element before a trailing paragraph). The `finding` layout uses the same pattern; its Key Insight panel also accepts semantic coloring via the layout's verdict line.
+**Note:** The blockquote must be the **last element** on the slide (or the last element before a trailing paragraph).
 
 ## Feature: Below-Note
 
 A trailing plain paragraph (not a blockquote) on any card-bearing layout renders as a **below-note** — body-sized contextual text with a hairline gradient rule above it, visually separate from the card content.
 
 ```markdown
-<!-- _class: card-grid -->
+<!-- _class: cards-grid -->
 
 ## Slide heading.
 
@@ -1405,7 +1326,7 @@ A trailing plain paragraph (not a blockquote) on any card-bearing layout renders
 This is a below-note. It appears below the cards with a hairline rule above it.
 ```
 
-**Layouts that support below-note:** `card-grid`, `comparison`, `verdict-grid`, `featured`, `finding`, `criteria`, `cards-wide-3`
+**Layouts that support below-note:** `cards-grid`, `compare-prose`, `verdict-grid`, `featured`, `list-criteria`, `cards-wide`
 
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
@@ -1417,7 +1338,7 @@ This is a below-note. It appears below the cards with a hairline rule above it.
 
 These are named variations of existing templates. Use them when the base template almost fits but needs one structural addition.
 
-### Variant: T12 with Below Note
+### Variant: T11 with Below Note
 
 Extends Template 12 (Comparison with connector). Adds a full-width framing paragraph below the two cards.
 
@@ -1439,7 +1360,7 @@ Extends Template 12 (Comparison with connector). Adds a full-width framing parag
 └───────────────────────────────────────┘
 ```
 
-**CSS addition to T12:**
+**CSS addition to T11:**
 
 - After the card row: `margin-top: 20px`
 - Framing paragraph: `font-size: 15-17px; color: var(--text-body); line-height: 1.6; max-width: 800px`
@@ -1448,7 +1369,7 @@ Extends Template 12 (Comparison with connector). Adds a full-width framing parag
 **Marp markdown source:**
 
 ```markdown
-<!-- _class: comparison -->
+<!-- _class: compare-prose -->
 
 ## Heading
 
@@ -1460,11 +1381,11 @@ Extends Template 12 (Comparison with connector). Adds a full-width framing parag
 Optional framing sentence below the cards.
 ```
 
-**How the renderer maps this:** Same as T12, except a trailing paragraph (not inside a list item) is rendered as the framing note below the cards.
+**How the renderer maps this:** Same as T11, except a trailing paragraph (not inside a list item) is rendered as the framing note below the cards.
 
 ---
 
-### Variant: T14 Step Cards
+### Variant: T13 Step Cards
 
 Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-width numbered step cards arranged horizontally.
 
@@ -1486,7 +1407,7 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `steps`
+**CSS class:** `list-steps`
 
 **Layout spec:**
 
@@ -1495,13 +1416,13 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 - Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS, no `**...**` required
 - Card body (nested `ul/ol > li` or `p`): 16px (`--fs-body`), `--text-body`
 - `❯` chevron connectors between cards: CSS-generated, not authored
-- 2–4 cards; use T14 (dot-on-line) for 5–6 steps with shorter labels
+- 2–4 cards; use T13 (dot-on-line) for 5–6 steps with shorter labels
 - Use `ol` (not `ul`) to get the auto-generated `STEP 01` badge
 
 **Marp markdown source:**
 
 ```markdown
-<!-- _class: steps -->
+<!-- _class: list-steps -->
 
 ## How to roll this out across your organization.
 
@@ -1517,11 +1438,11 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 
 **How the renderer maps this:** Each `ol > li` → one step card. The first text line is the step title (auto-bolded by CSS). Nested `ul/ol > li` items form the card body. The `STEP 01` badge and `❯` chevron connectors are CSS-generated — do not author them in the Markdown.
 
-**When to use:** Steps that need more content than a dot label can hold. Use dot-on-line (T14) for light orientation with short labels; use step cards when each step needs a title plus a sentence of description. Use `ol` to activate the `STEP 01` eyebrow badge.
+**When to use:** Steps that need more content than a dot label can hold. Use dot-on-line (T13) for light orientation with short labels; use step cards when each step needs a title plus a sentence of description. Use `ol` to activate the `STEP 01` eyebrow badge.
 
 ---
 
-### Variant: T15 Tabular Inline
+### Variant: T14 Tabular Inline
 
 Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
 
@@ -1554,7 +1475,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 - Description column: `font-size: 15-16px; color: var(--text-body)`
 - Metadata column(s): `font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); text-align: right`
 - Use CSS grid — never use spaces or tabs to fake alignment
-- Maximum 2 metadata columns on the right; if more structure is needed, use T24 (Comparison Table)
+- Maximum 2 metadata columns on the right; if more structure is needed, use T22 (Comparison Table)
 
 **Marp markdown source:**
 
@@ -1573,11 +1494,11 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 **How the renderer maps this:** Each `li` is parsed for inline patterns: backtick code → number column; bold → verb column; plain text → description column; italic → metadata column. The renderer places each token into the grid column in order. Alternatively, use explicit `<span class="col-N">` wrappers inside each `li` for precise control.
 
-**When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T24 if readers need to scan down columns as much as across rows.
+**When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T22 if readers need to scan down columns as much as across rows.
 
 ---
 
-## Template 26: Image (text + background photo)
+## Template 24: Image (text + background photo)
 
 ### Default (photo right)
 
@@ -1624,7 +1545,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 ```markdown
 <!-- _class: image -->
 
-### Layout · Image
+`Layout · Image`
 
 ## Images sit naturally beside text when you need visual evidence.
 
@@ -1636,21 +1557,21 @@ Use `_class: image` with `![bg right](url)` — image-right is the default.
 ```markdown
 <!-- _class: image left -->
 
-### Layout · Image Left
+`Layout · Image Left`
 
 ## Flip the image to the left when the composition benefits.
 
 ![bg left](path/to/photo.jpg)
 ```
 
-- `h3` = eyebrow label
+- `` `inline code` `` paragraph = eyebrow label
 - `h2` = heading
 - `p` = body text
 - `![bg right](url)` / `![bg left](url)` = Marp background image directive
 
 ---
 
-## Template 27: Code
+## Template 25: Code
 
 ```
 ┌───────────────────────────────────────┐
@@ -1683,11 +1604,11 @@ Use `_class: image` with `![bg right](url)` — image-right is the default.
 ````markdown
 <!-- _class: code -->
 
-### Implementation · Token Pipeline
+`Implementation · Token Pipeline`
 
 ## The tokenization call is three lines of application code.
 
-### JavaScript · SDK v2 interface
+`JavaScript · SDK v2 interface`
 
 ```javascript
 const tokens = await client.tokenize(input, {
@@ -1699,15 +1620,14 @@ const tokens = await client.tokenize(input, {
 
 ```
 
-- `h3` (first) = eyebrow
+- `` `inline code` `` paragraph (first) = eyebrow
 - `h2` = heading
-- `_em_` paragraph (optional) = italic subtitle
-- `h3` (second) = language/context label above the code block
+- `` `inline code` `` paragraph (second, after `h2`) = language/context label above the code block
 - Fenced code block = the code (fills remaining space)
 
 ---
 
-## Template 28: Code Compare
+## Template 26: Code Compare
 
 ```
 
@@ -1725,11 +1645,11 @@ const tokens = await client.tokenize(input, {
 
 ````
 
-**CSS class:** `code-compare`
+**CSS class:** `compare-code`
 
 **Marp directive:**
 ```markdown
-<!-- _class: code-compare -->
+<!-- _class: compare-code -->
 ````
 
 - Two equal code columns (`1fr 1fr`), gap `--sp-md`
@@ -1739,7 +1659,7 @@ const tokens = await client.tokenize(input, {
 **Marp markdown source:**
 
 ````markdown
-<!-- _class: code-compare -->
+<!-- _class: compare-code -->
 
 `Before & After · Key Distribution`
 
@@ -1787,6 +1707,6 @@ signature = vault.sign(payload, key_id="prod-hmac-v3")
 - Retokens: `--bg`, `--bg-alt`, `--border`, `--text-*` all switch to `var(--dark-*)` values
 - Spectrum bar changes: instead of a 4px solid top border, dark slides render a 1px spectrum line as a CSS `background` at the top
 - Use for mid-deck emphasis slides, impactful data reveals, or transitional moments
-- Gallery uses: `content dark`, `list dark`, `cards-stacked dark`, `divider dark`, `image-full dark`
+- Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image-full dark`
 
 ---

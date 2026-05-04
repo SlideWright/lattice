@@ -160,6 +160,18 @@ body  { margin: 0; padding: 0; }
 
 section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
 section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#d6deeb; background:none; padding:0; display:block; }
+
+/* Diagram source <pre> in pending/error states. Structural rules live in
+ * lattice.css; this rule contributes the on-theme color and overrides
+ * Marp's bundled `section pre { background:var(--color-foreground) }` and
+ * `section code { background:var(--color-dimmed); color:var(--color-background) }`
+ * defaults from the marpit base theme. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  background: none !important;
+  color: var(--text-muted) !important;
+}
 /* comments */
 section .hljs-comment { color:var(--hljs-comment); font-style:italic; }
 section .hljs-quote { color:#697098; font-style:italic; }
@@ -1026,7 +1038,8 @@ section p:has(> code:only-child):has(+ h3),
 section p:has(> code:only-child):has(+ h4),
 section p:has(> code:only-child):has(+ h5),
 section p:has(> code:only-child):has(+ ul),
-section p:has(> code:only-child):has(+ ol) {
+section p:has(> code:only-child):has(+ ol),
+section p:has(> code:only-child):has(+ pre) {
   margin: 0 0 4px 0;
 }
 section p:has(> code:only-child):has(+ h1) > code,
@@ -1035,7 +1048,8 @@ section p:has(> code:only-child):has(+ h3) > code,
 section p:has(> code:only-child):has(+ h4) > code,
 section p:has(> code:only-child):has(+ h5) > code,
 section p:has(> code:only-child):has(+ ul) > code,
-section p:has(> code:only-child):has(+ ol) > code {
+section p:has(> code:only-child):has(+ ol) > code,
+section p:has(> code:only-child):has(+ pre) > code {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 600;
@@ -1061,7 +1075,8 @@ section.dark p:has(> code:only-child):has(+ h3) > code,
 section.dark p:has(> code:only-child):has(+ h4) > code,
 section.dark p:has(> code:only-child):has(+ h5) > code,
 section.dark p:has(> code:only-child):has(+ ul) > code,
-section.dark p:has(> code:only-child):has(+ ol) > code { color: var(--on-dark-secondary); }
+section.dark p:has(> code:only-child):has(+ ol) > code,
+section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-secondary); }
 /* Centered eyebrow for subtopic */
 section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
@@ -1069,9 +1084,9 @@ section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
  * Any trailing > blockquote on a content-bearing layout renders
  * as a warm filled panel — Option C styling.
  * Excluded layouts handle blockquote themselves:
- *   quote, two-column, featured (primary content), finding (verdict)
+ *   quote, featured (primary content)
  */
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote {
+section:not(.quote):not(.featured) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -1079,7 +1094,7 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::before {
+section:not(.quote):not(.featured) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
   font-size:var(--fs-label);
@@ -1090,19 +1105,19 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote::
   display:block;
   margin-bottom:6px;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote p {
+section:not(.quote):not(.featured) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote ul {
+section:not(.quote):not(.featured) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:6px;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li {
+section:not(.quote):not(.featured) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
@@ -1110,7 +1125,7 @@ section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote l
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.two-column):not(.featured):not(.finding) > blockquote li::before {
+section:not(.quote):not(.featured) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -1207,30 +1222,17 @@ section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bo
    query the container width before rendering. width:100% on a freshly-inserted flex child
    can resolve to 0 before the browser commits a layout pass.
    1280px section − 2 × var(--sp-2xl) padding = 1152px. */
-section.diagram .mermaid-svg, section.diagram .mermaid-block { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
+section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
+/* Source <pre> in pending/error states occupies the same slot as the rendered
+ * diagram so the slide layout does not reflow when the diagram swaps in. */
+section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
+  flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
+}
 section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
 /* Key Insight panel on diagram slides must stretch full-width to match every
    other layout. section.diagram uses align-items:center which would shrink
    the blockquote to fit-content; align-self:stretch overrides that. */
 section.diagram > blockquote { align-self:stretch; }
-
-/* ── TWO-COLUMN ──
- * ### eyebrow  ## heading  p body  > blockquote = right panel
- * h3 spans full width, h2+p go left, blockquote goes right.
- */
-section.two-column { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto 1fr; column-gap:var(--sp-lg); }
-section.two-column h3 { grid-column:1 / -1; grid-row:1; margin-bottom:4px; }
-section.two-column h2 { grid-column:1; grid-row:2; font-size:var(--fs-xl); margin-bottom:var(--sp-xs); align-self:end; }
-section.two-column > p { grid-column:1; grid-row:3; font-size:var(--fs-body); line-height:var(--lh-relaxed); align-self:start; }
-section.two-column > blockquote {
-  grid-column:2; grid-row:2 / 4;
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:var(--sp-md);
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted);
-  text-align:center; margin:0;
-}
-section.two-column > blockquote p { font-size:var(--fs-label); color:var(--text-muted); margin:0; font-style:normal; }
 
 /* ── STATS ──
  * ## heading  p intro  ol with: **number** label text
@@ -1245,94 +1247,94 @@ section.stats .stat-item { display:flex; flex-direction:column; align-items:cent
 section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
-/* ── CARD-GRID ──
+/* ── CARDS-GRID ──
  * Markdown: outer ul/ol — li first line is card header, auto-bold by CSS.
  *   Bold by convention: no manual **...** required. Nested ul/ol is body text.
  * Marp CLI path:  section > ul/ol > li  (native HTML)
- * lattice.js path: section > .card-grid-inner > .card  (post-processed)
+ * lattice.js path: section > .cards-grid-inner > .card  (post-processed)
  */
-section.card-grid h2 { margin-bottom:var(--sp-sm); }
-section.card-grid { display:flex; flex-direction:column; }
+section.cards-grid h2 { margin-bottom:var(--sp-sm); }
+section.cards-grid { display:flex; flex-direction:column; }
 section.cards-side { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.card-grid > ul, section.card-grid > ol,
+section.cards-grid > ul, section.cards-grid > ol,
 section.cards-side > ul, section.cards-side > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.card-grid > ul, section.card-grid > ol { grid-auto-rows:1fr; }
-section.card-grid > ul > li, section.card-grid > ol > li,
+section.cards-grid > ul, section.cards-grid > ol { grid-auto-rows:1fr; }
+section.cards-grid > ul > li, section.cards-grid > ol > li,
 section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid > ul > li:last-child:nth-child(odd),
-section.card-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid > ul > li:last-child:nth-child(odd),
+section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.card-grid > ul > li > strong,
+section.cards-grid > ul > li > strong,
 section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
 /* — inline code badge pinned to title row — */
-section.card-grid > ul > li > code,
-section.card-grid > ol > li > code,
+section.cards-grid > ul > li > code,
+section.cards-grid > ol > li > code,
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
-section.card-grid > ul > li > ul, section.card-grid > ul > li > ol,
-section.card-grid > ol > li > ul, section.card-grid > ol > li > ol,
+section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
+section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol,
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
 section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid > ul > li > ul > li, section.card-grid > ul > li > ol > li,
-section.card-grid > ol > li > ul > li, section.card-grid > ol > li > ol > li,
+section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li,
 section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
 section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
-section.card-grid .card-grid-inner,
-section.card-grid .card-grid-inner--ordered,
-section.cards-side .card-grid-inner,
-section.cards-side .card-grid-inner--ordered {
+section.cards-grid .cards-grid-inner,
+section.cards-grid .cards-grid-inner--ordered,
+section.cards-side .cards-grid-inner,
+section.cards-side .cards-grid-inner--ordered {
   display:grid; grid-template-columns:1fr 1fr;
   grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
 }
-section.card-grid .card,
+section.cards-grid .card,
 section.cards-side .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid .card-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.card-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.card-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
+section.cards-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.card-grid .card > ul, section.card-grid .card > ol,
+section.cards-grid .card > ul, section.cards-grid .card > ol,
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid .card > ul > li, section.card-grid .card > ol > li,
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li,
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner badge via absolute ::before — */
-section.card-grid > ol, section.cards-side > ol { counter-reset:card; }
-section.card-grid > ol > li, section.cards-side > ol > li {
+section.cards-grid > ol, section.cards-side > ol { counter-reset:card; }
+section.cards-grid > ol > li, section.cards-side > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid > ol > li::before, section.cards-side > ol > li::before {
+section.cards-grid > ol > li::before, section.cards-side > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
   color:var(--on-dark-primary,#fff); background:var(--accent);
 }
-section.card-grid .card-grid-inner--ordered, section.cards-side .card-grid-inner--ordered { counter-reset:card; }
-section.card-grid .card-grid-inner--ordered > .card, section.cards-side .card-grid-inner--ordered > .card {
+section.cards-grid .cards-grid-inner--ordered, section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
+section.cards-grid .cards-grid-inner--ordered > .card, section.cards-side .cards-grid-inner--ordered > .card {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid .card-grid-inner--ordered > .card::before, section.cards-side .card-grid-inner--ordered > .card::before {
+section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-side .cards-grid-inner--ordered > .card::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1340,39 +1342,53 @@ section.card-grid .card-grid-inner--ordered > .card::before, section.cards-side 
   color:var(--on-dark-primary,#fff); background:var(--accent);
 }
 
-/* ── CARDS-STACKED ──
- * ## heading  p card1  p card2
+/* ── CARDS-STACK ──
+ * Structured: flat ul/ol → .cards-stack-inner > .card.
+ * Each card holds inline-title prose: **Title.** body continues.
+ *
+ * Two parallel selector chains, same shape as cards-grid:
+ *   marp-cli path: section.cards-stack > ul/ol > li        (raw markdown)
+ *   lattice.js path: section.cards-stack .cards-stack-inner > .card  (post-processed)
  */
-section.cards-stacked h2 { margin-bottom:var(--sp-sm); }
-section.cards-stacked > p {
+section.cards-stack { display:flex; flex-direction:column; }
+section.cards-stack h2 { margin-bottom:var(--sp-sm); }
+
+/* shared visual contract — both raw and post-processed */
+section.cards-stack > ul, section.cards-stack > ol,
+section.cards-stack .cards-stack-inner {
+  display:flex; flex-direction:column; gap:var(--sp-md);
+  flex:1; list-style:none; margin:0; padding:0;
+}
+section.cards-stack > ul > li, section.cards-stack > ol > li,
+section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  margin:0; flex:1;
+  margin:0; flex:1; list-style:none;
 }
-section.cards-stacked > p + p { margin-top:var(--sp-md); }
+section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
 
 /* ── COMPARISON ──
  * Nested list format: 2 li, each with **Title** + sublist body.
  * Optional trailing p for below-note.
  */
-section.comparison { }
-section.comparison h2 { margin-bottom:var(--sp-md); }
-section.comparison .comparison-inner { display:flex; align-items:stretch; flex:1; }
-section.comparison .comparison-inner .card {
+section.compare-prose { }
+section.compare-prose h2 { margin-bottom:var(--sp-md); }
+section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
+section.compare-prose .compare-prose-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   font-weight:700; color:var(--text-heading);
 }
-section.comparison .comparison-inner .card > strong { display:block; }
-section.comparison .comparison-inner .card > ul,
-section.comparison .comparison-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
-section.comparison .comparison-inner .card > ul > li,
-section.comparison .comparison-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.comparison .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+section.compare-prose .compare-prose-inner .card > strong { display:block; }
+section.compare-prose .compare-prose-inner .card > ul,
+section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.compare-prose .compare-prose-inner .card > ul > li,
+section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
-section.comparison > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── QUOTE ──
  * > blockquote  p attribution
@@ -1510,6 +1526,15 @@ section.split-panel :is(ul,ol) > li > strong { display:block; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:4px 0 0 0; margin-inline-start:0; width:100%; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-panel :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+/* Trailing ul after the main list = optional metadata footer (Audience, Intent).
+ * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
+ * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
+ * no rule fires, panel renders as before. */
+section.split-panel .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:4px; flex:0 0 auto; list-style:none; padding-inline-start:0; }
+section.split-panel .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-panel {
   --marp-slide-header-color: var(--on-dark-secondary);
   --marp-slide-footer-color: var(--on-dark-secondary);
@@ -1523,95 +1548,56 @@ section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:700px; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:540px; margin:0 auto; text-align:center; }
 
-/* ── FINDING ──
- * ### eyebrow  ## heading
- * #### card1-title  p card1-body  #### card2-title  p card2-body
- * > blockquote = verdict line
- * CSS pairs each h4+p as a card, puts them side by side, blockquote pins to bottom
- */
-section.finding { }
-section.finding h3 { margin-bottom:4px; }
-section.finding h2 { font-size:var(--fs-xl); line-height:var(--lh-tight); margin-bottom:var(--sp-sm); }
-section.finding .finding-top { display:flex; gap:var(--sp-md); flex:1; min-height:0; }
-section.finding .finding-top .card { flex:1; overflow:auto; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; }
-section.finding blockquote {
-  flex-shrink:0;
-  background:var(--accent-soft); border:1px solid var(--accent);
-  border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md);
-  margin-top:var(--sp-sm); margin-bottom:0;
-}
-section.finding blockquote::before {
-  content:'KEY INSIGHT';
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--accent);
-  display:block;
-  margin-bottom:4px;
-}
-section.finding blockquote p {
-  font-family:var(--font-body); font-size:var(--fs-body);
-  color:var(--text-heading);
-  line-height:var(--lh-snug); margin:0;
-}
-section.finding blockquote.pass, section.finding blockquote.pass p { color:var(--pass); border-color:var(--pass); background:color-mix(in srgb, var(--pass) 8%, white); }
-section.finding blockquote.fail, section.finding blockquote.fail p { color:var(--fail); border-color:var(--fail); background:color-mix(in srgb, var(--fail) 8%, white); }
-section.finding blockquote.warn, section.finding blockquote.warn p { color:var(--warn); border-color:var(--warn); background:color-mix(in srgb, var(--warn) 8%, white); }
-section.finding .verdict { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; color:var(--accent); line-height:1.4; }
-section.finding .verdict-dot { margin-right:6px; }
-
-/* ── CARDS-WIDE-3 ──
+/* ── CARDS-WIDE ──
  * ## heading  then 3× pairs: ### eyebrow·heading  p body
  * CSS stacks them vertically, each full width
  */
-section.cards-wide-3 h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
-section.cards-wide-3 .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
-section.cards-wide-3 .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.cards-wide-3 .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide-3 .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
-section.cards-wide-3 .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.cards-wide-3 .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
-section.cards-wide-3 .three-stack.ordered { counter-reset:wide-counter; }
-section.cards-wide-3 .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide-3 .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
-section.cards-wide-3 .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.cards-wide .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
+section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
+section.cards-wide .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
+section.cards-wide .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
+section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
+section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
 
 /* ── CRITERIA ──
  * ## heading  ol or ul — li **title** [optional nested ul > li description]
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */
-section.criteria h2 { margin-bottom:var(--sp-md); }
-section.criteria > :is(ol, ul) {
+section.list-criteria h2 { margin-bottom:var(--sp-md); }
+section.list-criteria > :is(ol, ul) {
   list-style:none; counter-reset:crit-counter;
   display:flex; flex-direction:column; gap:var(--sp-sm);
   flex:1; justify-content:space-between; margin:0; padding:0;
 }
-section.criteria > :is(ol, ul) > li {
+section.list-criteria > :is(ol, ul) > li {
   counter-increment:crit-counter;
   display:flex; align-items:center; gap:var(--sp-md); flex:1;
   container-type:size;
 }
-section.criteria > :is(ol, ul) > li::before {
+section.list-criteria > :is(ol, ul) > li::before {
   content:counter(crit-counter, decimal-leading-zero);
   flex-shrink:0; align-self:stretch;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-mono); font-size:55cqh; font-weight:700;
   color:var(--accent); line-height:1;
 }
-section.criteria .crit-body { flex:1; display:flex; flex-direction:column; justify-content:center; }
-section.criteria .crit-body strong {
+section.list-criteria .crit-body { flex:1; display:flex; flex-direction:column; justify-content:center; }
+section.list-criteria .crit-body strong {
   display:block; font-size:var(--fs-emphasis); font-weight:700;
   color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria .crit-body ul { list-style:none; padding:0; margin:0; }
-section.criteria .crit-body ul li {
+section.list-criteria .crit-body ul { list-style:none; padding:0; margin:0; }
+section.list-criteria .crit-body ul li {
   font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base);
   counter-increment:none;
 }
-section.criteria .crit-body ul li::before { display:none !important; content:none !important; }
+section.list-criteria .crit-body ul li::before { display:none !important; content:none !important; }
 
 /* ── VERDICT-GRID ──
  * ## heading  then 4× pairs: ### tool-name  p badges+body
@@ -1669,10 +1655,10 @@ section.featured .sub-card p  { font-size:var(--fs-body); color:var(--text-body)
 /* ── STEPS ──
  * ## heading  ol with: **Step N title** \n body text
  */
-section.steps h2 { margin-bottom:var(--sp-md); }
-section.steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
-section.steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-md); font-weight:700; color:var(--text-heading); }
-section.steps ol > li:not(:last-child)::after {
+section.list-steps h2 { margin-bottom:var(--sp-md); }
+section.list-steps ol { list-style:none; counter-reset:step-counter; display:flex; gap:var(--sp-xl); flex:1; padding:0; margin:0; align-items:stretch; }
+section.list-steps ol > li { counter-increment:step-counter; flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); position:relative; font-size:var(--fs-md); font-weight:700; color:var(--text-heading); }
+section.list-steps ol > li:not(:last-child)::after {
   content:'';
   position:absolute;
   right:calc(-1 * var(--sp-xl) / 2);
@@ -1683,14 +1669,14 @@ section.steps ol > li:not(:last-child)::after {
   border-left:10px solid var(--border);
   z-index:1;
 }
-section.steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
-section.steps ol > li strong { display:block; }
-section.steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
-section.steps ol > li:not(:has(> ul)) > p { flex:1; }
+section.list-steps ol > li::before { content:'STEP ' counter(step-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-label); }
+section.list-steps ol > li strong { display:block; }
+section.list-steps ol > li p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
 /* Nested list format: - body text under each step */
-section.steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.steps ol > li > ul > li::before { display:none !important; content:none !important; }
+section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── IMAGE LAYOUTS ──
  * _class: image       → image right, text left (default)
@@ -1779,56 +1765,125 @@ section.code > em { font-size:var(--fs-sm); color:var(--text-label); margin-bott
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
-/* ── CODE-COMPARE ──
+/* ── COMPARE-CODE ──
  * `eyebrow(opt)` ## heading  `left-label` ```block  `right-label` ```block
  * Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
  * CSS arranges the two p>code+pre pairs side by side.
  */
-section.code-compare { }
-section.code-compare h2 { margin-bottom:var(--sp-sm); }
-section.code-compare .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
-section.code-compare .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.compare-code { }
+section.compare-code h2 { margin-bottom:var(--sp-sm); }
+section.compare-code .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
+section.compare-code .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
 /* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
-section.code-compare .code-col p:has(> code:only-child),
-section.code-compare h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
-section.code-compare .code-col p:has(> code:only-child) > code,
-section.code-compare h2 ~ p:has(> code:only-child) > code {
+section.compare-code .code-col p:has(> code:only-child),
+section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.compare-code .code-col p:has(> code:only-child) > code,
+section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
   letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
   background:none; border:none; padding:0; border-radius:0;
 }
-section.code-compare pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
-section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
+section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
+section.compare-code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
 
 /* ── Mermaid ── */
-/* .mermaid-svg   = CLI path (lattice.js pre-renders to SVG wrapper).
-   .mermaid-block = runtime path (lattice-runtime.js wraps the original
-                    <pre><code class="language-mermaid"> and adds a sibling
-                    .mermaid render target). The wrapper is the flex child
-                    of section.diagram; data-state toggles which child is
-                    visible.
-   .mermaid       = SVG render destination inside .mermaid-block. */
-.mermaid-svg                         { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
-.mermaid-block                       { display:flex; flex-direction:column; align-items:stretch; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
-.mermaid-block > .mermaid            { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
+/* .mermaid-svg = CLI path (lattice.js pre-renders into a wrapper).
+   Runtime path (lattice-runtime.js) does NOT wrap the original
+   `<pre is="marp-pre"><code class="language-mermaid">`. Marp's <pre> is
+   a direct flex child of <section> with auto-scaling — wrapping it
+   broke that. Instead the runtime marks state on the <pre> itself and
+   inserts a sibling `<div class="mermaid">` (SVG target) and, on
+   failure, a sibling `<div class="mermaid-error">`. */
+.mermaid-svg                             { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
+section.diagram > .mermaid               { display:flex; align-items:center; justify-content:center; width:100%; flex:1; min-height:0; overflow:hidden; }
 .mermaid-svg svg,
-.mermaid-block > .mermaid svg        { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
+section.diagram > .mermaid svg           { width:100% !important; max-width:100% !important; height:100% !important; max-height:100% !important; display:block; }
 
-/* Visibility states. Default (data-state pending/rendering): the original
- * <pre> stays visible — the user sees the styled source while Mermaid
- * loads/parses. On success the SVG container takes over; on error we
- * keep the source visible AND show a themed cause block underneath, so
- * the user can read both their input and the parser's complaint without
- * losing the surrounding code-block styling Marp applies natively. */
-.mermaid-block > .mermaid                              { display:none; }
-.mermaid-block > :is(pre, marp-pre)                    { flex:0 0 auto; margin:0; }
-.mermaid-block[data-state="rendered"] > :is(pre, marp-pre) { display:none; }
-.mermaid-block[data-state="rendered"] > .mermaid        { display:flex; }
-.mermaid-block[data-state="error"]    > .mermaid        { display:none; }
+/* Visibility states keyed off `data-mermaid-state` on the <pre>.
+ *
+ * Pending/error states keep the source `<pre>` visible so the author has
+ * perspective on what's being rendered (and can see the source-of-truth
+ * if rendering fails). The `<pre>` is hidden ONLY once we have a
+ * successful SVG in the sibling.
+ *
+ * Rules are intentionally UNSCOPED — `data-mermaid-state` is only ever set
+ * by our runtime, so this cannot affect unrelated <pre> blocks. */
+:is(pre, marp-pre)[data-mermaid-state] + .mermaid                  { display:none; }
+:is(pre, marp-pre)[data-mermaid-state="rendered"]                  { display:none; }
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid       { display:flex; }
+
+/* Base (theme-agnostic) styling for the source <pre> in pending/error states.
+ * Structural only: layout, sizing, font, whitespace. No background, no
+ * border, no fill colors — those belong in the per-theme stylesheet
+ * (see `section.diagram > pre` in themes/indaco.css etc.). The selector
+ * pair covers two paths: (1) any pre inside section.diagram (slide host,
+ * styling applies even before the runtime tags it), and (2) any pre
+ * tagged by the runtime in a non-slide host. `:not([data-mermaid-state=
+ * "rendered"])` steps aside once the SVG sibling takes over. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) {
+  margin:0 !important;
+  padding:var(--sp-sm) var(--sp-md) !important;
+  background:none !important;
+  border:none !important;
+  border-radius:var(--radius-md) !important;
+  overflow:auto;
+  box-sizing:border-box;
+  /* Match the rendered .mermaid container so the slot doesn't reflow when the
+   * diagram swaps in. Slide hosts override via the more-specific
+   * `section.diagram > :is(pre, marp-pre)` rule above (flex:1 + slide width). */
+  width:1152px; height:480px;
+  max-width:100%;
+}
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) > code {
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  line-height:var(--lh-base);
+  background:none !important;
+  border:none !important;
+  padding:0 !important;
+  display:block;
+  white-space:pre;
+}
+/* Suppress per-token hljs coloring inside the source <pre>. Marp registers
+ * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
+ * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
+ * the per-theme `section .hljs-*` rules paints a JavaScript-style highlight
+ * on what is really our diagram source — visually noisy and semantically
+ * misleading (mermaid is not a programming language). Force every hljs span
+ * to inherit the flat code color so the block reads as a plain code block. */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"],
+:is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  color:inherit;
+  font-style:inherit;
+  font-weight:inherit;
+  background:none !important;
+}
+
+/* Default container size for non-slide hosts (plain markdown preview,
+ * standalone HTML pages). Mermaid reads getBoundingClientRect() before
+ * rendering and, for diagram types with useMaxWidth:true, scales the SVG
+ * to that width. We give the container fixed pixel dimensions so it has
+ * a deterministic box even when no flex parent provides one.
+ *
+ * The slide-context rule below (`section.diagram > .mermaid`) is more
+ * specific and overrides these inside Marp slides. */
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid {
+  align-items:center; justify-content:center;
+  width:1152px; height:480px;
+  max-width:100%;
+  box-sizing:border-box;
+}
+:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid > svg {
+  max-width:100%; max-height:100%; display:block;
+}
 
 /* Themed parser-error block. Uses the same fail-soft palette as .verdict
- * and .badge.fail so it feels native to the deck. */
-.mermaid-block .mermaid-error {
+ * and .badge.fail so it feels native to the deck. Width matches the
+ * source <pre> / rendered .mermaid container so the error sits flush with
+ * the diagram slot above it. Height is intrinsic — errors are short. */
+.mermaid-error {
   margin-top:var(--sp-sm);
   padding:var(--sp-xs) var(--sp-md);
   background:color-mix(in srgb, var(--fail) 8%, var(--bg-alt));
@@ -1839,8 +1894,14 @@ section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--
   color:var(--text-body);
   display:flex; flex-direction:column; gap:4px;
   flex:0 0 auto;
+  width:1152px; max-width:100%;
+  box-sizing:border-box;
 }
-.mermaid-block .mermaid-error-label {
+section.diagram > .mermaid-error {
+  width:calc(1280px - 2 * var(--sp-2xl));
+}
+section.diagram > .mermaid-error-label,
+.mermaid-error-label {
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:700;
@@ -1848,8 +1909,8 @@ section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--
   text-transform:uppercase;
   color:var(--fail);
 }
-.mermaid-block .mermaid-error-msg    { font-family:var(--font-mono); color:var(--text-heading); }
-.mermaid-block .mermaid-error-detail {
+.mermaid-error-msg    { font-family:var(--font-mono); color:var(--text-heading); }
+.mermaid-error-detail {
   margin:0; padding:var(--sp-xs) var(--sp-sm);
   background:var(--bg);
   border:1px solid var(--border);
@@ -1870,21 +1931,21 @@ section.code-compare pre > code { font-family:var(--font-mono); font-size:var(--
    <text> titles with no class — those cannot be class-targeted and remain
    visible. See references/mermaid.md §5.3 for the diagnostic recipe. */
 section.diagram .mermaid-svg svg .titleText,
-section.diagram .mermaid-block svg .titleText,
+section.diagram > .mermaid svg .titleText,
 section.diagram .mermaid-svg svg .pieTitleText,
-section.diagram .mermaid-block svg .pieTitleText,
+section.diagram > .mermaid svg .pieTitleText,
 section.diagram .mermaid-svg svg .radarTitle,
-section.diagram .mermaid-block svg .radarTitle,
+section.diagram > .mermaid svg .radarTitle,
 section.diagram .mermaid-svg svg .packetTitle,
-section.diagram .mermaid-block svg .packetTitle,
+section.diagram > .mermaid svg .packetTitle,
 section.diagram .mermaid-svg svg [class$="TitleText"],
-section.diagram .mermaid-block svg [class$="TitleText"] { display:none; }
+section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
  * MARP VS CODE PREVIEW FALLBACKS
  * ══════════════════════════════════════════════════════════════════════════════
- * lattice.js post-processes markdown into custom scaffold HTML (.card-grid-inner,
- * .stats-row, .comparison-inner, etc.) before PDF render.
+ * lattice.js post-processes markdown into custom scaffold HTML (.cards-grid-inner,
+ * .stats-row, .compare-prose-inner, etc.) before PDF render.
  * The Marp VS Code extension uses Marp's own renderer, which emits standard
  * HTML (ul/li, ol/li, strong, h4, pre…) with no scaffold wrappers.
  *
@@ -1910,61 +1971,61 @@ section.stats:not(:has(.stats-row)) ol > li > strong {
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 
-/* ── CARD-GRID ───────────────────────────────────────────────────────────────
- * ul/ol > li (nested list format) → mimic .card-grid-inner > .card             */
-section.card-grid:not(:has(.card-grid-inner)) > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ol {
+/* ── CARDS-GRID ───────────────────────────────────────────────────────────────
+ * ul/ol > li (nested list format) → mimic .cards-grid-inner > .card             */
+section.cards-grid:not(:has(.cards-grid-inner)) > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.card-grid:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.card-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.card-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > strong,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > code,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > code,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ul > li > ol > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ul > li,
-section.card-grid:not(:has(.card-grid-inner)) > ol > li > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ul > li > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
-section.card-grid:not(:has(.card-grid-inner)) > ol, section.cards-side:not(:has(.card-grid-inner)) > ol { counter-reset:card; }
-section.card-grid:not(:has(.card-grid-inner)) > ol > li,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol, section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 30px);
 }
-section.card-grid:not(:has(.card-grid-inner)) > ol > li::before,
-section.cards-side:not(:has(.card-grid-inner)) > ol > li::before {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -1974,35 +2035,35 @@ section.cards-side:not(:has(.card-grid-inner)) > ol > li::before {
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → side-by-side cards with → connector         */
-section.comparison:not(:has(.comparison-inner)) > ul,
-section.comparison:not(:has(.comparison-inner)) > ol {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol {
   display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
   list-style:none; padding:0; margin:0; position:relative;
 }
-section.comparison:not(:has(.comparison-inner)) > ul::before,
-section.comparison:not(:has(.comparison-inner)) > ol::before {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
   content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   font-size:var(--fs-xl); color:var(--text-muted);
   background:var(--bg); padding:2px 8px; border-radius:4px; z-index:1;
 }
-section.comparison:not(:has(.comparison-inner)) > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li {
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; align-content:start; justify-items:start;
   font-weight:700; color:var(--text-heading);
 }
-section.comparison:not(:has(.comparison-inner)) > ul > li > strong,
-section.comparison:not(:has(.comparison-inner)) > ol > li > strong { display:block; }
-section.comparison:not(:has(.comparison-inner)) > ul > li > ul,
-section.comparison:not(:has(.comparison-inner)) > ul > li > ol,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ul,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
-section.comparison:not(:has(.comparison-inner)) > ul > li > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ul > li > ol > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ul > li,
-section.comparison:not(:has(.comparison-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > strong,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > strong { display:block; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
  * Nested-list format: ul > li(strong title + ul(badge items + last = body))
@@ -2073,50 +2134,50 @@ section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul > li {
 section.featured:not(:has(.feat-layout)) > ul > li::before { display:none !important; content:none !important; }
 section.featured:not(:has(.feat-layout)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
-/* ── CARDS-WIDE-3 ────────────────────────────────────────────────────────────
+/* ── CARDS-WIDE ────────────────────────────────────────────────────────────
  * ol > li(<strong>eyebrow · heading</strong> body) → mimic .three-stack > .wide-card
  * Note: eyebrow/heading split not possible in CSS; both render as bold text.   */
-section.cards-wide-3:not(:has(.three-stack)) ol {
+section.cards-wide:not(:has(.three-stack)) ol {
   display:flex; flex-direction:column; gap:12px; flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.cards-wide-3:not(:has(.three-stack)) ol > li {
+section.cards-wide:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
 }
-section.cards-wide-3:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > strong { display:flex; align-items:center; gap:8px; font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > strong::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.cards-wide-3:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
+section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
+section.cards-wide:not(:has(.three-stack)) ol > li > strong { display:flex; align-items:center; gap:8px; font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.cards-wide:not(:has(.three-stack)) ol > li > strong::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide:not(:has(.three-stack)) ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
  * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
  * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
   display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
   column-gap:var(--sp-md); row-gap:0; align-content:center;
 }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1;
   display:block; font-size:var(--fs-emphasis); font-weight:700;
   color:var(--text-heading); margin-bottom:4px;
 }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:0; }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
-section.criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul { grid-column:2; grid-row:2; list-style:none; padding:0; margin:0; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
 
 /* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
- * Recreates the two-column layout purely in CSS without DOM transformation.
+ * Pure-CSS rendering without DOM transformation.
  * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
  * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
 section.split-panel:not(:has(.panel-left)) {
   display:grid;
   grid-template-columns:34% 1fr;
-  grid-template-rows:auto auto 1fr;
+  grid-template-rows:auto auto 1fr auto;
   padding:0; position:relative;
 }
 section.split-panel:not(:has(.panel-left))::before {
@@ -2163,31 +2224,29 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
   padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
   list-style:none; margin:0;
 }
+/* Optional metadata footer: a trailing ul placed *after* the main list in the
+ * source. Lands in row 4 of the fallback grid, pinned to the bottom of the
+ * right column with a divider above. Card styling is reset on its <li>. */
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul {
+  grid-column:2; grid-row:4;
+  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  margin:0; border-top:1px solid var(--border);
+  list-style:none; display:flex; flex-direction:column; gap:4px;
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
+  display:block;
+  background:none; border:none; border-radius:0;
+  padding:0; margin:0;
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-snug);
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
+  font-weight:700; color:var(--text-heading); margin-right:0.4em;
+}
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
-/* ── FINDING CSS-grid fallback ───────────────────────────────────────────────
- * ul > li(**title** + nested ul > li body) → side-by-side cards, last odd = full-width
- * *italic* trailing paragraph → verdict line with ● dot */
-section.finding:not(:has(.finding-top)) > ul {
-  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
-  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
-}
-section.finding:not(:has(.finding-top)) > ul > li:last-child:nth-child(odd) { grid-column:1/-1; }
-section.finding:not(:has(.finding-top)) > ul > li {
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-direction:column;
-}
-section.finding:not(:has(.finding-top)) > ul > li > strong {
-  display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs);
-}
-section.finding:not(:has(.finding-top)) > ul > li > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.finding:not(:has(.finding-top)) > ul > li > ul > li { font-size:var(--fs-sm); color:var(--text-body); line-height:var(--lh-base); }
-/* verdict from *italic* paragraph */
-section.finding:not(:has(.finding-top)) > p:last-of-type { flex-shrink:0; margin:var(--sp-sm) 0 0; font-size:var(--fs-label); font-weight:600; line-height:1.4; }
-section.finding:not(:has(.finding-top)) > p:last-of-type em { font-style:normal; color:var(--accent); }
-section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'● '; }
-
-/* ── CODE-COMPARE fallback ───────────────────────────────────────────────────
+/* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
  * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
  * Optional eyebrow = p>code placed before h2 (identical to other slide types).
  *
@@ -2199,56 +2258,54 @@ section.finding:not(:has(.finding-top)) > p:last-of-type em::before { content:'�
  * With eyebrow:    p(1)=eyebrow row1; h2 row2; p(2) col1 row3; p(3) col2 row3; pre(1/2) row4; bq row5 */
 
 /* Shared grid shell */
-section.code-compare:not(:has(.code-cols)) {
+section.compare-code:not(:has(.code-cols)) {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:0 var(--sp-md);
 }
 
 /* ── WITHOUT eyebrow (no p precedes h2 among siblings) ── */
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) {
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
   grid-template-rows:auto auto 1fr auto;
 }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
-section.code-compare:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
 
 /* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) {
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
   grid-template-rows:auto auto auto 1fr auto;
 }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
-section.code-compare:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
  * the same hairline-rule treatment for layouts that use it.                   */
-section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.comparison:not(:has(.below-note)) > :is(ul, ol) + p,
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.finding:not(:has(.below-note)) > blockquote + p,
-section.criteria:not(:has(.below-note)) > :is(ul, ol) + p,
-section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p {
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
   position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
-section.card-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.comparison:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p::before,
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p::before,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.finding:not(:has(.below-note)) > blockquote + p::before,
-section.criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
-section.cards-wide-3:not(:has(.below-note)) > :is(ul, ol) + p::before {
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
@@ -2265,38 +2322,37 @@ section[data-marpit-pagination]::after {
 }
 
 </style></head><body>
-<section id="1" class="title" data-marpit-slide="1" style="--marp-slide:1;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Product Strategy · Q3 2025</code></p><h1>From Signal to Strategy</h1><p><code>A decision framework for product leaders navigating market uncertainty</code></p><footer><div style="display:block;width:100%;text-align:left">Title slide · title</div></footer></section>
-<section id="2" class="divider" data-marpit-slide="2" style="--marp-slide:2;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Section 01 · Foundations</code></p><h1>The landscape has shifted. Here is what that means for us.</h1><footer><div style="display:block;width:100%;text-align:left">Section break · divider</div></footer></section>
+<section id="1" class="title" data-marpit-slide="1" style="--marp-slide:1;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h1>From Signal to Strategy</h1><p><code>Product Strategy · Q3 2025</code></p><p>A decision framework for product leaders navigating market uncertainty</p><footer><div style="display:block;width:100%;text-align:left">Title slide · title</div></footer></section>
+<section id="2" class="divider" data-marpit-slide="2" style="--marp-slide:2;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Section 01 · Foundations</code></p><h2>The landscape has shifted. Here is what that means for us.</h2><footer><div style="display:block;width:100%;text-align:left">Section break · divider</div></footer></section>
 <section id="3" class="subtopic" data-marpit-slide="3" data-marpit-pagination="3" style="--marp-slide:3;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Module 02</code></p><h2>Before we score signals, we need to agree on what a signal is.</h2><p>The word is overloaded. We use it to mean anything from a customer complaint to a macro trend. This framework requires a tighter definition.</p><footer><div style="display:block;width:100%;text-align:left">Centered orientation · subtopic</div></footer></section>
-<section id="4" class="content" data-marpit-slide="4" data-marpit-pagination="4" style="--marp-slide:4;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Context · Competitive Dynamics</h3><h2>The window for differentiation is narrowing.</h2><p>Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot identify signal from noise in that window will consistently miss timing.</p><footer><div style="display:block;width:100%;text-align:left">Single-idea prose · content</div></footer></section>
-<section id="5" class="diagram" data-marpit-slide="5" data-marpit-pagination="5" style="--marp-slide:5;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Architecture · Signal Pipeline</h3><h2>How signals move from input to decision.</h2><p><code>Four-stage processing pipeline — weekly cadence</code></p><div class="mermaid-svg"><svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 785.328px; background-color: transparent;" viewBox="0 -50 785.328125 173" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:"JetBrains Mono",monospace;font-size:14px;fill:#0A1628;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#C20000;}#my-svg .error-text{fill:#FFFFFF;stroke:#FFFFFF;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#1A1A1A;stroke:#1A1A1A;}#my-svg .marker.cross{stroke:#1A1A1A;}#my-svg svg{font-family:"JetBrains Mono",monospace;font-size:14px;}#my-svg p{margin:0;}#my-svg .label{font-family:"JetBrains Mono",monospace;color:#0A1628;}#my-svg .cluster-label text{fill:#0A1628;}#my-svg .cluster-label span{color:#0A1628;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#0A1628;color:#0A1628;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#DCE9F5;stroke:#1F4A6E;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#1A1A1A!important;stroke-width:0;stroke:#1A1A1A;}#my-svg .arrowheadPath{fill:#000000;}#my-svg .edgePath .path{stroke:#1A1A1A;stroke-width:1px;}#my-svg .flowchart-link{stroke:#1A1A1A;fill:none;}#my-svg .edgeLabel{background-color:#FFFFFF;text-align:center;}#my-svg .edgeLabel p{background-color:#FFFFFF;}#my-svg .edgeLabel rect{opacity:0.5;background-color:#FFFFFF;fill:#FFFFFF;}#my-svg .labelBkg{background-color:rgba(255, 255, 255, 0.5);}#my-svg .cluster rect{fill:#F2F5FA;stroke:#1F4A6E;stroke-width:1px;}#my-svg .cluster text{fill:#0A1628;}#my-svg .cluster span{color:#0A1628;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"JetBrains Mono",monospace;font-size:12px;background:#F2F5FA;border:1px solid #1F4A6E;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#0A1628;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:#FFFFFF;text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:#FFFFFF;padding:2px;}#my-svg .icon-shape .label rect,#my-svg .image-shape .label rect{opacity:0.5;background-color:#FFFFFF;fill:#FFFFFF;}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg .node .neo-node{stroke:#1F4A6E;}#my-svg [data-look="neo"].node rect,#my-svg [data-look="neo"].cluster rect,#my-svg [data-look="neo"].node polygon{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node path{stroke:url(#my-svg-gradient);stroke-width:1px;}#my-svg [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node .neo-line path{stroke:#1F4A6E;filter:none;}#my-svg [data-look="neo"].node circle{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node circle .state-start{fill:#000000;}#my-svg [data-look="neo"].icon-shape .icon{fill:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].icon-shape .icon-neo path{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"/></marker><marker id="my-svg_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M160.719,69L164.885,69C169.052,69,177.385,69,185.052,69C192.719,69,199.719,69,203.219,69L206.719,69" id="my-svg-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTYwLjcxODc1LCJ5Ijo2OX0seyJ4IjoxODUuNzE4NzUsInkiOjY5fSx7IngiOjIxMC43MTg3NSwieSI6Njl9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M338.156,43.504L342.323,41.836C346.49,40.169,354.823,36.835,362.49,35.167C370.156,33.5,377.156,33.5,380.656,33.5L384.156,33.5" id="my-svg-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MzM4LjE1NjI1LCJ5Ijo0My41MDM1MjIzNjcwMzA2NH0seyJ4IjozNjMuMTU2MjUsInkiOjMzLjV9LHsieCI6Mzg4LjE1NjI1LCJ5IjozMy41fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M566.172,33.5L570.339,33.5C574.505,33.5,582.839,33.5,591.33,34.954C599.822,36.408,608.471,39.317,612.796,40.771L617.121,42.225" id="my-svg-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NTY2LjE3MTg3NSwieSI6MzMuNX0seyJ4Ijo1OTEuMTcxODc1LCJ5IjozMy41fSx7IngiOjYyMC45MTIxOTE5MDE0MDg1LCJ5Ijo0My41fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M620.912,94.5L615.955,96.167C610.999,97.833,601.085,101.167,577.127,102.833C553.169,104.5,515.167,104.5,477.164,104.5C439.161,104.5,401.159,104.5,378.61,103.08C356.061,101.661,348.965,98.822,345.418,97.402L341.87,95.982" id="my-svg-L_D_B_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_B_0" data-points="W3sieCI6NjIwLjkxMjE5MTkwMTQwODUsInkiOjk0LjV9LHsieCI6NTkxLjE3MTg3NSwieSI6MTA0LjV9LHsieCI6NDc3LjE2NDA2MjUsInkiOjEwNC41fSx7IngiOjM2My4xNTYyNSwieSI6MTA0LjV9LHsieCI6MzM4LjE1NjI1LCJ5Ijo5NC40OTY0Nzc2MzI5NjkzNn1d" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(477.1640625, 104.5)"><g class="label" data-id="L_D_B_0" transform="translate(-84.2890625, -10.5)"><foreignObject width="168.578125" height="21"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>weekly retrospective</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="my-svg-flowchart-A-0" data-look="classic" transform="translate(84.359375, 69)"><rect class="basic label-container" style="" x="-76.359375" y="-25.5" width="152.71875" height="51"/><g class="label" style="" transform="translate(-46.359375, -10.5)"><rect/><foreignObject width="92.71875" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Raw Signals</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-B-1" data-look="classic" transform="translate(274.4375, 69)"><rect class="basic label-container" style="" x="-63.71875" y="-25.5" width="127.4375" height="51"/><g class="label" style="" transform="translate(-33.71875, -10.5)"><rect/><foreignObject width="67.4375" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Classify</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-C-3" data-look="classic" transform="translate(477.1640625, 33.5)"><rect class="basic label-container" style="" x="-89.0078125" y="-25.5" width="178.015625" height="51"/><g class="label" style="" transform="translate(-59.0078125, -10.5)"><rect/><foreignObject width="118.015625" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Score &amp; Weight</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-D-5" data-look="classic" transform="translate(696.75, 69)"><rect class="basic label-container" style="" x="-80.578125" y="-25.5" width="161.15625" height="51"/><g class="label" style="" transform="translate(-50.578125, -10.5)"><rect/><foreignObject width="101.15625" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Decision Log</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="my-svg-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><defs><filter id="my-svg-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><linearGradient id="my-svg-gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1F4A6E" stop-opacity="1"/><stop offset="100%" stop-color="#1F4A6E" stop-opacity="1"/></linearGradient><text text-anchor="middle" x="392.6640625" y="-25" class="flowchartTitleText">processing pipeline — weekly cadence</text></svg></div>
+<section id="4" class="content" data-marpit-slide="4" data-marpit-pagination="4" style="--marp-slide:4;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Context · Competitive Dynamics</code></p><h2>The window for differentiation is narrowing.</h2><p>Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot identify signal from noise in that window will consistently miss timing.</p><footer><div style="display:block;width:100%;text-align:left">Single-idea prose · content</div></footer></section>
+<section id="5" class="diagram" data-marpit-slide="5" data-marpit-pagination="5" style="--marp-slide:5;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Architecture · Signal Pipeline</code></p><h2>How signals move from input to decision.</h2><p><code>Four-stage processing pipeline — weekly cadence</code></p><div class="mermaid-svg"><svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flowchart" style="max-width: 785.328px; background-color: transparent;" viewBox="0 -50 785.328125 173" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#my-svg{font-family:"JetBrains Mono",monospace;font-size:14px;fill:#0A1628;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#my-svg .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#my-svg .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#my-svg .error-icon{fill:#C20000;}#my-svg .error-text{fill:#FFFFFF;stroke:#FFFFFF;}#my-svg .edge-thickness-normal{stroke-width:1px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-thickness-invisible{stroke-width:0;fill:none;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#1A1A1A;stroke:#1A1A1A;}#my-svg .marker.cross{stroke:#1A1A1A;}#my-svg svg{font-family:"JetBrains Mono",monospace;font-size:14px;}#my-svg p{margin:0;}#my-svg .label{font-family:"JetBrains Mono",monospace;color:#0A1628;}#my-svg .cluster-label text{fill:#0A1628;}#my-svg .cluster-label span{color:#0A1628;}#my-svg .cluster-label span p{background-color:transparent;}#my-svg .label text,#my-svg span{fill:#0A1628;color:#0A1628;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#DCE9F5;stroke:#1F4A6E;stroke-width:1px;}#my-svg .rough-node .label text,#my-svg .node .label text,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-anchor:middle;}#my-svg .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#my-svg .rough-node .label,#my-svg .node .label,#my-svg .image-shape .label,#my-svg .icon-shape .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .root .anchor path{fill:#1A1A1A!important;stroke-width:0;stroke:#1A1A1A;}#my-svg .arrowheadPath{fill:#000000;}#my-svg .edgePath .path{stroke:#1A1A1A;stroke-width:1px;}#my-svg .flowchart-link{stroke:#1A1A1A;fill:none;}#my-svg .edgeLabel{background-color:#FFFFFF;text-align:center;}#my-svg .edgeLabel p{background-color:#FFFFFF;}#my-svg .edgeLabel rect{opacity:0.5;background-color:#FFFFFF;fill:#FFFFFF;}#my-svg .labelBkg{background-color:rgba(255, 255, 255, 0.5);}#my-svg .cluster rect{fill:#F2F5FA;stroke:#1F4A6E;stroke-width:1px;}#my-svg .cluster text{fill:#0A1628;}#my-svg .cluster span{color:#0A1628;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"JetBrains Mono",monospace;font-size:12px;background:#F2F5FA;border:1px solid #1F4A6E;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#0A1628;}#my-svg rect.text{fill:none;stroke-width:0;}#my-svg .icon-shape,#my-svg .image-shape{background-color:#FFFFFF;text-align:center;}#my-svg .icon-shape p,#my-svg .image-shape p{background-color:#FFFFFF;padding:2px;}#my-svg .icon-shape .label rect,#my-svg .image-shape .label rect{opacity:0.5;background-color:#FFFFFF;fill:#FFFFFF;}#my-svg .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#my-svg .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#my-svg .node .neo-node{stroke:#1F4A6E;}#my-svg [data-look="neo"].node rect,#my-svg [data-look="neo"].cluster rect,#my-svg [data-look="neo"].node polygon{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node path{stroke:url(#my-svg-gradient);stroke-width:1px;}#my-svg [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node .neo-line path{stroke:#1F4A6E;filter:none;}#my-svg [data-look="neo"].node circle{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].node circle .state-start{fill:#000000;}#my-svg [data-look="neo"].icon-shape .icon{fill:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg [data-look="neo"].icon-shape .icon-neo path{stroke:url(#my-svg-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="my-svg_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/></marker><marker id="my-svg_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"/></marker><marker id="my-svg_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"/></marker><g class="root"><g class="clusters"/><g class="edgePaths"><path d="M160.719,69L164.885,69C169.052,69,177.385,69,185.052,69C192.719,69,199.719,69,203.219,69L206.719,69" id="my-svg-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTYwLjcxODc1LCJ5Ijo2OX0seyJ4IjoxODUuNzE4NzUsInkiOjY5fSx7IngiOjIxMC43MTg3NSwieSI6Njl9XQ==" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M338.156,43.504L342.323,41.836C346.49,40.169,354.823,36.835,362.49,35.167C370.156,33.5,377.156,33.5,380.656,33.5L384.156,33.5" id="my-svg-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MzM4LjE1NjI1LCJ5Ijo0My41MDM1MjIzNjcwMzA2NH0seyJ4IjozNjMuMTU2MjUsInkiOjMzLjV9LHsieCI6Mzg4LjE1NjI1LCJ5IjozMy41fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M566.172,33.5L570.339,33.5C574.505,33.5,582.839,33.5,591.33,34.954C599.822,36.408,608.471,39.317,612.796,40.771L617.121,42.225" id="my-svg-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NTY2LjE3MTg3NSwieSI6MzMuNX0seyJ4Ijo1OTEuMTcxODc1LCJ5IjozMy41fSx7IngiOjYyMC45MTIxOTE5MDE0MDg1LCJ5Ijo0My41fV0=" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/><path d="M620.912,94.5L615.955,96.167C610.999,97.833,601.085,101.167,577.127,102.833C553.169,104.5,515.167,104.5,477.164,104.5C439.161,104.5,401.159,104.5,378.61,103.08C356.061,101.661,348.965,98.822,345.418,97.402L341.87,95.982" id="my-svg-L_D_B_0" class="edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_B_0" data-points="W3sieCI6NjIwLjkxMjE5MTkwMTQwODUsInkiOjk0LjV9LHsieCI6NTkxLjE3MTg3NSwieSI6MTA0LjV9LHsieCI6NDc3LjE2NDA2MjUsInkiOjEwNC41fSx7IngiOjM2My4xNTYyNSwieSI6MTA0LjV9LHsieCI6MzM4LjE1NjI1LCJ5Ijo5NC40OTY0Nzc2MzI5NjkzNn1d" data-look="classic" marker-end="url(#my-svg_flowchart-v2-pointEnd)"/></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(477.1640625, 104.5)"><g class="label" data-id="L_D_B_0" transform="translate(-84.2890625, -10.5)"><foreignObject width="168.578125" height="21"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>weekly retrospective</p></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="my-svg-flowchart-A-0" data-look="classic" transform="translate(84.359375, 69)"><rect class="basic label-container" style="" x="-76.359375" y="-25.5" width="152.71875" height="51"/><g class="label" style="" transform="translate(-46.359375, -10.5)"><rect/><foreignObject width="92.71875" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Raw Signals</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-B-1" data-look="classic" transform="translate(274.4375, 69)"><rect class="basic label-container" style="" x="-63.71875" y="-25.5" width="127.4375" height="51"/><g class="label" style="" transform="translate(-33.71875, -10.5)"><rect/><foreignObject width="67.4375" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Classify</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-C-3" data-look="classic" transform="translate(477.1640625, 33.5)"><rect class="basic label-container" style="" x="-89.0078125" y="-25.5" width="178.015625" height="51"/><g class="label" style="" transform="translate(-59.0078125, -10.5)"><rect/><foreignObject width="118.015625" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Score &amp; Weight</p></span></div></foreignObject></g></g><g class="node default" id="my-svg-flowchart-D-5" data-look="classic" transform="translate(696.75, 69)"><rect class="basic label-container" style="" x="-80.578125" y="-25.5" width="161.15625" height="51"/><g class="label" style="" transform="translate(-50.578125, -10.5)"><rect/><foreignObject width="101.15625" height="21"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Decision Log</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="my-svg-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><defs><filter id="my-svg-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"/></filter></defs><linearGradient id="my-svg-gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1F4A6E" stop-opacity="1"/><stop offset="100%" stop-color="#1F4A6E" stop-opacity="1"/></linearGradient><text text-anchor="middle" x="392.6640625" y="-25" class="flowchartTitleText">processing pipeline — weekly cadence</text></svg></div>
 <footer><div style="display:block;width:100%;text-align:left">Component diagram · diagram</div></footer></section>
-<section id="6" class="two-column" data-marpit-slide="6" data-marpit-pagination="6" style="--marp-slide:6;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Overview · Framework Design</h3><h2>Built for speed without sacrificing rigor.</h2><p>The framework was designed around a hard constraint: product decisions must close in 72 hours or the opportunity cost of delay exceeds the cost of a suboptimal decision. Every component is optimized for that window.</p><blockquote><p>Visual: decision velocity vs. decision quality scatter plot — 72-hour decision window highlighted</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Text + visual split · two-column</div></footer></section>
-<section id="7" class="stats" data-marpit-slide="7" data-marpit-pagination="7" style="--marp-slide:7;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Impact · Pilot Results</h3><h2>Six months of results across four product teams.</h2><p><code>Measured against pre-framework baseline, same teams, same market conditions.</code></p><div class="stats-row"><div class="stat-item"><span class="stat-num">73%</span><span class="stat-label">faster close</span></div><div class="stat-item"><span class="stat-num">4.2×</span><span class="stat-label">signal recall</span></div><div class="stat-item"><span class="stat-num">18</span><span class="stat-label">decisions logged</span></div><div class="stat-item"><span class="stat-num">91%</span><span class="stat-label">team alignment</span></div></div><footer><div style="display:block;width:100%;text-align:left">KPI numbers · stats</div></footer></section>
-<section id="8" class="card-grid" data-marpit-slide="8" data-marpit-pagination="8" style="--marp-slide:8;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The framework has four components.</h2><div class="card-grid-inner"><div class="card">Signal Intake<ul><li>Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.</li></ul></div><div class="card">Scoring Model<ul><li>Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.</li></ul></div><div class="card">Decision Log<ul><li>Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.</li></ul></div><div class="card">Calibration Loop<ul><li>Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">2×2 card grid · card-grid</div></footer></section>
-<section id="9" class="card-grid" data-marpit-slide="9" data-marpit-pagination="9" style="--marp-slide:9;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Code in card headers and body text.</h2><div class="card-grid-inner"><div class="card">Signal Intake <code>v2.4</code><ul><li>Handles 94% of structured signals without manual intervention. Average latency: <code>4 min</code> from ingestion to scored entry.</li></ul></div><div class="card">Scoring Model <code>configurable</code><ul><li>Three dimensions: confidence, recency, relevance. Default weights are <code>33 / 33 / 33</code> — adjust after your first retrospective.</li></ul></div><div class="card">Decision Log <code>required</code><ul><li>Every prioritization change above <code>P2</code> must carry a logged rationale. No log, no change.</li></ul></div><div class="card">Calibration Loop <code>monthly</code><ul><li>Compares predicted outcomes to actuals. First meaningful weight update happens after <code>2 cycles</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Inline code in cards · card-grid</div></footer></section>
-<section id="10" class="card-grid" data-marpit-slide="10" data-marpit-pagination="10" style="--marp-slide:10;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Signal Intake produces three outputs.</h2><div class="card-grid-inner card-grid-inner--ordered"><div class="card">Weekly Signal Brief<ul><li>A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.</li></ul></div><div class="card">Anomaly Alerts<ul><li>Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.</li></ul></div><div class="card">Monthly Signal Index<ul><li>The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">2 top + 1 bottom · card-grid</div></footer></section>
-<section id="11" class="cards-stacked" data-marpit-slide="11" data-marpit-pagination="11" style="--marp-slide:11;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two failure modes the framework is designed to prevent.</h2><p><strong>False signal amplification.</strong> A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.</p><p><strong>Signal hoarding.</strong> Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.</p><footer><div style="display:block;width:100%;text-align:left">Vertical card stack · cards-stacked</div></footer></section>
-<section id="12" class="card-grid" data-marpit-slide="12" data-marpit-pagination="12" style="--marp-slide:12;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two intake modes for different signal types.</h2><div class="card-grid-inner"><div class="card">Structured Intake<ul><li>Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.</li></ul></div><div class="card">Unstructured Intake<ul><li>Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Side-by-side cards · card-grid</div></footer></section>
-<section id="13" class="comparison" data-marpit-slide="13" data-marpit-pagination="13" style="--marp-slide:13;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Scoring model: before and after the calibration loop.</h2><div class="comparison-inner"><div class="card">Before Calibration<ul><li>Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.</li></ul></div><div class="connector">❯</div><div class="card">After Calibration<ul><li>Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.</li></ul></div></div><div class="below-note"><p>The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.</p></div><footer><div style="display:block;width:100%;text-align:left">Two options + connector · comparison</div></footer></section>
-<section id="14" class="quote" data-marpit-slide="14" data-marpit-pagination="14" style="--marp-slide:14;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><blockquote><p>The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.</p></blockquote><p>— Head of Product, Pilot Team 3</p><footer><div style="display:block;width:100%;text-align:left">Pull quote · quote</div></footer></section>
-<section id="15" class="timeline" data-marpit-slide="15" data-marpit-pagination="15" style="--marp-slide:15;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How a decision moves through the framework.</h2><ol><li>Signal Logged<ul><li><em>Owner classifies and submits to intake queue</em></li></ul></li><li>Scored<ul><li><em>Model applies current weights, generates score</em></li></ul></li><li>Brief Published<ul><li><em>Signal appears in weekly brief with rank</em></li></ul></li><li>Decision Logged<ul><li><em>PM records rationale, signals, predicted outcome</em></li></ul></li><li>Retrospective<ul><li><em>Outcome scored, weights updated accordingly</em></li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Horizontal timeline · timeline</div></footer></section>
-<section id="16" class="list" data-marpit-slide="16" data-marpit-pagination="16" style="--marp-slide:16;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What the framework does not do.</h2><ul><li>It does not make decisions — it structures the information that humans use to decide.</li><li>It does not replace customer discovery — it scores and routes what discovery surfaces.</li><li>It does not work without the Decision Log — calibration requires outcome data to learn from.</li><li>It does not guarantee alignment — it surfaces disagreement earlier, which still requires resolution.</li><li>It does not scale down to individual feature decisions — it is designed for prioritization above P2.</li></ul><footer><div style="display:block;width:100%;text-align:left">Card list stack · list</div></footer></section>
-<section id="17" class="list" data-marpit-slide="17" data-marpit-pagination="17" style="--marp-slide:17;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Four things that must be true before you begin.</h2><ol><li>You have a regular prioritization cadence — at minimum monthly.</li><li>At least one person owns signal collection full-time or as a primary responsibility.</li><li>Leadership has agreed to log decisions with rationale, not just outcomes.</li><li>You have 90 minutes per week to run the intake and scoring process.</li></ol><footer><div style="display:block;width:100%;text-align:left">Numbered list · list</div></footer></section>
-<section id="18" class="big-number" data-marpit-slide="18" data-marpit-pagination="18" style="--marp-slide:18;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Calibration Result · 6-Month Pilot</code></p><ul><li>14x<ul><li>Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">Hero stat · big-number</div></footer></section>
-<section id="19" class="split-panel" data-marpit-slide="19" data-marpit-pagination="19" style="--marp-slide:19;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><div class="panel-left"><div class="watermark">S</div><p><code>Section 02</code></p><h2>Scoring Model Deep Dive</h2></div><div class="panel-right"><h3>What this section covers</h3><p>The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.</p><ol><li>Confidence<ul><li>How many independent sources corroborate the signal. Ranges 1–5.</li></ul></li><li>Recency<ul><li>Time-decay applied from signal date to scoring date. Half-life is team-configurable.</li></ul></li><li>Strategic Relevance<ul><li>Manual score from the signal owner. Ranges 1–5. Requires justification above 4.</li></ul></li></ol></div><footer><div style="display:block;width:100%;text-align:left">Dark panel + content · split-panel</div></footer></section>
-<section id="20" class="closing" data-marpit-slide="20" style="--marp-slide:20;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>What Would Help Us Move Forward</code></p><h2>Next step is a working session, not a debate.</h2><p><code>Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.</code></p><footer><div style="display:block;width:100%;text-align:left">Dark closing bookend · closing</div></footer></section>
-<section id="21" class="finding" data-marpit-slide="21" data-marpit-pagination="21" style="--marp-slide:21;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Finding 01 · Structured Intake</h3><h2>Structured intake performed above expectations — volume and latency were not concerns.</h2><div class="finding-top"><div class="card"><h4>What worked</h4><p>API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.</p></div><div class="card"><h4>What required tuning</h4><p>NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.</p></div></div><p class="verdict"><span class="verdict-dot">●</span>Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.</p><footer><div style="display:block;width:100%;text-align:left">Finding + key insight · finding</div></footer></section>
-<section id="22" class="card-grid" data-marpit-slide="22" data-marpit-pagination="22" style="--marp-slide:22;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Key insight works on any card-bearing layout.</h2><div class="card-grid-inner"><div class="card">Signal Intake<ul><li>Weekly structured collection across customer conversations, market data, and competitive moves.</li></ul></div><div class="card">Scoring Model<ul><li>Each signal scored on three dimensions: confidence, recency, and strategic relevance.</li></ul></div><div class="card">Decision Log<ul><li>Every decision recorded with the signals that informed it and the criteria applied.</li></ul></div><div class="card">Calibration Loop<ul><li>Monthly retrospective that compares predicted outcomes to actual outcomes.</li></ul></div></div><blockquote><p>The calibration loop is what separates teams that learn from teams that repeat the same mistakes.</p></blockquote><div class="below-note"><p>¹ Trailing blockquote becomes a key insight. Trailing paragraph becomes a below-note.</p></div><footer><div style="display:block;width:100%;text-align:left">Key insight + below-note · card-grid</div></footer></section>
-<section id="23" class="cards-wide-3" data-marpit-slide="23" data-marpit-pagination="23" style="--marp-slide:23;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Three scoring failure modes found in the pilot.</h2><div class="three-stack ordered"><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Recency dominance</span></div><div class="wide-card-body"><span><ul><li>High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.</span></div></div><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Source concentration</span></div><div class="wide-card-body"><span><ul><li>Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.</span></div></div><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Outcome misclassification</span></div><div class="wide-card-body"><span><ul><li>PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.</span></div></div></div><footer><div style="display:block;width:100%;text-align:left">3 full-width cards · cards-wide-3</div></footer></section>
-<section id="24" class="criteria" data-marpit-slide="24" data-marpit-pagination="24" style="--marp-slide:24;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Four requirements every decision system must meet.</h2><ul><li><div class="crit-body"><strong>Speed</strong><ul><li>Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.</li></ul></div></li><li><div class="crit-body"><strong>Auditability</strong><ul><li>Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.</li></ul></div></li><li><div class="crit-body"><strong>Adoption</strong><ul><li>If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.</li></ul></div></li><li><div class="crit-body"><strong>Calibration</strong><ul><li>The system must improve over time. A static scoring model is a spreadsheet with extra steps.</li></ul></div></li></ul><footer><div style="display:block;width:100%;text-align:left">Numbered criteria · criteria</div></footer></section>
-<section id="25" class="verdict-grid" data-marpit-slide="25" data-marpit-pagination="25" style="--marp-slide:25;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>We evaluated four intake tools against the criteria.</h2><div class="grid-verdict"><div class="vcard"><div class="vcard-title">Tool A · Chorus</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge warn">Auditability</span><span class="badge pass">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.</div></div><div class="vcard"><div class="vcard-title">Tool B · Productboard</div><div class="badge-row"><span class="badge fail">Speed</span><span class="badge pass">Auditability</span><span class="badge pass">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.</div></div><div class="vcard"><div class="vcard-title">Tool C · Notion</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge pass">Auditability</span><span class="badge warn">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.</div></div><div class="vcard"><div class="vcard-title">Tool D · Sprig + Decision Log</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge pass">Auditability</span><span class="badge pass">Adoption</span><span class="badge pass">Calibration</span></div><div class="vcard-body">Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.</div></div></div><footer><div style="display:block;width:100%;text-align:left">2×2 verdict grid · verdict-grid</div></footer></section>
-<section id="26" class="compare-table" data-marpit-slide="26" data-marpit-pagination="26" style="--marp-slide:26;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The four tools side by side.</h2><table><thead><tr><th>Criterion</th><th>Chorus</th><th>Productboard</th><th>Notion</th><th>Sprig + Log</th></tr></thead><tbody><tr><td><strong>Speed</strong></td><td>✓</td><td>✗</td><td>✓</td><td>✓</td></tr><tr><td><strong>Auditability</strong></td><td>✗</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td><strong>Adoption</strong></td><td>✓</td><td>✓</td><td>✗</td><td>✓</td></tr><tr><td><strong>Calibration</strong></td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr><tr><td><strong>Setup time</strong></td><td>1 day</td><td>3–4 weeks</td><td>40+ hours</td><td>Same day</td></tr></tbody></table>
+<section id="6" class="stats" data-marpit-slide="6" data-marpit-pagination="6" style="--marp-slide:6;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Impact · Pilot Results</code></p><h2>Six months of results across four product teams.</h2><p><code>Measured against pre-framework baseline, same teams, same market conditions.</code></p><div class="stats-row"><div class="stat-item"><span class="stat-num">73%</span><span class="stat-label">faster close</span></div><div class="stat-item"><span class="stat-num">4.2×</span><span class="stat-label">signal recall</span></div><div class="stat-item"><span class="stat-num">18</span><span class="stat-label">decisions logged</span></div><div class="stat-item"><span class="stat-num">91%</span><span class="stat-label">team alignment</span></div></div><footer><div style="display:block;width:100%;text-align:left">KPI numbers · stats</div></footer></section>
+<section id="7" class="cards-grid" data-marpit-slide="7" data-marpit-pagination="7" style="--marp-slide:7;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The framework has four components.</h2><div class="cards-grid-inner"><div class="card">Signal Intake<ul><li>Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.</li></ul></div><div class="card">Scoring Model<ul><li>Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.</li></ul></div><div class="card">Decision Log<ul><li>Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.</li></ul></div><div class="card">Calibration Loop<ul><li>Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">2×2 card grid · cards-grid</div></footer></section>
+<section id="8" class="cards-grid" data-marpit-slide="8" data-marpit-pagination="8" style="--marp-slide:8;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Code in card headers and body text.</h2><div class="cards-grid-inner"><div class="card">Signal Intake <code>v2.4</code><ul><li>Handles 94% of structured signals without manual intervention. Average latency: <code>4 min</code> from ingestion to scored entry.</li></ul></div><div class="card">Scoring Model <code>configurable</code><ul><li>Three dimensions: confidence, recency, relevance. Default weights are <code>33 / 33 / 33</code> — adjust after your first retrospective.</li></ul></div><div class="card">Decision Log <code>required</code><ul><li>Every prioritization change above <code>P2</code> must carry a logged rationale. No log, no change.</li></ul></div><div class="card">Calibration Loop <code>monthly</code><ul><li>Compares predicted outcomes to actuals. First meaningful weight update happens after <code>2 cycles</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Inline code in cards · cards-grid</div></footer></section>
+<section id="9" class="cards-grid" data-marpit-slide="9" data-marpit-pagination="9" style="--marp-slide:9;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Signal Intake produces three outputs.</h2><div class="cards-grid-inner cards-grid-inner--ordered"><div class="card">Weekly Signal Brief<ul><li>A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.</li></ul></div><div class="card">Anomaly Alerts<ul><li>Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.</li></ul></div><div class="card">Monthly Signal Index<ul><li>The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">2 top + 1 bottom · cards-grid</div></footer></section>
+<section id="10" class="cards-stack" data-marpit-slide="10" data-marpit-pagination="10" style="--marp-slide:10;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two failure modes the framework is designed to prevent.</h2><div class="cards-stack-inner"><div class="card"><strong>False signal amplification.</strong> A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.</div><div class="card"><strong>Signal hoarding.</strong> Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.</div></div><footer><div style="display:block;width:100%;text-align:left">Vertical card stack · cards-stack</div></footer></section>
+<section id="11" class="cards-grid" data-marpit-slide="11" data-marpit-pagination="11" style="--marp-slide:11;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two intake modes for different signal types.</h2><div class="cards-grid-inner"><div class="card">Structured Intake<ul><li>Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.</li></ul></div><div class="card">Unstructured Intake<ul><li>Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Side-by-side cards · cards-grid</div></footer></section>
+<section id="12" class="compare-prose" data-marpit-slide="12" data-marpit-pagination="12" style="--marp-slide:12;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Scoring model: before and after the calibration loop.</h2><div class="compare-prose-inner"><div class="card">Before Calibration<ul><li>Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.</li></ul></div><div class="connector">❯</div><div class="card">After Calibration<ul><li>Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.</li></ul></div></div><div class="below-note"><p>The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.</p></div><footer><div style="display:block;width:100%;text-align:left">Two options + connector · compare-prose</div></footer></section>
+<section id="13" class="quote" data-marpit-slide="13" data-marpit-pagination="13" style="--marp-slide:13;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><blockquote><p>The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.</p></blockquote><p>— Head of Product, Pilot Team 3</p><footer><div style="display:block;width:100%;text-align:left">Pull quote · quote</div></footer></section>
+<section id="14" class="timeline" data-marpit-slide="14" data-marpit-pagination="14" style="--marp-slide:14;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How a decision moves through the framework.</h2><ol><li>Signal Logged<ul><li><em>Owner classifies and submits to intake queue</em></li></ul></li><li>Scored<ul><li><em>Model applies current weights, generates score</em></li></ul></li><li>Brief Published<ul><li><em>Signal appears in weekly brief with rank</em></li></ul></li><li>Decision Logged<ul><li><em>PM records rationale, signals, predicted outcome</em></li></ul></li><li>Retrospective<ul><li><em>Outcome scored, weights updated accordingly</em></li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Horizontal timeline · timeline</div></footer></section>
+<section id="15" class="list" data-marpit-slide="15" data-marpit-pagination="15" style="--marp-slide:15;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What the framework does not do.</h2><ul><li>It does not make decisions — it structures the information that humans use to decide.</li><li>It does not replace customer discovery — it scores and routes what discovery surfaces.</li><li>It does not work without the Decision Log — calibration requires outcome data to learn from.</li><li>It does not guarantee alignment — it surfaces disagreement earlier, which still requires resolution.</li><li>It does not scale down to individual feature decisions — it is designed for prioritization above P2.</li></ul><footer><div style="display:block;width:100%;text-align:left">Card list stack · list</div></footer></section>
+<section id="16" class="list" data-marpit-slide="16" data-marpit-pagination="16" style="--marp-slide:16;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Four things that must be true before you begin.</h2><ol><li>You have a regular prioritization cadence — at minimum monthly.</li><li>At least one person owns signal collection full-time or as a primary responsibility.</li><li>Leadership has agreed to log decisions with rationale, not just outcomes.</li><li>You have 90 minutes per week to run the intake and scoring process.</li></ol><footer><div style="display:block;width:100%;text-align:left">Numbered list · list</div></footer></section>
+<section id="17" class="big-number" data-marpit-slide="17" data-marpit-pagination="17" style="--marp-slide:17;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Calibration Result · 6-Month Pilot</code></p><ul><li>14x<ul><li>Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">Hero stat · big-number</div></footer></section>
+<section id="18" class="split-panel" data-marpit-slide="18" data-marpit-pagination="18" style="--marp-slide:18;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><div class="panel-left"><div class="watermark">S</div><p><code>Section 02</code></p><h2>Scoring Model Deep Dive</h2></div><div class="panel-right"><h3>What this section covers</h3><p>The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.</p><ol><li>Confidence<ul><li>How many independent sources corroborate the signal. Ranges 1–5.</li></ul></li><li>Recency<ul><li>Time-decay applied from signal date to scoring date. Half-life is team-configurable.</li></ul></li><li>Strategic Relevance<ul><li>Manual score from the signal owner. Ranges 1–5. Requires justification above 4.</li></ul></li></ol></div><footer><div style="display:block;width:100%;text-align:left">Dark panel + content · split-panel</div></footer></section>
+<section id="19" class="closing" data-marpit-slide="19" style="--marp-slide:19;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>What Would Help Us Move Forward</code></p><h2>Next step is a working session, not a debate.</h2><p><code>Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.</code></p><footer><div style="display:block;width:100%;text-align:left">Dark closing bookend · closing</div></footer></section>
+<section id="20" class="cards-grid" data-marpit-slide="20" data-marpit-pagination="20" style="--marp-slide:20;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Finding 01 · Structured Intake</code></p><h2>Structured intake performed above expectations — volume and latency were not concerns.</h2><div class="cards-grid-inner"><div class="card"><strong>What worked</strong><ul><li>API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.</li></ul></div><div class="card"><strong>What required tuning</strong><ul><li>NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.</li></ul></div></div><blockquote><p>Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Finding + key insight · cards-grid</div></footer></section>
+<section id="21" class="cards-grid" data-marpit-slide="21" data-marpit-pagination="21" style="--marp-slide:21;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Key insight works on any card-bearing layout.</h2><div class="cards-grid-inner"><div class="card">Signal Intake<ul><li>Weekly structured collection across customer conversations, market data, and competitive moves.</li></ul></div><div class="card">Scoring Model<ul><li>Each signal scored on three dimensions: confidence, recency, and strategic relevance.</li></ul></div><div class="card">Decision Log<ul><li>Every decision recorded with the signals that informed it and the criteria applied.</li></ul></div><div class="card">Calibration Loop<ul><li>Monthly retrospective that compares predicted outcomes to actual outcomes.</li></ul></div></div><blockquote><p>The calibration loop is what separates teams that learn from teams that repeat the same mistakes.</p></blockquote><div class="below-note"><p>¹ Trailing blockquote becomes a key insight. Trailing paragraph becomes a below-note.</p></div><footer><div style="display:block;width:100%;text-align:left">Key insight + below-note · cards-grid</div></footer></section>
+<section id="22" class="cards-wide" data-marpit-slide="22" data-marpit-pagination="22" style="--marp-slide:22;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Three scoring failure modes found in the pilot.</h2><div class="three-stack ordered"><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Recency dominance</span></div><div class="wide-card-body"><span><ul><li>High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.</span></div></div><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Source concentration</span></div><div class="wide-card-body"><span><ul><li>Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.</span></div></div><div class="wide-card"><div class="wide-card-header"><span class="wide-card-heading">Outcome misclassification</span></div><div class="wide-card-body"><span><ul><li>PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.</span></div></div></div><footer><div style="display:block;width:100%;text-align:left">3 full-width cards · cards-wide</div></footer></section>
+<section id="23" class="list-criteria" data-marpit-slide="23" data-marpit-pagination="23" style="--marp-slide:23;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Four requirements every decision system must meet.</h2><ul><li><div class="crit-body"><strong>Speed</strong><ul><li>Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.</li></ul></div></li><li><div class="crit-body"><strong>Auditability</strong><ul><li>Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.</li></ul></div></li><li><div class="crit-body"><strong>Adoption</strong><ul><li>If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.</li></ul></div></li><li><div class="crit-body"><strong>Calibration</strong><ul><li>The system must improve over time. A static scoring model is a spreadsheet with extra steps.</li></ul></div></li></ul><footer><div style="display:block;width:100%;text-align:left">Numbered criteria · list-criteria</div></footer></section>
+<section id="24" class="verdict-grid" data-marpit-slide="24" data-marpit-pagination="24" style="--marp-slide:24;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>We evaluated four intake tools against the criteria.</h2><div class="grid-verdict"><div class="vcard"><div class="vcard-title">Tool A · Chorus</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge warn">Auditability</span><span class="badge pass">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.</div></div><div class="vcard"><div class="vcard-title">Tool B · Productboard</div><div class="badge-row"><span class="badge fail">Speed</span><span class="badge pass">Auditability</span><span class="badge pass">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.</div></div><div class="vcard"><div class="vcard-title">Tool C · Notion</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge pass">Auditability</span><span class="badge warn">Adoption</span><span class="badge fail">Calibration</span></div><div class="vcard-body">Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.</div></div><div class="vcard"><div class="vcard-title">Tool D · Sprig + Decision Log</div><div class="badge-row"><span class="badge pass">Speed</span><span class="badge pass">Auditability</span><span class="badge pass">Adoption</span><span class="badge pass">Calibration</span></div><div class="vcard-body">Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.</div></div></div><footer><div style="display:block;width:100%;text-align:left">2×2 verdict grid · verdict-grid</div></footer></section>
+<section id="25" class="compare-table" data-marpit-slide="25" data-marpit-pagination="25" style="--marp-slide:25;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The four tools side by side.</h2><table><thead><tr><th>Criterion</th><th>Chorus</th><th>Productboard</th><th>Notion</th><th>Sprig + Log</th></tr></thead><tbody><tr><td><strong>Speed</strong></td><td>✓</td><td>✗</td><td>✓</td><td>✓</td></tr><tr><td><strong>Auditability</strong></td><td>✗</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td><strong>Adoption</strong></td><td>✓</td><td>✓</td><td>✗</td><td>✓</td></tr><tr><td><strong>Calibration</strong></td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr><tr><td><strong>Setup time</strong></td><td>1 day</td><td>3–4 weeks</td><td>40+ hours</td><td>Same day</td></tr></tbody></table>
 <div class="below-note"><p><em>Evaluated against the same four teams and the same 90-minute weekly budget constraint.</em></p></div><footer><div style="display:block;width:100%;text-align:left">Comparison table · compare-table</div></footer></section>
-<section id="27" class="featured" data-marpit-slide="27" data-marpit-pagination="27" style="--marp-slide:27;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Applying the criteria to the tools — here is where the evidence points.</h2><div class="feat-layout"><div class="feat-card"><h3>The evidence favors Tool D</h3><p>Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.</p></div><div class="sub-row"><div class="sub-card"><h3>The path is not self-executing</h3><p>Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.</p></div><div class="sub-card"><h3>The Decision Log is the hardest part</h3><p>Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.</p></div></div></div><footer><div style="display:block;width:100%;text-align:left">Featured + 2 sub-cards · featured</div></footer></section>
-<section id="28" class="comparison" data-marpit-slide="28" data-marpit-pagination="28" style="--marp-slide:28;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two options with a connector and an explanatory note below.</h2><div class="comparison-inner"><div class="card">Option A · Label<ul><li>Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.</li></ul></div><div class="connector">❯</div><div class="card">Option B · Label<ul><li>Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.</li></ul></div></div><div class="below-note"><p>The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.</p></div><footer><div style="display:block;width:100%;text-align:left">Two options + connector · comparison</div></footer></section>
-<section id="29" class="steps" data-marpit-slide="29" data-marpit-pagination="29" style="--marp-slide:29;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How to roll this out across your organization.</h2><ol><li>Pick one team and one decision type<ul><li>Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.</li></ul></li><li>Log everything, decide nothing differently<ul><li>In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.</li></ul></li><li>Run your first retrospective<ul><li>At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.</li></ul></li><li>Expand to a second team<ul><li>With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Horizontal steps · steps</div></footer></section>
-<section id="30" class="list-tabular" data-marpit-slide="30" data-marpit-pagination="30" style="--marp-slide:30;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The six signal dimensions, what they measure, and how they are scored.</h2><ol>
+<section id="26" class="featured" data-marpit-slide="26" data-marpit-pagination="26" style="--marp-slide:26;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Applying the criteria to the tools — here is where the evidence points.</h2><div class="feat-layout"><div class="feat-card"><h3>The evidence favors Tool D</h3><p>Sprig combined with a lightweight Decision Log meets all four criteria within the 90-minute weekly budget, reaches production in the same week it is adopted, and leaves a clean exit ramp if a better native solution emerges.</p></div><div class="sub-row"><div class="sub-card"><h3>The path is not self-executing</h3><p>Sprig requires a connector built to your NPS and support platforms. Budget 4–6 hours of engineering time in week one. After that, zero maintenance overhead.</p></div><div class="sub-card"><h3>The Decision Log is the hardest part</h3><p>Not technically. Culturally. PMs need to log decisions with predicted outcomes before they close, not after. This is a habit change, not a tool change.</p></div></div></div><footer><div style="display:block;width:100%;text-align:left">Featured + 2 sub-cards · featured</div></footer></section>
+<section id="27" class="compare-prose" data-marpit-slide="27" data-marpit-pagination="27" style="--marp-slide:27;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Two options with a connector and an explanatory note below.</h2><div class="compare-prose-inner"><div class="card">Option A · Label<ul><li>Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.</li></ul></div><div class="connector">❯</div><div class="card">Option B · Label<ul><li>Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.</li></ul></div></div><div class="below-note"><p>The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.</p></div><footer><div style="display:block;width:100%;text-align:left">Two options + connector · compare-prose</div></footer></section>
+<section id="28" class="list-steps" data-marpit-slide="28" data-marpit-pagination="28" style="--marp-slide:28;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How to roll this out across your organization.</h2><ol><li>Pick one team and one decision type<ul><li>Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.</li></ul></li><li>Log everything, decide nothing differently<ul><li>In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.</li></ul></li><li>Run your first retrospective<ul><li>At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.</li></ul></li><li>Expand to a second team<ul><li>With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">Horizontal steps · list-steps</div></footer></section>
+<section id="29" class="list-tabular" data-marpit-slide="29" data-marpit-pagination="29" style="--marp-slide:29;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>The six signal dimensions, what they measure, and how they are scored.</h2><ol>
 <li><strong>Confidence</strong>Number of independent sources corroborating the signal<em>1–5 · Auto-scored</em></li>
 <li><strong>Recency</strong>Time-decay from signal date, configurable half-life<em>0.0–1.0 · Auto-scored</em></li>
 <li><strong>Relevance</strong>Alignment to current strategic bets, owner-scored<em>1–5 · Manual</em></li>
@@ -2304,8 +2360,8 @@ section[data-marpit-pagination]::after {
 <li><strong>Effort</strong>Engineering and design cost to act on the signal<em>1–5 · Manual</em></li>
 <li><strong>Confidence delta</strong>Change in confidence score since last scoring cycle<em>−5 to +5 · Auto</em></li>
 </ol><footer><div style="display:block;width:100%;text-align:left">Tabular list · list-tabular</div></footer></section>
-<section id="31" class="content" data-marpit-slide="31" data-marpit-pagination="31" style="--marp-slide:31;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Header And Footer</h3><h2>Header stays uppercase — footer renders as written.</h2><p>Set <code>header:</code> and <code>footer:</code> in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case. The footer renders exactly as written.</p><footer><div style="display:block;width:100%;text-align:left">Header and footer demo · content</div></footer></section>
-<section id="32" class="code" data-marpit-slide="32" data-marpit-pagination="32" style="--marp-slide:32;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Implementation · Token Pipeline</h3><h2>The tokenization call is three lines of application code.</h2><h3>JavaScript · SDK v2 interface</h3><pre class="hljs language-javascript"><code class="language-javascript hljs"><span class="hljs-keyword">import</span> { TokenVault } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@company/token-sdk&quot;</span>;
+<section id="30" class="content" data-marpit-slide="30" data-marpit-pagination="30" style="--marp-slide:30;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Header And Footer</code></p><h2>Header stays uppercase — footer renders as written.</h2><p>Set <code>header:</code> and <code>footer:</code> in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case. The footer renders exactly as written.</p><footer><div style="display:block;width:100%;text-align:left">Header and footer demo · content</div></footer></section>
+<section id="31" class="code" data-marpit-slide="31" data-marpit-pagination="31" style="--marp-slide:31;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Implementation · Token Pipeline</code></p><h2>The tokenization call is three lines of application code.</h2><p><code>JavaScript · SDK v2 interface</code></p><pre class="hljs language-javascript"><code class="language-javascript hljs"><span class="hljs-keyword">import</span> { TokenVault } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@company/token-sdk&quot;</span>;
 
 <span class="hljs-keyword">const</span> vault = <span class="hljs-keyword">new</span> TokenVault({ <span class="hljs-attr">keyFile</span>: <span class="hljs-string">&quot;./vault.key&quot;</span> });
 
@@ -2315,7 +2371,7 @@ section[data-marpit-pagination]::after {
 <span class="hljs-comment">// Detokenize only at point of use — every call is logged</span>
 <span class="hljs-keyword">const</span> plaintext = <span class="hljs-keyword">await</span> vault.detokenize(token, { <span class="hljs-attr">requestor</span>: <span class="hljs-string">&quot;claims-svc&quot;</span> });</code></pre>
 <footer><div style="display:block;width:100%;text-align:left">Single code block · code</div></footer></section>
-<section id="33" class="code-compare" data-marpit-slide="33" data-marpit-pagination="33" style="--marp-slide:33;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Before & After · Key Distribution</code></p><h2>File-distributed keys versus vault-integrated keys.</h2><div class="code-cols"><div class="code-col"><p><code>Before · File-distributed</code></p><pre class="hljs language-python"><code class="language-python hljs"><span class="hljs-comment"># Key material on disk — anyone with</span>
+<section id="32" class="compare-code" data-marpit-slide="32" data-marpit-pagination="32" style="--marp-slide:32;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Before & After · Key Distribution</code></p><h2>File-distributed keys versus vault-integrated keys.</h2><div class="code-cols"><div class="code-col"><p><code>Before · File-distributed</code></p><pre class="hljs language-python"><code class="language-python hljs"><span class="hljs-comment"># Key material on disk — anyone with</span>
 <span class="hljs-comment"># filesystem access can read it</span>
 <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./vault.key&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:
     key = f.read()
@@ -2329,15 +2385,15 @@ kms = boto3.client(<span class="hljs-string">&#x27;kms&#x27;</span>)
 token = kms.encrypt(
     KeyId=<span class="hljs-string">&#x27;alias/tokenization&#x27;</span>,
     Plaintext=ssn
-)[<span class="hljs-string">&#x27;CiphertextBlob&#x27;</span>]</code></pre></div></div><footer><div style="display:block;width:100%;text-align:left">Two code blocks · code-compare</div></footer></section>
-<section id="34" class="image" data-marpit-slide="34" data-marpit-pagination="34" style="--marp-slide:34;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Layout · Image</code></p><h2>Images sit naturally beside text when you need visual evidence.</h2><p>Use <code>_class: image</code> with <code>![bg right](url)</code> — image-right is the default. Add <code>left</code> to flip: <code>_class: image left</code>.</p><footer><div style="display:block;width:100%;text-align:left">Text left, image right · image</div></footer></section>
-<section id="35" class="image left" data-marpit-slide="35" data-marpit-pagination="35" style="--marp-slide:35;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Layout · Image Left</h3><h2>Lead with the image, follow with the argument.</h2><p>Add <code>left</code> to the class: <code>_class: image left</code> with <code>![bg left](url)</code>. Only the padding and placeholder position change — everything else is shared.</p><footer><div style="display:block;width:100%;text-align:left">Image left, text right · image left</div></footer></section>
-<section id="36" class="image-full" data-marpit-slide="36" style="--marp-slide:36;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>[ Dashboard screenshot · Signal Brief — With Caption ]</h2><p>Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday</p><footer><div style="display:block;width:100%;text-align:left">Image full · image-full</div></footer></section>
-<section id="37" class="divider dark" data-marpit-slide="37" style="--marp-slide:37;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Any Layout Class</code></p><h1>The dark modifier works on any layout.</h1><p>Add <code>dark</code> alongside any class — palette remaps automatically</p><footer><div style="display:block;width:100%;text-align:left">Dark variant — section break · divider dark</div></footer></section>
-<section id="38" class="content dark" data-marpit-slide="38" data-marpit-pagination="38" style="--marp-slide:38;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Content</code></p><h2>The token system handles dark without per-element overrides.</h2><p>All colours reference CSS variables — <code>--bg</code>, <code>--text-heading</code>, <code>--text-body</code>, <code>--border</code> — that remap when <code>dark</code> is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.</p><footer><div style="display:block;width:100%;text-align:left">Dark variant — prose · content dark</div></footer></section>
-<section id="39" class="image-full dark" data-marpit-slide="39" style="--marp-slide:39;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>[ Dashboard screenshot · Signal Brief — Dark ]</h2><p>Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday</p><footer><div style="display:block;width:100%;text-align:left">Image full dark · image-full dark</div></footer></section>
-<section id="40" class="list dark" data-marpit-slide="40" data-marpit-pagination="40" style="--marp-slide:40;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Dark Variant · List</h3><h2>The card stack renders cleanly on dark backgrounds.</h2><ul><li>Every card uses <code>--bg-alt</code> for fill and <code>--border</code> for the border — both remap in dark mode.</li><li>The accent left border uses <code>--accent</code> which is unchanged — the gold reads well against dark.</li><li>Body text shifts to <code>--text-body</code> which in dark mode is a warm light tone, not pure white.</li></ul><footer><div style="display:block;width:100%;text-align:left">Dark variant — list · list dark</div></footer></section>
-<section id="41" class="cards-stacked dark" data-marpit-slide="41" data-marpit-pagination="41" style="--marp-slide:41;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h3>Dark Variant · Cards Stacked</h3><h2>Two-card layouts work equally well inverted to dark.</h2><p>The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.</p><p>The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+)[<span class="hljs-string">&#x27;CiphertextBlob&#x27;</span>]</code></pre></div></div><footer><div style="display:block;width:100%;text-align:left">Two code blocks · compare-code</div></footer></section>
+<section id="33" class="image" data-marpit-slide="33" data-marpit-pagination="33" style="--marp-slide:33;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Layout · Image</code></p><h2>Images sit naturally beside text when you need visual evidence.</h2><p>Use <code>_class: image</code> with <code>![bg right](url)</code> — image-right is the default. Add <code>left</code> to flip: <code>_class: image left</code>.</p><footer><div style="display:block;width:100%;text-align:left">Text left, image right · image</div></footer></section>
+<section id="34" class="image left" data-marpit-slide="34" data-marpit-pagination="34" style="--marp-slide:34;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Layout · Image Left</code></p><h2>Lead with the image, follow with the argument.</h2><p>Add <code>left</code> to the class: <code>_class: image left</code> with <code>![bg left](url)</code>. Only the padding and placeholder position change — everything else is shared.</p><footer><div style="display:block;width:100%;text-align:left">Image left, text right · image left</div></footer></section>
+<section id="35" class="image-full" data-marpit-slide="35" style="--marp-slide:35;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>[ Dashboard screenshot · Signal Brief — With Caption ]</h2><p>Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday</p><footer><div style="display:block;width:100%;text-align:left">Image full · image-full</div></footer></section>
+<section id="36" class="divider dark" data-marpit-slide="36" style="--marp-slide:36;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Any Layout Class</code></p><h1>The dark modifier works on any layout.</h1><p>Add <code>dark</code> alongside any class — palette remaps automatically</p><footer><div style="display:block;width:100%;text-align:left">Dark variant — section break · divider dark</div></footer></section>
+<section id="37" class="content dark" data-marpit-slide="37" data-marpit-pagination="37" style="--marp-slide:37;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Content</code></p><h2>The token system handles dark without per-element overrides.</h2><p>All colours reference CSS variables — <code>--bg</code>, <code>--text-heading</code>, <code>--text-body</code>, <code>--border</code> — that remap when <code>dark</code> is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.</p><footer><div style="display:block;width:100%;text-align:left">Dark variant — prose · content dark</div></footer></section>
+<section id="38" class="image-full dark" data-marpit-slide="38" style="--marp-slide:38;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>[ Dashboard screenshot · Signal Brief — Dark ]</h2><p>Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday</p><footer><div style="display:block;width:100%;text-align:left">Image full dark · image-full dark</div></footer></section>
+<section id="39" class="list dark" data-marpit-slide="39" data-marpit-pagination="39" style="--marp-slide:39;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · List</code></p><h2>The card stack renders cleanly on dark backgrounds.</h2><ul><li>Every card uses <code>--bg-alt</code> for fill and <code>--border</code> for the border — both remap in dark mode.</li><li>The accent left border uses <code>--accent</code> which is unchanged — the gold reads well against dark.</li><li>Body text shifts to <code>--text-body</code> which in dark mode is a warm light tone, not pure white.</li></ul><footer><div style="display:block;width:100%;text-align:left">Dark variant — list · list dark</div></footer></section>
+<section id="40" class="cards-stack dark" data-marpit-slide="40" data-marpit-pagination="40" style="--marp-slide:40;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Cards Stacked</code></p><h2>Two-card layouts work equally well inverted to dark.</h2><div class="cards-stack-inner"><div class="card">The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.</div><div class="card">The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.</div></div><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
-<footer><div style="display:block;width:100%;text-align:left">Dark variant — stacked cards · cards-stacked dark</div></footer></section>
+<footer><div style="display:block;width:100%;text-align:left">Dark variant — stacked cards · cards-stack dark</div></footer></section>
 </body></html>
