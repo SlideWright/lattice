@@ -91,6 +91,54 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | Layout variant | T13v Step Cards                                         | `list-steps`                                        |
 | Visual         | T15 Image Full                                          | `image-full`                                   |
 
+## Modifiers
+
+Modifiers are class flags that compose with any layout. They encode **authorial intent** — density, emphasis, orientation — rather than cosmetic switches. Every modifier is opt-in and additive: an existing slide's rendering never changes until an author adds the modifier to its `_class` directive.
+
+**Composition syntax:** layout first, then modifiers, space-separated:
+
+```markdown
+<!-- _class: cards-grid compact dark -->
+<!-- _class: closing accent -->
+<!-- _class: list-steps phase -->
+```
+
+**Cascade rule:** when two modifiers tune the same variable (e.g. `compact loose`), the last one in the source wins. When modifiers tune disjoint properties (e.g. `compact dark`), they compose without conflict.
+
+**Reference:** [proposals.md §2 (modifier catalogue)](./proposals.md) and the appendix matrix at the end of that file enumerate which modifiers attach to which layouts.
+
+### Cross-cutting modifiers
+
+These modifiers apply across most layouts. They never change the layout's markdown contract — only how it renders.
+
+#### `dark`
+
+Reskins the slide canvas using the palette's `--dark-*` tokens. The same layout structure works on either canvas. The dark bookend layouts (`title`, `divider`, `closing`) include `dark` in their default chrome.
+
+#### `compact`
+
+Tightens the spacing scale ~25 % (`--sp-xs` … `--sp-2xl`). Card gaps, list gutters, and section LR padding follow because layouts read those variables via `var()`. The chrome reservation (top/bottom 88 px) is preserved so headers and footers never collide with content. Reach for `compact` when one more card needs to fit, or when prose runs the section by 1-2 lines.
+
+```markdown
+<!-- _class: cards-grid compact -->
+```
+
+#### `loose`
+
+Inverse of `compact` — grows the spacing scale ~25 %. Reach for it when a slide carries a single editorial point and you want the page to feel deliberately quiet.
+
+```markdown
+<!-- _class: content loose -->
+```
+
+#### `accent`
+
+Replaces the default rainbow top-stripe with a solid accent-colour stripe and tints the slide heading. Composes with `dark`: on the dark canvas, where the spectrum stripe is suppressed, `accent.dark` restores a solid accent stripe so the visual signal still reads.
+
+```markdown
+<!-- _class: closing accent -->
+```
+
 ## Template 1: Title (dark bookend)
 
 ```

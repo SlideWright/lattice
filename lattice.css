@@ -1455,3 +1455,68 @@ section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * MODIFIERS — cross-cutting authorial intent flags
+ * ────────────────────────────────────────────────────────────────────────
+ * Modifiers compose with any layout. They redefine palette/spacing
+ * variables on the section element; layouts that read those variables
+ * via var() pick up the new values automatically. This keeps modifiers
+ * additive — no per-layout cascade edits required.
+ *
+ * Composition rules:
+ *   - Modifiers never collide with layouts; any modifier may pair with
+ *     any layout where the appendix matrix in references/proposals.md
+ *     marks it ● or ○.
+ *   - When two density modifiers are stacked (e.g. compact loose), the
+ *     last one in the source order wins, per normal cascade.
+ *   - Layout-specific modifiers (declared further below) compose with
+ *     cross-cutting modifiers.
+ *
+ * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── compact ────────────────────────────────────────────────────────────
+ * Tighter spacing for dense slides. Shrinks the spacing scale ~25 %; the
+ * section's own LR padding follows because it is declared with var(--sp-2xl).
+ * Chrome reservation (top/bottom 88px) is intentionally preserved so header
+ * and footer never collide with content. */
+section.compact {
+  --sp-xs: 6px;
+  --sp-sm: 12px;
+  --sp-md: 18px;
+  --sp-lg: 24px;
+  --sp-xl: 36px;
+  --sp-2xl: 48px;
+}
+
+/* ── loose ──────────────────────────────────────────────────────────────
+ * More breathing room. Inverse of compact. */
+section.loose {
+  --sp-xs: 10px;
+  --sp-sm: 20px;
+  --sp-md: 30px;
+  --sp-lg: 40px;
+  --sp-xl: 60px;
+  --sp-2xl: 80px;
+}
+
+/* ── accent ─────────────────────────────────────────────────────────────
+ * Replaces the rainbow spectrum top-border with a solid accent stripe and
+ * tints the slide heading. Used when a slide carries a single editorial
+ * argument — the accent stripe signals "this is the point". */
+section.accent {
+  border-top: 4px solid var(--accent);
+  border-image: none;
+}
+section.accent h2 { color: var(--accent); }
+/* On the dark canvas the rainbow border is suppressed entirely; the accent
+ * modifier restores a single-colour stripe so the visual signal still reads. */
+section.accent.dark {
+  background:
+    linear-gradient(to right, var(--accent), var(--accent)) top / 100% 4px no-repeat,
+    var(--bg);
+  border-top: none;
+}
+section.accent.dark h2 { color: var(--accent); }
+

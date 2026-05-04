@@ -616,6 +616,53 @@ A tall asset on a wide canvas — the lattice pattern frames the image on the le
 - The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
 - The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
+---
+
+<!-- _class: cards-grid compact -->
+<!-- _footer: "Modifier — compact · cards-grid compact" -->
+
+`Modifier · compact`
+
+## Compact tightens the spacing scale ~25 %, end-to-end.
+
+- **What changes**
+  - `--sp-xs` through `--sp-2xl` shrink. Card gaps, list gutters, and section padding follow because every layout reads them via `var()`.
+- **What does not change**
+  - Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.
+- **When to reach for it**
+  - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.
+- **Composition**
+  - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
+
+---
+
+<!-- _class: content loose -->
+<!-- _footer: "Modifier — loose · content loose" -->
+
+`Modifier · loose`
+
+## Loose is the inverse — more breathing room, same layout machinery.
+
+The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for `loose` when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.
+
+The discipline is the same as `compact` from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.
+
+> Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
+
+---
+
+<!-- _class: closing accent -->
+<!-- _paginate: false -->
+<!-- _footer: "Modifier — accent · closing accent" -->
+
+`Modifier · accent`
+
+## Accent replaces the rainbow stripe with a single editorial colour.
+
+The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The `accent` modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.
+
+It composes with `dark`: on the dark canvas the spectrum top-stripe is suppressed entirely, so `accent.dark` restores a solid accent stripe in its place — preserving the visual signal across both canvases.
+
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->

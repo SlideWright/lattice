@@ -2328,6 +2328,71 @@ section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
   background:linear-gradient(to right, var(--accent), transparent);
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+ * MODIFIERS — cross-cutting authorial intent flags
+ * ────────────────────────────────────────────────────────────────────────
+ * Modifiers compose with any layout. They redefine palette/spacing
+ * variables on the section element; layouts that read those variables
+ * via var() pick up the new values automatically. This keeps modifiers
+ * additive — no per-layout cascade edits required.
+ *
+ * Composition rules:
+ *   - Modifiers never collide with layouts; any modifier may pair with
+ *     any layout where the appendix matrix in references/proposals.md
+ *     marks it ● or ○.
+ *   - When two density modifiers are stacked (e.g. compact loose), the
+ *     last one in the source order wins, per normal cascade.
+ *   - Layout-specific modifiers (declared further below) compose with
+ *     cross-cutting modifiers.
+ *
+ * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── compact ────────────────────────────────────────────────────────────
+ * Tighter spacing for dense slides. Shrinks the spacing scale ~25 %; the
+ * section's own LR padding follows because it is declared with var(--sp-2xl).
+ * Chrome reservation (top/bottom 88px) is intentionally preserved so header
+ * and footer never collide with content. */
+section.compact {
+  --sp-xs: 6px;
+  --sp-sm: 12px;
+  --sp-md: 18px;
+  --sp-lg: 24px;
+  --sp-xl: 36px;
+  --sp-2xl: 48px;
+}
+
+/* ── loose ──────────────────────────────────────────────────────────────
+ * More breathing room. Inverse of compact. */
+section.loose {
+  --sp-xs: 10px;
+  --sp-sm: 20px;
+  --sp-md: 30px;
+  --sp-lg: 40px;
+  --sp-xl: 60px;
+  --sp-2xl: 80px;
+}
+
+/* ── accent ─────────────────────────────────────────────────────────────
+ * Replaces the rainbow spectrum top-border with a solid accent stripe and
+ * tints the slide heading. Used when a slide carries a single editorial
+ * argument — the accent stripe signals "this is the point". */
+section.accent {
+  border-top: 4px solid var(--accent);
+  border-image: none;
+}
+section.accent h2 { color: var(--accent); }
+/* On the dark canvas the rainbow border is suppressed entirely; the accent
+ * modifier restores a single-colour stripe so the visual signal still reads. */
+section.accent.dark {
+  background:
+    linear-gradient(to right, var(--accent), var(--accent)) top / 100% 4px no-repeat,
+    var(--bg);
+  border-top: none;
+}
+section.accent.dark h2 { color: var(--accent); }
+
+
 
 /* Marp system styles — pagination content binding.
    Header/footer positioning + section::after typography live in lattice.css
@@ -2411,7 +2476,10 @@ token = kms.encrypt(
 <section id="37" class="content dark" data-marpit-slide="37" data-marpit-pagination="37" style="--marp-slide:37;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Content</code></p><h2>The token system handles dark without per-element overrides.</h2><p>All colours reference CSS variables — <code>--bg</code>, <code>--text-heading</code>, <code>--text-body</code>, <code>--border</code> — that remap when <code>dark</code> is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.</p><footer><div style="display:block;width:100%;text-align:left">Dark variant — prose · content dark</div></footer></section>
 <section id="38" class="image-full dark" data-marpit-slide="38" style="--marp-slide:38;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><div style="position:absolute;inset:0;z-index:-1;overflow:hidden;"><img src="sample-image-portrait.svg" style="width:100%;height:100%;object-fit:contain;display:block;" alt=""/></div><h2>[ Signal Pipeline · Portrait Asset — Dark ]</h2><p>A tall asset on a wide canvas — the lattice pattern frames the image on the left and right, replacing dead space with brand chrome.</p><footer><div style="display:block;width:100%;text-align:left">Image full dark · image-full dark</div></footer></section>
 <section id="39" class="list dark" data-marpit-slide="39" data-marpit-pagination="39" style="--marp-slide:39;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · List</code></p><h2>The card stack renders cleanly on dark backgrounds.</h2><ul><li>Every card uses <code>--bg-alt</code> for fill and <code>--border</code> for the border — both remap in dark mode.</li><li>The accent left border uses <code>--accent</code> which is unchanged — the gold reads well against dark.</li><li>Body text shifts to <code>--text-body</code> which in dark mode is a warm light tone, not pure white.</li></ul><footer><div style="display:block;width:100%;text-align:left">Dark variant — list · list dark</div></footer></section>
-<section id="40" class="cards-stack dark" data-marpit-slide="40" data-marpit-pagination="40" style="--marp-slide:40;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Cards Stacked</code></p><h2>Two-card layouts work equally well inverted to dark.</h2><div class="cards-stack-inner"><div class="card">The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.</div><div class="card">The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.</div></div><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<section id="40" class="cards-stack dark" data-marpit-slide="40" data-marpit-pagination="40" style="--marp-slide:40;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Dark Variant · Cards Stacked</code></p><h2>Two-card layouts work equally well inverted to dark.</h2><div class="cards-stack-inner"><div class="card">The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.</div><div class="card">The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.</div></div><footer><div style="display:block;width:100%;text-align:left">Dark variant — stacked cards · cards-stack dark</div></footer></section>
+<section id="41" class="cards-grid compact" data-marpit-slide="41" data-marpit-pagination="41" style="--marp-slide:41;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
+<section id="42" class="content loose" data-marpit-slide="42" data-marpit-pagination="42" style="--marp-slide:42;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
+<section id="43" class="closing accent" data-marpit-slide="43" style="--marp-slide:43;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
-<footer><div style="display:block;width:100%;text-align:left">Dark variant — stacked cards · cards-stack dark</div></footer></section>
+<footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
 </body></html>
