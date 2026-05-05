@@ -1618,6 +1618,7 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
   font-size:var(--fs-sm);
   color:var(--text-muted);
   line-height:var(--lh-snug);
+  border-top:1px dotted var(--border);
 }
 
 /* ✦ glyph prefix + override the below-note ::before hairline. */
