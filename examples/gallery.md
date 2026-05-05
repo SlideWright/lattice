@@ -759,6 +759,67 @@ The left card is struck through to read as the option considered then dropped; t
 
 ---
 
+<!-- _class: image mirror -->
+<!-- _footer: "Modifier — image mirror · image mirror" -->
+
+`Modifier · image mirror`
+
+## Mirror flips the image to the other half — alias of legacy `image left`.
+
+The half-canvas image moves from the right slot to the left slot, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag; `left` remains as a backwards-compatible alias for one release.
+
+![bg left fit](sample-image-portrait.svg)
+
+---
+
+<!-- _class: featured mirror -->
+<!-- _footer: "Modifier — featured mirror · featured mirror" -->
+
+## Mirror puts the hero card on the right; sub-cards stack on the left.
+
+- The hero card now reads from the right
+  - The featured layout normally leads with the accented hero card on the left and stacks supporting cards on the right. Mirror swaps the columns without touching the markdown contract.
+- First supporting card on the left
+  - Useful when the rest of the deck reads left-to-right and the editorial weight needs to land on the right edge as the next slide opens.
+- Second supporting card below
+  - Identical structure, identical authoring; only the visual side changes.
+
+---
+
+<!-- _class: split-panel mirror -->
+<!-- _footer: "Modifier — split-panel mirror · split-panel mirror" -->
+
+## Section opener with the accent panel on the right.
+
+`Section 02 · Mirror`
+
+### What this section covers
+
+Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips.
+
+1. Confidence
+   - How many independent sources corroborate the signal. Ranges 1–5.
+1. Recency
+   - Time-decay applied from signal date to scoring date. Half-life is team-configurable.
+1. Strategic Relevance
+   - Manual score from the signal owner. Ranges 1–5. Requires justification above 4.
+
+---
+
+<!-- _class: compare-prose mirror chosen -->
+<!-- _footer: "Modifier — compare-prose mirror chosen · compare-prose mirror chosen" -->
+
+## Mirror composes with chosen — the accented card reads from the left.
+
+- Considered alternative
+  - Source order keeps this card first, so `chosen` rules continue to target the second card in the markdown. Mirror only flips the rendering; the editorial intent (left = considered, right = chosen) is preserved by reading order.
+- The choice
+  - With `mirror`, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path.
+
+The below-note still appears under both cards after the hairline rule.
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

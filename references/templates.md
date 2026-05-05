@@ -139,6 +139,25 @@ Replaces the default rainbow top-stripe with a solid accent-colour stripe and ti
 <!-- _class: closing accent -->
 ```
 
+#### `mirror`
+
+Flips the asymmetric half of a layout left/right. Applies only where the layout has an inherent left/right asymmetry — symmetric grids ignore it.
+
+| Layout          | Effect                                                                  |
+| --------------- | ----------------------------------------------------------------------- |
+| `image`         | image side flips from right (default) to left. Alias of legacy `left`. |
+| `featured`      | hero card moves from the left column to the right column.              |
+| `split-panel`   | accent panel moves from the left to the right.                         |
+| `compare-prose` | left and right cards swap; chosen/decision read from the left.         |
+
+```markdown
+<!-- _class: image mirror -->
+<!-- _class: featured mirror -->
+<!-- _class: compare-prose mirror chosen -->
+```
+
+`image left` is preserved as a deprecated alias; new authoring should prefer `image mirror`.
+
 ### Layout-specific modifiers
 
 #### `list-steps` family
