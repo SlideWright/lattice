@@ -248,18 +248,29 @@ section .hljs-strong { font-weight:700; }
    * second pale tint. Tokenizing keeps it auditable. */
   --mermaid-accent-warm: #BD5000;
 
-  /* Mid-tone categorical palette (L≈60). Fed to cScale and gitN.
-   * Mermaid kanban applies a lighten step that brings these to L≈70
-   * (pale enough for dark text). Mindmap uses them directly with
-   * themeCSS overrides above. */
-  --mermaid-mid-blue:    #5C9DD3;
-  --mermaid-mid-green:   #6FB89A;
-  --mermaid-mid-purple:  #8E7BAF;
-  --mermaid-mid-orange:  #D4A271;
-  --mermaid-mid-teal:    #6BBDB8;
-  --mermaid-mid-rose:    #C57E8B;
-  --mermaid-mid-slate:   #9AA8B8;
-  --mermaid-mid-mauve:   #B8939F;
+  /* Mid-tone categorical palette (L≈60). Brand-level source of truth
+   * for any layout that needs categorical colour (actor pills, kanban
+   * dots, mermaid cScale, etc). Mermaid kanban applies a lighten step
+   * that brings these to L≈70 (pale enough for dark text); mindmap
+   * uses them directly via themeCSS overrides above. */
+  --cat-blue:    #5C9DD3;
+  --cat-green:   #6FB89A;
+  --cat-purple:  #8E7BAF;
+  --cat-orange:  #D4A271;
+  --cat-teal:    #6BBDB8;
+  --cat-rose:    #C57E8B;
+  --cat-slate:   #9AA8B8;
+  --cat-mauve:   #B8939F;
+
+  /* Mermaid aliases — consumed by lattice-runtime.js. */
+  --mermaid-mid-blue:    var(--cat-blue);
+  --mermaid-mid-green:   var(--cat-green);
+  --mermaid-mid-purple:  var(--cat-purple);
+  --mermaid-mid-orange:  var(--cat-orange);
+  --mermaid-mid-teal:    var(--cat-teal);
+  --mermaid-mid-rose:    var(--cat-rose);
+  --mermaid-mid-slate:   var(--cat-slate);
+  --mermaid-mid-mauve:   var(--cat-mauve);
 
   /* Pie cycle extension (slots 7-12 use these distinct light hues
    * since pie keeps the deck-wide pale-with-dark-text contract). */

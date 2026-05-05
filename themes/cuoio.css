@@ -172,15 +172,27 @@ section .hljs-strong { font-weight:700; }
   --mermaid-border: #8B7E6D;  /* deep taupe — reads on every pale fill */
   --mermaid-line:   #6B5D4F;  /* warm brown ink — edges and arrows */
 
-  /* Mid-tone categorical palette — 6 earth pigments (for cScale/git) */
-  --mermaid-mid-blue:    #3E5C6B;  /* petrol */
-  --mermaid-mid-green:   #6E7A3A;  /* moss */
-  --mermaid-mid-purple:  #4F4770;  /* iris */
-  --mermaid-mid-orange:  #8B6914;  /* gold */
-  --mermaid-mid-teal:    #3E7A6B;  /* dark teal */
-  --mermaid-mid-rose:    #76394C;  /* rose */
-  --mermaid-mid-slate:   #7A6B59;  /* text-label */
-  --mermaid-mid-mauve:   #6E4558;  /* deeper rose */
+  /* Mid-tone categorical palette — 8 earth pigments.
+   * Brand-level vars; the source of truth for any layout that needs
+   * categorical colour (actor pills, kanban dots, mermaid cScale, etc). */
+  --cat-blue:    #3E5C6B;  /* petrol */
+  --cat-green:   #6E7A3A;  /* moss */
+  --cat-purple:  #4F4770;  /* iris */
+  --cat-orange:  #8B6914;  /* gold */
+  --cat-teal:    #3E7A6B;  /* dark teal */
+  --cat-rose:    #76394C;  /* rose */
+  --cat-slate:   #7A6B59;  /* taupe */
+  --cat-mauve:   #6E4558;  /* deeper rose */
+
+  /* Mermaid aliases — consumed by lattice-runtime.js. */
+  --mermaid-mid-blue:    var(--cat-blue);
+  --mermaid-mid-green:   var(--cat-green);
+  --mermaid-mid-purple:  var(--cat-purple);
+  --mermaid-mid-orange:  var(--cat-orange);
+  --mermaid-mid-teal:    var(--cat-teal);
+  --mermaid-mid-rose:    var(--cat-rose);
+  --mermaid-mid-slate:   var(--cat-slate);
+  --mermaid-mid-mauve:   var(--cat-mauve);
 
   /* Pie cycle extension (slots 7-12, distinct warm tints) */
   --mermaid-pie-yellow:  #F5EDE0;  /* pale gold wash */

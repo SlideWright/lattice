@@ -2005,7 +2005,10 @@ section.actors > ol > li > strong {
   color:var(--text-heading);
   line-height:var(--lh-snug);
 }
-/* Inline code = actor name chip, filled accent, right-aligned. */
+/* Inline code = actor name chip, filled categorical pill, right-aligned.
+ * Each item gets a different on-brand categorical hue via nth-child
+ * rotation. The --cat-* palette is theme-defined; both cuoio (warm
+ * earth pigments) and indaco (cool L≈60 mids) ship balanced sets. */
 section.actors > ul > li > code,
 section.actors > ol > li > code {
   grid-column:2; grid-row:1;
@@ -2016,10 +2019,23 @@ section.actors > ol > li > code {
   font-weight:600;
   letter-spacing:0.04em;
   color:var(--on-dark-primary, #fff);
-  background:var(--accent);
+  background:var(--actor-chip, var(--accent));
   border-radius:999px;
   padding:4px 12px;
   white-space:nowrap;
+}
+/* Categorical rotation across items (cycle of 6, then mauve/slate). */
+section.actors > :is(ul, ol) > li:nth-child(8n+1) { --actor-chip:var(--cat-blue); }
+section.actors > :is(ul, ol) > li:nth-child(8n+2) { --actor-chip:var(--cat-green); }
+section.actors > :is(ul, ol) > li:nth-child(8n+3) { --actor-chip:var(--cat-purple); }
+section.actors > :is(ul, ol) > li:nth-child(8n+4) { --actor-chip:var(--cat-orange); }
+section.actors > :is(ul, ol) > li:nth-child(8n+5) { --actor-chip:var(--cat-teal); }
+section.actors > :is(ul, ol) > li:nth-child(8n+6) { --actor-chip:var(--cat-rose); }
+section.actors > :is(ul, ol) > li:nth-child(8n+7) { --actor-chip:var(--cat-mauve); }
+section.actors > :is(ul, ol) > li:nth-child(8n)   { --actor-chip:var(--cat-slate); }
+/* The accent left-border picks up the same hue as the chip. */
+section.actors > :is(ul, ol) > li {
+  border-left-color:var(--actor-chip, var(--accent));
 }
 /* Body row spans full width below the header. */
 section.actors > ul > li > ul,
