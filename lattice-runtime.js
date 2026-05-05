@@ -39,7 +39,7 @@
     const line    = v('mermaid-line');
     const primary = v('mermaid-primary-color');
     const second  = v('mermaid-secondary-color');
-    const slate   = v('mermaid-mid-slate');
+    const slate   = v('cat-slate');
 
     return {
       fontFamily: v('font-body') || "'Outfit', system-ui, sans-serif",
@@ -79,12 +79,12 @@
       // Categorical scale — cScale feeds kanban columns, mindmap levels, etc.
       // CSS themeCSS overrides already target kanban and mindmap explicitly;
       // cScale is the fallback for other diagrams that read it directly.
-      cScale0:  v('mermaid-mid-blue'),   cScale1:  v('mermaid-mid-green'),
-      cScale2:  v('mermaid-mid-purple'), cScale3:  v('mermaid-mid-orange'),
-      cScale4:  v('mermaid-mid-teal'),   cScale5:  v('mermaid-mid-rose'),
-      cScale6:  v('mermaid-mid-blue'),   cScale7:  v('mermaid-mid-green'),
-      cScale8:  v('mermaid-mid-purple'), cScale9:  v('mermaid-mid-orange'),
-      cScale10: v('mermaid-mid-teal'),   cScale11: v('mermaid-mid-rose'),
+      cScale0:  v('cat-blue'),   cScale1:  v('cat-green'),
+      cScale2:  v('cat-purple'), cScale3:  v('cat-orange'),
+      cScale4:  v('cat-teal'),   cScale5:  v('cat-rose'),
+      cScale6:  v('cat-blue'),   cScale7:  v('cat-green'),
+      cScale8:  v('cat-purple'), cScale9:  v('cat-orange'),
+      cScale10: v('cat-teal'),   cScale11: v('cat-rose'),
 
       // fillType — subgraph and mindmap level fills (pale band)
       fillType0: primary,              fillType1: second,
@@ -153,10 +153,10 @@
       todayLineColor:         v('mermaid-gantt-today'),
 
       // Git graph
-      git0: v('mermaid-mid-blue'),   git1: v('mermaid-mid-green'),
-      git2: v('mermaid-mid-purple'), git3: v('mermaid-mid-orange'),
-      git4: v('mermaid-mid-teal'),   git5: v('mermaid-mid-rose'),
-      git6: v('mermaid-mid-slate'),  git7: v('mermaid-mid-mauve'),
+      git0: v('cat-blue'),   git1: v('cat-green'),
+      git2: v('cat-purple'), git3: v('cat-orange'),
+      git4: v('cat-teal'),   git5: v('cat-rose'),
+      git6: v('cat-slate'),  git7: v('cat-mauve'),
       gitBranchLabel0: text, gitBranchLabel1: text,
       gitBranchLabel2: text, gitBranchLabel3: text,
       gitBranchLabel4: text, gitBranchLabel5: text,
@@ -200,9 +200,9 @@
         yAxisLineColor:   border,
         yAxisTickColor:   slate,
         plotColorPalette: [
-          v('mermaid-mid-blue'),   v('mermaid-mid-green'),
-          v('mermaid-mid-purple'), v('mermaid-mid-orange'),
-          v('mermaid-mid-teal'),   v('mermaid-mid-rose'),
+          v('cat-blue'),   v('cat-green'),
+          v('cat-purple'), v('cat-orange'),
+          v('cat-teal'),   v('cat-rose'),
         ].join(','),
       },
 

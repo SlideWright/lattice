@@ -262,16 +262,6 @@ section .hljs-strong { font-weight:700; }
   --cat-slate:   #9AA8B8;
   --cat-mauve:   #B8939F;
 
-  /* Mermaid aliases — consumed by lattice-runtime.js. */
-  --mermaid-mid-blue:    var(--cat-blue);
-  --mermaid-mid-green:   var(--cat-green);
-  --mermaid-mid-purple:  var(--cat-purple);
-  --mermaid-mid-orange:  var(--cat-orange);
-  --mermaid-mid-teal:    var(--cat-teal);
-  --mermaid-mid-rose:    var(--cat-rose);
-  --mermaid-mid-slate:   var(--cat-slate);
-  --mermaid-mid-mauve:   var(--cat-mauve);
-
   /* Pie cycle extension (slots 7-12 use these distinct light hues
    * since pie keeps the deck-wide pale-with-dark-text contract). */
   --mermaid-pie-yellow:  #F4EFD8;

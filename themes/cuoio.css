@@ -184,16 +184,6 @@ section .hljs-strong { font-weight:700; }
   --cat-slate:   #7A6B59;  /* taupe */
   --cat-mauve:   #6E4558;  /* deeper rose */
 
-  /* Mermaid aliases — consumed by lattice-runtime.js. */
-  --mermaid-mid-blue:    var(--cat-blue);
-  --mermaid-mid-green:   var(--cat-green);
-  --mermaid-mid-purple:  var(--cat-purple);
-  --mermaid-mid-orange:  var(--cat-orange);
-  --mermaid-mid-teal:    var(--cat-teal);
-  --mermaid-mid-rose:    var(--cat-rose);
-  --mermaid-mid-slate:   var(--cat-slate);
-  --mermaid-mid-mauve:   var(--cat-mauve);
-
   /* Pie cycle extension (slots 7-12, distinct warm tints) */
   --mermaid-pie-yellow:  #F5EDE0;  /* pale gold wash */
   --mermaid-pie-red:     #F0E0E0;  /* pale sienna wash */
@@ -403,19 +393,19 @@ section .hljs-strong { font-weight:700; }
     stroke-opacity: 0.5 !important;
   }
   section .radarCurve-0 {
-    fill: var(--mermaid-mid-orange) !important;
+    fill: var(--cat-orange) !important;
     fill-opacity: 0.30 !important;
-    stroke: var(--mermaid-mid-orange) !important;
+    stroke: var(--cat-orange) !important;
     stroke-width: 2.5 !important;
   }
   section .radarCurve-1 {
-    fill: var(--mermaid-mid-blue) !important;
+    fill: var(--cat-blue) !important;
     fill-opacity: 0.30 !important;
-    stroke: var(--mermaid-mid-blue) !important;
+    stroke: var(--cat-blue) !important;
     stroke-width: 2.5 !important;
   }
-  section .radarLegendBox-0 { fill: var(--mermaid-mid-orange) !important; }
-  section .radarLegendBox-1 { fill: var(--mermaid-mid-blue) !important; }
+  section .radarLegendBox-0 { fill: var(--cat-orange) !important; }
+  section .radarLegendBox-1 { fill: var(--cat-blue) !important; }
   section .radarAxisLabel {
     fill: var(--text-heading) !important;
     font-weight: 600 !important;

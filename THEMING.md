@@ -95,10 +95,11 @@ gantt planned bars, etc.): `--mermaid-primary-color`, `--mermaid-secondary-color
 reads on every pale surface — typically saturated brand navy), `--mermaid-line`
 (arrows and signals — typically near-black).
 
-**Mid-tone categorical palette** (8 hues used by `cScale0..11` and
-`git0..7`): `--mermaid-mid-blue`, `--mermaid-mid-green`, `--mermaid-mid-purple`,
-`--mermaid-mid-orange`, `--mermaid-mid-teal`, `--mermaid-mid-rose`,
-`--mermaid-mid-slate`, `--mermaid-mid-mauve`. Pick at L≈60 because Mermaid's
+**Mid-tone categorical palette** (8 hues; brand-level vars used by
+`cScale0..11`, `git0..7`, and any layout that needs categorical colour
+— e.g. actor pills): `--cat-blue`, `--cat-green`, `--cat-purple`,
+`--cat-orange`, `--cat-teal`, `--cat-rose`, `--cat-slate`, `--cat-mauve`.
+Pick at L≈60 because Mermaid's
 kanban renderer applies a lighten step that brings emitted fills to L≈70.
 
 **Pie cycle extension** (5 additional pale tints for slots 7-12):
