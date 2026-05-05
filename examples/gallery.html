@@ -1468,7 +1468,7 @@ section.list ol li::before { content:counter(list-counter, decimal-leading-zero)
  * **num** *verb* description `meta`
  */
 section.list-tabular h2 { margin-bottom:var(--sp-md); }
-section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:flex-start; }
+section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:center; }
 section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-body); line-height:var(--lh-base); }
 section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
 section.list-tabular ol > li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); }
