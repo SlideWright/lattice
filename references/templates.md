@@ -1620,7 +1620,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 └───────────────────────────────────────┘
 ```
 
-**Layouts that support Key Insight:** `cards-grid`, `cards-side`, `compare-prose`, `list`, `list-criteria`, `cards-wide`, `list-steps`, `split-panel`
+**Layouts that support Key Insight:** every layout except `quote` and `featured` (which use the blockquote slot for primary content). In practice, reach for it on card- and list-bearing layouts where the trailing blockquote summarises the slide.
 
 **Styling:**
 
@@ -1662,11 +1662,47 @@ A trailing plain paragraph (not a blockquote) on any card-bearing layout renders
 This is a below-note. It appears below the cards with a hairline rule above it.
 ```
 
-**Layouts that support below-note:** `cards-grid`, `compare-prose`, `verdict-grid`, `featured`, `list-criteria`, `cards-wide`
+**Layouts that support below-note:** `cards-grid`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`
 
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
 - Use for source attribution, scope caveats, or a single sentence of additional context
+
+---
+
+## Feature: Annotation
+
+A trailing paragraph whose only content is an `_italic_` span renders as an **annotation** — a `✦` (U+2726) glyph in `--accent` followed by smaller, muted, label-size text. No hairline rule. Distinct from a below-note: lighter visual weight, lower information density, signals "this is a footnote, not a continuation of the argument."
+
+```markdown
+<!-- _class: cards-grid -->
+
+## Slide heading.
+
+- Card Title 1
+  - Card body.
+- Card Title 2
+  - Card body.
+
+_Source: pilot retrospective, six months across four product teams._
+```
+
+**Layouts that support annotation:** same set as below-note — `cards-grid`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`
+
+- Selector: `p:has(> em:only-child)` — the paragraph must contain a single `<em>` and nothing else (no leading/trailing text outside the italic span)
+- Glyph: `✦` (U+2726) in `--accent`, `0.95em`
+- Text: 15px (`--fs-sm`), `--text-muted`
+- Use for: source citations, scope caveats, asterisk-style footnotes — content that frames the slide rather than extending its argument
+
+**Note:** The three trailing-paragraph registers compose by markdown shape on the same set of layouts:
+
+| Markdown shape                          | Renders as       | Visual                                  |
+| --------------------------------------- | ---------------- | --------------------------------------- |
+| `> blockquote`                          | **Key Insight**  | accent-tinted panel, "KEY INSIGHT" eyebrow |
+| Plain `<p>`                             | **Below-Note**   | hairline rule + body text               |
+| `<p>` containing only `_italic_` markdown | **Annotation** | `✦` glyph + muted label-size text       |
+
+A slide may carry one Key Insight (blockquote) plus one trailing-paragraph register (below-note OR annotation), in that order. See `examples/gallery.md` slide 21 for key-insight + below-note, slide 22 for key-insight + annotation.
 
 ---
 
