@@ -1484,25 +1484,56 @@ section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { 
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
- * the same hairline-rule treatment for layouts that use it.                   */
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda):not(:has(.below-note))
-  > :is(ul, ol, blockquote, table) + p {
+ * the same hairline-rule treatment for layouts that use it.
+ *
+ * NOTE: Marpit's CSS scoper rewrites leading `:is(section.X, ...)` to
+ * `div#:$p > svg > foreignobject > section :is(...)` — i.e. it treats
+ * the `:is(...)` as a descendant of the slide root rather than the slide
+ * itself. So leading sections must be enumerated as a comma-separated
+ * union (each gets prefixed individually), not collapsed into `:is()`.
+ *                                                                            */
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
   position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda):not(:has(.below-note))
-  > :is(ul, ol, blockquote, table) + p::before {
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
@@ -1515,49 +1546,121 @@ section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { 
  * this, don't dwell."
  *
  * Selector covers both forms: the CLI-wrapped `.below-note > p` and the
- * Marp-preview raw trailing `<p>`. Suppresses the below-note hairline
- * when triggered, and overrides the fallback's hairline ::before.
+ * Marp-preview raw trailing `<p>`. Layouts must be enumerated as a
+ * comma-separated union (see note on the below-note fallback above).
  * ──────────────────────────────────────────────────────────────────────── */
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda, section.compare-table)
-  .below-note:has(> p > em:only-child)::before { display:none; }
 
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda, section.compare-table)
-  .below-note > p:has(> em:only-child),
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda, section.compare-table)
-  > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
+/* Suppress the below-note hairline rule when annotation triggers (CLI form). */
+section.cards-grid .below-note:has(> p > em:only-child)::before,
+section.compare-prose .below-note:has(> p > em:only-child)::before,
+section.verdict-grid .below-note:has(> p > em:only-child)::before,
+section.featured .below-note:has(> p > em:only-child)::before,
+section.list-criteria .below-note:has(> p > em:only-child)::before,
+section.cards-wide .below-note:has(> p > em:only-child)::before,
+section.cards-stack .below-note:has(> p > em:only-child)::before,
+section.list .below-note:has(> p > em:only-child)::before,
+section.list-steps .below-note:has(> p > em:only-child)::before,
+section.list-tabular .below-note:has(> p > em:only-child)::before,
+section.timeline .below-note:has(> p > em:only-child)::before,
+section.principles .below-note:has(> p > em:only-child)::before,
+section.tldr .below-note:has(> p > em:only-child)::before,
+section.matrix-2x2 .below-note:has(> p > em:only-child)::before,
+section.decision .below-note:has(> p > em:only-child)::before,
+section.before-after .below-note:has(> p > em:only-child)::before,
+section.actors .below-note:has(> p > em:only-child)::before,
+section.kpi .below-note:has(> p > em:only-child)::before,
+section.agenda .below-note:has(> p > em:only-child)::before,
+section.compare-table .below-note:has(> p > em:only-child)::before {
+  display:none;
+}
+
+/* Annotation paragraph styling — covers both CLI-wrapped and Marp-preview raw forms. */
+section.cards-grid .below-note > p:has(> em:only-child),
+section.compare-prose .below-note > p:has(> em:only-child),
+section.verdict-grid .below-note > p:has(> em:only-child),
+section.featured .below-note > p:has(> em:only-child),
+section.list-criteria .below-note > p:has(> em:only-child),
+section.cards-wide .below-note > p:has(> em:only-child),
+section.cards-stack .below-note > p:has(> em:only-child),
+section.list .below-note > p:has(> em:only-child),
+section.list-steps .below-note > p:has(> em:only-child),
+section.list-tabular .below-note > p:has(> em:only-child),
+section.timeline .below-note > p:has(> em:only-child),
+section.principles .below-note > p:has(> em:only-child),
+section.tldr .below-note > p:has(> em:only-child),
+section.matrix-2x2 .below-note > p:has(> em:only-child),
+section.decision .below-note > p:has(> em:only-child),
+section.before-after .below-note > p:has(> em:only-child),
+section.actors .below-note > p:has(> em:only-child),
+section.kpi .below-note > p:has(> em:only-child),
+section.agenda .below-note > p:has(> em:only-child),
+section.compare-table .below-note > p:has(> em:only-child),
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
   font-size:var(--fs-label);
   color:var(--text-muted);
   line-height:var(--lh-snug);
 }
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda, section.compare-table)
-  .below-note > p:has(> em:only-child)::before,
-:is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide,
-    section.cards-stack, section.list, section.list-steps,
-    section.list-tabular, section.timeline, section.principles,
-    section.tldr, section.matrix-2x2, section.decision, section.before-after,
-    section.actors, section.kpi, section.agenda, section.compare-table)
-  > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before {
+
+/* ✦ glyph prefix + override the below-note ::before hairline. */
+section.cards-grid .below-note > p:has(> em:only-child)::before,
+section.compare-prose .below-note > p:has(> em:only-child)::before,
+section.verdict-grid .below-note > p:has(> em:only-child)::before,
+section.featured .below-note > p:has(> em:only-child)::before,
+section.list-criteria .below-note > p:has(> em:only-child)::before,
+section.cards-wide .below-note > p:has(> em:only-child)::before,
+section.cards-stack .below-note > p:has(> em:only-child)::before,
+section.list .below-note > p:has(> em:only-child)::before,
+section.list-steps .below-note > p:has(> em:only-child)::before,
+section.list-tabular .below-note > p:has(> em:only-child)::before,
+section.timeline .below-note > p:has(> em:only-child)::before,
+section.principles .below-note > p:has(> em:only-child)::before,
+section.tldr .below-note > p:has(> em:only-child)::before,
+section.matrix-2x2 .below-note > p:has(> em:only-child)::before,
+section.decision .below-note > p:has(> em:only-child)::before,
+section.before-after .below-note > p:has(> em:only-child)::before,
+section.actors .below-note > p:has(> em:only-child)::before,
+section.kpi .below-note > p:has(> em:only-child)::before,
+section.agenda .below-note > p:has(> em:only-child)::before,
+section.compare-table .below-note > p:has(> em:only-child)::before,
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before {
   content:'\2726';
   position:static;
   background:none;
