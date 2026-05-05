@@ -2329,6 +2329,276 @@ section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+ * NEW LAYOUTS (Wave 7) — proposals.md §3.1–3.6
+ * ────────────────────────────────────────────────────────────────────────
+ * Four authoring components introduced to replace the most common
+ * cards-grid / compare-prose hand-rolls in real decks.
+ *
+ *   matrix-2x2    — quadrant grid (SWOT, Eisenhower, risk/impact, …)
+ *   decision      — verdict slide; one heading + 2-3 short justifications
+ *   before-after  — explicit state-change with arrow connector
+ *   principles    — declared statements; sparser than list, larger type
+ *
+ * All four are CSS-only: they style the bare <ul>/<ol> Marp emits. No
+ * lattice.js post-processing is required because the markdown contract
+ * is simple enough that direct selectors do the job.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── MATRIX-2X2 ────────────────────────────────────────────────────────
+ * ## heading
+ * `Axis-X · Axis-Y`         (eyebrow, optional — renders as inline-code label)
+ * - Top-left              \
+ * - Top-right              \  exactly four top-level items, in
+ * - Bottom-left            /  declaration order = TL · TR · BL · BR
+ * - Bottom-right          /
+ *
+ * Implementation: a 2×2 CSS grid on the bare ul/ol. Each li is a card
+ * with the body nested as an inner ul. The four quadrants share visual
+ * chrome; the bottom-right cell carries an accent ring as the conventional
+ * "high-priority" or "outcome" cell (SWOT: opportunities · Eisenhower: do).
+ * Authors who want a different accent cell can swap items in the markdown.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.matrix-2x2 { display:flex; flex-direction:column; }
+section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
+section.matrix-2x2 > ul,
+section.matrix-2x2 > ol {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:var(--sp-md); flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.matrix-2x2 > ul > li,
+section.matrix-2x2 > ol > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-md);
+  position:relative; overflow:hidden;
+}
+/* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
+section.matrix-2x2 > ul > li:nth-child(4),
+section.matrix-2x2 > ol > li:nth-child(4) {
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+/* Body — nested ul/ol becomes the cell prose. */
+section.matrix-2x2 li > ul,
+section.matrix-2x2 li > ol {
+  list-style:none; padding:0; margin:0;
+}
+section.matrix-2x2 li > ul > li,
+section.matrix-2x2 li > ol > li {
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+
+/* ── DECISION ──────────────────────────────────────────────────────────
+ * ## We are building, not buying.   (the verdict, in display weight)
+ * `Decision · 2026 Q1`              (eyebrow, optional)
+ * - **Build**           justification one
+ * - **Why not buy**     justification two
+ * - **Why not delay**   justification three
+ *
+ * The heading carries the verb of the decision. The list below holds
+ * 2-4 short justifications, each with a strong-prefix label and a body
+ * paragraph. Cards render as a horizontal strip with an accent left
+ * edge — visually unified, signalling that they all support the verdict.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.decision { display:flex; flex-direction:column; }
+section.decision h2 {
+  font-size:var(--fs-2xl);
+  margin-bottom:var(--sp-md);
+  line-height:var(--lh-tight);
+  max-width:900px;
+}
+section.decision > ul,
+section.decision > ol {
+  display:flex;
+  gap:var(--sp-md);
+  flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.decision > ul > li,
+section.decision > ol > li {
+  flex:1;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  color:var(--text-body);
+}
+section.decision > ul > li > strong,
+section.decision > ol > li > strong {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+section.decision > ul > li > p,
+section.decision > ol > li > p,
+section.decision > ul > li > ul,
+section.decision > ol > li > ul {
+  font-size:var(--fs-body);
+  line-height:var(--lh-base);
+  color:var(--text-body);
+  font-weight:400;
+  margin:0;
+  list-style:none;
+  padding:0;
+}
+
+/* ── BEFORE-AFTER ──────────────────────────────────────────────────────
+ * ## heading
+ * - **Before** body explaining the prior state
+ * - **After**  body explaining the new state
+ *
+ * Two cards with a large arrow between them. The right (After) card
+ * carries an accent ring to signal "this is the new state". The arrow
+ * is rendered as a section-level glyph between the two cards.
+ *
+ * Composes with `.vertical` (cross-cutting modifier slot — wave 7+) by
+ * stacking the cards and rotating the arrow. Implemented here as a base
+ * layout; the vertical variant is added in a later wave if needed.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.before-after { display:flex; flex-direction:column; }
+section.before-after h2 { margin-bottom:var(--sp-sm); }
+section.before-after > ul,
+section.before-after > ol {
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:stretch;
+  gap:var(--sp-md);
+  flex:1;
+  list-style:none; padding:0; margin:0;
+  position:relative;
+}
+section.before-after > ul > li,
+section.before-after > ol > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  color:var(--text-body);
+  font-size:var(--fs-md);
+  font-weight:400;
+}
+section.before-after > ul > li:first-child,
+section.before-after > ol > li:first-child {
+  grid-column:1;
+}
+section.before-after > ul > li:last-child,
+section.before-after > ol > li:last-child {
+  grid-column:3;
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+section.before-after > ul > li > strong,
+section.before-after > ol > li > strong {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--text-label);
+}
+section.before-after > ul > li:last-child > strong,
+section.before-after > ol > li:last-child > strong {
+  color:var(--accent);
+}
+/* Arrow injected as a grid cell between the two list items via ::before
+ * on the ul/ol. Position: column 2, vertically centred. */
+section.before-after > ul::before,
+section.before-after > ol::before {
+  content:'→';
+  grid-column:2;
+  grid-row:1;
+  align-self:center;
+  font-size:var(--fs-3xl);
+  color:var(--accent);
+  font-weight:400;
+  line-height:1;
+}
+/* Optional trailing paragraph — context note below the comparison. */
+section.before-after > p:last-of-type {
+  font-size:var(--fs-label);
+  font-style:italic;
+  color:var(--text-muted);
+  margin-top:var(--sp-md);
+  padding-top:var(--sp-sm);
+  border-top:1px solid var(--border);
+}
+
+/* ── PRINCIPLES ────────────────────────────────────────────────────────
+ * ## heading
+ * 1. We default to the choice that is cheaper to reverse.
+ * 2. We name the actor, never the system.
+ * 3. We write down the bet on the same slide as the choice.
+ *
+ * Numbered list of declarative statements in display weight. Each item
+ * is one paragraph (no nested body). Generous line-height; leading
+ * counter rendered in accent mono.
+ *
+ * Counter format defaults to decimal-leading-zero (01, 02, 03). Compose
+ * with .lettered or .roman to switch counter style.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.principles { display:flex; flex-direction:column; }
+section.principles h2 { margin-bottom:var(--sp-lg); }
+section.principles ol {
+  list-style:none;
+  counter-reset:principle-counter;
+  padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-md);
+  flex:1;
+}
+section.principles ol > li {
+  counter-increment:principle-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+}
+section.principles ol > li:last-child { border-bottom:none; }
+section.principles ol > li::before {
+  content:counter(principle-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+  align-self:start;
+  padding-top:0.4em;
+}
+/* Counter format modifiers — same family as list-steps. */
+section.principles.lettered ol > li::before {
+  content:counter(principle-counter, upper-alpha);
+}
+section.principles.roman ol > li::before {
+  content:counter(principle-counter, upper-roman);
+}
+/* Plain bullets — no numeric counter. */
+section.principles.bullet ol > li::before { content:'·'; }
+
+/* ════════════════════════════════════════════════════════════════════════
  * MODIFIERS — cross-cutting authorial intent flags
  * ────────────────────────────────────────────────────────────────────────
  * Modifiers compose with any layout. They redefine palette/spacing
@@ -2800,9 +3070,13 @@ token = kms.encrypt(
 <section id="54" class="divider numbered" data-marpit-slide="54" data-marpit-pagination="54" style="--marp-slide:54;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · divider numbered</code></p><h2>Numbered stamps an auto-counter in the top-right corner.</h2><p>The CSS counter walks the whole deck once and increments on every <code>divider.numbered</code> slide. Authors do not number sections by hand — the layout does it.</p><footer><div style="display:block;width:100%;text-align:left">Modifier — divider numbered · divider numbered</div></footer></section>
 <section id="55" class="subtopic numbered" data-marpit-slide="55" data-marpit-pagination="55" style="--marp-slide:55;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · subtopic numbered</code></p><h2>Each bookend layout owns its own counter.</h2><p>The subtopic counter is independent of the divider counter, so a mid-deck subtopic stamps <code>01</code> even when the dividers are already at <code>04</code>.</p><footer><div style="display:block;width:100%;text-align:left">Modifier — subtopic numbered · subtopic numbered</div></footer></section>
 <section id="56" class="closing numbered" data-marpit-slide="56" style="--marp-slide:56;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Closing · numbered</code></p><h2>The closing series gets its own auto-stamp too.</h2><p><code>Use it for multi-part decks where the closing slide of each part should carry the part number.</code></p><footer><div style="display:block;width:100%;text-align:left">Modifier — closing numbered · closing numbered</div></footer></section>
-<section id="57" class="cards-grid compact" data-marpit-slide="57" data-marpit-pagination="57" style="--marp-slide:57;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
-<section id="58" class="content loose" data-marpit-slide="58" data-marpit-pagination="58" style="--marp-slide:58;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
-<section id="59" class="closing accent" data-marpit-slide="59" style="--marp-slide:59;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<section id="57" class="matrix-2x2" data-marpit-slide="57" data-marpit-pagination="57" style="--marp-slide:57;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How we sort vendors against our two axes.</h2><p><code>Coverage · Cost</code></p><ul><li>High coverage / Low cost<ul><li>Vendor A — strongest fit on coverage, second-lowest TCO of the four.</li><li>Vendor B — narrower coverage but cheapest license tier.</li></ul></li><li>High coverage / High cost<ul><li>Vendor C — full coverage, premium pricing, niche differentiators we do not need.</li></ul></li><li>Low coverage / Low cost<ul><li>Vendor D — cheap, but leaves three regulatory boundaries uncovered.</li></ul></li><li>Low coverage / High cost<ul><li><em>none — and that is the signal.</em></li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — matrix-2x2 · matrix-2x2</div></footer></section>
+<section id="58" class="decision" data-marpit-slide="58" data-marpit-pagination="58" style="--marp-slide:58;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>We are building, not buying.</h2><p><code>Decision · 2026 Q1</code></p><ul><li><strong>Build</strong><ul><li>Owns the architecture, owns the operating model, owns the timeline.</li></ul></li><li><strong>Why not buy</strong><ul><li>Three vendors evaluated; none cover the regulatory boundary in-process.</li></ul></li><li><strong>Why not delay</strong><ul><li>The compliance window closes in 18 months.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — decision · decision</div></footer></section>
+<section id="59" class="before-after" data-marpit-slide="59" data-marpit-pagination="59" style="--marp-slide:59;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Detokenize used to require a vault round-trip.</h2><p><code>Latency story · before vs after</code></p><ul><li><strong>Before</strong><ul><li>Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.</li></ul></li><li><strong>After</strong><ul><li>Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.</li></ul></li></ul><div class="below-note"><p>The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — before-after · before-after</div></footer></section>
+<section id="60" class="principles" data-marpit-slide="60" data-marpit-pagination="60" style="--marp-slide:60;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How we make calls when the spec is silent.</h2><ol><li>We default to the choice that is cheaper to reverse.</li><li>We name the actor, never the system.</li><li>We write down the bet on the same slide as the choice.</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — principles · principles</div></footer></section>
+<section id="61" class="cards-grid compact" data-marpit-slide="61" data-marpit-pagination="61" style="--marp-slide:61;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
+<section id="62" class="content loose" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
+<section id="63" class="closing accent" data-marpit-slide="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
 <footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
 </body></html>

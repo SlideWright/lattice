@@ -244,6 +244,92 @@ Flips the stack direction from vertical (cards as rows) to horizontal (cards as 
 <!-- _class: cards-stack horizontal -->
 ```
 
+## New Layouts
+
+Four authoring components introduced to replace the most common `cards-grid` / `compare-prose` hand-rolls in real decks. All four are CSS-only; their markdown contracts are simple list shapes Marp emits natively.
+
+**Reference:** [proposals.md §3.1–3.6](./proposals.md).
+
+### `matrix-2x2` — quadrant grid
+
+Used for SWOT, Eisenhower, BCG growth-share, risk × impact, build-vs-buy. Four top-level items in declaration order map to **top-left, top-right, bottom-left, bottom-right**. The fourth (bottom-right) cell carries an accent ring as the conventional "outcome" or "high-priority" cell.
+
+```markdown
+<!-- _class: matrix-2x2 -->
+
+## How we sort vendors against our two axes.
+
+`Coverage · Cost`
+
+- High coverage / Low cost
+  - body for the TL cell
+- High coverage / High cost
+  - body for the TR cell
+- Low coverage / Low cost
+  - body for the BL cell
+- Low coverage / High cost
+  - body for the BR cell (accent)
+```
+
+### `decision` — the verdict slide
+
+Heavier than `closing`, lighter than `featured`. The heading carries the verdict verb in display weight; 2–4 short justifications below render as a horizontal strip with an accent left edge.
+
+```markdown
+<!-- _class: decision -->
+
+## We are building, not buying.
+
+`Decision · 2026 Q1`
+
+- **Build**
+  - Owns the architecture, owns the operating model, owns the timeline.
+- **Why not buy**
+  - Three vendors evaluated; none cover the regulatory boundary in-process.
+- **Why not delay**
+  - The compliance window closes in 18 months.
+```
+
+### `before-after` — explicit state-change
+
+Two cards with a large arrow between. The right (After) card carries an accent ring to signal the new state. An optional trailing paragraph renders as a context note below the comparison.
+
+```markdown
+<!-- _class: before-after -->
+
+## Detokenize used to require a vault round-trip.
+
+`Latency story · before vs after`
+
+- **Before**
+  - Body explaining the prior state.
+- **After**
+  - Body explaining the new state.
+
+Optional context sentence below the comparison.
+```
+
+### `principles` — declared statements
+
+Numbered list of declarative one-liners in display weight. Each item is one paragraph (no nested body). Generous line-height; the leading counter renders in accent mono.
+
+| Modifier   | Effect                                                |
+| ---------- | ----------------------------------------------------- |
+| (default)  | counter shows `01`, `02`, `03` (decimal-leading-zero) |
+| `lettered` | counter shows `A`, `B`, `C`                           |
+| `roman`    | counter shows `I`, `II`, `III`                        |
+| `bullet`   | suppresses the counter; renders a middot prefix       |
+
+```markdown
+<!-- _class: principles -->
+
+## How we make calls when the spec is silent.
+
+1. We default to the choice that is cheaper to reverse.
+2. We name the actor, never the system.
+3. We write down the bet on the same slide as the choice.
+```
+
 ## Template 1: Title (dark bookend)
 
 ```

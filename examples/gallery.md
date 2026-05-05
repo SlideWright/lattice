@@ -854,6 +854,68 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 ---
 
+<!-- _class: matrix-2x2 -->
+<!-- _footer: "New layout — matrix-2x2 · matrix-2x2" -->
+
+## How we sort vendors against our two axes.
+
+`Coverage · Cost`
+
+- High coverage / Low cost
+  - Vendor A — strongest fit on coverage, second-lowest TCO of the four.
+  - Vendor B — narrower coverage but cheapest license tier.
+- High coverage / High cost
+  - Vendor C — full coverage, premium pricing, niche differentiators we do not need.
+- Low coverage / Low cost
+  - Vendor D — cheap, but leaves three regulatory boundaries uncovered.
+- Low coverage / High cost
+  - _none — and that is the signal._
+
+---
+
+<!-- _class: decision -->
+<!-- _footer: "New layout — decision · decision" -->
+
+## We are building, not buying.
+
+`Decision · 2026 Q1`
+
+- **Build**
+  - Owns the architecture, owns the operating model, owns the timeline.
+- **Why not buy**
+  - Three vendors evaluated; none cover the regulatory boundary in-process.
+- **Why not delay**
+  - The compliance window closes in 18 months.
+
+---
+
+<!-- _class: before-after -->
+<!-- _footer: "New layout — before-after · before-after" -->
+
+## Detokenize used to require a vault round-trip.
+
+`Latency story · before vs after`
+
+- **Before**
+  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
+- **After**
+  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
+
+The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
+
+---
+
+<!-- _class: principles -->
+<!-- _footer: "New layout — principles · principles" -->
+
+## How we make calls when the spec is silent.
+
+1. We default to the choice that is cheaper to reverse.
+2. We name the actor, never the system.
+3. We write down the bet on the same slide as the choice.
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
