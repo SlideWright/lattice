@@ -820,6 +820,40 @@ The below-note still appears under both cards after the hairline rule.
 
 ---
 
+<!-- _class: divider numbered -->
+<!-- _footer: "Modifier — divider numbered · divider numbered" -->
+
+`Modifier · divider numbered`
+
+## Numbered stamps an auto-counter in the top-right corner.
+
+The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it.
+
+---
+
+<!-- _class: subtopic numbered -->
+<!-- _footer: "Modifier — subtopic numbered · subtopic numbered" -->
+
+`Modifier · subtopic numbered`
+
+## Each bookend layout owns its own counter.
+
+The subtopic counter is independent of the divider counter, so a mid-deck subtopic stamps `01` even when the dividers are already at `04`.
+
+---
+
+<!-- _class: closing numbered -->
+<!-- _footer: "Modifier — closing numbered · closing numbered" -->
+<!-- _paginate: false -->
+
+`Closing · numbered`
+
+## The closing series gets its own auto-stamp too.
+
+`Use it for multi-part decks where the closing slide of each part should carry the part number.`
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

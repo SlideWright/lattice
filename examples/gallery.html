@@ -2645,6 +2645,60 @@ section.compare-prose.mirror .compare-prose-inner {
   flex-direction: row-reverse;
 }
 
+/* ────────────────────────────────────────────────────────────────────────
+ * Bookend modifier — numbered
+ * Reference: proposals.md §2.2 divider/subtopic/closing; appendix matrix
+ *
+ * Stamps an auto-incrementing index in the top-right corner of any
+ * divider/subtopic/closing slide that opts in via .numbered. Each layout
+ * carries its own counter so authors can mix the three without collisions
+ * (e.g. "01 / divider" and "01 / closing" both read as 01 within their
+ * own series).
+ *
+ * Counter scope: counter-reset is applied at body level so the counter
+ * walks the whole deck once. No author bookkeeping required.
+ *
+ * Visual: large display-weight numeral, accent-tinted, anchored to the
+ * top-right corner, sized so it does not collide with section chrome.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+body {
+  counter-reset: lat-divider lat-subtopic lat-closing;
+}
+
+section.divider.numbered  { counter-increment: lat-divider; }
+section.subtopic.numbered { counter-increment: lat-subtopic; }
+section.closing.numbered  { counter-increment: lat-closing; }
+
+section.divider.numbered::after,
+section.subtopic.numbered::after,
+section.closing.numbered::after {
+  position: absolute;
+  top: var(--sp-xl);
+  right: var(--sp-xl);
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* On dark canvases the accent is muted; lift the numeral with the
+ * dark watermark colour so it reads against the dark bg. */
+section.divider.numbered::after,
+section.closing.numbered::after {
+  color: var(--on-dark-watermark, var(--accent));
+  opacity: 0.85;
+}
+
+section.divider.numbered::after  { content: counter(lat-divider,  decimal-leading-zero); }
+section.subtopic.numbered::after { content: counter(lat-subtopic, decimal-leading-zero); }
+section.closing.numbered::after  { content: counter(lat-closing,  decimal-leading-zero); }
+
 
 
 /* Marp system styles — pagination content binding.
@@ -2743,9 +2797,12 @@ token = kms.encrypt(
 <section id="51" class="featured mirror" data-marpit-slide="51" data-marpit-pagination="51" style="--marp-slide:51;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Mirror puts the hero card on the right; sub-cards stack on the left.</h2><div class="feat-layout"><div class="feat-card"><h3>The hero card now reads from the right</h3><p>The featured layout normally leads with the accented hero card on the left and stacks supporting cards on the right. Mirror swaps the columns without touching the markdown contract.</p></div><div class="sub-row"><div class="sub-card"><h3>First supporting card on the left</h3><p>Useful when the rest of the deck reads left-to-right and the editorial weight needs to land on the right edge as the next slide opens.</p></div><div class="sub-card"><h3>Second supporting card below</h3><p>Identical structure, identical authoring; only the visual side changes.</p></div></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — featured mirror · featured mirror</div></footer></section>
 <section id="52" class="split-panel mirror" data-marpit-slide="52" data-marpit-pagination="52" style="--marp-slide:52;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><div class="panel-left"><div class="watermark">S</div><p><code>Section 02 · Mirror</code></p><h2>Section opener with the accent panel on the right.</h2></div><div class="panel-right"><h3>What this section covers</h3><p>Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips.</p><ol><li>Confidence<ul><li>How many independent sources corroborate the signal. Ranges 1–5.</li></ul></li><li>Recency<ul><li>Time-decay applied from signal date to scoring date. Half-life is team-configurable.</li></ul></li><li>Strategic Relevance<ul><li>Manual score from the signal owner. Ranges 1–5. Requires justification above 4.</li></ul></li></ol></div><footer><div style="display:block;width:100%;text-align:left">Modifier — split-panel mirror · split-panel mirror</div></footer></section>
 <section id="53" class="compare-prose mirror chosen" data-marpit-slide="53" data-marpit-pagination="53" style="--marp-slide:53;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Mirror composes with chosen — the accented card reads from the left.</h2><div class="compare-prose-inner"><div class="card">Considered alternative<ul><li>Source order keeps this card first, so <code>chosen</code> rules continue to target the second card in the markdown. Mirror only flips the rendering; the editorial intent (left = considered, right = chosen) is preserved by reading order.</li></ul></div><div class="connector">❯</div><div class="card">The choice<ul><li>With <code>mirror</code>, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path.</li></ul></div></div><div class="below-note"><p>The below-note still appears under both cards after the hairline rule.</p></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compare-prose mirror chosen · compare-prose mirror chosen</div></footer></section>
-<section id="54" class="cards-grid compact" data-marpit-slide="54" data-marpit-pagination="54" style="--marp-slide:54;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
-<section id="55" class="content loose" data-marpit-slide="55" data-marpit-pagination="55" style="--marp-slide:55;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
-<section id="56" class="closing accent" data-marpit-slide="56" style="--marp-slide:56;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<section id="54" class="divider numbered" data-marpit-slide="54" data-marpit-pagination="54" style="--marp-slide:54;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · divider numbered</code></p><h2>Numbered stamps an auto-counter in the top-right corner.</h2><p>The CSS counter walks the whole deck once and increments on every <code>divider.numbered</code> slide. Authors do not number sections by hand — the layout does it.</p><footer><div style="display:block;width:100%;text-align:left">Modifier — divider numbered · divider numbered</div></footer></section>
+<section id="55" class="subtopic numbered" data-marpit-slide="55" data-marpit-pagination="55" style="--marp-slide:55;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · subtopic numbered</code></p><h2>Each bookend layout owns its own counter.</h2><p>The subtopic counter is independent of the divider counter, so a mid-deck subtopic stamps <code>01</code> even when the dividers are already at <code>04</code>.</p><footer><div style="display:block;width:100%;text-align:left">Modifier — subtopic numbered · subtopic numbered</div></footer></section>
+<section id="56" class="closing numbered" data-marpit-slide="56" style="--marp-slide:56;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Closing · numbered</code></p><h2>The closing series gets its own auto-stamp too.</h2><p><code>Use it for multi-part decks where the closing slide of each part should carry the part number.</code></p><footer><div style="display:block;width:100%;text-align:left">Modifier — closing numbered · closing numbered</div></footer></section>
+<section id="57" class="cards-grid compact" data-marpit-slide="57" data-marpit-pagination="57" style="--marp-slide:57;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
+<section id="58" class="content loose" data-marpit-slide="58" data-marpit-pagination="58" style="--marp-slide:58;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
+<section id="59" class="closing accent" data-marpit-slide="59" style="--marp-slide:59;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
 <footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
 </body></html>

@@ -158,6 +158,23 @@ Flips the asymmetric half of a layout left/right. Applies only where the layout 
 
 `image left` is preserved as a deprecated alias; new authoring should prefer `image mirror`.
 
+#### `numbered`
+
+Stamps an auto-incrementing index in the top-right corner of bookend slides. Each layout (`divider`, `subtopic`, `closing`) carries its own counter, so a `divider numbered` series and a `closing numbered` series number independently.
+
+| Layout     | Counter token   | Stamp position |
+| ---------- | --------------- | -------------- |
+| `divider`  | `lat-divider`   | top-right      |
+| `subtopic` | `lat-subtopic`  | top-right      |
+| `closing`  | `lat-closing`   | top-right      |
+
+```markdown
+<!-- _class: divider numbered -->   → first stamps "01", next "02", …
+<!-- _class: closing numbered -->   → independent counter, starts at "01"
+```
+
+The counter is set on `body` and walks the deck once. Authors do not number sections manually — the layout does it.
+
 ### Layout-specific modifiers
 
 #### `list-steps` family
