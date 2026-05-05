@@ -1240,7 +1240,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block
