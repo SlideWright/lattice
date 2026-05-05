@@ -1618,7 +1618,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 └───────────────────────────────────────┘
 ```
 
-**Layouts that support Key Insight:** `cards-grid`, `cards-side`, `compare-prose`, `list`, `list-criteria`, `cards-wide`, `list-steps`, `split-panel`
+**Layouts that support Key Insight:** see the per-layout matrix at the end of this section. Briefly: every content layout except `quote` and `featured` (where blockquote is already claimed for primary content).
 
 **Styling:**
 
@@ -1660,7 +1660,7 @@ A trailing plain paragraph (not a blockquote, not italic-only) on any card-beari
 This is a below-note. It appears below the cards with a hairline rule above it.
 ```
 
-**Layouts that support below-note:** Most content layouts — `cards-grid`, `cards-wide`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`. Excluded: bookends (`title`, `closing`, `subtopic`, `divider`, `quote`, `big-number`) and layouts where the trailing paragraph is already claimed for a caption or main prose (`content`, `diagram`, `image-full`, `image*`, `code`, `compare-code`, `split-panel`, `roadmap`, `stats`).
+**Layouts that support below-note:** see the per-layout matrix below.
 
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
@@ -1683,7 +1683,7 @@ A trailing paragraph whose **only** content is `_italic_` markdown renders as an
 _Source: pilot retrospective, six months across four product teams._
 ```
 
-**Layouts that support annotation:** same set as below-note (compare-table included).
+**Layouts that support annotation:** see the per-layout matrix below.
 
 - Glyph: `✦` (U+2726) in `--accent`, prepended via `::before`
 - Text: 13px (`--fs-label`), italic, `--text-muted`
@@ -1697,6 +1697,49 @@ _Source: pilot retrospective, six months across four product teams._
 | `> blockquote`  | Accent panel + "KEY INSIGHT" eyebrow   | Conclusion (read this)        |
 | Plain paragraph | Hairline rule + body text              | Context (frame this)          |
 | `_italic only_` | ✦ glyph + italic muted label-size text | Annotation (skim this)        |
+
+**Per-layout register support:**
+
+Legend: ● supported · ○ not supported · — not applicable (layout has no body content) · † trailing `<p>` is claimed for another purpose on this layout (caption, attribution, body prose, or italic legend)
+
+| Layout          | Key Insight | Below-Note | Annotation | Notes                                |
+| --------------- | :---------: | :--------: | :--------: | ------------------------------------ |
+| `title`         |      —      |     —      |     —      | bookend                              |
+| `closing`       |      —      |     —      |     —      | bookend                              |
+| `subtopic`      |      —      |     —      |     —      | bookend                              |
+| `divider`       |      —      |     —      |     —      | section bookend                      |
+| `big-number`    |      —      |     —      |     —      | bookend variant                      |
+| `quote`         |      ○      |     ○      |     ○      | trailing `<p>` is the attribution †  |
+| `content`       |      ●      |     ○      |     ○      | trailing `<p>` is the body prose †   |
+| `diagram`       |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `image-full`    |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `image-right`   |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `image-left`    |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `code`          |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `compare-code`  |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
+| `split-panel`   |      ●      |     ○      |     ○      | trailing `<p>` is the side prose †   |
+| `roadmap`       |      ●      |     ○      |     ○      | trailing `<p>` is the italic legend †|
+| `stats`         |      ●      |     ○      |     ○      | trailing `<p>` is the subtitle †     |
+| `cards-grid`    |      ●      |     ●      |     ●      |                                      |
+| `cards-wide`    |      ●      |     ●      |     ●      |                                      |
+| `cards-stack`   |      ●      |     ●      |     ●      |                                      |
+| `compare-prose` |      ●      |     ●      |     ●      |                                      |
+| `compare-table` |      ●      |     ●      |     ●      |                                      |
+| `verdict-grid`  |      ●      |     ●      |     ●      |                                      |
+| `featured`      |      ○      |     ●      |     ●      | key-insight excluded; blockquote claimed by feat-card |
+| `list`          |      ●      |     ●      |     ●      |                                      |
+| `list-criteria` |      ●      |     ●      |     ●      |                                      |
+| `list-steps`    |      ●      |     ●      |     ●      |                                      |
+| `list-tabular`  |      ●      |     ●      |     ●      |                                      |
+| `timeline`      |      ●      |     ●      |     ●      |                                      |
+| `principles`    |      ●      |     ●      |     ●      |                                      |
+| `tldr`          |      ●      |     ●      |     ●      |                                      |
+| `matrix-2x2`    |      ●      |     ●      |     ●      |                                      |
+| `decision`      |      ●      |     ●      |     ●      |                                      |
+| `before-after`  |      ●      |     ●      |     ●      |                                      |
+| `actors`        |      ●      |     ●      |     ●      |                                      |
+| `kpi`           |      ●      |     ●      |     ●      |                                      |
+| `agenda`        |      ●      |     ●      |     ●      |                                      |
 
 ---
 
