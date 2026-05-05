@@ -2598,6 +2598,348 @@ section.principles.roman ol > li::before {
 /* Plain bullets — no numeric counter. */
 section.principles.bullet ol > li::before { content:'·'; }
 
+/* ── ROADMAP ───────────────────────────────────────────────────────────
+ * ## heading
+ * | Workstream | Phase 01 | Phase 02 | Phase 03 |
+ * | ---------- | -------- | -------- | -------- |
+ * | Platform   | …        | …        | …        |
+ *
+ * Multi-phase rollout grid. First column = workstream label (sticky,
+ * bold). Phase columns get phase chrome: a numbered badge in the
+ * header row, and a left-to-right accent gradient on the column rule.
+ * Empty cells render as a thin dash so the eye does not interpret
+ * blank as missing.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.roadmap { display:flex; flex-direction:column; }
+section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.roadmap table {
+  width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
+  font-size:var(--fs-body); flex:1;
+}
+section.roadmap thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  text-align:left;
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:2px solid var(--border);
+  background:var(--bg-alt);
+}
+/* Phase columns get a numbered badge in the header. */
+section.roadmap thead th:not(:first-child) {
+  counter-increment:phase-counter;
+  position:relative;
+  padding-left:calc(var(--sp-md) + 2.4em);
+}
+section.roadmap thead { counter-reset:phase-counter; }
+section.roadmap thead th:not(:first-child)::before {
+  content:counter(phase-counter, decimal-leading-zero);
+  position:absolute;
+  left:var(--sp-md); top:50%;
+  transform:translateY(-50%);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  color:var(--on-dark-primary,#fff);
+  background:var(--accent);
+  border-radius:6px;
+  padding:3px 7px;
+  letter-spacing:0.04em;
+}
+section.roadmap td {
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:1px solid var(--border);
+  color:var(--text-body);
+  vertical-align:top;
+  line-height:var(--lh-snug);
+}
+section.roadmap td:first-child {
+  font-weight:600;
+  color:var(--text-heading);
+  background:var(--bg-alt);
+  border-right:1px solid var(--border);
+}
+/* Empty cells render as a muted dash. */
+section.roadmap td:empty::before {
+  content:'—';
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+section.roadmap > p {
+  font-size:var(--fs-label);
+  font-style:italic;
+  color:var(--text-muted);
+  margin-top:var(--sp-md);
+}
+
+/* ── KPI ───────────────────────────────────────────────────────────────
+ * ## heading
+ * 1. **94%**
+ *    - Token-issuance success — _target 99%, +2pp QoQ_
+ * 2. **8 ms**
+ *    - p99 detokenize — _target 10 ms, -3 ms QoQ_
+ *
+ * Metrics dashboard. Each item: a big display number (strong), a
+ * label (body), and an optional italic sub-line for target / trend.
+ * Three or four items render across; more wrap to a second row.
+ * The italic sub-line auto-detects + / - prefixes for trend colour.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.kpi { display:flex; flex-direction:column; }
+section.kpi h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.kpi > ol,
+section.kpi > ul {
+  list-style:none; padding:0; margin:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:var(--sp-md);
+  align-content:start;
+}
+section.kpi > ol > li,
+section.kpi > ul > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md) var(--sp-lg);
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+}
+section.kpi > ol > li::marker,
+section.kpi > ul > li::marker { content:''; }
+section.kpi > ol > li > strong,
+section.kpi > ul > li > strong {
+  display:block;
+  font-family:var(--font-display, var(--font-sans));
+  font-size:var(--fs-3xl);
+  font-weight:700;
+  line-height:var(--lh-tight);
+  color:var(--text-heading);
+  letter-spacing:-0.02em;
+}
+section.kpi > ol > li > ul,
+section.kpi > ul > li > ul {
+  list-style:none; padding:0; margin:0;
+}
+section.kpi > ol > li > ul > li,
+section.kpi > ul > li > ul > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.kpi > ol > li > ul > li > em,
+section.kpi > ul > li > ul > li > em {
+  display:block;
+  font-style:italic;
+  font-size:var(--fs-label);
+  color:var(--text-muted);
+  margin-top:var(--sp-xs);
+}
+/* target modifier — emphasises the gap line */
+section.kpi.target > ol > li > ul > li > em,
+section.kpi.target > ul > li > ul > li > em {
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* ── AGENDA ────────────────────────────────────────────────────────────
+ * ## heading
+ * 1. The Design       — page 7
+ * 2. The Phasing      — page 18
+ * 3. The Choices      — page 26
+ *
+ * Auto-numbered table-of-contents. Each row: counter prefix, section
+ * title, dotted leader, page reference. Used between sections in
+ * long decks.
+ *
+ * Modifier `progress N` (where N is 1-9) highlights the Nth row as
+ * "you are here." Past rows render muted; future rows render normal.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.agenda { display:flex; flex-direction:column; }
+section.agenda h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-lg); }
+section.agenda ol {
+  list-style:none; padding:0; margin:0;
+  counter-reset:agenda-counter;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.agenda ol > li {
+  counter-increment:agenda-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding:var(--sp-xs) 0;
+  border-bottom:1px solid var(--border);
+}
+section.agenda ol > li::before {
+  content:counter(agenda-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+}
+/* progress modifier — highlights "you are here" row */
+section.agenda[class*="progress-"] ol > li { opacity:0.55; }
+section.agenda.progress-1 ol > li:nth-child(1),
+section.agenda.progress-2 ol > li:nth-child(2),
+section.agenda.progress-3 ol > li:nth-child(3),
+section.agenda.progress-4 ol > li:nth-child(4),
+section.agenda.progress-5 ol > li:nth-child(5),
+section.agenda.progress-6 ol > li:nth-child(6),
+section.agenda.progress-7 ol > li:nth-child(7),
+section.agenda.progress-8 ol > li:nth-child(8),
+section.agenda.progress-9 ol > li:nth-child(9) {
+  opacity:1;
+  background:var(--accent-soft);
+  border-left:3px solid var(--accent);
+  margin-left:calc(-1 * var(--sp-md));
+  padding-left:var(--sp-md);
+  border-bottom-color:var(--accent);
+}
+/* Past rows (those before the highlighted one) get muted-but-not-faded text. */
+section.agenda.progress-2 ol > li:nth-child(-n+1),
+section.agenda.progress-3 ol > li:nth-child(-n+2),
+section.agenda.progress-4 ol > li:nth-child(-n+3),
+section.agenda.progress-5 ol > li:nth-child(-n+4),
+section.agenda.progress-6 ol > li:nth-child(-n+5),
+section.agenda.progress-7 ol > li:nth-child(-n+6),
+section.agenda.progress-8 ol > li:nth-child(-n+7),
+section.agenda.progress-9 ol > li:nth-child(-n+8) {
+  opacity:0.4;
+}
+
+/* ── ACTORS ────────────────────────────────────────────────────────────
+ * ## heading
+ * - **HSM admin** `key custody`
+ *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Platform operator** `policy`
+ *   - Owns codebook policy, signing keys, version floors.
+ *
+ * Roster of actors with role tags. Each item: bold actor name,
+ * inline-code role-tag chip, and a body line for responsibilities.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.actors { display:flex; flex-direction:column; }
+section.actors h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.actors > ul,
+section.actors > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.actors > ul > li,
+section.actors > ol > li {
+  display:flex; flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+  row-gap:var(--sp-xs);
+  padding:var(--sp-sm) var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+}
+section.actors > ul > li::marker,
+section.actors > ol > li::marker { content:''; }
+section.actors > ul > li > strong,
+section.actors > ol > li > strong {
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--text-heading);
+  white-space:nowrap;
+}
+section.actors > ul > li > code,
+section.actors > ol > li > code {
+  display:inline-flex; align-items:center;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--accent);
+  background:var(--accent-soft);
+  border:1px solid var(--accent);
+  border-radius:999px;
+  padding:2px 10px;
+  white-space:nowrap;
+}
+section.actors > ul > li > ul,
+section.actors > ol > li > ul,
+section.actors > ul > li > ol,
+section.actors > ol > li > ol {
+  list-style:none; padding:0; margin:0;
+  flex-basis:100%;
+}
+section.actors > ul > li > ul > li,
+section.actors > ol > li > ul > li,
+section.actors > ul > li > ol > li,
+section.actors > ol > li > ol > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+
+/* ── TLDR ──────────────────────────────────────────────────────────────
+ * ## heading
+ * - One-line takeaway. → slide 8
+ * - Another takeaway.  → slide 12
+ *
+ * Executive summary slide. Each item is one short line; an optional
+ * `→` reference at the end is rendered in muted mono.
+ *
+ * Modifier `numbered` adds a 01., 02. counter prefix.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.tldr { display:flex; flex-direction:column; }
+section.tldr h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.tldr > ul,
+section.tldr > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.tldr > ul > li,
+section.tldr > ol > li {
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+}
+section.tldr > ul > li::marker,
+section.tldr > ol > li::marker { content:''; }
+section.tldr > ul > li:last-child,
+section.tldr > ol > li:last-child { border-bottom:none; }
+/* numbered modifier — adds counter prefix */
+section.tldr.numbered > ul,
+section.tldr.numbered > ol {
+  counter-reset:tldr-counter;
+}
+section.tldr.numbered > ul > li,
+section.tldr.numbered > ol > li {
+  counter-increment:tldr-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+}
+section.tldr.numbered > ul > li::before,
+section.tldr.numbered > ol > li::before {
+  content:counter(tldr-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * MODIFIERS — cross-cutting authorial intent flags
  * ────────────────────────────────────────────────────────────────────────
@@ -3074,9 +3416,15 @@ token = kms.encrypt(
 <section id="58" class="decision" data-marpit-slide="58" data-marpit-pagination="58" style="--marp-slide:58;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>We are building, not buying.</h2><p><code>Decision · 2026 Q1</code></p><ul><li><strong>Build</strong><ul><li>Owns the architecture, owns the operating model, owns the timeline.</li></ul></li><li><strong>Why not buy</strong><ul><li>Three vendors evaluated; none cover the regulatory boundary in-process.</li></ul></li><li><strong>Why not delay</strong><ul><li>The compliance window closes in 18 months.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — decision · decision</div></footer></section>
 <section id="59" class="before-after" data-marpit-slide="59" data-marpit-pagination="59" style="--marp-slide:59;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Detokenize used to require a vault round-trip.</h2><p><code>Latency story · before vs after</code></p><ul><li><strong>Before</strong><ul><li>Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.</li></ul></li><li><strong>After</strong><ul><li>Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.</li></ul></li></ul><div class="below-note"><p>The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — before-after · before-after</div></footer></section>
 <section id="60" class="principles" data-marpit-slide="60" data-marpit-pagination="60" style="--marp-slide:60;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How we make calls when the spec is silent.</h2><ol><li>We default to the choice that is cheaper to reverse.</li><li>We name the actor, never the system.</li><li>We write down the bet on the same slide as the choice.</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — principles · principles</div></footer></section>
-<section id="61" class="cards-grid compact" data-marpit-slide="61" data-marpit-pagination="61" style="--marp-slide:61;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
-<section id="62" class="content loose" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
-<section id="63" class="closing accent" data-marpit-slide="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<section id="61" class="roadmap" data-marpit-slide="61" data-marpit-pagination="61" style="--marp-slide:61;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What ships in each phase, by workstream.</h2><table><thead><tr><th>Workstream</th><th>Phase 01</th><th>Phase 02</th><th>Phase 03</th></tr></thead><tbody><tr><td><strong>Platform</strong></td><td>Codebook signing</td><td>Multi-tenant DEKs</td><td>Per-purpose codebooks</td></tr><tr><td><strong>Operations</strong></td><td>Manual rotation</td><td>Automated rotation</td><td>Crypto-shred</td></tr><tr><td><strong>Compliance</strong></td><td>Audit trail (HSM)</td><td>Centralised log</td><td>Examiner pack</td></tr><tr><td><strong>SDK</strong></td><td>Java</td><td></td><td>Polyglot parity</td></tr></tbody></table>
+<div class="below-note"><p>The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — roadmap · roadmap</div></footer></section>
+<section id="62" class="kpi target" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Where we are against quarter targets.</h2><ol><li><strong>94%</strong><ul><li>Token-issuance success — <em>target 99%, +2pp QoQ</em></li></ul></li><li><strong>8 ms</strong><ul><li>p99 detokenize — <em>target 10 ms, -3 ms QoQ</em></li></ul></li><li><strong>0</strong><ul><li>Examiner findings — <em>target 0, flat</em></li></ul></li><li><strong>3.2×</strong><ul><li>Detokenize headroom — <em>target 2×, +0.4× QoQ</em></li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — kpi · kpi target</div></footer></section>
+<section id="63" class="agenda progress-2" data-marpit-slide="63" data-marpit-pagination="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What this deck covers, in order.</h2><ol><li>The Design — page 7</li><li>The Phasing — page 18</li><li>The Choices — page 26</li><li>Appendices — page 35</li><li>Closing — page 64</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — agenda · agenda progress-2</div></footer></section>
+<section id="64" class="actors" data-marpit-slide="64" data-marpit-pagination="64" style="--marp-slide:64;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Who owns each part of the codebook lifecycle.</h2><ul><li><strong>HSM admin</strong> <code>key custody</code><ul><li>Manages KEK ceremonies and rotation. Never holds plaintext DEKs.</li></ul></li><li><strong>Platform operator</strong> <code>policy</code><ul><li>Owns codebook policy, signing keys, version floors, and revocation playbooks.</li></ul></li><li><strong>Application team</strong> <code>consumption</code><ul><li>Holds time-bound codebooks; tokenizes and detokenizes in-process.</li></ul></li><li><strong>Examiner</strong> <code>oversight</code><ul><li>Reads the HSM audit trail; cannot read plaintext.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — actors · actors</div></footer></section>
+<section id="65" class="tldr numbered" data-marpit-slide="65" data-marpit-pagination="65" style="--marp-slide:65;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Section 03 · Recap</code></p><h2>What this section will tell you, in five lines.</h2><ul><li>The codebook model gets in-process latency with vault-grade key custody. → slide 8</li><li>Rotation is a version-floor increment, not a coordinated cutover. → slide 12</li><li>Per-tenant KEKs make crypto-shred a single HSM op. → slide 18</li><li>Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22</li><li>Five questions stay open until Phase 1 closes them on the record. → slide 27</li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — tldr · tldr numbered</div></footer></section>
+<section id="66" class="cards-grid compact" data-marpit-slide="66" data-marpit-pagination="66" style="--marp-slide:66;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
+<section id="67" class="content loose" data-marpit-slide="67" data-marpit-pagination="67" style="--marp-slide:67;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>
+<section id="68" class="closing accent" data-marpit-slide="68" style="--marp-slide:68;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
 <footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
 </body></html>

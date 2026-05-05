@@ -916,6 +916,82 @@ The architecture change is the codebook model — local, signed, time-bound key 
 
 ---
 
+<!-- _class: roadmap -->
+<!-- _footer: "New layout — roadmap · roadmap" -->
+
+## What ships in each phase, by workstream.
+
+| Workstream | Phase 01          | Phase 02              | Phase 03              |
+| ---------- | ----------------- | --------------------- | --------------------- |
+| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
+| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
+| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
+| SDK        | Java              |                       | Polyglot parity       |
+
+The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
+
+---
+
+<!-- _class: kpi target -->
+<!-- _footer: "New layout — kpi · kpi target" -->
+
+## Where we are against quarter targets.
+
+1. **94%**
+   - Token-issuance success — _target 99%, +2pp QoQ_
+2. **8 ms**
+   - p99 detokenize — _target 10 ms, -3 ms QoQ_
+3. **0**
+   - Examiner findings — _target 0, flat_
+4. **3.2×**
+   - Detokenize headroom — _target 2×, +0.4× QoQ_
+
+---
+
+<!-- _class: agenda progress-2 -->
+<!-- _footer: "New layout — agenda · agenda progress-2" -->
+
+## What this deck covers, in order.
+
+1. The Design — page 7
+2. The Phasing — page 18
+3. The Choices — page 26
+4. Appendices — page 35
+5. Closing — page 64
+
+---
+
+<!-- _class: actors -->
+<!-- _footer: "New layout — actors · actors" -->
+
+## Who owns each part of the codebook lifecycle.
+
+- **HSM admin** `key custody`
+  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+- **Platform operator** `policy`
+  - Owns codebook policy, signing keys, version floors, and revocation playbooks.
+- **Application team** `consumption`
+  - Holds time-bound codebooks; tokenizes and detokenizes in-process.
+- **Examiner** `oversight`
+  - Reads the HSM audit trail; cannot read plaintext.
+
+---
+
+<!-- _class: tldr numbered -->
+<!-- _footer: "New layout — tldr · tldr numbered" -->
+
+`Section 03 · Recap`
+
+## What this section will tell you, in five lines.
+
+- The codebook model gets in-process latency with vault-grade key custody. → slide 8
+- Rotation is a version-floor increment, not a coordinated cutover. → slide 12
+- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
+- Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
+- Five questions stay open until Phase 1 closes them on the record. → slide 27
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

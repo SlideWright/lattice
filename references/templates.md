@@ -330,6 +330,100 @@ Numbered list of declarative one-liners in display weight. Each item is one para
 3. We write down the bet on the same slide as the choice.
 ```
 
+### `roadmap` — phased multi-workstream grid
+
+A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold, on tinted ground). Phase columns (everything after the first) get phase chrome — a numbered badge in the header. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
+
+```markdown
+<!-- _class: roadmap -->
+
+## What ships in each phase, by workstream.
+
+| Workstream | Phase 01         | Phase 02           | Phase 03              |
+| ---------- | ---------------- | ------------------ | --------------------- |
+| Platform   | Codebook signing | Multi-tenant DEKs  | Per-purpose codebooks |
+| Operations | Manual rotation  | Automated rotation | Crypto-shred          |
+| SDK        | Java             |                    | Polyglot parity       |
+```
+
+### `kpi` — metrics dashboard with targets and trends
+
+Ordered or unordered list. Each item is a card: bold = the metric (display weight), nested list line = the label, italics = optional target/trend sub-line. Cards lay out in an auto-fit grid (3-4 across at standard widths, wraps to a second row beyond that).
+
+| Modifier  | Effect                                                                         |
+| --------- | ------------------------------------------------------------------------------ |
+| (default) | italic sub-line renders in muted body colour                                   |
+| `target`  | promotes the italic sub-line to accent colour with semi-bold weight            |
+
+```markdown
+<!-- _class: kpi target -->
+
+## Where we are against quarter targets.
+
+1. **94%**
+   - Token-issuance success — _target 99%, +2pp QoQ_
+2. **8 ms**
+   - p99 detokenize — _target 10 ms, -3 ms QoQ_
+3. **0**
+   - Examiner findings — _target 0, flat_
+```
+
+### `agenda` — auto-numbered table of contents
+
+Ordered list of section titles, optionally followed by a page reference (` — page N`). Counter renders in accent mono; rows are separated by hairline rules.
+
+| Modifier      | Effect                                                                      |
+| ------------- | --------------------------------------------------------------------------- |
+| (default)     | all rows render at full opacity                                             |
+| `progress-N`  | highlights the Nth row as "you are here"; rows above render muted, rows below render normal (N = 1-9) |
+
+```markdown
+<!-- _class: agenda progress-2 -->
+
+## What this deck covers, in order.
+
+1. The Design — page 7
+2. The Phasing — page 18
+3. The Choices — page 26
+4. Closing — page 64
+```
+
+### `actors` — roster of roles with role-tag chips
+
+Unordered list of actors. Each item: bold actor name, an inline-code role tag (rendered as a pill chip in accent), and a nested list line for the responsibility body.
+
+```markdown
+<!-- _class: actors -->
+
+## Who owns each part of the codebook lifecycle.
+
+- **HSM admin** `key custody`
+  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+- **Platform operator** `policy`
+  - Owns codebook policy, signing keys, version floors, and revocation playbooks.
+- **Examiner** `oversight`
+  - Reads the HSM audit trail; cannot read plaintext.
+```
+
+### `tldr` — single-line takeaways / recap
+
+Unordered or ordered list of one-line takeaways. Optionally end each line with a `→ slide N` reference. Use as an executive summary or a section recap.
+
+| Modifier   | Effect                                                  |
+| ---------- | ------------------------------------------------------- |
+| (default)  | plain takeaways with hairline separators                |
+| `numbered` | adds a `01.`, `02.` accent mono prefix to each line     |
+
+```markdown
+<!-- _class: tldr numbered -->
+
+## What this section will tell you, in five lines.
+
+- The codebook model gets in-process latency with vault-grade key custody. → slide 8
+- Rotation is a version-floor increment, not a coordinated cutover. → slide 12
+- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
+```
+
 ## Template 1: Title (dark bookend)
 
 ```

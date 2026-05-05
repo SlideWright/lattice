@@ -1726,6 +1726,348 @@ section.principles.roman ol > li::before {
 /* Plain bullets — no numeric counter. */
 section.principles.bullet ol > li::before { content:'·'; }
 
+/* ── ROADMAP ───────────────────────────────────────────────────────────
+ * ## heading
+ * | Workstream | Phase 01 | Phase 02 | Phase 03 |
+ * | ---------- | -------- | -------- | -------- |
+ * | Platform   | …        | …        | …        |
+ *
+ * Multi-phase rollout grid. First column = workstream label (sticky,
+ * bold). Phase columns get phase chrome: a numbered badge in the
+ * header row, and a left-to-right accent gradient on the column rule.
+ * Empty cells render as a thin dash so the eye does not interpret
+ * blank as missing.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.roadmap { display:flex; flex-direction:column; }
+section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.roadmap table {
+  width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
+  font-size:var(--fs-body); flex:1;
+}
+section.roadmap thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  text-align:left;
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:2px solid var(--border);
+  background:var(--bg-alt);
+}
+/* Phase columns get a numbered badge in the header. */
+section.roadmap thead th:not(:first-child) {
+  counter-increment:phase-counter;
+  position:relative;
+  padding-left:calc(var(--sp-md) + 2.4em);
+}
+section.roadmap thead { counter-reset:phase-counter; }
+section.roadmap thead th:not(:first-child)::before {
+  content:counter(phase-counter, decimal-leading-zero);
+  position:absolute;
+  left:var(--sp-md); top:50%;
+  transform:translateY(-50%);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  color:var(--on-dark-primary,#fff);
+  background:var(--accent);
+  border-radius:6px;
+  padding:3px 7px;
+  letter-spacing:0.04em;
+}
+section.roadmap td {
+  padding:var(--sp-sm) var(--sp-md);
+  border-bottom:1px solid var(--border);
+  color:var(--text-body);
+  vertical-align:top;
+  line-height:var(--lh-snug);
+}
+section.roadmap td:first-child {
+  font-weight:600;
+  color:var(--text-heading);
+  background:var(--bg-alt);
+  border-right:1px solid var(--border);
+}
+/* Empty cells render as a muted dash. */
+section.roadmap td:empty::before {
+  content:'—';
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+section.roadmap > p {
+  font-size:var(--fs-label);
+  font-style:italic;
+  color:var(--text-muted);
+  margin-top:var(--sp-md);
+}
+
+/* ── KPI ───────────────────────────────────────────────────────────────
+ * ## heading
+ * 1. **94%**
+ *    - Token-issuance success — _target 99%, +2pp QoQ_
+ * 2. **8 ms**
+ *    - p99 detokenize — _target 10 ms, -3 ms QoQ_
+ *
+ * Metrics dashboard. Each item: a big display number (strong), a
+ * label (body), and an optional italic sub-line for target / trend.
+ * Three or four items render across; more wrap to a second row.
+ * The italic sub-line auto-detects + / - prefixes for trend colour.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.kpi { display:flex; flex-direction:column; }
+section.kpi h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.kpi > ol,
+section.kpi > ul {
+  list-style:none; padding:0; margin:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:var(--sp-md);
+  align-content:start;
+}
+section.kpi > ol > li,
+section.kpi > ul > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md) var(--sp-lg);
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+}
+section.kpi > ol > li::marker,
+section.kpi > ul > li::marker { content:''; }
+section.kpi > ol > li > strong,
+section.kpi > ul > li > strong {
+  display:block;
+  font-family:var(--font-display, var(--font-sans));
+  font-size:var(--fs-3xl);
+  font-weight:700;
+  line-height:var(--lh-tight);
+  color:var(--text-heading);
+  letter-spacing:-0.02em;
+}
+section.kpi > ol > li > ul,
+section.kpi > ul > li > ul {
+  list-style:none; padding:0; margin:0;
+}
+section.kpi > ol > li > ul > li,
+section.kpi > ul > li > ul > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.kpi > ol > li > ul > li > em,
+section.kpi > ul > li > ul > li > em {
+  display:block;
+  font-style:italic;
+  font-size:var(--fs-label);
+  color:var(--text-muted);
+  margin-top:var(--sp-xs);
+}
+/* target modifier — emphasises the gap line */
+section.kpi.target > ol > li > ul > li > em,
+section.kpi.target > ul > li > ul > li > em {
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* ── AGENDA ────────────────────────────────────────────────────────────
+ * ## heading
+ * 1. The Design       — page 7
+ * 2. The Phasing      — page 18
+ * 3. The Choices      — page 26
+ *
+ * Auto-numbered table-of-contents. Each row: counter prefix, section
+ * title, dotted leader, page reference. Used between sections in
+ * long decks.
+ *
+ * Modifier `progress N` (where N is 1-9) highlights the Nth row as
+ * "you are here." Past rows render muted; future rows render normal.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.agenda { display:flex; flex-direction:column; }
+section.agenda h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-lg); }
+section.agenda ol {
+  list-style:none; padding:0; margin:0;
+  counter-reset:agenda-counter;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.agenda ol > li {
+  counter-increment:agenda-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding:var(--sp-xs) 0;
+  border-bottom:1px solid var(--border);
+}
+section.agenda ol > li::before {
+  content:counter(agenda-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+}
+/* progress modifier — highlights "you are here" row */
+section.agenda[class*="progress-"] ol > li { opacity:0.55; }
+section.agenda.progress-1 ol > li:nth-child(1),
+section.agenda.progress-2 ol > li:nth-child(2),
+section.agenda.progress-3 ol > li:nth-child(3),
+section.agenda.progress-4 ol > li:nth-child(4),
+section.agenda.progress-5 ol > li:nth-child(5),
+section.agenda.progress-6 ol > li:nth-child(6),
+section.agenda.progress-7 ol > li:nth-child(7),
+section.agenda.progress-8 ol > li:nth-child(8),
+section.agenda.progress-9 ol > li:nth-child(9) {
+  opacity:1;
+  background:var(--accent-soft);
+  border-left:3px solid var(--accent);
+  margin-left:calc(-1 * var(--sp-md));
+  padding-left:var(--sp-md);
+  border-bottom-color:var(--accent);
+}
+/* Past rows (those before the highlighted one) get muted-but-not-faded text. */
+section.agenda.progress-2 ol > li:nth-child(-n+1),
+section.agenda.progress-3 ol > li:nth-child(-n+2),
+section.agenda.progress-4 ol > li:nth-child(-n+3),
+section.agenda.progress-5 ol > li:nth-child(-n+4),
+section.agenda.progress-6 ol > li:nth-child(-n+5),
+section.agenda.progress-7 ol > li:nth-child(-n+6),
+section.agenda.progress-8 ol > li:nth-child(-n+7),
+section.agenda.progress-9 ol > li:nth-child(-n+8) {
+  opacity:0.4;
+}
+
+/* ── ACTORS ────────────────────────────────────────────────────────────
+ * ## heading
+ * - **HSM admin** `key custody`
+ *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Platform operator** `policy`
+ *   - Owns codebook policy, signing keys, version floors.
+ *
+ * Roster of actors with role tags. Each item: bold actor name,
+ * inline-code role-tag chip, and a body line for responsibilities.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.actors { display:flex; flex-direction:column; }
+section.actors h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.actors > ul,
+section.actors > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.actors > ul > li,
+section.actors > ol > li {
+  display:flex; flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+  row-gap:var(--sp-xs);
+  padding:var(--sp-sm) var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+}
+section.actors > ul > li::marker,
+section.actors > ol > li::marker { content:''; }
+section.actors > ul > li > strong,
+section.actors > ol > li > strong {
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--text-heading);
+  white-space:nowrap;
+}
+section.actors > ul > li > code,
+section.actors > ol > li > code {
+  display:inline-flex; align-items:center;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--accent);
+  background:var(--accent-soft);
+  border:1px solid var(--accent);
+  border-radius:999px;
+  padding:2px 10px;
+  white-space:nowrap;
+}
+section.actors > ul > li > ul,
+section.actors > ol > li > ul,
+section.actors > ul > li > ol,
+section.actors > ol > li > ol {
+  list-style:none; padding:0; margin:0;
+  flex-basis:100%;
+}
+section.actors > ul > li > ul > li,
+section.actors > ol > li > ul > li,
+section.actors > ul > li > ol > li,
+section.actors > ol > li > ol > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+
+/* ── TLDR ──────────────────────────────────────────────────────────────
+ * ## heading
+ * - One-line takeaway. → slide 8
+ * - Another takeaway.  → slide 12
+ *
+ * Executive summary slide. Each item is one short line; an optional
+ * `→` reference at the end is rendered in muted mono.
+ *
+ * Modifier `numbered` adds a 01., 02. counter prefix.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.tldr { display:flex; flex-direction:column; }
+section.tldr h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.tldr > ul,
+section.tldr > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.tldr > ul > li,
+section.tldr > ol > li {
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+}
+section.tldr > ul > li::marker,
+section.tldr > ol > li::marker { content:''; }
+section.tldr > ul > li:last-child,
+section.tldr > ol > li:last-child { border-bottom:none; }
+/* numbered modifier — adds counter prefix */
+section.tldr.numbered > ul,
+section.tldr.numbered > ol {
+  counter-reset:tldr-counter;
+}
+section.tldr.numbered > ul > li,
+section.tldr.numbered > ol > li {
+  counter-increment:tldr-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+}
+section.tldr.numbered > ul > li::before,
+section.tldr.numbered > ol > li::before {
+  content:counter(tldr-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * MODIFIERS — cross-cutting authorial intent flags
  * ────────────────────────────────────────────────────────────────────────
