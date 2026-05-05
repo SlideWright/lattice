@@ -1757,12 +1757,13 @@ section.roadmap thead th {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--text-label);
-  text-align:left;
+  text-align:center;
   vertical-align:middle;
   padding:var(--sp-sm) var(--sp-md);
   border-bottom:2px solid var(--border);
   background:var(--bg-alt);
 }
+section.roadmap thead th:first-child { text-align:left; }
 /* Phase columns get a numbered badge stacked above the phase name. */
 section.roadmap thead th:not(:first-child) {
   counter-increment:phase-counter;
@@ -1777,10 +1778,11 @@ section.roadmap thead th:not(:first-child)::before {
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:700;
-  color:var(--on-dark-primary,#fff);
-  background:var(--accent);
-  border-radius:6px;
-  padding:3px 9px;
+  color:var(--text-body);
+  background:var(--bg);
+  border:1px solid var(--phase-accent, var(--accent));
+  border-radius:999px;
+  padding:2px 9px;
   letter-spacing:0.04em;
   line-height:1;
   vertical-align:middle;
@@ -1788,6 +1790,15 @@ section.roadmap thead th:not(:first-child)::before {
 section.roadmap thead th:not(:first-child) {
   white-space:nowrap;
 }
+/* Categorical rotation across phase columns. */
+section.roadmap thead th:nth-child(8n+2) { --phase-accent:var(--cat-blue); }
+section.roadmap thead th:nth-child(8n+3) { --phase-accent:var(--cat-green); }
+section.roadmap thead th:nth-child(8n+4) { --phase-accent:var(--cat-purple); }
+section.roadmap thead th:nth-child(8n+5) { --phase-accent:var(--cat-orange); }
+section.roadmap thead th:nth-child(8n+6) { --phase-accent:var(--cat-teal); }
+section.roadmap thead th:nth-child(8n+7) { --phase-accent:var(--cat-rose); }
+section.roadmap thead th:nth-child(8n)   { --phase-accent:var(--cat-mauve); }
+section.roadmap thead th:nth-child(8n+1) { --phase-accent:var(--cat-slate); }
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
   border-bottom:1px solid var(--border);
@@ -1847,6 +1858,8 @@ section.kpi > ul > li {
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
   justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 section.kpi > ol > li::marker,
 section.kpi > ul > li::marker { content:''; }
