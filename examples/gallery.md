@@ -281,7 +281,7 @@ The scoring model is the most configurable component. This section covers the th
 ---
 
 <!-- _class: cards-grid -->
-<!-- _footer: "Key insight + below-note · cards-grid" -->
+<!-- _footer: "Key insight + annotation · cards-grid" -->
 
 ## Key insight works on any card-bearing layout.
 
@@ -296,7 +296,7 @@ The scoring model is the most configurable component. This section covers the th
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
-¹ Trailing blockquote becomes a key insight. Trailing paragraph becomes a below-note.
+_Source: pilot retrospective, six months across four product teams._
 
 ---
 
@@ -305,11 +305,11 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Three scoring failure modes found in the pilot.
 
-1. **Recency dominance**
+1. Recency dominance
    - High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
-2. **Source concentration**
+2. Source concentration
    - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
-3. **Outcome misclassification**
+3. Outcome misclassification
    - PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
 
 ---
@@ -319,13 +319,13 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Four requirements every decision system must meet.
 
-- **Speed**
+- Speed
   - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
-- **Auditability**
+- Auditability
   - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
-- **Adoption**
+- Adoption
   - If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
-- **Calibration**
+- Calibration
   - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
 
 ---
@@ -335,25 +335,25 @@ The scoring model is the most configurable component. This section covers the th
 
 ## We evaluated four intake tools against the criteria.
 
-- **Tool A · Chorus**
+- Tool A · Chorus
   - [x] Speed
   - [~] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
-- **Tool B · Productboard**
+- Tool B · Productboard
   - [ ] Speed
   - [x] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.
-- **Tool C · Notion**
+- Tool C · Notion
   - [x] Speed
   - [x] Auditability
   - [~] Adoption
   - [ ] Calibration
   - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
-- **Tool D · Sprig + Decision Log**
+- Tool D · Sprig + Decision Log
   - [x] Speed
   - [x] Auditability
   - [x] Adoption
@@ -376,6 +376,48 @@ The scoring model is the most configurable component. This section covers the th
 | Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
 
 _Evaluated against the same four teams and the same 90-minute weekly budget constraint._
+
+---
+
+<!-- _class: glossary -->
+<!-- _footer: "Glossary · glossary (auto-table, auto-pill)" -->
+
+## Glossary
+
+- Adoption
+  - Percentage of eligible PMs filing a Decision Log entry within 24 hours of a decision close.
+- Auditability
+  - The property that any decision can be reconstructed from its inputs three months later without the original author present.
+- Calibration
+  - The retrospective comparison of predicted to observed outcomes, used to score the framework's accuracy.
+- Connector
+  - The integration layer between Sprig and your NPS / support platforms. Owns ingestion and tagging.
+- Decision Log
+  - The append-only record of every prioritization decision, its predicted outcome, and the actual outcome at retrospective time.
+- Eligible PM
+  - A PM whose team has adopted the framework and is past the 30-day onboarding period.
+- Framework
+  - The four-criterion process: Speed, Auditability, Adoption, Calibration. The deck's central artifact.
+
+---
+
+<!-- _class: glossary -->
+<!-- _footer: "Glossary continued · glossary (auto-table, auto-pill)" -->
+
+## Glossary
+
+- Predicted outcome
+  - The author's stated expectation, recorded at decision time, used as the input to calibration.
+- Prioritization rhythm
+  - The team's regular cadence (weekly, biweekly) for revisiting and re-ordering work.
+- Retrospective
+  - The 30-day review meeting where logged decisions are scored against observed outcomes.
+- Signal
+  - Any qualitative or quantitative input to a decision — survey response, NPS comment, support ticket, sales call note.
+- Sprig
+  - The micro-survey product used by Tool D to capture qualitative signal in-product.
+- Tool D
+  - The recommended option in the four-tool comparison: Sprig combined with a lightweight Decision Log.
 
 ---
 
