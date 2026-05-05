@@ -348,12 +348,12 @@ A markdown table that becomes a phased rollout grid. The first column carries th
 
 ### `kpi` — metrics dashboard with targets and trends
 
-Ordered or unordered list. Each item is a card: bold = the metric (display weight), nested list line = the label, italics = optional target/trend sub-line. Cards lay out in an auto-fit grid (3-4 across at standard widths, wraps to a second row beyond that).
+Ordered or unordered list. Each item is a card: bold = the metric (display weight), first nested bullet = the label, optional second nested bullet = the target/trend sub-line. Cards lay out in an auto-fit grid (3-4 across at standard widths, wraps to a second row beyond that). Each card carries a categorical top-stripe rotating through the `--cat-*` palette.
 
 | Modifier  | Effect                                                                         |
 | --------- | ------------------------------------------------------------------------------ |
-| (default) | italic sub-line renders in muted body colour                                   |
-| `target`  | promotes the italic sub-line to accent colour with semi-bold weight            |
+| (default) | sub-line renders in muted body colour                                          |
+| `target`  | promotes the sub-line to accent colour with semi-bold weight                   |
 
 ```markdown
 <!-- _class: kpi target -->
@@ -361,11 +361,13 @@ Ordered or unordered list. Each item is a card: bold = the metric (display weigh
 ## Where we are against quarter targets.
 
 1. **94%**
-   - Token-issuance success — _target 99%, +2pp QoQ_
+   - Token-issuance success
+   - target 99%, +2pp QoQ
 2. **8 ms**
-   - p99 detokenize — _target 10 ms, -3 ms QoQ_
+   - p99 detokenize
+   - target 10 ms, -3 ms QoQ
 3. **0**
-   - Examiner findings — _target 0, flat_
+   - Examiner findings
 ```
 
 ### `agenda` — auto-numbered table of contents

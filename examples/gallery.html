@@ -2701,14 +2701,15 @@ section.roadmap > p {
 /* ── KPI ───────────────────────────────────────────────────────────────
  * ## heading
  * 1. **94%**
- *    - Token-issuance success — _target 99%, +2pp QoQ_
+ *    - Token-issuance success
+ *    - target 99%, +2pp QoQ        (optional)
  * 2. **8 ms**
- *    - p99 detokenize — _target 10 ms, -3 ms QoQ_
+ *    - p99 detokenize
  *
  * Metrics dashboard. Each item: a big display number (strong), a
- * label (body), and an optional italic sub-line for target / trend.
+ * label line, and an optional second bullet for target / trend.
  * Three or four items render across; more wrap to a second row.
- * The italic sub-line auto-detects + / - prefixes for trend colour.
+ * Each card carries a categorical top-stripe from --cat-*.
  * ──────────────────────────────────────────────────────────────────────── */
 section.kpi { display:flex; flex-direction:column; }
 section.kpi h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -2765,17 +2766,16 @@ section.kpi > ul > li > ul > li {
   color:var(--text-body);
   line-height:var(--lh-snug);
 }
-section.kpi > ol > li > ul > li > em,
-section.kpi > ul > li > ul > li > em {
-  display:block;
-  font-style:italic;
+/* Optional second bullet renders as a muted sub-line (target / trend). */
+section.kpi > ol > li > ul > li + li,
+section.kpi > ul > li > ul > li + li {
   font-size:var(--fs-label);
   color:var(--text-muted);
   margin-top:var(--sp-xs);
 }
 /* target modifier — emphasises the gap line */
-section.kpi.target > ol > li > ul > li > em,
-section.kpi.target > ul > li > ul > li > em {
+section.kpi.target > ol > li > ul > li + li,
+section.kpi.target > ul > li > ul > li + li {
   color:var(--accent);
   font-weight:600;
 }
@@ -3490,7 +3490,7 @@ token = kms.encrypt(
 <section id="60" class="principles" data-marpit-slide="60" data-marpit-pagination="60" style="--marp-slide:60;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How we make calls when the spec is silent.</h2><ol><li>We default to the choice that is cheaper to reverse.</li><li>We name the actor, never the system.</li><li>We write down the bet on the same slide as the choice.</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — principles · principles</div></footer></section>
 <section id="61" class="roadmap" data-marpit-slide="61" data-marpit-pagination="61" style="--marp-slide:61;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What ships in each phase, by workstream.</h2><table><thead><tr><th>Workstream</th><th>Phase 01</th><th>Phase 02</th><th>Phase 03</th></tr></thead><tbody><tr><td><strong>Platform</strong></td><td>Codebook signing</td><td>Multi-tenant DEKs</td><td>Per-purpose codebooks</td></tr><tr><td><strong>Operations</strong></td><td>Manual rotation</td><td>Automated rotation</td><td>Crypto-shred</td></tr><tr><td><strong>Compliance</strong></td><td>Audit trail (HSM)</td><td>Centralised log</td><td>Examiner pack</td></tr><tr><td><strong>SDK</strong></td><td>Java</td><td></td><td>Polyglot parity</td></tr></tbody></table>
 <div class="below-note"><p>The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — roadmap · roadmap</div></footer></section>
-<section id="62" class="kpi target" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Where we are against quarter targets.</h2><ol><li><strong>94%</strong><ul><li>Token-issuance success — <em>target 99%, +2pp QoQ</em></li></ul></li><li><strong>8 ms</strong><ul><li>p99 detokenize — <em>target 10 ms, -3 ms QoQ</em></li></ul></li><li><strong>0</strong><ul><li>Examiner findings — <em>target 0, flat</em></li></ul></li><li><strong>3.2×</strong><ul><li>Detokenize headroom — <em>target 2×, +0.4× QoQ</em></li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — kpi · kpi target</div></footer></section>
+<section id="62" class="kpi target" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Where we are against quarter targets.</h2><ol><li><strong>94%</strong><ul><li>Token-issuance success</li><li>target 99%, +2pp QoQ</li></ul></li><li><strong>8 ms</strong><ul><li>p99 detokenize</li><li>target 10 ms, -3 ms QoQ</li></ul></li><li><strong>0</strong><ul><li>Examiner findings</li><li>target 0, flat</li></ul></li><li><strong>3.2×</strong><ul><li>Detokenize headroom</li><li>target 2×, +0.4× QoQ</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — kpi · kpi target</div></footer></section>
 <section id="63" class="agenda progress-2" data-marpit-slide="63" data-marpit-pagination="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What this deck covers, in order.</h2><ol><li>The Design — page 7</li><li>The Phasing — page 18</li><li>The Choices — page 26</li><li>Appendices — page 35</li><li>Closing — page 64</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — agenda · agenda progress-2</div></footer></section>
 <section id="64" class="actors" data-marpit-slide="64" data-marpit-pagination="64" style="--marp-slide:64;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Who owns each part of the codebook lifecycle.</h2><ul><li><strong>Key custody</strong> <code>HSM admin</code><ul><li>Manages KEK ceremonies and rotation. Never holds plaintext DEKs.</li></ul></li><li><strong>Policy</strong> <code>Platform operator</code><ul><li>Owns codebook policy, signing keys, version floors, and revocation playbooks.</li></ul></li><li><strong>Consumption</strong> <code>Application team</code><ul><li>Holds time-bound codebooks; tokenizes and detokenizes in-process.</li></ul></li><li><strong>Oversight</strong> <code>Examiner</code><ul><li>Reads the HSM audit trail; cannot read plaintext.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — actors · actors</div></footer></section>
 <section id="65" class="tldr numbered" data-marpit-slide="65" data-marpit-pagination="65" style="--marp-slide:65;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Section 03 · Recap</code></p><h2>What this section will tell you, in five lines.</h2><ul><li>The codebook model gets in-process latency with vault-grade key custody. → slide 8</li><li>Rotation is a version-floor increment, not a coordinated cutover. → slide 12</li><li>Per-tenant KEKs make crypto-shred a single HSM op. → slide 18</li><li>Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22</li><li>Five questions stay open until Phase 1 closes them on the record. → slide 27</li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — tldr · tldr numbered</div></footer></section>

@@ -1828,14 +1828,15 @@ section.roadmap > p {
 /* ── KPI ───────────────────────────────────────────────────────────────
  * ## heading
  * 1. **94%**
- *    - Token-issuance success — _target 99%, +2pp QoQ_
+ *    - Token-issuance success
+ *    - target 99%, +2pp QoQ        (optional)
  * 2. **8 ms**
- *    - p99 detokenize — _target 10 ms, -3 ms QoQ_
+ *    - p99 detokenize
  *
  * Metrics dashboard. Each item: a big display number (strong), a
- * label (body), and an optional italic sub-line for target / trend.
+ * label line, and an optional second bullet for target / trend.
  * Three or four items render across; more wrap to a second row.
- * The italic sub-line auto-detects + / - prefixes for trend colour.
+ * Each card carries a categorical top-stripe from --cat-*.
  * ──────────────────────────────────────────────────────────────────────── */
 section.kpi { display:flex; flex-direction:column; }
 section.kpi h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -1892,17 +1893,16 @@ section.kpi > ul > li > ul > li {
   color:var(--text-body);
   line-height:var(--lh-snug);
 }
-section.kpi > ol > li > ul > li > em,
-section.kpi > ul > li > ul > li > em {
-  display:block;
-  font-style:italic;
+/* Optional second bullet renders as a muted sub-line (target / trend). */
+section.kpi > ol > li > ul > li + li,
+section.kpi > ul > li > ul > li + li {
   font-size:var(--fs-label);
   color:var(--text-muted);
   margin-top:var(--sp-xs);
 }
 /* target modifier — emphasises the gap line */
-section.kpi.target > ol > li > ul > li > em,
-section.kpi.target > ul > li > ul > li > em {
+section.kpi.target > ol > li > ul > li + li,
+section.kpi.target > ul > li > ul > li + li {
   color:var(--accent);
   font-weight:600;
 }

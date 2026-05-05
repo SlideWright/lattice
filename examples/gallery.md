@@ -938,13 +938,17 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Where we are against quarter targets.
 
 1. **94%**
-   - Token-issuance success — _target 99%, +2pp QoQ_
+   - Token-issuance success
+   - target 99%, +2pp QoQ
 2. **8 ms**
-   - p99 detokenize — _target 10 ms, -3 ms QoQ_
+   - p99 detokenize
+   - target 10 ms, -3 ms QoQ
 3. **0**
-   - Examiner findings — _target 0, flat_
+   - Examiner findings
+   - target 0, flat
 4. **3.2×**
-   - Detokenize headroom — _target 2×, +0.4× QoQ_
+   - Detokenize headroom
+   - target 2×, +0.4× QoQ
 
 ---
 
