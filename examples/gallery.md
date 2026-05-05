@@ -966,13 +966,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Who owns each part of the codebook lifecycle.
 
-- **HSM admin** `key custody`
+- **Key custody** `HSM admin`
   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
-- **Platform operator** `policy`
+- **Policy** `Platform operator`
   - Owns codebook policy, signing keys, version floors, and revocation playbooks.
-- **Application team** `consumption`
+- **Consumption** `Application team`
   - Holds time-bound codebooks; tokenizes and detokenizes in-process.
-- **Examiner** `oversight`
+- **Oversight** `Examiner`
   - Reads the HSM audit trail; cannot read plaintext.
 
 ---

@@ -2563,30 +2563,36 @@ section.principles ol {
   display:flex; flex-direction:column;
   gap:var(--sp-md);
   flex:1;
+  justify-content:center;
 }
 section.principles ol > li {
   counter-increment:principle-counter;
+  flex:1;
+  container-type:size;
   display:grid;
   grid-template-columns:auto 1fr;
-  column-gap:var(--sp-md);
-  align-items:baseline;
-  font-size:var(--fs-emphasis);
+  column-gap:var(--sp-lg);
+  align-items:center;
+  font-family:var(--font-display, var(--font-sans));
+  font-size:clamp(var(--fs-md), 11cqh, var(--fs-2xl));
   font-weight:500;
-  line-height:var(--lh-relaxed);
+  line-height:var(--lh-snug);
+  letter-spacing:-0.01em;
   color:var(--text-heading);
-  padding-bottom:var(--sp-sm);
+  padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
+  overflow:hidden;
 }
 section.principles ol > li:last-child { border-bottom:none; }
 section.principles ol > li::before {
   content:counter(principle-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:clamp(var(--fs-lg), 28cqh, var(--fs-3xl));
   font-weight:700;
-  letter-spacing:0.12em;
+  letter-spacing:0.04em;
   color:var(--accent);
-  align-self:start;
-  padding-top:0.4em;
+  line-height:1;
+  align-self:center;
 }
 /* Counter format modifiers — same family as list-steps. */
 section.principles.lettered ol > li::before {
@@ -2628,26 +2634,31 @@ section.roadmap thead th {
   border-bottom:2px solid var(--border);
   background:var(--bg-alt);
 }
-/* Phase columns get a numbered badge in the header. */
+/* Phase columns get a numbered badge stacked above the phase name. */
 section.roadmap thead th:not(:first-child) {
   counter-increment:phase-counter;
-  position:relative;
-  padding-left:calc(var(--sp-md) + 2.4em);
+  padding-top:var(--sp-md);
+  padding-bottom:var(--sp-md);
 }
 section.roadmap thead { counter-reset:phase-counter; }
 section.roadmap thead th:not(:first-child)::before {
   content:counter(phase-counter, decimal-leading-zero);
-  position:absolute;
-  left:var(--sp-md); top:50%;
-  transform:translateY(-50%);
+  display:block;
+  width:fit-content;
+  margin-bottom:var(--sp-xs);
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:700;
   color:var(--on-dark-primary,#fff);
   background:var(--accent);
   border-radius:6px;
-  padding:3px 7px;
+  padding:3px 9px;
   letter-spacing:0.04em;
+  line-height:1;
+}
+section.roadmap thead th:not(:first-child) {
+  /* Force badge onto its own line above the phase name. */
+  white-space:normal;
 }
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
@@ -2695,16 +2706,18 @@ section.kpi > ul {
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
   gap:var(--sp-md);
-  align-content:start;
+  flex:1;
+  align-content:center;
 }
 section.kpi > ol > li,
 section.kpi > ul > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-radius:var(--radius-md);
-  padding:var(--sp-md) var(--sp-lg);
+  padding:var(--sp-lg) var(--sp-lg);
   display:flex; flex-direction:column;
-  gap:var(--sp-xs);
+  gap:var(--sp-sm);
+  justify-content:center;
 }
 section.kpi > ol > li::marker,
 section.kpi > ul > li::marker { content:''; }
@@ -2818,13 +2831,17 @@ section.agenda.progress-9 ol > li:nth-child(-n+8) {
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **HSM admin** `key custody`
+ * - **Key custody** `HSM admin`
  *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
- * - **Platform operator** `policy`
+ * - **Policy** `Platform operator`
  *   - Owns codebook policy, signing keys, version floors.
  *
- * Roster of actors with role tags. Each item: bold actor name,
- * inline-code role-tag chip, and a body line for responsibilities.
+ * Roster of responsibilities owned by named actors. Strong = the
+ * responsibility (left header). Inline `code` = the actor name,
+ * rendered as a filled accent pill, right-aligned. Nested li = body.
+ *
+ * Convention: bold is the primary scannable thing; code is the
+ * metadata chip. Same convention as everywhere else in Lattice.
  * ──────────────────────────────────────────────────────────────────────── */
 section.actors { display:flex; flex-direction:column; }
 section.actors h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -2834,47 +2851,55 @@ section.actors > ol {
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
   flex:1;
+  justify-content:center;
 }
 section.actors > ul > li,
 section.actors > ol > li {
-  display:flex; flex-wrap:wrap;
-  align-items:baseline;
+  display:grid;
+  grid-template-columns:1fr auto;
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
-  padding:var(--sp-sm) var(--sp-md);
+  align-items:center;
+  padding:var(--sp-md) var(--sp-lg);
   background:var(--bg-alt);
   border:1px solid var(--border);
+  border-left:3px solid var(--accent);
   border-radius:var(--radius-md);
 }
 section.actors > ul > li::marker,
 section.actors > ol > li::marker { content:''; }
+/* Strong = primary header (responsibility / capability), left-aligned. */
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
-  font-size:var(--fs-body);
+  grid-column:1; grid-row:1;
+  font-size:var(--fs-emphasis);
   font-weight:700;
   color:var(--text-heading);
-  white-space:nowrap;
+  line-height:var(--lh-snug);
 }
+/* Inline code = actor name chip, filled accent, right-aligned. */
 section.actors > ul > li > code,
 section.actors > ol > li > code {
+  grid-column:2; grid-row:1;
+  justify-self:end;
   display:inline-flex; align-items:center;
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:600;
   letter-spacing:0.04em;
-  color:var(--accent);
-  background:var(--accent-soft);
-  border:1px solid var(--accent);
+  color:var(--on-dark-primary, #fff);
+  background:var(--accent);
   border-radius:999px;
-  padding:2px 10px;
+  padding:4px 12px;
   white-space:nowrap;
 }
+/* Body row spans full width below the header. */
 section.actors > ul > li > ul,
 section.actors > ol > li > ul,
 section.actors > ul > li > ol,
 section.actors > ol > li > ol {
+  grid-column:1 / -1; grid-row:2;
   list-style:none; padding:0; margin:0;
-  flex-basis:100%;
 }
 section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
@@ -2903,15 +2928,20 @@ section.tldr > ol {
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
   flex:1;
+  justify-content:center;
 }
 section.tldr > ul > li,
 section.tldr > ol > li {
-  font-size:var(--fs-emphasis);
+  flex:1;
+  container-type:size;
+  display:flex; align-items:center;
+  font-size:clamp(var(--fs-md), 13cqh, var(--fs-lg));
   font-weight:500;
-  line-height:var(--lh-relaxed);
+  line-height:var(--lh-snug);
   color:var(--text-heading);
-  padding-bottom:var(--sp-sm);
+  padding:var(--sp-xs) 0;
   border-bottom:1px solid var(--border);
+  overflow:hidden;
 }
 section.tldr > ul > li::marker,
 section.tldr > ol > li::marker { content:''; }
@@ -2927,17 +2957,18 @@ section.tldr.numbered > ol > li {
   counter-increment:tldr-counter;
   display:grid;
   grid-template-columns:auto 1fr;
-  column-gap:var(--sp-md);
-  align-items:baseline;
+  column-gap:var(--sp-lg);
+  align-items:center;
 }
 section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:clamp(var(--fs-md), 22cqh, var(--fs-2xl));
   font-weight:700;
-  letter-spacing:0.12em;
+  letter-spacing:0.04em;
   color:var(--accent);
+  line-height:1;
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -3420,7 +3451,7 @@ token = kms.encrypt(
 <div class="below-note"><p>The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — roadmap · roadmap</div></footer></section>
 <section id="62" class="kpi target" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Where we are against quarter targets.</h2><ol><li><strong>94%</strong><ul><li>Token-issuance success — <em>target 99%, +2pp QoQ</em></li></ul></li><li><strong>8 ms</strong><ul><li>p99 detokenize — <em>target 10 ms, -3 ms QoQ</em></li></ul></li><li><strong>0</strong><ul><li>Examiner findings — <em>target 0, flat</em></li></ul></li><li><strong>3.2×</strong><ul><li>Detokenize headroom — <em>target 2×, +0.4× QoQ</em></li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — kpi · kpi target</div></footer></section>
 <section id="63" class="agenda progress-2" data-marpit-slide="63" data-marpit-pagination="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What this deck covers, in order.</h2><ol><li>The Design — page 7</li><li>The Phasing — page 18</li><li>The Choices — page 26</li><li>Appendices — page 35</li><li>Closing — page 64</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — agenda · agenda progress-2</div></footer></section>
-<section id="64" class="actors" data-marpit-slide="64" data-marpit-pagination="64" style="--marp-slide:64;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Who owns each part of the codebook lifecycle.</h2><ul><li><strong>HSM admin</strong> <code>key custody</code><ul><li>Manages KEK ceremonies and rotation. Never holds plaintext DEKs.</li></ul></li><li><strong>Platform operator</strong> <code>policy</code><ul><li>Owns codebook policy, signing keys, version floors, and revocation playbooks.</li></ul></li><li><strong>Application team</strong> <code>consumption</code><ul><li>Holds time-bound codebooks; tokenizes and detokenizes in-process.</li></ul></li><li><strong>Examiner</strong> <code>oversight</code><ul><li>Reads the HSM audit trail; cannot read plaintext.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — actors · actors</div></footer></section>
+<section id="64" class="actors" data-marpit-slide="64" data-marpit-pagination="64" style="--marp-slide:64;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Who owns each part of the codebook lifecycle.</h2><ul><li><strong>Key custody</strong> <code>HSM admin</code><ul><li>Manages KEK ceremonies and rotation. Never holds plaintext DEKs.</li></ul></li><li><strong>Policy</strong> <code>Platform operator</code><ul><li>Owns codebook policy, signing keys, version floors, and revocation playbooks.</li></ul></li><li><strong>Consumption</strong> <code>Application team</code><ul><li>Holds time-bound codebooks; tokenizes and detokenizes in-process.</li></ul></li><li><strong>Oversight</strong> <code>Examiner</code><ul><li>Reads the HSM audit trail; cannot read plaintext.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — actors · actors</div></footer></section>
 <section id="65" class="tldr numbered" data-marpit-slide="65" data-marpit-pagination="65" style="--marp-slide:65;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Section 03 · Recap</code></p><h2>What this section will tell you, in five lines.</h2><ul><li>The codebook model gets in-process latency with vault-grade key custody. → slide 8</li><li>Rotation is a version-floor increment, not a coordinated cutover. → slide 12</li><li>Per-tenant KEKs make crypto-shred a single HSM op. → slide 18</li><li>Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22</li><li>Five questions stay open until Phase 1 closes them on the record. → slide 27</li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — tldr · tldr numbered</div></footer></section>
 <section id="66" class="cards-grid compact" data-marpit-slide="66" data-marpit-pagination="66" style="--marp-slide:66;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · compact</code></p><h2>Compact tightens the spacing scale ~25 %, end-to-end.</h2><div class="cards-grid-inner"><div class="card"><strong>What changes</strong><ul><li><code>--sp-xs</code> through <code>--sp-2xl</code> shrink. Card gaps, list gutters, and section padding follow because every layout reads them via <code>var()</code>.</li></ul></div><div class="card"><strong>What does not change</strong><ul><li>Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.</li></ul></div><div class="card"><strong>When to reach for it</strong><ul><li>You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.</li></ul></div><div class="card"><strong>Composition</strong><ul><li><code>compact</code> composes with <code>dark</code>, <code>accent</code>, and any layout where density makes sense. It is silently incompatible with <code>title</code>, <code>divider</code>, and <code>image-full</code>.</li></ul></div></div><footer><div style="display:block;width:100%;text-align:left">Modifier — compact · cards-grid compact</div></footer></section>
 <section id="67" class="content loose" data-marpit-slide="67" data-marpit-pagination="67" style="--marp-slide:67;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · loose</code></p><h2>Loose is the inverse — more breathing room, same layout machinery.</h2><p>The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for <code>loose</code> when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.</p><p>The discipline is the same as <code>compact</code> from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.</p><blockquote><p>Density is not the same as importance. <code>loose</code> says: this page deserves room — not because it carries more, but because it carries one thing well.</p></blockquote><footer><div style="display:block;width:100%;text-align:left">Modifier — loose · content loose</div></footer></section>

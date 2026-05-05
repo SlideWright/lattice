@@ -388,20 +388,20 @@ Ordered list of section titles, optionally followed by a page reference (` — p
 4. Closing — page 64
 ```
 
-### `actors` — roster of roles with role-tag chips
+### `actors` — roster of responsibilities owned by named actors
 
-Unordered list of actors. Each item: bold actor name, an inline-code role tag (rendered as a pill chip in accent), and a nested list line for the responsibility body.
+Unordered list. Each item: bold = the responsibility / capability (left header), inline-code = the actor name (rendered as a filled accent pill, right-aligned), nested list line = the body. Bold-is-primary / code-is-chip is the consistent Lattice authoring convention.
 
 ```markdown
 <!-- _class: actors -->
 
 ## Who owns each part of the codebook lifecycle.
 
-- **HSM admin** `key custody`
+- **Key custody** `HSM admin`
   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
-- **Platform operator** `policy`
+- **Policy** `Platform operator`
   - Owns codebook policy, signing keys, version floors, and revocation playbooks.
-- **Examiner** `oversight`
+- **Oversight** `Examiner`
   - Reads the HSM audit trail; cannot read plaintext.
 ```
 
