@@ -1660,7 +1660,7 @@ A trailing plain paragraph (not a blockquote, not italic-only) on any card-beari
 This is a below-note. It appears below the cards with a hairline rule above it.
 ```
 
-**Layouts that support below-note:** `cards-grid`, `compare-prose`, `verdict-grid`, `featured`, `list-criteria`, `cards-wide`
+**Layouts that support below-note:** Most content layouts — `cards-grid`, `cards-wide`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`. Excluded: bookends (`title`, `closing`, `subtopic`, `divider`, `quote`, `big-number`) and layouts where the trailing paragraph is already claimed for a caption or main prose (`content`, `diagram`, `image-full`, `image*`, `code`, `compare-code`, `split-panel`, `roadmap`, `stats`).
 
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
@@ -1683,7 +1683,7 @@ A trailing paragraph whose **only** content is `_italic_` markdown renders as an
 _Source: pilot retrospective, six months across four product teams._
 ```
 
-**Layouts that support annotation:** same set as below-note, plus `compare-table`
+**Layouts that support annotation:** same set as below-note (compare-table included).
 
 - Glyph: `✦` (U+2726) in `--accent`, prepended via `::before`
 - Text: 13px (`--fs-label`), italic, `--text-muted`

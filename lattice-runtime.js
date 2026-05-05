@@ -561,6 +561,98 @@
     });
   }
 
+  // ── Glossary list → table transform ─────────────────────────────────────
+  // Author writes a 2-level nested list under a `glossary` slide:
+  //   - Term
+  //     - Definition
+  // The runtime rewrites the first <ul> in each glossary section into a
+  // 2-column table with the term auto-bolded. Mirrors the Marpit plugin in
+  // marp.config.js and the post-processor in lattice.js.
+  function applyGlossaryListTable(root) {
+    if (!root || !root.querySelectorAll) return;
+    const slides = root.querySelectorAll('section.glossary');
+    slides.forEach((sec) => {
+      // Skip if a table is already present (already transformed, or table-input author).
+      if (sec.querySelector('table')) return;
+      const ul = sec.querySelector(':scope > ul, :scope > div > ul');
+      if (!ul) return;
+      const items = Array.from(ul.children).filter(c => c.tagName === 'LI');
+      if (!items.length) return;
+      const tbody = document.createElement('tbody');
+      items.forEach((li) => {
+        const nested = li.querySelector(':scope > ul');
+        let termHtml;
+        if (nested) {
+          // Term = li's content excluding the nested ul.
+          const clone = li.cloneNode(true);
+          const nestedClone = clone.querySelector(':scope > ul');
+          if (nestedClone) nestedClone.remove();
+          termHtml = clone.innerHTML.trim();
+        } else {
+          termHtml = li.innerHTML.trim();
+        }
+        if (!/^<(?:strong|b)\b/i.test(termHtml)) termHtml = `<strong>${termHtml}</strong>`;
+        const defLi = nested && nested.querySelector(':scope > li');
+        const defHtml = defLi ? defLi.innerHTML.trim() : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${termHtml}</td><td>${defHtml}</td>`;
+        tbody.appendChild(tr);
+      });
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      thead.innerHTML = '<tr><th>Term</th><th>Definition</th></tr>';
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      ul.replaceWith(table);
+    });
+  }
+
+  // ── Glossary range pill ─────────────────────────────────────────────────
+  // Mirrors the Marpit plugin in marp.config.js and the post-processor in
+  // lattice.js. VS Code's Marp preview won't load custom Marpit plugins
+  // unless the user trusts the workspace and points the extension at the
+  // config — too brittle to rely on. Instead we run a DOM-side injector
+  // here so every `section.compare-table.glossary` gets its h2 pill in the
+  // preview just like in marp-cli output.
+  function applyGlossaryRangePills(root) {
+    if (!root || !root.querySelectorAll) return;
+    const slides = root.querySelectorAll('section.glossary');
+    slides.forEach((sec) => {
+      const h2 = sec.querySelector('h2');
+      if (!h2) return;
+      const tbody = sec.querySelector('table tbody');
+      if (!tbody) return;
+      const cells = tbody.querySelectorAll('tr > td:first-child');
+      if (!cells.length) return;
+      const firstChar = (el) => ((el.textContent || '').trim()[0] || '').toUpperCase();
+      const a = firstChar(cells[0]);
+      const z = firstChar(cells[cells.length - 1]);
+      if (!a) return;
+      const range = a === z ? a : `${a} \u2013 ${z}`;
+      const existing = h2.querySelector(':scope > .range-pill');
+      if (existing) {
+        if (existing.textContent !== range) existing.textContent = range;
+        return;
+      }
+      const pill = document.createElement('span');
+      pill.className = 'range-pill';
+      pill.textContent = range;
+      h2.appendChild(document.createTextNode(' '));
+      h2.appendChild(pill);
+    });
+  }
+
+  function startGlossaryObserver() {
+    if (typeof document === 'undefined' || !document.body) return;
+    const apply = () => {
+      applyGlossaryListTable(document);
+      applyGlossaryRangePills(document);
+    };
+    apply();
+    const mo = new MutationObserver(apply);
+    mo.observe(document.body, { subtree: true, childList: true, characterData: true });
+  }
+
   function bootstrap() {
     // Diagnostic breadcrumb. Visible in the host's DevTools console.
     // In VS Code: "Developer: Open Webview Developer Tools" while the Marp
@@ -641,6 +733,7 @@
     };
     tick();
     startObserver();
+    startGlossaryObserver();
   }
 
   if (typeof document === "undefined") return;

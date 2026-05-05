@@ -882,17 +882,31 @@ function parseSlide(raw, index) {
     });
   }
 
-  // verdict-grid: ul > li(strong title + ul(badge items + last body)) → grid-verdict
+  // verdict-grid: ul > li(title + ul(badge items + last body)) → grid-verdict.
+  // Title can be bare text or wrapped in <strong> — CSS bolds it either way.
   if (cls.includes('verdict-grid')) {
     // Greedy match on outer ul so nested uls don't split the match
     html = html.replace(/<ul>([\s\S]*)<\/ul>/, (_, outerInner) => {
-      // Nested-list format: each top-level li has <strong>title + inner <ul>
-      const nestedRe = /<li>\s*<strong>([\s\S]*?)<\/strong>([\s\S]*?)<\/ul>\s*<\/li>/g;
-      const nestedMatches = [...outerInner.matchAll(nestedRe)];
-      if (nestedMatches.length > 0) {
-        const vcards = nestedMatches.map(m => {
-          const title = m[1];
-          const nestedItems = [...m[2].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(n => n[1].trim());
+      // Split into top-level <li>…</li> blocks, depth-aware.
+      const items = [];
+      const re = /<li>|<\/li>|<(?:ul|ol)>|<\/(?:ul|ol)>/g;
+      let depth = 0, liStart = -1, mm;
+      while ((mm = re.exec(outerInner)) !== null) {
+        const tok = mm[0];
+        if (tok === '<li>') { if (depth === 0) liStart = mm.index + tok.length; depth++; }
+        else if (tok === '</li>') { depth--; if (depth === 0 && liStart >= 0) { items.push(outerInner.slice(liStart, mm.index)); liStart = -1; } }
+        else if (tok === '<ul>' || tok === '<ol>') depth++;
+        else depth--;
+      }
+      const hasNested = items.some(c => /<ul>/.test(c));
+      if (hasNested) {
+        const vcards = items.map(content => {
+          const innerUlMatch = content.match(/<ul>([\s\S]*)<\/ul>\s*$/);
+          let titleRaw = innerUlMatch ? content.slice(0, innerUlMatch.index) : content;
+          titleRaw = titleRaw.trim();
+          const strongOnly = titleRaw.match(/^<strong>([\s\S]*?)<\/strong>$/);
+          const title = strongOnly ? strongOnly[1] : titleRaw;
+          const nestedItems = innerUlMatch ? [...innerUlMatch[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(n => n[1].trim()) : [];
           const badgeItems = nestedItems.slice(0, -1);
           const bodyText = nestedItems[nestedItems.length - 1] ?? '';
           const badges = badgeItems.map(b => {
@@ -904,11 +918,11 @@ function parseSlide(raw, index) {
         });
         return `<div class="grid-verdict">${vcards.join('')}</div>`;
       }
-      // Legacy flat format: li > strong + inline text
-      const vcards = [...outerInner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => {
-        const titleMatch = m[1].match(/<strong>(.*?)<\/strong>/);
-        const title = titleMatch ? titleMatch[1] : '';
-        const body = m[1].replace(/<strong>.*?<\/strong>/, '').trim();
+      // Legacy flat format: li with optional <strong> title + inline body
+      const vcards = items.map(content => {
+        const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
+        const title = titleMatch ? titleMatch[1] : content.trim();
+        const body = titleMatch ? content.replace(/<strong>.*?<\/strong>/, '').trim() : '';
         return `<div class="vcard"><div class="vcard-title">${title}</div><div class="vcard-body">${body}</div></div>`;
       });
       return `<div class="grid-verdict">${vcards.join('')}</div>`;
@@ -995,24 +1009,43 @@ function parseSlide(raw, index) {
   if (cls.includes('cards-wide')) {
     html = html.replace(/<(ol|ul)>([\s\S]*?)<\/\1>/g, (_, tag, inner) => {
       const isOrdered = tag === 'ol';
-      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-      let counter = 0;
-      const cards = items.map(content => {
-        counter++;
-        const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
-        if (!strongMatch) return `<div class="wide-card"><div class="wide-card-body"><span>${content}</span></div></div>`;
-        const heading = strongMatch[1];
-        // Support nested <ul><li>body</li></ul> (preferred) or inline text body
-        const nestedUl = content.match(/<ul>([\s\S]*?)<\/ul>/);
-        let bodyHtml;
-        if (nestedUl) {
-          const bodyItems = [...nestedUl[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-          bodyHtml = bodyItems.map(b => `<span>${b}</span>`).join('');
+      // Split inner into top-level <li>…</li> blocks, tracking nested ul/ol depth
+      // so a nested list's </li> doesn't terminate the outer item.
+      const items = [];
+      const re = /<li>|<\/li>|<(?:ul|ol)>|<\/(?:ul|ol)>/g;
+      let depth = 0, liStart = -1, m;
+      while ((m = re.exec(inner)) !== null) {
+        const tok = m[0];
+        if (tok === '<li>') {
+          if (depth === 0) liStart = m.index + tok.length;
+          depth++;
+        } else if (tok === '</li>') {
+          depth--;
+          if (depth === 0 && liStart >= 0) {
+            items.push(inner.slice(liStart, m.index));
+            liStart = -1;
+          }
+        } else if (tok === '<ul>' || tok === '<ol>') {
+          depth++;
         } else {
-          bodyHtml = `<span>${content.replace(strongMatch[0], '').trim()}</span>`;
+          depth--;
         }
-        // CSS .three-stack.ordered .wide-card-header::before already generates the counter
-        // via counter(wide-counter) — do not inject a redundant span here.
+      }
+      const cards = items.map(content => {
+        // Header = content before the first nested <ul> (or whole content if none).
+        // Strip a wrapping <strong>…</strong> if the author wrote one — the layout
+        // bolds the heading via CSS, so manual bolding is optional.
+        const nestedUl = content.match(/<ul>([\s\S]*)<\/ul>\s*$/);
+        let headerRaw = nestedUl ? content.slice(0, nestedUl.index) : content;
+        headerRaw = headerRaw.trim();
+        const strongOnly = headerRaw.match(/^<strong>([\s\S]*?)<\/strong>$/);
+        const heading = strongOnly ? strongOnly[1] : headerRaw;
+        if (!heading) return `<div class="wide-card"><div class="wide-card-body"><span>${content}</span></div></div>`;
+        let bodyHtml = '';
+        if (nestedUl) {
+          const bodyItems = [...nestedUl[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(x => x[1]);
+          bodyHtml = bodyItems.map(b => `<span>${b}</span>`).join('');
+        }
         const badgeHtml = '';
         return `<div class="wide-card"><div class="wide-card-header">${badgeHtml}<span class="wide-card-heading">${heading}</span></div><div class="wide-card-body">${bodyHtml}</div></div>`;
       });
@@ -1114,12 +1147,100 @@ function parseSlide(raw, index) {
     }
   }
 
+  // ── glossary: nested-list → table transform ──────────────────────────────
+  // Author writes:
+  //   - Term
+  //     - Definition
+  // Runtime transforms to a 2-column table with the term auto-bolded.
+  // Mirrors the Marpit plugin in marp.config.js and the DOM injector in
+  // lattice-runtime.js so all three pipelines emit identical HTML.
+  if (cls.includes('glossary')) {
+    // Find the first top-level <ul>...</ul> with balanced depth (a non-greedy
+    // regex would stop at the FIRST nested </ul>).
+    const startIdx = html.indexOf('<ul>');
+    if (startIdx >= 0) {
+      const tagRe = /<(\/?)ul>/g;
+      tagRe.lastIndex = startIdx;
+      let depth = 0, endIdx = -1, m;
+      while ((m = tagRe.exec(html)) !== null) {
+        if (m[1] === '') depth++;
+        else { depth--; if (depth === 0) { endIdx = m.index + m[0].length; break; } }
+      }
+      if (endIdx > startIdx) {
+        const inner = html.slice(startIdx + 4, endIdx - 5); // strip outer <ul></ul>
+        // Walk top-level <li>…</li> spans; for each, split term from any nested <ul>.
+        const liRe = /<(\/?)(ul|li)>/g;
+        let liDepth = 0, itemStart = -1;
+        const items = [];
+        let t;
+        while ((t = liRe.exec(inner)) !== null) {
+          const closing = t[1] === '/';
+          const tag = t[2];
+          if (tag === 'li' && !closing && liDepth === 0) { itemStart = t.index + t[0].length; liDepth = 1; continue; }
+          if (tag === 'ul' && !closing && liDepth >= 1) { liDepth++; continue; }
+          if (tag === 'ul' && closing && liDepth >= 2) { liDepth--; continue; }
+          if (tag === 'li' && closing && liDepth === 1) {
+            items.push(inner.slice(itemStart, t.index));
+            liDepth = 0; itemStart = -1;
+          }
+        }
+        const rows = [];
+        for (const item of items) {
+          const nestedIdx = item.search(/<ul>/);
+          let term, def;
+          if (nestedIdx >= 0) {
+            term = item.slice(0, nestedIdx).trim();
+            const nested = item.slice(nestedIdx);
+            const defMatch = nested.match(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>/);
+            def = defMatch ? defMatch[1].trim() : '';
+          } else {
+            term = item.trim(); def = '';
+          }
+          if (!/^<(?:strong|b)\b/i.test(term)) term = `<strong>${term}</strong>`;
+          rows.push(`<tr><td>${term}</td><td>${def}</td></tr>`);
+        }
+        if (rows.length) {
+          const thead = `<thead><tr><th>Term</th><th>Definition</th></tr></thead>`;
+          const table = `<table>${thead}<tbody>\n${rows.join('\n')}\n</tbody></table>`;
+          html = html.slice(0, startIdx) + table + html.slice(endIdx);
+        }
+      }
+    }
+  }
+
+  // ── glossary: auto-range pill ────────────────────────────────────────────
+  // Every glossary slide gets a brand pill appended to its h2, spanning the
+  // alphabetic range of the table — e.g. `Glossary` becomes
+  // `Glossary <span class="range-pill">A – G</span>`. The first and last
+  // visible characters of the table's first-column cells are read at parse
+  // time, so reordering entries cannot desync the header. Mirrors the Marpit
+  // plugin in marp.config.js so the result is identical in build, VS Code
+  // Marp preview, and this LLM-env emulator.
+  if (cls.includes('glossary')) {
+    const tbodyMatch = html.match(/<tbody>([\s\S]*?)<\/tbody>/);
+    if (tbodyMatch) {
+      const rows = [...tbodyMatch[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
+      if (rows.length) {
+        const firstCell = rows[0][1].match(/<td>([\s\S]*?)<\/td>/);
+        const lastCell  = rows[rows.length - 1][1].match(/<td>([\s\S]*?)<\/td>/);
+        const firstChar = (s) => (s.replace(/<[^>]+>/g, '').trim()[0] || '').toUpperCase();
+        if (firstCell && lastCell) {
+          const a = firstChar(firstCell[1]);
+          const z = firstChar(lastCell[1]);
+          const range = a === z ? a : `${a} – ${z}`;
+          const pill = ` <span class="range-pill">${range}</span>`;
+          html = html.replace(/(<h2>[\s\S]*?)(<\/h2>)/, (_, open, close) => `${open}${pill}${close}`);
+        }
+      }
+    }
+  }
+
   // ── Universal below-note ─────────────────────────────────────────────────────
   // Any layout where the last element in html is a plain <p> gets it wrapped
   // in .below-note for the full-width hairline treatment.
-  // Excludes: title, closing, quote, big-number, subtopic, divider (centred layouts
-  // where the trailing p IS the main content, not a footnote).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','timeline','diagram','stats','code'];
+  // Excludes: bookends and layouts where trailing <p> is already claimed
+  // (caption / attribution / main content / italic legend).
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

@@ -54,6 +54,154 @@ function verdictGridBadges(markdown) {
 const mermaidLanguage = require("./lib/mermaid-hljs");
 
 /**
+ * Marpit plugin: on a `glossary` slide, transforms a top-level 2-level
+ * nested bullet list:
+ *
+ *   - Term
+ *     - Definition
+ *
+ * into a 2-column glossary table with the term auto-bolded. Lets authors
+ * write glossaries as nested bullets rather than markdown tables. Runs
+ * before `glossaryRange` so the pill logic finds the generated <td> cells.
+ */
+function glossaryListToTable(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "glossary_list_to_table", (state) => {
+    const tokens = state.tokens;
+    let inGlossary = false;
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      if (t.type === "marpit_slide_open") {
+        const cls = t.attrGet("class") || "";
+        inGlossary = /\bglossary\b/.test(cls);
+        continue;
+      }
+      if (t.type === "marpit_slide_close") { inGlossary = false; continue; }
+      if (!inGlossary) continue;
+      if (t.type !== "bullet_list_open") continue;
+      // Find matching bullet_list_close at the same depth.
+      let depth = 1, end = -1;
+      for (let j = i + 1; j < tokens.length; j++) {
+        if (tokens[j].type === "bullet_list_open") depth++;
+        else if (tokens[j].type === "bullet_list_close") { depth--; if (depth === 0) { end = j; break; } }
+      }
+      if (end < 0) continue;
+      // Walk top-level list_item children to build (term, def) rows.
+      const rows = [];
+      let liDepth = 0;
+      let term = "", def = "";
+      let captureTo = null; // 'term' | 'def'
+      for (let j = i + 1; j < end; j++) {
+        const tk = tokens[j];
+        if (tk.type === "list_item_open") {
+          liDepth++;
+          if (liDepth === 1) { term = ""; def = ""; captureTo = "term"; }
+        } else if (tk.type === "list_item_close") {
+          if (liDepth === 1) {
+            const termHtml = /^<(?:strong|b)\b/.test(term) ? term : `<strong>${term}</strong>`;
+            rows.push(`<tr><td>${termHtml}</td><td>${def}</td></tr>`);
+          }
+          liDepth--;
+        } else if (tk.type === "bullet_list_open" && liDepth === 1) {
+          captureTo = "def";
+        } else if (tk.type === "inline") {
+          const html = markdown.renderer.renderInline(tk.children, markdown.options, state.env);
+          if (captureTo === "term" && liDepth === 1 && !term) {
+            term = html;
+            captureTo = null;
+          } else if (captureTo === "def" && liDepth === 2 && !def) {
+            def = html;
+          }
+        }
+      }
+      if (!rows.length) continue;
+      // Replace tokens [i..end] with one html_block.
+      const Ctor = t.constructor;
+      const repl = new Ctor("html_block", "", 0);
+      repl.content = `<table><thead><tr><th>Term</th><th>Definition</th></tr></thead><tbody>\n${rows.join("\n")}\n</tbody></table>\n`;
+      repl.block = true;
+      tokens.splice(i, end - i + 1, repl);
+      // Continue scanning from i+1 (replacement is a single token).
+    }
+  });
+}
+
+/**
+ * Marpit plugin: on a `glossary` slide, appends a pill to the
+ * h2 spanning the alphabetic range of the table — e.g. the h2 `Glossary`
+ * becomes `Glossary <span class="range-pill">A – G</span>`. The first and
+ * last visible characters of the table's first-column cells are read at
+ * parse time, so reordering or moving entries cannot desync the header.
+ * Runs in both the build pipeline and VS Code's Marp preview.
+ */
+function glossaryRange(markdown) {
+  markdown.core.ruler.after("glossary_list_to_table", "glossary_range", (state) => {
+    let inGlossary = false;
+    let h2InlineToken = null;
+    let firstTermChar = null;
+    let lastTermChar = null;
+    let captureNextInline = false;
+    // We've already converted the bullet list to an html_block by the time
+    // this ruler runs — read first/last term out of the table HTML directly.
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        const cls = token.attrGet("class") || "";
+        inGlossary = /\bglossary\b/.test(cls);
+        h2InlineToken = null;
+        firstTermChar = null;
+        lastTermChar = null;
+        captureNextInline = false;
+        continue;
+      }
+      if (!inGlossary) continue;
+      if (token.type === "marpit_slide_close") {
+        if (h2InlineToken && firstTermChar) {
+          const range = firstTermChar === lastTermChar
+            ? firstTermChar
+            : `${firstTermChar} – ${lastTermChar || firstTermChar}`;
+          const Ctor = (h2InlineToken.children && h2InlineToken.children[0])
+            ? h2InlineToken.children[0].constructor
+            : null;
+          if (Ctor) {
+            const space = new Ctor("text", "", 0); space.content = " ";
+            const pill = new Ctor("html_inline", "", 0);
+            pill.content = `<span class="range-pill">${range}</span>`;
+            h2InlineToken.children = [...(h2InlineToken.children || []), space, pill];
+          }
+        }
+        inGlossary = false;
+        continue;
+      }
+      if (token.type === "heading_open" && token.tag === "h2") {
+        captureNextInline = "h2";
+        continue;
+      }
+      if (captureNextInline === "h2" && token.type === "inline") {
+        if (!h2InlineToken) h2InlineToken = token;
+        captureNextInline = false;
+        continue;
+      }
+      // Read the table HTML (from glossary_list_to_table) or from a literal
+      // markdown table token sequence. We take the easy path for the
+      // html_block produced by our transform; for raw token tables we
+      // walk tbody tds the same way as before.
+      if (token.type === "html_block" && /<table>/.test(token.content)) {
+        const tbody = token.content.match(/<tbody>([\s\S]*?)<\/tbody>/);
+        if (tbody) {
+          const rows = [...tbody[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
+          if (rows.length) {
+            const fc = rows[0][1].match(/<td>([\s\S]*?)<\/td>/);
+            const lc = rows[rows.length - 1][1].match(/<td>([\s\S]*?)<\/td>/);
+            const firstChar = (s) => (s.replace(/<[^>]+>/g, "").trim()[0] || "").toUpperCase();
+            if (fc) firstTermChar = firstChar(fc[1]);
+            if (lc) lastTermChar = firstChar(lc[1]);
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
  * Teach marp-core's bundled highlight.js about Mermaid syntax so fenced
  * ```mermaid blocks get hljs token spans at SSR time. The default
  * `marp.highlighter` returns the empty string for unknown languages, which
@@ -85,6 +233,6 @@ module.exports = {
   imageScale: 3,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    return marp.use(splitPanelCounter).use(verdictGridBadges);
+    return marp.use(splitPanelCounter).use(verdictGridBadges).use(glossaryListToTable).use(glossaryRange);
   },
 };

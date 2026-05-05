@@ -1636,7 +1636,6 @@ section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no
 section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:8px var(--sp-xs) 10px; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td { padding:8px var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
-section.compare-table > p { font-size:var(--fs-label); font-style:italic; color:var(--text-muted); margin-top:var(--sp-md); padding-top:var(--sp-sm); }
 
 /* ── GLOSSARY ──
  * Modifier (used alone or alongside `compare-table`): zebra rows for
@@ -2359,22 +2358,24 @@ section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
  * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
  * the same hairline-rule treatment for layouts that use it.                   */
-section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p,
-section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p,
-section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p {
+:is(section.cards-grid, section.compare-prose, section.verdict-grid,
+    section.featured, section.list-criteria, section.cards-wide,
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda):not(:has(.below-note))
+  > :is(ul, ol, blockquote, table) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
   position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
-section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.compare-prose:not(:has(.below-note)) > :is(ul, ol) + p::before,
-section.verdict-grid:not(:has(.below-note)) > :is(ul, ol) + p::before,
-section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote) + p::before,
-section.list-criteria:not(:has(.below-note)) > :is(ul, ol) + p::before,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
+:is(section.cards-grid, section.compare-prose, section.verdict-grid,
+    section.featured, section.list-criteria, section.cards-wide,
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda):not(:has(.below-note))
+  > :is(ul, ol, blockquote, table) + p::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background:linear-gradient(to right, var(--accent), transparent);
 }
@@ -2392,15 +2393,25 @@ section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
  * ──────────────────────────────────────────────────────────────────────── */
 :is(section.cards-grid, section.compare-prose, section.verdict-grid,
     section.featured, section.list-criteria, section.cards-wide,
-    section.compare-table)
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda, section.compare-table)
   .below-note:has(> p > em:only-child)::before { display:none; }
 
 :is(section.cards-grid, section.compare-prose, section.verdict-grid,
     section.featured, section.list-criteria, section.cards-wide,
-    section.compare-table)
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda, section.compare-table)
   .below-note > p:has(> em:only-child),
 :is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide)
+    section.featured, section.list-criteria, section.cards-wide,
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda, section.compare-table)
   > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
   font-size:var(--fs-label);
   color:var(--text-muted);
@@ -2408,10 +2419,17 @@ section.cards-wide:not(:has(.below-note)) > :is(ul, ol) + p::before {
 }
 :is(section.cards-grid, section.compare-prose, section.verdict-grid,
     section.featured, section.list-criteria, section.cards-wide,
-    section.compare-table)
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda, section.compare-table)
   .below-note > p:has(> em:only-child)::before,
 :is(section.cards-grid, section.compare-prose, section.verdict-grid,
-    section.featured, section.list-criteria, section.cards-wide)
+    section.featured, section.list-criteria, section.cards-wide,
+    section.cards-stack, section.list, section.list-steps,
+    section.list-tabular, section.timeline, section.principles,
+    section.tldr, section.matrix-2x2, section.decision, section.before-after,
+    section.actors, section.kpi, section.agenda, section.compare-table)
   > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before {
   content:'\2726';
   position:static;
@@ -2627,15 +2645,7 @@ section.before-after > ol::before {
   font-weight:400;
   line-height:1;
 }
-/* Optional trailing paragraph — context note below the comparison. */
-section.before-after > p:last-of-type {
-  font-size:var(--fs-label);
-  font-style:italic;
-  color:var(--text-muted);
-  margin-top:var(--sp-md);
-  padding-top:var(--sp-sm);
-  border-top:1px solid var(--border);
-}
+/* Optional trailing paragraph — handled by universal below-note / annotation. */
 
 /* ── PRINCIPLES ────────────────────────────────────────────────────────
  * ## heading
@@ -3600,7 +3610,7 @@ token = kms.encrypt(
 <section id="61" class="before-after" data-marpit-slide="61" data-marpit-pagination="61" style="--marp-slide:61;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Detokenize used to require a vault round-trip.</h2><p><code>Latency story · before vs after</code></p><ul><li><strong>Before</strong><ul><li>Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.</li></ul></li><li><strong>After</strong><ul><li>Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.</li></ul></li></ul><div class="below-note"><p>The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — before-after · before-after</div></footer></section>
 <section id="62" class="principles" data-marpit-slide="62" data-marpit-pagination="62" style="--marp-slide:62;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>How we make calls when the spec is silent.</h2><ol><li>We default to the choice that is cheaper to reverse.</li><li>We name the actor, never the system.</li><li>We write down the bet on the same slide as the choice.</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — principles · principles</div></footer></section>
 <section id="63" class="roadmap" data-marpit-slide="63" data-marpit-pagination="63" style="--marp-slide:63;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What ships in each phase, by workstream.</h2><table><thead><tr><th>Workstream</th><th>Phase 01</th><th>Phase 02</th><th>Phase 03</th></tr></thead><tbody><tr><td><strong>Platform</strong></td><td>Codebook signing</td><td>Multi-tenant DEKs</td><td>Per-purpose codebooks</td></tr><tr><td><strong>Operations</strong></td><td>Manual rotation</td><td>Automated rotation</td><td>Crypto-shred</td></tr><tr><td><strong>Compliance</strong></td><td>Audit trail (HSM)</td><td>Centralised log</td><td>Examiner pack</td></tr><tr><td><strong>SDK</strong></td><td>Java</td><td></td><td>Polyglot parity</td></tr></tbody></table>
-<div class="below-note"><p>The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.</p></div><footer><div style="display:block;width:100%;text-align:left">New layout — roadmap · roadmap</div></footer></section>
+<p>The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.</p><footer><div style="display:block;width:100%;text-align:left">New layout — roadmap · roadmap</div></footer></section>
 <section id="64" class="kpi target" data-marpit-slide="64" data-marpit-pagination="64" style="--marp-slide:64;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Where we are against quarter targets.</h2><ol><li><strong>94%</strong><ul><li>Token-issuance success</li><li>target 99%, +2pp QoQ</li></ul></li><li><strong>8 ms</strong><ul><li>p99 detokenize</li><li>target 10 ms, -3 ms QoQ</li></ul></li><li><strong>0</strong><ul><li>Examiner findings</li><li>target 0, flat</li></ul></li><li><strong>3.2×</strong><ul><li>Detokenize headroom</li><li>target 2×, +0.4× QoQ</li></ul></li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — kpi · kpi target</div></footer></section>
 <section id="65" class="agenda progress-2" data-marpit-slide="65" data-marpit-pagination="65" style="--marp-slide:65;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>What this deck covers, in order.</h2><ol><li>The Design — page 7</li><li>The Phasing — page 18</li><li>The Choices — page 26</li><li>Appendices — page 35</li><li>Closing — page 64</li></ol><footer><div style="display:block;width:100%;text-align:left">New layout — agenda · agenda progress-2</div></footer></section>
 <section id="66" class="actors" data-marpit-slide="66" data-marpit-pagination="66" style="--marp-slide:66;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><h2>Who owns each part of the codebook lifecycle.</h2><ul><li><strong>Key custody</strong> <code>HSM admin</code><ul><li>Manages KEK ceremonies and rotation. Never holds plaintext DEKs.</li></ul></li><li><strong>Policy</strong> <code>Platform operator</code><ul><li>Owns codebook policy, signing keys, version floors, and revocation playbooks.</li></ul></li><li><strong>Consumption</strong> <code>Application team</code><ul><li>Holds time-bound codebooks; tokenizes and detokenizes in-process.</li></ul></li><li><strong>Oversight</strong> <code>Examiner</code><ul><li>Reads the HSM audit trail; cannot read plaintext.</li></ul></li></ul><footer><div style="display:block;width:100%;text-align:left">New layout — actors · actors</div></footer></section>
