@@ -2714,6 +2714,7 @@ section.kpi > ol > li,
 section.kpi > ul > li {
   background:var(--bg-alt);
   border:1px solid var(--border);
+  border-top:3px solid var(--kpi-accent, var(--accent));
   border-radius:var(--radius-md);
   padding:var(--sp-lg) var(--sp-lg);
   display:flex; flex-direction:column;
@@ -2722,6 +2723,15 @@ section.kpi > ul > li {
 }
 section.kpi > ol > li::marker,
 section.kpi > ul > li::marker { content:''; }
+/* Categorical rotation across cards (cycle of 6, then mauve/slate). */
+section.kpi > :is(ul, ol) > li:nth-child(8n+1) { --kpi-accent:var(--cat-blue); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+2) { --kpi-accent:var(--cat-green); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+3) { --kpi-accent:var(--cat-purple); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+4) { --kpi-accent:var(--cat-orange); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+5) { --kpi-accent:var(--cat-teal); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+6) { --kpi-accent:var(--cat-rose); }
+section.kpi > :is(ul, ol) > li:nth-child(8n+7) { --kpi-accent:var(--cat-mauve); }
+section.kpi > :is(ul, ol) > li:nth-child(8n)   { --kpi-accent:var(--cat-slate); }
 section.kpi > ol > li > strong,
 section.kpi > ul > li > strong {
   display:block;
