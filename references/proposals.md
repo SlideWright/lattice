@@ -1,5 +1,14 @@
 # Lattice — Authoring Enhancement Proposals
 
+> **Not canonical.** This is a design-speculation document, written ahead of implementation. The authoring shapes shown here are exploratory — actual shipped behaviour may differ. For ground truth, use:
+>
+> - **`references/templates.md`** — canonical template / layout reference.
+> - **`examples/gallery.md`** — canonical authoring examples that actually render.
+>
+> When this document and either of those disagree, the gallery and template reference win. Examples in this file may use older shapes (e.g. `— _italic modifier_` patterns) that were superseded during implementation; treat them as historical context, not as patterns to copy.
+
+---
+
 > A design document, not a spec. Every proposal here is reversible: it adds capability without changing what already works. Existing decks render identically until an author opts into a new modifier or layout.
 
 This document is a tour of where Lattice could go next as an authoring system. It is organised into three parts and a closing plan:
@@ -331,6 +340,8 @@ The first column is treated as a workstream label (sticky). Phase columns get ph
 ### 3.4 `kpi` — metrics dashboard slide
 
 Like `stats`, but with trend signals. For business decks where every number has a delta and a target.
+
+> **Shipped, with a different authoring shape.** During implementation the `— _italic modifier_` recipe shown below was replaced with a natural two-bullet structure (number heading + label bullet + optional target/trend bullet) — see Template 21 in `templates.md` and the `kpi` slide in `examples/gallery.md` for the canonical form. The example below is preserved as historical design context.
 
 ```markdown
 <!-- _class: kpi -->

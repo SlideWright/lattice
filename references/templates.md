@@ -1481,7 +1481,7 @@ Optional intro paragraph.
   - `.cell-warn`: `background: rgba(146,100,0,0.08); color: #925c00`
   - No class: neutral, `color: var(--text-muted)`
 - Use background tint only — never bold fills that obscure text
-- Footnote paragraph after table: `font-size: 12px; font-style: italic; color: var(--text-muted); margin-top: 12px`
+- Trailing paragraph after the table follows the universal trailing-paragraph registers (see Feature: Below-Note and Feature: Annotation): a plain trailing `<p>` renders as a hairline-ruled below-note, and a trailing `<p>` whose only content is `_italic_` markdown renders as an annotation with the `✦` glyph. There is no `compare-table`-specific footnote rule.
 - Maximum ~6 rows, ~5 columns before legibility breaks — split or simplify if more
 
 **Marp markdown source:**
@@ -1522,10 +1522,12 @@ Optional intro paragraph.
   </tbody>
 </table>
 
-_Footnote: scope and timeline estimates are not included — this table covers architectural properties only._
+_Scope and timeline estimates are not included — this table covers architectural properties only._
 ```
 
 **Note:** This template requires `html: true` in the Marp frontmatter. The `<table>` is written directly in the markdown — Marp passes it through when HTML is enabled. Cell classes (`.cell-pass`, `.cell-fail`, `.cell-warn`) must be defined in the deck's CSS theme.
+
+**Note on the trailing line:** the example uses an italic-only paragraph, which the universal annotation register renders with the `✦` glyph + label-size muted text. Drop the italics to get a below-note instead (full-width hairline rule + body text). Drop the line entirely if no scope-caveat is needed.
 
 **When to use:** Multi-vendor comparison, criteria matrix, architectural property grid. Use when the reader needs to scan both across a row (how one item compares across options) and down a column (what one option looks like in total). If you only need to compare two things, use T11 instead.
 
@@ -1618,7 +1620,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 └───────────────────────────────────────┘
 ```
 
-**Layouts that support Key Insight:** see the per-layout matrix at the end of this section. Briefly: every content layout except `quote` and `featured` (where blockquote is already claimed for primary content).
+**Layouts that support Key Insight:** `cards-grid`, `cards-side`, `compare-prose`, `list`, `list-criteria`, `cards-wide`, `list-steps`, `split-panel`
 
 **Styling:**
 
@@ -1645,7 +1647,7 @@ Any card-bearing layout that ends with a trailing `> blockquote` renders it as a
 
 ## Feature: Below-Note
 
-A trailing plain paragraph (not a blockquote, not italic-only) on any card-bearing layout renders as a **below-note** — body-sized contextual text with a hairline gradient rule above it, visually separate from the card content.
+A trailing plain paragraph (not a blockquote) on any card-bearing layout renders as a **below-note** — body-sized contextual text with a hairline gradient rule above it, visually separate from the card content.
 
 ```markdown
 <!-- _class: cards-grid -->
@@ -1660,86 +1662,11 @@ A trailing plain paragraph (not a blockquote, not italic-only) on any card-beari
 This is a below-note. It appears below the cards with a hairline rule above it.
 ```
 
-**Layouts that support below-note:** see the per-layout matrix below.
+**Layouts that support below-note:** `cards-grid`, `compare-prose`, `verdict-grid`, `featured`, `list-criteria`, `cards-wide`
 
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
-- Use for **framing context** the audience reads — a single sentence that scopes or contextualizes the cards
-
-## Feature: Annotation (italic trailing paragraph)
-
-A trailing paragraph whose **only** content is `_italic_` markdown renders as an **annotation** — a quieter register prefixed with a `✦` star glyph in accent, used for sources, scope caveats, and footnotes. Distinct from below-note: no hairline rule, smaller type, muted color.
-
-```markdown
-<!-- _class: cards-grid -->
-
-## Slide heading.
-
-- Card Title 1
-  - Card body.
-
-> The key insight that ties the cards together.
-
-_Source: pilot retrospective, six months across four product teams._
-```
-
-**Layouts that support annotation:** see the per-layout matrix below.
-
-- Glyph: `✦` (U+2726) in `--accent`, prepended via `::before`
-- Text: 13px (`--fs-label`), italic, `--text-muted`
-- Use for **annotations** the audience skims — sources, attribution, scope/timeframe footnotes
-- The paragraph must contain **only** italic text (`_text_` or `*text*`); a paragraph with mixed content is not an annotation, it's a below-note
-
-**Three trailing-paragraph registers, summarized:**
-
-| Markdown        | Treatment                              | Editorial register |
-| --------------- | -------------------------------------- | ------------------ |
-| `> blockquote`  | Accent panel + "KEY INSIGHT" eyebrow   | Conclusion (read this)        |
-| Plain paragraph | Hairline rule + body text              | Context (frame this)          |
-| `_italic only_` | ✦ glyph + italic muted label-size text | Annotation (skim this)        |
-
-**Per-layout register support:**
-
-Legend: ● supported · ○ not supported · — not applicable (layout has no body content) · † trailing `<p>` is claimed for another purpose on this layout (caption, attribution, body prose, or italic legend)
-
-| Layout          | Key Insight | Below-Note | Annotation | Notes                                |
-| --------------- | :---------: | :--------: | :--------: | ------------------------------------ |
-| `title`         |      —      |     —      |     —      | bookend                              |
-| `closing`       |      —      |     —      |     —      | bookend                              |
-| `subtopic`      |      —      |     —      |     —      | bookend                              |
-| `divider`       |      —      |     —      |     —      | section bookend                      |
-| `big-number`    |      —      |     —      |     —      | bookend variant                      |
-| `quote`         |      ○      |     ○      |     ○      | trailing `<p>` is the attribution †  |
-| `content`       |      ●      |     ○      |     ○      | trailing `<p>` is the body prose †   |
-| `diagram`       |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `image-full`    |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `image-right`   |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `image-left`    |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `code`          |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `compare-code`  |      ●      |     ○      |     ○      | trailing `<p>` is the caption †      |
-| `split-panel`   |      ●      |     ○      |     ○      | trailing `<p>` is the side prose †   |
-| `roadmap`       |      ●      |     ○      |     ○      | trailing `<p>` is the italic legend †|
-| `stats`         |      ●      |     ○      |     ○      | trailing `<p>` is the subtitle †     |
-| `cards-grid`    |      ●      |     ●      |     ●      |                                      |
-| `cards-wide`    |      ●      |     ●      |     ●      |                                      |
-| `cards-stack`   |      ●      |     ●      |     ●      |                                      |
-| `compare-prose` |      ●      |     ●      |     ●      |                                      |
-| `compare-table` |      ●      |     ●      |     ●      |                                      |
-| `verdict-grid`  |      ●      |     ●      |     ●      |                                      |
-| `featured`      |      ○      |     ●      |     ●      | key-insight excluded; blockquote claimed by feat-card |
-| `list`          |      ●      |     ●      |     ●      |                                      |
-| `list-criteria` |      ●      |     ●      |     ●      |                                      |
-| `list-steps`    |      ●      |     ●      |     ●      |                                      |
-| `list-tabular`  |      ●      |     ●      |     ●      |                                      |
-| `timeline`      |      ●      |     ●      |     ●      |                                      |
-| `principles`    |      ●      |     ●      |     ●      |                                      |
-| `tldr`          |      ●      |     ●      |     ●      |                                      |
-| `matrix-2x2`    |      ●      |     ●      |     ●      |                                      |
-| `decision`      |      ●      |     ●      |     ●      |                                      |
-| `before-after`  |      ●      |     ●      |     ●      |                                      |
-| `actors`        |      ●      |     ●      |     ●      |                                      |
-| `kpi`           |      ●      |     ●      |     ●      |                                      |
-| `agenda`        |      ●      |     ●      |     ●      |                                      |
+- Use for source attribution, scope caveats, or a single sentence of additional context
 
 ---
 

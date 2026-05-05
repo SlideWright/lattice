@@ -281,9 +281,29 @@ The scoring model is the most configurable component. This section covers the th
 ---
 
 <!-- _class: cards-grid -->
-<!-- _footer: "Key insight + annotation · cards-grid" -->
+<!-- _footer: "Key insight + below-note · cards-grid" -->
 
 ## Key insight works on any card-bearing layout.
+
+- Signal Intake
+  - Weekly structured collection across customer conversations, market data, and competitive moves.
+- Scoring Model
+  - Each signal scored on three dimensions: confidence, recency, and strategic relevance.
+- Decision Log
+  - Every decision recorded with the signals that informed it and the criteria applied.
+- Calibration Loop
+  - Monthly retrospective that compares predicted outcomes to actual outcomes.
+
+> The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
+
+Trailing blockquote becomes a key insight; trailing paragraph becomes a below-note with a hairline rule above it.
+
+---
+
+<!-- _class: cards-grid -->
+<!-- _footer: "Key insight + annotation · cards-grid" -->
+
+## A trailing italic-only paragraph becomes an annotation.
 
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
