@@ -2643,9 +2643,8 @@ section.roadmap thead th:not(:first-child) {
 section.roadmap thead { counter-reset:phase-counter; }
 section.roadmap thead th:not(:first-child)::before {
   content:counter(phase-counter, decimal-leading-zero);
-  display:block;
-  width:fit-content;
-  margin-bottom:var(--sp-xs);
+  display:inline-block;
+  margin-right:var(--sp-sm);
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:700;
@@ -2655,10 +2654,10 @@ section.roadmap thead th:not(:first-child)::before {
   padding:3px 9px;
   letter-spacing:0.04em;
   line-height:1;
+  vertical-align:middle;
 }
 section.roadmap thead th:not(:first-child) {
-  /* Force badge onto its own line above the phase name. */
-  white-space:normal;
+  white-space:nowrap;
 }
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
