@@ -596,15 +596,17 @@ section.list ol li::before { content:counter(list-counter, decimal-leading-zero)
  */
 section.list-tabular h2 { margin-bottom:var(--sp-md); }
 section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:center; }
-section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-body); line-height:var(--lh-base); }
+section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); line-height:var(--lh-base); }
 section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
-section.list-tabular ol > li strong { font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); }
-section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+section.list-tabular ol > li strong { font-size:inherit; font-weight:inherit; color:inherit; }
+section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); font-weight:400; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 /* VS Code / CLI fallback: nested format before runtime flattening.
  * display:contents makes the inner ul transparent to the parent grid, so its
- * li children become grid items and slot into columns 3 (desc) and 4 (meta). */
+ * li children become grid items and slot into columns 3 (desc) and 4 (meta).
+ * Inner li's reset weight/size so only the parent li (column 2 = the name)
+ * carries the emphasis typography — author writes plain text, CSS bolds it. */
 section.list-tabular ol > li > ul { display:contents; }
-section.list-tabular ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); }
+section.list-tabular ol > li > ul > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); }
 section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
 section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
 

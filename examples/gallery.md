@@ -271,9 +271,9 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Structured intake performed above expectations — volume and latency were not concerns.
 
-- **What worked**
+- What worked
   - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
-- **What required tuning**
+- What required tuning
   - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
 
 > Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.
@@ -490,22 +490,22 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 ## The six signal dimensions, what they measure, and how they are scored.
 
-1. **Confidence**
+1. Confidence
    - Number of independent sources corroborating the signal
    - _1–5 · Auto-scored_
-2. **Recency**
+2. Recency
    - Time-decay from signal date, configurable half-life
    - _0.0–1.0 · Auto-scored_
-3. **Relevance**
+3. Relevance
    - Alignment to current strategic bets, owner-scored
    - _1–5 · Manual_
-4. **Reach**
+4. Reach
    - Number of customers or segments affected
    - _1–5 · Auto-scored_
-5. **Effort**
+5. Effort
    - Engineering and design cost to act on the signal
    - _1–5 · Manual_
-6. **Confidence delta**
+6. Confidence delta
    - Change in confidence score since last scoring cycle
    - _−5 to +5 · Auto_
 
@@ -735,9 +735,9 @@ A tall asset on a wide canvas — the lattice pattern frames the image on the le
 
 ## Chosen flags the right-hand card as the winner.
 
-- **Vault round-trip**
+- Vault round-trip
   - Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.
-- **In-process codebook**
+- In-process codebook
   - Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
@@ -751,9 +751,9 @@ The right card carries an accent left-edge and accent-tinted background — the 
 
 ## Decision composes chosen + rejected with a labelled connector.
 
-- **Buy a vendor**
+- Buy a vendor
   - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.
-- **Build in-house**
+- Build in-house
   - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
 
 The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
@@ -767,9 +767,9 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
-- **Before — manual rotation**
+- Before — manual rotation
   - Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.
-- **After — version-floor rotation**
+- After — version-floor rotation
   - The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.
 
 ---
@@ -781,11 +781,11 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Three switches the grid from 2 columns to 3 columns.
 
-- **Codebook**
+- Codebook
   - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry. The codebook is the unit of distribution.
-- **DEK**
+- DEK
   - Data encryption key. Wrapped by a KEK; lives plaintext only inside native SDK memory. Never leaves the host.
-- **KEK**
+- KEK
   - Key encryption key. Lives in the HSM, never exported. The crypto-shred operation on a tenant is a single HSM op against its KEK.
 
 ---
@@ -797,13 +797,13 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Four switches to 4 columns; pair with compact for visual balance.
 
-- **Sense**
+- Sense
   - Signals are observed, never invented. Inputs are written down before they are interpreted.
-- **Score**
+- Score
   - A signal becomes data once it carries a number. Calibration is against outcomes, not intuition.
-- **Decide**
+- Decide
   - A decision is a signal plus a deadline. Without a deadline it is an opinion.
-- **Review**
+- Review
   - The retrospective closes the loop on the score that earned the decision. The model improves only here.
 
 ---
@@ -1065,13 +1065,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Compact tightens the spacing scale ~25 %, end-to-end.
 
-- **What changes**
+- What changes
   - `--sp-xs` through `--sp-2xl` shrink. Card gaps, list gutters, and section padding follow because every layout reads them via `var()`.
-- **What does not change**
+- What does not change
   - Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.
-- **When to reach for it**
+- When to reach for it
   - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.
-- **Composition**
+- Composition
   - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
 
 ---

@@ -1103,8 +1103,11 @@ function parseSlide(raw, index) {
   }
 
   // steps: ol already renders correctly via CSS counter + strong
-  // list-tabular: nested format — **name** / - description / - _meta_
+  // list-tabular: nested format — name (optional **bold**) / - description / - _meta_
   // Flatten nested ul into: <li><strong>name</strong>description<em>meta</em></li>
+  // The leading **bold** is optional — if the author writes plain text the
+  // runtime auto-wraps it in <strong> so the column-2 typography is consistent
+  // with the rest of the framework's "CSS does the bolding" authoring rule.
   if (cls.includes('list-tabular')) {
     const olIdx = html.indexOf('<ol>');
     if (olIdx !== -1) {
@@ -1124,10 +1127,11 @@ function parseSlide(raw, index) {
             liDepth--;
             if (liDepth === 0 && liStart !== -1) {
               const content = olInner.slice(liStart, i);
-              const strongMatch = content.match(/<strong>(.*?)<\/strong>/);
               const innerUlIdx = content.indexOf('<ul>');
-              if (strongMatch && innerUlIdx !== -1) {
-                const name = strongMatch[1];
+              if (innerUlIdx !== -1) {
+                const head = content.slice(0, innerUlIdx).trim();
+                const strongMatch = head.match(/^<strong>(.*?)<\/strong>$/);
+                const name = strongMatch ? strongMatch[1] : head;
                 // Inner items have no further nesting — non-greedy regex is safe
                 const innerItems = [...content.slice(innerUlIdx).matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1].trim());
                 const desc = innerItems[0] || '';

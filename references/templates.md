@@ -1835,36 +1835,38 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 └───────────────────────────────────────┘
 ```
 
-**CSS class:** `list-tabular` (or add `tabular` modifier to `list`)
+**CSS class:** `list-tabular`
 
 **Layout spec:**
 
-- `section.list-tabular ul`: `list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px`
-- Each `li`: `display: grid; grid-template-columns: [varies by content]; align-items: baseline; gap: 0 20px`
-- Define column widths explicitly — e.g. `grid-template-columns: 40px 140px 1fr 200px` for number + verb + description + scope
-- Number column: `font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent)`
-- Verb column: `font-size: 16-18px; font-weight: 700; color: var(--text-heading)`
-- Description column: `font-size: 15-16px; color: var(--text-body)`
-- Metadata column(s): `font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); text-align: right`
-- Use CSS grid — never use spaces or tabs to fake alignment
-- Maximum 2 metadata columns on the right; if more structure is needed, use T22 (Comparison Table)
+- `section.list-tabular ol`: `list-style: none; counter-reset; display: flex; flex-direction: column; gap: 10px; justify-content: center`
+- Each top-level `li`: `display: grid; grid-template-columns: 44px 160px 1fr 240px; align-items: baseline; column-gap: var(--sp-sm)`
+- Counter column: `::before` renders `counter(..., decimal-leading-zero)` in mono `--accent`
+- Name column: inherits `--fs-emphasis` weight 700 `--text-heading` from the parent li — **author writes plain text, CSS does the bolding** (a leading `**name**` still works but is no longer required)
+- Description column: `--fs-body`, `--text-body`
+- Metadata column: `--fs-xs`, `--text-label`, right-aligned, set via author's `_italic_` span
 
 **Marp markdown source:**
 
 ```markdown
 <!-- _class: list-tabular -->
 
-## Growth is a change in thinking, not title.
+## Six dimensions, what they measure, how they are scored.
 
-- `01` **Remember** Recall facts, syntax, rules _Feature / Task_
-- `02` **Understand** Explain behavior & dependencies _Component / Module_
-- `03` **Apply** Use patterns in new contexts _Service / Product_
-- `04` **Analyze** Decompose across boundaries _System / Platform_
-- `05` **Evaluate** Judge options against strategy _Org / Multi-domain_
-- `06` **Create** Synthesize new frameworks _Enterprise / Ecosystem_
+1. Confidence
+   - Number of independent sources corroborating the signal
+   - _1–5 · Auto-scored_
+2. Recency
+   - Time-decay from signal date, configurable half-life
+   - _0.0–1.0 · Auto-scored_
+3. Relevance
+   - Alignment to current strategic bets, owner-scored
+   - _1–5 · Manual_
 ```
 
-**How the renderer maps this:** Each `li` is parsed for inline patterns: backtick code → number column; bold → verb column; plain text → description column; italic → metadata column. The renderer places each token into the grid column in order. Alternatively, use explicit `<span class="col-N">` wrappers inside each `li` for precise control.
+**How the renderer maps this:** Each top-level `<li>` carries the row name as plain text (or wrapped in `**...**` — both work). The nested `<ul>` carries two children: the description, then the metadata as `_italic_`. `lattice.js` flattens the nested form to `<li><strong>name</strong>desc<em>meta</em></li>`; in the VS Code preview, CSS `display:contents` promotes the inner `<li>`s into the parent grid so the same markdown renders correctly without the build step.
+
+**Authoring rule:** the leading `**bold**` is optional. The framework's "CSS does the emphasis, not the author" convention applies here as it does on `list-criteria`, `actors`, `decision`, and the other structured layouts.
 
 **When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T22 if readers need to scan down columns as much as across rows.
 
