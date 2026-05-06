@@ -2425,7 +2425,9 @@ section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::befo
  * comma-separated union (see note on the below-note fallback above).
  * ──────────────────────────────────────────────────────────────────────── */
 
-/* Suppress the below-note hairline rule when annotation triggers (CLI form). */
+/* Suppress the below-note hairline rule when annotation triggers (CLI form),
+ * and replace it with a dotted rule on the wrapper at the same vertical
+ * position so the gap above the rule is identical to a plain below-note. */
 section.cards-grid .below-note:has(> p > em:only-child)::before,
 section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
@@ -2446,7 +2448,9 @@ section.actors .below-note:has(> p > em:only-child)::before,
 section.kpi .below-note:has(> p > em:only-child)::before,
 section.agenda .below-note:has(> p > em:only-child)::before,
 section.compare-table .below-note:has(> p > em:only-child)::before {
-  display:none;
+  background:none;
+  border-top:1px dotted var(--border);
+  height:0;
 }
 
 /* Annotation paragraph styling — covers both CLI-wrapped and Marp-preview raw forms. */
@@ -2493,7 +2497,30 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) 
   font-size:var(--fs-sm);
   color:var(--text-muted);
   line-height:var(--lh-snug);
+}
+/* Marp-preview raw form: rule lives on the <p> directly (no wrapper). */
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
   border-top:1px dotted var(--border);
+  padding-top:var(--sp-xs);
 }
 
 /* ✦ glyph prefix + override the below-note ::before hairline. */
