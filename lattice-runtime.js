@@ -734,6 +734,40 @@
     tick();
     startObserver();
     startGlossaryObserver();
+    startOverflowWatcher();
+  }
+
+  // ── Overflow watcher ─────────────────────────────────────────────────
+  // Tags any <section> whose content exceeds the 1280×720 frame with
+  // class `overflow`, which lattice.css renders as a loud red inset ring.
+  // Re-checks on resize and whenever DOM mutations land (Marp preview
+  // re-renders on every keystroke).
+  function startOverflowWatcher() {
+    if (typeof document === "undefined") return;
+    // Sub-pixel rounding from nested flex/grid borders + shadows can push
+    // scrollHeight a few px past clientHeight even when content visually
+    // fits. 12px filters that noise while still catching genuine overflow
+    // (smallest real bug observed in the gallery was a 211px overshoot).
+    const TOL = 12;
+    const check = () => {
+      for (const s of document.querySelectorAll('section')) {
+        const over = s.scrollHeight > s.clientHeight + TOL
+                  || s.scrollWidth  > s.clientWidth  + TOL;
+        s.classList.toggle('overflow', over);
+      }
+    };
+    check();
+    if (typeof MutationObserver !== "undefined") {
+      let raf = 0;
+      const schedule = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => { raf = 0; check(); });
+      };
+      new MutationObserver(schedule).observe(document.body, {
+        subtree: true, childList: true, characterData: true, attributes: true,
+      });
+      if (typeof window !== "undefined") window.addEventListener('resize', schedule);
+    }
   }
 
   if (typeof document === "undefined") return;

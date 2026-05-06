@@ -3453,6 +3453,14 @@ section.compare-prose.vertical .compare-prose-inner .card {
   flex: 0 1 auto;
 }
 section.compare-prose.vertical .compare-prose-inner .connector {
+  /* In horizontal mode the connector is a fixed-width column; in vertical
+   * mode the parent's `align-items: stretch` would balloon it to the full
+   * row width (≈1152px). After `transform: rotate(90deg)` that wide box
+   * becomes a ~1152px-tall visual block that overflows the frame even
+   * though only the chevron glyph is visible. `align-self:center` opts
+   * out of the cross-axis stretch so the connector shrinks back to its
+   * intrinsic glyph size before being rotated. */
+  align-self: center;
   padding: 0;
   transform: rotate(90deg);
   font-size: var(--fs-2xl);
@@ -3620,6 +3628,19 @@ section.divider.numbered::after  { content: counter(lat-divider,  decimal-leadin
 section.subtopic.numbered::after { content: counter(lat-subtopic, decimal-leading-zero); }
 section.closing.numbered::after  { content: counter(lat-closing,  decimal-leading-zero); }
 
+/* ════════════════════════════════════════════════════════════════════════
+ * OVERFLOW WARNING — visual signal when content exceeds the 1280×720 frame
+ * ────────────────────────────────────────────────────────────────────────
+ * The class `.overflow` is added at runtime by lattice-runtime.js (VS Code
+ * preview) and by the build-time check in lattice.js (CLI / PDF) when a
+ * section's scrollHeight exceeds its clientHeight. Authors get a loud red
+ * inset ring on every slide that doesn't fit — no debug flag, no missed
+ * defects. Drawn via `box-shadow` so it never shifts layout.
+ * ──────────────────────────────────────────────────────────────────── */
+section.overflow {
+  box-shadow: inset 0 0 0 4px #d4351c;
+}
+
 
 
 /* Marp system styles — pagination content binding.
@@ -3754,4 +3775,23 @@ token = kms.encrypt(
 <section id="71" class="closing accent" data-marpit-slide="71" style="--marp-slide:71;"><header><div style="display:block;width:100%;text-align:left">Lattice · Layout Gallery</div></header><p><code>Modifier · accent</code></p><h2>Accent replaces the rainbow stripe with a single editorial colour.</h2><p>The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The <code>accent</code> modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.</p><p>It composes with <code>dark</code>: on the dark canvas the spectrum top-stripe is suppressed entirely, so <code>accent.dark</code> restores a solid accent stripe in its place — preserving the visual signal across both canvases.</p><script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>
 <footer><div style="display:block;width:100%;text-align:left">Modifier — accent · closing accent</div></footer></section>
+<script>
+/* Overflow watcher — tags any section whose content exceeds the 1280×720
+   frame with class "overflow" so lattice.css can draw the red warning ring.
+   Mirrors the watcher in lattice-runtime.js (used by the VS Code preview). */
+(function(){
+  var TOL = 12;
+  function check(){
+    document.querySelectorAll('section').forEach(function(s){
+      var over = s.scrollHeight > s.clientHeight + TOL
+              || s.scrollWidth  > s.clientWidth  + TOL;
+      s.classList.toggle('overflow', over);
+    });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', check);
+  else check();
+  if (typeof window !== 'undefined') window.addEventListener('resize', check);
+})();
+</script>
 </body></html>

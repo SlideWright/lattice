@@ -2580,6 +2580,14 @@ section.compare-prose.vertical .compare-prose-inner .card {
   flex: 0 1 auto;
 }
 section.compare-prose.vertical .compare-prose-inner .connector {
+  /* In horizontal mode the connector is a fixed-width column; in vertical
+   * mode the parent's `align-items: stretch` would balloon it to the full
+   * row width (≈1152px). After `transform: rotate(90deg)` that wide box
+   * becomes a ~1152px-tall visual block that overflows the frame even
+   * though only the chevron glyph is visible. `align-self:center` opts
+   * out of the cross-axis stretch so the connector shrinks back to its
+   * intrinsic glyph size before being rotated. */
+  align-self: center;
   padding: 0;
   transform: rotate(90deg);
   font-size: var(--fs-2xl);
@@ -2746,4 +2754,17 @@ section.closing.numbered::after {
 section.divider.numbered::after  { content: counter(lat-divider,  decimal-leading-zero); }
 section.subtopic.numbered::after { content: counter(lat-subtopic, decimal-leading-zero); }
 section.closing.numbered::after  { content: counter(lat-closing,  decimal-leading-zero); }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * OVERFLOW WARNING — visual signal when content exceeds the 1280×720 frame
+ * ────────────────────────────────────────────────────────────────────────
+ * The class `.overflow` is added at runtime by lattice-runtime.js (VS Code
+ * preview) and by the build-time check in lattice.js (CLI / PDF) when a
+ * section's scrollHeight exceeds its clientHeight. Authors get a loud red
+ * inset ring on every slide that doesn't fit — no debug flag, no missed
+ * defects. Drawn via `box-shadow` so it never shifts layout.
+ * ──────────────────────────────────────────────────────────────────── */
+section.overflow {
+  box-shadow: inset 0 0 0 4px #d4351c;
+}
 

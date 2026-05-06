@@ -1403,6 +1403,25 @@ ${css}
 ${marpSystemCss}
 </style></head><body>
 ${highlightedSlides.join('\n')}
+<script>
+/* Overflow watcher — tags any section whose content exceeds the 1280×720
+   frame with class "overflow" so lattice.css can draw the red warning ring.
+   Mirrors the watcher in lattice-runtime.js (used by the VS Code preview). */
+(function(){
+  var TOL = 12;
+  function check(){
+    document.querySelectorAll('section').forEach(function(s){
+      var over = s.scrollHeight > s.clientHeight + TOL
+              || s.scrollWidth  > s.clientWidth  + TOL;
+      s.classList.toggle('overflow', over);
+    });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', check);
+  else check();
+  if (typeof window !== 'undefined') window.addEventListener('resize', check);
+})();
+</script>
 </body></html>`;
 
 const outHtml = outFile.replace(/\.pdf$/, '.html');
@@ -1449,6 +1468,27 @@ const puppeteer = loadPuppeteer();
     waitUntil: 'networkidle0',
     timeout: 60000
   });
+  // Tag any section whose content exceeds the 1280×720 frame so the red
+  // overflow ring (defined in lattice.css under `section.overflow`) is
+  // burned into the printed PDF. Mirrors the runtime watcher in
+  // lattice-runtime.js so authors get the same loud signal in both the
+  // VS Code preview and the exported PDF.
+  const overflowing = await page.evaluate(() => {
+    const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
+    const flagged = [];
+    document.querySelectorAll('section').forEach((s, i) => {
+      const over = s.scrollHeight > s.clientHeight + TOL
+                || s.scrollWidth  > s.clientWidth  + TOL;
+      if (over) {
+        s.classList.add('overflow');
+        flagged.push(i + 1);
+      }
+    });
+    return flagged;
+  });
+  if (overflowing.length) {
+    console.warn(`  ⚠ Overflow on slide${overflowing.length > 1 ? 's' : ''} ${overflowing.join(', ')} — red ring drawn in PDF.`);
+  }
   await page.pdf({
     path: outFile,
     width: '1280px', height: '720px',

@@ -1706,6 +1706,23 @@ A slide may carry one Key Insight (blockquote) plus one trailing-paragraph regis
 
 ---
 
+## Feature: Overflow Warning
+
+Every slide is a fixed 1280×720 frame with `overflow: hidden`. Content that exceeds the frame is clipped silently — easy to miss in a deck of 60+ slides. Lattice tags any overflowing `<section>` with the class `overflow`, which the theme renders as a **4 px inset red ring**. Authors get a loud, unmissable signal in every render path.
+
+**Detection.** Pure DOM measurement — `scrollHeight > clientHeight + 12` (12 px filters sub-pixel rounding noise from nested borders and shadows). Runs in three places:
+
+| Pipeline                | Source                                         | When it fires                            |
+| ----------------------- | ---------------------------------------------- | ---------------------------------------- |
+| VS Code Marp preview    | `lattice-runtime.js` → `startOverflowWatcher()` | After Mermaid init, on every DOM mutation, on resize |
+| `node lattice.js …`     | inline `<script>` baked into the HTML output    | On `DOMContentLoaded` and on resize      |
+| `node lattice.js … pdf` | Puppeteer `page.evaluate()` before `page.pdf()` | Once per build; also logs `⚠ Overflow on slide N` to the console |
+
+**What authors see.** The red ring is drawn via `box-shadow: inset` so it never shifts layout. Build-time also prints a console warning naming each offending slide. There is no opt-in, no debug flag, and no way to silence it short of fixing the slide.
+
+**No false positives in the gallery.** A 12 px tolerance was chosen empirically: the Lattice gallery (71 slides) renders zero rings; injecting one item past the fold lights up the offending slide on the next save.
+---
+
 ## Documented Variants
 
 These are named variations of existing templates. Use them when the base template almost fits but needs one structural addition.
