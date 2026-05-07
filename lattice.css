@@ -2387,13 +2387,14 @@ section.tldr.numbered > ol > li::before {
  * - [ ] Multi-tenant operation — _Phase 2_
  *
  * Each top-level list item carries a state marker:
- *   [x] → done   (✓, pass colour)
- *   [~] → partial (~, warn colour)
- *   [ ] → pending (☐, muted)
+ *   [x] → pass (✓, --pass green)
+ *   [~] → warn (~, --warn amber)
+ *   [ ] → fail (☐, --fail red)
  * The Marp plugin (build) and runtime transformer (preview) strip the
- * marker and add `class="state pass|warn|pending"` to the <li>; CSS
- * paints the glyph and the row background tint. Optional `_em_` tails
- * render in muted body voice via the universal subtitle/em rules.
+ * marker and add `class="state pass|warn|fail"` to the <li>; CSS
+ * paints the glyph and the row background tint. A trailing `_em_` tail
+ * is promoted to a right-aligned `.row-pill`; mid-sentence ems remain
+ * inline as muted italic body voice.
  * ──────────────────────────────────────────────────────────────────────── */
 section.checklist { display:flex; flex-direction:column; }
 section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -2408,6 +2409,9 @@ section.checklist > ol {
 section.checklist > ul > li,
 section.checklist > ol > li {
   position:relative;
+  display:flex;
+  align-items:baseline;
+  gap:var(--sp-md);
   padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(2em + var(--sp-md));
   background:var(--bg-alt);
   border-left:3px solid var(--border);
@@ -2416,6 +2420,7 @@ section.checklist > ol > li {
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
+  break-inside:avoid;
 }
 section.checklist > ul > li::marker,
 section.checklist > ol > li::marker { content:''; }
@@ -2468,6 +2473,66 @@ section.checklist > ol > li em {
   font-style:italic;
   font-weight:400;
   color:var(--text-muted);
+}
+
+/* ── ROW PILL ─────────────────────────────────────────────────────────
+ * The trailing _em italic_ tail on a checklist row is promoted by the
+ * Marp plugin / emulator / runtime to <span class="row-pill"><em>…</em></span>.
+ * It anchors right, picks up the row's state colour (border + text), and
+ * wraps internally if the metadata phrase runs long. Inline code stays
+ * atomic via the universal `code { white-space:nowrap }` rule below.
+ *
+ * Long-text rules:
+ *   - max-width 40 % of row → enforces "tag, not card"
+ *   - flex-shrink permits the label column to stay wider when the pill
+ *     is short; pill wraps to two lines before the label collapses
+ *   - break-inside:avoid on the <li> keeps the row whole across pages
+ *
+ * Authoring guidance lives in templates.md (T28 → "Trailing em → row pill").
+ * ──────────────────────────────────────────────────────────────────── */
+section.checklist .row-pill {
+  margin-left:auto;
+  flex:0 1 auto;
+  max-width:40%;
+  align-self:flex-start;
+  padding:2px 10px;
+  border:1px solid var(--accent);
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:500;
+  line-height:var(--lh-snug);
+  letter-spacing:0.02em;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+section.checklist .row-pill em {
+  font-style:normal;
+  font-weight:inherit;
+  color:inherit;
+}
+section.checklist .row-pill code { white-space:nowrap; }
+/* State-aware pill: border + text track the row's state token; the soft
+ * background mirrors the row tint so the pill reads as part of the row,
+ * not foreign chrome. */
+section.checklist > ul > li.state.pass .row-pill,
+section.checklist > ol > li.state.pass .row-pill {
+  border-color:var(--pass); color:var(--pass);
+  background:var(--pass-bg, var(--accent-soft));
+}
+section.checklist > ul > li.state.warn .row-pill,
+section.checklist > ol > li.state.warn .row-pill {
+  border-color:var(--warn); color:var(--warn);
+  background:var(--warn-bg, var(--accent-soft));
+}
+section.checklist > ul > li.state.fail .row-pill,
+section.checklist > ol > li.state.fail .row-pill {
+  border-color:var(--fail); color:var(--fail);
+  background:var(--fail-bg, var(--accent-soft));
 }
 
 /* ════════════════════════════════════════════════════════════════════════

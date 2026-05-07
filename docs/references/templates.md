@@ -2253,7 +2253,7 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
   - `[x]` → done (✓, `--pass` green, soft pass tint, pass-coloured left bar)
   - `[~]` → partial (~, `--warn` amber, soft warn tint, warn-coloured left bar)
   - `[ ]` → todo (☐, `--fail` red, soft fail tint, fail-coloured left bar)
-- Optional `_em italic_` tail on any item renders as a muted annotation in the same line.
+- Optional `_em italic_` tail on any item is **promoted to a right-aligned row pill** — see [Trailing em → row pill](#trailing-em--row-pill) below. Mid-sentence ems stay inline as muted italic body voice.
 - Rows space evenly to fill the slide height; standard density holds 5–8 items comfortably.
 
 **Authoring contract — flat bullet list, one item per row:**
@@ -2276,6 +2276,39 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 **How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[~]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|fail"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
 
 **State palette:** Reuses the `--pass` / `--warn` / `--fail` tokens (and their `*-bg` soft fills) that both themes ship at WCAG AA on body backgrounds. See the [State Convention](#state-convention) section for the canonical mapping shared with `verdict-grid`.
+
+#### Trailing em → row pill
+
+The trailing `_em italic_` tail on a checklist row is promoted to a right-aligned **row pill** — a rounded mono-font tag whose border and text colour track the row's state token. Authors keep writing `_…_` exactly as before; no new syntax.
+
+**Promotion rule:** the **last** child of a `<li>` (ignoring trailing whitespace) being an `<em>` triggers promotion. An optional preceding em-dash (`—`), en-dash (`–`), or hyphen separator is stripped. Inline mid-sentence ems are not promoted — only a trailing tail.
+
+**Why a pill, not body prose:** the em tail in this layout is **status metadata** — *where to follow up*, *why it slipped*, *which phase it's deferred to*. Pulling it out of the row body lets the eye sweep left for the label and jump right for the disposition. Same recipe as the glossary range pill and the cards-grid header badge: `--accent-soft` background, `--accent` border + text, mono font, 999 px radius — but state-coloured per row.
+
+**Wrapping behaviour, by case:**
+
+| Case | Label  | Pill   | Behaviour                                                           |
+| ---- | ------ | ------ | ------------------------------------------------------------------- |
+| A    | short  | short  | both fit on one line; pill anchored right, baseline-locked          |
+| B    | long   | short  | label wraps in its column; pill stays right, top-aligned to row     |
+| C    | short  | long   | pill hits `max-width` (~40 % of row), wraps internally on words     |
+| D    | long   | long   | both wrap independently in their own columns; row grows vertically  |
+
+The glyph column is `position:absolute`, so it stays anchored to the row top regardless of how either column wraps. `break-inside:avoid` on the `<li>` keeps the row from splitting across PDF pages mid-pill.
+
+**Risks worth naming:**
+
+- **Pill abuse as second body.** Once pills look pretty, authors are tempted to write a full clause inside the em tail. *Pill text is a short status phrase — target under ~40 characters.* If you need a sentence, write it in the row body, not in the em tail.
+- **Multi-line pill reads as a card, not a tag.** Pill chrome (radius, border, soft tint) is calibrated for one line. Two lines is tolerable; three lines means the pill recipe was the wrong tool — push the metadata back into the row body or into a below-paragraph annotation.
+- **Compact + long labels** stack rows tall and crowd the slide. Compact + checklist is a known tight pairing; pills don't make it worse, but they don't help either. Reach for `loose` on slides where every row carries a pill.
+- **Locale length drift.** Translated decks (EN → DE, EN → FI) can run 30–50 % longer; the 40 % cap means more pills wrap to two lines after translation. Acceptable; no fix required.
+- **Pill on a `[x]` row.** Allowed, so the rule is uniform — but editorially, *done is done*: a passed row rarely needs a follow-up tag. Reserve pills for `[~]` and `[ ]` rows where there's actual outstanding metadata.
+
+```markdown
+- [x] Codebook signing live across production — _shipped 2026-Q1_
+- [~] Cold-start TTL refresh under burst load — _owner: platform; deadline 2026-W22_
+- [ ] Multi-tenant codebook authoring — _deferred to Phase 2_
+```
 
 **When to use:** acceptance reviews, retro snapshots, "what shipped vs what slipped" summaries — any slide where the editorial point is *the mix of states*, not the body text behind each row. If items need a sentence of body context, reach for `verdict-grid` or `list-criteria` instead. If items are equal-weight bullets without state, use `tldr` or `list`.
 

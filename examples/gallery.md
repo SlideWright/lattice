@@ -1074,6 +1074,21 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ---
 
+<!-- _class: checklist -->
+<!-- _footer: "New layout — checklist row pills · checklist (long-text)" -->
+
+`Phase 1 · Open items, with disposition`
+
+## Trailing italic tails render as right-aligned row pills.
+
+- [x] Codebook signing live across production — _shipped 2026-Q1_
+- [~] Cold-start TTL refresh under burst load — _owner: platform; deadline 2026-W22_
+- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants — _open, see slide 27_
+- [ ] Multi-tenant codebook authoring with per-purpose scope and per-region key custody — _Phase 2_
+- [ ] Crypto-shred runbook hand-off — _deferred to Phase 2 pending HSM admin staffing decision and on-call rota sign-off_
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 

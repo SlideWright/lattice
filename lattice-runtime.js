@@ -486,8 +486,10 @@
   /**
    * Transforms checklist items in VS Code preview (mirrors the Marp plugin).
    * For each top-level <li> in section.checklist whose text starts with
-   * [x] / [~] / [ ], strips the marker and adds class="state pass|warn|pending"
-   * to the <li>. CSS draws the glyph. Idempotent — skips items already tagged.
+   * [x] / [~] / [ ], strips the marker and adds class="state pass|warn|fail"
+   * to the <li>. A trailing <em> (with optional em-dash / hyphen separator)
+   * is promoted to <span class="row-pill"><em>…</em></span> so it reads as
+   * a right-aligned status tag. Idempotent — skips items already tagged.
    */
   function transformChecklistItemStates() {
     if (typeof document === 'undefined') return;
@@ -508,6 +510,22 @@
         const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
         firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
         li.classList.add('state', stateClass);
+
+        // Promote a trailing <em> to a row-pill. Walk back from the last
+        // child, skipping a trailing whitespace-only text node.
+        let last = li.lastChild;
+        while (last && last.nodeType === 3 && /^\s*$/.test(last.nodeValue)) last = last.previousSibling;
+        if (!last || last.nodeType !== 1 || last.tagName !== 'EM') continue;
+        if (last.parentElement !== li) continue; // only promote a top-level trailing em
+        // Strip a trailing separator from the preceding text node, if any.
+        const prev = last.previousSibling;
+        if (prev && prev.nodeType === 3) {
+          prev.nodeValue = prev.nodeValue.replace(/\s*[—–-]+\s*$/, '');
+        }
+        const span = document.createElement('span');
+        span.className = 'row-pill';
+        li.replaceChild(span, last);
+        span.appendChild(last);
       }
     }
   }
