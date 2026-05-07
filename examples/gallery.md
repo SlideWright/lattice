@@ -1066,26 +1066,11 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## What shipped, what slipped, what stayed open.
 
 - [x] Codebook signing live across all production tenants
-- [x] HSM-anchored audit trail readable by Examiner role
+- [x] HSM-anchored audit trail readable by Examiner role `shipped 2026-Q1`
 - [x] One reference client integrated end-to-end
-- [~] TTL refresh under cold-start load `see slide 27`
+- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
 - [ ] Multi-tenant codebook operation `Phase 2`
 - [ ] Crypto-shred runbook hand-off to Platform `Phase 2`
-
----
-
-<!-- _class: checklist -->
-<!-- _footer: "New layout — checklist row pills · checklist (long-text)" -->
-
-`Phase 1 · Open items, with disposition`
-
-## Trailing inline code becomes a right-aligned row pill.
-
-- [x] Codebook signing live across production `shipped 2026-Q1`
-- [~] Cold-start TTL refresh under burst load `owner: platform`
-- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
-- [ ] Multi-tenant codebook authoring with per-purpose scope and per-region key custody `Phase 2`
-- [ ] Crypto-shred runbook hand-off to Platform team `Phase 2`
 
 ---
 

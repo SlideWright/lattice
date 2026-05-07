@@ -2387,12 +2387,13 @@ section.tldr.numbered > ol > li::before {
  * - [ ] Multi-tenant operation — _Phase 2_
  *
  * Each top-level list item carries a state marker:
- *   [x] → pass (✓, --pass green)
- *   [~] → warn (~, --warn amber)
- *   [ ] → fail (☐, --fail red)
+ *   [x] → pass (filled checkbox + check, --pass green)
+ *   [~] → warn (filled checkbox + dash, --warn amber)
+ *   [ ] → fail (empty checkbox, --fail red border)
  * The Marp plugin (build) and runtime transformer (preview) strip the
  * marker and add `class="state pass|warn|fail"` to the <li>; CSS
- * paints the glyph and the row background tint. Trailing inline `code`
+ * paints a real checkbox (square box + inline-SVG mark, no font
+ * dependency) and the row background tint. Trailing inline `code`
  * on a row floats right as a status pill (universal pill convention).
  * ──────────────────────────────────────────────────────────────────────── */
 section.checklist { display:flex; flex-direction:column; }
@@ -2423,18 +2424,26 @@ section.checklist > ol > li {
 }
 section.checklist > ul > li::marker,
 section.checklist > ol > li::marker { content:''; }
-/* State glyph in the left padding column. Glyph + colour come from the state class. */
+/* Real checkbox in the left padding column — a square box rendered as a
+ * pseudo-element with an inline-SVG mark painted via background-image.
+ * Pure CSS, no font dependency, no emoji; the mark is white over a
+ * filled state colour for pass/warn, and the box is empty (border only)
+ * for fail. */
 section.checklist > ul > li.state::before,
 section.checklist > ol > li.state::before {
+  content:'';
   position:absolute;
   left:var(--sp-md);
-  top:var(--sp-sm);
-  width:1.5em;
-  text-align:center;
-  font-family:var(--font-mono);
-  font-size:var(--fs-lg);
-  font-weight:700;
-  line-height:var(--lh-snug);
+  top:calc(var(--sp-sm) + 0.2em);
+  width:1.15em;
+  height:1.15em;
+  border:2px solid currentColor;
+  border-radius:3px;
+  background-color:transparent;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:78% 78%;
+  box-sizing:border-box;
 }
 section.checklist > ul > li.state.pass,
 section.checklist > ol > li.state.pass {
@@ -2443,7 +2452,9 @@ section.checklist > ol > li.state.pass {
 }
 section.checklist > ul > li.state.pass::before,
 section.checklist > ol > li.state.pass::before {
-  content:'✓'; color:var(--pass);
+  color:var(--pass);
+  background-color:var(--pass);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
 }
 section.checklist > ul > li.state.warn,
 section.checklist > ol > li.state.warn {
@@ -2452,7 +2463,9 @@ section.checklist > ol > li.state.warn {
 }
 section.checklist > ul > li.state.warn::before,
 section.checklist > ol > li.state.warn::before {
-  content:'~'; color:var(--warn);
+  color:var(--warn);
+  background-color:var(--warn);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M4 8 L12 8'/></svg>");
 }
 section.checklist > ul > li.state.fail,
 section.checklist > ol > li.state.fail {
@@ -2462,7 +2475,8 @@ section.checklist > ol > li.state.fail {
 }
 section.checklist > ul > li.state.fail::before,
 section.checklist > ol > li.state.fail::before {
-  content:'☐'; color:var(--fail);
+  color:var(--fail);
+  background-color:transparent;
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */
@@ -2489,7 +2503,7 @@ section.checklist > ol > li em {
 section.checklist > ul > li > code,
 section.checklist > ol > li > code {
   margin-left:auto;
-  align-self:baseline;
+  align-self:center;
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:600;
