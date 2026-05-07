@@ -2003,7 +2003,7 @@ Bring whatever you have. A square crop in a half-canvas slot will show small top
 
 **Marp markdown source:**
 
-````markdown
+~~~markdown
 <!-- _class: code -->
 
 `Implementation · Token Pipeline`
@@ -2018,9 +2018,7 @@ const tokens = await client.tokenize(input, {
   format: "compact",
 });
 ```
-````
-
-```text
+~~~
 
 - `` `inline code` `` paragraph (first) = eyebrow
 - `h2` = heading
@@ -2061,7 +2059,7 @@ const tokens = await client.tokenize(input, {
 
 **Marp markdown source:**
 
-````markdown
+~~~markdown
 <!-- _class: compare-code -->
 
 `Before & After · Key Distribution`
@@ -2080,7 +2078,7 @@ hmac.new(SECRET_KEY, payload)
 ```python
 signature = vault.sign(payload, key_id="prod-hmac-v3")
 ```
-````
+~~~
 
 - `` `inline code` `` paragraph before `h2` = optional eyebrow (spans both columns)
 - `h2` = heading (spans both columns)
@@ -2181,7 +2179,7 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 <!-- _class: list dark -->
 <!-- _class: divider dark -->
 <!-- _class: image-full dark -->
-````
+```
 
 - Retokens: `--bg`, `--bg-alt`, `--border`, `--text-*` all switch to `var(--dark-*)` values
 - Spectrum bar changes: instead of a 4px solid top border, dark slides render a 1px spectrum line as a CSS `background` at the top
