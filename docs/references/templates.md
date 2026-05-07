@@ -1889,32 +1889,32 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ---
 
-## Template 24: Image (text + background photo)
+## Template 24: Image (text + background image)
 
-### Default (photo right)
+### Default (image right)
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│   LABEL             ┌───────────────┐   │
-│   Heading           │               │   │
-│                    │   [ photo ]   │    │
-│   Body text here.   │               │   │
-│                    └───────────────┘    │
+│  LABEL                ┌──────────────┐  │
+│  Heading              │              │  │
+│                       │  [ image ]   │  │
+│  Body text here.      │              │  │
+│                       └──────────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
-### Variant: photo left
+### Variant: image left
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌───────────────┐  LABEL               │
-│  │               │  Heading             │
-│  │   [ photo ]   │                      │
-│   │               │  Body text here.    │
-│  └───────────────┘                      │
+│  ┌──────────────┐     LABEL             │
+│  │              │     Heading           │
+│  │  [ image ]   │                       │
+│  │              │     Body text here.   │
+│  └──────────────┘                       │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -1929,7 +1929,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 - Text occupies left half; background image fills right half
 - Use `image left` modifier to flip: image left, text right
-- Text padding auto-adjusted so content never overlaps the photo
+- Text padding auto-adjusted so content never overlaps the image
 
 **Marp markdown source:**
 
@@ -1942,7 +1942,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 Use `_class: image` with `![bg right fit](url)` — image-right is the default. The `fit` keyword tells Marp's renderer (and ours) to letterbox the image inside its slot rather than crop it.
 
-![bg right fit](path/to/photo.jpg)
+![bg right fit](path/to/image.jpg)
 ```
 
 ```markdown
@@ -1952,7 +1952,7 @@ Use `_class: image` with `![bg right fit](url)` — image-right is the default. 
 
 ## Flip the image to the left when the composition benefits.
 
-![bg left fit](path/to/photo.jpg)
+![bg left fit](path/to/image.jpg)
 ```
 
 - `` `inline code` `` paragraph = eyebrow label
