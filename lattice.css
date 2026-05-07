@@ -2376,6 +2376,100 @@ section.tldr.numbered > ol > li::before {
   line-height:1;
 }
 
+/* ── CHECKLIST ─────────────────────────────────────────────────────────
+ * <!-- _class: checklist -->
+ *
+ * ## Phase 1 acceptance, by item.
+ *
+ * - [x] Codebook signing in production
+ * - [x] HSM-anchored audit trail
+ * - [~] TTL refresh under cold-start load — _open, see slide 27_
+ * - [ ] Multi-tenant operation — _Phase 2_
+ *
+ * Each top-level list item carries a state marker:
+ *   [x] → done   (✓, pass colour)
+ *   [~] → partial (~, warn colour)
+ *   [ ] → pending (☐, muted)
+ * The Marp plugin (build) and runtime transformer (preview) strip the
+ * marker and add `class="state pass|warn|pending"` to the <li>; CSS
+ * paints the glyph and the row background tint. Optional `_em_` tails
+ * render in muted body voice via the universal subtitle/em rules.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.checklist { display:flex; flex-direction:column; }
+section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.checklist > ul,
+section.checklist > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+  justify-content:center;
+}
+section.checklist > ul > li,
+section.checklist > ol > li {
+  flex:1;
+  container-type:size;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-lg);
+  align-items:center;
+  font-size:clamp(var(--fs-md), 13cqh, var(--fs-lg));
+  font-weight:500;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+  padding:var(--sp-xs) var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  border-left:3px solid transparent;
+  overflow:hidden;
+}
+section.checklist > ul > li::marker,
+section.checklist > ol > li::marker { content:''; }
+section.checklist > ul > li:last-child,
+section.checklist > ol > li:last-child { border-bottom:none; }
+/* State glyph in column 1. Glyph + colour come from the state class. */
+section.checklist > ul > li.state::before,
+section.checklist > ol > li.state::before {
+  font-family:var(--font-mono);
+  font-size:clamp(var(--fs-md), 16cqh, var(--fs-xl));
+  font-weight:700;
+  line-height:1;
+  text-align:center;
+  width:1.4em;
+}
+section.checklist > ul > li.state.pass,
+section.checklist > ol > li.state.pass {
+  border-left-color:var(--pass);
+  background:var(--pass-bg, transparent);
+}
+section.checklist > ul > li.state.pass::before,
+section.checklist > ol > li.state.pass::before {
+  content:'✓'; color:var(--pass);
+}
+section.checklist > ul > li.state.warn,
+section.checklist > ol > li.state.warn {
+  border-left-color:var(--warn);
+  background:var(--warn-bg, transparent);
+}
+section.checklist > ul > li.state.warn::before,
+section.checklist > ol > li.state.warn::before {
+  content:'~'; color:var(--warn);
+}
+section.checklist > ul > li.state.pending,
+section.checklist > ol > li.state.pending {
+  color:var(--text-muted);
+}
+section.checklist > ul > li.state.pending::before,
+section.checklist > ol > li.state.pending::before {
+  content:'☐'; color:var(--text-muted);
+}
+/* Inline _em_ tail inside an item — soft annotation. */
+section.checklist > ul > li em,
+section.checklist > ol > li em {
+  font-style:italic;
+  font-weight:400;
+  color:var(--text-muted);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * MODIFIERS — cross-cutting authorial intent flags
  * ────────────────────────────────────────────────────────────────────────

@@ -929,6 +929,18 @@ function parseSlide(raw, index) {
     });
   }
 
+  // checklist: top-level <li> whose body starts with [x] / [~] / [ ] gets
+  // class="state pass|warn|pending" and the marker stripped. CSS draws the
+  // glyph. Nested content (annotations, em paragraphs) passes through.
+  if (cls.includes('checklist')) {
+    html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
+      const m = /^\s*\[([x~ ])\]\s*/.exec(inner);
+      if (!m) return full;
+      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'pending';
+      return `<li class="state ${stateClass}">${inner.slice(m[0].length)}</li>`;
+    });
+  }
+
   // featured: first list item = .feat-card (accent hero), rest = .sub-row > .sub-card
   if (cls.includes('featured')) {
     const ulIdx = html.indexOf('<ul>');

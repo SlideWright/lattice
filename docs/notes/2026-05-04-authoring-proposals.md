@@ -481,7 +481,7 @@ Small layout, very high payoff for technical decks. A row of colour/shape marker
 - **Filled diamond** `policy gate`
 ```
 
-### 3.12 `checklist` — completion summary
+### 3.12 `checklist` — completion summary  *(implemented — see Template 28 in [templates.md](../references/templates.md#template-28-checklist))*
 
 Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[~]`).
 

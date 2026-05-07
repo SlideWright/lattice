@@ -364,6 +364,7 @@
 
   function initAndRun({ force = false } = {}) {
     transformVerdictGridBadges();
+    transformChecklistItemStates();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -478,6 +479,35 @@
           const label = text.replace(/^\[[x~\s]\]\s*/, '');
           li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
         }
+      }
+    }
+  }
+
+  /**
+   * Transforms checklist items in VS Code preview (mirrors the Marp plugin).
+   * For each top-level <li> in section.checklist whose text starts with
+   * [x] / [~] / [ ], strips the marker and adds class="state pass|warn|pending"
+   * to the <li>. CSS draws the glyph. Idempotent — skips items already tagged.
+   */
+  function transformChecklistItemStates() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.checklist')) {
+      for (const li of section.querySelectorAll(':scope > ul > li, :scope > ol > li')) {
+        if (li.classList.contains('state')) continue;
+        // Inspect the first text node (leading text content of the <li>).
+        const firstText = (() => {
+          for (const node of li.childNodes) {
+            if (node.nodeType === 3) return node;
+            if (node.nodeType === 1) return null; // element before any text
+          }
+          return null;
+        })();
+        if (!firstText) continue;
+        const m = /^\[([x~ ])\]\s*/.exec(firstText.nodeValue);
+        if (!m) continue;
+        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'pending';
+        firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
+        li.classList.add('state', stateClass);
       }
     }
   }

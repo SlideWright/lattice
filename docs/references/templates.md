@@ -2,7 +2,7 @@
 
 All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: approximately 1160×600.
 
-27 templates plus 4 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+28 templates plus 4 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
 
 ## Layout Inventory: Structured vs Unstructured
 
@@ -14,7 +14,7 @@ Every layout falls into one of two categories. The distinction matters because i
 
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
 | Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `image left`, `image-full`, `code`         | no — CSS-only                   |
 
 Modifiers (`dark`, image variants like `image left`, etc.) compose with both categories.
@@ -81,7 +81,7 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | Category       | Templates                                               | CSS class                                      |
 | -------------- | ------------------------------------------------------- | ---------------------------------------------- |
 | Structural     | T1 Title, T2 Divider, T3 Sub-Topic, T18 Closing         | `title` `divider` `subtopic` `closing`         |
-| Text           | T4 Content, T12 Quote, T14 List, T20 Criteria           | `content` `quote` `list` `list-criteria`            |
+| Text           | T4 Content, T12 Quote, T14 List, T20 Criteria, T28 Checklist | `content` `quote` `list` `list-criteria` `checklist` |
 | Text variant   | T14v Tabular Inline                                     | `list-tabular`                                 |
 | Data           | T5 Diagram, T6 Stats, T16 Big Number, T22 Compare Table, T27 Glossary | `diagram` `stats` `big-number` `compare-table` `glossary` |
 | Cards          | T7 Grid 2×2, T8 Grid 2+1, T9 Stacked, T10 Side-by-Side  | `cards-grid` `cards-stack` `cards-side`       |
@@ -2167,6 +2167,65 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 **When to use:** appendix glossaries, term-of-art reference for technical decks, acronym pages. Use whenever you'd reach for a 2-column table whose left side is a short noun and right side is a sentence — the nested-list authoring is faster, harder to misformat, and free-of-charge gives you the alphabet pill that orients the reader on multi-page glossaries.
 
 **Future:** the auto-derivation pattern (`{range}` was the original placeholder, since dropped in favor of unconditional injection) generalizes to other deck-wide tokens — `{date}`, `{slide-count}`, `{deck-version}`. When a second use case lands the runtime can grow a small token table; for now glossary range is the only consumer.
+
+---
+
+## Template 28: Checklist
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  EYEBROW                                │
+│  ## Heading line.                       │
+│                                         │
+│  ┃ ✓  Done item one                     │
+│  ┃ ✓  Done item two                     │
+│  ┃ ~  Partial item — annotation         │
+│  │ ☐  Pending item                      │
+│  │ ☐  Pending item — annotation         │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `checklist`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: checklist -->
+```
+
+- Vertical list of state-marked rows. Each item is one line: a state glyph (✓ / ~ / ☐) in the leading column, the label in the body column.
+- States authored as a leading marker on each item:
+  - `[x]` → done (✓, pass colour, soft pass tint, accent-tinted left bar)
+  - `[~]` → partial (~, warn colour, soft warn tint, accent-tinted left bar)
+  - `[ ]` → pending (☐, muted, no tint, transparent left bar)
+- Optional `_em italic_` tail on any item renders as a muted annotation in the same line.
+- Rows space evenly to fill the slide height; standard density holds 5–8 items comfortably.
+
+**Authoring contract — flat bullet list, one item per row:**
+
+```markdown
+<!-- _class: checklist -->
+
+`Phase 1 · Acceptance review`
+
+## What shipped, what slipped, what stayed open.
+
+- [x] Codebook signing live across all production tenants
+- [x] HSM-anchored audit trail readable by Examiner role
+- [x] One reference client integrated end-to-end
+- [~] TTL refresh under cold-start load — _open, see slide 27_
+- [ ] Multi-tenant codebook operation — _Phase 2_
+- [ ] Crypto-shred runbook hand-off to Platform — _Phase 2_
+```
+
+**How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[~]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|pending"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
+
+**State palette:** Reuses the project's `--pass` / `--warn` tokens and their `*-bg` soft fills; pending rows lean on `--text-muted` only. Both themes (`indaco`, `cuoio`) ship the tokens at WCAG AA on body backgrounds.
+
+**When to use:** acceptance reviews, retro snapshots, "what shipped vs what slipped" summaries — any slide where the editorial point is *the mix of states*, not the body text behind each row. If items need a sentence of body context, reach for `verdict-grid` or `list-criteria` instead. If items are equal-weight bullets without state, use `tldr` or `list`.
 
 ---
 

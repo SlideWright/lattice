@@ -51,6 +51,49 @@ function verdictGridBadges(markdown) {
   });
 }
 
+/**
+ * Marpit plugin: on a `checklist` slide, transforms each top-level list item
+ * whose text begins with `[x]`, `[~]`, or `[ ]` into:
+ *
+ *   <li class="state pass|warn|pending">label</li>
+ *
+ * The marker is stripped from the rendered text; CSS draws the state glyph
+ * (✓ / ~ / ☐) as a `::before` pseudo. Trailing `_italic_` annotations are
+ * preserved untouched. Items without a marker pass through unchanged.
+ */
+function checklistItemStates(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "checklist_item_states", (state) => {
+    let inChecklist = false;
+    let listDepth = 0;
+    let pendingItemOpen = null;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        inChecklist = /\bchecklist\b/.test(token.attrGet("class") || "");
+        listDepth = 0;
+        pendingItemOpen = null;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { inChecklist = false; continue; }
+      if (!inChecklist) continue;
+      if (token.type === "bullet_list_open" || token.type === "ordered_list_open") { listDepth++; continue; }
+      if (token.type === "bullet_list_close" || token.type === "ordered_list_close") { listDepth--; continue; }
+      if (token.type === "list_item_open" && listDepth === 1) { pendingItemOpen = token; continue; }
+      if (token.type !== "inline" || !pendingItemOpen || !token.children) continue;
+      // Find the first text child and inspect its leading marker.
+      const textChild = token.children.find((c) => c.type === "text");
+      if (!textChild) { pendingItemOpen = null; continue; }
+      const m = /^\[([x~ ])\]\s*/.exec(textChild.content);
+      if (!m) { pendingItemOpen = null; continue; }
+      const stateClass = m[1] === "x" ? "state pass" : m[1] === "~" ? "state warn" : "state pending";
+      // Append to existing class on the <li> (Marpit/markdown-it: attrJoin).
+      const cur = pendingItemOpen.attrGet("class");
+      pendingItemOpen.attrSet("class", cur ? `${cur} ${stateClass}` : stateClass);
+      textChild.content = textChild.content.slice(m[0].length);
+      pendingItemOpen = null;
+    }
+  });
+}
+
 const mermaidLanguage = require("./lib/mermaid-hljs");
 
 /**
@@ -233,6 +276,6 @@ module.exports = {
   imageScale: 3,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    return marp.use(splitPanelCounter).use(verdictGridBadges).use(glossaryListToTable).use(glossaryRange);
+    return marp.use(splitPanelCounter).use(verdictGridBadges).use(checklistItemStates).use(glossaryListToTable).use(glossaryRange);
   },
 };

@@ -1058,6 +1058,22 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ---
 
+<!-- _class: checklist -->
+<!-- _footer: "New layout — checklist · checklist" -->
+
+`Phase 1 · Acceptance review`
+
+## What shipped, what slipped, what stayed open.
+
+- [x] Codebook signing live across all production tenants
+- [x] HSM-anchored audit trail readable by Examiner role
+- [x] One reference client integrated end-to-end
+- [~] TTL refresh under cold-start load — _open, see slide 27_
+- [ ] Multi-tenant codebook operation — _Phase 2_
+- [ ] Crypto-shred runbook hand-off to Platform — _Phase 2_
+
+---
+
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
