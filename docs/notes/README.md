@@ -52,3 +52,8 @@ it is load-bearing.
   model, modifier catalogue, new layout proposals. Explicitly
   non-canonical; ground truth lives in `../references/templates.md`
   and `examples/gallery.md`.
+- [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
+  canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
+  ASCII layout preview in `templates.md`, plus the
+  [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
+  and builder library.
