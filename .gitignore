@@ -3,6 +3,8 @@ node_modules/
 tokenization/
 
 # Marp / build outputs
+# (note: examples/*.pdf are intentionally tracked as ship-with-the-package
+# demos; the rule below catches ad-hoc renders elsewhere in the tree.)
 *.pptx
 *.pdf
 
