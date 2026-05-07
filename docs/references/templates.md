@@ -2031,28 +2031,29 @@ const tokens = await client.tokenize(input, {
 
 ## Template 26: Code Compare
 
-```
-
+```text
 ┌───────────────────────────────────────┐
-│ header │
-│ LABEL Heading │
-│ ┌──────────────┐ ┌──────────────┐ │
-│ │ Left label │ │ Right label │ │
-│ │ │ │ │ │
-│ │ // code │ │ // code │ │
-│ │ │ │ │ │
-│ └──────────────┘ └──────────────┘ │
-│ footer 1/19 │
+│  header                               │
+│             LABEL                     │
+│         Comparison Title              │
+│                                       │
+│  ┌──────────────┐     ┌──────────────┐│
+│  │ Left label   │     │ Right label  ││
+│  │              │     │              ││
+│  │   // code    │     │   // code    ││
+│  │              │     │              ││
+│  └──────────────┘     └──────────────┘│
+│                                       │
+│  footer                          1/19 │
 └───────────────────────────────────────┘
-
-````
+```
 
 **CSS class:** `compare-code`
 
 **Marp directive:**
 ```markdown
 <!-- _class: compare-code -->
-````
+```
 
 - Two equal code columns (`1fr 1fr`), gap `--sp-md`
 - Each column: inline-code label (`p > code`) above a code block (`pre`)
@@ -2073,14 +2074,12 @@ const tokens = await client.tokenize(input, {
 SECRET_KEY = os.environ["SECRET_KEY"]
 hmac.new(SECRET_KEY, payload)
 ```
-````
 
 `After · HSM / KMS integrated`
 
 ```python
 signature = vault.sign(payload, key_id="prod-hmac-v3")
 ```
-
 ````
 
 - `` `inline code` `` paragraph before `h2` = optional eyebrow (spans both columns)
@@ -2096,7 +2095,7 @@ signature = vault.sign(payload, key_id="prod-hmac-v3")
 
 ## Template 27: Glossary
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  Glossary                  ╭─ A – G ─╮│
@@ -2147,9 +2146,9 @@ The runtime transforms that into a 2-column glossary table. The author **never w
 
 | Channel | Where | When |
 |---|---|---|
-| `marp-cli` build | [marp.config.js](../../marp.config.js) `glossaryListToTable` + `glossaryRange` | parse-time, token-level |
-| LLM-env emulator | [lattice-emulator.js](../../lattice-emulator.js) post-processor | render-time, HTML-string |
-| VS Code Marp preview | [lattice-runtime.js](../../lattice-runtime.js) MutationObserver | client-side, DOM-level |
+| `marp-cli` build | [marp.config.js](../marp.config.js) `glossaryListToTable` + `glossaryRange` | parse-time, token-level |
+| LLM-env emulator | [lattice-emulator.js](../lattice-emulator.js) post-processor | render-time, HTML-string |
+| VS Code Marp preview | [lattice-runtime.js](../lattice-runtime.js) MutationObserver | client-side, DOM-level |
 
 The runtime path is what makes the live preview work — VS Code's Marp extension does not load project-local Marpit plugins, so the DOM injector is the only channel for the preview, and it must stay in lockstep with the other two.
 
