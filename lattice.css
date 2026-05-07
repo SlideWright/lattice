@@ -2407,39 +2407,35 @@ section.checklist > ol {
 }
 section.checklist > ul > li,
 section.checklist > ol > li {
-  flex:1;
-  container-type:size;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
-  font-size:clamp(var(--fs-md), 13cqh, var(--fs-lg));
+  position:relative;
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(2em + var(--sp-md));
+  background:var(--bg-alt);
+  border-left:3px solid var(--border);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:var(--fs-md);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
-  padding:var(--sp-xs) var(--sp-sm);
-  border-bottom:1px solid var(--border);
-  border-left:3px solid transparent;
-  overflow:hidden;
 }
 section.checklist > ul > li::marker,
 section.checklist > ol > li::marker { content:''; }
-section.checklist > ul > li:last-child,
-section.checklist > ol > li:last-child { border-bottom:none; }
-/* State glyph in column 1. Glyph + colour come from the state class. */
+/* State glyph in the left padding column. Glyph + colour come from the state class. */
 section.checklist > ul > li.state::before,
 section.checklist > ol > li.state::before {
-  font-family:var(--font-mono);
-  font-size:clamp(var(--fs-md), 16cqh, var(--fs-xl));
-  font-weight:700;
-  line-height:1;
+  position:absolute;
+  left:var(--sp-md);
+  top:var(--sp-sm);
+  width:1.5em;
   text-align:center;
-  width:1.4em;
+  font-family:var(--font-mono);
+  font-size:var(--fs-lg);
+  font-weight:700;
+  line-height:var(--lh-snug);
 }
 section.checklist > ul > li.state.pass,
 section.checklist > ol > li.state.pass {
   border-left-color:var(--pass);
-  background:var(--pass-bg, transparent);
+  background:var(--pass-bg, var(--bg-alt));
 }
 section.checklist > ul > li.state.pass::before,
 section.checklist > ol > li.state.pass::before {
@@ -2448,7 +2444,7 @@ section.checklist > ol > li.state.pass::before {
 section.checklist > ul > li.state.warn,
 section.checklist > ol > li.state.warn {
   border-left-color:var(--warn);
-  background:var(--warn-bg, transparent);
+  background:var(--warn-bg, var(--bg-alt));
 }
 section.checklist > ul > li.state.warn::before,
 section.checklist > ol > li.state.warn::before {
@@ -2457,12 +2453,15 @@ section.checklist > ol > li.state.warn::before {
 section.checklist > ul > li.state.pending,
 section.checklist > ol > li.state.pending {
   color:var(--text-muted);
+  /* default border-left: var(--border); default background: var(--bg-alt) — both visible. */
 }
 section.checklist > ul > li.state.pending::before,
 section.checklist > ol > li.state.pending::before {
   content:'☐'; color:var(--text-muted);
 }
-/* Inline _em_ tail inside an item — soft annotation. */
+/* Inline _em_ tail inside an item — soft annotation. Wraps onto a new
+ * line within the same row when the body runs long; em sits lighter
+ * and muted so the eye still reads the label first. */
 section.checklist > ul > li em,
 section.checklist > ol > li em {
   font-style:italic;
