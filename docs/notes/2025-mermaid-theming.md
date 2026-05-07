@@ -84,8 +84,7 @@ The local bundle is `node_modules/mermaid/dist/mermaid.min.js` — a ~3 MB UMD b
 **Files changed**:
 - `examples/gallery.md` (+ regenerated `examples/gallery.html`)
 - `examples/mermaid-gallery.md`
-- `.scratch/tokenization-business.md`
-- `.scratch/tokenization-design.md`
+- (also: external tokenization decks, since moved out of the repo)
 
 ---
 
@@ -116,8 +115,6 @@ The local bundle is `node_modules/mermaid/dist/mermaid.min.js` — a ~3 MB UMD b
 | `examples/gallery.md` | CDN → local mermaid |
 | `examples/gallery.html` | Regenerated from gallery.md |
 | `examples/mermaid-gallery.md` | CDN → local mermaid |
-| `.scratch/tokenization-business.md` | CDN → local mermaid |
-| `.scratch/tokenization-design.md` | CDN → local mermaid |
 | `docs/notes/2025-mermaid-theming.md` | This file (was `AgentNote.md`) |
 
 ---

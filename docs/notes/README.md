@@ -27,6 +27,19 @@ later, it lives here.
 - Anything that should be in `CHANGELOG.md` (user-facing changes) or
   `docs/architecture.md` (how the system works).
 
+## Scratch housekeeping
+
+`.scratch/` is the gitignored sandbox for probes, throwaway scripts,
+and temp artifacts (used by humans, agents, and tests). Nothing under
+it is load-bearing.
+
+- Treat anything older than ~2 weeks as fair game to delete.
+- If a file is worth keeping, promote it: docs go under `docs/notes/`,
+  source documents go to a sibling folder outside the repo (e.g. the
+  gitignored `tokenization/` folder).
+- Run `npm run clean:scratch` to delete `.scratch/` entries older than
+  14 days. The script is opt-in — it never runs automatically.
+
 ## Current notes
 
 - [2025-mermaid-theming.md](2025-mermaid-theming.md) — Marp's `:root`
