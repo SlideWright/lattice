@@ -2253,7 +2253,8 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
   - `[x]` → done (✓, `--pass` green, soft pass tint, pass-coloured left bar)
   - `[~]` → partial (~, `--warn` amber, soft warn tint, warn-coloured left bar)
   - `[ ]` → todo (☐, `--fail` red, soft fail tint, fail-coloured left bar)
-- Optional `_em italic_` tail on any item is **promoted to a right-aligned row pill** — see [Trailing em → row pill](#trailing-em--row-pill) below. Mid-sentence ems stay inline as muted italic body voice.
+- Optional trailing inline `` `code` `` on any item floats right as a **status pill** — same convention used by `cards-grid`, `cards-side`, and `actors`. See [Trailing `code` → row pill](#trailing-code--row-pill) below.
+- Optional `_em italic_` tail renders inline as a muted annotation in the same line.
 - Rows space evenly to fill the slide height; standard density holds 5–8 items comfortably.
 
 **Authoring contract — flat bullet list, one item per row:**
@@ -2277,38 +2278,26 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 
 **State palette:** Reuses the `--pass` / `--warn` / `--fail` tokens (and their `*-bg` soft fills) that both themes ship at WCAG AA on body backgrounds. See the [State Convention](#state-convention) section for the canonical mapping shared with `verdict-grid`.
 
-#### Trailing em → row pill
+#### Trailing `code` → row pill
 
-The trailing `_em italic_` tail on a checklist row is promoted to a right-aligned **row pill** — a rounded mono-font tag whose border and text colour track the row's state token. Authors keep writing `_…_` exactly as before; no new syntax.
+A trailing inline `` `code` `` on any row floats right as a small mono-font pill — the same universal pill convention used by `cards-grid`, `cards-side`, and `actors` (a `code` immediately following the card title becomes a header badge there). Authors do not learn anything new; the only rule is *put the metadata in backticks at the end of the row*.
 
-**Promotion rule:** the **last** child of a `<li>` (ignoring trailing whitespace) being an `<em>` triggers promotion. An optional preceding em-dash (`—`), en-dash (`–`), or hyphen separator is stripped. Inline mid-sentence ems are not promoted — only a trailing tail.
+```markdown
+- [x] Codebook signing live across production `shipped 2026-Q1`
+- [~] Cold-start TTL refresh under burst load `owner: platform`
+- [ ] Multi-tenant codebook authoring `Phase 2`
+```
 
-**Why a pill, not body prose:** the em tail in this layout is **status metadata** — *where to follow up*, *why it slipped*, *which phase it's deferred to*. Pulling it out of the row body lets the eye sweep left for the label and jump right for the disposition. Same recipe as the glossary range pill and the cards-grid header badge: `--accent-soft` background, `--accent` border + text, mono font, 999 px radius — but state-coloured per row.
+**Visual recipe:** identical to the cards-grid badge — `--fs-label`, `font-weight:600`, `border-radius:999px`, `border-color:var(--text-muted)`, neutral background. Pure CSS, no plugin work — the rendered `<code>` element gets `margin-left:auto` to anchor right, and the universal pill paint is applied.
 
-**Wrapping behaviour, by case:**
-
-| Case | Label  | Pill   | Behaviour                                                           |
-| ---- | ------ | ------ | ------------------------------------------------------------------- |
-| A    | short  | short  | both fit on one line; pill anchored right, baseline-locked          |
-| B    | long   | short  | label wraps in its column; pill stays right, top-aligned to row     |
-| C    | short  | long   | pill hits `max-width` (~40 % of row), wraps internally on words     |
-| D    | long   | long   | both wrap independently in their own columns; row grows vertically  |
-
-The glyph column is `position:absolute`, so it stays anchored to the row top regardless of how either column wraps. `break-inside:avoid` on the `<li>` keeps the row from splitting across PDF pages mid-pill.
+**Long-text policy:** the pill stays on one line (`white-space:nowrap`, matching cards-grid). If the metadata phrase is too long to fit, **it is too long for the pill recipe** — push it back into the row body, or add a below paragraph for context. The pill is a tag, not a card.
 
 **Risks worth naming:**
 
-- **Pill abuse as second body.** Once pills look pretty, authors are tempted to write a full clause inside the em tail. *Pill text is a short status phrase — target under ~40 characters.* If you need a sentence, write it in the row body, not in the em tail.
-- **Multi-line pill reads as a card, not a tag.** Pill chrome (radius, border, soft tint) is calibrated for one line. Two lines is tolerable; three lines means the pill recipe was the wrong tool — push the metadata back into the row body or into a below-paragraph annotation.
-- **Compact + long labels** stack rows tall and crowd the slide. Compact + checklist is a known tight pairing; pills don't make it worse, but they don't help either. Reach for `loose` on slides where every row carries a pill.
-- **Locale length drift.** Translated decks (EN → DE, EN → FI) can run 30–50 % longer; the 40 % cap means more pills wrap to two lines after translation. Acceptable; no fix required.
+- **Pill abuse as second body.** Authors are tempted to write a full clause inside backticks once pills look pretty. *Pill text is a short status phrase — target under ~25 characters.* If you need a sentence, write it in the row body.
+- **Mid-row code styled as a pill.** The CSS targets `> li > code` (any direct child), so an inline `` `code` `` snippet mid-row will also float right as a pill — it cannot tell the difference between *trailing metadata* and *mid-sentence reference to an identifier*. Authoring guidance: keep code references in the row body to a minimum, and reserve trailing backticks for status metadata. (This is the same trade-off cards-grid makes.)
 - **Pill on a `[x]` row.** Allowed, so the rule is uniform — but editorially, *done is done*: a passed row rarely needs a follow-up tag. Reserve pills for `[~]` and `[ ]` rows where there's actual outstanding metadata.
-
-```markdown
-- [x] Codebook signing live across production — _shipped 2026-Q1_
-- [~] Cold-start TTL refresh under burst load — _owner: platform; deadline 2026-W22_
-- [ ] Multi-tenant codebook authoring — _deferred to Phase 2_
-```
+- **Locale length drift.** Translated decks (EN → DE, EN → FI) can run 30–50 % longer; nowrap pills will overflow visibly. Authors translating a checklist deck should reshorten pill text in the target locale.
 
 **When to use:** acceptance reviews, retro snapshots, "what shipped vs what slipped" summaries — any slide where the editorial point is *the mix of states*, not the body text behind each row. If items need a sentence of body context, reach for `verdict-grid` or `list-criteria` instead. If items are equal-weight bullets without state, use `tldr` or `list`.
 

@@ -931,19 +931,15 @@ function parseSlide(raw, index) {
 
   // checklist: top-level <li> whose body starts with [x] / [~] / [ ] gets
   // class="state pass|warn|fail" and the marker stripped. CSS draws the
-  // glyph. A trailing <em> (with optional preceding em-dash / hyphen
-  // separator) is promoted to <span class="row-pill"><em>…</em></span>
-  // — right-aligned status tag whose colour tracks the row state. Inline
-  // mid-sentence <em> stays untouched.
+  // glyph and pins a trailing <code> as the right-aligned row pill
+  // (universal pill convention, shared with cards-grid / cards-side /
+  // actors).
   if (cls.includes('checklist')) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
       const m = /^\s*\[([x~ ])\]\s*/.exec(inner);
       if (!m) return full;
       const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
-      let body = inner.slice(m[0].length);
-      // Promote trailing <em>…</em> (after optional separator + whitespace) to row-pill.
-      body = body.replace(/(\s*[—–-]+)?\s*<em>([\s\S]+?)<\/em>\s*$/, ' <span class="row-pill"><em>$2</em></span>');
-      return `<li class="state ${stateClass}">${body}</li>`;
+      return `<li class="state ${stateClass}">${inner.slice(m[0].length)}</li>`;
     });
   }
 

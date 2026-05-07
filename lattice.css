@@ -2392,9 +2392,8 @@ section.tldr.numbered > ol > li::before {
  *   [ ] → fail (☐, --fail red)
  * The Marp plugin (build) and runtime transformer (preview) strip the
  * marker and add `class="state pass|warn|fail"` to the <li>; CSS
- * paints the glyph and the row background tint. A trailing `_em_` tail
- * is promoted to a right-aligned `.row-pill`; mid-sentence ems remain
- * inline as muted italic body voice.
+ * paints the glyph and the row background tint. Trailing inline `code`
+ * on a row floats right as a status pill (universal pill convention).
  * ──────────────────────────────────────────────────────────────────────── */
 section.checklist { display:flex; flex-direction:column; }
 section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -2465,9 +2464,8 @@ section.checklist > ul > li.state.fail::before,
 section.checklist > ol > li.state.fail::before {
   content:'☐'; color:var(--fail);
 }
-/* Inline _em_ tail inside an item — soft annotation. Wraps onto a new
- * line within the same row when the body runs long; em sits lighter
- * and muted so the eye still reads the label first. */
+/* Inline _em_ tail inside an item — soft annotation. Renders as muted
+ * italic body voice; the eye still reads the label first. */
 section.checklist > ul > li em,
 section.checklist > ol > li em {
   font-style:italic;
@@ -2476,63 +2474,31 @@ section.checklist > ol > li em {
 }
 
 /* ── ROW PILL ─────────────────────────────────────────────────────────
- * The trailing _em italic_ tail on a checklist row is promoted by the
- * Marp plugin / emulator / runtime to <span class="row-pill"><em>…</em></span>.
- * It anchors right, picks up the row's state colour (border + text), and
- * wraps internally if the metadata phrase runs long. Inline code stays
- * atomic via the universal `code { white-space:nowrap }` rule below.
+ * Trailing inline `code` on a checklist row → right-anchored pill.
+ * Same convention used by cards-grid / cards-side / actors: `code` is
+ * pinned right via `margin-left:auto`, painted with the universal pill
+ * recipe (mono label, 999px radius, neutral chrome, white-space:nowrap).
+ * No plugin work — this is pure CSS on the rendered <code> element.
  *
- * Long-text rules:
- *   - max-width 40 % of row → enforces "tag, not card"
- *   - flex-shrink permits the label column to stay wider when the pill
- *     is short; pill wraps to two lines before the label collapses
- *   - break-inside:avoid on the <li> keeps the row whole across pages
- *
- * Authoring guidance lives in templates.md (T28 → "Trailing em → row pill").
+ * Long-text policy: pill text stays on one line (`white-space:nowrap`
+ * matches cards-grid). If the metadata phrase needs to wrap, it is too
+ * long for the pill recipe — put it in the row body or use a below
+ * paragraph instead. Authoring guidance lives in templates.md (T28
+ * → "Trailing `code` → row pill").
  * ──────────────────────────────────────────────────────────────────── */
-section.checklist .row-pill {
+section.checklist > ul > li > code,
+section.checklist > ol > li > code {
   margin-left:auto;
-  flex:0 1 auto;
-  max-width:40%;
-  align-self:flex-start;
-  padding:2px 10px;
-  border:1px solid var(--accent);
-  border-radius:999px;
-  background:var(--accent-soft);
-  color:var(--accent);
+  align-self:baseline;
   font-family:var(--font-mono);
   font-size:var(--fs-label);
-  font-weight:500;
-  line-height:var(--lh-snug);
-  letter-spacing:0.02em;
-  text-align:center;
-  white-space:normal;
-  overflow-wrap:break-word;
-  word-break:normal;
-}
-section.checklist .row-pill em {
-  font-style:normal;
-  font-weight:inherit;
-  color:inherit;
-}
-section.checklist .row-pill code { white-space:nowrap; }
-/* State-aware pill: border + text track the row's state token; the soft
- * background mirrors the row tint so the pill reads as part of the row,
- * not foreign chrome. */
-section.checklist > ul > li.state.pass .row-pill,
-section.checklist > ol > li.state.pass .row-pill {
-  border-color:var(--pass); color:var(--pass);
-  background:var(--pass-bg, var(--accent-soft));
-}
-section.checklist > ul > li.state.warn .row-pill,
-section.checklist > ol > li.state.warn .row-pill {
-  border-color:var(--warn); color:var(--warn);
-  background:var(--warn-bg, var(--accent-soft));
-}
-section.checklist > ul > li.state.fail .row-pill,
-section.checklist > ol > li.state.fail .row-pill {
-  border-color:var(--fail); color:var(--fail);
-  background:var(--fail-bg, var(--accent-soft));
+  font-weight:600;
+  border:1px solid var(--text-muted);
+  border-radius:999px;
+  padding:3px 9px;
+  background:var(--bg);
+  color:var(--text-body);
+  white-space:nowrap;
 }
 
 /* ════════════════════════════════════════════════════════════════════════

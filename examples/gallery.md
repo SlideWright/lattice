@@ -1068,9 +1068,9 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 - [x] Codebook signing live across all production tenants
 - [x] HSM-anchored audit trail readable by Examiner role
 - [x] One reference client integrated end-to-end
-- [~] TTL refresh under cold-start load — _open, see slide 27_
-- [ ] Multi-tenant codebook operation — _Phase 2_
-- [ ] Crypto-shred runbook hand-off to Platform — _Phase 2_
+- [~] TTL refresh under cold-start load `see slide 27`
+- [ ] Multi-tenant codebook operation `Phase 2`
+- [ ] Crypto-shred runbook hand-off to Platform `Phase 2`
 
 ---
 
@@ -1079,13 +1079,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 `Phase 1 · Open items, with disposition`
 
-## Trailing italic tails render as right-aligned row pills.
+## Trailing inline code becomes a right-aligned row pill.
 
-- [x] Codebook signing live across production — _shipped 2026-Q1_
-- [~] Cold-start TTL refresh under burst load — _owner: platform; deadline 2026-W22_
-- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants — _open, see slide 27_
-- [ ] Multi-tenant codebook authoring with per-purpose scope and per-region key custody — _Phase 2_
-- [ ] Crypto-shred runbook hand-off — _deferred to Phase 2 pending HSM admin staffing decision and on-call rota sign-off_
+- [x] Codebook signing live across production `shipped 2026-Q1`
+- [~] Cold-start TTL refresh under burst load `owner: platform`
+- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
+- [ ] Multi-tenant codebook authoring with per-purpose scope and per-region key custody `Phase 2`
+- [ ] Crypto-shred runbook hand-off to Platform team `Phase 2`
 
 ---
 

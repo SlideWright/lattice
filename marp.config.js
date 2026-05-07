@@ -89,40 +89,8 @@ function checklistItemStates(markdown) {
       const cur = pendingItemOpen.attrGet("class");
       pendingItemOpen.attrSet("class", cur ? `${cur} ${stateClass}` : stateClass);
       textChild.content = textChild.content.slice(m[0].length);
-      // Trailing-em → right-aligned row pill. Locate a trailing
-      //   [text? em_open inline-text em_close text?(whitespace only)]
-      // run at the end of the inline children, strip an optional preceding
-      // em-dash / hyphen separator from the text node before em_open, and
-      // wrap the em in `<span class="row-pill">…</span>` via html_inline
-      // tokens. Mid-sentence ems are left untouched.
-      const kids = token.children;
-      let endIdx = kids.length - 1;
-      // skip a trailing whitespace-only text node, if any
-      if (endIdx >= 0 && kids[endIdx].type === "text" && /^\s*$/.test(kids[endIdx].content)) endIdx--;
-      if (endIdx >= 2 && kids[endIdx].type === "em_close") {
-        // walk back to the matching em_open at the same depth
-        let depth = 1, openIdx = endIdx - 1;
-        while (openIdx > 0 && depth > 0) {
-          if (kids[openIdx].type === "em_close") depth++;
-          else if (kids[openIdx].type === "em_open") { depth--; if (depth === 0) break; }
-          openIdx--;
-        }
-        if (openIdx > 0 && kids[openIdx].type === "em_open") {
-          // strip a trailing separator (em-dash, en-dash, hyphen runs) from
-          // the text node directly before em_open
-          const prev = kids[openIdx - 1];
-          if (prev && prev.type === "text") {
-            prev.content = prev.content.replace(/\s*[—–-]+\s*$/, "");
-          }
-          const openSpan = new state.Token("html_inline", "", 0);
-          openSpan.content = '<span class="row-pill">';
-          const closeSpan = new state.Token("html_inline", "", 0);
-          closeSpan.content = "</span>";
-          // insert openSpan before em_open and closeSpan after em_close
-          kids.splice(endIdx + 1, 0, closeSpan);
-          kids.splice(openIdx, 0, openSpan);
-        }
-      }
+      // CSS handles the trailing-`code` pill (universal pill convention,
+      // shared with cards-grid, cards-side, actors). No token surgery.
       pendingItemOpen = null;
     }
   });
