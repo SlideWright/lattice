@@ -2,7 +2,7 @@
 
 All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: approximately 1160×600.
 
-26 templates plus 3 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+27 templates plus 4 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
 
 ## Layout Inventory: Structured vs Unstructured
 
@@ -89,7 +89,8 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | Comparative    | T11 Comparison, T23 Featured                            | `compare-prose` `featured`                        |
 | Layout         | T13 Timeline, T17 Split Panel                           | `timeline` `split-panel`          |
 | Layout variant | T13v Step Cards                                         | `list-steps`                                        |
-| Visual         | T15 Image Full                                          | `image-full`                                   |
+| Visual         | T15 Image Full, T24 Image (text + bg)                   | `image-full` `image` (`image left` variant)         |
+| Code           | T25 Code, T26 Code Compare                              | `code` `compare-code`                          |
 
 ## Modifiers
 
