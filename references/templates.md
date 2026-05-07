@@ -8,20 +8,20 @@ All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: a
 
 Every layout falls into one of two categories. The distinction matters because it changes what the source markdown looks like and where bugs are most likely to live.
 
-**Structured layouts** are post-processed by `lattice.js`: a flat `ul`/`ol` (sometimes with nested children) is rewritten into purpose-built DOM (`.card`, `.stat-item`, `.vcard`, `.feat-card`, `.compare-prose-inner`, `.panel-left`/`.panel-right`, etc.). The CSS targets that generated structure. Authors write a list; the post-processor turns it into the layout.
+**Structured layouts** are post-processed by `lattice-emulator.js`: a flat `ul`/`ol` (sometimes with nested children) is rewritten into purpose-built DOM (`.card`, `.stat-item`, `.vcard`, `.feat-card`, `.compare-prose-inner`, `.panel-left`/`.panel-right`, etc.). The CSS targets that generated structure. Authors write a list; the post-processor turns it into the layout.
 
 **Unstructured layouts** are rendered by CSS alone from the semantic markdown that Marp emits. No DOM rewriting happens — the headings, paragraphs, and lists you write are the headings, paragraphs, and lists the CSS styles.
 
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice.js` rewrites DOM |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
 | Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `image left`, `image-full`, `code`         | no — CSS-only                   |
 
 Modifiers (`dark`, image variants like `image left`, etc.) compose with both categories.
 
 **Authoring implication:** every structured layout has a single canonical list shape documented in its template entry. Deviating from that shape (wrong list type, wrong nesting depth, missing `**Title.**` marker, etc.) causes the post-processor to fall back to the raw list rendering, which the CSS does not style. When a structured slide looks wrong, check the source list shape first.
 
-**Audit implication:** structured layouts are where `lattice.js` and `marp-cli` are most likely to diverge — see [audit.md §11.4](./audit.md#114-comparison-workflow).
+**Audit implication:** structured layouts are where `lattice-emulator.js` and `marp-cli` are most likely to diverge — see [audit.md §11.4](./audit.md#114-comparison-workflow).
 
 ## Eyebrow Labels
 
@@ -1434,7 +1434,7 @@ Optional intro paragraph.
 
 - Each `- Card Title` → one card in the grid; the heading is auto-bolded by CSS, no `**…**` required (`**…**` is harmless if you prefer it)
 - `[x]` → pass badge (green); `[ ]` → fail badge (red); `[~]` → warn badge (amber)
-- **Badge colors (green/red/amber) render only in the Marp CLI / lattice.js path.** The VS Code preview shows all badges as neutral pills (`--bg` fill, `--text-muted` border).
+- **Badge colors (green/red/amber) render only in the Marp CLI / lattice-emulator.js path.** The VS Code preview shows all badges as neutral pills (`--bg` fill, `--text-muted` border).
 - Last nested `li` (after all badge items) → card body description
 - Last card in the grid gets accent-soft highlight automatically (`li:last-child` rule)
 
@@ -1715,8 +1715,8 @@ Every slide is a fixed 1280×720 frame with `overflow: hidden`. Content that exc
 | Pipeline                | Source                                         | When it fires                            |
 | ----------------------- | ---------------------------------------------- | ---------------------------------------- |
 | VS Code Marp preview    | `lattice-runtime.js` → `startOverflowWatcher()` | After Mermaid init, on every DOM mutation, on resize |
-| `node lattice.js …`     | inline `<script>` baked into the HTML output    | On `DOMContentLoaded` and on resize      |
-| `node lattice.js … pdf` | Puppeteer `page.evaluate()` before `page.pdf()` | Once per build; also logs `⚠ Overflow on slide N` to the console |
+| `node lattice-emulator.js …`     | inline `<script>` baked into the HTML output    | On `DOMContentLoaded` and on resize      |
+| `node lattice-emulator.js … pdf` | Puppeteer `page.evaluate()` before `page.pdf()` | Once per build; also logs `⚠ Overflow on slide N` to the console |
 
 **What authors see.** The red ring is drawn via `box-shadow: inset` so it never shifts layout. Build-time also prints a console warning naming each offending slide. There is no opt-in, no debug flag, and no way to silence it short of fixing the slide.
 
@@ -1881,7 +1881,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
    - _1–5 · Manual_
 ```
 
-**How the renderer maps this:** Each top-level `<li>` carries the row name as plain text (or wrapped in `**...**` — both work). The nested `<ul>` carries two children: the description, then the metadata as `_italic_`. `lattice.js` flattens the nested form to `<li><strong>name</strong>desc<em>meta</em></li>`; in the VS Code preview, CSS `display:contents` promotes the inner `<li>`s into the parent grid so the same markdown renders correctly without the build step.
+**How the renderer maps this:** Each top-level `<li>` carries the row name as plain text (or wrapped in `**...**` — both work). The nested `<ul>` carries two children: the description, then the metadata as `_italic_`. `lattice-emulator.js` flattens the nested form to `<li><strong>name</strong>desc<em>meta</em></li>`; in the VS Code preview, CSS `display:contents` promotes the inner `<li>`s into the parent grid so the same markdown renders correctly without the build step.
 
 **Authoring rule:** the leading `**bold**` is optional. The framework's "CSS does the emphasis, not the author" convention applies here as it does on `list-criteria`, `actors`, `decision`, and the other structured layouts.
 
@@ -2148,7 +2148,7 @@ The runtime transforms that into a 2-column glossary table. The author **never w
 | Channel | Where | When |
 |---|---|---|
 | `marp-cli` build | [marp.config.js](../marp.config.js) `glossaryListToTable` + `glossaryRange` | parse-time, token-level |
-| LLM-env emulator | [lattice.js](../lattice.js) post-processor | render-time, HTML-string |
+| LLM-env emulator | [lattice-emulator.js](../lattice-emulator.js) post-processor | render-time, HTML-string |
 | VS Code Marp preview | [lattice-runtime.js](../lattice-runtime.js) MutationObserver | client-side, DOM-level |
 
 The runtime path is what makes the live preview work — VS Code's Marp extension does not load project-local Marpit plugins, so the DOM injector is the only channel for the preview, and it must stay in lockstep with the other two.

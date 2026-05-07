@@ -6,7 +6,7 @@ don't need to read this.
 
 ## Why Marp emulation, not Marp itself
 
-Lattice ships its own renderer (`lattice.js`) instead of calling the
+Lattice ships its own renderer (`lattice-emulator.js`) instead of calling the
 Marp CLI for two reasons:
 
 **Mermaid pre-rendering.** Marp CLI doesn't render Mermaid diagrams as
@@ -61,7 +61,7 @@ Mermaid blocks ──────────┴─→ %%{init}%% injection ─�
 The renderer is a single Node script. No framework, no plugins, ~1000
 lines. Its job is:
 
-1. Parse argv: `lattice.js source.md theme.css output.pdf [palette]`.
+1. Parse argv: `lattice-emulator.js source.md theme.css output.pdf [palette]`.
 2. Read the palette file. Parse `:root { ... }` blocks into a flat
    variable map. Split the file on the Mermaid sentinel comment;
    everything after is the per-diagram Mermaid CSS.
@@ -90,7 +90,7 @@ resolution logic, but operates against the live DOM:
 
 1. On load, read CSS custom properties from `document.documentElement`
    (which has the palette's `:root` block applied via the loaded
-   `<link rel=stylesheet>`). The same `MERMAID_VAR_MAP` from `lattice.js`
+   `<link rel=stylesheet>`). The same `MERMAID_VAR_MAP` from `lattice-emulator.js`
    resolves against these.
 2. Find the Mermaid CSS section by walking `document.styleSheets` for a
    stylesheet whose source contains the sentinel comment. If the palette
@@ -110,7 +110,7 @@ the same palette file. Both produce visually equivalent output.
 
 A theme author edits one file (`themes/<n>.css`); both paths update.
 The structural mapping (`MERMAID_VAR_MAP`) is duplicated between
-`lattice.js` and `lattice-runtime.js` because they target different
+`lattice-emulator.js` and `lattice-runtime.js` because they target different
 runtime environments — Node and browser, respectively. The maps are
 verified byte-equivalent in the smoke test.
 
@@ -138,7 +138,7 @@ Mermaid CSS section in `themes/indaco.css` patches the gaps.
 The renderer expects this layout relative to its own location:
 
 ```
-lattice.js
+lattice-emulator.js
 themes/
   indaco.css     (default palette; or whatever palette is named)
   cuoio.css

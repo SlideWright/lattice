@@ -197,7 +197,7 @@ section footer {
 
 /* Pagination — single mechanism across both rendering paths.
    The Marp CLI engine emits `data-marpit-pagination="N"` on each <section>;
-   the custom renderer (lattice.js) emits the identical attribute. Both paths
+   the custom renderer (lattice-emulator.js) emits the identical attribute. Both paths
    render the page number via the same `section::after` pseudo-element rule. */
 section[data-marpit-pagination]::after {
   content: attr(data-marpit-pagination);
@@ -222,7 +222,7 @@ section::after {
 
 **Critical — !important is deliberate.** Marp's scaffold CSS injects `section::after { padding: inherit; }` and font defaults that load *after* the theme stylesheet at equal specificity, so the cascade order favours the scaffold. `!important` on padding, position, and font properties is the override that makes the theme rule win regardless of load order. This is one of the few places in the system where `!important` is the right tool.
 
-**Single mechanism — no DOM span.** Earlier versions of lattice.js injected a `<span class="marp-slide-pagination">N</span>` element with its own positioning CSS, creating two divergent pagination paths. That has been removed: lattice.js now emits the same `data-marpit-pagination` attribute Marp CLI does, and the single `section::after` rule handles both. Any new pagination styling lives on `section::after` only.
+**Single mechanism — no DOM span.** Earlier versions of lattice-emulator.js injected a `<span class="marp-slide-pagination">N</span>` element with its own positioning CSS, creating two divergent pagination paths. That has been removed: lattice-emulator.js now emits the same `data-marpit-pagination` attribute Marp CLI does, and the single `section::after` rule handles both. Any new pagination styling lives on `section::after` only.
 
 **CSS variables:** `--marp-slide-pagination-color` and `--marp-slide-pagination-font-size` are defined in `:root` for reference but the values above are set directly so the !important overrides apply. Update both if the variables are ever wired through.
 

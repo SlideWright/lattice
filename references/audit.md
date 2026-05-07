@@ -1,6 +1,6 @@
 # Part 11: Parity Audit Workflow
 
-When asked to compare lattice.js output against marp-cli (or to verify fixes), follow this exact sequence every time. Do not re-derive these commands.
+When asked to compare lattice-emulator.js output against marp-cli (or to verify fixes), follow this exact sequence every time. Do not re-derive these commands.
 
 ## 11.1 Canonical Render Commands
 
@@ -25,10 +25,10 @@ for f in /tmp/marp-out.???; do
 done
 ```
 
-**lattice.js render**:
+**lattice-emulator.js render**:
 
 ```bash
-node lattice.js examples/gallery.md lattice.css /tmp/lattice-out.pdf indaco
+node lattice-emulator.js examples/gallery.md lattice.css /tmp/lattice-out.pdf indaco
 # produces /tmp/lattice-out.html
 ```
 
@@ -99,13 +99,13 @@ for i, (cls, body) in enumerate(sections, 1):
 "
 ```
 
-If the slide count differs between the two manifests, stop — there is a parsing error in `lattice.js`.
+If the slide count differs between the two manifests, stop — there is a parsing error in `lattice-emulator.js`.
 
 ## 11.4 Comparison Workflow
 
 1. Build the manifest (§11.3) — confirm slide count matches between marp and lattice
 2. Copy marp PNG output to named files: `for f in /tmp/marp-out.???; do n=$(echo "$f" | grep -o '\.[0-9]*$' | tr -d '.'); cp "$f" "/tmp/marp-slides/${n}.png"; done`
-3. Run lattice.js screenshot: `node tools/screenshot-slides.js /tmp/lattice-out.html /tmp/lattice-slides`
+3. Run lattice-emulator.js screenshot: `node tools/screenshot-slides.js /tmp/lattice-out.html /tmp/lattice-slides`
 4. Look up the target slide number in the manifest, then compare:
 
 ```text
@@ -141,21 +141,21 @@ print(sections[idx][:2000])
 "
 ```
 
-Compare the output against what `lattice.css` expects. **The CSS is the truth** — if the generated HTML structure does not match what the CSS selectors target, fix `lattice.js`, not the CSS.
+Compare the output against what `lattice.css` expects. **The CSS is the truth** — if the generated HTML structure does not match what the CSS selectors target, fix `lattice-emulator.js`, not the CSS.
 
 ## 11.6 Fix Verification Pattern
 
-After editing `lattice.js` or `lattice.css`:
+After editing `lattice-emulator.js` or `lattice.css`:
 
-1. Verify syntax: `node -e "require('./lattice.js')"` — should print usage, not an error
-2. Re-render: `node lattice.js examples/gallery.md lattice.css /tmp/lattice-fixed.pdf indaco`
+1. Verify syntax: `node -e "require('./lattice-emulator.js')"` — should print usage, not an error
+2. Re-render: `node lattice-emulator.js examples/gallery.md lattice.css /tmp/lattice-fixed.pdf indaco`
 3. Re-screenshot: `node tools/screenshot-slides.js /tmp/lattice-fixed.html /tmp/lattice-fixed`
 4. Compare **only the affected slides** — look up their numbers in the manifest, do not re-compare all slides
 
-## 11.7 CSS vs lattice.js — Ground Rules
+## 11.7 CSS vs lattice-emulator.js — Ground Rules
 
 - `lattice.css` is the single source of truth for structure and appearance
-- `lattice.js` post-processors must produce HTML that matches the CSS selectors exactly
+- `lattice-emulator.js` post-processors must produce HTML that matches the CSS selectors exactly
 - When comparing output, always ask: "Does the generated HTML match what the CSS expects?"
-- Never add inline styles to `lattice.js` output to compensate for a CSS gap — fix the CSS
+- Never add inline styles to `lattice-emulator.js` output to compensate for a CSS gap — fix the CSS
 - CSS fallback rules (`:not(:has(.panel-left))`) describe the _intent_; the post-processed path must replicate that intent with real DOM structure

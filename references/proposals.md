@@ -27,7 +27,7 @@ This document is a tour of where Lattice could go next as an authoring system. I
 A Lattice layout, today, is three things at once:
 
 1. **A markdown contract.** The author writes a fixed shape — `## heading`, then `ol > li > strong + p`, etc. Each layout has a single canonical shape (see [templates.md §Layout Inventory](./templates.md)).
-2. **A DOM transformation.** For structured layouts, `lattice.js` rewrites the contract into purpose-built HTML (`.cards-grid-inner > .card`, `.stats-row > .stat-item`). For unstructured layouts, the markdown emits its own HTML directly.
+2. **A DOM transformation.** For structured layouts, `lattice-emulator.js` rewrites the contract into purpose-built HTML (`.cards-grid-inner > .card`, `.stats-row > .stat-item`). For unstructured layouts, the markdown emits its own HTML directly.
 3. **A visual contract.** CSS targets the resulting DOM and produces the rendered slide.
 
 Read together, that is a **component**: an authorial intent (`compare two paths`), a stable input shape (`two top-level list items, each with title + body`), and a stable output (`two cards, optional connector, optional below-note`). The author writes intent; the renderer guarantees the output.

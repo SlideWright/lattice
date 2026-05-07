@@ -82,7 +82,7 @@ Some types accept both. The rendered CSS class is determined by diagram type, no
 **Diagnostic recipe (when Mermaid adds a new diagram type).**
 
 1. Add a `title` directive to the diagram in `examples/mermaid-gallery.md`.
-2. Build to HTML via `node lattice.js examples/mermaid-gallery.md ...`.
+2. Build to HTML via `node lattice-emulator.js examples/mermaid-gallery.md ...`.
 3. Open the HTML in a browser so Mermaid renders the SVG client-side.
 4. Save the post-render DOM (DevTools → Elements → copy outerHTML on the `<svg>`).
 5. Grep for the title text string. Inspect the surrounding `<text>` element's `class` attribute.
@@ -94,7 +94,7 @@ Some types accept both. The rendered CSS class is determined by diagram type, no
 
 **Mermaid parser limits inside themeCSS.** Two structural restrictions on what `%%{init: { themeCSS: ... } }%%` accepts without silently dropping the entire field:
 
-1. **No CSS comments** (`/* ... */`) — `lattice.js` strips them from the themeCSS block before injection (see `resolveVarsInThemeCSS` and the comment-stripping pass on line ~491). Comments are fine in the source palette file; they are removed pre-injection.
+1. **No CSS comments** (`/* ... */`) — `lattice-emulator.js` strips them from the themeCSS block before injection (see `resolveVarsInThemeCSS` and the comment-stripping pass on line ~491). Comments are fine in the source palette file; they are removed pre-injection.
 2. **No `>` child combinator** — breaks the parser the same way. The current title-suppression rule uses descendant combinators only.
 
 Attribute selectors with brackets (`[class$="TitleText"]`) are safe — they are already used by the mindmap section overrides (`[class*="section-0"]`) and parse without issue.

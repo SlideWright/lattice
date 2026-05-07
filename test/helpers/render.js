@@ -11,7 +11,7 @@ const { execFileSync } = require('child_process');
 const ROOT     = path.join(__dirname, '..', '..');
 const EXAMPLES = path.join(ROOT, 'examples');
 const THEME    = path.join(ROOT, 'lattice.css');
-const EMULATOR = path.join(ROOT, 'lattice.js'); // renamed in Phase 4
+const EMULATOR = path.join(ROOT, 'lattice-emulator.js'); // renamed in Phase 4
 
 function tmpFile(suffix) {
   return path.join(os.tmpdir(), `lattice-test-${process.pid}-${Date.now()}${suffix}`);

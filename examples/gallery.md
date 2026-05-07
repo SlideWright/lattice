@@ -1104,7 +1104,7 @@ The default top border is a spectrum gradient — a system signal that the page 
 It composes with `dark`: on the dark canvas the spectrum top-stripe is suppressed entirely, so `accent.dark` restores a solid accent stripe in its place — preserving the visual signal across both canvases.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
-     The build script (lattice.js) pre-renders Mermaid to SVG at build time
+     The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
 <script src="../node_modules/mermaid/dist/mermaid.min.js"></script>

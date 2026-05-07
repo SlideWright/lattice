@@ -16,7 +16,7 @@ context renders identically.
 
 ## What you get
 
-- **A renderer.** `node lattice.js deck.md lattice.css out.pdf` produces
+- **A renderer.** `node lattice-emulator.js deck.md lattice.css out.pdf` produces
   a paginated PDF. Mermaid diagrams pre-render as inline SVG. Code blocks
   syntax-highlight. Slides are 1280×720.
 - **Two palettes.** `indaco` (cool indigo, default) and `cuoio` (warm
@@ -44,8 +44,8 @@ Requires Node 18+, Mermaid CLI, and Puppeteer (which downloads a Chromium).
 ## Render the example galleries
 
 ```sh
-node lattice.js examples/gallery.md lattice.css examples/gallery.pdf
-node lattice.js examples/mermaid-gallery.md lattice.css examples/mermaid-gallery.pdf
+node lattice-emulator.js examples/gallery.md lattice.css examples/gallery.pdf
+node lattice-emulator.js examples/mermaid-gallery.md lattice.css examples/mermaid-gallery.pdf
 ```
 
 The two galleries are committed to `examples/` as ground-truth fixtures
@@ -74,7 +74,7 @@ theme: cuoio    # warm leather
 For CLI builds, the active palette can also be overridden positionally:
 
 ```sh
-node lattice.js deck.md lattice.css out.pdf <palette-name>
+node lattice-emulator.js deck.md lattice.css out.pdf <palette-name>
 ```
 
 The fourth positional argument names a file in `themes/`. The default is
@@ -111,7 +111,7 @@ lattice/
 ├── LICENSE
 ├── package.json
 │
-├── lattice.js                 renderer (build-time)
+├── lattice-emulator.js                 renderer (build-time)
 ├── lattice-runtime.js         browser script (runtime)
 ├── lattice.css                slide layouts (engine, palette-blind)
 │

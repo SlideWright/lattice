@@ -2,7 +2,7 @@
  * Unit: source files parse cleanly.
  *
  * Both engine files are scripts (not modules) with side-effecting top
- * levels — `lattice.js` is a CLI that exits on missing argv,
+ * levels — `lattice-emulator.js` is a CLI that exits on missing argv,
  * `lattice-runtime.js` references `window`/`document`. We can't safely
  * `require()` either one inside a test process, so we delegate parse
  * checking to `node --check`, which lexes + parses without executing.
@@ -21,8 +21,8 @@ function nodeCheck(file) {
   });
 }
 
-test('lattice.js parses', () => {
-  assert.doesNotThrow(() => nodeCheck('lattice.js'));
+test('lattice-emulator.js parses', () => {
+  assert.doesNotThrow(() => nodeCheck('lattice-emulator.js'));
 });
 
 test('lattice-runtime.js parses', () => {

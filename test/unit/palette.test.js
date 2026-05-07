@@ -6,7 +6,7 @@
  *   - Define every CSS custom property the emulator's Mermaid
  *     theme-variable map references.
  *
- * The required-vars list mirrors what `lattice.js` consumes via its
+ * The required-vars list mirrors what `lattice-emulator.js` consumes via its
  * MERMAID_VAR_MAP. Phase 6 will derive this list from the source
  * directly to remove the manual sync.
  */

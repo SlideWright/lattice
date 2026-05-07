@@ -1,5 +1,5 @@
 /**
- * lattice.js — Marp-faithful HTML renderer + PDF exporter
+ * lattice-emulator.js — Marp-faithful HTML renderer + PDF exporter
  *
  * Emulates the HTML structure that Marp CLI produces so that
  * lattice.css (written for Marp) renders correctly without
@@ -10,7 +10,7 @@
  * Mermaid diagrams (```mermaid blocks) are rendered to SVG via mmdc
  * with theme variables mapped to the Lattice palette.
  *
- * Usage: node lattice.js <source.md> <theme.css> <output.pdf>
+ * Usage: node lattice-emulator.js <source.md> <theme.css> <output.pdf>
  *
  * NOTE: This script exists only because Marp CLI cannot be installed
  * in this build environment. End users should use Marp CLI directly:
@@ -43,7 +43,7 @@ let hljs;
 
 const [,, mdFile, cssFile, outFile, paletteArg] = process.argv;
 if (!mdFile || !cssFile || !outFile) {
-  console.error('Usage: node lattice.js source.md theme.css output.pdf [palette]');
+  console.error('Usage: node lattice-emulator.js source.md theme.css output.pdf [palette]');
   console.error('Default palette: indaco');
   process.exit(1);
 }
@@ -525,7 +525,7 @@ function renderMermaid(definition) {
   const MAX_ATTEMPTS = 3;
   let lastError = null;
   // Resolve mmdc binary explicitly — falls back to bare 'mmdc' on PATH if the
-  // local install is missing. Direct `node lattice.js` doesn't include
+  // local install is missing. Direct `node lattice-emulator.js` doesn't include
   // node_modules/.bin in PATH the way `npm run` does.
   const localMmdc = path.join(__dirname, 'node_modules', '.bin', 'mmdc');
   const mmdcBin   = fs.existsSync(localMmdc) ? localMmdc : 'mmdc';
@@ -1264,7 +1264,7 @@ function parseSlide(raw, index) {
   // Pagination is rendered via the native Marp mechanism: a CSS pseudo-element
   // `section::after { content: attr(data-marpit-pagination); }` fed by the
   // data attribute on the section itself. We do NOT inject a real DOM element —
-  // that would create two pagination paths (Marp CLI vs lattice.js) with
+  // that would create two pagination paths (Marp CLI vs lattice-emulator.js) with
   // divergent positioning. Single mechanism, single CSS rule.
 
   const slideNum   = index + 1;

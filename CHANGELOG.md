@@ -67,14 +67,14 @@ Initial public release.
 
 ### Engine
 
-- Markdown-to-PDF renderer (`lattice.js`) with Marp-emulated HTML output,
+- Markdown-to-PDF renderer (`lattice-emulator.js`) with Marp-emulated HTML output,
   highlight.js syntax coloring, and per-diagram Mermaid pre-rendering.
 - Browser runtime (`lattice-runtime.js`) for live Marp preview and web
   export contexts. Resolves the Mermaid theme from the loaded palette CSS
   at runtime.
 - Single source of truth for color: every Mermaid theme variable derives
   from CSS custom properties in the active palette. The structural
-  mapping (which Mermaid key gets which palette role) lives in `lattice.js`
+  mapping (which Mermaid key gets which palette role) lives in `lattice-emulator.js`
   and does not change when palettes are swapped.
 
 ### Theme

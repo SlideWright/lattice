@@ -567,7 +567,7 @@
   //     - Definition
   // The runtime rewrites the first <ul> in each glossary section into a
   // 2-column table with the term auto-bolded. Mirrors the Marpit plugin in
-  // marp.config.js and the post-processor in lattice.js.
+  // marp.config.js and the post-processor in lattice-emulator.js.
   function applyGlossaryListTable(root) {
     if (!root || !root.querySelectorAll) return;
     const slides = root.querySelectorAll('section.glossary');
@@ -609,7 +609,7 @@
 
   // ── Glossary range pill ─────────────────────────────────────────────────
   // Mirrors the Marpit plugin in marp.config.js and the post-processor in
-  // lattice.js. VS Code's Marp preview won't load custom Marpit plugins
+  // lattice-emulator.js. VS Code's Marp preview won't load custom Marpit plugins
   // unless the user trusts the workspace and points the extension at the
   // config — too brittle to rely on. Instead we run a DOM-side injector
   // here so every `section.compare-table.glossary` gets its h2 pill in the
