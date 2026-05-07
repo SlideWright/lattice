@@ -357,7 +357,7 @@ CSS themes use positional selectors (`p:first-of-type`, `p:nth-of-type(2)`, `ul 
 
 # Part 8: Workflow Checklist
 
-```
+```text
 □ Create Marp markdown source (deck.md) with CSS theme in frontmatter
 □ Find Chrome binary path (Puppeteer or Playwright)
 □ Create Puppeteer config (puppeteer-config.json)
@@ -400,7 +400,7 @@ CSS themes use positional selectors (`p:first-of-type`, `p:nth-of-type(2)`, `ul 
 
 # Part 10: File Naming Convention
 
-```
+```text
 project_deck.md             Marp markdown source
 project_deck.html           Intermediate HTML (debugging)
 project_deck.pdf            Final PDF

@@ -62,7 +62,7 @@ A modifier is _not_ a layout. The boundary: if the markdown contract changes, it
 
 Every Lattice layout should publish four things:
 
-```
+```text
 Layout: list-steps
   Intent:    A horizontal sequence of N labelled stages.
   Markdown:  ## heading + ol > li (**title** + body)

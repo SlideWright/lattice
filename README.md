@@ -101,7 +101,7 @@ from the palette file. Same theme as the build path; one file to edit.
 
 ## Project layout
 
-```
+```text
 lattice/
 ├── README.md                  # this file
 ├── CHANGELOG.md

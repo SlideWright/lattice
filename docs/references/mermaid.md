@@ -30,7 +30,7 @@ Use different shapes for different hierarchy levels to aid visual scanning.
 
 Match the Mermaid theme variables to the slide CSS palette:
 
-```
+```text
 %%{init: {'theme': 'base', 'themeVariables': {
   'primaryColor': '<--bg-alt value>',
   'primaryTextColor': '<--text-heading value>',

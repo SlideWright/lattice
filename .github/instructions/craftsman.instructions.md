@@ -8,7 +8,7 @@ Do excellent work, not performative work. Match depth to difficulty. State what 
 
 Every task begins with one line:
 
-```
+```text
 Tier <N>: <type>: <one-line scope>
 ```
 

@@ -428,7 +428,7 @@ Unordered or ordered list of one-line takeaways. Optionally end each line with a
 
 ## Template 1: Title (dark bookend)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │            [dark background]          │
 │                                       │
@@ -477,7 +477,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 2: Section Divider
 
-```
+```text
 ┌───────────────────────────────────────┐
 │            [dark or accent bg]        │
 │                                       │
@@ -521,7 +521,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 3: Sub-Topic
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
@@ -553,7 +553,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 4: Content (text only)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
@@ -583,7 +583,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 5: Diagram (single)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │           LABEL                       │
@@ -614,7 +614,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 6: Stats / KPI Row
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -663,7 +663,7 @@ Subtitle or tagline — plain paragraph, italic, muted.
 
 ## Template 7: Card Grid (2×2)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -748,7 +748,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 8: Card Grid 2+1
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -789,7 +789,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 9: Two Cards Stacked (vertical)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -837,7 +837,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 10: Two Cards Side-by-Side (horizontal)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -877,7 +877,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 11: Comparison (side by side with connector)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -919,7 +919,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 12: Quote / Testimonial
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
@@ -950,7 +950,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 13: Timeline / Process
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │             LABEL                     │
@@ -988,7 +988,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 
 ## Template 14: List / Bullet Points
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
@@ -1041,7 +1041,7 @@ One class, two authoring modes — caption is optional.
 
 ### Without caption
 
-```
+```text
 ┌───────────────────────────────────────┐
 │                header                 │
 │             [image-full]              │
@@ -1053,7 +1053,7 @@ One class, two authoring modes — caption is optional.
 
 ### With caption
 
-```
+```text
 
 ┌───────────────────────────────────────┐
 │                header                 │
@@ -1093,7 +1093,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 ## Template 16: Big Number / Single Stat
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │                                       │
@@ -1135,7 +1135,7 @@ Caption text that appears as an overlay bar at the bottom.
 
 ## Template 17: Split Panel (colored sidebar)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │ header                                │
 │ ┌──────────┐                          │
@@ -1194,7 +1194,7 @@ Optional intro paragraph.
 
 ## Template 18: Closing (dark bookend)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │            [dark background]          │
 │                                       │
@@ -1228,7 +1228,7 @@ Optional intro paragraph.
 
 ## Template 19: Three-Row Wide Cards
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL · CONTEXT                      │
@@ -1290,7 +1290,7 @@ Optional intro paragraph.
 
 ## Template 20: Numbered Criteria List
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1358,7 +1358,7 @@ Optional intro paragraph.
 
 ## Template 21: Card Grid with Verdict Badges
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1444,7 +1444,7 @@ Optional intro paragraph.
 
 ## Template 22: Comparison Table
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1535,7 +1535,7 @@ _Scope and timeline estimates are not included — this table covers architectur
 
 ## Template 23: Featured Card + Sub-Grid
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1602,7 +1602,7 @@ _Scope and timeline estimates are not included — this table covers architectur
 
 Any card-bearing layout that ends with a trailing `> blockquote` renders it as a **Key Insight panel** — an accent-tinted bar that pins below the card content.
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1731,7 +1731,7 @@ These are named variations of existing templates. Use them when the base templat
 
 Extends Template 12 (Comparison with connector). Adds a full-width framing paragraph below the two cards.
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1778,7 +1778,7 @@ Optional framing sentence below the cards.
 
 Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-width numbered step cards arranged horizontally.
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1835,7 +1835,7 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 
 Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -1893,7 +1893,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ### Default (photo right)
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL             ┌───────────────┐  │
@@ -1907,7 +1907,7 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ### Variant: photo left
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  ┌───────────────┐  LABEL             │
@@ -1975,7 +1975,7 @@ Bring whatever you have. A square crop in a half-canvas slot will show small top
 
 ## Template 25: Code
 
-```
+```text
 ┌───────────────────────────────────────┐
 │  header                               │
 │  LABEL                                │
@@ -2020,7 +2020,7 @@ const tokens = await client.tokenize(input, {
 ```
 ````
 
-```
+```text
 
 - `` `inline code` `` paragraph (first) = eyebrow
 - `h2` = heading

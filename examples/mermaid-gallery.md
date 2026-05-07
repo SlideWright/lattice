@@ -454,7 +454,7 @@ ZenUML is a Mermaid diagram type that emits HTML+SVG with Tailwind CSS classes f
 
 For static-PDF pipelines like this one, prefer the standard `sequenceDiagram` (slide 5) — same conceptual model, fully supported by the Mermaid CLI, themable through `themeVariables`.
 
-```
+```text
 zenuml
   title Order
   Customer->Order.create() {

@@ -30,7 +30,7 @@ for Marp works against Lattice output.
 
 ## The build pipeline
 
-```
+```text
 deck.md  ─┐
           │
 themes/   │
@@ -137,7 +137,7 @@ Mermaid CSS section in `themes/indaco.css` patches the gaps.
 
 The renderer expects this layout relative to its own location:
 
-```
+```text
 lattice-emulator.js
 themes/
   indaco.css     (default palette; or whatever palette is named)
