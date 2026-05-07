@@ -429,16 +429,16 @@ Unordered or ordered list of one-line takeaways. Optionally end each line with a
 ## Template 1: Title (dark bookend)
 
 ```text
-┌───────────────────────────────────────┐
-│            [dark background]          │
-│                                       │
-│          EYEBROW LABEL                │
-│                                       │
-│       Display Title Here              │
-│       ─────── (accent line)           │
-│       Subtitle or tagline             │
-│                                       │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│             [dark background]           │
+│                                         │
+│          EYEBROW LABEL                  │
+│                                         │
+│       Display Title Here                │
+│       ─────── (accent line)             │
+│       Subtitle or tagline               │
+│                                         │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `title`
@@ -478,16 +478,16 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 2: Section Divider
 
 ```text
-┌───────────────────────────────────────┐
-│            [dark or accent bg]        │
-│                                       │
-│    ┌──────┐                           │
-│    │  01  │   SECTION LABEL           │
-│    └──────┘                           │
-│              Section Title            │
-│              ───────                  │
-│                                       │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│            [dark or accent bg]          │
+│                                         │
+│    ┌──────┐                             │
+│    │  01  │   SECTION LABEL             │
+│    └──────┘                             │
+│               Section Title             │
+│              ───────                    │
+│                                         │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `divider`
@@ -522,17 +522,17 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 3: Sub-Topic
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                                       │
-│          CATEGORY LABEL               │
-│          Topic Title                  │
-│                                       │
-│          Brief orienting sentence     │
-│          about what follows.          │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                                         │
+│          CATEGORY LABEL                 │
+│          Topic Title                    │
+│                                         │
+│          Brief orienting sentence       │
+│           about what follows.           │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `subtopic`
@@ -554,18 +554,18 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 4: Content (text only)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                                       │
-│  LABEL                                │
-│  Slide Heading                        │
-│                                       │
-│  Body paragraph text here. Can be     │
-│  2-3 sentences maximum. Keep it       │
-│  focused on one idea.                 │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                                         │
+│  LABEL                                  │
+│  Slide Heading                          │
+│                                         │
+│  Body paragraph text here. Can be       │
+│  2-3 sentences maximum. Keep it         │
+│  focused on one idea.                   │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `content`
@@ -584,18 +584,18 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 5: Diagram (single)
 
 ```text
-┌────────────────────────────────────────┐
-│  header                                │
-│                 LABEL                  │
-│             Diagram Title              │
-│             subtitle text              │
-│    ┌──────────────────────────────┐    │
-│    │                              │    │
-│    │      [diagram SVG/PNG]       │    │
-│    │                              │    │
-│    └──────────────────────────────┘    │
-│  footer                           1/19 │
-└────────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│              Diagram Title              │
+│              subtitle text              │
+│     ┌─────────────────────────────┐     │
+│     │                             │     │
+│     │      [diagram SVG/PNG]      │     │
+│     │                             │     │
+│     └─────────────────────────────┘     │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `diagram`
@@ -615,17 +615,17 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 6: Stats / KPI Row
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│             LABEL                     │
-│           Stats Title                 │
-│           description                 │
-│                                       │
-│      42       5       4       6       │
-│    TOTAL   SHAPES  CLASSES  WIDE      │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│             LABEL                       │
+│           Stats Title                   │
+│           description                   │
+│                                         │
+│       42       5       4       6        │
+│     TOTAL   SHAPES  CLASSES  WIDE       │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `stats`
@@ -664,21 +664,21 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 7: Card Grid (2×2)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                 LABEL                 │
-│              Grid Title               │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Card Title 1 │   │ Card Title 2 │  │
-│  │ content      │   │ content      │  │
-│  └──────────────┘   └──────────────┘  │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Card Title 3 │   │ Card Title 4 │  │
-│  │ content      │   │ content      │  │
-│  └──────────────┘   └──────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│               Grid Title                │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Card Title 1 │     │ Card Title 2 │  │
+│  │ content      │     │ content      │  │
+│  └──────────────┘     └──────────────┘  │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Card Title 3 │     │ Card Title 4 │  │
+│  │ content      │     │ content      │  │
+│  └──────────────┘     └──────────────┘  │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-grid`
@@ -749,21 +749,21 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 8: Card Grid 2+1
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                 LABEL                 │
-│              Grid Title               │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Card Title 1 │   │ Card Title 2 │  │
-│  │ content      │   │ content      │  │
-│  └──────────────┘   └──────────────┘  │
-│  ┌─────────────────────────────────┐  │
-│  │ Card Title 3 (full width)       │  │
-│  │ content stretches across        │  │
-│  └─────────────────────────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│               Grid Title                │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Card Title 1 │     │ Card Title 2 │  │
+│  │ content      │     │ content      │  │
+│  └──────────────┘     └──────────────┘  │
+│  ┌───────────────────────────────────┐  │
+│  │ Card Title 3 (full width)         │  │
+│  │ content stretches across          │  │
+│  └───────────────────────────────────┘  │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-grid`
@@ -790,21 +790,21 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 9: Two Cards Stacked (vertical)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│             LABEL                     │
-│           Slide Title                 │
-│                                       │
-│  ┌─────────────────────────────────┐  │
-│  │ Card Title 1                    │  │
-│  │ content stretches full width    │  │
-│  └─────────────────────────────────┘  │
-│  ┌─────────────────────────────────┐  │
-│  │ Card Title 2                    │  │
-│  │ content stretches full width    │  │
-│  └─────────────────────────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│             LABEL                       │
+│           Slide Title                   │
+│                                         │
+│   ┌─────────────────────────────────┐   │
+│   │ Card Title 1                    │   │
+│   │ content stretches full width    │   │
+│   └─────────────────────────────────┘   │
+│   ┌─────────────────────────────────┐   │
+│   │ Card Title 2                    │   │
+│   │ content stretches full width    │   │
+│   └─────────────────────────────────┘   │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-stack`
@@ -838,19 +838,19 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 10: Two Cards Side-by-Side (horizontal)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                 LABEL                 │
-│              Slide Title              │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Card Title 1 │   │ Card Title 2 │  │
-│  │              │   │              │  │
-│  │ content      │   │ content      │  │
-│  │              │   │              │  │
-│  └──────────────┘   └──────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│               Slide Title               │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Card Title 1 │     │ Card Title 2 │  │
+│  │              │     │              │  │
+│  │ content      │     │ content      │  │
+│  │              │     │              │  │
+│  └──────────────┘     └──────────────┘  │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-side`
@@ -889,7 +889,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 │  │              │     │              │  │
 │  └──────────────┘     └──────────────┘  │
 │                                         │
-│  footer                            1/19 │
+│  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
@@ -920,18 +920,18 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 12: Quote / Testimonial
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                                       │
-│                                       │
-│       "Quote text goes here in        │
-│        italic display font,           │
-│        centered on the slide."        │
-│                                       │
-│              — Attribution            │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                                         │
+│                                         │
+│        "Quote text goes here in         │
+│        italic display font,             │
+│         centered on the slide."         │
+│                                         │
+│               — Attribution             │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `quote`
@@ -951,17 +951,17 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 13: Timeline / Process
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│             LABEL                     │
-│          Process Title                │
-│                                       │
-│     ●──────●──────●──────●            │
-│   Step 1  Step 2  Step 3  Step 4      │
-│   desc    desc    desc    desc        │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│             LABEL                       │
+│          Process Title                  │
+│                                         │
+│     ●──────●──────●──────●              │
+│   Step 1  Step 2  Step 3  Step 4        │
+│   desc    desc    desc    desc          │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `timeline`
@@ -989,19 +989,19 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 14: List / Bullet Points
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                                       │
-│  LABEL                                │
-│  List Heading                         │
-│                                       │
-│  •  First point clearly stated        │
-│  •  Second point with enough room     │
-│  •  Third point, well spaced          │
-│  •  Fourth point if needed            │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                                         │
+│  LABEL                                  │
+│  List Heading                           │
+│                                         │
+│  •  First point clearly stated          │
+│  •  Second point with enough room       │
+│  •  Third point, well spaced            │
+│  •  Fourth point if needed              │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `list`
@@ -1042,26 +1042,26 @@ One class, two authoring modes — caption is optional.
 ### Without caption
 
 ```text
-┌───────────────────────────────────────┐
-│                header                 │
-│             [image-full]              │
-│                                       │
-│                                       │
-│                                       │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│                 header                  │
+│              [image-full]               │
+│                                         │
+│                                         │
+│                                         │
+└─────────────────────────────────────────┘
 ```
 
 ### With caption
 
 ```text
 
-┌───────────────────────────────────────┐
-│                header                 │
-│             [image-full]              │
-│                                       │
-│  ┌─ caption text ──────────────────┐  │
-│  └─────────────────────────────────┘  │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│                 header                  │
+│              [image-full]               │
+│                                         │
+│   ┌─ caption text ──────────────────┐   │
+│   └─────────────────────────────────┘   │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `image-full`
@@ -1094,19 +1094,19 @@ Caption text that appears as an overlay bar at the bottom.
 ## Template 16: Big Number / Single Stat
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│                                       │
-│                                       │
-│              LABEL                    │
-│                                       │
-│              247                      │
-│                                       │
-│         description text              │
-│         below the number              │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                                         │
+│                                         │
+│              LABEL                      │
+│                                         │
+│              247                        │
+│                                         │
+│         description text                │
+│         below the number                │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `big-number`
@@ -1136,21 +1136,21 @@ Caption text that appears as an overlay bar at the bottom.
 ## Template 17: Split Panel (colored sidebar)
 
 ```text
-┌───────────────────────────────────────┐
-│ header                                │
-│ ┌──────────┐                          │
-│ │ EYEBROW  │  SECTION HEADING         │
-│ │          │                          │
-│ │ [accent  │  ┌──────────────────┐    │
-│ │  panel]  │  │ Card Title 1     │    │
-│ │          │  │ body text        │    │
-│ │          │  └──────────────────┘    │
-│ │ Panel    │  ┌──────────────────┐    │
-│ │ Title    │  │ Card Title 2     │    │
-│ └──────────┘  │ body text        │    │
-│               └──────────────────┘    │
-│              footer              1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│ header                                  │
+│ ┌──────────┐                            │
+│ │ EYEBROW  │  SECTION HEADING           │
+│ │          │                            │
+│ │ [accent  │  ┌──────────────────┐      │
+│ │  panel]  │  │ Card Title 1     │      │
+│ │          │  │ body text        │      │
+│ │          │  └──────────────────┘      │
+│ │ Panel    │  ┌──────────────────┐      │
+│ │ Title    │  │ Card Title 2     │      │
+│ └──────────┘  │ body text        │      │
+│               └──────────────────┘      │
+│              footer              1/19   │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `split-panel`
@@ -1195,18 +1195,18 @@ Optional intro paragraph.
 ## Template 18: Closing (dark bookend)
 
 ```text
-┌───────────────────────────────────────┐
-│            [dark background]          │
-│                                       │
-│                                       │
-│          BRAND / LABEL                │
-│          ─────── (accent line)        │
-│                                       │
-│       Closing statement or            │
-│       call to action in italic        │
-│                                       │
-│                                       │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│             [dark background]           │
+│                                         │
+│                                         │
+│          BRAND / LABEL                  │
+│           ─────── (accent line)         │
+│                                         │
+│       Closing statement or              │
+│        call to action in italic         │
+│                                         │
+│                                         │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `closing`
@@ -1229,25 +1229,25 @@ Optional intro paragraph.
 ## Template 19: Three-Row Wide Cards
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL · CONTEXT                      │
-│  Slide heading goes here.             │
-│                                       │
-│  ┌─────────────────────────────────┐  │
-│  │ [1]  Card Heading One           │  │
-│  │       body text for this card.  │  │
-│  └─────────────────────────────────┘  │
-│  ┌─────────────────────────────────┐  │
-│  │ [2]  Card Heading Two           │  │
-│  │       body text for this card.  │  │
-│  └─────────────────────────────────┘  │
-│  ┌─────────────────────────────────┐  │
-│  │ [3]  Card Heading Three         │  │
-│  │       body text for this card.  │  │
-│  └─────────────────────────────────┘  │
-│  footer                          6/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL · CONTEXT                        │
+│  Slide heading goes here.               │
+│                                         │
+│   ┌─────────────────────────────────┐   │
+│   │ [1]  Card Heading One           │   │
+│   │       body text for this card.  │   │
+│   └─────────────────────────────────┘   │
+│   ┌─────────────────────────────────┐   │
+│   │ [2]  Card Heading Two           │   │
+│   │       body text for this card.  │   │
+│   └─────────────────────────────────┘   │
+│   ┌─────────────────────────────────┐   │
+│   │ [3]  Card Heading Three         │   │
+│   │       body text for this card.  │   │
+│   └─────────────────────────────────┘   │
+│  footer                           6/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `cards-wide`
@@ -1291,25 +1291,25 @@ Optional intro paragraph.
 ## Template 20: Numbered Criteria List
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Here is what the criteria are.       │
-│                                       │
-│  01  Criterion Title One              │
-│      Supporting description text.     │
-│                                       │
-│  02  Criterion Title Two              │
-│      Supporting description text.     │
-│                                       │
-│  03  Criterion Title Three            │
-│      Supporting description text.     │
-│                                       │
-│  04  Criterion Title Four             │
-│      Supporting description text.     │
-│                                       │
-│  footer                          8/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Here is what the criteria are.         │
+│                                         │
+│  01  Criterion Title One                │
+│       Supporting description text.      │
+│                                         │
+│  02  Criterion Title Two                │
+│       Supporting description text.      │
+│                                         │
+│  03  Criterion Title Three              │
+│       Supporting description text.      │
+│                                         │
+│  04  Criterion Title Four               │
+│       Supporting description text.      │
+│                                         │
+│  footer                           8/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `list-criteria`
@@ -1359,23 +1359,23 @@ Optional intro paragraph.
 ## Template 21: Card Grid with Verdict Badges
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  We have four options.                │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Option 1     │   │ Option 2     │  │
-│  │ ✓In-proc ✕Ops│   │ ✕In-proc ✓Ops│  │
-│  │ description  │   │ description  │  │
-│  └──────────────┘   └──────────────┘  │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Option 3     │   │ Option 4 ★   │  │
-│  │ ✓In-proc ✓Ops│   │ ✓In-proc ✓Ops│  │
-│  │ description  │   │ description  │  │
-│  └──────────────┘   └──────────────┘  │
-│  footer                          9/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  We have four options.                  │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Option 1     │     │ Option 2     │  │
+│  │ ✓In-proc ✕Ops│     │ ✕In-proc ✓Ops│  │
+│  │ description  │     │ description  │  │
+│  └──────────────┘     └──────────────┘  │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Option 3     │     │ Option 4 ★   │  │
+│  │ ✓In-proc ✓Ops│     │ ✓In-proc ✓Ops│  │
+│  │ description  │     │ description  │  │
+│  └──────────────┘     └──────────────┘  │
+│  footer                           9/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `verdict-grid` (extends standard card grid)
@@ -1451,7 +1451,7 @@ Optional intro paragraph.
 │  Here are the numbers side by side.     │
 │                                         │
 │  ┌───────────┬───────────┬───────────┐  │
-│  │           │ Option A  │ Option B   │  │
+│  │           │ Option A  │ Option B  │  │
 │  ├───────────┼───────────┼───────────┤  │
 │  │ Row 1     │ ✓         │ ✕         │  │
 │  │ Row 2     │ ✕         │ ✓         │  │
@@ -1459,7 +1459,7 @@ Optional intro paragraph.
 │  │ Row 4     │ ⚠         │ ✓         │  │
 │  └───────────┴───────────┴───────────┘  │
 │  Footnote text for scope caveats.       │
-│  footer                           11/19 │
+│  footer                          11/19  │
 └─────────────────────────────────────────┘
 ```
 
@@ -1536,25 +1536,25 @@ _Scope and timeline estimates are not included — this table covers architectur
 ## Template 23: Featured Card + Sub-Grid
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Here is where the evidence points.   │
-│                                       │
-│  ┌─────────────────────────────────┐  │
-│  │ ── THE EVIDENCE FAVORS OPTION 4 │  │
-│  │                                 │  │
-│  │ Featured thesis here. This is   │  │
-│  │ the answer the slide asserts.   │  │
-│  └─────────────────────────────────┘  │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Sub Card 1   │   │ Sub Card 2   │  │
-│  │ Condition or │   │ Condition or │  │
-│  │ caveat.      │   │ fallback.    │  │
-│  └──────────────┘   └──────────────┘  │
-│  footer                         14/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│   Here is where the evidence points.    │
+│                                         │
+│   ┌─────────────────────────────────┐   │
+│   │ ── THE EVIDENCE FAVORS OPTION 4 │   │
+│   │                                 │   │
+│   │ Featured thesis here. This is   │   │
+│   │ the answer the slide asserts.   │   │
+│   └─────────────────────────────────┘   │
+│                                         │
+│   ┌──────────────┐   ┌──────────────┐   │
+│   │ Sub Card 1   │   │ Sub Card 2   │   │
+│   │ Condition or │   │ Condition or │   │
+│   │ caveat.      │   │ fallback.    │   │
+│   └──────────────┘   └──────────────┘   │
+│  footer                          14/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `featured`
@@ -1603,21 +1603,21 @@ _Scope and timeline estimates are not included — this table covers architectur
 Any card-bearing layout that ends with a trailing `> blockquote` renders it as a **Key Insight panel** — an accent-tinted bar that pins below the card content.
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Grid Title                           │
-│                                       │
-│  ┌──────────────┐   ┌──────────────┐  │
-│  │ Card Title 1 │   │ Card Title 2 │  │
-│  │ body text    │   │ body text    │  │
-│  └──────────────┘   └──────────────┘  │
-│  ┌─────────────────────────────────┐  │
-│  │ KEY INSIGHT                     │  │
-│  │ The key insight text here.      │  │
-│  └─────────────────────────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Grid Title                             │
+│                                         │
+│   ┌──────────────┐   ┌──────────────┐   │
+│   │ Card Title 1 │   │ Card Title 2 │   │
+│   │ body text    │   │ body text    │   │
+│   └──────────────┘   └──────────────┘   │
+│   ┌─────────────────────────────────┐   │
+│   │ KEY INSIGHT                     │   │
+│   │ The key insight text here.      │   │
+│   └─────────────────────────────────┘   │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **Layouts that support Key Insight:** every layout except `quote` and `featured` (which use the blockquote slot for primary content). In practice, reach for it on card- and list-bearing layouts where the trailing blockquote summarises the slide.
@@ -1732,21 +1732,21 @@ These are named variations of existing templates. Use them when the base templat
 Extends Template 12 (Comparison with connector). Adds a full-width framing paragraph below the two cards.
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Comparison Heading                   │
-│                                       │
-│  ┌─────────────┐     ┌─────────────┐  │
-│  │ Card A      │  →  │ Card B      │  │
-│  │ content     │     │ content     │  │
-│  └─────────────┘     └─────────────┘  │
-│                                       │
-│  Framing sentence that applies to     │
-│  both sides equally. Max 30 words.    │
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Comparison Heading                     │
+│                                         │
+│   ┌─────────────┐     ┌─────────────┐   │
+│   │ Card A      │  →  │ Card B      │   │
+│   │ content     │     │ content     │   │
+│   └─────────────┘     └─────────────┘   │
+│                                         │
+│  Framing sentence that applies to       │
+│   both sides equally. Max 30 words.     │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS addition to T11:**
@@ -1779,21 +1779,21 @@ Optional framing sentence below the cards.
 Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-width numbered step cards arranged horizontally.
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  How to roll this out.                │
-│                                       │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐  │
-│  │ STEP 01 │ │ STEP 02 │ │ STEP 03 │  │
-│  │         │ │         │ │         │  │
-│  │ Step    │ │ Step    │ │ Step    │  │
-│  │ Title   │ │ Title   │ │ Title   │  │
-│  │         │ │         │ │         │  │
-│  │ body    │ │ body    │ │ body    │  │
-│  └─────────┘ └─────────┘ └─────────┘  │
-│  footer                         12/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  How to roll this out.                  │
+│                                         │
+│   ┌─────────┐ ┌─────────┐ ┌─────────┐   │
+│   │ STEP 01 │ │ STEP 02 │ │ STEP 03 │   │
+│   │         │ │         │ │         │   │
+│   │ Step    │ │ Step    │ │ Step    │   │
+│   │ Title   │ │ Title   │ │ Title   │   │
+│   │         │ │         │ │         │   │
+│   │ body    │ │ body    │ │ body    │   │
+│   └─────────┘ └─────────┘ └─────────┘   │
+│  footer                          12/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `list-steps`
@@ -1836,20 +1836,20 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Growth is a change in thinking.      │
-│                                       │
-│ 01  Remember    Recall facts  Feature │
-│ 02  Understand  Explain it    Module  │
-│ 03  Apply       Use patterns  Service │
-│ 04  Analyze     Decompose     System  │
-│ 05  Evaluate    Judge option  Org     │
-│ 06  Create      Synthesize    Entrp.  │
-│                                       │
-│  footer                          3/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Growth is a change in thinking.        │
+│                                         │
+│  01  Remember    Recall facts  Feature  │
+│  02  Understand  Explain it    Module   │
+│  03  Apply       Use patterns  Service  │
+│  04  Analyze     Decompose     System   │
+│ 05  Evaluate    Judge option  Org       │
+│  06  Create      Synthesize    Entrp.   │
+│                                         │
+│  footer                           3/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `list-tabular`
@@ -1894,29 +1894,29 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 ### Default (photo right)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL             ┌───────────────┐  │
-│  Heading           │               │  │
-│                    │   [ photo ]   │  │
-│  Body text here.   │               │  │
-│                    └───────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│   LABEL             ┌───────────────┐   │
+│   Heading           │               │   │
+│                    │   [ photo ]   │    │
+│   Body text here.   │               │   │
+│                    └───────────────┘    │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 ### Variant: photo left
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  ┌───────────────┐  LABEL             │
-│  │               │  Heading           │
-│  │   [ photo ]   │                    │
-│  │               │  Body text here.   │
-│  └───────────────┘                    │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  ┌───────────────┐  LABEL               │
+│  │               │  Heading             │
+│  │   [ photo ]   │                      │
+│   │               │  Body text here.    │
+│  └───────────────┘                      │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `image` (default: image right) · `image left` (image left)
@@ -1976,17 +1976,17 @@ Bring whatever you have. A square crop in a half-canvas slot will show small top
 ## Template 25: Code
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Slide Heading                        │
-│  Language · Context label             │
-│  ┌─────────────────────────────────┐  │
-│  │ // code block fills remaining   │  │
-│  │ // space below                  │  │
-│  └─────────────────────────────────┘  │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Slide Heading                          │
+│  Language · Context label               │
+│   ┌─────────────────────────────────┐   │
+│   │ // code block fills remaining   │   │
+│   │ // space below                  │   │
+│   └─────────────────────────────────┘   │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `code`
@@ -2042,7 +2042,7 @@ const tokens = await client.tokenize(input, {
 │  │              │     │              │  │
 │  └──────────────┘     └──────────────┘  │
 │                                         │
-│  footer                            1/19 │
+│  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
@@ -2094,20 +2094,20 @@ signature = vault.sign(payload, key_id="prod-hmac-v3")
 ## Template 27: Glossary
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  Glossary                  ╭─ A – G ─╮│
-│  TERM           DEFINITION            │
-│  ─────────────── spectrum ─────────── │
-│  AES-256        Symmetric block cipher│
-│                 with a 256-bit key …  │
-│  Audit anchor   The HSM unwrap log …  │
-│  Codebook       A signed envelope …   │
-│  DEK            Data Encryption Key … │
-│  …                                    │
-│  Grover's …     Quantum search algo … │
-│  footer                         12/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  Glossary                  ╭─ A – G ─╮  │
+│  TERM           DEFINITION              │
+│  ──────────── spectrum ───────────      │
+│  AES-256        Symmetric block cipher  │
+│                 with a 256-bit key …    │
+│  Audit anchor   The HSM unwrap log …    │
+│  Codebook       A signed envelope …     │
+│  DEK            Data Encryption Key …   │
+│  …                                      │
+│  Grover's …     Quantum search algo …   │
+│  footer                          12/19  │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `glossary`
