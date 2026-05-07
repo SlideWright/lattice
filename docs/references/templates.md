@@ -584,18 +584,18 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ## Template 5: Diagram (single)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│           LABEL                       │
-│         Diagram Title                 │
-│         subtitle text                 │
-│  ┌──────────────────────────────┐     │
-│  │                              │     │
-│  │      [diagram SVG/PNG]       │     │
-│  │                              │     │
-│  └──────────────────────────────┘     │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌────────────────────────────────────────┐
+│  header                                │
+│                 LABEL                  │
+│             Diagram Title              │
+│             subtitle text              │
+│    ┌──────────────────────────────┐    │
+│    │                              │    │
+│    │      [diagram SVG/PNG]       │    │
+│    │                              │    │
+│    └──────────────────────────────┘    │
+│  footer                           1/19 │
+└────────────────────────────────────────┘
 ```
 
 **CSS class:** `diagram`
@@ -666,17 +666,17 @@ Subtitle or tagline — plain paragraph, italic, muted.
 ```text
 ┌───────────────────────────────────────┐
 │  header                               │
-│             LABEL                     │
-│           Grid Title                  │
+│                 LABEL                 │
+│              Grid Title               │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Card Title 1 │  │ Card Title 2 │   │
-│  │ content      │  │ content      │   │
-│  └──────────────┘  └──────────────┘   │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Card Title 3 │  │ Card Title 4 │   │
-│  │ content      │  │ content      │   │
-│  └──────────────┘  └──────────────┘   │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Card Title 1 │   │ Card Title 2 │  │
+│  │ content      │   │ content      │  │
+│  └──────────────┘   └──────────────┘  │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Card Title 3 │   │ Card Title 4 │  │
+│  │ content      │   │ content      │  │
+│  └──────────────┘   └──────────────┘  │
 │  footer                          1/19 │
 └───────────────────────────────────────┘
 ```
@@ -751,13 +751,13 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ```text
 ┌───────────────────────────────────────┐
 │  header                               │
-│             LABEL                     │
-│           Grid Title                  │
+│                 LABEL                 │
+│              Grid Title               │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Card Title 1 │  │ Card Title 2 │   │
-│  │ content      │  │ content      │   │
-│  └──────────────┘  └──────────────┘   │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Card Title 1 │   │ Card Title 2 │  │
+│  │ content      │   │ content      │  │
+│  └──────────────┘   └──────────────┘  │
 │  ┌─────────────────────────────────┐  │
 │  │ Card Title 3 (full width)       │  │
 │  │ content stretches across        │  │
@@ -840,15 +840,15 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ```text
 ┌───────────────────────────────────────┐
 │  header                               │
-│             LABEL                     │
-│           Slide Title                 │
+│                 LABEL                 │
+│              Slide Title              │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Card Title 1 │  │ Card Title 2 │   │
-│  │              │  │              │   │
-│  │ content      │  │ content      │   │
-│  │              │  │              │   │
-│  └──────────────┘  └──────────────┘   │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Card Title 1 │   │ Card Title 2 │  │
+│  │              │   │              │  │
+│  │ content      │   │ content      │  │
+│  │              │   │              │  │
+│  └──────────────┘   └──────────────┘  │
 │  footer                          1/19 │
 └───────────────────────────────────────┘
 ```
@@ -878,19 +878,19 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 ## Template 11: Comparison (side by side with connector)
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│             LABEL                     │
-│         Comparison Title              │
-│                                       │
-│  ┌──────────────┐     ┌──────────────┐│
-│  │ Before /     │  →  │ After /      ││
-│  │ Option A     │     │ Option B     ││
-│  │              │     │              ││
-│  └──────────────┘     └──────────────┘│
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│            Comparison Title             │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Before /     │  →  │ After /      │  │
+│  │ Option A     │     │ Option B     │  │
+│  │              │     │              │  │
+│  └──────────────┘     └──────────────┘  │
+│                                         │
+│  footer                            1/19 │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `compare-prose`
@@ -1364,16 +1364,16 @@ Optional intro paragraph.
 │  LABEL                                │
 │  We have four options.                │
 │                                       │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │ Option 1     │  │ Option 2     │   │
-│  │ ✓In-proc ✕Ops│  │ ✕In-proc ✓Ops│   │
-│  │ description  │  │ description  │   │
-│  └──────────────┘  └──────────────┘   │
-│  ┌──────────────┐  ┌──────────────┐*  │
-│  │ Option 3     │  │ Option 4 ★   │   │
-│  │ ✓In-proc ✓Ops│  │ ✓In-proc ✓Ops│   │
-│  │ description  │  │ description  │   │
-│  └──────────────┘  └──────────────┘   │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Option 1     │   │ Option 2     │  │
+│  │ ✓In-proc ✕Ops│   │ ✕In-proc ✓Ops│  │
+│  │ description  │   │ description  │  │
+│  └──────────────┘   └──────────────┘  │
+│  ┌──────────────┐   ┌──────────────┐  │
+│  │ Option 3     │   │ Option 4 ★   │  │
+│  │ ✓In-proc ✓Ops│   │ ✓In-proc ✓Ops│  │
+│  │ description  │   │ description  │  │
+│  └──────────────┘   └──────────────┘  │
 │  footer                          9/19 │
 └───────────────────────────────────────┘
 ```
@@ -1445,22 +1445,22 @@ Optional intro paragraph.
 ## Template 22: Comparison Table
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│  LABEL                                │
-│  Here are the numbers side by side.   │
-│                                       │
-│  ┌──────────┬──────────┬──────────┐   │
-│  │          │ Option A │ Option B │   │
-│  ├──────────┼──────────┼──────────┤   │
-│  │ Row 1    │ ✓        │ ✕        │   │
-│  │ Row 2    │ ✕        │ ✓        │   │
-│  │ Row 3    │ ✓        │ ✓        │   │
-│  │ Row 4    │ ⚠        │ ✓        │   │
-│  └──────────┴──────────┴──────────┘   │
-│  Footnote text for scope caveats.     │
-│  footer                         11/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL                                  │
+│  Here are the numbers side by side.     │
+│                                         │
+│  ┌───────────┬───────────┬───────────┐  │
+│  │           │ Option A  │ Option B   │  │
+│  ├───────────┼───────────┼───────────┤  │
+│  │ Row 1     │ ✓         │ ✕         │  │
+│  │ Row 2     │ ✕         │ ✓         │  │
+│  │ Row 3     │ ✓         │ ✓         │  │
+│  │ Row 4     │ ⚠         │ ✓         │  │
+│  └───────────┴───────────┴───────────┘  │
+│  Footnote text for scope caveats.       │
+│  footer                           11/19 │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `compare-table`
@@ -2030,20 +2030,20 @@ const tokens = await client.tokenize(input, {
 ## Template 26: Code Compare
 
 ```text
-┌───────────────────────────────────────┐
-│  header                               │
-│             LABEL                     │
-│         Comparison Title              │
-│                                       │
-│  ┌──────────────┐     ┌──────────────┐│
-│  │ Left label   │     │ Right label  ││
-│  │              │     │              ││
-│  │   // code    │     │   // code    ││
-│  │              │     │              ││
-│  └──────────────┘     └──────────────┘│
-│                                       │
-│  footer                          1/19 │
-└───────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  header                                 │
+│                  LABEL                  │
+│            Comparison Title             │
+│                                         │
+│  ┌──────────────┐     ┌──────────────┐  │
+│  │ Left label   │     │ Right label  │  │
+│  │              │     │              │  │
+│  │   // code    │     │   // code    │  │
+│  │              │     │              │  │
+│  └──────────────┘     └──────────────┘  │
+│                                         │
+│  footer                            1/19 │
+└─────────────────────────────────────────┘
 ```
 
 **CSS class:** `compare-code`
