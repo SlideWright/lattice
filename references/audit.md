@@ -34,14 +34,14 @@ node lattice.js examples/gallery.md lattice.css /tmp/lattice-out.pdf indaco
 
 ## 11.2 Screenshot Script
 
-The screenshot script lives at `screenshot-slides.js` in the workspace root. **Do not recreate it** — it already exists. Usage:
+The screenshot script lives at `tools/screenshot-slides.js`. **Do not recreate it** — it already exists. Usage:
 
 ```bash
 # Default: reads /tmp/lattice-out.html, writes to /tmp/lattice-slides/
-node screenshot-slides.js
+node tools/screenshot-slides.js
 
 # Custom paths:
-node screenshot-slides.js /tmp/my-deck.html /tmp/my-slides
+node tools/screenshot-slides.js /tmp/my-deck.html /tmp/my-slides
 ```
 
 Output: `/tmp/lattice-slides/001.png` … `NNN.png` — real PNGs, viewable with `view_image`.
@@ -105,7 +105,7 @@ If the slide count differs between the two manifests, stop — there is a parsin
 
 1. Build the manifest (§11.3) — confirm slide count matches between marp and lattice
 2. Copy marp PNG output to named files: `for f in /tmp/marp-out.???; do n=$(echo "$f" | grep -o '\.[0-9]*$' | tr -d '.'); cp "$f" "/tmp/marp-slides/${n}.png"; done`
-3. Run lattice.js screenshot: `node screenshot-slides.js /tmp/lattice-out.html /tmp/lattice-slides`
+3. Run lattice.js screenshot: `node tools/screenshot-slides.js /tmp/lattice-out.html /tmp/lattice-slides`
 4. Look up the target slide number in the manifest, then compare:
 
 ```text
@@ -149,7 +149,7 @@ After editing `lattice.js` or `lattice.css`:
 
 1. Verify syntax: `node -e "require('./lattice.js')"` — should print usage, not an error
 2. Re-render: `node lattice.js examples/gallery.md lattice.css /tmp/lattice-fixed.pdf indaco`
-3. Re-screenshot: `node screenshot-slides.js /tmp/lattice-fixed.html /tmp/lattice-fixed`
+3. Re-screenshot: `node tools/screenshot-slides.js /tmp/lattice-fixed.html /tmp/lattice-fixed`
 4. Compare **only the affected slides** — look up their numbers in the manifest, do not re-compare all slides
 
 ## 11.7 CSS vs lattice.js — Ground Rules

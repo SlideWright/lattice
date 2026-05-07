@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-// CLI args: node screenshot-slides.js [html-path] [out-dir] [slide-index|all]
+// CLI args: node tools/screenshot-slides.js [html-path] [out-dir] [slide-index|all]
 //   slide-index: 1-based; if provided, screenshots only that slide.
 //   all (default): screenshots every slide.
 const htmlFile = process.argv[2] || '/tmp/lattice-out.html';
