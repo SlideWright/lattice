@@ -2,8 +2,8 @@
 
 > **Not canonical.** This is a design-speculation document, written ahead of implementation. The authoring shapes shown here are exploratory — actual shipped behaviour may differ. For ground truth, use:
 >
-> - **`references/templates.md`** — canonical template / layout reference.
-> - **`examples/gallery.md`** — canonical authoring examples that actually render.
+> - **`../references/templates.md`** — canonical template / layout reference.
+> - **`../../examples/gallery.md`** — canonical authoring examples that actually render.
 >
 > When this document and either of those disagree, the gallery and template reference win. Examples in this file may use older shapes (e.g. `— _italic modifier_` patterns) that were superseded during implementation; treat them as historical context, not as patterns to copy.
 
@@ -26,7 +26,7 @@ This document is a tour of where Lattice could go next as an authoring system. I
 
 A Lattice layout, today, is three things at once:
 
-1. **A markdown contract.** The author writes a fixed shape — `## heading`, then `ol > li > strong + p`, etc. Each layout has a single canonical shape (see [templates.md §Layout Inventory](./templates.md)).
+1. **A markdown contract.** The author writes a fixed shape — `## heading`, then `ol > li > strong + p`, etc. Each layout has a single canonical shape (see [templates.md §Layout Inventory](../references/templates.md)).
 2. **A DOM transformation.** For structured layouts, `lattice-emulator.js` rewrites the contract into purpose-built HTML (`.cards-grid-inner > .card`, `.stats-row > .stat-item`). For unstructured layouts, the markdown emits its own HTML directly.
 3. **A visual contract.** CSS targets the resulting DOM and produces the rendered slide.
 

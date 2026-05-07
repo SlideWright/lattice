@@ -131,10 +131,10 @@ lattice/
 │   ├── editorial.md           # prose rules
 │   ├── skill.md               # deck authoring contract (layouts + directives)
 │   ├── notes/                 # durable developer / agent investigation notes
-│   └── references/
-│       ├── design.md, templates.md, pipeline.md,
-│       ├── mermaid.md, audit.md
-│       └── proposals.md       # forward-looking; explicitly non-canonical
+│   │                          # (also: forward-looking design proposals)
+│   └── references/            # canonical references
+│       └── design.md, templates.md, pipeline.md,
+│           mermaid.md, audit.md
 │
 ├── test/
 │   ├── unit/                  # fast (<100 ms); no child processes

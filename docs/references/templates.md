@@ -105,7 +105,7 @@ Modifiers are class flags that compose with any layout. They encode **authorial 
 
 **Cascade rule:** when two modifiers tune the same variable (e.g. `compact loose`), the last one in the source wins. When modifiers tune disjoint properties (e.g. `compact dark`), they compose without conflict.
 
-**Reference:** [proposals.md §2 (modifier catalogue)](./proposals.md) and the appendix matrix at the end of that file enumerate which modifiers attach to which layouts.
+**Reference:** [2025-authoring-proposals.md §2 (modifier catalogue)](../notes/2025-authoring-proposals.md) and the appendix matrix at the end of that file enumerate which modifiers attach to which layouts.
 
 ### Cross-cutting modifiers
 
@@ -248,7 +248,7 @@ Flips the stack direction from vertical (cards as rows) to horizontal (cards as 
 
 Four authoring components introduced to replace the most common `cards-grid` / `compare-prose` hand-rolls in real decks. All four are CSS-only; their markdown contracts are simple list shapes Marp emits natively.
 
-**Reference:** [proposals.md §3.1–3.6](./proposals.md).
+**Reference:** [2025-authoring-proposals.md §3.1–3.6](../notes/2025-authoring-proposals.md).
 
 ### `matrix-2x2` — quadrant grid
 

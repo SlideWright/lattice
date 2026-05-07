@@ -45,3 +45,8 @@ it is load-bearing.
 - [2025-mermaid-theming.md](2025-mermaid-theming.md) — Marp's `:root`
   CSS variable scoping, Mermaid theming contract, CDN-to-local bundle
   migration. Was previously the repo-root `AgentNote.md`.
+- [2025-authoring-proposals.md](2025-authoring-proposals.md) —
+  forward-looking design RFC for the authoring system: component
+  model, modifier catalogue, new layout proposals. Explicitly
+  non-canonical; ground truth lives in `../references/templates.md`
+  and `examples/gallery.md`.
