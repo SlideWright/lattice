@@ -7,7 +7,9 @@ later, it lives here.
 
 ## Convention
 
-- Filename: `YYYY-topic.md` (e.g. `2025-mermaid-theming.md`).
+- Filename: `YYYY-MM-DD-topic.md` (e.g. `2026-04-30-mermaid-theming.md`).
+  Date is when the investigation/note was first authored, not when
+  it was last edited. ISO order keeps `ls` chronological.
 - One root cause or one decision per file. Don't merge unrelated
   investigations.
 - Lead with the symptom, then the root cause, then the fix. Future
@@ -42,10 +44,10 @@ it is load-bearing.
 
 ## Current notes
 
-- [2025-mermaid-theming.md](2025-mermaid-theming.md) — Marp's `:root`
+- [2026-04-30-mermaid-theming.md](2026-04-30-mermaid-theming.md) — Marp's `:root`
   CSS variable scoping, Mermaid theming contract, CDN-to-local bundle
   migration. Was previously the repo-root `AgentNote.md`.
-- [2025-authoring-proposals.md](2025-authoring-proposals.md) —
+- [2026-05-04-authoring-proposals.md](2026-05-04-authoring-proposals.md) —
   forward-looking design RFC for the authoring system: component
   model, modifier catalogue, new layout proposals. Explicitly
   non-canonical; ground truth lives in `../references/templates.md`

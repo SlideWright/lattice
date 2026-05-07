@@ -115,7 +115,7 @@ The local bundle is `node_modules/mermaid/dist/mermaid.min.js` — a ~3 MB UMD b
 | `examples/gallery.md` | CDN → local mermaid |
 | `examples/gallery.html` | Regenerated from gallery.md |
 | `examples/mermaid-gallery.md` | CDN → local mermaid |
-| `docs/notes/2025-mermaid-theming.md` | This file (was `AgentNote.md`) |
+| `docs/notes/2026-04-30-mermaid-theming.md` | This file (was `AgentNote.md`) |
 
 ---
 
