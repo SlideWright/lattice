@@ -84,7 +84,7 @@ function checklistItemStates(markdown) {
       if (!textChild) { pendingItemOpen = null; continue; }
       const m = /^\[([x~ ])\]\s*/.exec(textChild.content);
       if (!m) { pendingItemOpen = null; continue; }
-      const stateClass = m[1] === "x" ? "state pass" : m[1] === "~" ? "state warn" : "state pending";
+      const stateClass = m[1] === "x" ? "state pass" : m[1] === "~" ? "state warn" : "state fail";
       // Append to existing class on the <li> (Marpit/markdown-it: attrJoin).
       const cur = pendingItemOpen.attrGet("class");
       pendingItemOpen.attrSet("class", cur ? `${cur} ${stateClass}` : stateClass);

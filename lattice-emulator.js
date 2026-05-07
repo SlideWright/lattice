@@ -936,7 +936,7 @@ function parseSlide(raw, index) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
       const m = /^\s*\[([x~ ])\]\s*/.exec(inner);
       if (!m) return full;
-      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'pending';
+      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
       return `<li class="state ${stateClass}">${inner.slice(m[0].length)}</li>`;
     });
   }

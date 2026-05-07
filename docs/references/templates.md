@@ -92,6 +92,58 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | Visual         | T15 Image Full, T24 Image (text + bg)                   | `image-full` `image` (`image left` variant)         |
 | Code           | T25 Code, T26 Code Compare                              | `code` `compare-code`                          |
 
+## State Convention
+
+Two layouts — `verdict-grid` (T21) and `checklist` (T28) — accept **state markers** as a leading prefix on each list item. The marker syntax, color tokens, glyphs, and class names are unified across both so authors only learn one vocabulary.
+
+**Authoring syntax:** `[x]`, `[~]`, or `[ ]` immediately after the bullet, followed by a space, followed by the label.
+
+```markdown
+- [x] Done — succeeded / chosen
+- [~] Partial — caveat / partial success
+- [ ] Todo — not done / rejected
+```
+
+**Canonical mapping:**
+
+| Marker | Class       | Token   | Glyph       | Semantic                         |
+| ------ | ----------- | ------- | ----------- | -------------------------------- |
+| `[x]`  | `state pass` | `--pass` | ✓ (green)   | succeeded, chosen, complete      |
+| `[~]`  | `state warn` | `--warn` | ~ (amber)   | partial, caveat, qualified pass  |
+| `[ ]`  | `state fail` | `--fail` | ✗ on `verdict-grid`, ☐ on `checklist` (red) | not done, rejected, todo |
+
+**Why one convention covers both layouts:**
+
+- `verdict-grid` evaluates options against criteria — every cell got a verdict, so `[ ]` reads as **rejected**.
+- `checklist` reports completion — items either done, partial, or **not yet done**.
+
+In both cases, `[ ]` signals "this did not pass." Red is the right color either way; the difference between "rejected" and "todo" comes from the layout's editorial framing, not from a separate token. This keeps a single mental model: green = good, amber = qualified, red = not.
+
+**Glyphs differ by layout** because each picks the most readable shape for its content density: `verdict-grid` packs many states into a small chip row, so the binary ✗ is clearest; `checklist` gives each row full width, so the empty checkbox ☐ — which matches the markdown source `[ ]` literally — is more legible at body size.
+
+**Theme tokens:**
+
+| Token        | Indaco             | Cuoio                   | Use                                            |
+| ------------ | ------------------ | ----------------------- | ---------------------------------------------- |
+| `--pass`     | brand green deep   | deep green (`#2d6a3f`)  | success colour, foreground glyph + left bar    |
+| `--warn`     | dark amber-brown   | warm amber (`#925c00`)  | partial / caveat colour                        |
+| `--fail`     | deep red           | deep red (`#9b1c1c`)    | failed / rejected / todo colour                |
+| `--pass-bg`  | 10% pass on bg     | 10% pass on bg          | row tint when authored as `[x]`                |
+| `--warn-bg`  | 10% warn on bg     | 10% warn on bg          | row tint when authored as `[~]`                |
+| `--fail-bg`  | 10% fail on bg     | 10% fail on bg          | row tint when authored as `[ ]`                |
+
+All foreground tokens meet WCAG AA on body backgrounds. The `*-bg` variants are 10% colour-mix fills so the tint is visible without competing with body text.
+
+**Implementation contract:** the marker is processed in three channels and they must stay in lockstep:
+
+| Channel               | File                                | Function                          |
+| --------------------- | ----------------------------------- | --------------------------------- |
+| Marp build (HTML/PDF) | [marp.config.js](../../marp.config.js) | `verdictGridBadges`, `checklistItemStates` |
+| Emulator (PDF direct) | [lattice-emulator.js](../../lattice-emulator.js) | `cls.includes('verdict-grid')`, `cls.includes('checklist')` |
+| VS Code preview       | [lattice-runtime.js](../../lattice-runtime.js)   | `transformVerdictGridBadges`, `transformChecklistItemStates` |
+
+Both layouts strip the marker and add `class="state pass|warn|fail"` to the carrier element (a `<span class="badge …">` for verdict-grid, the `<li>` itself for checklist). CSS owns all the visual chrome from there.
+
 ## Modifiers
 
 Modifiers are class flags that compose with any layout. They encode **authorial intent** — density, emphasis, orientation — rather than cosmetic switches. Every modifier is opt-in and additive: an existing slide's rendering never changes until an author adds the modifier to its `_class` directive.
@@ -2197,10 +2249,10 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 ```
 
 - Vertical list of state-marked rows. Each item is one line: a state glyph (✓ / ~ / ☐) in the leading column, the label in the body column.
-- States authored as a leading marker on each item:
-  - `[x]` → done (✓, pass colour, soft pass tint, accent-tinted left bar)
-  - `[~]` → partial (~, warn colour, soft warn tint, accent-tinted left bar)
-  - `[ ]` → pending (☐, muted, no tint, transparent left bar)
+- States authored as a leading marker on each item — see [State Convention](#state-convention) for the full mapping:
+  - `[x]` → done (✓, `--pass` green, soft pass tint, pass-coloured left bar)
+  - `[~]` → partial (~, `--warn` amber, soft warn tint, warn-coloured left bar)
+  - `[ ]` → todo (☐, `--fail` red, soft fail tint, fail-coloured left bar)
 - Optional `_em italic_` tail on any item renders as a muted annotation in the same line.
 - Rows space evenly to fill the slide height; standard density holds 5–8 items comfortably.
 
@@ -2221,9 +2273,9 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 - [ ] Crypto-shred runbook hand-off to Platform — _Phase 2_
 ```
 
-**How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[~]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|pending"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
+**How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[~]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|fail"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
 
-**State palette:** Reuses the project's `--pass` / `--warn` tokens and their `*-bg` soft fills; pending rows lean on `--text-muted` only. Both themes (`indaco`, `cuoio`) ship the tokens at WCAG AA on body backgrounds.
+**State palette:** Reuses the `--pass` / `--warn` / `--fail` tokens (and their `*-bg` soft fills) that both themes ship at WCAG AA on body backgrounds. See the [State Convention](#state-convention) section for the canonical mapping shared with `verdict-grid`.
 
 **When to use:** acceptance reviews, retro snapshots, "what shipped vs what slipped" summaries — any slide where the editorial point is *the mix of states*, not the body text behind each row. If items need a sentence of body context, reach for `verdict-grid` or `list-criteria` instead. If items are equal-weight bullets without state, use `tldr` or `list`.
 

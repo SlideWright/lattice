@@ -505,7 +505,7 @@
         if (!firstText) continue;
         const m = /^\[([x~ ])\]\s*/.exec(firstText.nodeValue);
         if (!m) continue;
-        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'pending';
+        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
         firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
         li.classList.add('state', stateClass);
       }

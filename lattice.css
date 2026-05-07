@@ -2450,14 +2450,15 @@ section.checklist > ul > li.state.warn::before,
 section.checklist > ol > li.state.warn::before {
   content:'~'; color:var(--warn);
 }
-section.checklist > ul > li.state.pending,
-section.checklist > ol > li.state.pending {
-  color:var(--text-muted);
-  /* default border-left: var(--border); default background: var(--bg-alt) — both visible. */
+section.checklist > ul > li.state.fail,
+section.checklist > ol > li.state.fail {
+  border-left-color:var(--fail);
+  background:var(--fail-bg, var(--bg-alt));
+  color:var(--text-heading);
 }
-section.checklist > ul > li.state.pending::before,
-section.checklist > ol > li.state.pending::before {
-  content:'☐'; color:var(--text-muted);
+section.checklist > ul > li.state.fail::before,
+section.checklist > ol > li.state.fail::before {
+  content:'☐'; color:var(--fail);
 }
 /* Inline _em_ tail inside an item — soft annotation. Wraps onto a new
  * line within the same row when the body runs long; em sits lighter
