@@ -2147,9 +2147,9 @@ The runtime transforms that into a 2-column glossary table. The author **never w
 
 | Channel | Where | When |
 |---|---|---|
-| `marp-cli` build | [marp.config.js](../marp.config.js) `glossaryListToTable` + `glossaryRange` | parse-time, token-level |
-| LLM-env emulator | [lattice-emulator.js](../lattice-emulator.js) post-processor | render-time, HTML-string |
-| VS Code Marp preview | [lattice-runtime.js](../lattice-runtime.js) MutationObserver | client-side, DOM-level |
+| `marp-cli` build | [marp.config.js](../../marp.config.js) `glossaryListToTable` + `glossaryRange` | parse-time, token-level |
+| LLM-env emulator | [lattice-emulator.js](../../lattice-emulator.js) post-processor | render-time, HTML-string |
+| VS Code Marp preview | [lattice-runtime.js](../../lattice-runtime.js) MutationObserver | client-side, DOM-level |
 
 The runtime path is what makes the live preview work — VS Code's Marp extension does not load project-local Marpit plugins, so the DOM injector is the only channel for the preview, and it must stay in lockstep with the other two.
 
