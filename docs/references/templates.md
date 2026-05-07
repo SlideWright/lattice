@@ -2003,7 +2003,7 @@ Bring whatever you have. A square crop in a half-canvas slot will show small top
 
 **Marp markdown source:**
 
-~~~markdown
+```markdown
 <!-- _class: code -->
 
 `Implementation · Token Pipeline`
@@ -2012,13 +2012,13 @@ Bring whatever you have. A square crop in a half-canvas slot will show small top
 
 `JavaScript · SDK v2 interface`
 
-```javascript
+~~~javascript
 const tokens = await client.tokenize(input, {
   model: "signal-v2",
   format: "compact",
 });
-```
 ~~~
+```
 
 - `` `inline code` `` paragraph (first) = eyebrow
 - `h2` = heading
@@ -2059,7 +2059,7 @@ const tokens = await client.tokenize(input, {
 
 **Marp markdown source:**
 
-~~~markdown
+```markdown
 <!-- _class: compare-code -->
 
 `Before & After · Key Distribution`
@@ -2068,17 +2068,17 @@ const tokens = await client.tokenize(input, {
 
 `Before · File-distributed`
 
-```python
+~~~python
 SECRET_KEY = os.environ["SECRET_KEY"]
 hmac.new(SECRET_KEY, payload)
-```
+~~~
 
 `After · HSM / KMS integrated`
 
-```python
+~~~python
 signature = vault.sign(payload, key_id="prod-hmac-v3")
-```
 ~~~
+```
 
 - `` `inline code` `` paragraph before `h2` = optional eyebrow (spans both columns)
 - `h2` = heading (spans both columns)
