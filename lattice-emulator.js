@@ -314,7 +314,7 @@ const MERMAID_VAR_MAP = {
   quadrantPointTextFill:            { var: 'text-heading' },
   quadrantXAxisTextFill:            { var: 'text-heading' },
   quadrantYAxisTextFill:            { var: 'text-heading' },
-  quadrantInternalBorderStrokeFill: { var: 'mermaid-mid-slate' },
+  quadrantInternalBorderStrokeFill: { var: 'cat-slate' },
   quadrantExternalBorderStrokeFill: { var: 'mermaid-border' },
   quadrantTitleFill:                { var: 'text-heading' },
 
