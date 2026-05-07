@@ -1,6 +1,7 @@
-# AgentNote — Mermaid Theming Fixes
+# 2025 — Mermaid Theming Fixes
 
-> Written by GitHub Copilot after autonomous investigation and fixes across two sessions.
+> Investigation note. Was previously `AgentNote.md` at the repo root;
+> moved here when the docs tree was consolidated.
 
 ---
 
@@ -117,7 +118,7 @@ The local bundle is `node_modules/mermaid/dist/mermaid.min.js` — a ~3 MB UMD b
 | `examples/mermaid-gallery.md` | CDN → local mermaid |
 | `.scratch/tokenization-business.md` | CDN → local mermaid |
 | `.scratch/tokenization-design.md` | CDN → local mermaid |
-| `AgentNote.md` | This file |
+| `docs/notes/2025-mermaid-theming.md` | This file (was `AgentNote.md`) |
 
 ---
 

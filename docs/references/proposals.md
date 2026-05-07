@@ -70,7 +70,7 @@ Layout: list-steps
   Modifiers: phase | stage | rank | milestone | vertical | compact | …
 ```
 
-That block is what a SKILL.md entry, a snippet, and a linter rule all read from. Today it lives implicitly in CSS comments and prose. Making it explicit (Part 4 below) is what turns Lattice from "a theme with conventions" into "a slide component library."
+That block is what a `docs/skill.md` entry, a snippet, and a linter rule all read from. Today it lives implicitly in CSS comments and prose. Making it explicit (Part 4 below) is what turns Lattice from "a theme with conventions" into "a slide component library."
 
 ---
 
@@ -561,7 +561,7 @@ Every layout should be addressable from a single machine-readable source. I prop
 
 This file becomes the source for:
 
-- The SKILL.md authoring tables (auto-rendered).
+- The `docs/skill.md` authoring tables (auto-rendered).
 - VS Code snippet generation (one snippet per layout × per common modifier set).
 - A linter (see §4.3).
 - The gallery (auto-generates a slide for every modifier combination).
@@ -577,7 +577,7 @@ A small CLI (`node lattice-lint <file.md>`) that reads the manifest and validate
 - Every `_class` directive references a known layout.
 - Every modifier on a class is declared compatible with that layout.
 - Structured layouts have the markdown shape their contract requires (e.g. `cards-stack` requires a flat `ul` of `**Title.**`-style items).
-- Heading sentences end with a period (per [EDITORIAL.md](../EDITORIAL.md)).
+- Heading sentences end with a period (per [editorial.md](../editorial.md)).
 - Eyebrow paragraphs use the inline-code form, not the deprecated `### Eyebrow` form.
 
 This is cheap to build because the rules already exist; they are scattered across CSS comments and prose docs.
