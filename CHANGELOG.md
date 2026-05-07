@@ -11,6 +11,52 @@ in patch versions.
 
 ### Changed
 
+- **Repository reorganization (pre-release).** The project layout was
+  flattened, renamed, and re-tested in eight phases. Because Lattice
+  has not been released into the wild, every change is a clean break
+  with no aliases or compatibility shims.
+
+  - `lattice.js` → `lattice-emulator.js`. The build-time renderer no
+    longer steals the engine's name; `lattice` now refers to the CSS
+    layouts + runtime + theming contract, `lattice-emulator` to the
+    Marp-emulating PDF shim.
+  - Documentation collapsed into `docs/`: `ARCHITECTURE.md`,
+    `THEMING.md`, `EDITORIAL.md`, `SKILL.md`, and `references/` all
+    moved under `docs/`. New `docs/notes/` folder for durable
+    developer/agent investigation notes; the prior repo-root
+    `AgentNote.md` is its first inhabitant.
+  - `screenshot-slides.js` moved to `tools/`. The `.test/` folder of
+    ad-hoc probe scripts (~85 files of historical investigation) was
+    deleted along with stale `examples/*.html` and `examples/*.pptx`
+    artifacts; `examples/*.html` is now gitignored.
+  - Test runner switched from a single `smoke-test.js` to `node:test`
+    with two tiers under `test/`: `unit/` (fast, no child processes —
+    `npm test`) and `integration/` (rebuilds both galleries through
+    both renderers — `npm run test:integration`). Shared plumbing
+    lives under `test/helpers/`; the page-count contract lives in
+    `test/fixtures/expected-page-counts.json`.
+  - Test coverage expanded with `mermaid-var-map.test.js`, which
+    extracts every CSS-var reference from the emulator's
+    `MERMAID_VAR_MAP` and asserts both palettes define each token,
+    plus `marp.gallery.test.js` and `parity.test.js` to assert
+    cross-renderer agreement on slide count.
+  - `@marp-team/marp-cli` promoted from `devDependencies` to
+    `dependencies`. Lattice's runtime/preview path explicitly targets
+    marp-cli output and the integration suite spawns it; there is no
+    "lattice without marp" mode worth supporting.
+
+### Fixed
+
+- **Quadrant chart internal border drift.** The emulator's
+  `MERMAID_VAR_MAP` referenced `--mermaid-mid-slate` for
+  `quadrantInternalBorderStrokeFill`, but no palette defined that
+  token, so Mermaid silently fell back to its default colour. Pointed
+  the entry at `--cat-slate` to match what `lattice-runtime.js`
+  already uses for the same role. Caught by the new
+  `mermaid-var-map.test.js`.
+
+### Earlier (Unreleased)
+
 - **Mermaid runtime: removed source-restoration anti-pattern; SSR-highlighted source
   doubles as the failure-mode UI.** `lattice-runtime.js` previously destroyed the
   `<pre><code>` Marp emitted, replaced it with `<div class="mermaid">`, then on parse

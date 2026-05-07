@@ -39,7 +39,8 @@ cd lattice
 npm install
 ```
 
-Requires Node 18+, Mermaid CLI, and Puppeteer (which downloads a Chromium).
+Requires Node 18+. `npm install` pulls in Marp CLI, the Mermaid CLI,
+and Puppeteer (which downloads a matching Chromium).
 
 ## Render the example galleries
 
@@ -102,27 +103,70 @@ from the palette file. Same theme as the build path; one file to edit.
 
 ```
 lattice/
-├── README.md                  this file
-├── SKILL.md                   deck authoring contract
-├── THEMING.md                 palette + Mermaid theming
-├── EDITORIAL.md               prose rules
-├── ARCHITECTURE.md            engine internals
+├── README.md                  # this file
 ├── CHANGELOG.md
 ├── LICENSE
 ├── package.json
 │
-├── lattice-emulator.js                 renderer (build-time)
-├── lattice-runtime.js         browser script (runtime)
-├── lattice.css                slide layouts (engine, palette-blind)
+├── lattice-emulator.js        # build-time renderer (CLI; emulates marp-cli)
+├── lattice-runtime.js         # browser runtime (preview path, marp-cli path)
+├── lattice.css                # slide layouts; palette-blind
+├── marp.config.js             # Marpit plugins consumed by marp-cli
+│
+├── lib/
+│   └── mermaid-hljs.js        # highlight.js language for mermaid source
 │
 ├── themes/
-│   ├── indaco.css             default palette: cool indigo + Mermaid CSS
-│   └── cuoio.css              warm leather palette
+│   ├── indaco.css             # default palette: cool indigo + Mermaid CSS
+│   └── cuoio.css              # warm leather palette
 │
-└── examples/
-    ├── gallery.md / gallery.pdf
-    └── mermaid-gallery.md / mermaid-gallery.pdf
+├── examples/
+│   ├── gallery.md / gallery.pdf                  # 71-page layout gallery
+│   ├── mermaid-gallery.md / mermaid-gallery.pdf  # 31-page diagram gallery
+│   └── sample-image*.svg
+│
+├── docs/
+│   ├── architecture.md        # engine internals
+│   ├── theming.md             # palette + Mermaid theming
+│   ├── editorial.md           # prose rules
+│   ├── skill.md               # deck authoring contract (layouts + directives)
+│   ├── notes/                 # durable developer / agent investigation notes
+│   └── references/
+│       ├── design.md, templates.md, pipeline.md,
+│       ├── mermaid.md, audit.md
+│       └── proposals.md       # forward-looking; explicitly non-canonical
+│
+├── test/
+│   ├── unit/                  # fast (<100 ms); no child processes
+│   ├── integration/           # spawns emulator + marp-cli; rebuilds galleries
+│   ├── helpers/               # shared palette / pdf / render plumbing
+│   └── fixtures/              # expected-page-counts.json
+│
+└── tools/
+    └── screenshot-slides.js   # dev-only audit utility
 ```
+
+## Testing
+
+Two tiers, both built on Node's `node:test`:
+
+```sh
+npm test                  # unit tier — palette, var-map contract, source parse
+npm run test:integration  # integration tier — rebuilds both galleries through
+                          # lattice-emulator and marp-cli; cross-renderer parity
+npm run test:all          # both tiers
+```
+
+The unit tier finishes in under 100 ms and is the inner loop. The
+integration tier takes ~30 s (mostly the mermaid-gallery rebuild) and
+is what CI runs before merge. Both galleries (`examples/gallery.md`
+and `examples/mermaid-gallery.md`) are the authoritative test
+fixtures; their committed PDFs are the regression baseline. Page
+counts live in [test/fixtures/expected-page-counts.json](test/fixtures/expected-page-counts.json).
+
+`marp-cli` is a runtime dependency, not a dev dependency — the
+integration suite asserts cross-renderer parity, and the browser
+preview path explicitly targets marp-cli output.
 
 ## SlideWright ecosystem
 
