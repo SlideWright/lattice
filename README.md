@@ -26,10 +26,10 @@ context renders identically.
   across every text-bearing surface.
 - **26 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline, big-number, split-panel, verdict-grid, more.
-  Each layout has an authoring contract documented in [SKILL.md](SKILL.md).
+  Each layout has an authoring contract documented in [docs/skill.md](docs/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that
-  ignore `themeVariables`. Documented in [THEMING.md](THEMING.md).
+  ignore `themeVariables`. Documented in [docs/theming.md](docs/theming.md).
 
 ## Install
 
@@ -80,7 +80,7 @@ node lattice-emulator.js deck.md lattice.css out.pdf <palette-name>
 The fourth positional argument names a file in `themes/`. The default is
 `indaco`. To author a new palette, copy `themes/indaco.css`, change its
 `@theme` directive to your name, and edit the tokens. See
-[THEMING.md](THEMING.md) for the variable contract and the per-diagram
+[docs/theming.md](docs/theming.md) for the variable contract and the per-diagram
 Mermaid override surface.
 
 ## Embed in a browser

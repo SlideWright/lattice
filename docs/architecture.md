@@ -168,7 +168,7 @@ A new slide layout is a CSS class in `lattice.css`. The convention:
 the `<!-- _class: foo -->` directive in the markdown maps to a CSS
 class `section.foo`, and that class describes the layout. Layouts
 should be palette-blind — no hex literals, only `var(--token)` color
-references. See [SKILL.md](SKILL.md) for the existing layouts and
+references. See [skill.md](skill.md) for the existing layouts and
 their authoring contracts.
 
 If a layout needs new color tokens (not just rearrangements of

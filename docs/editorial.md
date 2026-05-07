@@ -1,7 +1,7 @@
 # Editorial
 
 The prose rules for writing the words on the slides. These are about
-style and rhythm, not layout. The layouts in [SKILL.md](SKILL.md) tell
+style and rhythm, not layout. The layouts in [skill.md](skill.md) tell
 you where to put text. This file tells you how it should sound.
 
 ## Headers are complete sentences

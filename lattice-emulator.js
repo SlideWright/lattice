@@ -125,7 +125,7 @@ const css = paletteCSS + '\n' + themeCSS;
 //
 // This single-file architecture means a palette author edits one CSS file
 // and gets both slide colors and per-diagram Mermaid overrides at once.
-// See THEMING.md for the per-diagram override surface and parser limits.
+// See docs/theming.md for the per-diagram override surface and parser limits.
 const MERMAID_CSS_SENTINEL = '/* ===== MERMAID THEME CSS ===== */';
 let MERMAID_THEME_CSS = '';
 {

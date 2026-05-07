@@ -120,11 +120,11 @@ Initial public release.
 ### Documentation
 
 - `README.md`: project landing.
-- `SKILL.md`: deck authoring contract — layouts, directives, examples.
-- `THEMING.md`: how to author a palette, including the per-diagram
+- `docs/skill.md`: deck authoring contract — layouts, directives, examples.
+- `docs/theming.md`: how to author a palette, including the per-diagram
   Mermaid theming surface and parser limits.
-- `EDITORIAL.md`: prose rules for writing the words on the slides.
-- `ARCHITECTURE.md`: engine internals.
+- `docs/editorial.md`: prose rules for writing the words on the slides.
+- `docs/architecture.md`: engine internals.
 
 ### Position in SlideWright
 

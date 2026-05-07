@@ -206,7 +206,7 @@ The current overrides cover:
   `.packetTitle` (packet), and the `[class$="TitleText"]` safety net
   (flowchart, class, ER, requirement, gitgraph). Six types render bare
   `<text>` titles with no class (sequence, journey, C4, quadrant,
-  timeline, xy-chart) and remain visible — see references/mermaid.md
+  timeline, xy-chart) and remain visible — see docs/references/mermaid.md
   §5.4 for the full convention and the diagnostic recipe.
 
 ## Mermaid parser limits
