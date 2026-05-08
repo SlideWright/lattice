@@ -80,6 +80,28 @@ Full rendering pipeline (Mermaid, PPTX, image conversion): see [references/pipel
 
 ---
 
+## Dark canvas (quick reference)
+
+Lattice renders dark canvas via the native CSS `color-scheme` cascade —
+no class-list surgery, no per-renderer logic. Same recipe in marp-cli,
+the emulator, and the VS Code preview.
+
+| Goal | Front-matter |
+|---|---|
+| Whole deck dark, simplest | `theme: cuoio-dark` (or `indaco-dark`) |
+| Whole deck dark, any theme | `style: ":root{color-scheme:dark}"` |
+| Follow viewer's OS preference | `style: ":root{color-scheme:light dark}"` |
+| One slide dark on a light deck | `<!-- _class: dark -->` on that slide |
+
+Default is light. Layout classes that always want a dark canvas
+(`section.title`, `section.divider`, `section.closing`) keep their dark
+chrome regardless of the deck's color-scheme.
+
+For the architectural detail (why `light-dark()` + `:where(:root)`),
+see [theming.md § Dark mode](./theming.md#dark-mode).
+
+---
+
 ## Visual testing — pick the right path
 
 Four paths can produce a slide screenshot. They have meaningfully different costs; choose by what's changing and how many slides.

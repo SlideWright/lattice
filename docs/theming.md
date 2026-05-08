@@ -71,6 +71,52 @@ to spot during palette development.
 | `--dark-text-heading`, `--dark-text-body`, `--dark-text-display` | Ink |
 | `--dark-text-label`, `--dark-text-muted` | Chrome |
 
+These tokens are inputs to the surface tokens via `light-dark()` — see
+the [Dark mode](#dark-mode) section below. They also remain available
+directly for any layout (e.g. `section.title`) that wants the dark canvas
+regardless of the deck's color-scheme.
+
+## Dark mode
+
+The dark canvas is driven by the native CSS `color-scheme` cascade plus
+`light-dark()` resolution on the surface tokens. No engine plugins, no
+class-list surgery, no per-renderer logic — the same mechanism works in
+marp-cli, the lattice emulator, and the VS Code Marp preview.
+
+### Authoring paths
+
+There are four ways to get a dark canvas:
+
+| Goal | Front-matter / source |
+|---|---|
+| Whole deck dark, simplest | `theme: cuoio-dark` (or `indaco-dark`) — a 3-line wrapper that does the next path internally. |
+| Whole deck dark, any theme | `style: ":root{color-scheme:dark}"` — Marp's native `style:` directive, one line. |
+| Follow viewer's OS preference | `style: ":root{color-scheme:light dark}"` — `light-dark()` resolves per the viewer's `prefers-color-scheme`. |
+| Single slide on an otherwise-light deck | `<!-- _class: dark -->` on that slide — `section.dark { color-scheme: dark }` flips just that section. |
+
+Default is light. With no directive, `:where(:root) { color-scheme: light }`
+applies at zero specificity, so any author override wins the cascade
+automatically (no `!important` needed).
+
+### How it resolves
+
+Each palette declares surface tokens like
+`--bg: light-dark(<light>, <dark>)`. The browser resolves the function
+at every use site based on the computed `color-scheme` of the element:
+
+- At `:root` scope, the deck-wide author override (`style:` directive or
+  variant theme) sets the scheme; every section inherits.
+- At section scope, `section.dark { color-scheme: dark }` overrides
+  inheritance for that one element and its descendants.
+- Inside Mermaid SVGs, `light-dark()` doesn't propagate cleanly because
+  Mermaid renders the SVG in an isolated context. The lattice emulator's
+  palette parser collapses `light-dark()` to the side that matches the
+  palette's declared color-scheme before passing colors to Mermaid's
+  themeVariables, so dark variants render dark diagrams and light decks
+  render light diagrams. Author-flipped decks via `style:` still need the
+  matching theme variant if they care about diagram color (the variant
+  is the only signal the palette parser sees).
+
 ### highlight.js syntax
 
 | Token | Highlight class |
