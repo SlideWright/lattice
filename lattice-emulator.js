@@ -724,6 +724,10 @@ const fm      = fmMatch ? fmMatch[1] : '';
 const paginateGlobal = /^\s*paginate:\s*true/m.test(fm);
 const globalHeader   = (fm.match(/^\s*header:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
 const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+// Deck-wide class (Marp `class:` directive, applied to every section).
+// Marp distinguishes the deck-wide form (no leading underscore) from the
+// per-slide `_class:` directive. Multiple classes are space-separated.
+const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
 const headingDivider = (() => {
   const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
   return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
@@ -751,15 +755,17 @@ function parseInline(t) {
 
 // ── Slide parser ─────────────────────────────────────────────────────────────
 function parseSlide(raw, index) {
-  // Read per-slide directives
-  let classAttr = '';
+  // Read per-slide directives. Deck-wide `class:` from front matter seeds
+  // the class list; per-slide `<!-- _class: ... -->` appends, matching
+  // Marp's directive-merging behaviour.
+  let classAttr = globalClass;
   let paginate  = paginateGlobal;
   let header    = globalHeader;
   let footer    = globalFooter;
   let bgColor   = '';
 
   const cm = raw.match(/<!--\s*_class:\s*(.*?)\s*-->/);
-  if (cm) classAttr = cm[1].trim();
+  if (cm) classAttr = `${classAttr} ${cm[1].trim()}`.trim();
 
   if (raw.includes('_paginate: false')) paginate = false;
   if (raw.includes('_paginate: true'))  paginate = true;
