@@ -1,4 +1,46 @@
 /**
+ * Marpit plugin: deck-wide `class:` propagation.
+ *
+ * Marpit's native directive spec is "spot replaces global": a slide with
+ * `<!-- _class: foo -->` discards the deck-wide `class:` value entirely,
+ * which makes deck-wide modifiers (e.g. `class: dark` in front matter)
+ * useless on layout-heavy decks where every slide carries a layout
+ * `_class:` directive of its own.
+ *
+ * This plugin overrides that semantic for the deck-wide direction: it
+ * reads the YAML front-matter `class:` line directly from the source,
+ * splits it into tokens, and APPENDS any token that isn't already on
+ * each section. Per-slide `_class:` still wins for tokens it declares
+ * (Marpit set them first); deck-wide tokens are merged in after, so
+ * `class: dark` + `_class: title` becomes `class="title dark"`.
+ *
+ * Mirrored by lattice-emulator.js's front-matter parser so both render
+ * paths produce identical class lists.
+ */
+function deckClassPropagate(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "deck_class_propagate", (state) => {
+    // Read the front-matter block straight from source; the global
+    // `class:` value isn't preserved on tokens once Marpit has applied it.
+    const src = (state.env && (state.env.markdown || state.env.source)) || state.src || "";
+    const fmMatch = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+    if (!fmMatch) return;
+    const cm = fmMatch[1].match(/^\s*class:\s*["']?(.*?)["']?\s*$/m);
+    if (!cm) return;
+    const deckTokens = cm[1].trim().split(/\s+/).filter(Boolean);
+    if (!deckTokens.length) return;
+
+    for (const token of state.tokens) {
+      if (token.type !== "marpit_slide_open") continue;
+      const cur = (token.attrGet("class") || "").split(/\s+/).filter(Boolean);
+      for (const t of deckTokens) {
+        if (!cur.includes(t)) cur.push(t);
+      }
+      token.attrSet("class", cur.join(" "));
+    }
+  });
+}
+
+/**
  * Marpit plugin: numbers each `.split-panel` slide at build time and writes
  * `data-split-panel-n="01"` onto the section. The theme reads it with
  * `content: attr(data-split-panel-n)` — same mechanism Marp uses for native
@@ -320,7 +362,8 @@ module.exports = {
   imageScale: 3,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    marp.use(splitPanelCounter)
+    marp.use(deckClassPropagate)
+        .use(splitPanelCounter)
         .use(verdictGridBadges)
         .use(checklistItemStates)
         .use(slotLabelLift)
@@ -350,6 +393,7 @@ module.exports = {
 // known config keys above and ignores the rest, so attaching this is
 // safe; consumers should treat it as test-internal API.
 module.exports.plugins = {
+  deckClassPropagate,
   splitPanelCounter,
   verdictGridBadges,
   checklistItemStates,

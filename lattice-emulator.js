@@ -755,17 +755,26 @@ function parseInline(t) {
 
 // ── Slide parser ─────────────────────────────────────────────────────────────
 function parseSlide(raw, index) {
-  // Read per-slide directives. Deck-wide `class:` from front matter seeds
-  // the class list; per-slide `<!-- _class: ... -->` appends, matching
-  // Marp's directive-merging behaviour.
-  let classAttr = globalClass;
+  // Read per-slide directives. Deck-wide `class:` from front matter is
+  // APPENDED to the per-slide `_class:` (Lattice extension to Marpit's
+  // native "spot replaces global" rule). Mirrors the deckClassPropagate
+  // Marpit plugin in marp.config.js so both render paths produce
+  // identical class lists. See plugin docstring for rationale.
+  let classAttr = '';
   let paginate  = paginateGlobal;
   let header    = globalHeader;
   let footer    = globalFooter;
   let bgColor   = '';
 
   const cm = raw.match(/<!--\s*_class:\s*(.*?)\s*-->/);
-  if (cm) classAttr = `${classAttr} ${cm[1].trim()}`.trim();
+  if (cm) classAttr = cm[1].trim();
+  if (globalClass) {
+    const cur = classAttr.split(/\s+/).filter(Boolean);
+    for (const t of globalClass.split(/\s+/).filter(Boolean)) {
+      if (!cur.includes(t)) cur.push(t);
+    }
+    classAttr = cur.join(' ');
+  }
 
   if (raw.includes('_paginate: false')) paginate = false;
   if (raw.includes('_paginate: true'))  paginate = true;

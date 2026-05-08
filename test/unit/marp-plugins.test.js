@@ -25,6 +25,80 @@ function makeMarp(plugin) {
   return m;
 }
 
+// ── deckClassPropagate ─────────────────────────────────────────────────
+
+test('deckClassPropagate: deck-wide `class:` is appended to every section, even those with `_class:`', () => {
+  const m = makeMarp(plugins.deckClassPropagate);
+  const md = [
+    '---',
+    'class: dark',
+    '---',
+    '',
+    '# Slide 1',
+    '',
+    '---',
+    '',
+    '<!-- _class: title -->',
+    '',
+    '# Slide 2',
+    '',
+    '---',
+    '',
+    '<!-- _class: cards-grid compact -->',
+    '',
+    '# Slide 3',
+  ].join('\n');
+  const { html } = m.render(md);
+  const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(m => m[1].split(/\s+/).filter(Boolean));
+  assert.equal(sections.length, 3);
+  for (const cls of sections) {
+    assert.ok(cls.includes('dark'), `missing 'dark' on a section; got [${cls.join(', ')}]`);
+  }
+  // Per-slide layout tokens must survive — append, not replace.
+  assert.ok(sections[1].includes('title'),       `slide 2 lost 'title'; got [${sections[1].join(', ')}]`);
+  assert.ok(sections[2].includes('cards-grid'),  `slide 3 lost 'cards-grid'; got [${sections[2].join(', ')}]`);
+  assert.ok(sections[2].includes('compact'),     `slide 3 lost 'compact'; got [${sections[2].join(', ')}]`);
+});
+
+test('deckClassPropagate: idempotent — a slide that already declares the deck token gets it once, not twice', () => {
+  const m = makeMarp(plugins.deckClassPropagate);
+  const md = [
+    '---', 'class: dark', '---', '',
+    '<!-- _class: list dark -->',
+    '# Already-dark slide',
+  ].join('\n');
+  const { html } = m.render(md);
+  const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+  const darkCount = cls.filter(c => c === 'dark').length;
+  assert.equal(darkCount, 1, `'dark' should appear exactly once; got [${cls.join(', ')}]`);
+});
+
+test('deckClassPropagate: no-op when front matter has no `class:` directive', () => {
+  const m = makeMarp(plugins.deckClassPropagate);
+  const md = [
+    '---', 'theme: indaco', '---', '',
+    '<!-- _class: title -->',
+    '# Title',
+  ].join('\n');
+  const { html } = m.render(md);
+  const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+  assert.deepEqual(cls, ['title'], `expected only 'title'; got [${cls.join(', ')}]`);
+});
+
+test('deckClassPropagate: handles space-separated multi-token deck class', () => {
+  const m = makeMarp(plugins.deckClassPropagate);
+  const md = [
+    '---', 'class: dark numbered', '---', '',
+    '<!-- _class: cards-grid -->',
+    '# Card slide',
+  ].join('\n');
+  const { html } = m.render(md);
+  const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+  assert.ok(cls.includes('dark'));
+  assert.ok(cls.includes('numbered'));
+  assert.ok(cls.includes('cards-grid'));
+});
+
 // ── verdictGridBadges ──────────────────────────────────────────────────
 
 test('verdictGridBadges: [x] / [-] / [ ] markers become badge spans', () => {
