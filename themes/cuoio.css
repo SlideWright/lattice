@@ -1,70 +1,155 @@
 /* @theme cuoio
  * @size 16:9 1280px 720px
  *
-/* Palette · Cuoio
- * Warm cream + leather. Variant theme: extends lattice (layouts + tokens)
- * and overrides palette tokens. Tokens not redefined here fall through to
- * lattice's defaults — useful during palette development to see what's
- * still inherited.
+/* Lattice · Cuoio palette
+ * ────────────────────────────────────────────────────────────────────────
+ * Warm cream + leather. Counterpart to the cool indaco default — same
+ * design contract, warm earth pigments instead of cool indigo. Pale
+ * parchment surfaces with saturated leather/saddle accents and dark
+ * espresso ink. Saturated red is reserved for alarm states (gantt
+ * critical, error fills) — every routine surface stays in the warm
+ * earth band so the deck reads as ink-on-vellum.
+ *
+ * This file is a sibling palette to indaco.css; both implement the same
+ * token contract so layouts in lattice.css stay palette-blind.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text color (#1e1a15, dark espresso) on every light surface.
+ *      No auto-inversion logic is relied upon; every text variable below
+ *      is set explicitly.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)   — primary / secondary / pie tints, used
+ *                              directly by flowchart, sequence, class,
+ *                              state, ER, quadrant, and most layouts.
+ *                              Cream/parchment family (#F3EDE4 → #FAF7F2).
+ *        Mid-tone band      — categorical pigments (--cat-*) used as
+ *                              foreground marks on the cream surface
+ *                              (radar curves, kpi accents, status dots).
+ *                              Earth pigment family at L≈30-45.
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Deep taupe #8B7E6D reads on every cream fill.
+ *        b. Alarm signal. Saturated red #9b1c1c only on critBkgColor
+ *           and errorBkgColor — never on routine fills.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on (bg, bg-alt, accent-soft). Decorative
+ *      tokens (--text-muted, borders, hairlines, spectrum gradient) are
+ *      WCAG-exempt per design.
+ *
+ * Palette divergence from indaco
+ * ──────────────────────────────
+ * Indaco's --cat-* are L≈60 mid-tones tuned for Mermaid kanban's lighten
+ * step (L≈70 emitted, light enough for dark text on top). Cuoio's --cat-*
+ * are L≈30-45 dark earth pigments because the warm brand reads as
+ * "ink on vellum" — categorical fills want saturation, not pastels. The
+ * Mermaid kanban / mindmap overrides in this file route fills through
+ * --mermaid-pie-* (pale tints) instead of --cat-*, so the two contracts
+ * coexist without conflict.
+ *
+ * Mermaid theme extension
+ * ───────────────────────
+ * Per-diagram Mermaid CSS overrides live below the sentinel comment.
+ * Lattice's renderer extracts both the :root tokens and the additional
+ * CSS rules from this single palette file at build time. See indaco.css
+ * for the per-diagram rationale (rules here mirror that file's coverage
+ * with cuoio palette tokens).
  */
 
 @import 'lattice';
 
 :root {
-  /* Raw palette */
-  --bg: #faf7f2;
-  --bg-alt: #f3ede4;
-  --bg-dark: #1e1a15;
-  --border: #e0d8cc;
-  --text-display: #faf7f2;
-  --text-heading: #1e1a15;
-  --text-body: #6b5d4f;
-  --text-muted: #a69882;
-  --text-label: #7a6b59;
-  --accent: #8b6914;
-  --accent-soft: #f5efe0;
-  --pass: #2d6a3f;
-  --fail: #9b1c1c;
-  --warn: #925c00;
-  --bg-warm-mid: #3a2e20;
-  --bg-warm-light: #5b4a30;
-  --code-text: #c4b8a8;
+  /* ── Cuoio brand axis (single source of truth for brand color) ─────── */
+  --brand-leather-deep:  #1E1A15;  /* dark espresso — bg-dark            */
+  --brand-leather-mid:   #5B4A30;  /* mid leather — divider panels       */
+  --brand-leather:       #7A5A10;  /* saddle gold — accent, 5.96:1 on bg */
+  --brand-gold-bright:   #C8A040;  /* decorative spectrum endpoint        */
+  --brand-green-deep:    #2D6A3F;  /* pass signal — 6.06:1 on bg AA      */
 
-  /* Derived tints */
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       #FAF7F2;          /* canvas — warm parchment                */
+  --bg-alt:   #F3EDE4;           /* card fill — deeper cream              */
+  --bg-dark:  var(--brand-leather-deep); /* dark panels / title / divider */
+  --border:   #E0D8CC;           /* hairline rule — decorative            */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FAF7F2;      /* on dark surfaces — 16.19:1 on bg-dark  */
+  --text-heading: var(--brand-leather-deep); /* espresso — 16.19:1 on bg  */
+  --text-body:    #6B5D4F;      /* warm umber — 5.95:1 on bg AA           */
+  --text-label:   #6F604F;      /* deeper umber for labels — 5.68:1 on bg */
+  --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE        */
+
+  /* ── Brand accent ─────────────────────────────────────────────────── */
+  --accent:      var(--brand-leather); /* saddle — 5.96:1 on bg AA        */
+  --accent-soft: #F5EFE0;       /* pale gold panel — accent reads 5.55:1  */
+
+  /* ── Semantic signals ─────────────────────────────────────────────── */
+  --pass: var(--brand-green-deep); /* 6.06:1 on bg AA */
+  --fail: #9B1C1C;               /* 7.63:1 on bg AAA */
+  --warn: #925C00;               /* 5.24:1 on bg AA  */
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
-  --on-dark-primary: color-mix(in srgb, white 90%, transparent);
-  --on-dark-secondary: color-mix(in srgb, white 65%, transparent);
-  --on-dark-ghost: color-mix(in srgb, white 30%, transparent);
-  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
-  --overlay-dark: color-mix(in srgb, var(--bg-dark) 82%, transparent);
 
-  /* Spectrum bar (composed of palette hues) */
+  /* ── Dark-panel ramp ──────────────────────────────────────────────── */
+  --bg-warm-mid:   #3A2E20;     /* divider panels (deep) — decorative     */
+  --bg-warm-light: var(--brand-leather-mid); /* accent panels (lighter)   */
+  --code-text:     #C4B8A8;     /* code text on dark — 8.87:1 on bg-dark  */
+
+  /* ── Spectrum ribbon — earth pigment cycle ────────────────────────── */
+  /* Decorative only (code block bottom border, dark canvas top hairline);
+   * not derived from the brand axis so the warm spectrum reads against
+   * dark surfaces without losing chromatic separation. */
   --spectrum: linear-gradient(
     90deg,
-    #5b86b8,
-    #7b72c0,
-    #a8628a,
-    #c45d5d,
-    #d08c42,
-    #b8a032
+    #5B86B8,
+    #7B72C0,
+    #A8628A,
+    #C45D5D,
+    #D08C42,
+    #B8A032
   );
   --spectrum-vertical: linear-gradient(
     180deg,
-    #5b86b8,
-    #7b72c0,
-    #a8628a,
-    #c45d5d,
-    #d08c42,
-    #b8a032
+    #5B86B8,
+    #7B72C0,
+    #A8628A,
+    #C45D5D,
+    #D08C42,
+    #B8A032
   );
+
+  /* ── Derived on-dark tints ────────────────────────────────────────── */
+  --on-dark-primary:   color-mix(in srgb, white 90%, transparent);
+  --on-dark-secondary: color-mix(in srgb, white 65%, transparent);
+  --on-dark-ghost:     color-mix(in srgb, white 30%, transparent);
+  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+  --overlay-dark:      color-mix(in srgb, var(--bg-dark) 82%, transparent);
 
   /* Marp chrome mappings */
   --marp-slide-pagination-color:     var(--text-muted);
   --marp-slide-pagination-font-size: var(--fs-label);
   --marp-slide-header-color: var(--text-muted);
   --marp-slide-footer-color: var(--text-muted);
+}
+
+/* ── Dark-variant tokens ───────────────────────────────────────────────
+ * Used by section.dark in lattice.css to reskin the slide canvas
+ * for cover/divider/closing layouts that need a dark canvas. The slide
+ * rule remaps the main tokens to these dark values so the same layout
+ * structure works on either canvas. All ratios verified against
+ * --dark-bg as the active surface. */
+:root {
+  --dark-bg:           #15110D;  /* deeper than bg-dark — canvas dark     */
+  --dark-bg-alt:       #1E1A15;  /* same as light bg-dark — card on dark  */
+  --dark-border:       #3A2E20;
+  --dark-text-heading: #FAF7F2;  /* 17.58:1 on dark-bg AAA                */
+  --dark-text-body:    #D6C4A8;  /* warm tan — 11.02:1 on dark-bg AAA     */
+  --dark-text-muted:   #A69882;
+  --dark-text-label:   #C4B8A8;  /* pale tan — 9.63:1 on dark-bg AAA      */
+  --dark-text-display: #FAF7F2;
 }
 
 /* ── highlight.js syntax tokens ────────────────────────────────────────
@@ -172,17 +257,22 @@ section .hljs-strong { font-weight:700; }
   --mermaid-border: #8B7E6D;  /* deep taupe — reads on every pale fill */
   --mermaid-line:   #6B5D4F;  /* warm brown ink — edges and arrows */
 
-  /* Mid-tone categorical palette — 8 earth pigments.
-   * Brand-level vars; the source of truth for any layout that needs
-   * categorical colour (actor pills, kanban dots, mermaid cScale, etc). */
-  --cat-blue:    #3E5C6B;  /* petrol */
-  --cat-green:   #6E7A3A;  /* moss */
-  --cat-purple:  #4F4770;  /* iris */
-  --cat-orange:  #8B6914;  /* gold */
-  --cat-teal:    #3E7A6B;  /* dark teal */
-  --cat-rose:    #76394C;  /* rose */
-  --cat-slate:   #7A6B59;  /* taupe */
-  --cat-mauve:   #6E4558;  /* deeper rose */
+  /* Dark-pigment categorical palette — 8 earth pigments. Brand-level vars,
+   * source of truth for any layout that needs categorical colour. Unlike
+   * indaco's L≈60 mid-tones (kanban-lighten compatible), cuoio's --cat-*
+   * are L≈30-45 dark pigments used as foreground marks ON the cream
+   * surface (radar curves, kpi accents, status dots). Every value clears
+   * WCAG AA (≥4.5:1) on --bg #FAF7F2 so direct-on-cream usage is safe.
+   * Mermaid kanban / mindmap fills route through --mermaid-pie-* (pale
+   * tints) instead of --cat-*, so the cScale lighten step is bypassed. */
+  --cat-blue:    #3E5C6B;  /* petrol — 6.67:1 on bg AA */
+  --cat-green:   #5D6A2C;  /* moss   — 5.51:1 on bg AA */
+  --cat-purple:  #4F4770;  /* iris   — 7.96:1 on bg AAA */
+  --cat-orange:  var(--brand-leather); /* saddle gold — 5.96:1 on bg AA */
+  --cat-teal:    #356D5E;  /* deep teal — 5.61:1 on bg AA */
+  --cat-rose:    #76394C;  /* rose   — 7.99:1 on bg AAA */
+  --cat-slate:   #7A6B59;  /* taupe  — 4.82:1 on bg AA */
+  --cat-mauve:   #6E4558;  /* deeper rose — 7.40:1 on bg AAA */
 
   /* Pie cycle extension (slots 7-12, distinct warm tints) */
   --mermaid-pie-yellow:  #F5EDE0;  /* pale gold wash */
@@ -201,23 +291,27 @@ section .hljs-strong { font-weight:700; }
   --mermaid-quadrant-3-text: #1E1A15;
   --mermaid-quadrant-4-text: #1E1A15;
 
-  /* Gantt task-state fills */
-  --mermaid-gantt-active:         #8B6914;  /* gold task bars */
-  --mermaid-gantt-active-border:  #6B5D4F;  /* warm brown ink */
-  --mermaid-gantt-done:           #E0D8CC;  /* secondary cream */
-  --mermaid-gantt-done-border:    #A69882;  /* muted taupe */
-  --mermaid-gantt-critical:       #9b1c1c;  /* --fail */
+  /* Gantt task-state fills. taskBkg uses --bg-alt from main palette;
+   * the rest are Mermaid-specific. critBkg keeps saturated red as the
+   * deck's only alarm signal. */
+  --mermaid-gantt-active:         var(--brand-leather); /* saddle bars     */
+  --mermaid-gantt-active-border:  #6B5D4F;  /* warm brown ink              */
+  --mermaid-gantt-done:           #E0D8CC;  /* secondary cream             */
+  --mermaid-gantt-done-border:    #A69882;  /* muted taupe                 */
+  --mermaid-gantt-critical:       var(--fail);
   --mermaid-gantt-critical-border:#7A1212;
-  --mermaid-gantt-today:          #8B6914;  /* gold today-line */
+  --mermaid-gantt-today:          var(--brand-leather); /* saddle today-line */
   --mermaid-gantt-grid:           #E0D8CC;
 
-  /* Notes — warm parchment tint */
+  /* Note (sequence diagram) — warm parchment tint with saddle border, the
+   * one accent-bordered surface in the Mermaid layer. Signals "aside". */
   --mermaid-note-bg:     #F5EFE0;
-  --mermaid-note-border: #8B6914;  /* gold */
+  --mermaid-note-border: var(--brand-leather);
 
-  /* Error state */
-  --mermaid-error-bg:    #9b1c1c;
-  --mermaid-error-text:  #FAF7F2;  /* canvas cream */
+  /* Error state — saturated red, paired with cream text. The deck's
+   * one alarm color, used by errorBkgColor across all diagrams. */
+  --mermaid-error-bg:    var(--fail);
+  --mermaid-error-text:  var(--bg);
 }
 
 /* ════════════════════════════════════════════════════════════════════════
