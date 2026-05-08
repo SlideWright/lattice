@@ -110,9 +110,14 @@
   --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
   --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE                */
 
-  /* ── Brand accent ─────────────────────────────────────────────────── */
-  --accent:      var(--brand-leather); /* saddle — 5.96:1 on bg AA        */
-  --accent-soft: #F5EFE0;       /* pale gold panel — accent reads 5.55:1  */
+  /* ── Brand accent ──────────────────────────────────────────────────────
+   * The accent is text-bearing on multiple surfaces (inline code chips,
+   * eyebrows, link colour, card headings), so it follows light-dark()
+   * too. Light pair: saddle gold on cream — 5.96:1 on bg, 5.55:1 on
+   * accent-soft. Dark pair: bright gold on dark-bg-alt — 7.05:1 on the
+   * inline-code surface, 5.38:1 on accent-soft (mid-leather panel). */
+  --accent:      light-dark(var(--brand-leather), var(--brand-gold-bright));
+  --accent-soft: light-dark(#F5EFE0, var(--bg-warm-mid));
 
   /* ── Semantic signals ─────────────────────────────────────────────── */
   --pass: var(--brand-green-deep); /* 6.06:1 on bg AA */
