@@ -240,7 +240,7 @@ file but not in the rendered SVG), check for these two patterns first.
    the original ones.
 5. Register the palette in `.vscode/settings.json` under
    `markdown.marp.themes` so the Marp VS Code extension picks it up.
-6. Build a deck: `node lattice-emulator.js deck.md lattice.css out.pdf <name>`.
+6. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
 7. Re-render `examples/mermaid-gallery.md` with your palette to verify
    every diagram type renders correctly.
 

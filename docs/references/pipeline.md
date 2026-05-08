@@ -118,7 +118,9 @@ const sharp = require('/home/claude/.npm-global/lib/node_modules/sharp');
 const path = require('path');
 
 async function convert(name) {
-  await sharp(path.join('/home/claude/diagrams', `${name}.svg`), { density: 200 })
+  // density:300 rasterizes the SVG at 300 DPI before PNG encode — print-quality
+  // for PPTX embedding. The SVG itself is vector; this only affects the PNG.
+  await sharp(path.join('/home/claude/diagrams', `${name}.svg`), { density: 300 })
     .png()
     .toFile(path.join('/home/claude/diagrams', `${name}.png`));
 }
@@ -237,7 +239,10 @@ const { chromium } = require('playwright');
 
 ```bash
 mkdir -p /home/claude/slides
-pdftoppm -jpeg -r 200 /home/claude/deck.pdf /home/claude/slides/slide
+# -r 300 = 300 DPI, print-quality. For a 1280×720 slide that's roughly
+# 4000×2250 px — sharp on retina displays and projection. Use -png if
+# you need lossless (larger files) instead of JPEG.
+pdftoppm -jpeg -r 300 /home/claude/deck.pdf /home/claude/slides/slide
 ls /home/claude/slides/slide-*.jpg
 ```
 

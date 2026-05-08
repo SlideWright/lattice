@@ -1,12 +1,12 @@
 # Lattice
 
-A Marp-based slide deck system for boardroom-quality PDFs from Markdown.
+A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
 
 Lattice produces decks where every slide is a deliberate layout — title,
 diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
-themed through a single CSS palette and rendered to PDF with no manual
-formatting work. Mermaid diagrams render with the same theme. Decks read
-as ink-on-paper and pass WCAG AA throughout.
+themed through a single CSS palette and rendered to your delivery format
+with no manual formatting work. Mermaid diagrams render with the same
+theme. Decks read as ink-on-paper and pass WCAG AA throughout.
 
 Lattice is the engine layer of [SlideWright](https://github.com/slidewright) —
 a project for building deck-quality documents with discipline. The same
@@ -16,9 +16,11 @@ context renders identically.
 
 ## What you get
 
-- **A renderer.** `node lattice-emulator.js deck.md lattice.css out.pdf` produces
-  a paginated PDF. Mermaid diagrams pre-render as inline SVG. Code blocks
-  syntax-highlight. Slides are 1280×720.
+- **A renderer.** Two paths from the same source: `marp-cli` (preferred —
+  emits PDF, HTML, PPTX, or PNG sets) and `lattice-emulator.js` (for
+  sandboxed/no-network builds — emits PDF plus an HTML sidecar). Mermaid
+  diagrams pre-render as inline SVG. Code blocks syntax-highlight. Slides
+  are 1280×720.
 - **Two palettes.** `indaco` (cool indigo, default) and `cuoio` (warm
   leather). Authors pick one in front matter (`theme: indaco` or
   `theme: cuoio`). Both supply pale fills, saturated brand borders, and
@@ -45,14 +47,39 @@ and Puppeteer (which downloads a matching Chromium).
 ## Render the example galleries
 
 ```sh
-node lattice-emulator.js examples/gallery.md lattice.css examples/gallery.pdf
-node lattice-emulator.js examples/mermaid-gallery.md lattice.css examples/mermaid-gallery.pdf
+node lattice-emulator.js examples/gallery.md examples/gallery.pdf
+node lattice-emulator.js examples/mermaid-gallery.md examples/mermaid-gallery.pdf
 ```
 
 The two galleries are committed to `examples/` as ground-truth fixtures
 for what the renderer produces. Re-rendering them after an engine or
 palette change should produce visually equivalent output; they're the
 regression check for the project.
+
+For other delivery formats from the same source, run marp-cli from the
+repo root — [marp.config.js](marp.config.js) registers both palettes and
+sets the image scale; the deck's `theme:` front matter selects which
+palette to use:
+
+```sh
+npx @marp-team/marp-cli deck.md --pdf --output deck.pdf
+# or --html, --pptx, --images png
+```
+
+The marp config sets `--image-scale 3`, so PNG output rasterizes at 3×
+the slide dimensions (3840×2160 from 1280×720) — sharp on retina
+displays and projectors. PDF and HTML are vector throughout (text,
+SVG-rendered Mermaid, code highlighting); image scale only affects the
+PNG path. From outside the repo root, pass both palettes explicitly:
+
+```sh
+npx @marp-team/marp-cli deck.md \
+  --theme-set themes/indaco.css themes/cuoio.css lattice.css \
+  --image-scale 3 --pdf --output deck.pdf
+```
+
+The full pipeline (Mermaid pre-rendering, image conversion, PPTX
+assembly) lives in [docs/references/pipeline.md](docs/references/pipeline.md).
 
 ## Use a different palette
 
@@ -75,10 +102,10 @@ theme: cuoio    # warm leather
 For CLI builds, the active palette can also be overridden positionally:
 
 ```sh
-node lattice-emulator.js deck.md lattice.css out.pdf <palette-name>
+node lattice-emulator.js deck.md out.pdf <palette-name>
 ```
 
-The fourth positional argument names a file in `themes/`. The default is
+The third positional argument names a file in `themes/`. The default is
 `indaco`. To author a new palette, copy `themes/indaco.css`, change its
 `@theme` directive to your name, and edit the tokens. See
 [docs/theming.md](docs/theming.md) for the variable contract and the per-diagram
