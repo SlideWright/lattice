@@ -42,8 +42,8 @@ function verdictGridBadges(markdown) {
       if (token.type !== "inline" || listDepth < 2 || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
       if (!/^\[/.test(text)) continue; // body text item — skip
-      const badgeClass = text.startsWith("[x]") ? "badge pass" : text.startsWith("[~]") ? "badge warn" : "badge fail";
-      const label = text.replace(/^\[[x~\s]\]\s*/, "");
+      const badgeClass = text.startsWith("[x]") ? "badge pass" : text.startsWith("[-]") ? "badge warn" : "badge fail";
+      const label = text.replace(/^\[[x\-\s]\]\s*/, "");
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
       htmlToken.content = `<span class="${badgeClass}">${label}</span>`;
       token.children = [htmlToken];
@@ -53,12 +53,12 @@ function verdictGridBadges(markdown) {
 
 /**
  * Marpit plugin: on a `checklist` slide, transforms each top-level list item
- * whose text begins with `[x]`, `[~]`, or `[ ]` into:
+ * whose text begins with `[x]`, `[-]`, or `[ ]` into:
  *
  *   <li class="state pass|warn|pending">label</li>
  *
  * The marker is stripped from the rendered text; CSS draws the state glyph
- * (✓ / ~ / ☐) as a `::before` pseudo. Trailing `_italic_` annotations are
+ * (✓ / – / ☐) as a `::before` pseudo. Trailing `_italic_` annotations are
  * preserved untouched. Items without a marker pass through unchanged.
  */
 function checklistItemStates(markdown) {
@@ -82,9 +82,9 @@ function checklistItemStates(markdown) {
       // Find the first text child and inspect its leading marker.
       const textChild = token.children.find((c) => c.type === "text");
       if (!textChild) { pendingItemOpen = null; continue; }
-      const m = /^\[([x~ ])\]\s*/.exec(textChild.content);
+      const m = /^\[([x\- ])\]\s*/.exec(textChild.content);
       if (!m) { pendingItemOpen = null; continue; }
-      const stateClass = m[1] === "x" ? "state pass" : m[1] === "~" ? "state warn" : "state fail";
+      const stateClass = m[1] === "x" ? "state pass" : m[1] === "-" ? "state warn" : "state fail";
       // Append to existing class on the <li> (Marpit/markdown-it: attrJoin).
       const cur = pendingItemOpen.attrGet("class");
       pendingItemOpen.attrSet("class", cur ? `${cur} ${stateClass}` : stateClass);
@@ -92,6 +92,46 @@ function checklistItemStates(markdown) {
       // CSS handles the trailing-`code` pill (universal pill convention,
       // shared with cards-grid, cards-side, actors). No token surgery.
       pendingItemOpen = null;
+    }
+  });
+}
+
+/**
+ * Marpit plugin: on `compare-prose`, `before-after`, and `decision` slides,
+ * wraps the lead inline content of each top-level <li> in <strong> so the
+ * labeled corner-tag CSS (`> strong:first-child`) fires without authors
+ * writing `**Label**` in source. Mirrors the same lift in
+ * lattice-emulator.js, so Marp CLI build, Marp VS Code preview, and the
+ * emulator pipeline all produce the same DOM.
+ *
+ * Idempotent: skips items whose first inline child is already `strong_open`.
+ */
+function slotLabelLift(markdown) {
+  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision)\b/;
+  markdown.core.ruler.after("marpit_slide_containers", "slot_label_lift", (state) => {
+    let active = false;
+    let listDepth = 0;
+    let pendingLi = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        active = SLOT_LAYOUTS.test(token.attrGet("class") || "");
+        listDepth = 0;
+        pendingLi = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { active = false; continue; }
+      if (!active) continue;
+      if (token.type === "bullet_list_open" || token.type === "ordered_list_open") { listDepth++; continue; }
+      if (token.type === "bullet_list_close" || token.type === "ordered_list_close") { listDepth--; continue; }
+      if (token.type === "list_item_open" && listDepth === 1) { pendingLi = true; continue; }
+      if (token.type !== "inline" || !pendingLi || !token.children || !token.children.length) continue;
+      pendingLi = false;
+      // Idempotent: leave existing `**Label**` lead alone.
+      if (token.children[0].type === "strong_open") continue;
+      const Ctor = token.children[0].constructor;
+      const open = new Ctor("strong_open", "strong", 1);
+      const close = new Ctor("strong_close", "strong", -1);
+      token.children = [open, ...token.children, close];
     }
   });
 }
@@ -278,6 +318,18 @@ module.exports = {
   imageScale: 3,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    return marp.use(splitPanelCounter).use(verdictGridBadges).use(checklistItemStates).use(glossaryListToTable).use(glossaryRange);
+    return marp.use(splitPanelCounter).use(verdictGridBadges).use(checklistItemStates).use(slotLabelLift).use(glossaryListToTable).use(glossaryRange);
   },
+};
+
+// Plugin functions exposed for unit tests. Marp-cli reads only the
+// known config keys above and ignores the rest, so attaching this is
+// safe; consumers should treat it as test-internal API.
+module.exports.plugins = {
+  splitPanelCounter,
+  verdictGridBadges,
+  checklistItemStates,
+  slotLabelLift,
+  glossaryListToTable,
+  glossaryRange,
 };

@@ -10,11 +10,17 @@
  * Mermaid diagrams (```mermaid blocks) are rendered to SVG via mmdc
  * with theme variables mapped to the Lattice palette.
  *
- * Usage: node lattice-emulator.js <source.md> <theme.css> <output.pdf>
+ * Usage:
+ *   node lattice-emulator.js <source.md> <output.pdf> [palette]
+ *   node lattice-emulator.js <source.md> <custom-layouts.css> <output.pdf> [palette]
+ *
+ * The bundled `lattice.css` is auto-resolved when no `.css` arg is given;
+ * pass an explicit `.css` path only to override the layout engine (rare —
+ * for layout-engine development, not deck authoring).
  *
  * NOTE: This script exists only because Marp CLI cannot be installed
  * in this build environment. End users should use Marp CLI directly:
- *   marp deck.md --theme lattice.css --pdf --allow-local-files
+ *   marp deck.md --pdf --allow-local-files   # picks up marp.config.js
  */
 
 const fs            = require('fs');
@@ -41,32 +47,177 @@ let hljs;
   }
 }
 
-const [,, mdFile, cssFile, outFile, paletteArg] = process.argv;
-if (!mdFile || !cssFile || !outFile) {
-  console.error('Usage: node lattice-emulator.js source.md theme.css output.pdf [palette]');
-  console.error('Default palette: indaco');
-  process.exit(1);
+// ── Help / version (handled before positional parsing) ─────────────────────
+function listAvailablePalettes() {
+  try {
+    return fs.readdirSync(path.join(__dirname, 'themes'))
+      .filter(f => f.endsWith('.css'))
+      .map(f => f.replace('.css', ''))
+      .join(', ');
+  } catch (_e) { return '(themes/ not readable)'; }
 }
 
-const md  = fs.readFileSync(mdFile, 'utf8');
+function showHelp() {
+  console.log(`lattice-emulator — Marp-faithful PDF/HTML renderer for Lattice decks
 
-// Load palette CSS (color tokens) and prepend to theme CSS (layouts).
-// Palette tokens must be defined before layouts that reference them via var().
-// Palette resolves in this order:
-//   1. Explicit CLI argument (4th positional arg, e.g. "indaco" or "cuoio").
-//   2. Explicit env var LATTICE_PALETTE.
-//   3. Default: "indaco".
-const paletteName = paletteArg || process.env.LATTICE_PALETTE || 'indaco';
-const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
-let paletteCSS = '';
-if (fs.existsSync(palettePath)) {
-  paletteCSS = fs.readFileSync(palettePath, 'utf8');
+USAGE
+  node lattice-emulator.js <source.md> <output.pdf> [palette]
+  node lattice-emulator.js <source.md> <custom.css> <output.pdf> [palette]
+
+ARGUMENTS
+  source.md          Markdown source (required)
+  output.pdf         Output PDF path (required); HTML sidecar written alongside
+  custom.css         Optional layout CSS override; if omitted, the bundled
+                     lattice.css from the install dir is used
+  palette            Palette name (e.g. 'indaco', 'cuoio')
+
+OPTIONS
+  -h, --help              Show this help and exit
+  -v, --version           Show version and exit
+  -o, --output PATH       Output PDF path (alternative to positional output.pdf)
+  -p, --palette NAME      Palette name (alternative to positional palette)
+  -c, --css PATH          Layout CSS override (alternative to positional custom.css)
+  -q, --quiet             Suppress non-error progress output
+
+  Both --flag value and --flag=value syntax accepted. Positional args still
+  work; named flags take precedence when both are supplied.
+
+PALETTE RESOLUTION (highest precedence first)
+  1. CLI palette positional argument
+  2. LATTICE_PALETTE environment variable
+  3. Deck front-matter \`theme:\` directive
+  4. Default 'indaco'
+
+  Available palettes: ${listAvailablePalettes()}
+
+EXIT CODES
+  0  Success
+  1  Usage error, missing file, palette not found, or render failure
+
+EXAMPLES
+  node lattice-emulator.js deck.md out.pdf
+  node lattice-emulator.js deck.md out.pdf cuoio
+  node lattice-emulator.js deck.md custom-layouts.css out.pdf cuoio
+  LATTICE_PALETTE=cuoio node lattice-emulator.js deck.md out.pdf
+`);
+}
+
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  showHelp();
+  process.exit(0);
+}
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  const pkg = require('./package.json');
+  console.log(`lattice-emulator ${pkg.version}`);
+  process.exit(0);
+}
+
+// Argv parsing — supports both named flags and positional args. The layout
+// CSS positional is optional; the bundled `lattice.css` is auto-resolved
+// when no .css positional is given.
+//
+//   node lattice-emulator.js source.md output.pdf [palette]                 # bundled
+//   node lattice-emulator.js source.md custom.css output.pdf [palette]      # override
+//   node lattice-emulator.js -o out.pdf -p cuoio source.md                  # named flags
+//
+// Named flags take precedence over positional args when both are given.
+function parseArgs(argv) {
+  const flags = { quiet: false };
+  const positional = [];
+  const opts = {
+    '-o': 'output', '--output': 'output',
+    '-p': 'palette', '--palette': 'palette',
+    '-c': 'css', '--css': 'css',
+  };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '-q' || a === '--quiet') { flags.quiet = true; continue; }
+    // --flag=value form
+    const eq = a.match(/^(--?[A-Za-z][\w-]*)=(.*)$/);
+    if (eq && opts[eq[1]]) { flags[opts[eq[1]]] = eq[2]; continue; }
+    // --flag value form
+    if (opts[a]) {
+      const v = argv[i + 1];
+      if (v === undefined || v.startsWith('-')) {
+        console.error(`error: ${a} requires a value`);
+        process.exit(1);
+      }
+      flags[opts[a]] = v;
+      i++;
+      continue;
+    }
+    if (a.startsWith('-')) {
+      console.error(`error: unknown option: ${a}`);
+      console.error('Run with --help to see available options.');
+      process.exit(1);
+    }
+    positional.push(a);
+  }
+  return { flags, positional };
+}
+
+const { flags, positional } = parseArgs(process.argv.slice(2));
+
+// Resolve mdFile + outFile + cssFile + paletteArg from positionals, with
+// named flags overriding. Positional shape:
+//   [source.md] [output.pdf | custom.css] [output.pdf | palette] [palette]
+const mdFile = positional[0];
+let cssFile, outFile, paletteArg;
+if (positional[1] && positional[1].endsWith('.css')) {
+  cssFile    = positional[1];
+  outFile    = positional[2];
+  paletteArg = positional[3];
 } else {
-  console.error(`Palette not found: ${palettePath}`);
-  console.error(`Available palettes: ${fs.readdirSync(path.join(__dirname, 'themes')).filter(f => f.endsWith('.css')).map(f => f.replace('.css', '')).join(', ')}`);
+  cssFile    = path.join(__dirname, 'lattice.css');
+  outFile    = positional[1];
+  paletteArg = positional[2];
+}
+// Named flags override positional resolution.
+if (flags.css)     cssFile    = flags.css;
+if (flags.output)  outFile    = flags.output;
+if (flags.palette) paletteArg = flags.palette;
+const QUIET = flags.quiet;
+
+if (!mdFile || !outFile) {
+  console.error('Usage:');
+  console.error('  node lattice-emulator.js source.md output.pdf [palette]               # bundled lattice.css');
+  console.error('  node lattice-emulator.js source.md custom.css output.pdf [palette]    # explicit layout CSS');
+  console.error('  node lattice-emulator.js [-o out.pdf] [-p palette] [-c css] source.md # named flags');
+  console.error('');
+  console.error('Run with --help for full options. Default palette: indaco.');
   process.exit(1);
 }
-const themeCSS = fs.readFileSync(cssFile, 'utf8');
+
+// Friendly error wrapper for file reads. Bare ENOENT throws produce
+// stack traces that look like crashes; this surfaces them as one-line
+// errors with exit code 1.
+function readFileOrDie(p, label) {
+  try {
+    return fs.readFileSync(p, 'utf8');
+  } catch (e) {
+    if (e.code === 'ENOENT') console.error(`error: ${label} not found: ${p}`);
+    else if (e.code === 'EACCES') console.error(`error: ${label} not readable (permission denied): ${p}`);
+    else console.error(`error: failed to read ${label} (${p}): ${e.message}`);
+    process.exit(1);
+  }
+}
+
+const md = readFileOrDie(mdFile, 'source markdown');
+
+// Resolve palette name from the precedence chain (CLI > env > front
+// matter > default). Logic lives in lib/resolve-palette.js so it can
+// be unit-tested in isolation; see test/unit/palette-resolution.test.js.
+const { resolvePalette } = require('./lib/resolve-palette');
+const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
+const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
+if (!fs.existsSync(palettePath)) {
+  console.error(`error: palette not found: ${paletteName}`);
+  console.error(`       (looked in ${palettePath})`);
+  console.error(`available palettes: ${listAvailablePalettes()}`);
+  process.exit(1);
+}
+const paletteCSS = readFileOrDie(palettePath, `palette '${paletteName}'`);
+const themeCSS   = readFileOrDie(cssFile, 'layout CSS');
 const css = paletteCSS + '\n' + themeCSS;
 
 // ── Mermaid renderer ─────────────────────────────────────────────────────────
@@ -559,9 +710,9 @@ function renderMermaid(definition) {
 // ── Pre-process markdown: render mermaid blocks before slide splitting ────────
 function preprocessMermaid(source) {
   return source.replace(/```mermaid\n([\s\S]*?)```/g, (_, def) => {
-    process.stdout.write('  Rendering mermaid diagram...');
+    if (!QUIET) process.stdout.write('  Rendering mermaid diagram...');
     const svg = renderMermaid(def.trim());
-    console.log(' done');
+    if (!QUIET) console.log(' done');
     return svg;
   });
 }
@@ -573,9 +724,20 @@ const fm      = fmMatch ? fmMatch[1] : '';
 const paginateGlobal = /^\s*paginate:\s*true/m.test(fm);
 const globalHeader   = (fm.match(/^\s*header:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
 const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+const headingDivider = (() => {
+  const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
+  return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
+})();
 
 const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
-const rawSlides = content.split(/\n---\n/).filter(s => s.trim().length > 0);
+
+// Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
+// directly. See that file for the fence-and-headingDivider rationale.
+const { splitSlides }    = require('./lib/split-slides');
+// Named-slot lift helper used by decision / before-after / compare-prose.
+const { liftSlotLabel }  = require('./lib/slot-label-lift');
+
+const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
 
 // ── Inline parser ────────────────────────────────────────────────────────────
@@ -773,6 +935,9 @@ function parseSlide(raw, index) {
   // This is the only place structural HTML is generated — never in the .md source.
 
   const cls = classAttr;
+  // Slot-label lift — extracted to lib/slot-label-lift.js for unit testing.
+  // See that file for behavior; same closure binding (used by cards-stack
+  // and decision/before-after handlers below).
 
   // cards-grid: wrap ul/ol into .cards-grid-inner, each top-level li becomes a .card.
   // Uses depth tracking to handle nested lists (li > ul/ol for body text).
@@ -833,7 +998,8 @@ function parseSlide(raw, index) {
           else i++;
         }
         const cards = items.map(c => `<div class="card">${c}</div>`).join('');
-        html = html.slice(0, listStart) + `<div class="cards-stack-inner">${cards}</div>` + html.slice(listEnd + closeList.length);
+        const innerCls = listTag === 'ol' ? 'cards-stack-inner cards-stack-inner--ordered' : 'cards-stack-inner';
+        html = html.slice(0, listStart) + `<div class="${innerCls}">${cards}</div>` + html.slice(listEnd + closeList.length);
       }
     }
   }
@@ -860,11 +1026,41 @@ function parseSlide(raw, index) {
           else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
           else i++;
         }
-        const cards = items.map(c => `<div class="card">${c}</div>`);
+        const cards = items.map(c => `<div class="card">${liftSlotLabel(c)}</div>`);
         const inner_html = `<div class="compare-prose-inner">${cards[0]}<div class="connector">❯</div>${cards[1] || ''}</div>`;
         html = html.slice(0, listStart) + inner_html + html.slice(listEnd + closeList.length);
       }
     }
+  }
+
+  // decision / before-after: named-slot layouts where each top-level li is
+  // a card with a slot label (Build / Why-not / Before / After). The CSS
+  // keeps these as native ul/ol > li (no card div wrapper); the only post-
+  // process needed is lifting the leading text into <strong> so the
+  // labeled-corner-tag CSS triggers without authors typing `**…**`.
+  if (cls.includes('decision') || cls.includes('before-after')) {
+    html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (full, tag, inner) => {
+      // Walk top-level <li>…</li> with depth tracking.
+      const out = [];
+      let liDepth = 0, liStart = -1, i = 0, lastEmitted = 0;
+      while (i < inner.length) {
+        if (inner.startsWith('<li>', i)) {
+          if (liDepth === 0) liStart = i + 4;
+          liDepth++; i += 4;
+        } else if (inner.startsWith('</li>', i)) {
+          liDepth--;
+          if (liDepth === 0 && liStart !== -1) {
+            out.push(inner.slice(lastEmitted, liStart));
+            out.push(liftSlotLabel(inner.slice(liStart, i)));
+            lastEmitted = i;
+            liStart = -1;
+          }
+          i += 5;
+        } else i++;
+      }
+      out.push(inner.slice(lastEmitted));
+      return `<${tag}>${out.join('')}</${tag}>`;
+    });
   }
 
   // stats: wrap ol, each li becomes a stat-item with h1 number + span label
@@ -910,8 +1106,8 @@ function parseSlide(raw, index) {
           const badgeItems = nestedItems.slice(0, -1);
           const bodyText = nestedItems[nestedItems.length - 1] ?? '';
           const badges = badgeItems.map(b => {
-            const bc = /^\[x\]/.test(b) ? 'badge pass' : /^\[~\]/.test(b) ? 'badge warn' : 'badge fail';
-            const label = b.replace(/^\[[x~\s]\]\s*/, '');
+            const bc = /^\[x\]/.test(b) ? 'badge pass' : /^\[-\]/.test(b) ? 'badge warn' : 'badge fail';
+            const label = b.replace(/^\[[x\-\s]\]\s*/, '');
             return `<span class="${bc}">${label}</span>`;
           }).join('');
           return `<div class="vcard"><div class="vcard-title">${title}</div><div class="badge-row">${badges}</div><div class="vcard-body">${bodyText}</div></div>`;
@@ -929,16 +1125,16 @@ function parseSlide(raw, index) {
     });
   }
 
-  // checklist: top-level <li> whose body starts with [x] / [~] / [ ] gets
+  // checklist: top-level <li> whose body starts with [x] / [-] / [ ] gets
   // class="state pass|warn|fail" and the marker stripped. CSS draws the
   // glyph and pins a trailing <code> as the right-aligned row pill
   // (universal pill convention, shared with cards-grid / cards-side /
   // actors).
   if (cls.includes('checklist')) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
-      const m = /^\s*\[([x~ ])\]\s*/.exec(inner);
+      const m = /^\s*\[([x\- ])\]\s*/.exec(inner);
       if (!m) return full;
-      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
+      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '-' ? 'warn' : 'fail';
       return `<li class="state ${stateClass}">${inner.slice(m[0].length)}</li>`;
     });
   }
@@ -1253,12 +1449,268 @@ function parseSlide(raw, index) {
     }
   }
 
+  // ── Chart family (experimental — 2026-05-07) ─────────────────────────────
+  // Shared frame for list-and-pill chart layouts (progress, timeline-list,
+  // piechart). Each layout's <ul>/<ol> is rewritten into chart-specific
+  // markup, then the whole slide is wrapped in a chart-frame skeleton:
+  // header (lucent strip with eyebrow + h2 + subtitle), body, optional
+  // caption. Class collisions matter — we match exact tokens, not
+  // substrings, because `progress-N` is already a modifier on `agenda`.
+  const classTokens = cls.trim().split(/\s+/);
+  const chartLayouts = ['progress', 'timeline-list', 'piechart'];
+  const chartLayout = chartLayouts.find(l => classTokens.includes(l));
+  if (chartLayout) {
+    // ── Helper: extract top-level <li> contents from a list inner string,
+    //   tracking nested <ul>/<ol> depth so a nested </li> doesn't terminate
+    //   the outer item. Used by all three chart layouts.
+    const parseTopLevelLis = (inner) => {
+      const items = [];
+      let depth = 0, liStart = -1, i = 0;
+      while (i < inner.length) {
+        if (inner.startsWith('<li>', i)) {
+          if (depth === 0) liStart = i + 4;
+          depth++;
+          i += 4;
+        } else if (inner.startsWith('</li>', i)) {
+          depth--;
+          if (depth === 0 && liStart !== -1) {
+            items.push(inner.slice(liStart, i));
+            liStart = -1;
+          }
+          i += 5;
+        } else if (inner.startsWith('<ul>', i) || inner.startsWith('<ol>', i)) {
+          depth++; i += 4;
+        } else if (inner.startsWith('</ul>', i) || inner.startsWith('</ol>', i)) {
+          depth--; i += 5;
+        } else {
+          i++;
+        }
+      }
+      return items;
+    };
+
+    // Strip trailing <code>X</code> (with optional whitespace) repeatedly,
+    // returning {leadStripped, pills} where pills are in source order.
+    const stripTrailingPills = (lead) => {
+      const pills = [];
+      let s = lead;
+      while (true) {
+        const m = s.match(/^([\s\S]*?)\s*<code>([^<]+)<\/code>\s*$/);
+        if (!m) break;
+        pills.unshift(m[2].trim());
+        s = m[1];
+      }
+      return { leadStripped: s, pills };
+    };
+
+    const escAttr = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    // ── progress ── one bar per top-level <li>
+    if (chartLayout === 'progress') {
+      html = html.replace(/<ul>([\s\S]*?)<\/ul>/, (_full, ulInner) => {
+        const items = parseTopLevelLis(ulInner);
+        const rows = items.map(item => {
+          // Find nested <ul> (the body footnote, if any)
+          const nestedIdx = item.search(/<ul>/);
+          const lead = nestedIdx >= 0 ? item.slice(0, nestedIdx) : item;
+          let note = '';
+          if (nestedIdx >= 0) {
+            const nestedMatch = item.slice(nestedIdx).match(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>/);
+            if (nestedMatch) note = nestedMatch[1].trim();
+          }
+          // Trailing pills: pct (required) + status (optional)
+          const { leadStripped, pills } = stripTrailingPills(lead.replace(/<\/?p>/g, '').trim());
+          const pctRaw = pills[0] || '';
+          const status = pills[1] || '';
+          const pct = parseInt(pctRaw, 10) || 0;
+          const labelText = leadStripped.trim();
+          const statusAttr = status ? ` data-s="${escAttr(status)}"` : '';
+          const statusEl = status
+            ? `<span class="chart-status"${statusAttr}>${status}</span>`
+            : '<span class="chart-status-empty"></span>';
+          const noteEl = note ? `<div class="progress-note">${note}</div>` : '';
+          return `<div class="progress-row">` +
+            `<div class="progress-label">${labelText}</div>` +
+            `<div class="progress-track"><div class="progress-fill"${statusAttr} style="--pct:${pct}"></div></div>` +
+            `<div class="progress-pct">${pctRaw}</div>` +
+            statusEl +
+            noteEl +
+            `</div>`;
+        }).join('');
+        return `<div class="progress-bars">${rows}</div>`;
+      });
+    }
+
+    // ── timeline-list ── horizontal spine; date pill leads, status trails
+    if (chartLayout === 'timeline-list') {
+      html = html.replace(/<ol>([\s\S]*?)<\/ol>/, (_full, olInner) => {
+        const items = parseTopLevelLis(olInner);
+        const itemEls = items.map(item => {
+          const nestedIdx = item.search(/<ul>/);
+          let lead = nestedIdx >= 0 ? item.slice(0, nestedIdx) : item;
+          let body = '';
+          if (nestedIdx >= 0) {
+            const nestedMatch = item.slice(nestedIdx).match(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>/);
+            if (nestedMatch) body = nestedMatch[1].trim();
+          }
+          lead = lead.replace(/<\/?p>/g, '').trim();
+          // Leading <code> = date pill
+          const leadingMatch = lead.match(/^<code>([^<]+)<\/code>\s*/);
+          const datePill = leadingMatch ? leadingMatch[1].trim() : '';
+          if (leadingMatch) lead = lead.slice(leadingMatch[0].length);
+          // Trailing <code> = status pill
+          const { leadStripped, pills } = stripTrailingPills(lead);
+          const statusPill = pills[0] || '';
+          const title = leadStripped.trim();
+          const dateEl = datePill ? `<div class="timeline-pill">${datePill}</div>` : '<div class="timeline-pill timeline-pill--empty"></div>';
+          const statusEl = statusPill ? `<span class="chart-status" data-s="${escAttr(statusPill)}">${statusPill}</span>` : '';
+          const bodyEl = body ? `<div class="timeline-body">${body}</div>` : '';
+          return `<div class="timeline-item">` +
+            `<div class="timeline-dot"></div>` +
+            dateEl +
+            `<div class="timeline-title">${title}</div>` +
+            statusEl +
+            bodyEl +
+            `</div>`;
+        }).join('');
+        return `<div class="timeline-spine">${itemEls}</div>`;
+      });
+    }
+
+    // ── piechart ── flat list with magnitude pill; emit SVG donut + legend
+    if (chartLayout === 'piechart') {
+      const palette = [
+        'var(--cat-blue)', 'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
+        'var(--cat-teal)', 'var(--cat-rose)', 'var(--cat-mauve)', 'var(--cat-slate)'
+      ];
+      const isDonut = classTokens.includes('donut');
+      html = html.replace(/<ul>([\s\S]*?)<\/ul>/, (_full, ulInner) => {
+        const items = parseTopLevelLis(ulInner);
+        const parsed = items.map(item => {
+          const lead = item.replace(/<\/?p>/g, '').trim();
+          const { leadStripped, pills } = stripTrailingPills(lead);
+          const valueRaw = pills[0] || '0';
+          const numMatch = valueRaw.match(/[\d.]+/);
+          const num = numMatch ? parseFloat(numMatch[0]) : 0;
+          return { label: leadStripped.trim(), valueRaw, num };
+        });
+        const total = parsed.reduce((s, p) => s + p.num, 0) || 1;
+        const cx = 100, cy = 100, R = 80, r = 50;
+        let cumul = 0;
+        const wedges = parsed.map((p, idx) => {
+          const startAngle = (cumul / total) * 2 * Math.PI;
+          cumul += p.num;
+          const endAngle = (cumul / total) * 2 * Math.PI;
+          const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+          const x1 = (cx + R * Math.sin(startAngle)).toFixed(2);
+          const y1 = (cy - R * Math.cos(startAngle)).toFixed(2);
+          const x2 = (cx + R * Math.sin(endAngle)).toFixed(2);
+          const y2 = (cy - R * Math.cos(endAngle)).toFixed(2);
+          const fill = palette[idx % palette.length];
+          if (isDonut) {
+            const ix1 = (cx + r * Math.sin(startAngle)).toFixed(2);
+            const iy1 = (cy - r * Math.cos(startAngle)).toFixed(2);
+            const ix2 = (cx + r * Math.sin(endAngle)).toFixed(2);
+            const iy2 = (cy - r * Math.cos(endAngle)).toFixed(2);
+            const d = `M ${x1} ${y1} A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${r} ${r} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
+            return `<path class="wedge" style="fill:${fill}" d="${d}"/>`;
+          }
+          const d = `M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+          return `<path class="wedge" style="fill:${fill}" d="${d}"/>`;
+        }).join('');
+        const svg = `<svg class="piechart-svg" viewBox="0 0 200 200" role="img" aria-hidden="true">${wedges}</svg>`;
+        const legendItems = parsed.map((p, idx) => {
+          const fill = palette[idx % palette.length];
+          return `<li>` +
+            `<span class="legend-swatch" style="background:${fill}"></span>` +
+            `<span class="legend-label">${p.label}</span>` +
+            `<span class="legend-pct">${p.valueRaw}</span>` +
+            `</li>`;
+        }).join('');
+        const legend = `<ol class="piechart-legend">${legendItems}</ol>`;
+        return `<div class="piechart-figure">${svg}${legend}</div>`;
+      });
+    }
+
+    // ── Wrap in chart-frame skeleton ─────────────────────────────────────
+    // Pull eyebrow / h2 / subtitle / chart-body / caption out of the html
+    // and reassemble. The chart body anchor is the <div> emitted by the
+    // layout-specific transform above.
+    const h2RE = /<h2>[\s\S]*?<\/h2>/;
+    const h2Match = h2RE.exec(html);
+    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure)"[^>]*>/;
+    const bodyMatch = h2Match && bodyRE.exec(html.slice(h2Match.index + h2Match[0].length));
+    if (h2Match && bodyMatch) {
+      const h2El = h2Match[0];
+      const beforeH2 = html.slice(0, h2Match.index);
+      const afterH2 = html.slice(h2Match.index + h2El.length);
+      const bodyStart = bodyMatch.index;
+      // depth-aware close-tag scan
+      let depth = 0, pos = bodyStart, end = -1;
+      while (pos < afterH2.length) {
+        if (afterH2.startsWith('<div', pos)) {
+          const close = afterH2.indexOf('>', pos);
+          if (close < 0) break;
+          depth++; pos = close + 1;
+        } else if (afterH2.startsWith('</div>', pos)) {
+          depth--;
+          if (depth === 0) { end = pos + 6; break; }
+          pos += 6;
+        } else { pos++; }
+      }
+      if (end > 0) {
+        const between = afterH2.slice(0, bodyStart);
+        const bodyHtml = afterH2.slice(bodyStart, end);
+        const afterBody = afterH2.slice(end);
+
+        // Eyebrow: <p><code>...</code></p> immediately before h2
+        let eyebrowEl = '';
+        let beforeRest = beforeH2;
+        const eyeMatch = beforeH2.match(/<p>\s*<code>([^<]+?)<\/code>\s*<\/p>\s*$/);
+        if (eyeMatch) {
+          eyebrowEl = `<p class="chart-eyebrow"><code>${eyeMatch[1]}</code></p>`;
+          beforeRest = beforeH2.slice(0, eyeMatch.index);
+        }
+
+        // Subtitle: first <p>...</p> between h2 and the chart body
+        let subtitleEl = '';
+        const subMatch = between.match(/<p>([\s\S]*?)<\/p>/);
+        if (subMatch) {
+          subtitleEl = `<p class="chart-subtitle">${subMatch[1]}</p>`;
+        }
+
+        // Caption: trailing <p>(<em>?)X(</em>?)</p> after the chart body
+        let captionEl = '';
+        let afterRest = afterBody;
+        const capMatch = afterBody.match(/<p>([\s\S]*?)<\/p>\s*$/);
+        if (capMatch) {
+          let cap = capMatch[1];
+          const emM = cap.match(/^<em>([\s\S]*)<\/em>$/);
+          if (emM) cap = emM[1];
+          captionEl = `<p class="chart-caption">${cap}</p>`;
+          afterRest = afterBody.slice(0, capMatch.index);
+        }
+
+        html = beforeRest +
+          `<div class="chart-header">` + eyebrowEl + h2El + subtitleEl + `</div>` +
+          `<div class="chart-body">` + bodyHtml + `</div>` +
+          captionEl +
+          afterRest;
+
+        // Add chart-frame to the section's class list
+        if (!classAttr.split(/\s+/).includes('chart-frame')) {
+          classAttr = (classAttr + ' chart-frame').trim();
+        }
+      }
+    }
+  }
+
   // ── Universal below-note ─────────────────────────────────────────────────────
   // Any layout where the last element in html is a plain <p> gets it wrapped
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap','progress','timeline-list','piechart'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block
@@ -1440,7 +1892,7 @@ ${highlightedSlides.join('\n')}
 
 const outHtml = outFile.replace(/\.pdf$/, '.html');
 fs.writeFileSync(outHtml, htmlDoc);
-console.log(`HTML: ${slides.length} slides → ${outHtml}`);
+if (!QUIET) console.log(`HTML: ${slides.length} slides → ${outHtml}`);
 
 // ── PDF via Puppeteer ─────────────────────────────────────────────────────────
 // Locate puppeteer in either: a local node_modules (preferred), the project
@@ -1510,5 +1962,5 @@ const puppeteer = loadPuppeteer();
     preferCSSPageSize: true
   });
   await browser.close();
-  console.log(`PDF: ${outFile}`);
+  if (!QUIET) console.log(`PDF: ${outFile}`);
 })();
