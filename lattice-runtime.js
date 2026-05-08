@@ -365,6 +365,7 @@
   function initAndRun({ force = false } = {}) {
     transformVerdictGridBadges();
     transformChecklistItemStates();
+    transformSlotLabels();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -455,7 +456,7 @@
 
   /**
    * Transforms verdict-grid badge items in VS Code preview (no Marp plugin).
-   * Finds [x]/[~]/[ ] prefixed li items inside section.verdict-grid, strips
+   * Finds [x]/[-]/[ ] prefixed li items inside section.verdict-grid, strips
    * the prefix, and wraps the label in <span class="badge pass|warn|fail">.
    * Idempotent — skips li items that already contain a .badge span.
    */
@@ -474,9 +475,9 @@
           const text = li.textContent.trim();
           if (!/^\[/.test(text)) continue;
           const badgeClass = text.startsWith('[x]') ? 'badge pass'
-                           : text.startsWith('[~]') ? 'badge warn'
+                           : text.startsWith('[-]') ? 'badge warn'
                            : 'badge fail';
-          const label = text.replace(/^\[[x~\s]\]\s*/, '');
+          const label = text.replace(/^\[[x\-\s]\]\s*/, '');
           li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
         }
       }
@@ -486,7 +487,7 @@
   /**
    * Transforms checklist items in VS Code preview (mirrors the Marp plugin).
    * For each top-level <li> in section.checklist whose text starts with
-   * [x] / [~] / [ ], strips the marker and adds class="state pass|warn|fail"
+   * [x] / [-] / [ ], strips the marker and adds class="state pass|warn|fail"
    * to the <li>. CSS handles the trailing-`code` pill (universal pill
    * convention, shared with cards-grid / cards-side / actors). Idempotent —
    * skips items already tagged.
@@ -505,11 +506,64 @@
           return null;
         })();
         if (!firstText) continue;
-        const m = /^\[([x~ ])\]\s*/.exec(firstText.nodeValue);
+        const m = /^\[([x\- ])\]\s*/.exec(firstText.nodeValue);
         if (!m) continue;
-        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '~' ? 'warn' : 'fail';
+        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '-' ? 'warn' : 'fail';
         firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
         li.classList.add('state', stateClass);
+      }
+    }
+  }
+
+  /**
+   * Lifts the leading inline content of each top-level <li> in named-slot
+   * layouts (`compare-prose`, `before-after`, `decision`) into a <strong>
+   * wrapper, matching the `slotLabelLift` Marpit plugin in marp.config.js
+   * and `liftSlotLabel` in lattice-emulator.js. The labeled corner-tag CSS
+   * (`> strong:first-child`) then renders the slot label as a flush
+   * top-left tag without authors having to write `**Label**` in source.
+   *
+   * Idempotent: skips items whose first element child is already <strong>.
+   * Walks until the first nested <ul>/<ol> (the body list) so prose lifts
+   * cleanly even when the lead spans multiple inline tokens (e.g. trailing
+   * `code`).
+   */
+  function transformSlotLabels() {
+    if (typeof document === 'undefined') return;
+    const SELECTOR = 'section.compare-prose, section.before-after, section.decision';
+    for (const section of document.querySelectorAll(SELECTOR)) {
+      // compare-prose authored with the build pipeline already has the
+      // .compare-prose-inner / .card structure with the strong inside.
+      // The runtime only needs to handle the raw <ul>/<ol> case.
+      const lists = section.querySelectorAll(':scope > ul, :scope > ol');
+      for (const list of lists) {
+        for (const li of list.children) {
+          if (li.tagName !== 'LI') continue;
+          // Idempotent: first element child already <strong>.
+          const firstEl = li.firstElementChild;
+          if (firstEl && firstEl.tagName === 'STRONG' &&
+              (li.firstChild === firstEl ||
+               (li.firstChild.nodeType === 3 && !li.firstChild.nodeValue.trim() && li.firstChild.nextSibling === firstEl))) {
+            continue;
+          }
+          // Collect lead nodes up to (but not including) the first nested list.
+          const lead = [];
+          let cursor = li.firstChild;
+          while (cursor && !(cursor.nodeType === 1 && (cursor.tagName === 'UL' || cursor.tagName === 'OL'))) {
+            lead.push(cursor);
+            cursor = cursor.nextSibling;
+          }
+          if (!lead.length) continue;
+          // Skip empty / whitespace-only leads.
+          const leadHasText = lead.some(n =>
+            (n.nodeType === 3 && n.nodeValue.trim()) ||
+            (n.nodeType === 1 && n.textContent.trim())
+          );
+          if (!leadHasText) continue;
+          const strong = document.createElement('strong');
+          for (const n of lead) strong.appendChild(n);
+          li.insertBefore(strong, cursor);
+        }
       }
     }
   }
@@ -685,6 +739,276 @@
     mo.observe(document.body, { subtree: true, childList: true, characterData: true });
   }
 
+  // ── Chart family — DOM transform ───────────────────────────────────────
+  // Mirror of the engine plugin (marp.config.js → lib/chart-family.js) for
+  // the marp-vscode preview path, where marp.config.js is NOT loaded by
+  // the extension. Same pattern as transformVerdictGridBadges,
+  // applyGlossaryListTable, etc. The transform is idempotent: a section
+  // already wrapped in `chart-frame` is a no-op.
+  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart'];
+  const PIE_PALETTE = [
+    'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
+    'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
+  ];
+
+  function chartEscAttr(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
+  function extractTrailingPills(lead) {
+    const pills = [];
+    while (lead.lastChild) {
+      while (lead.lastChild && lead.lastChild.nodeType === 3 &&
+             !lead.lastChild.nodeValue.trim()) {
+        lead.removeChild(lead.lastChild);
+      }
+      const last = lead.lastChild;
+      if (!last || last.nodeType !== 1 || last.tagName !== 'CODE') break;
+      pills.unshift(last.textContent.trim());
+      lead.removeChild(last);
+    }
+    return pills;
+  }
+
+  function extractLeadingPill(lead) {
+    while (lead.firstChild && lead.firstChild.nodeType === 3 &&
+           !lead.firstChild.nodeValue.trim()) {
+      lead.removeChild(lead.firstChild);
+    }
+    const first = lead.firstChild;
+    if (!first || first.nodeType !== 1 || first.tagName !== 'CODE') return '';
+    const text = first.textContent.trim();
+    lead.removeChild(first);
+    while (lead.firstChild && lead.firstChild.nodeType === 3 &&
+           !lead.firstChild.nodeValue.trim()) {
+      lead.removeChild(lead.firstChild);
+    }
+    return text;
+  }
+
+  function splitListItem(li) {
+    const clone = li.cloneNode(true);
+    let bodyHtml = '';
+    const nested = clone.querySelector(':scope > ul, :scope > ol');
+    if (nested) {
+      const firstNested = nested.querySelector(':scope > li');
+      bodyHtml = firstNested ? firstNested.innerHTML.trim() : '';
+      nested.remove();
+    }
+    const lead = document.createElement('span');
+    while (clone.firstChild) lead.appendChild(clone.firstChild);
+    return { lead, bodyHtml };
+  }
+
+  function buildProgressBars(ul) {
+    const wrap = document.createElement('div');
+    wrap.className = 'progress-bars';
+    for (const li of ul.querySelectorAll(':scope > li')) {
+      const { lead, bodyHtml } = splitListItem(li);
+      const pills = extractTrailingPills(lead);
+      const pctRaw = pills[0] || '';
+      const status = pills[1] || '';
+      const pct = parseInt(pctRaw, 10) || 0;
+      const labelHtml = lead.innerHTML.trim();
+      const row = document.createElement('div');
+      row.className = 'progress-row';
+      row.innerHTML =
+        '<div class="progress-label">' + labelHtml + '</div>' +
+        '<div class="progress-track"><div class="progress-fill"' +
+          (status ? ' data-s="' + chartEscAttr(status) + '"' : '') +
+          ' style="--pct:' + pct + '"></div></div>' +
+        '<div class="progress-pct">' + chartEscAttr(pctRaw) + '</div>' +
+        (status
+          ? '<span class="chart-status" data-s="' + chartEscAttr(status) + '">' + chartEscAttr(status) + '</span>'
+          : '<span class="chart-status-empty"></span>') +
+        (bodyHtml ? '<div class="progress-note">' + bodyHtml + '</div>' : '');
+      wrap.appendChild(row);
+    }
+    return wrap;
+  }
+
+  function buildTimelineSpine(ol) {
+    const wrap = document.createElement('div');
+    wrap.className = 'timeline-spine';
+    for (const li of ol.querySelectorAll(':scope > li')) {
+      const { lead, bodyHtml } = splitListItem(li);
+      const datePill = extractLeadingPill(lead);
+      const pills = extractTrailingPills(lead);
+      const statusPill = pills[0] || '';
+      const titleHtml = lead.innerHTML.trim();
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      item.innerHTML =
+        '<div class="timeline-dot"></div>' +
+        (datePill
+          ? '<div class="timeline-pill">' + chartEscAttr(datePill) + '</div>'
+          : '<div class="timeline-pill timeline-pill--empty"></div>') +
+        '<div class="timeline-title">' + titleHtml + '</div>' +
+        (statusPill
+          ? '<span class="chart-status" data-s="' + chartEscAttr(statusPill) + '">' + chartEscAttr(statusPill) + '</span>'
+          : '') +
+        (bodyHtml ? '<div class="timeline-body">' + bodyHtml + '</div>' : '');
+      wrap.appendChild(item);
+    }
+    return wrap;
+  }
+
+  function buildPieChart(ul, isDonut) {
+    const items = [];
+    for (const li of ul.querySelectorAll(':scope > li')) {
+      const { lead } = splitListItem(li);
+      const pills = extractTrailingPills(lead);
+      const valueRaw = pills[0] || '0';
+      const num = parseFloat((valueRaw.match(/[\d.]+/) || ['0'])[0]) || 0;
+      items.push({ labelHtml: lead.innerHTML.trim(), valueRaw, num });
+    }
+    const total = items.reduce((s, p) => s + p.num, 0) || 1;
+    const cx = 100, cy = 100, R = 80, r = 50;
+    let cumul = 0;
+    const wedgePaths = items.map((p, idx) => {
+      const startAngle = (cumul / total) * 2 * Math.PI;
+      cumul += p.num;
+      const endAngle = (cumul / total) * 2 * Math.PI;
+      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      const x1 = (cx + R * Math.sin(startAngle)).toFixed(2);
+      const y1 = (cy - R * Math.cos(startAngle)).toFixed(2);
+      const x2 = (cx + R * Math.sin(endAngle)).toFixed(2);
+      const y2 = (cy - R * Math.cos(endAngle)).toFixed(2);
+      const fill = PIE_PALETTE[idx % PIE_PALETTE.length];
+      let d;
+      if (isDonut) {
+        const ix1 = (cx + r * Math.sin(startAngle)).toFixed(2);
+        const iy1 = (cy - r * Math.cos(startAngle)).toFixed(2);
+        const ix2 = (cx + r * Math.sin(endAngle)).toFixed(2);
+        const iy2 = (cy - r * Math.cos(endAngle)).toFixed(2);
+        d = 'M ' + x1 + ' ' + y1 + ' A ' + R + ' ' + R + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 +
+            ' L ' + ix2 + ' ' + iy2 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 0 ' + ix1 + ' ' + iy1 + ' Z';
+      } else {
+        d = 'M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 +
+            ' A ' + R + ' ' + R + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z';
+      }
+      return '<path class="wedge" style="fill:' + fill + '" d="' + d + '"/>';
+    }).join('');
+    const legendItems = items.map((p, idx) => {
+      const fill = PIE_PALETTE[idx % PIE_PALETTE.length];
+      return '<li>' +
+        '<span class="legend-swatch" style="background:' + fill + '"></span>' +
+        '<span class="legend-label">' + p.labelHtml + '</span>' +
+        '<span class="legend-pct">' + chartEscAttr(p.valueRaw) + '</span>' +
+        '</li>';
+    }).join('');
+    const figure = document.createElement('div');
+    figure.className = 'piechart-figure';
+    figure.innerHTML =
+      '<svg class="piechart-svg" viewBox="0 0 200 200" role="img" aria-hidden="true">' +
+      wedgePaths + '</svg>' +
+      '<ol class="piechart-legend">' + legendItems + '</ol>';
+    return figure;
+  }
+
+  function transformChartSection(section, layout) {
+    if (section.querySelector(':scope > .chart-header')) return;
+    const h2 = section.querySelector(':scope > h2');
+    const list = section.querySelector(':scope > ul, :scope > ol');
+    if (!h2 || !list) return;
+
+    let eyebrowEl = null;
+    const prev = h2.previousElementSibling;
+    if (prev && prev.tagName === 'P' &&
+        prev.children.length === 1 && prev.firstElementChild.tagName === 'CODE' &&
+        !prev.textContent.replace(prev.firstElementChild.textContent, '').trim()) {
+      eyebrowEl = document.createElement('p');
+      eyebrowEl.className = 'chart-eyebrow';
+      const code = document.createElement('code');
+      code.textContent = prev.firstElementChild.textContent;
+      eyebrowEl.appendChild(code);
+      prev.remove();
+    }
+
+    let subtitleEl = null;
+    let cursor = h2.nextElementSibling;
+    while (cursor && cursor !== list) {
+      if (cursor.tagName === 'P') {
+        subtitleEl = document.createElement('p');
+        subtitleEl.className = 'chart-subtitle';
+        subtitleEl.innerHTML = cursor.innerHTML;
+        const next = cursor.nextElementSibling;
+        cursor.remove();
+        cursor = next;
+        break;
+      }
+      cursor = cursor.nextElementSibling;
+    }
+
+    let chartContainer;
+    const isDonut = section.classList.contains('donut');
+    if (layout === 'progress')           chartContainer = buildProgressBars(list);
+    else if (layout === 'timeline-list') chartContainer = buildTimelineSpine(list);
+    else if (layout === 'piechart')      chartContainer = buildPieChart(list, isDonut);
+    else return;
+
+    let captionEl = null;
+    let trailingP = null;
+    let ws = list.nextSibling;
+    while (ws && (ws.nodeType === 3 || (ws.nodeType === 1 && ws.tagName === 'P'))) {
+      if (ws.nodeType === 1 && ws.tagName === 'P') trailingP = ws;
+      ws = ws.nextSibling;
+    }
+    if (trailingP) {
+      let inner = trailingP.innerHTML.trim();
+      const m = inner.match(/^<em>([\s\S]*)<\/em>$/);
+      if (m) inner = m[1];
+      captionEl = document.createElement('p');
+      captionEl.className = 'chart-caption';
+      captionEl.innerHTML = inner;
+      trailingP.remove();
+    }
+
+    const header = document.createElement('div');
+    header.className = 'chart-header';
+    if (eyebrowEl) header.appendChild(eyebrowEl);
+    header.appendChild(h2.cloneNode(true));
+    if (subtitleEl) header.appendChild(subtitleEl);
+    const body = document.createElement('div');
+    body.className = 'chart-body';
+    body.appendChild(chartContainer);
+    h2.parentNode.replaceChild(header, h2);
+    list.parentNode.replaceChild(body, list);
+    if (captionEl) body.parentNode.insertBefore(captionEl, body.nextSibling);
+    section.classList.add('chart-frame');
+  }
+
+  function applyChartFamily(root) {
+    if (!root || !root.querySelectorAll) return;
+    for (const layout of CHART_LAYOUTS) {
+      for (const section of root.querySelectorAll('section.' + layout)) {
+        try { transformChartSection(section, layout); }
+        catch (e) {
+          if (typeof console !== 'undefined') {
+            console.warn('[lattice-runtime] chart transform failed', layout, e);
+          }
+        }
+      }
+    }
+  }
+
+  function startChartFamilyObserver() {
+    if (typeof document === 'undefined' || !document.body) return;
+    if (typeof MutationObserver === 'undefined') return;
+    if (globalScope.__llChartObserverStarted) return;
+    globalScope.__llChartObserverStarted = true;
+    // Brute-force on every mutation, like startGlossaryObserver above.
+    // The transform is idempotent (early-return when chart-frame is set),
+    // so re-applying on each mutation is cheap.
+    const apply = () => applyChartFamily(document);
+    apply();
+    new MutationObserver(apply).observe(document.body, {
+      subtree: true, childList: true, attributes: true, characterData: true,
+    });
+  }
+
   function bootstrap() {
     // Diagnostic breadcrumb. Visible in the host's DevTools console.
     // In VS Code: "Developer: Open Webview Developer Tools" while the Marp
@@ -766,6 +1090,7 @@
     tick();
     startObserver();
     startGlossaryObserver();
+    startChartFamilyObserver();
     startOverflowWatcher();
   }
 

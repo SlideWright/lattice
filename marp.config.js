@@ -306,6 +306,8 @@ function registerMermaidHljs(marp) {
   } catch (_e) { /* already registered */ }
 }
 
+const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
+
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
   themeSet: [
@@ -318,7 +320,29 @@ module.exports = {
   imageScale: 3,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
-    return marp.use(splitPanelCounter).use(verdictGridBadges).use(checklistItemStates).use(slotLabelLift).use(glossaryListToTable).use(glossaryRange);
+    marp.use(splitPanelCounter)
+        .use(verdictGridBadges)
+        .use(checklistItemStates)
+        .use(slotLabelLift)
+        .use(glossaryListToTable)
+        .use(glossaryRange);
+
+    // Wrap render() so chart-family slides are rewritten into the
+    // chart-frame skeleton in the rendered HTML — same DOM the export
+    // pipeline produces. Marp Core / Marpit's render returns
+    // { html, css, comments } (or similar). VS Code's marp-vscode
+    // extension calls render() through the same engine, so the preview
+    // and the export now go through one transform.
+    const originalRender = marp.render.bind(marp);
+    marp.render = (markdown, env) => {
+      const result = originalRender(markdown, env);
+      if (result && typeof result.html === 'string') {
+        result.html = applyChartFamilyToHtml(result.html);
+      }
+      return result;
+    };
+
+    return marp;
   },
 };
 

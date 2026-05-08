@@ -1,3 +1,10 @@
+---
+status: design-speculation
+version: 1
+supersedes: none
+companion: 2026-05-07-chart-family-proposals.md
+---
+
 # Lattice — Authoring Enhancement Proposals
 
 > **Not canonical.** This is a design-speculation document, written ahead of implementation. The authoring shapes shown here are exploratory — actual shipped behaviour may differ. For ground truth, use:
@@ -6,6 +13,8 @@
 > - **`../../examples/gallery.md`** — canonical authoring examples that actually render.
 >
 > When this document and either of those disagree, the gallery and template reference win. Examples in this file may use older shapes (e.g. `— _italic modifier_` patterns) that were superseded during implementation; treat them as historical context, not as patterns to copy.
+>
+> **Companion note.** The chart-family layouts (`timeline-list`, `gantt`, `piechart`, `progress`, `kanban`, plus adjacent candidates) drafted three days after this catalogue live in [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md). They follow the same component-model and pill discipline framed in Parts 1–2 of this note.
 
 ---
 
@@ -527,6 +536,8 @@ The last-slide-of-section citation list. Numbered, mono, smaller font. Today aut
 2. PCI-SSC Tokenization Guidelines v2.0 — _Type 1 substitution model_
 3. Internal audit AUDIT-2025-Q3-014 — _vendor evaluation_
 ```
+
+<!-- §3.15 `timeline-list`, §3.16 `gantt`, §3.17 chart family (`piechart` / `progress` / `kanban`), and §3.18 adjacent candidates have been split into the companion note: 2026-05-07-chart-family-proposals.md -->
 
 ### 3.15 Layouts I considered and rejected (yet)
 

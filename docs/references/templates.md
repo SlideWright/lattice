@@ -96,11 +96,11 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 
 Two layouts — `verdict-grid` (T21) and `checklist` (T28) — accept **state markers** as a leading prefix on each list item. The marker syntax, color tokens, glyphs, and class names are unified across both so authors only learn one vocabulary.
 
-**Authoring syntax:** `[x]`, `[~]`, or `[ ]` immediately after the bullet, followed by a space, followed by the label.
+**Authoring syntax:** `[x]`, `[-]`, or `[ ]` immediately after the bullet, followed by a space, followed by the label.
 
 ```markdown
 - [x] Done — succeeded / chosen
-- [~] Partial — caveat / partial success
+- [-] Partial — caveat / partial success
 - [ ] Todo — not done / rejected
 ```
 
@@ -109,7 +109,7 @@ Two layouts — `verdict-grid` (T21) and `checklist` (T28) — accept **state ma
 | Marker | Class       | Token   | Glyph       | Semantic                         |
 | ------ | ----------- | ------- | ----------- | -------------------------------- |
 | `[x]`  | `state pass` | `--pass` | ✓ (green)   | succeeded, chosen, complete      |
-| `[~]`  | `state warn` | `--warn` | ~ (amber)   | partial, caveat, qualified pass  |
+| `[-]`  | `state warn` | `--warn` | – (amber)   | partial, caveat, qualified pass  |
 | `[ ]`  | `state fail` | `--fail` | ✗ on `verdict-grid`, ☐ on `checklist` (red) | not done, rejected, todo |
 
 **Why one convention covers both layouts:**
@@ -129,7 +129,7 @@ In both cases, `[ ]` signals "this did not pass." Red is the right color either 
 | `--warn`     | dark amber-brown   | warm amber (`#925c00`)  | partial / caveat colour                        |
 | `--fail`     | deep red           | deep red (`#9b1c1c`)    | failed / rejected / todo colour                |
 | `--pass-bg`  | 10% pass on bg     | 10% pass on bg          | row tint when authored as `[x]`                |
-| `--warn-bg`  | 10% warn on bg     | 10% warn on bg          | row tint when authored as `[~]`                |
+| `--warn-bg`  | 10% warn on bg     | 10% warn on bg          | row tint when authored as `[-]`                |
 | `--fail-bg`  | 10% fail on bg     | 10% fail on bg          | row tint when authored as `[ ]`                |
 
 All foreground tokens meet WCAG AA on body backgrounds. The `*-bg` variants are 10% colour-mix fills so the tint is visible without competing with body text.
@@ -345,7 +345,7 @@ Heavier than `closing`, lighter than `featured`. The heading carries the verdict
 
 ### `before-after` — explicit state-change
 
-Two cards with a large arrow between. The right (After) card carries an accent ring to signal the new state. An optional trailing paragraph renders as a context note below the comparison.
+Two cards with a large arrow between. The right (After) card carries an accent ring to signal the new state. The leading `**Before**` / `**After**` bold prefix lifts into a flush top-left corner tag (accent fill, same chrome as the numbered tag) so the body fills from the top \u2014 see the **Labeled Corner Tag** universal feature. An optional trailing paragraph renders as a context note below the comparison.
 
 ```markdown
 <!-- _class: before-after -->
@@ -765,7 +765,7 @@ Outer list may be `ul` (`-`) or `ol` (`1.`). Sublist may also be `ul` or `ol`.
 - Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS, no `**...**` needed
 - Card body (nested list): 16px (`--fs-body`), `--text-body`
 - Equal-width, equal-height cards; last odd card spans full width automatically
-- **Numbered cards** (`ol` source): flush top-left corner badge — accent background, white mono number, `--radius-md 0 --radius-sm 0` corners; card `padding-top` is automatically increased to clear the badge
+- **Numbered cards** (`ol` source): flush top-left corner tag (numbered variant) — accent background, white mono number, `--radius-md 0 --radius-sm 0` corners; card `padding-top` is automatically increased to clear the tag
 - Trailing `> blockquote` on this layout renders as a **Key Insight** panel (see Key Insight feature below)
 
 **Inline code in card headers and body text:**
@@ -882,6 +882,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - `h2` = heading
 - Flat `ul`/`ol` — each top-level `li` becomes a card
 - **Inline title contract:** `**Title.**` (bold, period-terminated) at the start of the `li` reads as the card title; body prose continues on the same line. Distinct from `cards-grid` where the title sits on its own line above a nested body list.
+- **Ordered authoring (`1. `…):** opt into auto-numbered cards. The accent corner tag is the same chrome `cards-grid` uses; composes with the `horizontal` modifier (tag stays in the top-left of each card whether the row is vertical or horizontal). Use it whenever the cards carry a sequence — claim → evidence → implication, before → after, problem → root cause → fix.
 - Two full-width cards stacked vertically
 - 16px gap between cards
 - Each card takes roughly equal vertical space
@@ -969,6 +970,7 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 - Cards are equal width
 - Card header: 18px (`--fs-md`) bold, `--text-heading` — auto-bolded by CSS
 - Card body (nested list): 16px (`--fs-body`), `--text-body`
+- **Labeled corner tag (opt-in):** author the slot label as `**Option A**` / `**Option B**` and the bold prefix lifts into a flush top-left corner tag; cards without a leading `<strong>` render unchanged. See the **Labeled Corner Tag** universal feature.
 
 ## Template 12: Quote / Testimonial
 
@@ -1220,7 +1222,7 @@ Caption text that appears as an overlay bar at the bottom.
 - Right panel contains: `h3` subheading, optional `p` intro, then `ul`/`ol` card tiles
 - Good for category-based slides where sidebar signals section or dimension
 - **Card headers**: auto-bolded by CSS, no `**...**` required
-- Supports both `ul` (no badge) and `ol` (flush top-left corner badge)
+- Supports both `ul` (no tag) and `ol` (flush top-left corner tag)
 - **Authoring pattern:**
 
 ```markdown
@@ -1242,7 +1244,7 @@ Optional intro paragraph.
 - `h2` = left panel title (white, bottom)
 - `h3` = right panel subheading
 - `p` = right panel intro text
-- `ol > li` = stacked card tiles with flush corner badge; `ul > li` = stacked card tiles without badge
+- `ol > li` = stacked card tiles with flush corner tag; `ul > li` = stacked card tiles without tag
 - **Optional metadata footer** = a trailing `ul` placed *after* the main `ol`/`ul`. Renders pinned to the bottom of the right panel with a divider line above. Authored as `**Label** · body` items — typical use: audience, intent, scope, or other framing labels. Absent → panel renders as before.
 
 ## Template 18: Closing (dark bookend)
@@ -1459,7 +1461,7 @@ Optional intro paragraph.
 
 - Option 1 · Label
   - [x] In-process
-  - [~] Independence
+  - [-] Independence
   - [x] Ops
   - [] Availability
   - The architectural model leadership wants, but the stand-up burden is prohibitive.
@@ -1477,7 +1479,7 @@ Optional intro paragraph.
   - Honors architecture and independence, at the cost of a dedicated platform capability.
 - Option 4 · Label
   - [x] In-process
-  - [~] Independence
+  - [-] Independence
   - [x] Ops
   - [x] Availability
   - Co-develop the architecture needed. Same vendor, different engagement model.
@@ -1486,7 +1488,7 @@ Optional intro paragraph.
 **How the renderer maps this:**
 
 - Each `- Card Title` → one card in the grid; the heading is auto-bolded by CSS, no `**…**` required (`**…**` is harmless if you prefer it)
-- `[x]` → pass badge (green); `[ ]` → fail badge (red); `[~]` → warn badge (amber)
+- `[x]` → pass badge (green); `[ ]` → fail badge (red); `[-]` → warn badge (amber)
 - **Badge colors (green/red/amber) render only in the Marp CLI / lattice-emulator.js path.** The VS Code preview shows all badges as neutral pills (`--bg` fill, `--text-muted` border).
 - Last nested `li` (after all badge items) → card body description
 - Last card in the grid gets accent-soft highlight automatically (`li:last-child` rule)
@@ -1720,6 +1722,54 @@ This is a below-note. It appears below the cards with a hairline rule above it.
 - Rule: hairline gradient from `--accent` to transparent
 - Text: 16px (`--fs-body`), `--text-body`
 - Use for source attribution, scope caveats, or a single sentence of additional context
+
+---
+
+## Feature: Auto-Numbered Cards (ordered authoring)
+
+Card-bearing layouts auto-number their cards when the source list is an ordered list (`1. `, `2. `, …) instead of a bulleted list (`-`). The author opts into the tag by changing the marker — no class, no directive. Each opting layout pins the number in its own visual register (corner tag, accent block, mono-rail, "STEP 01" label) so the chrome reads as part of the layout, not bolted on.
+
+```markdown
+<!-- _class: cards-stack horizontal -->
+
+## Three-step argument.
+
+1. **Claim.** First card carries badge `1`.
+2. **Evidence.** Second card carries badge `2`.
+3. **Implication.** Third card carries badge `3`.
+```
+
+**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`, `roadmap`
+
+- Switching from `-` to `1. ` is the entire authoring surface — no modifier class, no comment directive
+- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers; roadmap numbers the phase columns
+- Layouts that **do not** number on `ol` are intentional: state-bearing rows (`actors`, `checklist`, `verdict-grid`), named-slot rows (`featured`, `compare-prose`, `before-after`, `decision`, `matrix-2x2`), equal-weight summaries (`tldr`), and value-display layouts (`kpi`, `stats`, `big-number`)
+
+---
+
+## Feature: Labeled Corner Tag (`before-after`, `compare-prose`, `decision`)
+
+The named-slot sibling of the numbered corner tag. The slot label sits at the top of each card as a flush corner tag — same geometry as the numbered tag, but the content is editorial text instead of a counter. The card body fills from the top; no first line is consumed by a label.
+
+```markdown
+<!-- _class: before-after -->
+
+## Detokenize used to require a vault round-trip.
+
+- Before
+  - Every detokenize call: network round-trip to the central vault, p99 60 ms.
+- After
+  - Local function call against an in-process codebook, p99 8 ms.
+```
+
+**Layouts that support the labeled corner tag:** `before-after`, `compare-prose`, `decision`
+
+- **Authoring is plain.** Write the slot label as the first line of each list item — no bold, no syntax. The build pipeline lifts it into a `<strong>` automatically because in these named-slot layouts the leading text is structurally a slot label, not editorial emphasis. Authors don't carry presentational markup.
+- Tag chrome matches the numbered corner tag — accent fill, white mono text, flush top-left geometry. The labeled and numbered variants are visually a family.
+- `before-after` and `compare-prose` use the unified accent fill because their slots have semantic ordering (before/after, A/B). `decision` is the categorical case: each slot is an independent reason, so the tag and the bottom border cycle through the categorical palette (`--cat-blue`, `--cat-green`, `--cat-purple`, …) — same palette and cycle as `kpi`, inverted to the bottom edge so the two layouts read as siblings (kpi = top accent, decision = bottom accent).
+- Composes with `compare-prose` modifiers: `chosen` and `decision` continue to recolour / strike the lifted label, so the corner tag inherits the modifier's editorial signal.
+- **Banner variant (`banner-tag` modifier).** Add `banner-tag` to the slide directive (e.g. `<!-- _class: decision banner-tag -->`) to flip each card from a flush-corner tag into a full-width header strip. The card becomes a vertical column-flex: tag fits its content height and spans the full card width; body stretches into the remaining height (vertically centred). Use when the slot label is the architectural signal of the card — the categorical case (`BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) — rather than a quiet marker. Default flush-corner stays for the editorial register where the body owns the card. Same lift infrastructure feeds both styles, so authoring is unchanged. Composes with all existing modifiers (`chosen`, `decision`, `mirror`, `vertical`).
+- Named-slot only — `before-after`, `compare-prose`, and `decision` exist precisely to label their cards. Other card-bearing layouts (`cards-grid`, `cards-stack`, etc.) keep the in-card title row because their card titles are editorial sentences, not categorical labels.
 
 ---
 
@@ -2232,7 +2282,7 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 │                                         │
 │  ┃ ✓  Done item one                     │
 │  ┃ ✓  Done item two                     │
-│  ┃ ~  Partial item — annotation         │
+│  ┃ –  Partial item — annotation         │
 │  │ ☐  Pending item                      │
 │  │ ☐  Pending item — annotation         │
 │                                         │
@@ -2248,10 +2298,10 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 <!-- _class: checklist -->
 ```
 
-- Vertical list of state-marked rows. Each item is one line: a state glyph (✓ / ~ / ☐) in the leading column, the label in the body column.
+- Vertical list of state-marked rows. Each item is one line: a state glyph (✓ / – / ☐) in the leading column, the label in the body column.
 - States authored as a leading marker on each item — see [State Convention](#state-convention) for the full mapping:
   - `[x]` → done (✓, `--pass` green, soft pass tint, pass-coloured left bar)
-  - `[~]` → partial (~, `--warn` amber, soft warn tint, warn-coloured left bar)
+  - `[-]` → partial (–, `--warn` amber, soft warn tint, warn-coloured left bar)
   - `[ ]` → todo (☐, `--fail` red, soft fail tint, fail-coloured left bar)
 - Optional trailing inline `` `code` `` on any item floats right as a **status pill** — same convention used by `cards-grid`, `cards-side`, and `actors`. See [Trailing `code` → row pill](#trailing-code--row-pill) below.
 - Optional `_em italic_` tail renders inline as a muted annotation in the same line.
@@ -2269,12 +2319,12 @@ The runtime path is what makes the live preview work — VS Code's Marp extensio
 - [x] Codebook signing live across all production tenants
 - [x] HSM-anchored audit trail readable by Examiner role
 - [x] One reference client integrated end-to-end
-- [~] TTL refresh under cold-start load — _open, see slide 27_
+- [-] TTL refresh under cold-start load — _open, see slide 27_
 - [ ] Multi-tenant codebook operation — _Phase 2_
 - [ ] Crypto-shred runbook hand-off to Platform — _Phase 2_
 ```
 
-**How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[~]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|fail"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
+**How the renderer maps this:** A Marpit plugin (`checklistItemStates` in [marp.config.js](../../marp.config.js)) walks each top-level `<li>` whose text begins with `[x]`, `[-]`, or `[ ]`, strips the marker, and adds `class="state pass|warn|fail"` to the `<li>`. CSS draws the glyph as a `::before` pseudo-element. The same transformation runs in `lattice-emulator.js` (build pipeline) and `lattice-runtime.js` (VS Code preview) so the three channels stay in sync.
 
 **State palette:** Reuses the `--pass` / `--warn` / `--fail` tokens (and their `*-bg` soft fills) that both themes ship at WCAG AA on body backgrounds. See the [State Convention](#state-convention) section for the canonical mapping shared with `verdict-grid`.
 
@@ -2284,11 +2334,15 @@ A trailing inline `` `code` `` on any row floats right as a small mono-font pill
 
 ```markdown
 - [x] Codebook signing live across production `shipped 2026-Q1`
-- [~] Cold-start TTL refresh under burst load `owner: platform`
+- [-] Cold-start TTL refresh under burst load `owner: platform`
 - [ ] Multi-tenant codebook authoring `Phase 2`
 ```
 
 **Visual recipe:** identical to the cards-grid badge — `--fs-label`, `font-weight:600`, `border-radius:999px`, `border-color:var(--text-muted)`, neutral background. Pure CSS, no plugin work — the rendered `<code>` element gets `margin-left:auto` to anchor right, and the universal pill paint is applied.
+
+**Theming hooks:** the universal rule reads three custom properties — `--pill-border`, `--pill-bg`, `--pill-fg` — each falling back to the default neutral recipe. A layout (or a single slide via `style="--pill-border:var(--accent)"`) can recolor pills without restating the chrome. The `actors` layout already uses this hook to assign per-row accent colors.
+
+**Where it applies:** the universal rule fires on `cards-grid`, `cards-side`, `actors`, `checklist`, and any future layout whose `> li` is `display:flex`. Layouts that partition the row with grid/scaffold (`list`, `list-criteria`, `list-tabular`, `cards-stack`, `cards-wide`) are explicitly excluded — `margin-left:auto` cannot right-anchor inside a grid track. To opt in, those layouts need a small per-layout placement override modeled on the `actors` rule (`grid-column`, `justify-self`, `align-self`); the chrome inherits for free.
 
 **Long-text policy:** the pill stays on one line (`white-space:nowrap`, matching cards-grid). If the metadata phrase is too long to fit, **it is too long for the pill recipe** — push it back into the row body, or add a below paragraph for context. The pill is a tag, not a card.
 
@@ -2296,10 +2350,215 @@ A trailing inline `` `code` `` on any row floats right as a small mono-font pill
 
 - **Pill abuse as second body.** Authors are tempted to write a full clause inside backticks once pills look pretty. *Pill text is a short status phrase — target under ~25 characters.* If you need a sentence, write it in the row body.
 - **Mid-row code styled as a pill.** The CSS targets `> li > code` (any direct child), so an inline `` `code` `` snippet mid-row will also float right as a pill — it cannot tell the difference between *trailing metadata* and *mid-sentence reference to an identifier*. Authoring guidance: keep code references in the row body to a minimum, and reserve trailing backticks for status metadata. (This is the same trade-off cards-grid makes.)
-- **Pill on a `[x]` row.** Allowed, so the rule is uniform — but editorially, *done is done*: a passed row rarely needs a follow-up tag. Reserve pills for `[~]` and `[ ]` rows where there's actual outstanding metadata.
+- **Pill on a `[x]` row.** Allowed, so the rule is uniform — but editorially, *done is done*: a passed row rarely needs a follow-up tag. Reserve pills for `[-]` and `[ ]` rows where there's actual outstanding metadata.
 - **Locale length drift.** Translated decks (EN → DE, EN → FI) can run 30–50 % longer; nowrap pills will overflow visibly. Authors translating a checklist deck should reshorten pill text in the target locale.
 
 **When to use:** acceptance reviews, retro snapshots, "what shipped vs what slipped" summaries — any slide where the editorial point is *the mix of states*, not the body text behind each row. If items need a sentence of body context, reach for `verdict-grid` or `list-criteria` instead. If items are equal-weight bullets without state, use `tldr` or `list`.
+
+---
+
+## Template 29: Chart Family (`progress`, `timeline-list`, `piechart`)
+
+A small family of list-and-pill chart layouts that share one **chart-frame** skeleton: a lucent header strip with eyebrow + h2 + subtitle, a dominant chart body, and an optional caption. Authors write a flat list with trailing inline `` `code` `` pills; the renderer rewrites the section into chart-specific markup at build time (`lattice-emulator.js`) and at preview time (`lattice-runtime.js`).
+
+**Modifiers shared by all three layouts:**
+
+- `dark` — dark canvas; status colours hold their AA contrast.
+- `minimal` — quieter chrome (no lucent strip; an accent hairline replaces it).
+
+**Status pill vocabulary** (used by `progress` row tints and as trailing pills in `timeline-list`):
+
+| Token       | Reads as                       |
+|-------------|---------------------------------|
+| `on-track`  | green / `--pass`                |
+| `done`      | green / `--pass`                |
+| `live`      | green / `--pass`                |
+| `at-risk`   | amber / `--warn`                |
+| `warn`      | amber / `--warn`                |
+| `pilot`     | amber / `--warn`                |
+| `blocked`   | red / `--fail`                  |
+| `fail`      | red / `--fail`                  |
+| `decision`  | accent / theme accent           |
+| `deferred`  | muted / `--text-muted`          |
+
+### 29a — `progress` (horizontal bars with status pills)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · BAR EYEBROW                  │
+│  ## Phase readiness, by workstream.     │
+│  Subtitle line — optional context.      │
+│                                         │
+│  Codebook platform   ████████▌  92%  ●  │
+│  Operations runbook  █████▌     68%  ●  │
+│  Compliance audit    ███████▌   81%  ●  │
+│  SDK polyglot parity ███▌       34%  ●  │
+│  Dependency dashbd.  █          12%  ●  │
+│                                         │
+│  Source · refreshed 2026-05-07          │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `progress` (composes with `dark`, `minimal`)
+
+**Marp directive:**
+
+```markdown
+<!-- _class: progress -->
+```
+
+- One row per top-level `<li>`. Each row carries a label, a track (filled to `--pct` of its width), a numeric readout, and an optional status pill that tints the bar fill.
+- Trailing inline `` `code` `` pills on each item: **first** is the percentage (`92%`), **second** (optional) is the status token (`on-track`, `at-risk`, etc.).
+- Rows share a fixed grid template so all bar tracks come out the exact same length; the percentage column is left-aligned and the pill column is right-aligned.
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: progress -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Phase 1 readiness, by workstream.
+
+Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`
+
+_Source: Linear · refreshed 2026-05-07_
+```
+
+### 29b — `timeline-list` (horizontal spine with date pills)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · CODEBOOK ARCHITECTURE        │
+│  ## How the architecture arrived.       │
+│  Subtitle — optional context.           │
+│                                         │
+│  ──●─────●─────●─────●──                │
+│   ▢2024 ▢2025 ▢2025 ▢2026               │
+│   Q3    Q1    Q3    Q1                  │
+│   Vault Codeb Pilot Prod                │
+│         (decn)(pilot)(live)             │
+│   body  body  body   body               │
+│                                         │
+│  Caption — Cross-functional sign-off    │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `timeline-list` (composes with `dark`, `minimal`)
+
+**Marp directive:**
+
+```markdown
+<!-- _class: timeline-list -->
+```
+
+- Ordered list (`<ol>`) — each `<li>` becomes a node on a horizontal spine.
+- **Leading** inline `` `code` `` is the date pill (renders above the dot).
+- **Trailing** inline `` `code` `` (optional) is the status pill (uses the same vocabulary as `progress`).
+- Optional nested bullet under each item becomes the body text below the title.
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: timeline-list -->
+
+`Codebook architecture`
+
+## How the codebook architecture arrived in production.
+
+Four stages over eighteen months. Date pill leads each item; status pill trails.
+
+1. `2024 Q3` Vault round-trip
+   - First production tokenization shipped on a centralised vault. p99 60 ms.
+2. `2025 Q1` Codebook proposal `decision`
+   - Architecture review accepts the in-process model.
+3. `2025 Q3` Pilot `pilot`
+   - One internal team, one workload, one quarter.
+4. `2026 Q1` Production `live`
+   - Codebook signing live across all production tenants.
+```
+
+### 29c — `piechart` (SVG pie/donut with legend)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · 1,840 PERSON-HOURS           │
+│  ## Where the engineering quarter went. │
+│  Subtitle — optional context.           │
+│                                         │
+│      ╭───╮     ▣ Codebook plat.   46%   │
+│     ╱     ╲    ▣ Operations rb.   22%   │
+│    │   ◯   │   ▣ Compliance       18%   │
+│     ╲     ╱    ▣ Pilot support     9%   │
+│      ╰───╯     ▣ Toil and on-call  5%   │
+│                                         │
+│  Caption — Refreshed weekly             │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `piechart` (composes with `donut`, `dark`, `minimal`)
+
+**Marp directives:**
+
+```markdown
+<!-- _class: piechart donut -->   <!-- ring with hollow centre -->
+<!-- _class: piechart -->         <!-- solid wedges -->
+```
+
+- Flat bullet list with one trailing inline `` `code` `` per item carrying the magnitude (`46%`, `22%`, … or raw counts like `8`, `5`).
+- Wedges are drawn proportionally; the legend reads in author order with the raw values.
+- Wedge colours come from a fixed eight-colour categorical palette (`--cat-blue`, `--cat-green`, …) cycled in source order.
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: piechart donut -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the engineering quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Codebook platform `46%`
+- Operations runbook `22%`
+- Compliance work `18%`
+- Pilot support `9%`
+- Toil and on-call `5%`
+
+_Refreshed weekly · last updated 2026-05-07_
+```
+
+### Shared frame (`chart-frame`)
+
+The renderer wraps every chart-family slide in this skeleton:
+
+```text
+section.<layout>.chart-frame
+├── div.chart-header
+│   ├── p.chart-eyebrow > code      (the leading single-code paragraph)
+│   ├── h2                          (the slide heading)
+│   └── p.chart-subtitle            (optional: first <p> after h2)
+├── div.chart-body
+│   └── (chart-specific markup: progress-bars / timeline-spine / piechart-figure)
+└── p.chart-caption                 (optional: trailing italic <p> after the list)
+```
+
+**How the renderer maps this:** Both `lattice-emulator.js` (build) and `lattice-runtime.js` (VS Code preview) walk every `section.progress | section.timeline-list | section.piechart`, extract the eyebrow / subtitle / caption, rewrite the list as the chart-specific markup, then add the `chart-frame` class. Both transforms are idempotent — re-running over an already-transformed section is a no-op.
+
+**Risks worth naming:**
+
+- **Eyebrow contract is strict.** The leading `<p>` is only treated as the eyebrow when it contains exactly one `<code>` and no other text. `` Phase 1 · `H1 2026` `` does *not* lift to the eyebrow strip — keep it as a single backticked phrase.
+- **`donut` only composes with `piechart`.** Adding `donut` to `progress` or `timeline-list` is silently ignored.
+- **Status pill words are a closed set.** Tokens outside the table above render with no colour — add the value to the vocabulary in `lattice.css` before using it.
+
+**When to use:** progress slides for end-of-quarter readiness or capacity claims; `timeline-list` for shipping milestones over weeks–years; `piechart` for an allocation snapshot where the editorial point is *proportion*. If the data is more than one chart's worth, split across slides — the chart-frame is one chart per page.
 
 ---
 

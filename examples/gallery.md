@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: indaco
+theme: cuoio
 size: 16:9
 paginate: true
 header: "Lattice · Layout Gallery"
@@ -357,7 +357,7 @@ _Source: pilot retrospective, six months across four product teams._
 
 - Tool A · Chorus
   - [x] Speed
-  - [~] Auditability
+  - [-] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
@@ -370,7 +370,7 @@ _Source: pilot retrospective, six months across four product teams._
 - Tool C · Notion
   - [x] Speed
   - [x] Auditability
-  - [~] Adoption
+  - [-] Adoption
   - [ ] Calibration
   - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
 - Tool D · Sprig + Decision Log
@@ -460,9 +460,9 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Two options with a connector and an explanatory note below.
 
-- Option A · Label
+- Option A
   - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- Option B · Label
+- Option B
   - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
 
 The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
@@ -815,9 +815,9 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
-- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
-- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
-- **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+1. **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
+2. **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+3. **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
 
 ---
 
@@ -942,11 +942,11 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 `Decision · 2026 Q1`
 
-- **Build**
+- Build
   - Owns the architecture, owns the operating model, owns the timeline.
-- **Why not buy**
+- Why not buy
   - Three vendors evaluated; none cover the regulatory boundary in-process.
-- **Why not delay**
+- Why not delay
   - The compliance window closes in 18 months.
 
 ---
@@ -958,12 +958,42 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 `Latency story · before vs after`
 
-- **Before**
+- Before
   - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
-- **After**
+- After
   - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
 
 The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
+
+---
+
+<!-- _class: decision banner-tag -->
+<!-- _footer: "Variant — decision · banner-tag" -->
+
+## Same decision, banner-tag variant.
+
+`Decision · banner-tag modifier`
+
+- Build
+  - Owns the architecture, owns the operating model, owns the timeline.
+- Why not buy
+  - Three vendors evaluated; none cover the regulatory boundary in-process.
+- Why not delay
+  - The compliance window closes in 18 months.
+
+---
+
+<!-- _class: before-after banner-tag -->
+<!-- _footer: "Variant — before-after · banner-tag" -->
+
+## Same comparison, banner-tag variant.
+
+`Latency story · banner-tag modifier`
+
+- Before
+  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
+- After
+  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
 
 ---
 
@@ -1068,7 +1098,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 - [x] Codebook signing live across all production tenants
 - [x] HSM-anchored audit trail readable by Examiner role `shipped 2026-Q1`
 - [x] One reference client integrated end-to-end
-- [~] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
+- [-] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
 - [ ] Multi-tenant codebook operation `Phase 2`
 - [ ] Crypto-shred runbook hand-off to Platform `Phase 2`
 
@@ -1104,6 +1134,102 @@ The spacing scale grows ~25 % rather than shrinks. Sections that already look ge
 The discipline is the same as `compact` from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.
 
 > Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
+
+---
+
+<!-- _class: progress -->
+<!-- _footer: "Horizontal bars with status pills · progress" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Phase 1 readiness, by workstream.
+
+Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`
+
+_Source: Linear · refreshed 2026-05-07_
+
+---
+
+<!-- _class: progress dark -->
+<!-- _footer: "Dark canvas · progress dark" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## The same data, dark canvas.
+
+Status colours hold their contrast against the dark canvas; the lucent strip darkens proportionally.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`
+
+---
+
+<!-- _class: timeline-list -->
+<!-- _footer: "Horizontal spine with date pills · timeline-list" -->
+
+`Codebook architecture`
+
+## How the codebook architecture arrived in production.
+
+Four stages over eighteen months. Date pill leads each item; status pill trails. The spine and dots come for free from CSS.
+
+1. `2024 Q3` Vault round-trip
+   - First production tokenization shipped on a centralised vault. p99 60 ms.
+2. `2025 Q1` Codebook proposal `decision`
+   - Architecture review accepts the in-process model. Build approved.
+3. `2025 Q3` Pilot `pilot`
+   - One internal team, one workload, one quarter. Detokenize p99 lands at 8 ms.
+4. `2026 Q1` Production `live`
+   - Codebook signing live across all production tenants.
+
+_Cross-functional sign-off · 2026-04-29_
+
+---
+
+<!-- _class: piechart donut -->
+<!-- _footer: "SVG donut with legend · piechart donut" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the engineering quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Codebook platform `46%`
+- Operations runbook `22%`
+- Compliance work `18%`
+- Pilot support `9%`
+- Toil and on-call `5%`
+
+_Refreshed weekly · last updated 2026-05-07_
+
+---
+
+<!-- _class: progress minimal -->
+<!-- _footer: "Minimal modifier · progress minimal" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Same data, minimal treatment.
+
+The lucent strip is gone; the header reads as quiet typography with an accent hairline, and the chart dominates more.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`
+
+_Source: Linear · refreshed 2026-05-07_
 
 ---
 

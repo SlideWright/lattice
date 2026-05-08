@@ -49,9 +49,15 @@ it is load-bearing.
   migration. Was previously the repo-root `AgentNote.md`.
 - [2026-05-04-authoring-proposals.md](2026-05-04-authoring-proposals.md) —
   forward-looking design RFC for the authoring system: component
-  model, modifier catalogue, new layout proposals. Explicitly
-  non-canonical; ground truth lives in `../references/templates.md`
-  and `examples/gallery.md`.
+  model, modifier catalogue, new layout proposals (§3.1–§3.14),
+  authoring DX & rollout plan. Explicitly non-canonical; ground
+  truth lives in `../references/templates.md` and
+  `examples/gallery.md`.
+- [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md) —
+  companion to the May 4 RFC: chart-family layouts that turn
+  list/sublist + inline-code pills into timelines, Gantts, pie /
+  progress / kanban, plus adjacent candidates. Same component-model
+  frame; same non-canonical status.
 - [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
   canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
   ASCII layout preview in `templates.md`, plus the
