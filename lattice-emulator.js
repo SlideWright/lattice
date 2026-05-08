@@ -512,17 +512,32 @@ const MERMAID_VAR_MAP = {
 };
 
 // ── Resolver: parses CSS custom properties from the palette file ─────────
-// Walks every :root { ... } block and extracts --variable-name: #hex pairs,
-// then resolves any var() references one level deep. Returns a flat hex map.
+// Walks every :root { ... } block and extracts --variable-name: <value>,
+// then resolves light-dark() and one level of var() references. Returns
+// a flat map suitable for feeding Mermaid themeVariables (which expects
+// literal colors, not CSS expressions).
 function parsePaletteVars(paletteCSSContent) {
+  // Strip CSS comments first so doc blocks containing example strings
+  // like `":root{color-scheme:dark}"` don't break the :root brace matcher.
+  const stripped = paletteCSSContent.replace(/\/\*[\s\S]*?\*\//g, '');
   const vars = {};
-  const rootBlocks = paletteCSSContent.match(/:root\s*\{[^}]*\}/g) || [];
+  const rootBlocks = stripped.match(/:root\s*\{[^}]*\}/g) || [];
   for (const block of rootBlocks) {
     const decls = block.match(/--[a-z0-9-]+\s*:\s*[^;]+/gi) || [];
     for (const d of decls) {
       const m = d.match(/--([a-z0-9-]+)\s*:\s*(.+)$/i);
       if (m) vars[m[1]] = m[2].trim();
     }
+  }
+  // Determine the palette's effective color-scheme. Mermaid renders in an
+  // isolated SVG context, so `light-dark()` cannot resolve dynamically per
+  // viewer; we collapse it now to whichever side matches what the deck is
+  // declared as. Dark variants (e.g. cuoio-dark.css) declare
+  // `color-scheme: dark` at :root; everything else is treated as light.
+  const isDark = /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
+  for (const k of Object.keys(vars)) {
+    const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
+    if (ld) vars[k] = isDark ? ld[2] : ld[1];
   }
   // Resolve var() references one level deep (e.g. --bg-dark: var(--brand-blue-deep))
   for (const k of Object.keys(vars)) {
@@ -755,6 +770,25 @@ const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1]
 // Marp distinguishes the deck-wide form (no leading underscore) from the
 // per-slide `_class:` directive. Multiple classes are space-separated.
 const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+// Deck-wide `style:` directive — Marp injects this CSS verbatim into the
+// rendered output. Authors use it for ad-hoc overrides like
+// `style: ":root{color-scheme:dark}"` without needing a custom theme.
+// Two forms are supported: an inline string (`style: "..."`) and a YAML
+// block scalar (`style: |` followed by indented lines).
+function readGlobalStyle(fmText) {
+  const inline = fmText.match(/^\s*style:\s*(["'])([\s\S]*?)\1\s*$/m);
+  if (inline) return inline[2];
+  const block = fmText.match(/^\s*style:\s*\|\s*\r?\n([\s\S]*?)(?=^\S|\Z)/m);
+  if (block) {
+    return block[1]
+      .split(/\r?\n/)
+      .map((l) => l.replace(/^ {2}/, '')) // strip the YAML indent (≥2 spaces)
+      .join('\n')
+      .trimEnd();
+  }
+  return '';
+}
+const globalStyle = readGlobalStyle(fm);
 const headingDivider = (() => {
   const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
   return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
@@ -1909,6 +1943,7 @@ ${googleFonts}
 body  { margin: 0; padding: 0; }
 ${css}
 ${marpSystemCss}
+${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
 ${highlightedSlides.join('\n')}
 <script>

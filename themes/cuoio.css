@@ -60,7 +60,32 @@
 
 @import 'lattice';
 
+/* Zero-specificity light default — see the long comment in the next
+ * :root block. Author overrides via `style: ":root{color-scheme:dark}"`
+ * always win because plain :root is (0,0,1) and :where() is (0,0,0). */
+:where(:root) { color-scheme: light; }
+
 :root {
+  /* ── Color scheme ─────────────────────────────────────────────────────
+   * Default to light. Authors can flip to dark via Marp's native
+   * front-matter `style:` directive — no engine plugins, no class
+   * surgery, works in marp-cli, the emulator, AND the VS Code preview
+   * (because `style:` injects CSS that survives Marpit's directive
+   * pipeline). One-line incantations:
+   *
+   *   style: ":root{color-scheme:dark}"        // force whole-deck dark
+   *   style: ":root{color-scheme:light dark}"  // follow OS / viewer pref
+   *
+   * Per-slide override is unaffected: `<!-- _class: dark -->` on a
+   * single slide flips just that section via lattice.css's section.dark
+   * rule (which sets color-scheme:dark on the section, so light-dark()
+   * descendants resolve to the dark side).
+   *
+   * The default `color-scheme: light` lives in a sibling :where(:root)
+   * rule below so its specificity is zero — any author-authored
+   * `:root { color-scheme: ... }` (whether from a style: directive or a
+   * theme variant like cuoio-dark) wins the cascade automatically. */
+
   /* ── Cuoio brand axis (single source of truth for brand color) ─────── */
   --brand-leather-deep:  #1E1A15;  /* dark espresso — bg-dark            */
   --brand-leather-mid:   #5B4A30;  /* mid leather — divider panels       */
@@ -68,18 +93,22 @@
   --brand-gold-bright:   #C8A040;  /* decorative spectrum endpoint        */
   --brand-green-deep:    #2D6A3F;  /* pass signal — 6.06:1 on bg AA      */
 
-  /* ── Surfaces ──────────────────────────────────────────────────────── */
-  --bg:       #FAF7F2;          /* canvas — warm parchment                */
-  --bg-alt:   #F3EDE4;           /* card fill — deeper cream              */
+  /* ── Surfaces ──────────────────────────────────────────────────────────
+   * Surface tokens use light-dark() so a single `color-scheme: dark`
+   * declaration (at :root or on a section) flips every descendant
+   * lookup without touching the layout CSS. WCAG annotations refer to
+   * the light pair; dark pair clears AAA on its own surface. */
+  --bg:       light-dark(#FAF7F2, var(--dark-bg));      /* parchment / espresso */
+  --bg-alt:   light-dark(#F3EDE4, var(--dark-bg-alt));  /* card fill            */
   --bg-dark:  var(--brand-leather-deep); /* dark panels / title / divider */
-  --border:   #E0D8CC;           /* hairline rule — decorative            */
+  --border:   light-dark(#E0D8CC, var(--dark-border));  /* hairline rule        */
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
-  --text-display: #FAF7F2;      /* on dark surfaces — 16.19:1 on bg-dark  */
-  --text-heading: var(--brand-leather-deep); /* espresso — 16.19:1 on bg  */
-  --text-body:    #6B5D4F;      /* warm umber — 5.95:1 on bg AA           */
-  --text-label:   #6F604F;      /* deeper umber for labels — 5.68:1 on bg */
-  --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE        */
+  --text-display: #FAF7F2;      /* on dark surfaces — 16.19:1 on bg-dark         */
+  --text-heading: light-dark(var(--brand-leather-deep), var(--dark-text-heading)); /* 16.19:1 / 17.58:1 */
+  --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
+  --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
+  --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE                */
 
   /* ── Brand accent ─────────────────────────────────────────────────── */
   --accent:      var(--brand-leather); /* saddle — 5.96:1 on bg AA        */

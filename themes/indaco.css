@@ -54,7 +54,28 @@
 
 @import 'lattice';
 
+/* Zero-specificity light default — see the long comment in the next
+ * :root block. Author overrides via `style: ":root{color-scheme:dark}"`
+ * always win because plain :root is (0,0,1) and :where() is (0,0,0). */
+:where(:root) { color-scheme: light; }
+
 :root {
+  /* ── Color scheme ──────────────────────────────────────────────────────
+   * Default to light. Authors flip to dark deck-wide via Marp's native
+   * front-matter `style:` directive — works in marp-cli, the emulator,
+   * AND the VS Code preview (because `style:` injects CSS that survives
+   * Marpit's directive pipeline). One-line incantations:
+   *
+   *   style: ":root{color-scheme:dark}"        // force whole-deck dark
+   *   style: ":root{color-scheme:light dark}"  // follow OS / viewer pref
+   *
+   * Per-slide override is unaffected: `<!-- _class: dark -->` flips just
+   * that section via lattice.css's section.dark rule.
+   *
+   * The default `color-scheme: light` lives in a sibling :where(:root)
+   * rule below so its specificity is zero — any author override (via
+   * style: directive or the indaco-dark variant theme) wins the cascade. */
+
   /* ── Lattice brand axis (single source of truth for brand color) ── */
   --brand-blue-deep:  #003D66;  /* dark canvas, bg-dark                  */
   --brand-blue-mid:   #006FA8;  /* accent, text-label — 5.47:1 bg AA     */
@@ -62,17 +83,19 @@
   --brand-green-deep: #2F6B12;  /* pass signal — 6.50:1 on white         */
   --brand-green:      #6CB516;  /* decorative spectrum endpoint          */
 
-  /* ── Surfaces ──────────────────────────────────────────────────────── */
-  --bg:       #FFFFFF;          /* canvas — pure white                    */
-  --bg-alt:   #F2F5FA;          /* card fill — cool blue-white            */
+  /* ── Surfaces ──────────────────────────────────────────────────────────
+   * light-dark() makes every descendant lookup follow the active
+   * color-scheme — at :root, on a section, or anywhere in between. */
+  --bg:       light-dark(#FFFFFF, var(--dark-bg));      /* canvas         */
+  --bg-alt:   light-dark(#F2F5FA, var(--dark-bg-alt));  /* card fill      */
   --bg-dark:  var(--brand-blue-deep); /* dark panels / title / divider   */
-  --border:   #E4EAF2;          /* hairline rule — decorative             */
+  --border:   light-dark(#E4EAF2, var(--dark-border));  /* hairline rule  */
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #FFFFFF;      /* on dark surfaces — 11.29:1 on bg-dark  */
-  --text-heading: #0A1628;      /* near-black slate  — 18.13:1 on bg      */
-  --text-body:    #1E3A5F;      /* corporate navy    — 11.50:1 on bg      */
-  --text-label:   var(--brand-blue-mid); /* eyebrows — 5.47:1 bg AA       */
+  --text-heading: light-dark(#0A1628, var(--dark-text-heading)); /* 18.13:1 / 17.12:1 */
+  --text-body:    light-dark(#1E3A5F, var(--dark-text-body));    /* 11.50:1 / 9.04:1  */
+  --text-label:   light-dark(var(--brand-blue-mid), var(--dark-text-label)); /* 5.47:1 / 6.95:1 AA */
   --text-muted:   #6B7F9A;      /* chrome / secondary — DECORATIVE        */
 
   /* ── Brand accent ─────────────────────────────────────────────────── */

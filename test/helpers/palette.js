@@ -16,8 +16,13 @@ const path = require('path');
 const SENTINEL = '/* ===== MERMAID THEME CSS ===== */';
 
 function parsePaletteVars(content) {
+  // Strip CSS comments first so doc blocks containing example strings
+  // like `":root{color-scheme:dark}"` don't terminate the :root block
+  // matcher's brace-balanced sweep prematurely. Real declarations never
+  // have CSS comments mid-value, so this is safe.
+  const stripped = content.replace(/\/\*[\s\S]*?\*\//g, '');
   const vars = {};
-  const rootBlocks = content.match(/:root\s*\{[^}]*\}/g) || [];
+  const rootBlocks = stripped.match(/:root\s*\{[^}]*\}/g) || [];
   for (const block of rootBlocks) {
     const decls = block.match(/--[a-z0-9-]+\s*:\s*[^;]+/gi) || [];
     for (const d of decls) {

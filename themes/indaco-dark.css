@@ -3,36 +3,13 @@
  *
 /* Lattice · Indaco (dark canvas)
  * ────────────────────────────────────────────────────────────────────────
- * Sibling palette to indaco. Same brand axis, same WCAG AA disclosure,
- * same Mermaid CSS extensions — the only difference is that the surface
- * tokens (--bg, --bg-alt, --border, --text-*) are pinned to the dark
- * variants at :root, so every section renders against a deep-navy canvas
- * without authors marking individual slides.
- *
- * See themes/cuoio-dark.css for the rationale on why a sibling theme is
- * the correct CSS-only deck-wide-dark mechanism (instead of front-matter
- * `class: dark`, which Marpit drops on slides that carry a `_class:`
- * directive — i.e. nearly every slide in a real deck).
- */
+ * Thin wrapper over indaco that flips the deck-wide color-scheme to dark.
+ * See themes/cuoio-dark.css for the rationale on why a single
+ * `color-scheme: dark` declaration at :root is the cleanest CSS-only
+ * deck-wide-dark mechanism — it leverages indaco's light-dark() surface
+ * tokens, so every descendant lookup resolves to the dark side without
+ * engine plugins or per-slide annotation. */
 
 @import 'indaco';
 
-:root {
-  --bg:           var(--dark-bg);
-  --bg-alt:       var(--dark-bg-alt);
-  --border:       var(--dark-border);
-  --text-heading: var(--dark-text-heading);
-  --text-body:    var(--dark-text-body);
-  --text-muted:   var(--dark-text-muted);
-  --text-label:   var(--dark-text-label);
-  --text-display: var(--dark-text-display);
-
-  --marp-slide-pagination-color: var(--dark-text-muted);
-  --marp-slide-header-color:     var(--dark-text-muted);
-  --marp-slide-footer-color:     var(--dark-text-muted);
-}
-
-section {
-  background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
-  border-top: none;
-}
+:root { color-scheme: dark; }

@@ -1043,20 +1043,19 @@ section.image-full.dark p:last-of-type {
 }
 
 /* ── DARK VARIANT ──
- * Reskins the slide canvas using --dark-* tokens defined in the active
- * palette. The same layout structure works on either canvas. */
+ * Per-slide dark canvas. Flips this section's color-scheme to dark; the
+ * palette's surface tokens use light-dark(), so `var(--bg)` etc. resolve
+ * to the dark side automatically for every descendant of this section.
+ * Deck-wide dark is achieved the same way at :root scope, via the
+ * native Marp front-matter directive
+ *   style: ":root{color-scheme:dark}"
+ * (or the cuoio-dark / indaco-dark variant theme, which is just a
+ * thin :root color-scheme:dark wrapper). */
 section.dark {
-  --bg:           var(--dark-bg);
-  --bg-alt:       var(--dark-bg-alt);
-  --border:       var(--dark-border);
-  --text-heading: var(--dark-text-heading);
-  --text-body:    var(--dark-text-body);
-  --text-muted:   var(--dark-text-muted);
-  --text-label:   var(--dark-text-label);
-  --text-display: var(--dark-text-display);
+  color-scheme: dark;
   background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
+  border-top: none;
 }
-section.dark { border-top: none; }
 
 /* ── CODE ──
  * ### eyebrow  ## heading  *subtitle*  ```lang block
