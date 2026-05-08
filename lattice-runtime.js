@@ -1009,6 +1009,54 @@
     });
   }
 
+  /**
+   * Mirror of marp.config.js's `deckClassPropagate` plugin for the preview
+   * path. Marpit's spec is "spot replaces global", so a slide with a
+   * `_class:` directive drops the deck-wide `class:` value entirely. The
+   * Marpit plugin overrides that at token-rewrite time, but VS Code Marp
+   * preview does not load `marp.config.js`, so the rendered DOM in the
+   * preview retains only per-slide classes.
+   *
+   * The runtime can't read front matter from the rendered DOM (Marpit
+   * strips it cleanly). Instead we fetch the source `.md` opportunistically
+   * — works for published HTML decks where the source is co-located, and
+   * gracefully no-ops for any context where fetch fails (notably VS Code's
+   * `vscode-webview://` sandbox, which doesn't have access to workspace
+   * files via fetch). For the VS Code preview case the recommended path is
+   * the `theme: cuoio-dark` / `theme: indaco-dark` variant themes; this
+   * mirror is a complementary path for users who want `class: dark` to
+   * keep working in browser-based previews of exported HTML.
+   */
+  function applyDeckClassFromFrontMatter() {
+    if (typeof document === 'undefined' || typeof fetch === 'undefined') return;
+    if (typeof window === 'undefined' || !window.location || !window.location.href) return;
+    // Derive the source `.md` URL from the current `.html` URL.
+    const url = window.location.href.replace(/[?#].*$/, '');
+    const mdUrl = url.replace(/\.html?$/i, '.md');
+    if (mdUrl === url) return; // not an .html→.md mapping (e.g. webview://)
+
+    fetch(mdUrl)
+      .then((r) => (r.ok ? r.text() : null))
+      .then((src) => {
+        if (!src) return;
+        const fm = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+        if (!fm) return;
+        const cm = fm[1].match(/^\s*class:\s*["']?(.*?)["']?\s*$/m);
+        if (!cm) return;
+        const deckTokens = cm[1].trim().split(/\s+/).filter(Boolean);
+        if (!deckTokens.length) return;
+        for (const section of document.querySelectorAll('section')) {
+          const cur = section.className.split(/\s+/).filter(Boolean);
+          let changed = false;
+          for (const t of deckTokens) {
+            if (!cur.includes(t)) { cur.push(t); changed = true; }
+          }
+          if (changed) section.className = cur.join(' ');
+        }
+      })
+      .catch(() => { /* fetch blocked / 404 / sandbox — no-op */ });
+  }
+
   function bootstrap() {
     // Diagnostic breadcrumb. Visible in the host's DevTools console.
     // In VS Code: "Developer: Open Webview Developer Tools" while the Marp
@@ -1087,6 +1135,7 @@
       }
       requestAnimationFrame(tick);
     };
+    applyDeckClassFromFrontMatter();
     tick();
     startObserver();
     startGlossaryObserver();

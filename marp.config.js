@@ -355,7 +355,9 @@ module.exports = {
   themeSet: [
     "lattice.css",
     "themes/indaco.css",
+    "themes/indaco-dark.css",
     "themes/cuoio.css",
+    "themes/cuoio-dark.css",
   ],
   html: true,
   allowLocalFiles: true,

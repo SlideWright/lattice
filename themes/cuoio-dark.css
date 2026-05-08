@@ -1,0 +1,56 @@
+/* @theme cuoio-dark
+ * @size 16:9 1280px 720px
+ *
+/* Lattice · Cuoio (dark canvas)
+ * ────────────────────────────────────────────────────────────────────────
+ * Sibling palette to cuoio. Same brand axis, same WCAG AA disclosure,
+ * same Mermaid CSS extensions — the only difference is that the surface
+ * tokens (--bg, --bg-alt, --border, --text-*) are pinned to the dark
+ * variants at :root, so every section renders against a deep-espresso
+ * canvas without authors marking individual slides.
+ *
+ * Why a sibling theme rather than `class: dark` in front-matter:
+ * Marpit's directive spec is "spot replaces global". Decks where every
+ * slide carries a layout `_class:` (gallery.md, every Lattice deck of
+ * meaningful size) drop the deck-wide `class: dark` on parse. Only the
+ * `theme:` directive survives uniformly because it has no spot variant.
+ * VS Code Marp preview loads themes via `markdown.marp.themes` but does
+ * not load `marp.config.js`, so the per-section CSS approach works
+ * universally — preview, marp-cli, and the lattice emulator all see it.
+ *
+ * Per-slide opt-out / opt-in still works the same way it does in the
+ * light cuoio theme: a slide carrying `_class: light` (if the layout CSS
+ * defines `section.light`) or any future light marker can override at
+ * the section scope; lattice.css owns those rules.
+ */
+
+@import 'cuoio';
+
+/* Pin surface tokens to the dark-variant values cuoio already defines.
+ * Cascade order: lattice → cuoio :root sets light defaults → this :root
+ * overrides them with --dark-* values → every section inherits. */
+:root {
+  --bg:           var(--dark-bg);
+  --bg-alt:       var(--dark-bg-alt);
+  --border:       var(--dark-border);
+  --text-heading: var(--dark-text-heading);
+  --text-body:    var(--dark-text-body);
+  --text-muted:   var(--dark-text-muted);
+  --text-label:   var(--dark-text-label);
+  --text-display: var(--dark-text-display);
+
+  /* Marp chrome on dark — keep the same muted-tan posture for header /
+   * footer / pagination so they stay legible against the dark canvas. */
+  --marp-slide-pagination-color: var(--dark-text-muted);
+  --marp-slide-header-color:     var(--dark-text-muted);
+  --marp-slide-footer-color:     var(--dark-text-muted);
+}
+
+/* Re-apply the dark-canvas border/background that lattice.css attaches
+ * to `section.dark` so the cuoio-dark canvas matches the appearance of
+ * a per-slide `_class: dark` slide. The spectrum hairline at the top
+ * comes from the same gradient cuoio defines. */
+section {
+  background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
+  border-top: none;
+}

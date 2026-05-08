@@ -216,7 +216,34 @@ if (!fs.existsSync(palettePath)) {
   console.error(`available palettes: ${listAvailablePalettes()}`);
   process.exit(1);
 }
-const paletteCSS = readFileOrDie(palettePath, `palette '${paletteName}'`);
+// Load the palette and any sibling palette imports it declares (e.g.
+// cuoio-dark.css imports cuoio.css). The palette parser scans `:root`
+// blocks of this combined string, so the dark variants inherit every
+// token defined in the parent without duplicating declarations.
+function loadPaletteWithImports(filePath, seen = new Set()) {
+  if (seen.has(filePath)) return '';
+  seen.add(filePath);
+  const content = readFileOrDie(filePath, `palette '${path.basename(filePath, '.css')}'`);
+  // Match `@import 'name';` and `@import "name";` and `@import name;`.
+  // The lattice palette convention is single-token names (cuoio, indaco)
+  // resolved relative to the themes/ directory.
+  const importRe = /@import\s+["']?([A-Za-z0-9_-]+)["']?\s*;/g;
+  let imported = '';
+  let m;
+  while ((m = importRe.exec(content)) !== null) {
+    const name = m[1];
+    if (name === 'lattice') continue; // layout CSS, loaded separately
+    const importPath = path.join(path.dirname(filePath), `${name}.css`);
+    if (fs.existsSync(importPath)) {
+      imported += loadPaletteWithImports(importPath, seen) + '\n';
+    }
+  }
+  // Parent first so child :root blocks override on identical token names
+  // (matches CSS cascade order).
+  return imported + content;
+}
+
+const paletteCSS = loadPaletteWithImports(palettePath);
 const themeCSS   = readFileOrDie(cssFile, 'layout CSS');
 const css = paletteCSS + '\n' + themeCSS;
 
