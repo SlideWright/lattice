@@ -3,7 +3,7 @@ marp: true
 theme: indaco
 size: 16:9
 paginate: true
-header: "Lattice · Layout Gallery"
+header: "Lattice · Decision Framework Gallery"
 ---
 
 <!-- _class: title -->
@@ -12,9 +12,9 @@ header: "Lattice · Layout Gallery"
 
 # From Signal to Strategy
 
-`Product Strategy · Q3 2025`
+`Decision Framework · 2026 H1`
 
-A decision framework for product leaders navigating market uncertainty
+A scoring discipline for product leaders who want their prioritization to learn from itself
 
 ---
 
@@ -24,7 +24,7 @@ A decision framework for product leaders navigating market uncertainty
 
 `Section 01 · Foundations`
 
-## The landscape has shifted. Here is what that means for us.
+## The shape of the problem before we shape the solution.
 
 ---
 
@@ -35,7 +35,7 @@ A decision framework for product leaders navigating market uncertainty
 
 ## Before we score signals, we need to agree on what a signal is.
 
-The word is overloaded. We use it to mean anything from a customer complaint to a macro trend. This framework requires a tighter definition.
+The word is overloaded. We use it to mean anything from a customer complaint to a macro trend. This framework requires a tighter definition or it cannot calibrate.
 
 ---
 
@@ -357,7 +357,7 @@ _Source: pilot retrospective, six months across four product teams._
 
 - Tool A · Chorus
   - [x] Speed
-  - [~] Auditability
+  - [-] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
@@ -370,7 +370,7 @@ _Source: pilot retrospective, six months across four product teams._
 - Tool C · Notion
   - [x] Speed
   - [x] Auditability
-  - [~] Adoption
+  - [-] Adoption
   - [ ] Calibration
   - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
 - Tool D · Sprig + Decision Log
@@ -460,9 +460,9 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Two options with a connector and an explanatory note below.
 
-- Option A · Label
+- Option A
   - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- Option B · Label
+- Option B
   - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
 
 The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
@@ -513,7 +513,7 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 
 <!-- _class: content -->
 <!-- _footer: "Header and footer demo · content" -->
-<!-- _header: "Lattice · Layout Gallery" -->
+<!-- _header: "Lattice · Decision Framework Gallery" -->
 <!-- _footer: "Header stays uppercase · footer renders as written" -->
 
 `Header And Footer`
@@ -527,22 +527,22 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-`Implementation · Token Pipeline`
+`Implementation · Decision Pipeline`
 
-## The tokenization call is three lines of application code.
+## Wiring a signal into the framework is three lines of application code.
 
-`JavaScript · SDK v2 interface`
+`JavaScript · DecisionFramework SDK v2`
 
 ```javascript
-import { TokenVault } from "@company/token-sdk";
+import { DecisionFramework } from "@company/signal-sdk";
 
-const vault = new TokenVault({ keyFile: "./vault.key" });
+const framework = new DecisionFramework({ configFile: "./framework.config.json" });
 
-// Tokenize at ingestion
-const token = await vault.tokenize(ssn, { field: "ssn", tenant: "acme" });
+// Score a signal at intake
+const score = await framework.score(signal, { dimensions: ["confidence", "recency", "relevance"] });
 
-// Detokenize only at point of use — every call is logged
-const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
+// Log every decision tied to its signals — calibration depends on it
+const entry = await framework.decisions.log(decision, { signals: [signal.id], rationale });
 ```
 
 ---
@@ -550,34 +550,36 @@ const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 <!-- _class: compare-code -->
 <!-- _footer: "Two code blocks · compare-code" -->
 
-`Before & After · Key Distribution`
+`Before & After · Scoring Mechanics`
 
-## File-distributed keys versus vault-integrated keys.
+## Spreadsheet-driven scoring versus framework-driven scoring.
 
-`Before · File-distributed`
+`Before · Spreadsheet round-trip`
 
 ```python
-# Key material on disk — anyone with
-# filesystem access can read it
-with open('./vault.key', 'rb') as f:
-    key = f.read()
+# Manual scoring in a spreadsheet —
+# anyone can edit, no audit trail
+import pandas as pd
 
-cipher = AES(key)
-token = cipher.encrypt(ssn)
+signals = pd.read_csv('./signals.csv')
+signals['score'] = signals.apply(
+    lambda r: 0.33*r.confidence + 0.33*r.recency + 0.33*r.relevance,
+    axis=1,
+)
+signals.to_csv('./scored.csv')
 ```
 
-`After · HSM / KMS integrated`
+`After · Framework-driven`
 
 ```python
-# Key never leaves the HSM —
-# every operation is audited
-import boto3
+# Calibrated weights, signed policy,
+# every score is audit-logged
+from decision_framework import Calibrator
 
-kms = boto3.client('kms')
-token = kms.encrypt(
-    KeyId='alias/tokenization',
-    Plaintext=ssn
-)['CiphertextBlob']
+calibrator = Calibrator.load('./policy.json')
+for signal in calibrator.intake.unscored():
+    calibrator.score(signal)
+    calibrator.decisions.log_if_relevant(signal)
 ```
 
 ---
@@ -676,7 +678,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 ## The card stack renders cleanly on dark backgrounds.
 
 - Every card uses `--bg-alt` for fill and `--border` for the border — both remap in dark mode.
-- The accent left border uses `--accent` which is unchanged — the gold reads well against dark.
+- The accent left border uses `--accent` which is unchanged — it reads well against dark.
 - Body text shifts to `--text-body` which in dark mode is a warm light tone, not pure white.
 
 ---
@@ -688,7 +690,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Two-card layouts work equally well inverted to dark.
 
-- The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
+- The framework introduces a single calibration question: what proves your scoring model is improving, and what is the cost of running without that proof for a quarter? Every other question in this document depends on the answer.
 - The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
 ---
@@ -701,11 +703,11 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 ## The phase modifier renames the prefix word from STEP to PHASE.
 
 1. Architecture
-   - The first phase scopes the technical surface — what we build, what we buy, what we defer. Output is an architecture decision record signed by the platform owner.
+   - The first phase scopes the framework's surface — what we score, what we ignore, what we defer. Output is a scoring policy signed by the platform owner.
 2. Pilot
-   - One internal team, one workload, one quarter. The phase ends when the integration is in production and the on-call rota covers it.
+   - One internal team, one decision type, one quarter. The phase ends when the framework is live in production cadence and the calibration loop has run twice.
 3. Rollout
-   - Five teams in two months. The phase ends when no team needs handholding and incident volume is at or below pre-rollout baseline.
+   - Five teams in two months. The phase ends when no team needs handholding and decision-log adoption is at or above 90% of eligible PMs.
 
 ---
 
@@ -716,12 +718,12 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
-1. Codebook signing in production
-   - The HSM-anchored signing pipeline runs end-to-end. The first signed codebook installs cleanly on a real client.
-2. Multi-tenant DEKs
-   - One codebook can carry distinct DEKs per tenant without per-tenant rebuilds. Crypto-shred is a single HSM op.
-3. Per-purpose codebooks
-   - Authoring a codebook scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
+1. Scoring policy in production
+   - The signed scoring policy runs end-to-end. The first calibrated brief lands in product leadership's inbox.
+2. Per-team weights
+   - One framework can carry distinct scoring weights per team without per-team forks. Recalibration is a single policy update.
+3. Per-decision-class profiles
+   - Authoring a scoring profile scoped to a single decision class takes minutes, not days. Audit trails distinguish profiles by default.
 
 ---
 
@@ -748,10 +750,10 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Chosen flags the right-hand card as the winner.
 
-- Vault round-trip
-  - Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.
-- In-process codebook
-  - Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.
+- Quarterly recalibration
+  - Weights are reviewed once a quarter against accumulated outcomes. Predictable cadence, low overhead, but a full quarter of stale weights between updates.
+- Continuous calibration
+  - Weights update at every retrospective once a minimum sample is reached. Latency from outcome to weight change drops from 90 days to under 14. Drift is observed, not retrofitted.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
 
@@ -764,10 +766,10 @@ The right card carries an accent left-edge and accent-tinted background — the 
 
 ## Decision composes chosen + rejected with a labelled connector.
 
-- Buy a vendor
-  - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.
-- Build in-house
-  - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
+- Buy a vendor framework
+  - Three vendors evaluated; none expose calibration weights to the customer. Time-to-value is six months at best; ongoing per-seat licensing.
+- Build the framework in-house
+  - Owns the scoring policy, owns the calibration loop, owns the timeline. The competitive window closes in 18 months and a vendor cutover would consume nine of those.
 
 The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
 
@@ -780,10 +782,10 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
-- Before — manual rotation
-  - Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.
-- After — version-floor rotation
-  - The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.
+- Before — manual recalibration
+  - Operators schedule a recalibration window, freeze new decisions on the affected scope, swap weights, run a verification pass, lift the freeze. Average review pause: 18 working hours.
+- After — version-floor recalibration
+  - The calibration loop emits a new policy with an incremented version. Teams pick up the new policy on next refresh. No freeze. No coordinated cutover.
 
 ---
 
@@ -794,12 +796,12 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Three switches the grid from 2 columns to 3 columns.
 
-- Codebook
-  - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry. The codebook is the unit of distribution.
-- DEK
-  - Data encryption key. Wrapped by a KEK; lives plaintext only inside native SDK memory. Never leaves the host.
-- KEK
-  - Key encryption key. Lives in the HSM, never exported. The crypto-shred operation on a tenant is a single HSM op against its KEK.
+- Signal
+  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake.
+- Decision
+  - A signal plus a deadline. Logged with rationale, predicted outcome, and the signals that informed it.
+- Outcome
+  - The observed result against the predicted outcome. The unit of calibration. Without it, the model never learns.
 
 ---
 
@@ -828,9 +830,9 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
-- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
-- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
-- **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+1. **Claim.** The framework gets calibrated prioritization with audit-grade decision custody. We stop paying re-litigation cost on every quarterly review.
+2. **Evidence.** The pilot ran six months across four product teams. Decision close-time landed at 18 minutes; calibration cycles ran without freeze on every retrospective.
+3. **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house framework and ship the operating runbook in the next phase.
 
 ---
 
@@ -937,12 +939,12 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - Vendor A — strongest fit on coverage, second-lowest TCO of the four.
-  - Vendor B — narrower coverage but cheapest license tier.
+  - Sprig + Log — strongest fit on coverage, lowest TCO of the four.
+  - Productboard — narrower coverage but mid-tier license.
 - High coverage / High cost
-  - Vendor C — full coverage, premium pricing, niche differentiators we do not need.
+  - Notion build-out — full coverage in theory, premium maintenance cost in practice.
 - Low coverage / Low cost
-  - Vendor D — cheap, but leaves three regulatory boundaries uncovered.
+  - Chorus — cheap, but leaves three of the four criteria uncovered.
 - Low coverage / High cost
   - _none — and that is the signal._
 
@@ -955,28 +957,58 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 `Decision · 2026 Q1`
 
-- **Build**
-  - Owns the architecture, owns the operating model, owns the timeline.
-- **Why not buy**
-  - Three vendors evaluated; none cover the regulatory boundary in-process.
-- **Why not delay**
-  - The compliance window closes in 18 months.
+- Build
+  - Owns the scoring policy, owns the calibration loop, owns the timeline.
+- Why not buy
+  - Three vendors evaluated; none expose calibration weights to the customer.
+- Why not delay
+  - The competitive window closes in 18 months.
 
 ---
 
 <!-- _class: before-after -->
 <!-- _footer: "New layout — before-after · before-after" -->
 
-## Detokenize used to require a vault round-trip.
+## Decisions used to require a quarterly re-litigation.
 
-`Latency story · before vs after`
+`Calibration story · before vs after`
 
-- **Before**
-  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
-- **After**
-  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
+- Before
+  - Every prioritization debate: fresh argument from first principles, average 4 hours per decision, p99 a full afternoon. Stale weights cascaded into stale prioritization.
+- After
+  - Decisions resolve against logged weights and prior calibration outcomes. p99 18 minutes. Weight drift is observed, not argued.
 
-The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
+The architecture change is the calibration loop — versioned, signed, weight-bound scoring policy — not a meeting optimisation.
+
+---
+
+<!-- _class: decision banner-tag -->
+<!-- _footer: "Variant — decision · banner-tag" -->
+
+## Same decision, banner-tag variant.
+
+`Decision · banner-tag modifier`
+
+- Build
+  - Owns the scoring policy, owns the calibration loop, owns the timeline.
+- Why not buy
+  - Three vendors evaluated; none expose calibration weights to the customer.
+- Why not delay
+  - The competitive window closes in 18 months.
+
+---
+
+<!-- _class: before-after banner-tag -->
+<!-- _footer: "Variant — before-after · banner-tag" -->
+
+## Same comparison, banner-tag variant.
+
+`Calibration story · banner-tag modifier`
+
+- Before
+  - Every prioritization debate: fresh argument from first principles, average 4 hours per decision, p99 a full afternoon. Stale weights cascaded into stale prioritization.
+- After
+  - Decisions resolve against logged weights and prior calibration outcomes. p99 18 minutes. Weight drift is observed, not argued.
 
 ---
 
@@ -996,12 +1028,12 @@ The architecture change is the codebook model — local, signed, time-bound key 
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01          | Phase 02              | Phase 03              |
-| ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
-| SDK        | Java              |                       | Polyglot parity       |
+| Workstream    | Phase 01            | Phase 02              | Phase 03                |
+| ------------- | ------------------- | --------------------- | ----------------------- |
+| Signal Intake | Connector v1        | Multi-source dedupe   | Anomaly auto-routing    |
+| Scoring       | Equal-weights model | Per-team calibration  | Per-decision profiles   |
+| Decision Log  | Append-only schema  | Outcome auto-pairing  | Examiner export         |
+| Adoption      | One pilot team      |                       | Org-wide enablement     |
 
 The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
 
@@ -1013,16 +1045,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Where we are against quarter targets.
 
 1. **94%**
-   - Token-issuance success
+   - Signal-classification success
    - target 99%, +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms, -3 ms QoQ
+2. **18 min**
+   - p99 decision close
+   - target 20 min, -3 min QoQ
 3. **0**
-   - Examiner findings
+   - Unscored decisions logged
    - target 0, flat
 4. **3.2×**
-   - Detokenize headroom
+   - Calibration headroom
    - target 2×, +0.4× QoQ
 
 ---
@@ -1032,7 +1064,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this deck covers, in order.
 
-1. The Design — page 7
+1. The Framework — page 7
 2. The Phasing — page 18
 3. The Choices — page 26
 4. Appendices — page 35
@@ -1043,16 +1075,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: actors -->
 <!-- _footer: "New layout — actors · actors" -->
 
-## Who owns each part of the codebook lifecycle.
+## Who owns each part of the framework lifecycle.
 
-- **Key custody** `HSM admin`
-  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
-- **Policy** `Platform operator`
-  - Owns codebook policy, signing keys, version floors, and revocation playbooks.
-- **Consumption** `Application team`
-  - Holds time-bound codebooks; tokenizes and detokenizes in-process.
-- **Oversight** `Examiner`
-  - Reads the HSM audit trail; cannot read plaintext.
+- **Signal custody** `Signal owner`
+  - Manages intake quality and source diversity. Never tunes scoring weights directly.
+- **Policy** `Framework operator`
+  - Owns scoring policy, calibration cadence, version floors, and rollback playbooks.
+- **Consumption** `Product team`
+  - Holds time-bound scoring profiles; runs intake and decision-logging in-team.
+- **Oversight** `Auditor`
+  - Reads the Decision Log audit trail; cannot edit weights.
 
 ---
 
@@ -1063,11 +1095,27 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this section will tell you, in five lines.
 
-- The codebook model gets in-process latency with vault-grade key custody. → slide 8
-- Rotation is a version-floor increment, not a coordinated cutover. → slide 12
-- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
-- Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
+- The framework gets calibrated prioritization with audit-grade decision custody. → slide 8
+- Recalibration is a version-floor increment, not a coordinated freeze. → slide 12
+- Per-team scoring weights make per-decision-class profiles a single policy update. → slide 18
+- Phase 1 ships the framework, Phase 2 ships the operating runbook. → slide 22
 - Five questions stay open until Phase 1 closes them on the record. → slide 27
+
+---
+
+<!-- _class: checklist -->
+<!-- _footer: "New layout — checklist · checklist" -->
+
+`Phase 1 · Acceptance review`
+
+## What shipped, what slipped, what stayed open.
+
+- [x] Scoring policy live across all pilot teams
+- [x] Decision Log audit trail readable by Auditor role `shipped 2026-Q1`
+- [x] One reference team running end-to-end weekly cadence
+- [-] Examiner pack auto-generation across the four pilot teams and the two extension teams `see slide 27`
+- [ ] Multi-team calibration cadence `Phase 2`
+- [ ] Outcome auto-pairing hand-off to Adoption `Phase 2`
 
 ---
 
@@ -1104,6 +1152,102 @@ The discipline is the same as `compact` from the other side: do not change the t
 
 ---
 
+<!-- _class: progress -->
+<!-- _footer: "Horizontal bars with status pills · progress" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Phase 1 readiness, by workstream.
+
+Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Adoption dashboard `12%` `blocked`
+
+_Source: Linear · refreshed 2026-05-07_
+
+---
+
+<!-- _class: progress dark -->
+<!-- _footer: "Dark canvas · progress dark" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## The same data, dark canvas.
+
+Status colours hold their contrast against the dark canvas; the lucent strip darkens proportionally.
+
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Adoption dashboard `12%` `blocked`
+
+---
+
+<!-- _class: timeline-list -->
+<!-- _footer: "Horizontal spine with date pills · timeline-list" -->
+
+`Framework arc`
+
+## How the framework arrived in production.
+
+Four stages over eighteen months. Date pill leads each item; status pill trails. The spine and dots come for free from CSS.
+
+1. `2024 Q3` Pre-framework prioritization
+   - First documented prioritization rhythm shipped on a shared spreadsheet. Average decision close: 4 hours.
+2. `2025 Q1` Framework proposal `decision`
+   - Architecture review accepts the calibration model. Build approved.
+3. `2025 Q3` Pilot `pilot`
+   - One internal team, one decision class, one quarter. Decision close p99 lands at 18 min.
+4. `2026 Q1` Production `live`
+   - Scoring policy live across all pilot teams.
+
+_Cross-functional sign-off · 2026-04-29_
+
+---
+
+<!-- _class: piechart donut -->
+<!-- _footer: "SVG donut with legend · piechart donut" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the framework quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Signal Intake build `46%`
+- Scoring policy work `22%`
+- Decision Log integration `18%`
+- Pilot enablement `9%`
+- Toil and on-call `5%`
+
+_Refreshed weekly · last updated 2026-05-07_
+
+---
+
+<!-- _class: progress minimal -->
+<!-- _footer: "Minimal modifier · progress minimal" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Same data, minimal treatment.
+
+The lucent strip is gone; the header reads as quiet typography with an accent hairline, and the chart dominates more.
+
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Adoption dashboard `12%` `blocked`
+
+_Source: Linear · refreshed 2026-05-07_
+
+---
+
 <!-- _class: closing accent -->
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->
@@ -1120,5 +1264,5 @@ It composes with `dark`: on the dark canvas the spectrum top-stripe is suppresse
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
-<script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<script src="../mermaid-v11.min.js"></script>
 <script src="../lattice-runtime.js"></script>

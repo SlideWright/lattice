@@ -865,15 +865,11 @@ function parseSlide(raw, index) {
   raw = raw.replace(/^!\[bg((?:\s+\w+)*)\]\(([^)]+)\)/gm, (_, kw, url) => {
     const side = /\bright\b/.test(kw) ? 'right'
                : /\bleft\b/.test(kw)  ? 'left'
-               : null;
-    const pos = side === 'right' ? 'right:0;top:0;bottom:0;width:50%;'
-              : side === 'left'  ? 'left:0;top:0;bottom:0;width:50%;'
-              : 'inset:0;';
-    // <img> with object-fit:contain reliably letterboxes both raster photos
-    // and SVGs across Chromium PDF rendering. z-index:-1 places the image
-    // above the section's lattice-pattern background but below all
-    // non-positioned content (header, h2, p, footer).
-    bgImageHtml = `<div style="position:absolute;${pos}z-index:-1;overflow:hidden;"><img src="${url}" style="width:100%;height:100%;object-fit:contain;display:block;" alt=""/></div>`;
+               : 'full';
+    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns all positioning,
+    // fit, and the hairline divider. The img has no inline styles — the
+    // cover/contain rule on section.image controls object-fit.
+    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img src="${url}" alt=""/></div>`;
     return '';
   });
 
@@ -1786,7 +1782,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image-full','split-panel','content','image-right','image-left','diagram','stats','code','roadmap','progress','timeline-list','piechart'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-panel','content','diagram','stats','code','roadmap','progress','timeline-list','piechart'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

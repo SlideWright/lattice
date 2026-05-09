@@ -548,7 +548,7 @@ section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-lab
  *                        timeline/list-steps (counter), principles/tldr (own line),
  *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
- *   non-list             content, code, compare-code, image, image-full, diagram
+ *   non-list             content, code, compare-code, image, diagram
  *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
  *                        (grid/scaffold rows where margin-left:auto cannot
  *                        right-anchor; opt in by adding a per-layout rule
@@ -556,7 +556,7 @@ section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-lab
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.image-full):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -1078,83 +1078,152 @@ section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; 
 section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
-/* ── IMAGE LAYOUTS ──
- * Two layouts share one placeholder: a tiled lattice-pattern SVG —
- * rhombic cells with a gold dot at each centre. The pattern repeats
- * at its native 80×80 cell, so it looks identical at any container
- * size and never lands on fractional-pixel boundaries.
+/* ── IMAGE ──────────────────────────────────────────────────────────────────
+ * One class (`image`) covers all half-canvas and full-bleed image layouts.
+ * Composable modifiers:
  *
- *   _class: image       → text left, image right (default)
- *   _class: image left  → text right, image left
- *   _class: image-full  → image fills the canvas
+ *   image             text left, image right (default cover fill)
+ *   image mirror      image left, text right  (or: image left — deprecated)
+ *   image contain     opt-in letterbox on --bg-alt matte (no crop)
+ *   image full        full-bleed magazine cover
+ *   image full mirror swaps scrim positions on full bleed
  *
- * Authors replace the placeholder by adding a Marp background image:
- *   ![bg right](photo.jpg)   ![bg left](photo.jpg)   ![bg](photo.jpg)
- * The figure Marp emits paints over the section background; the
- * placeholder simply disappears. No pseudo-element, no z-order
- * trick, no inset arithmetic. */
-section.image,
-section.image-full {
-  /* Create a stacking context so the bg-image div's z-index:-1
-   * goes behind sibling content (header, h2, p, footer) but NOT
-   * behind the section's own background painting. Without this,
-   * the section's solid --bg layer hides the image entirely. */
+ * Cover vs. contain is owned by the CSS class, not the Marp `fit` keyword.
+ * The CSS overrides Marp's inline background-size with !important so both
+ * render paths (Marp CLI advanced-background + emulator .lattice-bg) agree.
+ * ───────────────────────────────────────────────────────────────────────── */
+section.image {
   isolation: isolate;
   --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='%23006FA8' stroke-width='1' opacity='0.3'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.6'/></svg>");
+  --image-matte: var(--bg-alt);
+  --image-divider: var(--border);
 }
-section.image.dark,
-section.image-full.dark {
+section.image.dark {
   --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='white' stroke-width='1' opacity='0.18'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.5'/></svg>");
 }
-/* Half-canvas image: hard 50% gradient covers the text side; pattern
- * fills the slide underneath. Pattern + cover meet at exactly 50% —
- * same line Marp's ![bg right]/![bg left] figure paints to. */
-section.image {
+
+/* ─ HALF-CANVAS (default: image right) ─ */
+section.image:not(.full) {
   padding-right: calc(50% + var(--sp-lg));
   background:
     linear-gradient(to right, var(--bg) 50%, transparent 50%),
     var(--lattice-pattern);
 }
-section.image.left {
+section.image:not(.full).mirror,
+section.image:not(.full).left {
   padding-right: 0;
   padding-left: calc(50% + var(--sp-lg));
   background:
     linear-gradient(to left, var(--bg) 50%, transparent 50%),
     var(--lattice-pattern);
 }
+/* Contain replaces pattern with clean --bg-alt matte (editorial plate). */
+section.image:not(.full).contain {
+  background:
+    linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image:not(.full).contain.mirror,
+section.image:not(.full).contain.left {
+  background:
+    linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
 section.image h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
-section.image p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
-/* ── IMAGE-FULL ──
- * Pattern fills the whole canvas; ![bg](url) replaces it.
- * h2 = title bar at top · trailing p = optional caption bar at bottom.
- * The dark canvas comes from --bg, which the .dark rule below remaps. */
-section.image-full {
+section.image:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* ─ COVER (default) — both render paths ─
+ * Marp CLI: [data-marpit-advanced-background-container] figure
+ * Emulator: .lattice-bg img  */
+section.image [data-marpit-advanced-background-container] figure,
+section.image .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* ─ CONTAIN (opt-in) — higher specificity wins over cover rule ─ */
+section.image.contain [data-marpit-advanced-background-container] figure,
+section.image.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* ─ EMULATOR WRAPPER — CSS owns all positioning ─ */
+section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
+section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
+section.image .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image .lattice-bg-left  { left:0;  top:0; bottom:0; width:50%; }
+section.image .lattice-bg-full  { inset:0; }
+/* Mirror: remap right-slot to left position. */
+section.image.mirror .lattice-bg-right,
+section.image.left   .lattice-bg-right {
+  right: auto;
+  left: 0;
+}
+
+/* ─ HAIRLINE DIVIDER ─
+ * Right slot: shadow on the left (inner) edge.
+ * Left slot (mirror): shadow on the right (inner) edge.
+ * Contain: frame the image itself, not the slot edge. */
+section.image:not(.full) [data-marpit-advanced-background-container] figure,
+section.image:not(.full) .lattice-bg img {
+  box-shadow: -1px 0 0 var(--image-divider) !important;
+}
+section.image:not(.full).mirror [data-marpit-advanced-background-container] figure,
+section.image:not(.full).left   [data-marpit-advanced-background-container] figure,
+section.image:not(.full).mirror .lattice-bg img,
+section.image:not(.full).left   .lattice-bg img {
+  box-shadow: 1px 0 0 var(--image-divider) !important;
+}
+section.image:not(.full).contain [data-marpit-advanced-background-container] figure,
+section.image:not(.full).contain .lattice-bg img {
+  box-shadow: 0 0 0 1px var(--image-divider) !important;
+}
+
+/* ─ FULL BLEED — the slide IS the image ─
+ * Cover-fill the canvas; optional title overlay (h2) and caption
+ * overlay (trailing p) sit on dark gradient scrims that fade into
+ * the image. No solid bars — the image breathes. */
+section.image.full {
   padding: 0;
   border-top: none;
   background: var(--lattice-pattern), var(--bg);
 }
-section.image-full header,
-section.image-full footer { display:none; }
-section.image-full h2 {
-  position:absolute; top:0; left:0; right:0;
-  text-align:center; margin:0;
-  padding:var(--sp-xs) var(--sp-lg);
-  background:var(--accent-soft); color:var(--text-body);
+section.image.full.contain {
+  background: var(--image-matte);
+}
+section.image.full header,
+section.image.full footer { display:none; }
+section.image.full h2 {
+  position:absolute; top:0; left:0; right:0; margin:0;
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
+  background:linear-gradient(to bottom, rgba(0,0,0,0.55), transparent);
+  color:rgba(255,255,255,0.96);
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400;
-  letter-spacing:0.1em; text-transform:uppercase;
-  z-index:1;
+  letter-spacing:0.12em; text-transform:uppercase;
+  z-index:1; pointer-events:none;
 }
-section.image-full.dark h2 {
-  background:rgba(0,0,0,0.42); color:rgba(255,255,255,0.9);
-}
-section.image-full p:last-of-type {
+section.image.full p:last-of-type {
   position:absolute; bottom:0; left:0; right:0; margin:0;
-  display:flex; align-items:center; min-height:2.4em;
-  background:var(--accent-soft); color:var(--text-body);
-  padding:var(--sp-xs) var(--sp-lg); font-size:var(--fs-body); z-index:1;
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+  background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  color:rgba(255,255,255,0.92);
+  font-size:var(--fs-body); line-height:var(--lh-base);
+  z-index:1; pointer-events:none;
 }
-section.image-full.dark p:last-of-type {
-  background:rgba(0,0,0,0.58); color:rgba(255,255,255,0.85);
+/* Mirror on full-bleed swaps which scrim carries the heavier weight. */
+section.image.full.mirror h2 {
+  top:auto; bottom:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+}
+section.image.full.mirror p:last-of-type {
+  bottom:auto; top:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
 }
 
 /* ── DARK VARIANT ──
@@ -3139,14 +3208,7 @@ section.cards-stack.horizontal .cards-stack-inner {
  * prefer `image.mirror` for consistency with the cross-cutting vocabulary.
  * ──────────────────────────────────────────────────────────────────────── */
 
-/* — image: alias .mirror to existing .left half-bleed treatment — */
-section.image.mirror {
-  padding-right: 0;
-  padding-left: calc(50% + var(--sp-lg));
-  background:
-    linear-gradient(to left, var(--bg) 50%, transparent 50%),
-    var(--lattice-pattern);
-}
+/* — image: .mirror and .left are handled in the main IMAGE block above — */
 
 /* — featured: swap hero (first child) and sub-row (rest) columns —
  * Marp CLI path: section.featured > ul > li (first vs not-first)

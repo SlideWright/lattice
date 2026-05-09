@@ -15,9 +15,9 @@ Every layout falls into one of two categories. The distinction matters because i
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
-| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `image left`, `image-full`, `code`         | no — CSS-only                   |
+| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code`         | no — CSS-only                   |
 
-Modifiers (`dark`, image variants like `image left`, etc.) compose with both categories.
+Modifiers (`dark`, `mirror`, and image-specific `full` / `contain`, etc.) compose with both categories.
 
 **Authoring implication:** every structured layout has a single canonical list shape documented in its template entry. Deviating from that shape (wrong list type, wrong nesting depth, missing `**Title.**` marker, etc.) causes the post-processor to fall back to the raw list rendering, which the CSS does not style. When a structured slide looks wrong, check the source list shape first.
 
@@ -89,7 +89,7 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | Comparative    | T11 Comparison, T23 Featured                            | `compare-prose` `featured`                        |
 | Layout         | T13 Timeline, T17 Split Panel                           | `timeline` `split-panel`          |
 | Layout variant | T13v Step Cards                                         | `list-steps`                                        |
-| Visual         | T15 Image Full, T24 Image (text + bg)                   | `image-full` `image` (`image left` variant)         |
+| Visual         | T24 Image (text + bg, full bleed)                       | `image` (`mirror`, `full`, `contain` modifiers)     |
 | Code           | T25 Code, T26 Code Compare                              | `code` `compare-code`                          |
 
 ## State Convention
@@ -198,7 +198,7 @@ Flips the asymmetric half of a layout left/right. Applies only where the layout 
 
 | Layout          | Effect                                                                  |
 | --------------- | ----------------------------------------------------------------------- |
-| `image`         | image side flips from right (default) to left. Alias of legacy `left`. |
+| `image`         | image slot flips from right (default) to left. Alias of legacy `image left`. |
 | `featured`      | hero card moves from the left column to the right column.              |
 | `split-panel`   | accent panel moves from the left to the right.                         |
 | `compare-prose` | left and right cards swap; chosen/decision read from the left.         |
@@ -209,7 +209,7 @@ Flips the asymmetric half of a layout left/right. Applies only where the layout 
 <!-- _class: compare-prose mirror chosen -->
 ```
 
-`image left` is preserved as a deprecated alias; new authoring should prefer `image mirror`.
+`image left` is preserved as a deprecated alias for `image mirror`. The cross-cutting `mirror` modifier composes with `full` and `contain` (e.g. `image full mirror`).
 
 #### `numbered`
 
@@ -1090,61 +1090,12 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 3. Leadership has agreed to log decisions.
 ```
 
-## Template 15: Image Full
+## Template 15 — folded into Template 24
 
-One class, two authoring modes — caption is optional.
-
-### Without caption
-
-```text
-┌─────────────────────────────────────────┐
-│                 header                  │
-│              [image-full]               │
-│                                         │
-│                                         │
-│                                         │
-└─────────────────────────────────────────┘
-```
-
-### With caption
-
-```text
-
-┌─────────────────────────────────────────┐
-│                 header                  │
-│              [image-full]               │
-│                                         │
-│   ┌─ caption text ──────────────────┐   │
-│   └─────────────────────────────────┘   │
-└─────────────────────────────────────────┘
-```
-
-**CSS class:** `image-full`
-
-**Without caption:**
-
-```markdown
-<!-- _class: image-full -->
-<!-- _paginate: false -->
-
-## [ Placeholder text shown in draft mode ]
-```
-
-**With caption:**
-
-```markdown
-<!-- _class: image-full -->
-<!-- _paginate: false -->
-
-## [ Placeholder text shown in draft mode ]
-
-Caption text that appears as an overlay bar at the bottom.
-```
-
-- Caption bar is controlled by a trailing paragraph — include it or omit it
-- The `## heading` text is the draft placeholder; replaced by the real image at `![bg](url)`
-- `footer` is hidden — use the trailing paragraph for attribution instead
-- Use for product screenshots, reference images, full-canvas visuals
+Full-bleed image is no longer a separate class. It is now a modifier on the
+single `image` template — see Template 24 for the consolidated vocabulary
+(`image`, `image mirror`, `image full`, `image full mirror`, `image contain`,
+`image full contain`).
 
 ## Template 16: Big Number / Single Stat
 
@@ -1992,47 +1943,80 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 ---
 
-## Template 24: Image (text + background image)
+## Template 24: Image
 
-### Default (image right)
+One class, three modifiers. The `image` template covers every visual slide
+shape in the deck: half-canvas image-right (default), half-canvas mirrored,
+full-bleed cover, full-bleed letterbox, and the editorial-plate variant for
+assets that must not crop.
 
-```text
-┌─────────────────────────────────────────┐
-│  header                                 │
-│  LABEL                ┌──────────────┐  │
-│  Heading              │              │  │
-│                       │  [ image ]   │  │
-│  Body text here.      │              │  │
-│                       └──────────────┘  │
-│  footer                           1/19  │
-└─────────────────────────────────────────┘
-```
-
-### Variant: image left
+### Default — half-canvas, cover
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌──────────────┐     LABEL             │
-│  │              │     Heading           │
-│  │  [ image ]   │                       │
-│  │              │     Body text here.   │
-│  └──────────────┘                       │
-│  footer                           1/19  │
+│  LABEL              │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│  Heading            │ ▓▓▓ image ▓▓▓▓▓▓  │
+│                     │ ▓▓ (cover) ▓▓▓▓▓  │
+│  Body text here.    │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│  footer       1/N   │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+└─────────────────────────────────────────┘
+                       ↑ 1px hairline divider
+```
+
+### Variant: `mirror` — image left
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │       LABEL         │
+│  ▓▓▓ image ▓▓▓▓▓▓ │       Heading       │
+│  ▓▓ (cover) ▓▓▓▓▓ │                     │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │       Body text.    │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │                1/N  │
 └─────────────────────────────────────────┘
 ```
 
-**CSS class:** `image` (default: image right) · `image left` (image left)
+### Variant: `contain` — letterbox on a clean matte (no crop)
 
-**Marp directive:**
-
-```markdown
-<!-- _class: image -->
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL              │ ░░░ ┌──────┐ ░░░  │
+│  Heading            │ ░░░ │image │ ░░░  │
+│                     │ ░░░ │native│ ░░░  │
+│  Body text here.    │ ░░░ │ ratio│ ░░░  │
+│  footer       1/N   │ ░░░ └──────┘ ░░░  │
+└─────────────────────────────────────────┘
+                       ↑ matte (--bg-alt)
+                                  ↑ 1px frame around image
 ```
 
-- Text occupies left half; background image fills right half
-- Use `image left` modifier to flip: image left, text right
-- Text padding auto-adjusted so content never overlaps the image
+### Variant: `full` — full bleed
+
+```text
+┌─────────────────────────────────────────┐
+│ TITLE OVERLAY ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  │  ← gradient scrim
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│ ▓▓▓▓▓▓ image (cover, full bleed) ▓▓▓▓▓  │
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│ Caption text ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  │  ← gradient scrim
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `image` plus optional modifiers `mirror`, `full`, `contain`.
+
+| Class                       | Effect                                                |
+| --------------------------- | ----------------------------------------------------- |
+| `image`                     | half-canvas image right, cover-fill (default)         |
+| `image mirror`              | half-canvas image left, cover-fill                    |
+| `image contain`             | half-canvas image right, letterbox on matte           |
+| `image mirror contain`      | half-canvas image left, letterbox on matte            |
+| `image full`                | full-bleed cover, optional title + caption scrim      |
+| `image full contain`        | full-bleed letterbox on matte (no crop)               |
+| `image full mirror`         | full bleed; title scrim drops to bottom edge          |
+
+`image left` is a deprecated alias for `image mirror`, kept for one release.
 
 **Marp markdown source:**
 
@@ -2041,38 +2025,53 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 `Layout · Image`
 
-## Images sit naturally beside text when you need visual evidence.
+## Image right is the default — text leads, evidence follows.
 
-Use `_class: image` with `![bg right fit](url)` — image-right is the default. The `fit` keyword tells Marp's renderer (and ours) to letterbox the image inside its slot rather than crop it.
+Body text describing the visual evidence.
 
-![bg right fit](path/to/image.jpg)
+![bg right](path/to/image.jpg)
 ```
 
 ```markdown
-<!-- _class: image left -->
+<!-- _class: image full -->
+<!-- _paginate: false -->
 
-`Layout · Image Left`
+## Optional title overlay at top
 
-## Flip the image to the left when the composition benefits.
+Optional caption overlay at bottom.
 
-![bg left fit](path/to/image.jpg)
+![bg](path/to/image.jpg)
 ```
 
-- `` `inline code` `` paragraph = eyebrow label
-- `h2` = heading
-- `p` = body text
-- `![bg right fit](url)` / `![bg left fit](url)` = Marp background image directive
+- `` `inline code` `` paragraph = eyebrow label (half-canvas only)
+- `h2` = heading (half-canvas) or title overlay (full bleed)
+- `p` body = body text (half-canvas) or caption overlay (last `<p>` in full bleed)
+- `![bg right](url)` / `![bg left](url)` / `![bg](url)` = Marp background image directive
 
-**Image sizing — proportions are always preserved.**
+**Image sizing — the class decides fit, not the markdown.**
 
-Always include the `fit` keyword (`![bg right fit](url)`). It tells Marp to letterbox the image inside its slot at native aspect ratio, never cropped or distorted. Without `fit`, Marp's default is `cover`, which crops arbitrary photos. Whatever bands remain show the lattice pattern as intentional brand framing.
+In the consolidated vocabulary the slide class is the source of truth for
+how the image is fitted into its slot. The Marp `fit` keyword is accepted
+for back-compat but no longer load-bearing — CSS overrides it.
 
-| Layout | Slot aspect | Ideal source |
-|---|---|---|
-| `image` / `image left` | ≈ 8 : 9 (half of 16 : 9 canvas) | 640 × 720, or any 8 : 9 portrait-ish photo |
-| `image-full` | 16 : 9 | 1280 × 720, or any wide landscape |
+| Want                                              | Use                                |
+| ------------------------------------------------- | ---------------------------------- |
+| photo, magazine-tight, mild crop is OK            | `image` or `image full` (default)  |
+| chart / screenshot / diagram, must show in full   | `image contain` / `image full contain` |
+| flip image to the opposite slot                   | add `mirror`                       |
 
-Bring whatever you have. A square crop in a half-canvas slot will show small top/bottom bands. A portrait photo on a full canvas will show wide left/right bands. Both look intentional — the lattice frames the image instead of dead space.
+Slot aspect for reference:
+
+| Layout                  | Slot aspect                    | Crop behaviour (cover)      |
+| ----------------------- | ------------------------------ | --------------------------- |
+| `image`                 | ≈ 8 : 9 (half of 16 : 9 canvas) | crops left/right of wide; top/bottom of tall |
+| `image full`            | 16 : 9                          | crops sides of tall; top/bottom of square    |
+
+Bring whatever asset you have. With the default cover treatment the image
+fills its slot edge-to-edge — no placeholder pattern visible behind a real
+photo. If a crop would destroy meaning (charts, diagrams, schematics),
+add `contain` and the image lands on a clean `--bg-alt` matte at native
+ratio, framed by a 1px hairline.
 
 ---
 
@@ -2571,12 +2570,12 @@ section.<layout>.chart-frame
 <!-- _class: content dark -->
 <!-- _class: list dark -->
 <!-- _class: divider dark -->
-<!-- _class: image-full dark -->
+<!-- _class: image full dark -->
 ```
 
 - Retokens: `--bg`, `--bg-alt`, `--border`, `--text-*` all switch to `var(--dark-*)` values
 - Spectrum bar changes: instead of a 4px solid top border, dark slides render a 1px spectrum line as a CSS `background` at the top
 - Use for mid-deck emphasis slides, impactful data reveals, or transitional moments
-- Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image-full dark`
+- Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image full contain dark`
 
 ---
