@@ -2,7 +2,30 @@
     "markdown.marp.themes": [
         "lattice.css",
         "themes/cuoio.css",
-        "themes/indaco.css"
+        "themes/cuoio-dark.css",
+        "themes/indaco.css",
+        "themes/indaco-dark.css",
+        "themes/crepuscolo.css",
+        "themes/crepuscolo-dark.css",
+        "themes/laguna.css",
+        "themes/laguna-dark.css",
+        "themes/brina.css",
+        "themes/brina-dark.css",
+        "themes/ardesia.css",
+        "themes/ardesia-dark.css",
+        "themes/magnolia.css",
+        "themes/magnolia-dark.css",
+        "themes/atelier.css",
+        "themes/atelier-dark.css",
+        "themes/burgundy.css",
+        "themes/burgundy-dark.css",
+        "themes/mustard.css",
+        "themes/mustard-dark.css",
+        "themes/onyx.css",
+        "themes/onyx-dark.css",
+        "themes/concrete.css",
+        "themes/concrete-dark.css",
+        "themes/carbone.css"
     ],
     "chat.planAgent.defaultModel": "Claude Sonnet 4.6 (claude-code)",
     "chat.viewProgressBadge.enabled": true,
@@ -130,5 +153,7 @@
         "eval": false,
         "Invoke-Expression": false,
         "iex": false
-    }
+    },
+    "markdown.marp.diagnostics.slideContentOverflow": true,
+    "claudeCode.initialPermissionMode": "bypassPermissions"
 }
