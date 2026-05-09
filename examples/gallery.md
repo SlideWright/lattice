@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: cuoio
+theme: indaco
 size: 16:9
 paginate: true
 header: "Lattice · Layout Gallery"
@@ -1249,5 +1249,5 @@ It composes with `dark`: on the dark canvas the spectrum top-stripe is suppresse
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
-<script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
+<script src="../mermaid-v11.min.js"></script>
 <script src="../lattice-runtime.js"></script>
