@@ -118,6 +118,15 @@
   --mermaid-secondary-color: #EFD5C9;
   --mermaid-border:          #5A2530;
   --mermaid-accent-warm:     #BD5000;
+  --mermaid-pie-purple:  #F5DDD8;  /* pale dusty-rose */
+  --mermaid-pie-orange:  #F0DBBF;  /* pale peach-gold */
+  --mermaid-pie-teal:    #D8E8DC;  /* pale sage-green */
+  --mermaid-pie-rose:    #EFD5C9;  /* pale peach */
+  --mermaid-pie-yellow:  #F5EDCC;  /* pale cream-gold */
+  --mermaid-pie-red:     #F2D2D0;  /* pale faded-rose */
+  --mermaid-pie-slate:   #E0D8E0;  /* pale dusty-mauve */
+  --mermaid-pie-sage:    #D5E5D8;  /* pale sage */
+  --mermaid-pie-violet:  #EAD8E5;  /* pale dusty-violet */
 }
 
 section pre.hljs {

@@ -137,6 +137,15 @@
   --mermaid-secondary-color: #F0E2CE;
   --mermaid-border:          #48202A;
   --mermaid-accent-warm:     var(--brand-champagne);
+  --mermaid-pie-purple:  #EAD4D8;  /* pale wine-rose */
+  --mermaid-pie-orange:  #F0E2CE;  /* pale champagne */
+  --mermaid-pie-teal:    #D5E0E5;  /* pale steel-teal */
+  --mermaid-pie-rose:    #F0D4D8;  /* deeper pale rose */
+  --mermaid-pie-yellow:  #F0E8C8;  /* pale champagne-gold */
+  --mermaid-pie-red:     #F0CCCC;  /* pale faded-wine */
+  --mermaid-pie-slate:   #E0D5D8;  /* pale mauve-slate */
+  --mermaid-pie-sage:    #D8E0D5;  /* pale sage */
+  --mermaid-pie-violet:  #E5D0E8;  /* pale violet pop */
 }
 
 section pre.hljs {

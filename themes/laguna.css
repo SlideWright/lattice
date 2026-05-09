@@ -116,6 +116,15 @@
   --mermaid-secondary-color: #F4DBD0; /* warm coral pale */
   --mermaid-border:          #0F2D31;
   --mermaid-accent-warm:     var(--brand-coral); /* the coral pop */
+  --mermaid-pie-purple:  #D2E8EA;  /* pale teal */
+  --mermaid-pie-orange:  #F4DBD0;  /* pale coral */
+  --mermaid-pie-teal:    #CBE0E0;  /* deeper pale teal */
+  --mermaid-pie-rose:    #F8E8D8;  /* pale sandy peach */
+  --mermaid-pie-yellow:  #F2E5C0;  /* pale warm sand */
+  --mermaid-pie-red:     #F5D8CC;  /* pale salmon */
+  --mermaid-pie-slate:   #D8E5E8;  /* pale slate-teal */
+  --mermaid-pie-sage:    #D8E0D5;  /* pale sage-green */
+  --mermaid-pie-violet:  #DCE6E8;  /* very pale aqua */
 }
 
 section pre.hljs {

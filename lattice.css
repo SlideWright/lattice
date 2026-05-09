@@ -196,6 +196,25 @@
    * don't want a duotone identity can collapse --tag-bg to --accent. */
   --tag-bg:   var(--chart-2);
   --tag-text: var(--on-accent, #fff);
+
+  /* ── Mermaid supplementary fill palette ─────────────────────────────────
+   * Slots 2-5 (journey/mindmap/kanban section fills, gitgraph label
+   * backgrounds, treemap leaves, venn sets). Themes override slots 0-1
+   * directly via --mermaid-primary-color / --mermaid-secondary-color.
+   * These supplementary slots auto-derive from the chart palette so every
+   * theme gets on-brand fills without per-theme boilerplate.
+   *
+   * light-dark() selects pale pastels for light canvases and dark lifted
+   * fills for dark canvases (carbone, *-dark wrappers). */
+  --mermaid-pie-purple: light-dark(color-mix(in oklab, var(--chart-4) 15%, white), color-mix(in oklab, var(--chart-4) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-orange: light-dark(color-mix(in oklab, var(--chart-2) 15%, white), color-mix(in oklab, var(--chart-2) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-teal:   light-dark(color-mix(in oklab, var(--chart-3) 15%, white), color-mix(in oklab, var(--chart-3) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-rose:   light-dark(color-mix(in oklab, var(--chart-5) 15%, white), color-mix(in oklab, var(--chart-5) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-yellow: light-dark(color-mix(in oklab, var(--chart-5) 20%, white), color-mix(in oklab, var(--chart-5) 35%, var(--bg-dark, #001D33)));
+  --mermaid-pie-red:    light-dark(color-mix(in oklab, var(--chart-2) 12%, white), color-mix(in oklab, var(--chart-2) 20%, var(--bg-dark, #001D33)));
+  --mermaid-pie-slate:  light-dark(color-mix(in oklab, var(--chart-6) 18%, white), color-mix(in oklab, var(--chart-6) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-sage:   light-dark(color-mix(in oklab, var(--chart-3) 11%, white), color-mix(in oklab, var(--chart-3) 20%, var(--bg-dark, #001D33)));
+  --mermaid-pie-violet: light-dark(color-mix(in oklab, var(--chart-4) 11%, white), color-mix(in oklab, var(--chart-4) 20%, var(--bg-dark, #001D33)));
 }
 
 /* ── BASE ── */
@@ -1225,6 +1244,596 @@ section.image.full.mirror p:last-of-type {
   background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
   padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
 }
+
+/* ── IMAGE CONCEPT PROTOTYPES ─────────────────────────────────────────────────
+ * Five self-contained image layout concepts with distinct visual identities.
+ * Each is fully independent of .image rules — no inheritance between concepts.
+ *
+ * Classes: image-razor, image-brief, image-museum, image-anchor, image-chamber
+ * Modifiers (same grammar as .image):
+ *   .mirror / .left  — swap image to left slot, text to right
+ *   .contain         — letterbox (object-fit:contain) on --bg-alt matte
+ *   .full            — full-bleed canvas
+ *   .dark            — auto-handled by color-scheme token cascade
+ *
+ * Render path coverage:
+ *   Marp CLI: [data-marpit-advanced-background-container] figure
+ *   Emulator: .lattice-bg, .lattice-bg-right, .lattice-bg-left, .lattice-bg-full
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-RAZOR — The Argument / Evidence Pair
+   A 1.5px vertical --accent hairline at the 50% split, produced entirely via
+   CSS background gradient. No pseudo-elements. Clean rationalism.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-razor {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-razor:not(.full) {
+  padding-right: calc(50% + 56px);
+  padding-left: 56px;
+  background: linear-gradient(to right,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    transparent 50%
+  );
+}
+section.image-razor:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-razor:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror: image left, gradient reverses */
+section.image-razor:not(.full).mirror,
+section.image-razor:not(.full).left {
+  padding-left: calc(50% + 56px);
+  padding-right: 56px;
+  background: linear-gradient(to left,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    transparent 50%
+  );
+}
+
+/* Contain: right panel becomes --bg-alt matte */
+section.image-razor:not(.full).contain {
+  background: linear-gradient(to right,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    var(--image-matte) 50%
+  );
+}
+section.image-razor:not(.full).contain.mirror,
+section.image-razor:not(.full).contain.left {
+  background: linear-gradient(to left,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    var(--image-matte) 50%
+  );
+}
+
+/* Cover fill — both render paths */
+section.image-razor [data-marpit-advanced-background-container] figure,
+section.image-razor .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* Contain — opt-in letterbox */
+section.image-razor.contain [data-marpit-advanced-background-container] figure,
+section.image-razor.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper positioning */
+section.image-razor .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-razor .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-razor .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-razor .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-razor .lattice-bg-full  { inset:0; }
+section.image-razor.mirror .lattice-bg-right,
+section.image-razor.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: gradient scrims top and bottom, hairline at 50% for sub-panels */
+section.image-razor.full {
+  padding: 0;
+  border-top: none;
+  background: var(--bg);
+}
+section.image-razor.full header,
+section.image-razor.full footer { display:none; }
+section.image-razor.full h2 {
+  position:absolute; top:0; left:0; right:0; margin:0;
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
+  background:linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+  color:rgba(255,255,255,0.96);
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400;
+  letter-spacing:0.12em; text-transform:uppercase;
+  z-index:1; pointer-events:none;
+}
+section.image-razor.full p:last-of-type {
+  position:absolute; bottom:0; left:0; right:0; margin:0;
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+  background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  color:rgba(255,255,255,0.92);
+  font-size:var(--fs-body); line-height:var(--lh-base);
+  z-index:1; pointer-events:none;
+}
+section.image-razor.full.mirror h2 {
+  top:auto; bottom:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+}
+section.image-razor.full.mirror p:last-of-type {
+  bottom:auto; top:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-BRIEF — The Executive Brief
+   A 4px --accent accent strip at the top of the text panel only, signalling
+   formal document authority. No section border-top. Text sits below the strip.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-brief {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+  border-top: none;
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-brief:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  padding-top: calc(var(--sp-xl) + 4px); /* clear the 4px strip */
+  background:
+    linear-gradient(to right, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to right, var(--bg) 50%, transparent 50%);
+}
+section.image-brief:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-brief:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror: strip on right side text panel */
+section.image-brief:not(.full).mirror,
+section.image-brief:not(.full).left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  padding-top: calc(var(--sp-xl) + 4px);
+  background:
+    linear-gradient(to left, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to left, var(--bg) 50%, transparent 50%);
+}
+
+/* Contain variant */
+section.image-brief:not(.full).contain {
+  background:
+    linear-gradient(to right, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image-brief:not(.full).contain.mirror,
+section.image-brief:not(.full).contain.left {
+  background:
+    linear-gradient(to left, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Cover fill */
+section.image-brief [data-marpit-advanced-background-container] figure,
+section.image-brief .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+section.image-brief.contain [data-marpit-advanced-background-container] figure,
+section.image-brief.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper */
+section.image-brief .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-brief .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-brief .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-brief .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-brief .lattice-bg-full  { inset:0; }
+section.image-brief.mirror .lattice-bg-right,
+section.image-brief.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: solid --bg panel left 40%, 4px --accent left border, right 60% image */
+section.image-brief.full {
+  padding: 0;
+  border-top: none;
+  background: none;
+}
+section.image-brief.full header,
+section.image-brief.full footer { display:none; }
+section.image-brief.full h2 {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:40%;
+  display:flex; align-items:flex-end;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) calc(var(--sp-xl) + 4px);
+  background: var(--bg);
+  border-left: 4px solid var(--accent);
+  color:var(--text-heading);
+  font-size:var(--fs-xl);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-brief.full p:last-of-type {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:40%;
+  display:flex; align-items:flex-start;
+  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) calc(var(--sp-xl) + 4px);
+  padding-top:var(--sp-2xl);
+  background: transparent;
+  color:var(--text-body);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-brief.full.mirror h2 {
+  left:auto; right:0;
+  border-left:none; border-right:4px solid var(--accent);
+  padding-left:var(--sp-xl); padding-right:calc(var(--sp-xl) + 4px);
+}
+section.image-brief.full.mirror p:last-of-type {
+  left:auto; right:0;
+  padding-left:var(--sp-xl); padding-right:calc(var(--sp-xl) + 4px);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-MUSEUM — The Editorial Plate
+   Image is inset 20px from top/outer/bottom within its panel (flush at split).
+   --bg-alt matte is visible in the inset area. 1px inset border frames image
+   like a mounted print. The matte is the signature of this layout.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-museum {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-museum:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image-museum:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-museum:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror */
+section.image-museum:not(.full).mirror,
+section.image-museum:not(.full).left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Contain: same --bg-alt on both sides — unified plate look */
+section.image-museum:not(.full).contain {
+  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Marp CLI — inset figure in right slot */
+section.image-museum:not(.full) [data-marpit-advanced-background-container] figure {
+  top: 20px !important; right: 20px !important; bottom: 20px !important; left: 0 !important;
+  background-size: cover !important; background-position: center !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+section.image-museum:not(.full).contain [data-marpit-advanced-background-container] figure {
+  top: 20px !important; right: 20px !important; bottom: 20px !important; left: 0 !important;
+  background-size: contain !important; background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+/* Mirror: flush right edge, inset left */
+section.image-museum:not(.full).mirror [data-marpit-advanced-background-container] figure,
+section.image-museum:not(.full).left   [data-marpit-advanced-background-container] figure {
+  top: 20px !important; right: 0 !important; bottom: 20px !important; left: 20px !important;
+  background-size: cover !important; background-position: center !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+
+/* Emulator — right slot: inset top/right/bottom, flush left (at the split) */
+section.image-museum:not(.full) .lattice-bg-right {
+  background: var(--image-matte);
+  padding: 20px 20px 20px 0;
+  box-sizing: border-box;
+  right:0; top:0; bottom:0; width:50%;
+}
+section.image-museum:not(.full) .lattice-bg-right img {
+  width:100%; height:100%; display:block;
+  object-fit:cover; object-position:center;
+  box-shadow: 0 0 0 1px var(--border);
+}
+section.image-museum:not(.full).contain .lattice-bg-right img {
+  object-fit:contain; object-position:center;
+}
+/* Mirror: inset left/top/bottom, flush right */
+section.image-museum:not(.full).mirror .lattice-bg-right,
+section.image-museum:not(.full).left   .lattice-bg-right {
+  background: var(--image-matte);
+  padding: 20px 0 20px 20px;
+  box-sizing: border-box;
+  right:auto; left:0; top:0; bottom:0; width:50%;
+}
+
+/* Base wrapper for emulator */
+section.image-museum .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-museum .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-museum .lattice-bg-full  { inset:0; }
+
+/* Full-bleed: image centered in --bg-alt matte, generous padding */
+section.image-museum.full {
+  padding: 40px;
+  border-top: none;
+  background: var(--image-matte);
+  box-sizing: border-box;
+}
+section.image-museum.full header,
+section.image-museum.full footer { display:none; }
+section.image-museum.full [data-marpit-advanced-background-container] figure {
+  top: 40px !important; right: 40px !important; bottom: 40px !important; left: 40px !important;
+  background-size: contain !important; background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+section.image-museum.full .lattice-bg-full {
+  background: var(--image-matte);
+  padding: 40px;
+  box-sizing: border-box;
+}
+section.image-museum.full .lattice-bg-full img {
+  width:100%; height:100%; display:block;
+  object-fit:contain; object-position:center;
+  box-shadow: 0 0 0 1px var(--border);
+}
+section.image-museum.full h2 {
+  position:relative; z-index:1;
+  font-size:var(--fs-label); font-family:var(--font-mono); font-weight:400;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--text-label); margin:0 0 var(--sp-xs) 0;
+}
+section.image-museum.full p:last-of-type {
+  position:relative; z-index:1;
+  font-size:var(--fs-sm); color:var(--text-label);
+  line-height:var(--lh-base); margin:0;
+  text-align:center;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-ANCHOR — The Left Anchor
+   A 6px solid --accent LEFT border anchors the text panel. This is the
+   signature decoration — the image panel is deliberately plain.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-anchor {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-anchor:not(.full) {
+  border-left: 6px solid var(--accent);
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: calc(var(--sp-2xl) + 6px);
+  background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
+}
+section.image-anchor:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-anchor:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror: border moves to RIGHT, text goes right */
+section.image-anchor:not(.full).mirror,
+section.image-anchor:not(.full).left {
+  border-left: none;
+  border-right: 6px solid var(--accent);
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: calc(var(--sp-2xl) + 6px);
+  background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
+}
+
+/* Contain: --bg-alt matte on image side */
+section.image-anchor:not(.full).contain {
+  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image-anchor:not(.full).contain.mirror,
+section.image-anchor:not(.full).contain.left {
+  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Cover fill */
+section.image-anchor [data-marpit-advanced-background-container] figure,
+section.image-anchor .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+section.image-anchor.contain [data-marpit-advanced-background-container] figure,
+section.image-anchor.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper */
+section.image-anchor .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-anchor .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-anchor .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-anchor .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-anchor .lattice-bg-full  { inset:0; }
+section.image-anchor.mirror .lattice-bg-right,
+section.image-anchor.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: 6px accent left border + solid --bg text column 42% width */
+section.image-anchor.full {
+  padding: 0;
+  border-top: none;
+  border-left: 6px solid var(--accent);
+  background: none;
+  box-sizing: border-box;
+}
+section.image-anchor.full header,
+section.image-anchor.full footer { display:none; }
+section.image-anchor.full h2 {
+  position:absolute; top:0; left:6px; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-end;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: var(--bg);
+  color:var(--text-heading);
+  font-size:var(--fs-xl);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-anchor.full p:last-of-type {
+  position:absolute; top:0; left:6px; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-start;
+  padding:var(--sp-2xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: transparent;
+  color:var(--text-body);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-anchor.full.mirror {
+  border-left: none;
+  border-right: 6px solid var(--accent);
+}
+section.image-anchor.full.mirror h2 {
+  left:auto; right:6px;
+  padding-left:var(--sp-xl); padding-right:var(--sp-xl);
+}
+section.image-anchor.full.mirror p:last-of-type {
+  left:auto; right:6px;
+  padding-left:var(--sp-xl); padding-right:var(--sp-xl);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-CHAMBER — The Tonal Split
+   Text panel has --bg-alt background. No explicit divider — the tonal shift
+   IS the divider. Image fills the other half cleanly. Depth without decoration.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-chamber {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-chamber:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  background: linear-gradient(to right, var(--bg-alt) 50%, transparent 50%);
+}
+section.image-chamber:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-chamber:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror */
+section.image-chamber:not(.full).mirror,
+section.image-chamber:not(.full).left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  background: linear-gradient(to left, var(--bg-alt) 50%, transparent 50%);
+}
+
+/* Contain: --bg-alt on both sides — very unified, tonal all round */
+section.image-chamber:not(.full).contain {
+  background: linear-gradient(to right, var(--bg-alt) 50%, var(--image-matte) 50%);
+}
+section.image-chamber:not(.full).contain.mirror,
+section.image-chamber:not(.full).contain.left {
+  background: linear-gradient(to left, var(--bg-alt) 50%, var(--image-matte) 50%);
+}
+
+/* Cover fill */
+section.image-chamber [data-marpit-advanced-background-container] figure,
+section.image-chamber .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+section.image-chamber.contain [data-marpit-advanced-background-container] figure,
+section.image-chamber.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper */
+section.image-chamber .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-chamber .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-chamber .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-chamber .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-chamber .lattice-bg-full  { inset:0; }
+section.image-chamber.mirror .lattice-bg-right,
+section.image-chamber.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: --bg-dark text column 42% wide, solid hard edge */
+section.image-chamber.full {
+  padding: 0;
+  border-top: none;
+  background: none;
+}
+section.image-chamber.full header,
+section.image-chamber.full footer { display:none; }
+section.image-chamber.full h2 {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-end;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: var(--bg-dark);
+  color:rgba(255,255,255,0.95);
+  font-size:var(--fs-xl);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-chamber.full p:last-of-type {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-start;
+  padding:var(--sp-2xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: transparent;
+  color:rgba(255,255,255,0.75);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-chamber.full.mirror h2 {
+  left:auto; right:0;
+}
+section.image-chamber.full.mirror p:last-of-type {
+  left:auto; right:0;
+}
+
+/* ── END IMAGE CONCEPT PROTOTYPES ─────────────────────────────────────────── */
 
 /* ── DARK VARIANT ──
  * Per-slide dark canvas. Flips this section's color-scheme to dark; the

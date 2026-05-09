@@ -118,6 +118,15 @@
   --mermaid-secondary-color: #DBD5C0;
   --mermaid-border:          #38332A;
   --mermaid-accent-warm:     var(--brand-amber); /* the amber pop */
+  --mermaid-pie-purple:  #E5E0D2;  /* pale warm-oat */
+  --mermaid-pie-orange:  #E8D8B0;  /* pale amber-oat */
+  --mermaid-pie-teal:    #D5DDD5;  /* pale warm-neutral-sage */
+  --mermaid-pie-rose:    #EDE0D8;  /* pale warm-blush */
+  --mermaid-pie-yellow:  #E8E0B8;  /* pale warm-cream */
+  --mermaid-pie-red:     #EDD8CC;  /* pale warm-terracotta */
+  --mermaid-pie-slate:   #D5D5CC;  /* pale warm-gray */
+  --mermaid-pie-sage:    #D8DDD0;  /* pale warm-sage */
+  --mermaid-pie-violet:  #E0D8E5;  /* pale warm-lavender */
 }
 
 section pre.hljs {

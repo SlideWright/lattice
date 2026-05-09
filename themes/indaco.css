@@ -294,19 +294,12 @@ section .hljs-strong { font-weight:700; }
   --mermaid-primary-color:   #DCE9F5;  /* pale brand blue */
   --mermaid-secondary-color: #DDF0E8;  /* pale brand green */
 
-  /* Pie cycle pale tints (slots 3-6, paired with primary/secondary
-   * for slots 1-2 and 11-12). Each slice gets a distinct pale hue
-   * so categorical distinction reads at low saturation. */
-  --mermaid-pie-purple:  #E5DEEB;
-  --mermaid-pie-orange:  #F5E6D8;
-  --mermaid-pie-teal:    #D9EFEE;
-  --mermaid-pie-rose:    #F2DEE2;
-
   /* Borders and lines — saturated brand navy and near-black.
    * mermaid-border is the universal fill border (reads on every
-   * pale fill including white). mermaid-line is for edges/arrows. */
+   * pale fill including white). mermaid-line is for edges/arrows.
+   * light-dark() picks near-black on light canvas and muted light on dark. */
   --mermaid-border: #1F4A6E;  /* saturated brand navy */
-  --mermaid-line:   #1A1A1A;  /* near-black */
+  --mermaid-line:   light-dark(#1A1A1A, var(--dark-text-body));
 
   /* Cross-deck contrast accent. Used for radar's second curve where a
    * single warm hue against the pale-blue band reads better than a
@@ -327,8 +320,14 @@ section .hljs-strong { font-weight:700; }
   --cat-slate:   #9AA8B8;
   --cat-mauve:   #B8939F;
 
-  /* Pie cycle extension (slots 7-12 use these distinct light hues
-   * since pie keeps the deck-wide pale-with-dark-text contract). */
+  /* Pie cycle pale tints. Supplementary fill slots used by journey/
+   * mindmap/kanban sections, gitgraph label backgrounds, treemap leaves.
+   * Slots 0-1 = primary/secondary; slots 2+ = these tokens.
+   * New themes without their own overrides inherit these via cascade. */
+  --mermaid-pie-purple:  #E5DEEB;
+  --mermaid-pie-orange:  #F5E6D8;
+  --mermaid-pie-teal:    #D9EFEE;
+  --mermaid-pie-rose:    #F2DEE2;
   --mermaid-pie-yellow:  #F4EFD8;
   --mermaid-pie-red:     #F2DCDC;
   --mermaid-pie-slate:   #E0E4EA;
@@ -519,7 +518,7 @@ section .hljs-strong { font-weight:700; }
   section .cluster .items .node .label-container,
   section .items .node rect.basic.label-container,
   section .items .node .label-container {
-    fill: #FFFFFF !important;
+    fill: var(--bg-alt) !important;
     stroke: var(--mermaid-border) !important;
   }
 
@@ -612,9 +611,9 @@ section .hljs-strong { font-weight:700; }
     stroke-opacity: 0.5 !important;
   }
   section .radarCurve-0 {
-    fill: #006FA8 !important;
+    fill: var(--accent) !important;
     fill-opacity: 0.30 !important;
-    stroke: #006FA8 !important;
+    stroke: var(--accent) !important;
     stroke-width: 2.5 !important;
   }
   section .radarCurve-1 {
@@ -623,7 +622,7 @@ section .hljs-strong { font-weight:700; }
     stroke: var(--mermaid-accent-warm) !important;
     stroke-width: 2.5 !important;
   }
-  section .radarLegendBox-0 { fill: #006FA8 !important; }
+  section .radarLegendBox-0 { fill: var(--accent) !important; }
   section .radarLegendBox-1 { fill: var(--mermaid-accent-warm) !important; }
   section .radarAxisLabel {
     fill: var(--text-heading) !important;
@@ -925,4 +924,4 @@ section .hljs-strong { font-weight:700; }
    * from --bg-alt #F2F5FA) which the audit flagged as an off-palette
    * stray. Pin both bands to palette tokens for deterministic output. */
   section g.row-rect-even > path { fill: var(--bg-alt) !important; }
-  section g.row-rect-odd > path  { fill: #FFFFFF !important; }
+  section g.row-rect-odd > path  { fill: var(--bg) !important; }

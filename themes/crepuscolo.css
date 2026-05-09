@@ -119,6 +119,15 @@
   --mermaid-secondary-color: #DDEAE5;
   --mermaid-border:          #3F2A5C;
   --mermaid-accent-warm:     #BD5000;
+  --mermaid-pie-purple:  #E5DEEB;  /* pale lavender */
+  --mermaid-pie-orange:  #F5E8C8;  /* pale amber */
+  --mermaid-pie-teal:    #D8EEF3;  /* pale cyan */
+  --mermaid-pie-rose:    #EDE3E8;  /* pale mauve */
+  --mermaid-pie-yellow:  #F3EDD0;  /* pale gold */
+  --mermaid-pie-red:     #F3DDE0;  /* pale coral-rose */
+  --mermaid-pie-slate:   #D8D5E5;  /* pale violet-slate */
+  --mermaid-pie-sage:    #DDE9E6;  /* pale sage-mint */
+  --mermaid-pie-violet:  #E0D8EC;  /* pale deep-violet */
 }
 
 /* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)

@@ -135,6 +135,16 @@
   --mermaid-secondary-color: #2C3D2F;
   --mermaid-border:          var(--brand-lime);
   --mermaid-accent-warm:     #FFD166;
+  /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
+  --mermaid-pie-purple:  #2E2A38;
+  --mermaid-pie-orange:  #382E22;
+  --mermaid-pie-teal:    #223328;
+  --mermaid-pie-rose:    #342830;
+  --mermaid-pie-yellow:  #35332A;
+  --mermaid-pie-red:     #38282A;
+  --mermaid-pie-slate:   #2A2E38;
+  --mermaid-pie-sage:    #253328;
+  --mermaid-pie-violet:  #2C2838;
 }
 
 section pre.hljs {

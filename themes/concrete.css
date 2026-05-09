@@ -121,6 +121,15 @@
   --mermaid-secondary-color: #ECECE8;
   --mermaid-border:          #2A2A28;
   --mermaid-accent-warm:     var(--brand-oxblood);
+  --mermaid-pie-purple:  #D5D5D2;  /* pale concrete */
+  --mermaid-pie-orange:  #E8D8D0;  /* pale warm-oxblood tint */
+  --mermaid-pie-teal:    #CCCCCA;  /* slightly darker concrete */
+  --mermaid-pie-rose:    #E8D8D5;  /* pale warm-gray-rose */
+  --mermaid-pie-yellow:  #E8E5D8;  /* pale warm-bone */
+  --mermaid-pie-red:     #E5D0D0;  /* pale warm-red */
+  --mermaid-pie-slate:   #D5D5CE;  /* concrete-slate */
+  --mermaid-pie-sage:    #D8DDD5;  /* pale warm-sage */
+  --mermaid-pie-violet:  #D8D5E0;  /* pale cool contrast */
 }
 
 section pre.hljs {
