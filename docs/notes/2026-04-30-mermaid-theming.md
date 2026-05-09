@@ -75,11 +75,43 @@ This caused inconsistent rendering because:
 2. Network latency means the script loads after `lattice-runtime.js` fires its first retry, wasting retry budget
 3. VS Code's Markdown preview webview may block external scripts
 
-**Fix**: Changed to the local UMD bundle in all markdown files:
+**Fix (interim)**: Changed to the local `node_modules` UMD bundle:
 ```html
 <script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 ```
-The local bundle is `node_modules/mermaid/dist/mermaid.min.js` — a ~3 MB UMD bundle that sets `globalThis["mermaid"]`. This is the same version as the CDN (`mermaid@11`), loaded synchronously from the local filesystem.
+
+**Fix (current)**: Vendor the UMD bundle at the repo root with a
+major-version-pinned filename and reference it from the example decks:
+```html
+<script src="../mermaid-v11.min.js"></script>
+```
+
+The repo-root vendored bundle is committed to git (and listed in
+`package.json` `files:` so `npm publish` ships it). This was driven by
+two failure modes the `node_modules` form had:
+
+1. **Worktrees and fresh clones don't share `node_modules`.** Anyone
+   opening a deck before running `npm install` — or inspecting an old
+   commit via `git worktree add` — saw the script tag 404 and Mermaid
+   never load. Came up during a bisect for an unrelated bug; the bisect
+   appeared broken at every commit because the worktree had no
+   `node_modules`.
+2. **The relative path is brittle.** `../node_modules/...` only resolves
+   when the deck sits one level deep (e.g. `examples/foo.md`). Decks
+   anywhere else need a different number of `..`. A repo-root vendored
+   file is the same path from any directory tree depth, modulo the
+   number of `..` segments.
+
+The major-version pin (`mermaid-v11.min.js`, not plain `mermaid.min.js`
+or full-semver `mermaid-v11.14.0.min.js`) is a deliberate trade-off:
+patch / minor bumps stay invisible (content swap, no deck edits), but
+major bumps force a rename + grep-and-replace across decks — which is
+the right behavior because Mermaid majors have removed diagram types
+and renamed APIs.
+
+To bump: `cp node_modules/mermaid/dist/mermaid.min.js ./mermaid-v11.min.js`
+after `npm update mermaid`. Confirm with the `mermaid-smoke` integration
+test before committing the swap.
 
 **Files changed**:
 - `examples/gallery.md` (+ regenerated `examples/gallery.html`)

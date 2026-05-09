@@ -30,6 +30,7 @@
     "lattice-runtime.js",
     "lattice.css",
     "marp.config.js",
+    "mermaid-v11.min.js",
     "lib/",
     "themes/",
     "docs/",
