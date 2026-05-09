@@ -118,6 +118,10 @@
    * inline-code surface, 5.38:1 on accent-soft (mid-leather panel). */
   --accent:      light-dark(var(--brand-leather), var(--brand-gold-bright));
   --accent-soft: light-dark(#F5EFE0, var(--bg-warm-mid));
+  /* Text on top of --accent. Light: white on saddle gold (5.96:1).
+   * Dark: espresso on bright gold (~9:1) — fixes corner-tag contrast
+   * which would otherwise be white on bright gold (~2.3:1, fails AA). */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
 
   /* ── Semantic signals ─────────────────────────────────────────────── */
   --pass: var(--brand-green-deep); /* 6.06:1 on bg AA */

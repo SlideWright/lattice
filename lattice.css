@@ -87,6 +87,35 @@
   --cat-mauve-deep:  color-mix(in oklab, var(--cat-mauve)  var(--cat-mix-ratio), var(--cat-mix-base));
   --cat-slate-deep:  color-mix(in oklab, var(--cat-slate)  var(--cat-mix-ratio), var(--cat-mix-base));
   --on-cat: var(--on-dark-primary, #fff);
+
+  /* ── On-accent text tier ──────────────────────────────────────────────
+   * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
+   * split-panel left rail, banner-tags, badges). Themes can override any
+   * tier; the defaults below adapt automatically via light-dark() so
+   * dark-canvas modes (where many palettes flip --accent to a brighter
+   * value) do not inherit a white-on-bright-pastel collision.
+   *
+   * Tier semantics mirror `--on-dark-*`:
+   *   primary   — body text, headings, labels (full opacity)
+   *   secondary — eyebrows / muted captions on the accent rail
+   *   ghost     — very muted decorative chrome
+   *   watermark — large-glyph backdrop, near-invisible
+   *
+   * Themes whose accent doesn't switch (e.g., indaco's mid-blue stays in
+   * both modes) can simplify by redefining --on-accent: #fff at :root. */
+  --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
+  --on-accent-secondary: light-dark(rgba(255,255,255,0.70), color-mix(in srgb, var(--bg-dark, #000) 70%, transparent));
+  --on-accent-ghost:     light-dark(rgba(255,255,255,0.32), color-mix(in srgb, var(--bg-dark, #000) 32%, transparent));
+  --on-accent-watermark: light-dark(rgba(255,255,255,0.12), color-mix(in srgb, var(--bg-dark, #000) 12%, transparent));
+
+  /* ── Code panel ─────────────────────────────────────────────────────────
+   * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.
+   * Themes can override --code-bg to bind it to the brand palette;
+   * --code-text is theme-defined for syntax-on-dark legibility. The
+   * fallbacks below match the indaco values so unstyled renders are still
+   * usable as a diagnostic. */
+  --code-bg:   var(--bg-dark, #001D33);
+  --code-text: #CBD9E8;
 }
 
 /* ── BASE ── */
@@ -546,7 +575,7 @@ section.cards-grid > ol > li::before, section.cards-side > ol > li::before {
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
-  color:var(--on-dark-primary,#fff); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 section.cards-grid .cards-grid-inner--ordered, section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
 section.cards-grid .cards-grid-inner--ordered > .card, section.cards-side .cards-grid-inner--ordered > .card {
@@ -558,7 +587,7 @@ section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-sid
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
-  color:var(--on-dark-primary,#fff); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
 /* ── CARDS-STACK ──
@@ -602,7 +631,7 @@ section.cards-stack > ol > li::before {
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
-  color:var(--on-dark-primary,#fff); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 section.cards-stack .cards-stack-inner--ordered { counter-reset:stack; }
 section.cards-stack .cards-stack-inner--ordered > .card {
@@ -614,7 +643,7 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
-  color:var(--on-dark-primary,#fff); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
 /* ── COMPARISON ──
@@ -686,7 +715,7 @@ section.timeline > ol > li::before {
   content:counter(timeline-counter);
   display:flex; align-items:center; justify-content:center;
   width:26px; height:26px; border-radius:50%;
-  background:var(--accent); color:var(--on-dark-primary);
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff));
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; line-height:1;
   margin-bottom:14px; flex-shrink:0;
 }
@@ -750,14 +779,14 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
  */
 section.split-panel { padding:0; flex-direction:row; }
 section.split-panel h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
-section.split-panel h5 { font-size:var(--fs-label); color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
+section.split-panel h5 { font-size:var(--fs-label); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
 section.split-panel .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
-section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-dark-watermark); }
-section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-dark-watermark); top:40px; left:20px; line-height:1; pointer-events:none; }
+section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
+section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-accent-watermark); top:40px; left:20px; line-height:1; pointer-events:none; }
 /* Code-only paragraph (eyebrow / section label) in the processed panel-left:
  * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
-section.split-panel .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-dark-secondary); }
-section.split-panel .panel-left > p:has(> code:only-child) > code { color:var(--on-dark-secondary); background:none; border:none; padding:0; border-radius:0; }
+section.split-panel .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
+section.split-panel .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
 /* h5 eyebrow in processed panel-left: mirror the fallback grid's align-self:start. */
 section.split-panel .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
 section.split-panel .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
@@ -767,7 +796,7 @@ section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--
 section.split-panel ol { counter-reset:panel-counter; }
 section.split-panel :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-panel ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:46px 1fr; grid-auto-rows:auto; column-gap:10px; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-panel ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-dark-primary,#fff); font-family:var(--font-mono); font-size:1.5rem; font-weight:800; }
+section.split-panel ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff)); font-family:var(--font-mono); font-size:1.5rem; font-weight:800; }
 section.split-panel ol > li > strong,
 section.split-panel ol > li > span,
 section.split-panel ol > li > p,
@@ -813,8 +842,8 @@ section.cards-wide .wide-card-heading { font-size:var(--fs-body); font-weight:70
 section.cards-wide .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
-section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:6px; padding:3px 9px; }
 
 /* ── CRITERIA ──
  * ## heading  ol or ul — li **title** [optional nested ul > li description]
@@ -1070,8 +1099,8 @@ section.code { }
 section.code h3 { margin-bottom:4px; }
 section.code h2 { margin-bottom:var(--sp-xs); }
 section.code > em { font-size:var(--fs-sm); color:var(--text-label); margin-bottom:var(--sp-sm); font-style:normal; display:block; }
-section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
-section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
+section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
+section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
 /* ── COMPARE-CODE ──
  * `eyebrow(opt)` ## heading  `left-label` ```block  `right-label` ```block
@@ -1091,8 +1120,8 @@ section.compare-code h2 ~ p:has(> code:only-child) > code {
   letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
   background:none; border:none; padding:0; border-radius:0;
 }
-section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, #001D33; padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
-section.compare-code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:#C5D8F5; background:none; padding:0; display:block; }
+section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; }
+section.compare-code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
 /* ── Mermaid ── */
 /* .mermaid-svg = CLI path (lattice.js pre-renders into a wrapper).
@@ -1338,7 +1367,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   position:absolute; top:0; left:0;
   padding:6px 14px; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:16px; font-weight:700; line-height:1;
-  color:var(--on-dark-primary,#fff); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
 /* ── COMPARISON ──────────────────────────────────────────────────────────────
@@ -1461,7 +1490,7 @@ section.cards-wide:not(:has(.three-stack)) ol > li {
 }
 section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
 section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-dark-primary,#fff); background:var(--accent); border-radius:6px; padding:3px 9px; }
+section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:6px; padding:3px 9px; }
 section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
@@ -1507,13 +1536,13 @@ section.split-panel:not(:has(.panel-left)) h5 {
   grid-column:1; grid-row:1 / -1; align-self:start;
   padding:var(--sp-xl) var(--sp-lg) 0;
   z-index:1; position:relative;
-  color:rgba(255,255,255,0.65); margin:0;
+  color:var(--on-accent-secondary); margin:0;
 }
 section.split-panel:not(:has(.panel-left)) h2 {
   grid-column:1; grid-row:1 / -1; align-self:end;
   padding:0 var(--sp-lg) var(--sp-xl);
   z-index:1; position:relative;
-  color:white; font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
+  color:var(--on-accent); font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
 }
 section.split-panel:not(:has(.panel-left)) h3 {
   grid-column:2; grid-row:1;
@@ -1531,10 +1560,10 @@ section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) {
   grid-column:1; grid-row:1 / -1; align-self:center;
   padding:0 var(--sp-lg);
   z-index:1; position:relative;
-  color:var(--on-dark-secondary);
+  color:var(--on-accent-secondary);
 }
 section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) > code {
-  color:var(--on-dark-secondary);
+  color:var(--on-accent-secondary);
   background:none; border:none; padding:0; border-radius:0;
 }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
@@ -2069,7 +2098,7 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
   padding: 6px 14px;
   border-radius: var(--radius-md) 0 var(--radius-sm) 0;
   background: var(--accent);
-  color: var(--on-dark-primary, #fff);
+  color: var(--on-accent, var(--on-dark-primary, #fff));
   font-family: var(--font-mono);
   font-size: 15px;
   font-weight: 700;
@@ -2123,7 +2152,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
   padding: 10px var(--sp-md);
   border-radius: 0;
   background: var(--accent);
-  color: var(--on-dark-primary, #fff);
+  color: var(--on-accent, var(--on-dark-primary, #fff));
   font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 700;

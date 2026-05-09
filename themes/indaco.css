@@ -106,6 +106,10 @@
    * inside AA on the inline-code chip surface. */
   --accent:      light-dark(var(--brand-blue-mid), #82C8E5);
   --accent-soft: light-dark(#EFF6FC, #002847);
+  /* Text on top of --accent. Light: white on brand mid-blue (5.83:1).
+   * Dark: deep navy on sky blue (~9:1) — fixes corner-tag contrast
+   * which would otherwise be white on sky blue (~1.7:1, fails AA). */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
 
   /* ── Semantic signals ─────────────────────────────────────────────── */
   --pass: var(--brand-green-deep); /* 6.50:1 on bg AA */
