@@ -1,0 +1,112 @@
+/* @theme concrete
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Concrete palette — brutalist gray canvas
+ * ────────────────────────────────────────────────────────────────────────
+ * Architectural reveal, brutalist editorial, infrastructure decks. The
+ * lone theme with a non-white, non-cream, non-dark canvas: poured-
+ * concrete gray (#B8B8B5). Cards lift LIGHTER than the canvas instead
+ * of darker, an inversion of the usual paper metaphor. Black ink reads
+ * crisply on the gray; oxblood is the deliberate chromatic break.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Mid-gray canvas (#B8B8B5). Every other surface in the system goes
+ *      lighter (cards) or much darker (title/divider). This is the
+ *      defining choice; do not change it.
+ *
+ *   2. Card surfaces go LIGHTER than canvas — concrete logic. --bg-alt
+ *      (#D5D5D2) is the lifted surface; --bg-warm-light (#A8A8A5) is
+ *      a slightly darker fill for secondary surfaces. The usual
+ *      paper-card metaphor is inverted.
+ *
+ *   3. Black ink on gray canvas — pure black (#0F0F0E) reads at 9:1+,
+ *      well into AAA. The achromatic palette commits fully; oxblood is
+ *      the only chromatic axis.
+ *
+ *   4. Saturation reserved for the oxblood pop on second mermaid curve
+ *      (#A82828 light → #E85858 dark) via mermaid-accent-warm.
+ *
+ *   5. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the concrete-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Concrete brand axis — gray canvas + oxblood pop ──────────────── */
+  --brand-concrete:    #B8B8B5;  /* canvas (light)                        */
+  --brand-jet:         #0F0F0E;
+  --brand-bone:        #ECECE8;
+  --brand-oxblood:     #A82828;  /* mermaid-accent-warm (light)           */
+  --brand-oxblood-soft:#E85858;  /* mermaid-accent-warm (dark)            */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(var(--brand-concrete), var(--dark-bg));
+  --bg-alt:   light-dark(#D5D5D2, var(--dark-bg-alt));   /* lifted lighter */
+  --bg-dark:  #1A1A18;
+  --border:   light-dark(#80807C, var(--dark-border));   /* mid-gray rule  */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #ECECE8;
+  --text-heading: light-dark(var(--brand-jet), var(--dark-text-heading)); /* L:9.27:1 / D:14.96:1 AAA */
+  --text-body:    light-dark(#2A2A28, var(--dark-text-body));             /* L:7.42:1 / D:9.31:1 AAA  */
+  --text-label:   light-dark(#1F1F1F, var(--dark-text-label));            /* L:8.43:1 / D:8.84:1 AAA  */
+  --text-muted:   #4F4F4C;
+
+  /* ── Brand accent — pure black on gray, bone on dark ──────────────── */
+  --accent:      light-dark(var(--brand-jet), var(--brand-bone)); /* L:9.27:1 / D:14.96:1 on bg AAA */
+  --accent-soft: light-dark(#D5D5D2, #28282A);
+  --on-accent:   light-dark(#ECECE8, var(--bg-dark));    /* L:8.96:1 / D:14.96:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0F0F0F;
+  --bg-warm-light: #2A2A28;
+  --code-text:     #D5D5D2;
+
+  /* ── Spectrum — jet → mid-gray → oxblood pop ─────────────────────── */
+  --spectrum: linear-gradient(90deg, #0F0F0F 0%, #585855 55%, var(--brand-oxblood) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0F0F0F 0%, #585855 55%, var(--brand-oxblood) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #1A1A18;
+  --dark-bg-alt:       #38383A;
+  --dark-border:       #5A5A58;
+  --dark-text-heading: #ECECE8;
+  --dark-text-body:    #B8B8B5;
+  --dark-text-muted:   #80807C;
+  --dark-text-label:   #ECECE8;
+  --dark-text-display: #ECECE8;
+
+  /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
+  --mermaid-primary-color:   #D5D5D2;
+  --mermaid-secondary-color: #ECECE8;
+  --mermaid-border:          #2A2A28;
+  --mermaid-accent-warm:     var(--brand-oxblood);
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

@@ -1,0 +1,8 @@
+/* @theme atelier-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over atelier that flips deck-wide color-scheme to dark. */
+
+@import 'atelier';
+
+:root { color-scheme: dark; }

@@ -1,0 +1,8 @@
+/* @theme burgundy-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over burgundy that flips deck-wide color-scheme to dark. */
+
+@import 'burgundy';
+
+:root { color-scheme: dark; }

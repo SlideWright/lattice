@@ -1,0 +1,112 @@
+/* @theme mustard
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Mustard palette — apothecary library
+ * ────────────────────────────────────────────────────────────────────────
+ * Editorial archive, scholarly, vintage warmth. Aged-mustard yellow on
+ * parchment with oxblood tag. The only yellow-family theme. Distinct
+ * from cuoio (saddle-tan leather) by the desaturated dusty quality and
+ * the oxblood pop. Reads as old apothecary cabinet labels.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#2A1A06 deep
+ *      sepia-near-black). Dark mode flips to warm cream on deep
+ *      sepia-brown canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)  — primary mermaid surfaces, accent-soft, card
+ *                            fills. Dark text reads at AA+.
+ *        Mid-tone band     — accent and text-label, aged mustard (L≈40
+ *                            light, L≈65 dark).
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Aged mustard reads on every parchment fill.
+ *        b. Oxblood pop on second mermaid curve via mermaid-accent-warm.
+ *           The complementary partner that gives Mustard its vintage
+ *           apothecary identity (mustard + oxblood is the historical
+ *           palette of label / poison-bottle iconography).
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the mustard-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Mustard brand axis ──────────────────────────────────────────── */
+  --brand-mustard-deep:   #0F0A03;  /* dark canvas, bg-dark              */
+  --brand-mustard-mid:    #8C6A18;  /* accent (light), text-label        */
+  --brand-mustard-bright: #D4A848;  /* accent (dark)                     */
+  --brand-oxblood:        #6E2A1F;  /* mermaid-accent-warm (light)       */
+  --brand-oxblood-bright: #D87060;  /* mermaid-accent-warm (dark)        */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#F5EFD8, var(--dark-bg));      /* parchment       */
+  --bg-alt:   light-dark(#ECE3C0, var(--dark-bg-alt));
+  --bg-dark:  var(--brand-mustard-deep);
+  --border:   light-dark(#D5C896, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #F0E5C8;
+  --text-heading: light-dark(#2A1A06, var(--dark-text-heading));     /* L:14.39:1 / D:14.62:1 */
+  --text-body:    light-dark(#4F3D1C, var(--dark-text-body));        /* L:7.97:1 / D:8.36:1   */
+  --text-label:   light-dark(var(--brand-mustard-mid), var(--dark-text-label)); /* L:5.36:1 / D:6.20:1 AA+ */
+  --text-muted:   #80704A;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-mustard-mid), var(--brand-mustard-bright)); /* L:5.36:1 / D:8.45:1 on bg */
+  --accent-soft: light-dark(#E8D580, var(--bg-warm-mid));
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.61:1 / D:8.45:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0F0A03;
+  --bg-warm-light: #2A1F0E;
+  --code-text:     #BDAC78;
+
+  /* ── Spectrum — sepia → mustard → oxblood pop ──────────────────────── */
+  --spectrum: linear-gradient(90deg, #0F0A03 0%, #8C6A18 55%, var(--brand-oxblood) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0F0A03 0%, #8C6A18 55%, var(--brand-oxblood) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #0F0A03;
+  --dark-bg-alt:       #2A1F0E;
+  --dark-border:       #3D2D14;
+  --dark-text-heading: #F0E5C8;
+  --dark-text-body:    #BDAC78;
+  --dark-text-muted:   #85734A;
+  --dark-text-label:   #D4A848;
+  --dark-text-display: #F0E5C8;
+
+  /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
+  --mermaid-primary-color:   #E8D580;
+  --mermaid-secondary-color: #F0E5C8;
+  --mermaid-border:          #3D2D14;
+  --mermaid-accent-warm:     var(--brand-oxblood);
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

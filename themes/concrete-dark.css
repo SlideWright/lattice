@@ -1,0 +1,8 @@
+/* @theme concrete-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over concrete that flips deck-wide color-scheme to dark. */
+
+@import 'concrete';
+
+:root { color-scheme: dark; }

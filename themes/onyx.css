@@ -1,0 +1,112 @@
+/* @theme onyx
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Onyx palette — high-contrast editorial
+ * ────────────────────────────────────────────────────────────────────────
+ * Maximum-contrast minimalism. Pure black on pure white (or pure white
+ * on pure black in dark mode), with a single saturated red as the only
+ * chromatic pop — used via mermaid-accent-warm and as the dark-mode
+ * --fail signal. Every other axis is achromatic.
+ *
+ * The minimalist foil to carbone (which is dark + electric lime) — Onyx
+ * is editorial maximum, carbone is tech reveal. Both extreme, opposite
+ * registers.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Pure black ink on pure white canvas (light) and inverse (dark).
+ *      No warm-tinting, no gray-shifting. The most extreme contrast in
+ *      the set.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈97) — primary mermaid surfaces, accent-soft, card
+ *                           fills. Pure black text reads at AAA.
+ *        Dark band        — accent and ink. Pure black (#000000) light,
+ *                           pure white (#FFFFFF) dark.
+ *
+ *   3. Saturation reserved for one purpose only: the saturated red pop
+ *      (#C71F2D light → #FF4D5C dark) used via mermaid-accent-warm.
+ *      Onyx has no other chromatic axis.
+ *
+ *   4. Every text-bearing token clears WCAG AAA (7:1) — the highest in
+ *      the set.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the onyx-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Onyx brand axis — pure achromatic + red pop ──────────────────── */
+  --brand-jet:     #000000;
+  --brand-chalk:   #FFFFFF;
+  --brand-red:     #C71F2D;  /* mermaid-accent-warm (light)              */
+  --brand-red-bright: #FF4D5C; /* mermaid-accent-warm (dark)             */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#FFFFFF, var(--dark-bg));
+  --bg-alt:   light-dark(#F5F5F5, var(--dark-bg-alt));
+  --bg-dark:  #000000;
+  --border:   light-dark(#1A1A1A, var(--dark-border));  /* heavy black border light-mode */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(#000000, var(--dark-text-heading));     /* L:21.0:1 / D:21.0:1 AAA */
+  --text-body:    light-dark(#3A3A3A, var(--dark-text-body));        /* L:10.85:1 / D:11.0:1 AAA */
+  --text-label:   light-dark(#000000, var(--dark-text-label));       /* L:21.0:1 / D:21.0:1 AAA */
+  --text-muted:   #6E6E6E;
+
+  /* ── Brand accent — pure achromatic ─────────────────────────────── */
+  --accent:      light-dark(#000000, #FFFFFF);            /* L:21.0:1 / D:21.0:1 on bg AAA */
+  --accent-soft: light-dark(#F0F0F0, #1F1F1F);            /* accent reads AAA on this */
+  --on-accent:   light-dark(#FFFFFF, #000000);            /* L:21.0:1 / D:21.0:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0F0F0F;
+  --bg-warm-light: #1A1A1A;
+  --code-text:     #D9D9D9;
+
+  /* ── Spectrum — black → mid-gray → saturated red pop ──────────────── */
+  --spectrum: linear-gradient(90deg, #000000 0%, #666666 55%, var(--brand-red) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #000000 0%, #666666 55%, var(--brand-red) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #000000;
+  --dark-bg-alt:       #1A1A1A;
+  --dark-border:       #FFFFFF;  /* heavy white border on dark canvas */
+  --dark-text-heading: #FFFFFF;
+  --dark-text-body:    #BFBFBF;
+  --dark-text-muted:   #8C8C8C;
+  --dark-text-label:   #FFFFFF;
+  --dark-text-display: #FFFFFF;
+
+  /* ── Mermaid extensions — saturated red is the only chroma ───────── */
+  --mermaid-primary-color:   #F5F5F5;
+  --mermaid-secondary-color: #D9D9D9;
+  --mermaid-border:          #000000;
+  --mermaid-accent-warm:     var(--brand-red);
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

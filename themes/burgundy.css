@@ -1,0 +1,116 @@
+/* @theme burgundy
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Burgundy palette — wine cellar elegance
+ * ────────────────────────────────────────────────────────────────────────
+ * Hospitality, fine dining, heritage brand. Deep wine red on warm cream
+ * with champagne tag — the only red-family theme in the set. Distinct
+ * from cuoio (warm earth/leather) by hue: cuoio is tan/saddle, Burgundy
+ * is wine. The champagne pop on second mermaid curve gives it the
+ * cellar/cellar-bar duotone identity.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#2A1015 deep
+ *      garnet-near-black). Dark mode flips to warm cream on deep-wine
+ *      canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)  — primary mermaid surfaces, accent-soft, card
+ *                            fills. Dark text reads at AA+.
+ *        Mid-tone band     — accent and text-label, deep wine (L≈25
+ *                            light, L≈55 dark).
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Deep wine reads on every cream fill.
+ *        b. Champagne pop on second mermaid curve via mermaid-accent-warm.
+ *           The duotone partner that keeps the deck from being too
+ *           monochromatically red.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode.
+ *
+ *   Note on --fail: kept at standard #991B1B even though it overlaps the
+ *   Burgundy hue. The convergence is intentional — alarms in a wine-
+ *   themed deck read as part of the brand voice rather than foreign.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the burgundy-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Burgundy brand axis ─────────────────────────────────────────── */
+  --brand-wine-deep:    #180609;  /* dark canvas, bg-dark                */
+  --brand-wine-mid:     #742532;  /* accent (light), text-label          */
+  --brand-wine-bright:  #C36B78;  /* accent (dark)                       */
+  --brand-champagne:    #B8995E;  /* mermaid-accent-warm (light)         */
+  --brand-champagne-soft:#D4B98A; /* mermaid-accent-warm (dark)          */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#F8F2E5, var(--dark-bg));      /* warm cream      */
+  --bg-alt:   light-dark(#F1E8D2, var(--dark-bg-alt));
+  --bg-dark:  var(--brand-wine-deep);
+  --border:   light-dark(#DBCEAE, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #F0E2CE;
+  --text-heading: light-dark(#2A1015, var(--dark-text-heading));     /* L:14.96:1 / D:14.43:1 */
+  --text-body:    light-dark(#523A40, var(--dark-text-body));        /* L:7.13:1 / D:8.88:1   */
+  --text-label:   light-dark(var(--brand-wine-mid), var(--dark-text-label)); /* L:6.44:1 / D:6.85:1 AA+ */
+  --text-muted:   #7C6A6F;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-wine-mid), var(--brand-wine-bright)); /* L:6.44:1 / D:5.40:1 on bg AA+ */
+  --accent-soft: light-dark(#EAD4D8, var(--bg-warm-mid));
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:6.71:1 / D:5.40:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #180609;
+  --bg-warm-light: #2F141B;
+  --code-text:     #DBB8B8;
+
+  /* ── Spectrum — wine deep → wine mid → champagne pop ────────────────── */
+  --spectrum: linear-gradient(90deg, #180609 0%, #742532 55%, var(--brand-champagne) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #180609 0%, #742532 55%, var(--brand-champagne) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #180609;
+  --dark-bg-alt:       #2F141B;
+  --dark-border:       #48202A;
+  --dark-text-heading: #F0E2CE;
+  --dark-text-body:    #BFA9A6;
+  --dark-text-muted:   #85706E;
+  --dark-text-label:   #C36B78;
+  --dark-text-display: #F0E2CE;
+
+  /* ── Mermaid extensions — champagne pop on second curve ────────────── */
+  --mermaid-primary-color:   #EAD4D8;
+  --mermaid-secondary-color: #F0E2CE;
+  --mermaid-border:          #48202A;
+  --mermaid-accent-warm:     var(--brand-champagne);
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

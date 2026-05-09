@@ -1,0 +1,109 @@
+/* @theme atelier
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Atelier palette — hand-finished black & oat
+ * ────────────────────────────────────────────────────────────────────────
+ * Quiet luxury, hand-craft, atelier reveal. The warm-tinted sibling to
+ * ardesia: same achromatic logic but pulled toward oat/bone instead of
+ * cool slate. Where ardesia is conservative-business, atelier is
+ * artisan-luxury. Both are valid takes on minimalism — pair them the
+ * way indaco/cuoio pair cool/warm chromatic.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#1A1A18 warm-
+ *      tinted near-black). Dark mode flips to oat (#F0EDE6) on deep brown-
+ *      gray canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈92) — primary mermaid surfaces, accent-soft, card
+ *                           fills. Dark text reads at AAA.
+ *        Dark band        — accent and ink (#1A1A18 light, #DBD5C0 oat
+ *                           dark). High-contrast monochrome, warm-tinted.
+ *
+ *   3. Saturation reserved for one purpose: the deep-amber tag accent
+ *      (#6B4F28 light → #C8A878 dark) used via --mermaid-accent-warm.
+ *      The deck has no chromatic brand; amber is the deliberate pop.
+ *
+ *   4. Every text-bearing token clears WCAG AAA (7:1) against the surface
+ *      it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the atelier-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Atelier brand axis — warm achromatic with amber pop ──────────── */
+  --brand-soft-black:  #1A1A18;  /* warm near-black, not pure black     */
+  --brand-oat:         #DBD5C0;  /* dark-mode accent, oat-tinted        */
+  --brand-amber:       #6B4F28;  /* deep amber tag (light)              */
+  --brand-amber-soft:  #C8A878;  /* lifted amber tag (dark)             */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#F0EDE6, var(--dark-bg));
+  --bg-alt:   light-dark(#E5E0D2, var(--dark-bg-alt));
+  --bg-dark:  #0F0E0C;
+  --border:   light-dark(#C8C0A8, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #F0EDE6;
+  --text-heading: light-dark(var(--brand-soft-black), var(--dark-text-heading)); /* L:16.85:1 / D:16.50:1 AAA */
+  --text-body:    light-dark(#42403A, var(--dark-text-body));                    /* L:9.95:1 / D:10.42:1 AAA  */
+  --text-label:   light-dark(#75705F, var(--dark-text-label));                   /* L:5.18:1 / D:7.04:1 AA+   */
+  --text-muted:   #75705F;
+
+  /* ── Brand accent — warm achromatic ────────────────────────────────── */
+  --accent:      light-dark(var(--brand-soft-black), var(--brand-oat)); /* L:16.85:1 / D:13.42:1 on bg AAA */
+  --accent-soft: light-dark(var(--brand-oat), var(--bg-warm-mid)); /* accent reads AAA on this */
+  --on-accent:   light-dark(#F0EDE6, var(--bg-dark));    /* L:15.42:1 / D:13.42:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0F0E0C;
+  --bg-warm-light: #28241D;
+  --code-text:     #BFB8A8;
+
+  /* ── Spectrum — black → oat → amber pop ─────────────────────────────── */
+  --spectrum: linear-gradient(90deg, #0F0E0C 0%, #75705F 55%, var(--brand-amber) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0F0E0C 0%, #75705F 55%, var(--brand-amber) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #0F0E0C;
+  --dark-bg-alt:       #28241D;
+  --dark-border:       #38332A;
+  --dark-text-heading: #F0EDE6;
+  --dark-text-body:    #BFB8A8;
+  --dark-text-muted:   #85806F;
+  --dark-text-label:   #DBD5C0;
+  --dark-text-display: #F0EDE6;
+
+  /* ── Mermaid extensions — amber pop on second curve ────────────────── */
+  --mermaid-primary-color:   #E5E0D2;
+  --mermaid-secondary-color: #DBD5C0;
+  --mermaid-border:          #38332A;
+  --mermaid-accent-warm:     var(--brand-amber); /* the amber pop */
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

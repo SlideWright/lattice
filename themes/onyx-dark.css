@@ -1,0 +1,8 @@
+/* @theme onyx-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over onyx that flips deck-wide color-scheme to dark. */
+
+@import 'onyx';
+
+:root { color-scheme: dark; }
