@@ -19,6 +19,7 @@ Open the relevant file before starting work. Only load what the current task nee
 | Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |
 | Running the render pipeline (PDF/HTML/PPTX) | [references/pipeline.md](./references/pipeline.md) |
 | Comparing lattice-emulator.js vs marp-cli output | [references/audit.md](./references/audit.md) |
+| Hitting an unexpected behavior, hack, or browser/Marp/Mermaid quirk | [references/gotchas.md](./references/gotchas.md) — read first when something breaks in an unfamiliar way; add an entry when you find a new one |
 
 **Do not load all files at once.** Load only what the task requires.
 

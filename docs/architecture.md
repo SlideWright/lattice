@@ -4,6 +4,12 @@ How Lattice works under the hood. Read this when you want to maintain
 the engine, fork it, or understand a build failure. Most deck authors
 don't need to read this.
 
+> Debugging something subtle? Check
+> [references/gotchas.md](./references/gotchas.md) first. It tracks the
+> hacks, workarounds, and dependency quirks (Marpit, Mermaid, Chromium,
+> marp-vscode) that the engine is structured around — many of which
+> aren't self-documenting in the code.
+
 ## Why Marp emulation, not Marp itself
 
 Lattice ships its own renderer (`lattice-emulator.js`) instead of calling the
