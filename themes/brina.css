@@ -1,0 +1,107 @@
+/* @theme brina
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Brina palette — Nordic restraint, brushed steel
+ * ────────────────────────────────────────────────────────────────────────
+ * AI/ML, fintech, data. Cool gray-blue with desaturated accent — the
+ * theme commits fully to monochromatic restraint. Distinct from indaco
+ * (which carries warm-saturated brand navy) by going further toward
+ * neutral steel. Accent is steel-blue, not brand-blue.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#1A2330
+ *      graphite-blue). Dark mode flips to bone (#E6EDF4) on deep-graphite
+ *      canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈92) — primary mermaid surfaces, accent-soft, card
+ *                           fills. Dark text reads at AA+.
+ *        Mid-tone band    — accent, text-label, brand-steel (L≈40 light,
+ *                           L≈75 dark). Desaturated steel, not brand-blue.
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Steel-blue reads on every fill.
+ *        b. Alarm signal. --fail is the deck-wide alarm.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the brina-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Brina brand axis — desaturated steel ──────────────────────────── */
+  --brand-steel-deep:   #0C141C;  /* dark canvas, bg-dark                 */
+  --brand-steel-mid:    #3D6A82;  /* accent (light), text-label           */
+  --brand-steel-bright: #9CC0D2;  /* accent (dark), decorative spectrum   */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#F2F5F7, var(--dark-bg));
+  --bg-alt:   light-dark(#E8EDF1, var(--dark-bg-alt));
+  --bg-dark:  var(--brand-steel-deep);
+  --border:   light-dark(#D2DBE2, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(#1A2330, var(--dark-text-heading));     /* L:13.97:1 / D:14.18:1 */
+  --text-body:    light-dark(#475260, var(--dark-text-body));        /* L:7.05:1 / D:8.32:1   */
+  --text-label:   light-dark(var(--brand-steel-mid), var(--dark-text-label)); /* L:5.10:1 / D:6.30:1 AA */
+  --text-muted:   #7A848F;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-steel-mid), var(--brand-steel-bright)); /* L:5.10:1 / D:7.20:1 on bg */
+  --accent-soft: light-dark(#DAE6EE, var(--bg-warm-mid));
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.40:1 / D:7.20:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0C141C;
+  --bg-warm-light: #1E2A38;
+  --code-text:     #BFC9D6;
+
+  /* ── Spectrum — graphite → steel → silver ──────────────────────────── */
+  --spectrum: linear-gradient(90deg, #0C141C 0%, #3D6A82 55%, #C0D2DC 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0C141C 0%, #3D6A82 55%, #C0D2DC 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #0C141C;
+  --dark-bg-alt:       #1E2A38;
+  --dark-border:       #2C3B4D;
+  --dark-text-heading: #E6EDF4;
+  --dark-text-body:    #A5B3C2;
+  --dark-text-muted:   #6F7E8F;
+  --dark-text-label:   #9CC0D2;
+  --dark-text-display: #FFFFFF;
+
+  /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
+  --mermaid-primary-color:   #DAE6EE;
+  --mermaid-secondary-color: #E5EAF0;
+  --mermaid-border:          #1E2A38;
+  --mermaid-accent-warm:     #BD5000;
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

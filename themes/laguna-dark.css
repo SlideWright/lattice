@@ -1,0 +1,8 @@
+/* @theme laguna-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over laguna that flips deck-wide color-scheme to dark. */
+
+@import 'laguna';
+
+:root { color-scheme: dark; }

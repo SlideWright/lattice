@@ -1,0 +1,8 @@
+/* @theme brina-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over brina that flips deck-wide color-scheme to dark. */
+
+@import 'brina';
+
+:root { color-scheme: dark; }

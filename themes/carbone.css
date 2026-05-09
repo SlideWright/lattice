@@ -1,0 +1,125 @@
+/* @theme carbone
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Carbone palette — dark editorial with electric lime accent
+ * ────────────────────────────────────────────────────────────────────────
+ * Tech reveal, dramatic dark, "we ship product" deck. The lone palette
+ * in the set whose identity is the dark canvas itself — every other new
+ * theme follows the light-dark() switch contract. Carbone pins to dark
+ * always, regardless of the active color-scheme.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every surface (#F5F5F2 bone). The
+ *      canvas does not switch; light-mode and dark-mode resolve to the
+ *      same dark values.
+ *
+ *   2. Two lightness bands for fills:
+ *        Card band (L≈14)  — primary mermaid surfaces (--bg-alt = #26262A
+ *                            lifted graphite). Bone text reads at AAA.
+ *        Accent band       — electric lime #7DE38A. Used as foreground
+ *                            (text-label, accent text/borders) and as
+ *                            background of corner tags / small chips,
+ *                            where --on-accent flips dark to compensate.
+ *
+ *   3. Saturation: the accent IS the chroma. Everything else is
+ *      monochromatic graphite. Semantic signals stay at deep mid-tones
+ *      (#357849 / #A02323 / #9E5018) so checklist white-stroke icons
+ *      remain readable on top.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on. Bone text on graphite clears AAA;
+ *      lime accent on graphite clears AAA; --on-accent (graphite) on
+ *      lime clears AAA.
+ *
+ * Mechanism — pinned-dark, deliberately
+ * ─────────────────────────────────────
+ *   Carbone is the *one* palette that does not use light-dark() switching.
+ *   The default color-scheme is set to dark (at zero specificity), and all
+ *   tokens are static. This makes the palette intentionally one-mode —
+ *   if an author needs a light variant of carbone they should pick a
+ *   different palette rather than override color-scheme.
+ *
+ *   Per-slide `<!-- _class: dark -->` is inert here (canvas is already dark);
+ *   no carbone-dark wrapper is shipped because the palette is already dark.
+ *
+ *   Semantic signals (--pass/--fail/--warn) match the rest of the new-theme
+ *   set: kept dark for the white-stroke checklist icons.
+ */
+
+@import 'indaco';
+
+/* Zero-specificity dark default — same pattern indaco uses for light, but
+ * inverted. Carbone's identity is dark canvas; if an author flips
+ * color-scheme to light at higher specificity they get an unstyled deck
+ * (no light values defined), which is the correct failure mode for "this
+ * palette doesn't support light mode." */
+:where(:root) { color-scheme: dark; }
+
+:root {
+  /* ── Carbone brand axis ────────────────────────────────────────────── */
+  --brand-graphite-deep:   #0E0E10;  /* deepest panel — title/divider/closing */
+  --brand-graphite-canvas: #1A1A1C;  /* canvas                                */
+  --brand-graphite-card:   #26262A;  /* lifted card surface                   */
+  --brand-lime:            #7DE38A;  /* electric accent                       */
+
+  /* ── Surfaces — pinned dark (no light-dark wrapping) ──────────────── */
+  --bg:       var(--brand-graphite-canvas);
+  --bg-alt:   var(--brand-graphite-card);
+  --bg-dark:  var(--brand-graphite-deep);
+  --border:   #3A3A3F;
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #F5F5F2;
+  --text-heading: #F5F5F2;       /* L:15.91:1 on bg AAA */
+  --text-body:    #DCDCD7;       /* L:12.63:1 on bg AAA */
+  --text-label:   var(--brand-lime); /* L:10.95:1 on bg AAA */
+  --text-muted:   #757A82;       /* decorative — WCAG-exempt */
+
+  /* ── Brand accent — electric lime ──────────────────────────────────── */
+  --accent:      var(--brand-lime);          /* L:10.95:1 on bg AAA */
+  --accent-soft: #2C3D2F;                    /* lifted card with green tint */
+  /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
+  --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
+
+  /* ── Semantic signals — mid-tone so the white-stroke checklist icons
+   * stay legible. Brighter values (e.g., #7DE38A pass) would make the
+   * icon stroke vanish. ──────────────────────────────────────────────── */
+  --pass: #357849;
+  --fail: #A02323;
+  --warn: #9E5018;
+  --pass-bg: color-mix(in srgb, var(--pass) 18%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0E0E10;
+  --bg-warm-light: #2A2A2E;
+  --code-text:     #DCDCD7;
+
+  /* ── Spectrum — black → graphite → lime ────────────────────────────── */
+  --spectrum: linear-gradient(90deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-lime) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-lime) 100%);
+
+  /* ── Dark-variant tokens — kept for any explicit consumer (Marp chrome,
+   * theming code paths). Carbone resolves to these whether color-scheme is
+   * light or dark, since surface tokens above don't switch. ─────────── */
+  --dark-bg:           #0E0E10;
+  --dark-bg-alt:       #1A1A1C;
+  --dark-border:       #3A3A3F;
+  --dark-text-heading: #F5F5F2;
+  --dark-text-body:    #DCDCD7;
+  --dark-text-muted:   #757A82;
+  --dark-text-label:   var(--brand-lime);
+  --dark-text-display: #F5F5F2;
+
+  /* ── Mermaid extensions ────────────────────────────────────────────── */
+  --mermaid-primary-color:   #2A2A2E;
+  --mermaid-secondary-color: #2C3D2F;
+  --mermaid-border:          var(--brand-lime);
+  --mermaid-accent-warm:     #FFD166;
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

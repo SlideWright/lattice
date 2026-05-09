@@ -1,0 +1,8 @@
+/* @theme magnolia-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over magnolia that flips deck-wide color-scheme to dark. */
+
+@import 'magnolia';
+
+:root { color-scheme: dark; }

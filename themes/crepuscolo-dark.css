@@ -1,0 +1,8 @@
+/* @theme crepuscolo-dark
+ * @size 16:9 1280px 720px
+ *
+ * Thin wrapper over crepuscolo that flips deck-wide color-scheme to dark. */
+
+@import 'crepuscolo';
+
+:root { color-scheme: dark; }

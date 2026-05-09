@@ -1,0 +1,108 @@
+/* @theme laguna
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Laguna palette — coastal teal on warm sand
+ * ────────────────────────────────────────────────────────────────────────
+ * Hospitality, marine, resort. The teal-on-warm-sand pairing reads as
+ * Mediterranean coastline rather than clinical aquarium. The coral
+ * mermaid-accent-warm is the complementary pop that makes the duotone.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Warm sand canvas (#F8F2E5) instead of cool white. Distinctive vs
+ *      indaco's pure-white-modern register.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)  — primary mermaid surfaces, accent-soft, card
+ *                            fills. Dark text reads at AA+.
+ *        Mid-tone band     — accent, text-label, brand-teal (L≈30 light,
+ *                            L≈70 dark).
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Deep-teal reads on every cream/sand fill.
+ *        b. Coral pop on second mermaid curve / accent-warm — the
+ *           duotone partner that gives Laguna its resort identity.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the laguna-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Laguna brand axis ─────────────────────────────────────────────── */
+  --brand-teal-deep:    #04181B;  /* dark canvas, bg-dark                 */
+  --brand-teal-mid:     #006D77;  /* accent (light), text-label           */
+  --brand-teal-bright:  #5BBDC4;  /* accent (dark), decorative spectrum   */
+  --brand-coral:        #E29578;  /* mermaid-accent-warm (light)          */
+  --brand-coral-bright: #FFAD8A;  /* mermaid-accent-warm (dark)           */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#F8F2E5, var(--dark-bg));      /* warm sand        */
+  --bg-alt:   light-dark(#F1E9D4, var(--dark-bg-alt));  /* deeper sand card */
+  --bg-dark:  var(--brand-teal-deep);
+  --border:   light-dark(#DBCFB2, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #EFE8D7;
+  --text-heading: light-dark(#0E2F33, var(--dark-text-heading));     /* L:14.36:1 / D:13.30:1 */
+  --text-body:    light-dark(#3D5559, var(--dark-text-body));        /* L:7.61:1 / D:8.72:1   */
+  --text-label:   light-dark(var(--brand-teal-mid), var(--dark-text-label)); /* L:5.69:1 / D:7.59:1 AA+ */
+  --text-muted:   #6F7C7F;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-teal-mid), var(--brand-teal-bright)); /* L:5.69:1 / D:7.50:1 on bg AAA */
+  --accent-soft: light-dark(#D2E8EA, var(--bg-warm-mid)); /* accent reads AA+ on this */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.81:1 / D:7.50:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #04181B;
+  --bg-warm-light: #0F2D31;
+  --code-text:     #B0D5D2;
+
+  /* ── Spectrum — deep-teal → lagoon → coral pop ─────────────────────── */
+  --spectrum: linear-gradient(90deg, #04181B 0%, #006D77 55%, var(--brand-coral) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #04181B 0%, #006D77 55%, var(--brand-coral) 100%);
+
+  /* ── Dark-variant tokens ──────────────────────────────────────────── */
+  --dark-bg:           #04181B;
+  --dark-bg-alt:       #0F2D31;
+  --dark-border:       #1C3F44;
+  --dark-text-heading: #EFE8D7;
+  --dark-text-body:    #A9B7B9;
+  --dark-text-muted:   #6F7C7F;
+  --dark-text-label:   #5BBDC4;
+  --dark-text-display: #EFE8D7;
+
+  /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
+  --mermaid-primary-color:   #D2E8EA;
+  --mermaid-secondary-color: #F4DBD0; /* warm coral pale */
+  --mermaid-border:          #0F2D31;
+  --mermaid-accent-warm:     var(--brand-coral); /* the coral pop */
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

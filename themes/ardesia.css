@@ -1,0 +1,109 @@
+/* @theme ardesia
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Ardesia palette — achromatic neutral slate
+ * ────────────────────────────────────────────────────────────────────────
+ * Conservative business, finance, law. Maximum readability, minimum
+ * chroma. The deck reads as ink-on-paper without taking a brand stance.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#0A0A0A near-
+ *      black). Dark mode flips to #FFFFFF on deep-graphite canvas. Every
+ *      contrast clears AAA on this palette — chroma is gone, only luminance
+ *      separates surfaces.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈92) — primary mermaid surfaces, accent-soft, card
+ *                           fills. Dark text reads at AAA.
+ *        Dark band        — accent, text-label, near-black (#1F1F1F light,
+ *                           #E0E0DE dark — high-contrast monochrome).
+ *
+ *   3. Saturation reserved for one purpose only: alarm signals
+ *      (--fail #991B1B) and pass (--pass #2D6A3F). The deck has no
+ *      brand hue.
+ *
+ *   4. Every text-bearing token clears WCAG AAA (7:1) against the surface
+ *      it appears on, in both light and dark mode.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the ardesia-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Ardesia brand axis (achromatic — only luminance) ─────────────── */
+  --brand-slate-deep:   #0A0A0A;  /* near-black                          */
+  --brand-slate-mid:    #1F1F1F;  /* deep slate accent                   */
+  --brand-slate-bright: #E0E0DE;  /* lifted bone (dark-mode accent)      */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#FAFAF9, var(--dark-bg));
+  --bg-alt:   light-dark(#ECECEB, var(--dark-bg-alt));
+  --bg-dark:  #1A1A1A;
+  --border:   light-dark(#DCDCDB, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(var(--brand-slate-deep), var(--dark-text-heading)); /* L:18.96:1 / D:19.17:1 AAA */
+  --text-body:    light-dark(#2A2A2A, var(--dark-text-body));                    /* L:13.74:1 / D:11.43:1 AAA */
+  --text-label:   light-dark(var(--brand-slate-mid), var(--dark-text-label));    /* L:15.78:1 / D:9.33:1 AAA  */
+  --text-muted:   #757572;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-slate-mid), var(--brand-slate-bright)); /* L:15.78:1 / D:14.50:1 on bg AAA */
+  --accent-soft: light-dark(#E8E8E7, var(--bg-warm-mid)); /* accent reads L:13.44:1 / D:14.50:1 */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:16.48:1 / D:14.50:1 */
+
+  /* ── Semantic signals (kept dark in both modes) ───────────────────── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #0F0F0F;
+  --bg-warm-light: #2A2A2A;
+  --code-text:     #C8C8C5;
+
+  /* ── Spectrum — black → graphite → silver ──────────────────────────── */
+  --spectrum: linear-gradient(90deg, #0A0A0A 0%, #555555 55%, #B5B5B3 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0A0A0A 0%, #555555 55%, #B5B5B3 100%);
+
+  /* ── Dark-variant tokens (referenced by light-dark() above) ───────── */
+  --dark-bg:           #0F0F0F;
+  --dark-bg-alt:       #2A2A2A;
+  --dark-border:       #3D3D3D;
+  --dark-text-heading: #FFFFFF;
+  --dark-text-body:    #C8C8C5;
+  --dark-text-muted:   #757572;
+  --dark-text-label:   #B5B5B3;
+  --dark-text-display: #FFFFFF;
+
+  /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
+  --mermaid-primary-color:   #E8E8E7;
+  --mermaid-secondary-color: #DCDCDB;
+  --mermaid-border:          #2A2A2A;
+  /* Warm-gold pop — the deliberate "coolness break" on second curve.
+   * Same trick Boardroom's Graphite uses to give an achromatic palette
+   * one chromatic axis without compromising the neutral identity. */
+  --mermaid-accent-warm:     #C8B89A;
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

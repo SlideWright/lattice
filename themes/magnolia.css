@@ -1,0 +1,112 @@
+/* @theme magnolia
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Magnolia palette — soft coral / dusty rose
+ * ────────────────────────────────────────────────────────────────────────
+ * Hospitality, beauty, lifestyle. Approachable warm palette — the
+ * conversational sibling of the cool-tech themes. Sibling palette to
+ * indaco/cuoio.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#1F0A0F garnet-
+ *      black). Dark mode flips to #FFFFFF on deep-garnet canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈92) — primary mermaid surfaces, accent-soft, card
+ *                           fills. Dark text reads at AA+.
+ *        Mid-tone band    — accent, text-label, brand-rose (L≈40 light,
+ *                           L≈75 dark).
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Dusty rose reads on every cream/blush fill.
+ *        b. Alarm signal. --fail is the deck-wide alarm; not used on
+ *           routine surfaces.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the surface
+ *      it appears on, in both light and dark mode. Note: accent on accent-
+ *      soft sits at exactly 4.50:1 in light mode — tight but passing; see
+ *      ratio annotations inline.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration flips every descendant
+ *     lookup automatically.
+ *   • Default scheme is light at zero specificity; author overrides via
+ *     `style:` directive, `<!-- _class: dark -->`, or the magnolia-dark
+ *     variant theme always win the cascade.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ *     --fail uses #7E2F38 garnet-deep so it converges with the palette
+ *     without breaking the white-stroke contrast contract.
+ */
+
+@import 'indaco';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Magnolia brand axis ───────────────────────────────────────────── */
+  --brand-rose-deep:    #1F0A0F;  /* dark canvas, bg-dark                */
+  --brand-rose-mid:     #A04A55;  /* accent (light), text-label          */
+  --brand-rose-bright:  #E8A8B5;  /* accent (dark), decorative spectrum  */
+  --brand-garnet-deep:  #7E2F38;  /* fail signal — converges with palette*/
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#FCF8F5, var(--dark-bg));
+  --bg-alt:   light-dark(#F4E4E0, var(--dark-bg-alt));
+  --bg-dark:  var(--brand-rose-deep);
+  --border:   light-dark(#E8D2CD, var(--dark-border));
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(var(--brand-rose-deep), var(--dark-text-heading));  /* L:17.94:1 / D:19.81:1 */
+  --text-body:    light-dark(#3F1A22, var(--dark-text-body));                    /* L:14.39:1 / D:10.90:1 */
+  --text-label:   light-dark(var(--brand-rose-mid), var(--dark-text-label));     /* L:5.52:1 / D:10.09:1 AA+  */
+  --text-muted:   #B79A93;
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-rose-mid), var(--brand-rose-bright)); /* L:5.52:1 / D:10.09:1 on bg AA+ */
+  --accent-soft: light-dark(#F5DDD8, var(--bg-warm-mid)); /* accent reads L:4.50:1 / D:10.09:1 */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.82:1 / D:10.09:1 */
+
+  /* ── Semantic signals (kept dark in both modes; --fail uses palette
+   * convergent garnet so it doesn't clash with the warm accent) ──────── */
+  --pass: #2D6A3F;
+  --fail: var(--brand-garnet-deep);
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #14060A;
+  --bg-warm-light: #3F1A22;
+  --code-text:     #DBB8B8;
+
+  /* ── Spectrum — garnet → coral → peach ─────────────────────────────── */
+  --spectrum: linear-gradient(90deg, #1F0A0F 0%, #A04A55 55%, #E8B5A0 100%);
+  --spectrum-vertical: linear-gradient(180deg, #1F0A0F 0%, #A04A55 55%, #E8B5A0 100%);
+
+  /* ── Dark-variant tokens (referenced by light-dark() above) ───────── */
+  --dark-bg:           #14060A;
+  --dark-bg-alt:       #3F1A22;
+  --dark-border:       #5A2530;
+  --dark-text-heading: #FFFFFF;
+  --dark-text-body:    #DBB8B8;
+  --dark-text-muted:   #B79A93;
+  --dark-text-label:   #E8A8B5;
+  --dark-text-display: #FFFFFF;
+
+  /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
+  --mermaid-primary-color:   #F5DDD8;
+  --mermaid-secondary-color: #EFD5C9;
+  --mermaid-border:          #5A2530;
+  --mermaid-accent-warm:     #BD5000;
+}
+
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}

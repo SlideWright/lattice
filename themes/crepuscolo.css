@@ -1,0 +1,115 @@
+/* @theme crepuscolo
+ * @size 16:9 1280px 720px
+ *
+ * Lattice · Crepuscolo palette — cool dusk violet
+ * ────────────────────────────────────────────────────────────────────────
+ * Editorial, creative, brand. Twilight purples on cool off-white in light
+ * mode; deep plum with bright violet accent in dark. Sibling palette to
+ * indaco/cuoio — same token contract, different hue family.
+ *
+ * Design contract
+ * ───────────────
+ *   1. Single text-heading colour on every light surface (#150F22 plum-
+ *      black). Dark mode flips to #FFFFFF on dark plum canvas.
+ *
+ *   2. Two lightness bands for fills:
+ *        Pale band (L≈90)  — primary mermaid surfaces, accent-soft, card
+ *                            fills. Dark text reads at AA+.
+ *        Mid-tone band     — accent, text-label, brand-violet (L≈40 light,
+ *                            L≈75 dark). The bright dark-mode accent
+ *                            forces --on-accent to flip dark; see below.
+ *
+ *   3. Saturation reserved for two purposes:
+ *        a. Borders. Saturated brand violet reads on every fill.
+ *        b. Alarm signal. --fail (#991B1B) is the deck-wide alarm.
+ *
+ *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
+ *      surface it appears on, in both light and dark mode. WCAG ratios
+ *      are annotated inline as `L:x.xx:1 / D:x.xx:1`.
+ *
+ * Mechanism (mirrors indaco)
+ * ──────────────────────────
+ *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
+ *     single `color-scheme: dark` declaration (at :root or on a section)
+ *     flips every descendant lookup automatically.
+ *   • Default scheme is light, declared at zero specificity below so any
+ *     author override wins the cascade — Marp `style:` directive, the
+ *     `<!-- _class: dark -->` per-slide modifier, or the crepuscolo-dark
+ *     variant theme.
+ *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
+ *     between modes: they back the white SVG strokes baked into checklist
+ *     state markers, which require the colour to stay dark in both modes.
+ */
+
+@import 'indaco';
+
+/* Zero-specificity light default — author overrides via `style:` directive
+ * or the crepuscolo-dark wrapper always win because plain :root is (0,0,1)
+ * and :where() is (0,0,0). */
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* ── Crepuscolo brand axis ─────────────────────────────────────────── */
+  --brand-violet-deep:   #2A1B45;  /* dark canvas, bg-dark                */
+  --brand-violet-mid:    #5B3D8C;  /* accent (light), text-label          */
+  --brand-violet-bright: #B59ADC;  /* accent (dark), decorative spectrum  */
+
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  --bg:       light-dark(#FAF8FC, var(--dark-bg));      /* canvas              */
+  --bg-alt:   light-dark(#EFEBF5, var(--dark-bg-alt));  /* card fill           */
+  --bg-dark:  var(--brand-violet-deep);                  /* title / divider    */
+  --border:   light-dark(#DCD4E8, var(--dark-border));  /* hairline rule       */
+
+  /* ── Ink ramp ──────────────────────────────────────────────────────── */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(#150F22, var(--dark-text-heading));     /* L:17.71:1 / D:18.26:1 */
+  --text-body:    light-dark(#2E2542, var(--dark-text-body));        /* L:13.63:1 / D:10.42:1 */
+  --text-label:   light-dark(var(--brand-violet-mid), var(--dark-text-label)); /* L:7.99:1 / D:8.28:1 AAA */
+  --text-muted:   #8E83A8;       /* chrome / decorative — WCAG-exempt   */
+
+  /* ── Brand accent ──────────────────────────────────────────────────── */
+  --accent:      light-dark(var(--brand-violet-mid), var(--brand-violet-bright)); /* L:7.99:1 / D:7.50:1 on bg AAA */
+  --accent-soft: light-dark(#ECE5F5, var(--bg-warm-mid)); /* accent reads L:6.86:1 / D:7.50:1 on this */
+  /* Text on top of --accent — light: white on mid-violet; dark: deep
+   * plum on bright lavender. */
+  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:8.43:1 / D:7.50:1 */
+
+  /* ── Semantic signals (kept dark in both modes; see contract note 3) ── */
+  --pass: #2D6A3F;
+  --fail: #991B1B;
+  --warn: #92400E;
+  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+
+  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  --bg-warm-mid:   #1A0F2D;
+  --bg-warm-light: #3F2A5C;
+  --code-text:     #C8BFE0;
+
+  /* ── Spectrum — deep-plum → mid-violet → mauve ─────────────────────── */
+  --spectrum: linear-gradient(90deg, #2A1B45 0%, #5B3D8C 55%, #B07FB5 100%);
+  --spectrum-vertical: linear-gradient(180deg, #2A1B45 0%, #5B3D8C 55%, #B07FB5 100%);
+
+  /* ── Dark-variant tokens (referenced by light-dark() above) ───────── */
+  --dark-bg:           #1A0F2D;
+  --dark-bg-alt:       #2A1B45;
+  --dark-border:       #3F2A5C;
+  --dark-text-heading: #FFFFFF;
+  --dark-text-body:    #C8BFE0;
+  --dark-text-muted:   #8E83A8;
+  --dark-text-label:   #B5A8D5;
+  --dark-text-display: #FFFFFF;
+
+  /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
+  --mermaid-primary-color:   #E5DEEB;
+  --mermaid-secondary-color: #DDEAE5;
+  --mermaid-border:          #3F2A5C;
+  --mermaid-accent-warm:     #BD5000;
+}
+
+/* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)
+ * in lattice.css). Spectrum hairline anchors the bottom edge. */
+section pre.hljs {
+  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
