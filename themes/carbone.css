@@ -92,6 +92,23 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Pinned-dark theme. All chart colors are foreground-bright on the
+   * #1A1A1C graphite canvas. Lime + amber is the duotone (the cyber
+   * editorial pop); cyan and magenta complete a CMYK-style 4-hue spread;
+   * bone neutral and graphite-mid ground. */
+  --chart-1: var(--brand-lime);   /* LIME — brand */
+  --chart-2: #FFD166;             /* AMBER */
+  --chart-3: #5BCBDD;             /* CYAN */
+  --chart-4: #F277B8;             /* MAGENTA */
+  --chart-5: #DCDCD7;             /* BONE */
+  --chart-6: #757A82;             /* GRAPHITE-MID */
+
+  --scale-500: var(--brand-lime);
+
+  /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
+   * status badges a cyber-warm pop against the cold graphite. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0E0E10;
   --bg-warm-light: #2A2A2E;

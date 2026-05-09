@@ -81,6 +81,22 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Maximum-contrast achromatic with one saturated red. Onyx commits to
+   * pure B&W + red-pop as its identity; the three additional chromatic
+   * slots (chart-3 desat-blue, chart-4 desat-olive) are intentionally
+   * desaturated so the only "loud" voice in the deck is the red tag. */
+  --chart-1: light-dark(#000000, #FFFFFF);   /* JET / CHALK */
+  --chart-2: light-dark(var(--brand-red), var(--brand-red-bright)); /* SATURATED-RED */
+  --chart-3: light-dark(#4E5C8A, #87A0CC);   /* DESAT-BLUE */
+  --chart-4: light-dark(#6B7044, #A8B080);   /* DESAT-OLIVE */
+  --chart-5: light-dark(#8C8C8C, #B8B8B8);   /* NEUTRAL-MID */
+  --chart-6: light-dark(#404040, #D9D9D9);   /* NEUTRAL-DARK */
+
+  --scale-500: light-dark(#666666, #B8B8B8);
+
+  /* Tag uses --chart-2 (saturated red) — Onyx's signature pop. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0F0F;
   --bg-warm-light: #1A1A1A;

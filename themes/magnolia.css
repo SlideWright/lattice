@@ -81,6 +81,19 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Dusty rose anchor + sage complement (cool-warm balance). Dusty teal
+   * and warm amber give analogous-cool/analogous-warm distinction;
+   * mauve-violet is the muted bridge; garnet ink grounds. */
+  --chart-1: light-dark(var(--brand-rose-mid), var(--brand-rose-bright)); /* ROSE */
+  --chart-2: light-dark(#758C6E, #A5BB95);   /* SAGE */
+  --chart-3: light-dark(#4A8590, #7AB5BC);   /* DUSTY-TEAL */
+  --chart-4: light-dark(#C49526, #E0B855);   /* AMBER */
+  --chart-5: light-dark(#8B6E8C, #B89AAB);   /* MAUVE-VIOLET */
+  --chart-6: light-dark(var(--brand-rose-deep), #B79A93); /* GARNET-INK */
+
+  --scale-500: var(--brand-rose-mid);
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #14060A;
   --bg-warm-light: #3F1A22;

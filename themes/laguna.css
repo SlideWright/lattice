@@ -77,6 +77,21 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Coastal teal + complementary coral (the brand duotone). Golden sand
+   * is the warm bridge to the canvas; deep navy gives a cooler-cool sibling;
+   * sage muted; deep teal ink grounds. */
+  --chart-1: light-dark(var(--brand-teal-mid), var(--brand-teal-bright)); /* TEAL */
+  --chart-2: light-dark(var(--brand-coral), var(--brand-coral-bright));   /* CORAL */
+  --chart-3: light-dark(#C49526, #E0B855);   /* GOLDEN-SAND */
+  --chart-4: light-dark(#2D4D6B, #6087A8);   /* DEEP-NAVY */
+  --chart-5: light-dark(#7A8F7E, #A8B89C);   /* SAGE */
+  --chart-6: light-dark(var(--brand-teal-deep), #6F7C7F); /* DEEP-TEAL-INK */
+
+  --scale-500: var(--brand-teal-mid);
+
+  /* Tag uses --chart-2 (coral) by default — laguna's hospitality duotone. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #04181B;
   --bg-warm-light: #0F2D31;

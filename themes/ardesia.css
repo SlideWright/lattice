@@ -75,6 +75,23 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Achromatic theme with deliberate chroma admitted only for chart use.
+   * Jet anchors; warm gold is the chrome-break (= --tag-bg). The remaining
+   * three chromatic slots are intentionally desaturated so the deck stays
+   * "quiet" while charts remain readable as categorical encoding. */
+  --chart-1: light-dark(var(--brand-slate-mid), var(--brand-slate-bright)); /* JET */
+  --chart-2: light-dark(#C8B89A, #D4C5A0);   /* WARM-GOLD (chrome break) */
+  --chart-3: light-dark(#4A6B82, #82A0BC);   /* DESAT-BLUE */
+  --chart-4: light-dark(#8A5560, #C28590);   /* DESAT-WINE */
+  --chart-5: light-dark(#6B7E5E, #A8BB9A);   /* DESAT-OLIVE */
+  --chart-6: light-dark(#525250, #B5B5B3);   /* NEUTRAL-DARK */
+
+  --scale-500: var(--brand-slate-mid);
+
+  /* Tag uses --chart-2 (warm gold) — the only chromatic break ardesia
+   * permits, mirroring Boardroom's Graphite gold-tag move. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0F0F;
   --bg-warm-light: #2A2A2A;

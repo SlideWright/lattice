@@ -78,6 +78,22 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Warm-achromatic theme. Soft-black anchors; deep amber is the
+   * chrome-break (= --tag-bg). Three desaturated chromatic voices keep
+   * charts readable as categorical without rupturing the artisan-quiet
+   * identity. Dark-oat grounds. */
+  --chart-1: light-dark(var(--brand-soft-black), var(--brand-oat)); /* SOFT-BLACK */
+  --chart-2: light-dark(var(--brand-amber), var(--brand-amber-soft)); /* DEEP-AMBER */
+  --chart-3: light-dark(#4D6B7C, #87A5B5);   /* DESAT-BLUE */
+  --chart-4: light-dark(#8B5A6B, #C295A5);   /* DESAT-WINE */
+  --chart-5: light-dark(#6E7B5C, #A8B58F);   /* DESAT-OLIVE */
+  --chart-6: light-dark(#4F4838, #B5AB95);   /* DARK-OAT */
+
+  --scale-500: var(--brand-soft-black);
+
+  /* Tag uses --chart-2 (deep amber) — atelier's hand-finished gold pop. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0E0C;
   --bg-warm-light: #28241D;

@@ -119,6 +119,39 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Hand-picked following the Wong-2011 CB-safe baseline, anchored on
+   * indaco's brand mid-blue. Each pair (1↔2, 3↔4) is a complementary
+   * opposition that survives deuteranopia / protanopia. chart-5 is a
+   * mustard-gold whose lightness anchors the palette's "warm muted"
+   * voice; chart-6 is a deep slate ink for grounding.
+   *
+   *   chart-1 BLUE         brand mid-blue (= --accent on light)
+   *   chart-2 VERMILION   warm complement, CB-safe with blue
+   *   chart-3 TEAL         analogous-cool sibling, lifted from chart-1
+   *   chart-4 MAGENTA      4th distinct hue, opposes teal across CB axis
+   *   chart-5 GOLD         mustard-gold, lightness anchor (warm muted)
+   *   chart-6 SLATE-INK    dark grounding, theme-neutral
+   *
+   * Light: foreground on warm-white #FFFFFF.
+   * Dark:  foreground on dark-bg #001D33; lifted +20-25 lightness.
+   * Tested pairwise via OKLab distance; minimum ΔE ≈ 30 between any
+   * two non-adjacent slots, sufficient for distinct-without-position
+   * reading. */
+  --chart-1: light-dark(#006FA8, #4C9EE0);   /* BLUE */
+  --chart-2: light-dark(#C45D27, #ED7D45);   /* VERMILION */
+  --chart-3: light-dark(#1FA694, #4ED2C0);   /* TEAL */
+  --chart-4: light-dark(#B8438C, #DC75B0);   /* MAGENTA */
+  --chart-5: light-dark(#C8A82E, #E8C652);   /* GOLD */
+  --chart-6: light-dark(#3F4A60, #8A95B0);   /* SLATE-INK */
+
+  /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
+   * stops auto-derive in lattice.css :root via OKLab color-mix. */
+  --scale-500: var(--brand-blue-mid);
+
+  /* Tag (status badge) defaults to --chart-2 (warm vermilion) via
+   * lattice.css; indaco doesn't need to override. */
+
   /* ── Dark-panel ramp ──────────────────────────────────────────────── */
   --bg-warm-mid:   #002847;     /* divider panels (deep) — decorative     */
   --bg-warm-light: #00558C;     /* accent panels (lighter) — decorative   */

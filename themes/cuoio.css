@@ -131,6 +131,23 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Saddle + earth-pigment family. Cuoio's brand is the saddle gold;
+   * the duotone partner is deep teal (cool complement, CB-safe with
+   * warm gold). Terracotta and forest are the analogous siblings;
+   * dusty plum is the muted bridge. */
+  --chart-1: light-dark(var(--brand-leather), var(--brand-gold-bright)); /* SADDLE */
+  --chart-2: light-dark(#1F6B7C, #5BB8C7);   /* DEEP-TEAL */
+  --chart-3: light-dark(#B8553A, #DC8062);   /* TERRACOTTA */
+  --chart-4: light-dark(#45734A, #7AAB85);   /* FOREST */
+  --chart-5: light-dark(#8A5E73, #C29AAE);   /* DUSTY-PLUM */
+  --chart-6: light-dark(var(--brand-leather-deep), #C4B8A8); /* ESPRESSO-INK */
+
+  --scale-500: var(--brand-leather);
+
+  /* Tag uses --chart-2 (deep teal) by default — the saddle/teal duotone
+   * gives cuoio's corner tags a complementary cool pop. */
+
   /* ── Dark-panel ramp ──────────────────────────────────────────────── */
   --bg-warm-mid:   #3A2E20;     /* divider panels (deep) — decorative     */
   --bg-warm-light: var(--brand-leather-mid); /* accent panels (lighter)   */

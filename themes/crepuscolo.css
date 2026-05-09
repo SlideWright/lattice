@@ -82,6 +82,19 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Twilight + dusk-warm pop. Brand violet anchors; warm amber is the
+   * CB-safe complement. Deep cyan and coral are analogous siblings;
+   * desaturated mauve is the muted bridge; indigo-black grounds. */
+  --chart-1: light-dark(var(--brand-violet-mid), var(--brand-violet-bright)); /* VIOLET */
+  --chart-2: light-dark(#C49526, #E0B855);   /* AMBER */
+  --chart-3: light-dark(#1B7B92, #5BB5CC);   /* DEEP-CYAN */
+  --chart-4: light-dark(#C66045, #E89070);   /* CORAL */
+  --chart-5: light-dark(#8E7A93, #B5A2BB);   /* MUTED-MAUVE */
+  --chart-6: light-dark(#150F22, #6E5E7E);   /* INDIGO-BLACK */
+
+  --scale-500: var(--brand-violet-mid);
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #1A0F2D;
   --bg-warm-light: #3F2A5C;

@@ -85,6 +85,34 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Wine + champagne + four supporting voices. Burgundy's identity is the
+   * duotone (chart-1 wine + chart-2 champagne); the remaining four
+   * provide perceptual distance for charts that need 3-6 categories.
+   *
+   *   chart-1 WINE         brand mid-wine — the headline
+   *   chart-2 CHAMPAGNE    duotone partner (= --tag-bg)
+   *   chart-3 DEEP-TEAL    cool complement, CB-safe with red-wine
+   *   chart-4 DEEP-VIOLET  4th distinct hue, opposes teal
+   *   chart-5 OLIVE-SAGE   muted bridge between warm + cool
+   *   chart-6 WALNUT-INK   theme-coherent dark grounding
+   *
+   * Pairwise OKLab distance ≥ 30 between any non-adjacent slots.
+   * The wine ↔ teal opposition is the deuteranopia anchor (red-cyan
+   * pair survives D-deficient vision). */
+  --chart-1: light-dark(#742532, var(--brand-wine-bright));   /* WINE */
+  --chart-2: light-dark(#B8995E, var(--brand-champagne-soft)); /* CHAMPAGNE */
+  --chart-3: light-dark(#1F5C50, #4DA08C);   /* DEEP-TEAL */
+  --chart-4: light-dark(#7B4F9C, #A782C7);   /* DEEP-VIOLET */
+  --chart-5: light-dark(#8FA070, #B5C49A);   /* OLIVE-SAGE */
+  --chart-6: light-dark(#3F2D14, #8B7858);   /* WALNUT-INK */
+
+  /* Sequential ramp anchor — burgundy's brand mid-wine. */
+  --scale-500: var(--brand-wine-mid);
+
+  /* Tag uses --chart-2 (champagne) by default — the wine cellar duotone.
+   * lattice.css :root sets --tag-bg: var(--chart-2); no override needed. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #180609;
   --bg-warm-light: #2F141B;
