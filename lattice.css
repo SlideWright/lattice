@@ -116,6 +116,86 @@
    * usable as a diagnostic. */
   --code-bg:   var(--bg-dark, #001D33);
   --code-text: #CBD9E8;
+
+  /* ── Chart palette (--chart-1 … --chart-6) ─────────────────────────────
+   * Curated 6-color palette for Lattice's own chart layouts (piechart,
+   * future-progress-stacked, etc.). Distinct from --cat-* (which stays
+   * mid-tone L≈60 for kanban / Mermaid cScale).
+   *
+   * Semantic roles (themes pick deliberately, not auto-derived):
+   *   chart-1  PRIMARY      brand accent — the "answer" / current state
+   *   chart-2  COMPLEMENT    duotone partner; usually == --tag-bg
+   *   chart-3  ANALOGOUS-A   sibling of chart-1, hue-shifted +30..60°
+   *   chart-4  ANALOGOUS-B   sibling of chart-2, hue-shifted +30..60°
+   *   chart-5  MUTED         desaturated mid-tone; the "softer voice"
+   *   chart-6  INK           dark neutral; the grounding anchor
+   *
+   * Design constraints (see docs/notes/2026-05-07-chart-family-* for
+   * the full rationale):
+   *   1. Six is the cap. Perceptual research (Wong 2011, Cleveland-McGill,
+   *      IBM Carbon, Tableau 10) consistently shows distinguishability
+   *      collapses beyond 6-7 categorical hues. If a chart needs more,
+   *      use position / shape / labels — not more colors.
+   *   2. Each chart-N must be visually distinguishable from any other
+   *      chart-M without position context. Reader names a wedge by its
+   *      colour alone, not by "the second one from the top."
+   *   3. chart-1 vs chart-2 (the most-paired pair) must survive
+   *      deuteranopia / protanopia. Blue-orange / wine-champagne pairs
+   *      survive; red-green pairs don't.
+   *   4. Lightness hierarchy beyond hue: chart-1..4 land in the L≈40-60
+   *      foreground band; chart-5 muted (L≈55-70 desaturated); chart-6
+   *      ink (L≈30-45 dark). Three-level lightness gives a fallback
+   *      distinction channel for grayscale prints / CB readers.
+   *   5. Light-dark switching: each chart-N flips via light-dark() so it
+   *      reads on either canvas without the theme having to redeclare
+   *      the cycle.
+   *
+   * Defaults below map back to existing tokens so themes that haven't
+   * adopted chart-* yet still render a coherent (if not curated) palette.
+   * Each theme should override these with hand-picked values. */
+  --chart-1: var(--accent);
+  --chart-2: var(--mermaid-accent-warm, var(--cat-orange, #BD5000));
+  --chart-3: var(--cat-teal,  #6BBDB8);
+  --chart-4: var(--cat-rose,  #C57E8B);
+  --chart-5: var(--cat-slate, #9AA8B8);
+  --chart-6: var(--text-muted, #6B7F9A);
+
+  /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
+   * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
+   * sequential / quantitative encoding: heatmap intensity, progress
+   * intensity ramps, hover/active states, faint grid lines.
+   *
+   * Each theme sets --scale-500 (its anchor — typically the brand mid).
+   * The other nine stops auto-derive from the anchor via OKLab color-mix.
+   * 50-400 are tints toward white; 600-900 are shades toward black.
+   *
+   * Distinct from --chart-* (which is categorical) and --cat-* (which is
+   * Mermaid's mid-tone L≈60 categorical). The scale is for ORDERED data;
+   * categorical palettes are for UNORDERED groups. Don't substitute.
+   *
+   * Default --scale-500 falls back to --accent so unstyled themes still
+   * have a usable ramp, but every theme should set it deliberately. */
+  --scale-500: var(--accent);
+  --scale-50:  color-mix(in oklab, var(--scale-500)  8%, white);
+  --scale-100: color-mix(in oklab, var(--scale-500) 18%, white);
+  --scale-200: color-mix(in oklab, var(--scale-500) 35%, white);
+  --scale-300: color-mix(in oklab, var(--scale-500) 55%, white);
+  --scale-400: color-mix(in oklab, var(--scale-500) 78%, white);
+  --scale-600: color-mix(in oklab, var(--scale-500) 78%, black);
+  --scale-700: color-mix(in oklab, var(--scale-500) 55%, black);
+  --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
+  --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
+
+  /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
+   * Secondary accent for status badges / brand-status pills. Distinct
+   * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;
+   * Burgundy: wine + champagne; Onyx: black + saturated red).
+   *
+   * Default: --tag-bg = --chart-2 (the chart-palette complement) and
+   * --tag-text = readable ink for that color. Achromatic themes that
+   * don't want a duotone identity can collapse --tag-bg to --accent. */
+  --tag-bg:   var(--chart-2);
+  --tag-text: var(--on-accent, #fff);
 }
 
 /* ── BASE ── */
@@ -3708,33 +3788,31 @@ section.piechart .piechart-legend .legend-pct {
   font-variant-numeric: tabular-nums;
 }
 
-/* Categorical wedge / swatch palette — eight rotation, matches the
- * decision/before-after rotation already in lattice.css. */
-section.piechart .wedge:nth-child(8n+1),
-section.piechart .legend-swatch:nth-child(8n+1) { fill: var(--cat-blue);   background: var(--cat-blue); }
-section.piechart .wedge:nth-child(8n+2),
-section.piechart .legend-swatch:nth-child(8n+2) { fill: var(--cat-green);  background: var(--cat-green); }
-section.piechart .wedge:nth-child(8n+3),
-section.piechart .legend-swatch:nth-child(8n+3) { fill: var(--cat-purple); background: var(--cat-purple); }
-section.piechart .wedge:nth-child(8n+4),
-section.piechart .legend-swatch:nth-child(8n+4) { fill: var(--cat-orange); background: var(--cat-orange); }
-section.piechart .wedge:nth-child(8n+5),
-section.piechart .legend-swatch:nth-child(8n+5) { fill: var(--cat-teal);   background: var(--cat-teal); }
-section.piechart .wedge:nth-child(8n+6),
-section.piechart .legend-swatch:nth-child(8n+6) { fill: var(--cat-rose);   background: var(--cat-rose); }
-section.piechart .wedge:nth-child(8n+7),
-section.piechart .legend-swatch:nth-child(8n+7) { fill: var(--cat-mauve);  background: var(--cat-mauve); }
-section.piechart .wedge:nth-child(8n),
-section.piechart .legend-swatch:nth-child(8n)   { fill: var(--cat-slate);  background: var(--cat-slate); }
+/* Categorical wedge / swatch palette — six-rotation on --chart-1..6.
+ * Distinct from --cat-* (eight-rotation, used by decision/roadmap/kpi/
+ * actors for chrome stripes at L≈60). The chart palette is curated
+ * per-theme for foreground use at varying lightness; six is the cap
+ * for perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon).
+ * Pies that need >6 categories should consolidate "Other" or split. */
+section.piechart .wedge:nth-child(6n+1),
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-1); background: var(--chart-1); }
+section.piechart .wedge:nth-child(6n+2),
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-2); background: var(--chart-2); }
+section.piechart .wedge:nth-child(6n+3),
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-3); background: var(--chart-3); }
+section.piechart .wedge:nth-child(6n+4),
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-4); background: var(--chart-4); }
+section.piechart .wedge:nth-child(6n+5),
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-5); background: var(--chart-5); }
+section.piechart .wedge:nth-child(6n),
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-6); background: var(--chart-6); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(8n+1) .legend-swatch { background: var(--cat-blue); }
-section.piechart .piechart-legend li:nth-child(8n+2) .legend-swatch { background: var(--cat-green); }
-section.piechart .piechart-legend li:nth-child(8n+3) .legend-swatch { background: var(--cat-purple); }
-section.piechart .piechart-legend li:nth-child(8n+4) .legend-swatch { background: var(--cat-orange); }
-section.piechart .piechart-legend li:nth-child(8n+5) .legend-swatch { background: var(--cat-teal); }
-section.piechart .piechart-legend li:nth-child(8n+6) .legend-swatch { background: var(--cat-rose); }
-section.piechart .piechart-legend li:nth-child(8n+7) .legend-swatch { background: var(--cat-mauve); }
-section.piechart .piechart-legend li:nth-child(8n)   .legend-swatch { background: var(--cat-slate); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-1); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-2); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-3); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-4); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-6); }
 
 
