@@ -32,16 +32,39 @@
     const s = getComputedStyle(scopeEl);
     const v = (name) => s.getPropertyValue('--' + name).trim();
 
-    const bg      = v('bg');
-    const bgAlt   = v('bg-alt');
-    const text    = v('text-heading');
-    const border  = v('mermaid-border');
-    const line    = v('mermaid-line');
-    const primary = v('mermaid-primary-color');
-    const second  = v('mermaid-secondary-color');
-    const slate   = v('cat-slate');
+    // Colour resolver. CSS custom properties returned via getPropertyValue
+    // come back as the raw token stream — so a token defined as
+    // `light-dark(#FAF7F2, #15110D)` reads as that literal string, which
+    // Mermaid's color parser rejects with "Unsupported color format".
+    // Setting a real `color` property to `var(--name)` on a probe element
+    // forces the browser to resolve light-dark() / color-mix() / etc. to
+    // a flat rgb() value, which Mermaid accepts. The probe inherits
+    // color-scheme from `scopeEl`, so per-section dark contexts resolve
+    // to the dark side automatically. Falls back to raw string access for
+    // non-color tokens (fontFamily etc.).
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;';
+    scopeEl.appendChild(probe);
+    const vc = (name) => {
+      probe.style.color = '';
+      probe.style.color = `var(--${name})`;
+      const c = getComputedStyle(probe).color;
+      // Browsers return `rgba(0, 0, 0, 0)` when the var() is unresolved.
+      // Fall through to the raw value so Mermaid sees an empty string
+      // rather than a transparent black it would happily accept.
+      return c && c !== 'rgba(0, 0, 0, 0)' ? c : v(name);
+    };
 
-    return {
+    const bg      = vc('bg');
+    const bgAlt   = vc('bg-alt');
+    const text    = vc('text-heading');
+    const border  = vc('mermaid-border');
+    const line    = vc('mermaid-line');
+    const primary = vc('mermaid-primary-color');
+    const second  = vc('mermaid-secondary-color');
+    const slate   = vc('cat-slate');
+
+    const result = {
       fontFamily: v('font-body') || "'Outfit', system-ui, sans-serif",
       fontSize: '14px',
 
@@ -79,17 +102,17 @@
       // Categorical scale — cScale feeds kanban columns, mindmap levels, etc.
       // CSS themeCSS overrides already target kanban and mindmap explicitly;
       // cScale is the fallback for other diagrams that read it directly.
-      cScale0:  v('cat-blue'),   cScale1:  v('cat-green'),
-      cScale2:  v('cat-purple'), cScale3:  v('cat-orange'),
-      cScale4:  v('cat-teal'),   cScale5:  v('cat-rose'),
-      cScale6:  v('cat-blue'),   cScale7:  v('cat-green'),
-      cScale8:  v('cat-purple'), cScale9:  v('cat-orange'),
-      cScale10: v('cat-teal'),   cScale11: v('cat-rose'),
+      cScale0:  vc('cat-blue'),   cScale1:  vc('cat-green'),
+      cScale2:  vc('cat-purple'), cScale3:  vc('cat-orange'),
+      cScale4:  vc('cat-teal'),   cScale5:  vc('cat-rose'),
+      cScale6:  vc('cat-blue'),   cScale7:  vc('cat-green'),
+      cScale8:  vc('cat-purple'), cScale9:  vc('cat-orange'),
+      cScale10: vc('cat-teal'),   cScale11: vc('cat-rose'),
 
       // fillType — subgraph and mindmap level fills (pale band)
       fillType0: primary,              fillType1: second,
-      fillType2: v('mermaid-pie-purple'), fillType3: v('mermaid-pie-orange'),
-      fillType4: v('mermaid-pie-teal'),   fillType5: v('mermaid-pie-rose'),
+      fillType2: vc('mermaid-pie-purple'), fillType3: vc('mermaid-pie-orange'),
+      fillType4: vc('mermaid-pie-teal'),   fillType5: vc('mermaid-pie-rose'),
       fillType6: primary,              fillType7: second,
 
       // Sequence diagram
@@ -106,21 +129,21 @@
       sequenceNumberColor:   text,
 
       // Notes
-      noteBkgColor:    v('mermaid-note-bg'),
+      noteBkgColor:    vc('mermaid-note-bg'),
       noteTextColor:   text,
-      noteBorderColor: v('mermaid-note-border'),
+      noteBorderColor: vc('mermaid-note-border'),
 
       // Error
-      errorBkgColor:  v('mermaid-error-bg'),
-      errorTextColor: v('mermaid-error-text'),
+      errorBkgColor:  vc('mermaid-error-bg'),
+      errorTextColor: vc('mermaid-error-text'),
 
       // Pie chart
       pie1:  primary,               pie2:  second,
-      pie3:  v('mermaid-pie-purple'), pie4:  v('mermaid-pie-orange'),
-      pie5:  v('mermaid-pie-teal'),   pie6:  v('mermaid-pie-rose'),
-      pie7:  v('mermaid-pie-yellow'), pie8:  v('mermaid-pie-red'),
-      pie9:  v('mermaid-pie-slate'),  pie10: v('mermaid-pie-sage'),
-      pie11: v('mermaid-pie-violet'), pie12: primary,
+      pie3:  vc('mermaid-pie-purple'), pie4:  vc('mermaid-pie-orange'),
+      pie5:  vc('mermaid-pie-teal'),   pie6:  vc('mermaid-pie-rose'),
+      pie7:  vc('mermaid-pie-yellow'), pie8:  vc('mermaid-pie-red'),
+      pie9:  vc('mermaid-pie-slate'),  pie10: vc('mermaid-pie-sage'),
+      pie11: vc('mermaid-pie-violet'), pie12: primary,
       pieTitleTextSize:    '18px',
       pieTitleTextColor:   text,
       pieSectionTextSize:  '14px',
@@ -143,20 +166,20 @@
       taskTextOutsideColor:   text,
       taskTextDarkColor:      text,
       taskBorderColor:        border,
-      activeTaskBkgColor:     v('mermaid-gantt-active'),
-      activeTaskBorderColor:  v('mermaid-gantt-active-border'),
-      gridColor:              v('mermaid-gantt-grid'),
-      doneTaskBkgColor:       v('mermaid-gantt-done'),
-      doneTaskBorderColor:    v('mermaid-gantt-done-border'),
-      critBkgColor:           v('mermaid-gantt-critical'),
-      critBorderColor:        v('mermaid-gantt-critical-border'),
-      todayLineColor:         v('mermaid-gantt-today'),
+      activeTaskBkgColor:     vc('mermaid-gantt-active'),
+      activeTaskBorderColor:  vc('mermaid-gantt-active-border'),
+      gridColor:              vc('mermaid-gantt-grid'),
+      doneTaskBkgColor:       vc('mermaid-gantt-done'),
+      doneTaskBorderColor:    vc('mermaid-gantt-done-border'),
+      critBkgColor:           vc('mermaid-gantt-critical'),
+      critBorderColor:        vc('mermaid-gantt-critical-border'),
+      todayLineColor:         vc('mermaid-gantt-today'),
 
       // Git graph
-      git0: v('cat-blue'),   git1: v('cat-green'),
-      git2: v('cat-purple'), git3: v('cat-orange'),
-      git4: v('cat-teal'),   git5: v('cat-rose'),
-      git6: v('cat-slate'),  git7: v('cat-mauve'),
+      git0: vc('cat-blue'),   git1: vc('cat-green'),
+      git2: vc('cat-purple'), git3: vc('cat-orange'),
+      git4: vc('cat-teal'),   git5: vc('cat-rose'),
+      git6: vc('cat-slate'),  git7: vc('cat-mauve'),
       gitBranchLabel0: text, gitBranchLabel1: text,
       gitBranchLabel2: text, gitBranchLabel3: text,
       gitBranchLabel4: text, gitBranchLabel5: text,
@@ -168,14 +191,14 @@
       tagLabelBorder:        text,
 
       // Quadrant chart
-      quadrant1Fill:                    v('mermaid-quadrant-1-fill'),
-      quadrant2Fill:                    v('mermaid-quadrant-2-fill'),
-      quadrant3Fill:                    v('mermaid-quadrant-3-fill'),
-      quadrant4Fill:                    v('mermaid-quadrant-4-fill'),
-      quadrant1TextFill:                v('mermaid-quadrant-1-text'),
-      quadrant2TextFill:                v('mermaid-quadrant-2-text'),
-      quadrant3TextFill:                v('mermaid-quadrant-3-text'),
-      quadrant4TextFill:                v('mermaid-quadrant-4-text'),
+      quadrant1Fill:                    vc('mermaid-quadrant-1-fill'),
+      quadrant2Fill:                    vc('mermaid-quadrant-2-fill'),
+      quadrant3Fill:                    vc('mermaid-quadrant-3-fill'),
+      quadrant4Fill:                    vc('mermaid-quadrant-4-fill'),
+      quadrant1TextFill:                vc('mermaid-quadrant-1-text'),
+      quadrant2TextFill:                vc('mermaid-quadrant-2-text'),
+      quadrant3TextFill:                vc('mermaid-quadrant-3-text'),
+      quadrant4TextFill:                vc('mermaid-quadrant-4-text'),
       quadrantPointFill:                border,
       quadrantPointTextFill:            text,
       quadrantXAxisTextFill:            text,
@@ -200,9 +223,9 @@
         yAxisLineColor:   border,
         yAxisTickColor:   slate,
         plotColorPalette: [
-          v('cat-blue'),   v('cat-green'),
-          v('cat-purple'), v('cat-orange'),
-          v('cat-teal'),   v('cat-rose'),
+          vc('cat-blue'),   vc('cat-green'),
+          vc('cat-purple'), vc('cat-orange'),
+          vc('cat-teal'),   vc('cat-rose'),
         ].join(','),
       },
 
@@ -210,6 +233,12 @@
       attributeBackgroundColorOdd:  primary,
       attributeBackgroundColorEven: bgAlt,
     };
+
+    // Tear down the probe element. Must happen AFTER the result object is
+    // built — vc() reads from the live DOM each time, so the probe must
+    // live until every value is materialized.
+    if (probe.parentNode) probe.parentNode.removeChild(probe);
+    return result;
   }
 
   // Trailing-edge debounce for Marp's re-render mutation bursts (typically
