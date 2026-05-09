@@ -145,6 +145,15 @@
   --mermaid-pie-slate:   #2A2E38;
   --mermaid-pie-sage:    #253328;
   --mermaid-pie-violet:  #2C2838;
+  /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
+  --cat-blue:   #4A9C56;  /* darker lime */
+  --cat-green:  #9A7820;  /* darker amber */
+  --cat-purple: #3E8898;  /* darker cyan */
+  --cat-orange: #8E4870;  /* darker magenta */
+  --cat-teal:   #5DAF68;  /* lime */
+  --cat-rose:   #707878;
+  --cat-slate:  #585E6A;
+  --cat-mauve:  #808080;
 }
 
 section pre.hljs {

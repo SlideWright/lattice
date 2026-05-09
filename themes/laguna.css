@@ -125,6 +125,15 @@
   --mermaid-pie-slate:   #D8E5E8;  /* pale slate-teal */
   --mermaid-pie-sage:    #D8E0D5;  /* pale sage-green */
   --mermaid-pie-violet:  #DCE6E8;  /* very pale aqua */
+  /* cScale / gitgraph — coastal teal + warm coral family */
+  --cat-blue:   #286870;  /* deep teal */
+  --cat-green:  #A85E40;  /* coral */
+  --cat-purple: #7A8430;  /* olive */
+  --cat-orange: #1E4A62;  /* deep navy */
+  --cat-teal:   #387860;  /* sage-teal */
+  --cat-rose:   #A07860;  /* warm sand-brown */
+  --cat-slate:  #3A6070;  /* teal-slate */
+  --cat-mauve:  #807060;  /* warm gray-brown */
 }
 
 section pre.hljs {

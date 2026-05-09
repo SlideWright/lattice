@@ -128,6 +128,15 @@
   --mermaid-pie-slate:   #D8D5E5;  /* pale violet-slate */
   --mermaid-pie-sage:    #DDE9E6;  /* pale sage-mint */
   --mermaid-pie-violet:  #E0D8EC;  /* pale deep-violet */
+  /* cScale / gitgraph — twilight violet + amber family */
+  --cat-blue:   #7B5B9E;  /* mid-violet */
+  --cat-green:  #A8841E;  /* mid-amber */
+  --cat-purple: #3E7A8A;  /* mid-cyan */
+  --cat-orange: #A45840;  /* mid-coral */
+  --cat-teal:   #6A5880;  /* muted violet */
+  --cat-rose:   #8E6070;  /* mauve */
+  --cat-slate:  #5A5070;  /* deep violet-slate */
+  --cat-mauve:  #8B7298;  /* light violet */
 }
 
 /* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)

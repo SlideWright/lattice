@@ -146,6 +146,15 @@
   --mermaid-pie-slate:   #E0D5D8;  /* pale mauve-slate */
   --mermaid-pie-sage:    #D8E0D5;  /* pale sage */
   --mermaid-pie-violet:  #E5D0E8;  /* pale violet pop */
+  /* cScale / gitgraph — wine + champagne family */
+  --cat-blue:   #7A2230;  /* wine */
+  --cat-green:  #8A6E38;  /* champagne mid */
+  --cat-purple: #582888;  /* deep violet */
+  --cat-orange: #804838;  /* terracotta */
+  --cat-teal:   #385878;  /* steel-blue contrast */
+  --cat-rose:   #884860;  /* wine-rose */
+  --cat-slate:  #585070;  /* mauve-slate */
+  --cat-mauve:  #786070;  /* dusty wine-mauve */
 }
 
 section pre.hljs {

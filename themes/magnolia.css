@@ -127,6 +127,15 @@
   --mermaid-pie-slate:   #E0D8E0;  /* pale dusty-mauve */
   --mermaid-pie-sage:    #D5E5D8;  /* pale sage */
   --mermaid-pie-violet:  #EAD8E5;  /* pale dusty-violet */
+  /* cScale / gitgraph — dusty rose + sage family */
+  --cat-blue:   #A06070;  /* dusty rose */
+  --cat-green:  #587848;  /* sage */
+  --cat-purple: #805880;  /* dusty violet */
+  --cat-orange: #A87848;  /* dusty amber */
+  --cat-teal:   #487A68;  /* sage-teal */
+  --cat-rose:   #A87080;  /* dusty pink */
+  --cat-slate:  #6A7880;  /* cool slate */
+  --cat-mauve:  #886070;  /* dusty mauve */
 }
 
 section pre.hljs {

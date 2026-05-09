@@ -128,6 +128,15 @@
   --mermaid-pie-slate:   #DCDCDB;  /* pale neutral */
   --mermaid-pie-sage:    #D8E0D8;  /* pale warm-sage */
   --mermaid-pie-violet:  #E5E0EC;  /* pale gray-violet */
+  /* cScale / gitgraph — warm achromatic with one warm-gold pop */
+  --cat-blue:   #4E4E48;
+  --cat-green:  #A8946A;  /* warm gold */
+  --cat-purple: #787870;
+  --cat-orange: #343430;
+  --cat-teal:   #626260;
+  --cat-rose:   #9A9A92;
+  --cat-slate:  #525250;
+  --cat-mauve:  #8A8A80;
 }
 
 section pre.hljs {

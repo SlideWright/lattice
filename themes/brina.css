@@ -124,6 +124,15 @@
   --mermaid-pie-slate:   #D8E0EA;  /* pale glacier-gray */
   --mermaid-pie-sage:    #D5E5E8;  /* pale sage-ice */
   --mermaid-pie-violet:  #E0D8EC;  /* pale frost-violet */
+  /* cScale / gitgraph — cool desaturated steel family */
+  --cat-blue:   #3E687C;  /* steel-blue */
+  --cat-green:  #8A6E48;  /* warm brass contrast */
+  --cat-purple: #5A6080;  /* cool lavender */
+  --cat-orange: #4E6070;  /* cool gray-blue */
+  --cat-teal:   #3A7888;  /* glacier teal */
+  --cat-rose:   #7A6890;  /* cool lavender-rose */
+  --cat-slate:  #506080;  /* cool slate-blue */
+  --cat-mauve:  #707080;  /* cool mid-gray */
 }
 
 section pre.hljs {
