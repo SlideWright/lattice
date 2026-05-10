@@ -392,6 +392,8 @@
   let renderCounter = 0;
 
   function initAndRun({ force = false } = {}) {
+    transformStripHeadingPeriods();
+    transformAddHeadingPeriods();
     transformVerdictGridBadges();
     transformChecklistItemStates();
     transformSlotLabels();
@@ -593,6 +595,56 @@
           for (const n of lead) strong.appendChild(n);
           li.insertBefore(strong, cursor);
         }
+      }
+    }
+  }
+
+  /**
+   * Strips trailing periods from headings on `no-period` slides.
+   * Authors opt in deck-wide via `class: no-period` in front
+   * matter. Walks to the last text node inside each heading so inline markup
+   * (e.g. `<em>text.</em>`) is handled correctly. Mirrors the Marp plugin in
+   * marp.config.js and the `sp` helper in lattice-emulator.js.
+   */
+  function transformStripHeadingPeriods() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.no-period')) {
+      for (const h of section.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (h.dataset.periodsStripped) continue;
+        let lastText = null;
+        (function walk(node) {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) lastText = child;       // TEXT_NODE
+            else if (child.nodeType === 1) walk(child);       // ELEMENT_NODE
+          }
+        })(h);
+        if (lastText) lastText.nodeValue = lastText.nodeValue.replace(/\.\s*$/, '');
+        h.dataset.periodsStripped = '1';
+      }
+    }
+  }
+
+  /**
+   * Appends a period to headings on `with-period` slides that do not
+   * already end with terminal punctuation (.!?:…). Mirrors the Marp plugin in
+   * marp.config.js and the `ap` helper in lattice-emulator.js.
+   */
+  function transformAddHeadingPeriods() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.with-period')) {
+      for (const h of section.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (h.dataset.periodsAdded) continue;
+        let lastText = null;
+        (function walk(node) {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) lastText = child;
+            else if (child.nodeType === 1) walk(child);
+          }
+        })(h);
+        if (lastText && !/[.!?:…]$/.test(lastText.nodeValue.trimEnd())) {
+          lastText.nodeValue = lastText.nodeValue.trimEnd() + '.';
+        }
+        h.dataset.periodsAdded = '1';
       }
     }
   }

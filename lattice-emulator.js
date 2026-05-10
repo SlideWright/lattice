@@ -927,6 +927,8 @@ function parseSlide(raw, index) {
   let html = '';
   const lines = raw.split('\n');
   let inList = false, inOrderedList = false, inSubList = false, inBlockquote = false, inPre = false;
+  const sp = classAttr.includes('no-period') ? s => s.replace(/\.\s*$/, '') : s => s;
+  const ap = classAttr.includes('with-period')   ? s => /[.!?:…]$/.test(s.trimEnd()) ? s : s.trimEnd() + '.' : s => s;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -951,12 +953,12 @@ function parseSlide(raw, index) {
       if (inBlockquote)   { html += '</blockquote>'; inBlockquote  = false; }
       continue;
     }
-    if      (t.startsWith('######')) { html += `<h6>${parseInline(t.slice(6).trim())}</h6>`; }
-    else if (t.startsWith('#####'))  { html += `<h5>${parseInline(t.slice(5).trim())}</h5>`; }
-    else if (t.startsWith('####'))   { html += `<h4>${parseInline(t.slice(4).trim())}</h4>`; }
-    else if (t.startsWith('### '))   { html += `<h3>${parseInline(t.slice(4))}</h3>`; }
-    else if (t.startsWith('## '))    { html += `<h2>${parseInline(t.slice(3))}</h2>`; }
-    else if (t.startsWith('# '))     { html += `<h1>${parseInline(t.slice(2))}</h1>`; }
+    if      (t.startsWith('######')) { html += `<h6>${parseInline(ap(sp(t.slice(6).trim())))}</h6>`; }
+    else if (t.startsWith('#####'))  { html += `<h5>${parseInline(ap(sp(t.slice(5).trim())))}</h5>`; }
+    else if (t.startsWith('####'))   { html += `<h4>${parseInline(ap(sp(t.slice(4).trim())))}</h4>`; }
+    else if (t.startsWith('### '))   { html += `<h3>${parseInline(ap(sp(t.slice(4))))}</h3>`; }
+    else if (t.startsWith('## '))    { html += `<h2>${parseInline(ap(sp(t.slice(3))))}</h2>`; }
+    else if (t.startsWith('# '))     { html += `<h1>${parseInline(ap(sp(t.slice(2))))}</h1>`; }
     else if (/^(\*{3,}|_{3,})$/.test(t)) { html += '<hr>'; }
     else if (t.startsWith('> ')) {
       if (!inBlockquote) { html += '<blockquote>'; inBlockquote = true; }

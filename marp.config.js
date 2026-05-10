@@ -178,6 +178,71 @@ function slotLabelLift(markdown) {
   });
 }
 
+/**
+ * Marpit plugin: on a `no-period` slide, strips any trailing
+ * period (and optional trailing whitespace) from every heading token.
+ * Authors opt in deck-wide via `class: no-period` in front
+ * matter. Mirrors the `sp` helper in lattice-emulator.js and the
+ * `transformStripHeadingPeriods` function in lattice-runtime.js.
+ */
+function stripHeadingPeriods(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "strip_heading_periods", (state) => {
+    let active = false;
+    let pendingInline = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        active = /\bno-period\b/.test(token.attrGet("class") || "");
+        pendingInline = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { active = false; continue; }
+      if (!active) continue;
+      if (token.type === "heading_open")  { pendingInline = true;  continue; }
+      if (token.type === "heading_close") { pendingInline = false; continue; }
+      if (token.type !== "inline" || !pendingInline || !token.children) continue;
+      for (let i = token.children.length - 1; i >= 0; i--) {
+        if (token.children[i].type === "text") {
+          token.children[i].content = token.children[i].content.replace(/\.\s*$/, "");
+          break;
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Marpit plugin: on an `with-period` slide, appends a period to any
+ * heading that does not already end with terminal punctuation (.!?:…).
+ * Authors opt in deck-wide via `class: with-period` in front matter.
+ * Mirrors the `ap` helper in lattice-emulator.js and the
+ * `transformAddHeadingPeriods` function in lattice-runtime.js.
+ */
+function addHeadingPeriods(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "add_heading_periods", (state) => {
+    let active = false;
+    let pendingInline = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        active = /\bwith-period\b/.test(token.attrGet("class") || "");
+        pendingInline = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { active = false; continue; }
+      if (!active) continue;
+      if (token.type === "heading_open")  { pendingInline = true;  continue; }
+      if (token.type === "heading_close") { pendingInline = false; continue; }
+      if (token.type !== "inline" || !pendingInline || !token.children) continue;
+      for (let i = token.children.length - 1; i >= 0; i--) {
+        if (token.children[i].type === "text") {
+          const c = token.children[i].content;
+          if (!/[.!?:…]$/.test(c)) token.children[i].content = c + ".";
+          break;
+        }
+      }
+    }
+  });
+}
+
 const mermaidLanguage = require("./lib/mermaid-hljs");
 
 /**
@@ -370,7 +435,9 @@ module.exports = {
         .use(checklistItemStates)
         .use(slotLabelLift)
         .use(glossaryListToTable)
-        .use(glossaryRange);
+        .use(glossaryRange)
+        .use(stripHeadingPeriods)
+        .use(addHeadingPeriods);
 
     // Wrap render() so chart-family slides are rewritten into the
     // chart-frame skeleton in the rendered HTML — same DOM the export
@@ -402,4 +469,6 @@ module.exports.plugins = {
   slotLabelLift,
   glossaryListToTable,
   glossaryRange,
+  stripHeadingPeriods,
+  addHeadingPeriods,
 };
