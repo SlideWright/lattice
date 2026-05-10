@@ -243,9 +243,281 @@ _Refreshed weekly · last updated 2026-05-07_
 
 ---
 
+<!-- _class: subtopic -->
+
+## `gantt` — categorical bar chart.
+
+Time axis across the top; swimlanes down the left; bars absolutely positioned within each lane. Status pill colours the bar fill. Five versions: light full-chrome, dark, minimal, monthly axis, four-lane stress test.
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Experiment · gantt (light, 3 lanes)" -->
+
+`2026 Q1 → 2026 Q4`
+
+## What ships in each phase, by workstream.
+
+Three workstreams across four quarters. Status pills tint each bar — matching the vocabulary used by `progress` and `timeline-list`.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4`
+
+_Product roadmap · committed baseline · 2026-05-07_
+
+---
+
+<!-- _class: gantt dark -->
+<!-- _footer: "Experiment · gantt (dark canvas)" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Same roadmap, dark canvas.
+
+Bar fills lift with a white mix on the dark canvas — the same treatment used for `progress.dark`. Bar labels switch to dark navy for contrast.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4`
+
+---
+
+<!-- _class: gantt minimal -->
+<!-- _footer: "Experiment · gantt (minimal treatment)" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Same roadmap, minimal header.
+
+The lucent strip is gone; the chart dominates. Same axis, same bars, same status vocabulary — less chrome.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4`
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Experiment · gantt (monthly axis, 2 lanes)" -->
+
+`Jan → Jun`
+
+## Feature delivery by workstream, H1 2026.
+
+Monthly axis with two swimlanes. The tick parser recognises short month names as well as `Q1–Q4`.
+
+- Engineering
+  - Architecture review `Jan → Feb` `done`
+  - Development sprint `Mar → May` `at-risk`
+  - Hardening and QA `Jun → Jun`
+- Compliance
+  - Audit preparation `Jan → Mar` `done`
+  - External review window `Apr → Jun` `pilot`
+
+_Build calendar · Q1 baseline · refreshed 2026-05-07_
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Experiment · gantt (4 lanes, full status spectrum)" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Phase 2 delivery plan — risk review.
+
+Four workstreams. Every status colour is represented: done, live, at-risk, blocked, deferred. Two items need escalation before Q3 mid.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4` `blocked`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4` `deferred`
+- SDK
+  - Polyglot parity `Q2 → Q4` `at-risk`
+
+_Risk review · 2026-05-09 · 2 items require escalation_
+
+---
+
+<!-- _class: subtopic -->
+
+## `kanban` — board from a two-level list.
+
+Column = top-level bullet; card = sub-bullet. Trailing pills supply size (`S`/`M`/`L`/`XL`), lane (any word — receives a categorical left stripe), and status (shared vocabulary). The `Done` column dims automatically. Five versions: light full-chrome, dark, minimal, simple three-column, cards with body text.
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Experiment · kanban (light, 4 columns)" -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+Four columns, mixed card density. Lane pills receive categorical colour stripes; the Done column dims. Status pills reuse the shared vocabulary.
+
+- Backlog
+  - Per-purpose codebooks `S` `compliance`
+  - Crypto-shred runbook `M` `platform`
+  - Dependency dashboard `S`
+- In progress
+  - Multi-tenant DEKs `M` `platform` `at-risk`
+  - Examiner pack v2 `L` `compliance`
+- Review
+  - Automated rotation `M` `platform`
+  - Centralised log `S` `compliance`
+- Done
+  - Codebook signing `L` `platform` `done`
+  - HSM audit trail `M` `compliance` `done`
+
+_Refreshed at stand-up · 2026-05-09_
+
+---
+
+<!-- _class: kanban dark -->
+<!-- _footer: "Experiment · kanban (dark canvas)" -->
+
+`Phase 2 · Sprint 14`
+
+## Same board, dark canvas.
+
+Card backgrounds track `--bg-alt` via `light-dark()` — no explicit dark overrides needed for the card chrome. Only the column headers are lifted.
+
+- Backlog
+  - Per-purpose codebooks `S` `compliance`
+  - Crypto-shred runbook `M` `platform`
+  - Dependency dashboard `S`
+- In progress
+  - Multi-tenant DEKs `M` `platform` `at-risk`
+  - Examiner pack v2 `L` `compliance`
+- Review
+  - Automated rotation `M` `platform`
+  - Centralised log `S` `compliance`
+- Done
+  - Codebook signing `L` `platform` `done`
+  - HSM audit trail `M` `compliance` `done`
+
+---
+
+<!-- _class: kanban minimal -->
+<!-- _footer: "Experiment · kanban (minimal treatment)" -->
+
+`Phase 2 · Sprint 14`
+
+## Same board, minimal header.
+
+The lucent strip removed. The board is the entire content surface — suited to a check-in slide where the data needs to dominate.
+
+- Backlog
+  - Per-purpose codebooks `S` `compliance`
+  - Crypto-shred runbook `M` `platform`
+  - Dependency dashboard `S`
+- In progress
+  - Multi-tenant DEKs `M` `platform` `at-risk`
+  - Examiner pack v2 `L` `compliance`
+- Review
+  - Automated rotation `M` `platform`
+  - Centralised log `S` `compliance`
+- Done
+  - Codebook signing `L` `platform` `done`
+  - HSM audit trail `M` `compliance` `done`
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Experiment · kanban (3 columns, Todo / Doing / Done)" -->
+
+`Sprint 14 · Engineering`
+
+## Sprint board — who is doing what.
+
+Three-column variant. The Done column dims; the Doing column carries the at-risk signal. Lane stripes distinguish platform from operations and sdk.
+
+- To do
+  - Architecture ADR `M` `platform`
+  - Runbook template `S` `operations`
+  - Linter rule for pill positions `S` `sdk`
+- In progress
+  - Polyglot SDK `L` `sdk` `at-risk`
+  - On-call playbook `M` `operations`
+- Done
+  - API gateway rate-limit `M` `platform` `done`
+  - SDK Go client `M` `sdk` `done`
+  - Vault round-trip deprecation `L` `platform` `done`
+
+_Jira sync · 2026-05-09_
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Experiment · kanban (cards with body text)" -->
+
+`Compliance workstream`
+
+## Compliance tasks — detail view.
+
+Cards optionally carry a one-line body (from a third-level sub-bullet) rendered as an italic caption inside the card. Blocked column renders as a standard column; Done dims as usual.
+
+- Blocked
+  - External audit firm `M` `compliance` `blocked`
+    - Firm selection paused pending legal sign-off. Resuming W20.
+- In progress
+  - Audit pack v2 `L` `compliance` `at-risk`
+    - Second draft complete; awaiting exec sign-off on scope.
+  - Examiner role spec `S` `compliance`
+- Review
+  - Log retention policy `M` `compliance`
+    - Reviewed by legal on 2026-05-06. Minor edits pending.
+- Done
+  - Audit trail implementation `L` `compliance` `done`
+  - HSM key escrow review `M` `compliance` `done`
+
+_Compliance checkpoint · 2026-05-09_
+
+---
+
 <!-- _class: closing -->
 <!-- _footer: "Experiment · end" -->
 
 # End of chart-family experiment.
 
-Three layouts, two treatments, one frame, all on-theme tokens. Not yet wired through marp-cli or runtime — emulator path only.
+Five layouts, two treatments, one frame, all on-theme tokens. Emulator path only — not yet wired through marp-cli or lattice-runtime.js.
+
+<!-- markdownlint-disable MD033 -->
+<script src="../mermaid-v11.min.js"></script>
+<script src="../lattice-runtime.js"></script>

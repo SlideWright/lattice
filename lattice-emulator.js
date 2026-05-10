@@ -1531,7 +1531,7 @@ function parseSlide(raw, index) {
   // caption. Class collisions matter — we match exact tokens, not
   // substrings, because `progress-N` is already a modifier on `agenda`.
   const classTokens = cls.trim().split(/\s+/);
-  const chartLayouts = ['progress', 'timeline-list', 'piechart'];
+  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
   const chartLayout = chartLayouts.find(l => classTokens.includes(l));
   if (chartLayout) {
     // ── Helper: extract top-level <li> contents from a list inner string,
@@ -1578,6 +1578,30 @@ function parseSlide(raw, index) {
     };
 
     const escAttr = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    // Depth-aware extractor for the first <ul> in a string. Unlike the lazy
+    // regex /<ul>[\s\S]*?<\/ul>/, this correctly handles nested sub-lists
+    // (the lazy pattern would stop at the first inner </ul>, not the outer).
+    // Returns { inner, start, end } or null if no <ul> found.
+    const extractFirstUl = (src) => {
+      const s = src.indexOf('<ul>');
+      if (s < 0) return null;
+      let depth = 0, pos = s, inner = '';
+      while (pos < src.length) {
+        if (src.startsWith('<ul>', pos) || src.startsWith('<ol>', pos)) {
+          if (depth > 0) inner += src.slice(pos, pos + 4);
+          depth++; pos += 4;
+        } else if (src.startsWith('</ul>', pos) || src.startsWith('</ol>', pos)) {
+          depth--;
+          if (depth === 0) return { inner, start: s, end: pos + 5 };
+          inner += src.slice(pos, pos + 5); pos += 5;
+        } else {
+          if (depth > 0) inner += src[pos];
+          pos++;
+        }
+      }
+      return null;
+    };
 
     // ── progress ── one bar per top-level <li>
     if (chartLayout === 'progress') {
@@ -1706,13 +1730,191 @@ function parseSlide(raw, index) {
       });
     }
 
+    // ── gantt ── categorical bar chart from a two-level list
+    // Top-level bullet = swimlane; sub-bullet = bar with leading range pill
+    // and optional trailing status pill. The axis tick labels and bar positions
+    // share the same effective width (both are flex:1 inside a flex row that
+    // starts with a fixed-width label column) so percentage-based absolute
+    // positioning in .gantt-bars aligns precisely with the grid in .gantt-ticks.
+    // Sibling paths: lattice.css section.gantt, lattice-runtime.js (TODO).
+    if (chartLayout === 'gantt') {
+      // Parse the time window declared in the eyebrow (e.g. "2026 Q1 → 2026 Q4").
+      // Supports quarterly (Q1–Q4) and monthly (Jan–Dec) axes.
+      const parseGanttWindow = (text) => {
+        const m = text.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+        if (!m) return { ticks: [], colMap: {} };
+        const norm = (s) => {
+          const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+          const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+          return s.trim();
+        };
+        const start = norm(m[1].trim()), end = norm(m[2].trim());
+        const allQ = ['Q1','Q2','Q3','Q4'];
+        const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const qs = allQ.indexOf(start), qe = allQ.indexOf(end);
+        const ms = allM.indexOf(start), me = allM.indexOf(end);
+        let ticks;
+        if (qs >= 0 && qe >= 0 && qe >= qs)   ticks = allQ.slice(qs, qe + 1);
+        else if (ms >= 0 && me >= 0 && me >= ms) ticks = allM.slice(ms, me + 1);
+        else return { ticks: [], colMap: {} };
+        const colMap = {};
+        ticks.forEach((t, i) => { colMap[t] = i + 1; }); // 1-indexed in bar area
+        return { ticks, colMap };
+      };
+
+      // Parse a bar's range pill (e.g. "Q1 → Q2") into { col, span }.
+      // col is 1-indexed within the bar area (1 = first tick column).
+      const parseBarRange = (pill, colMap) => {
+        const m = pill.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+        if (!m) return { col: 1, span: 1 };
+        const norm = (s) => {
+          const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+          const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+          return s.trim();
+        };
+        const sc = colMap[norm(m[1].trim())], ec = colMap[norm(m[2].trim())];
+        if (!sc || !ec) return { col: 1, span: 1 };
+        return { col: sc, span: ec - sc + 1 };
+      };
+
+      // Extract window from eyebrow already sitting in html
+      const eyeHtmlMatch = html.match(/<p>\s*<code>([^<]+?)<\/code>\s*<\/p>/);
+      const { ticks, colMap } = parseGanttWindow(eyeHtmlMatch ? eyeHtmlMatch[1] : '');
+      const numCols = ticks.length || 4;
+
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        // Axis row: spacer + grid of tick labels
+        const tickHtml = ticks.map(t => `<div class="gantt-tick">${t}</div>`).join('');
+        const axisRow = `<div class="gantt-axis-row"><div class="gantt-axis-spacer"></div>` +
+          `<div class="gantt-ticks">${tickHtml}</div></div>`;
+
+        // Swimlanes
+        const swimlanes = parseTopLevelLis(ulExtract.inner);
+        const lanesHtml = swimlanes.map(lane => {
+          const laneUl = extractFirstUl(lane);
+          const laneLabel = (laneUl ? lane.slice(0, laneUl.start) : lane)
+            .replace(/<\/?p>/g, '').trim();
+          let barsHtml = '';
+          if (laneUl) {
+            const barItems = parseTopLevelLis(laneUl.inner);
+            barsHtml = barItems.map(barContent => {
+              const bc = barContent.replace(/<\/?p>/g, '').trim();
+              const { leadStripped, pills } = stripTrailingPills(bc);
+              const rangePill  = pills.find(p => /→|–|->/.test(p)) || '';
+              const statusPill = pills.find(p => !/→|–|->/.test(p)) || '';
+              const { col, span } = rangePill ? parseBarRange(rangePill, colMap) : { col: 1, span: 1 };
+              const sAttr = statusPill ? ` data-s="${escAttr(statusPill)}"` : '';
+              return `<div class="gantt-bar"${sAttr} style="--gantt-col-start:${col};--gantt-col-span:${span}">` +
+                `${leadStripped.trim()}</div>`;
+            }).join('');
+          }
+          return `<div class="gantt-lane">` +
+            `<div class="gantt-lane-label">${laneLabel}</div>` +
+            `<div class="gantt-bars">${barsHtml}</div>` +
+            `</div>`;
+        }).join('');
+
+        const ganttHtml = `<div class="gantt-chart" style="--gantt-cols:${numCols}">` +
+          axisRow + lanesHtml + `</div>`;
+        html = html.slice(0, ulExtract.start) + ganttHtml + html.slice(ulExtract.end);
+      }
+    }
+
+    // ── kanban ── board from a two-level list
+    // Top-level bullet = column header; sub-bullet = card with optional
+    // size pill (S/M/L/XL), lane pill (any word), status pill (vocabulary).
+    // Pill order is structural: size → lane → status (left to right trailing).
+    // Sibling paths: lattice.css section.kanban, lattice-runtime.js (TODO).
+    if (chartLayout === 'kanban') {
+      const KB_STATUS = ['on-track','done','live','at-risk','warn','blocked','fail',
+        'pilot','decision','deferred'];
+      const KB_SIZE   = ['s','m','l','xl'];
+      const KB_DONE_NAMES = ['done','completed','shipped','closed'];
+
+      const laneColorVars = ['var(--cat-blue)','var(--cat-green)','var(--cat-purple)',
+        'var(--cat-orange)','var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)'];
+      const laneColorMap = {};
+      let laneColorIdx = 0;
+      const getLaneColor = (lane) => {
+        if (!lane) return '';
+        const key = lane.toLowerCase();
+        if (!laneColorMap[key]) laneColorMap[key] = laneColorVars[laneColorIdx++ % laneColorVars.length];
+        return laneColorMap[key];
+      };
+
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        const columns = parseTopLevelLis(ulExtract.inner);
+        const columnsHtml = columns.map(col => {
+          const colUl = extractFirstUl(col);
+          const colHeader = (colUl ? col.slice(0, colUl.start) : col)
+            .replace(/<\/?p>/g, '').trim();
+          const isDone = KB_DONE_NAMES.includes(colHeader.toLowerCase());
+
+          let cardsHtml = '';
+          if (colUl) {
+            const cardItems = parseTopLevelLis(colUl.inner);
+            cardsHtml = cardItems.map(cardContent => {
+              const bodyUl = extractFirstUl(cardContent);
+              const cardLead = (bodyUl ? cardContent.slice(0, bodyUl.start) : cardContent)
+                .replace(/<\/?p>/g, '').trim();
+              let cardBody = '';
+              if (bodyUl) {
+                const bodyItems = parseTopLevelLis(bodyUl.inner);
+                cardBody = bodyItems[0] ? bodyItems[0].replace(/<\/?p>/g, '').trim() : '';
+              }
+
+              const { leadStripped, pills } = stripTrailingPills(cardLead);
+              const cardTitle = leadStripped.trim();
+              let size = '', lane = '', status = '';
+              for (const pill of pills) {
+                const lc = pill.toLowerCase();
+                if (!size && KB_SIZE.includes(lc))   { size = pill.toUpperCase(); }
+                else if (!status && KB_STATUS.includes(lc)) { status = pill; }
+                else if (!lane)                            { lane = pill; }
+              }
+
+              const laneColor = getLaneColor(lane);
+              const laneStyle = laneColor ? ` style="--lane-color:${laneColor}"` : '';
+              const sAttr     = status ? ` data-s="${escAttr(status)}"` : '';
+              const sizeEl    = size   ? `<span class="kanban-size">${size}</span>` : '';
+              const laneEl    = lane
+                ? `<span class="kanban-lane" style="--lane-color:${laneColor || 'var(--accent)'}">${lane}</span>`
+                : '';
+              const statusEl  = status
+                ? `<span class="chart-status" data-s="${escAttr(status)}">${status}</span>`
+                : '';
+              const bodyEl    = cardBody ? `<div class="kanban-card-body">${cardBody}</div>` : '';
+              const metaContent = [sizeEl, laneEl, statusEl].filter(Boolean).join('');
+              const metaEl    = metaContent ? `<div class="kanban-card-meta">${metaContent}</div>` : '';
+
+              return `<div class="kanban-card"${sAttr}${laneStyle}>` +
+                `<div class="kanban-card-title">${cardTitle}</div>${metaEl}${bodyEl}</div>`;
+            }).join('');
+          }
+
+          const doneAttr = isDone ? ' data-done' : '';
+          return `<div class="kanban-column"${doneAttr}>` +
+            `<div class="kanban-column-header">${colHeader}</div>` +
+            `<div class="kanban-cards">${cardsHtml}</div>` +
+            `</div>`;
+        }).join('');
+
+        const kanbanHtml = `<div class="kanban-board">${columnsHtml}</div>`;
+        html = html.slice(0, ulExtract.start) + kanbanHtml + html.slice(ulExtract.end);
+      }
+    }
+
     // ── Wrap in chart-frame skeleton ─────────────────────────────────────
     // Pull eyebrow / h2 / subtitle / chart-body / caption out of the html
     // and reassemble. The chart body anchor is the <div> emitted by the
     // layout-specific transform above.
     const h2RE = /<h2>[\s\S]*?<\/h2>/;
     const h2Match = h2RE.exec(html);
-    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure)"[^>]*>/;
+    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board)"[^>]*>/;
     const bodyMatch = h2Match && bodyRE.exec(html.slice(h2Match.index + h2Match[0].length));
     if (h2Match && bodyMatch) {
       const h2El = h2Match[0];

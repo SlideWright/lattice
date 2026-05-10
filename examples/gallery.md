@@ -1183,6 +1183,58 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 ---
 
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Chart — gantt + kanban · divider" -->
+
+`Chart Layouts · gantt + kanban`
+
+## Timeline bars and board columns from a two-level list
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Chart — gantt · gantt" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Feature delivery by workstream
+
+- Design
+  - Foundations `Q1` `done`
+  - Component audit `Q2` `done`
+  - Token refresh `Q3`
+- Engineering
+  - API v2 `Q1` `done`
+  - SDK release `Q2 → Q3` `in-progress`
+  - Migration guide `Q4`
+- Growth
+  - Onboarding v2 `Q2` `done`
+  - Referral flow `Q3 → Q4`
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Chart — kanban · kanban" -->
+
+`Board · Phase 2 delivery`
+
+## Where Phase 2 work stands today
+
+- Backlog
+  - API contract review
+  - Load-test harness
+- In progress
+  - SDK v2 alpha `in-progress`
+  - Onboarding redesign `in-progress`
+- Review
+  - Token migration spec `review`
+- Done
+  - Scope sign-off `done`
+  - Design freeze `done`
+
+---
+
 <!-- _class: closing accent -->
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->

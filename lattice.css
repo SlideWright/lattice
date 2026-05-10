@@ -4488,4 +4488,312 @@ section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background
 section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-6); }
 
+/* ── GANTT ──────────────────────────────────────────────────────────────────
+ * Categorical Gantt chart rendered from a two-level list.
+ * Swimlane = top-level bullet; bar = sub-bullet with a range pill and optional
+ * status pill. The axis tick labels (.gantt-ticks) and the bar container
+ * (.gantt-bars) are both flex:1 children inside their respective flex rows,
+ * so they resolve to the same width. Bars are absolutely positioned inside
+ * .gantt-bars using percentage math anchored on --gantt-cols, --gantt-col-start,
+ * and --gantt-col-span — no subgrid needed. */
+
+section.gantt.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-sm);
+  align-items: stretch;
+}
+
+.gantt-chart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Axis row: spacer + tick labels ── */
+.gantt-axis-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: var(--sp-xs);
+  margin-bottom: 4px;
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.gantt-axis-spacer {
+  flex: 0 0 180px;
+  width: 180px;
+}
+
+.gantt-ticks {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--gantt-cols), 1fr);
+}
+
+.gantt-tick {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-label);
+}
+
+/* ── Lane rows: label + bar container ── */
+.gantt-lane {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 50px;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+}
+.gantt-lane:last-child { border-bottom: none; }
+
+.gantt-lane-label {
+  flex: 0 0 180px;
+  width: 180px;
+  padding-right: var(--sp-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-heading);
+  text-align: right;
+  line-height: var(--lh-tight);
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gantt-bars {
+  flex: 1;
+  position: relative;
+  height: 44px;
+}
+
+/* Bar — absolutely positioned within its lane's bars container.
+ * left  = (col−1) / N × 100% + inset
+ * width =  span   / N × 100% − inset×2
+ * A 3px inset gives visible air between adjacent bars that share a column
+ * boundary (e.g. "Q1→Q2" and "Q2→Q3"). */
+.gantt-bar {
+  position: absolute;
+  top: 5px; bottom: 5px;
+  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
+  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--accent) 85%, var(--bg));
+  color: var(--on-accent);
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Status fills — override default accent fill, matching the progress contract */
+.gantt-bar[data-s="on-track"],
+.gantt-bar[data-s="done"],
+.gantt-bar[data-s="live"]     { background: var(--pass); }
+.gantt-bar[data-s="at-risk"],
+.gantt-bar[data-s="warn"]     { background: var(--warn); }
+.gantt-bar[data-s="blocked"],
+.gantt-bar[data-s="fail"]     { background: var(--fail); }
+.gantt-bar[data-s="deferred"] { background: color-mix(in oklab, var(--text-muted) 55%, var(--bg-alt)); }
+.gantt-bar[data-s="pilot"],
+.gantt-bar[data-s="decision"] { background: color-mix(in oklab, var(--accent) 80%, var(--bg)); }
+
+/* Dark canvas — lift status fills (same pattern as section.progress.dark) and
+ * switch bar text to dark navy so it reads against the lightened fills. */
+section.gantt.dark .gantt-bar {
+  background: color-mix(in oklab, var(--accent) 60%, var(--bg-alt));
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="on-track"],
+section.gantt.dark .gantt-bar[data-s="done"],
+section.gantt.dark .gantt-bar[data-s="live"]   { background: color-mix(in oklab, var(--pass) 40%, white); }
+section.gantt.dark .gantt-bar[data-s="at-risk"],
+section.gantt.dark .gantt-bar[data-s="warn"]   { background: color-mix(in oklab, var(--warn) 45%, white); }
+section.gantt.dark .gantt-bar[data-s="blocked"],
+section.gantt.dark .gantt-bar[data-s="fail"]   { background: color-mix(in oklab, var(--fail) 45%, white); }
+section.gantt.dark .gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 75%, var(--bg-alt));
+  color: var(--on-dark-secondary);
+}
+section.gantt.dark .gantt-bar[data-s="pilot"],
+section.gantt.dark .gantt-bar[data-s="decision"] { background: color-mix(in oklab, var(--accent) 60%, white); }
+
+/* Axis tick label on dark canvas — lighten to contrast against dark strip */
+section.gantt.dark .gantt-tick { color: color-mix(in oklab, var(--text-label) 60%, white); }
+section.gantt.dark .gantt-axis-row {
+  border-bottom-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+section.gantt.dark .gantt-lane {
+  border-bottom-color: color-mix(in oklab, var(--border) 60%, white);
+}
+section.gantt.dark .gantt-lane-label { color: var(--dark-text-heading, white); }
+
+/* ── KANBAN ──────────────────────────────────────────────────────────────────
+ * Board layout from a two-level list. Column = top-level bullet;
+ * card = sub-bullet with optional trailing pills: size (S/M/L/XL),
+ * lane (any word), status (shared vocabulary). Pill order is structural;
+ * the linter will enforce it. Lane pills receive categorical colour stripes
+ * via --lane-color inherited from the card's own style attribute. */
+
+section.kanban.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.kanban-board {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-md);
+  width: 100%;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Column header — monospace uppercase, same register as h3 eyebrows */
+.kanban-column-header {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 var(--sp-xs) 10px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: var(--sp-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* "Done" column: header turns pass-green, cards dim to signal completion */
+.kanban-column[data-done] .kanban-column-header {
+  color: var(--pass);
+  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+}
+.kanban-column[data-done] .kanban-card { opacity: 0.52; }
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: hidden;
+}
+
+/* Card — bg-alt panel with 3px left stripe coloured by --lane-color */
+.kanban-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--lane-color, var(--border));
+  border-radius: 6px;
+  padding: 9px var(--sp-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.kanban-card-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: var(--lh-tight);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.kanban-card-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  min-height: 20px;
+}
+
+/* Size badge — compact square chip */
+.kanban-size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+/* Lane tag — small pill tinted with the lane colour */
+.kanban-lane {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
+  color: var(--lane-color, var(--accent));
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Reuse .chart-status but compact it for the tight card meta row */
+.kanban-card-meta .chart-status {
+  height: 20px;
+  padding: 0 7px;
+  font-size: var(--fs-xs);
+  flex: 0 0 auto;
+}
+
+/* Optional card body (from a third-level sub-bullet) */
+.kanban-card-body {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  line-height: var(--lh-snug);
+  font-style: italic;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Dark canvas — the light-dark() tokens already remap bg, bg-alt, border,
+ * text-heading, and text-muted, so the card chrome adapts automatically.
+ * Only the column header needs lifting since it rides var(--text-muted). */
+section.kanban.dark .kanban-column-header {
+  color: color-mix(in oklab, var(--text-muted) 55%, white);
+}
+section.kanban.dark .kanban-column[data-done] .kanban-column-header {
+  color: color-mix(in oklab, var(--pass) 35%, white);
+}
+section.kanban.dark .kanban-size {
+  background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
+}
 

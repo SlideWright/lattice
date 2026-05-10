@@ -826,7 +826,7 @@
   // the extension. Same pattern as transformVerdictGridBadges,
   // applyGlossaryListTable, etc. The transform is idempotent: a section
   // already wrapped in `chart-frame` is a no-op.
-  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart'];
+  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
   const PIE_PALETTE = [
     'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
     'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
@@ -989,6 +989,182 @@
     return figure;
   }
 
+  function buildGanttChart(ul, eyebrowText) {
+    const parseWindow = (text) => {
+      const m = text.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+      if (!m) return { ticks: [], colMap: {} };
+      const norm = (s) => {
+        const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+        const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+        return s.trim();
+      };
+      const start = norm(m[1].trim()), end = norm(m[2].trim());
+      const allQ = ['Q1','Q2','Q3','Q4'];
+      const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const qs = allQ.indexOf(start), qe = allQ.indexOf(end);
+      const ms = allM.indexOf(start), me = allM.indexOf(end);
+      let ticks;
+      if (qs >= 0 && qe >= 0 && qe >= qs)       ticks = allQ.slice(qs, qe + 1);
+      else if (ms >= 0 && me >= 0 && me >= ms)   ticks = allM.slice(ms, me + 1);
+      else return { ticks: [], colMap: {} };
+      const colMap = {};
+      ticks.forEach((t, i) => { colMap[t] = i + 1; });
+      return { ticks, colMap };
+    };
+    const parseRange = (pill, colMap) => {
+      const m = pill.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+      if (!m) return { col: 1, span: 1 };
+      const norm = (s) => {
+        const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+        const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+        return s.trim();
+      };
+      const sc = colMap[norm(m[1].trim())], ec = colMap[norm(m[2].trim())];
+      if (!sc || !ec) return { col: 1, span: 1 };
+      return { col: sc, span: ec - sc + 1 };
+    };
+
+    const { ticks, colMap } = parseWindow(eyebrowText || '');
+    const numCols = ticks.length || 4;
+    const chart = document.createElement('div');
+    chart.className = 'gantt-chart';
+    chart.style.setProperty('--gantt-cols', numCols);
+
+    const axisRow = document.createElement('div');
+    axisRow.className = 'gantt-axis-row';
+    const axisSpacer = document.createElement('div');
+    axisSpacer.className = 'gantt-axis-spacer';
+    const ticksEl = document.createElement('div');
+    ticksEl.className = 'gantt-ticks';
+    for (const t of ticks) {
+      const tick = document.createElement('div');
+      tick.className = 'gantt-tick';
+      tick.textContent = t;
+      ticksEl.appendChild(tick);
+    }
+    axisRow.appendChild(axisSpacer);
+    axisRow.appendChild(ticksEl);
+    chart.appendChild(axisRow);
+
+    for (const li of ul.querySelectorAll(':scope > li')) {
+      const nestedUl = li.querySelector(':scope > ul, :scope > ol');
+      const labelClone = li.cloneNode(true);
+      labelClone.querySelector(':scope > ul, :scope > ol')?.remove();
+      const laneLabel = labelClone.textContent.trim();
+
+      const lane = document.createElement('div');
+      lane.className = 'gantt-lane';
+      const labelEl = document.createElement('div');
+      labelEl.className = 'gantt-lane-label';
+      labelEl.textContent = laneLabel;
+      const barsEl = document.createElement('div');
+      barsEl.className = 'gantt-bars';
+
+      if (nestedUl) {
+        for (const barLi of nestedUl.querySelectorAll(':scope > li')) {
+          const clone = barLi.cloneNode(true);
+          clone.querySelector(':scope > ul, :scope > ol')?.remove();
+          const pills = extractTrailingPills(clone);
+          const rangePill  = pills.find(p => /→|–|->/.test(p)) || '';
+          const statusPill = pills.find(p => !/→|–|->/.test(p)) || '';
+          const { col, span } = rangePill ? parseRange(rangePill, colMap) : { col: 1, span: 1 };
+          const bar = document.createElement('div');
+          bar.className = 'gantt-bar';
+          if (statusPill) bar.dataset.s = statusPill;
+          bar.style.setProperty('--gantt-col-start', col);
+          bar.style.setProperty('--gantt-col-span', span);
+          bar.innerHTML = clone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
+          barsEl.appendChild(bar);
+        }
+      }
+      lane.appendChild(labelEl);
+      lane.appendChild(barsEl);
+      chart.appendChild(lane);
+    }
+    return chart;
+  }
+
+  function buildKanbanBoard(ul) {
+    const KB_STATUS = ['on-track','done','live','at-risk','warn','blocked','fail','pilot','decision','deferred'];
+    const KB_SIZE   = ['s','m','l','xl'];
+    const KB_DONE_NAMES = ['done','completed','shipped','closed'];
+    const LANE_COLORS = [
+      'var(--cat-blue)','var(--cat-green)','var(--cat-purple)','var(--cat-orange)',
+      'var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)',
+    ];
+    const laneColorMap = {};
+    let laneColorIdx = 0;
+    const getLaneColor = (lane) => {
+      if (!lane) return '';
+      const key = lane.toLowerCase();
+      if (!laneColorMap[key]) laneColorMap[key] = LANE_COLORS[laneColorIdx++ % LANE_COLORS.length];
+      return laneColorMap[key];
+    };
+
+    const board = document.createElement('div');
+    board.className = 'kanban-board';
+
+    for (const colLi of ul.querySelectorAll(':scope > li')) {
+      const nestedUl = colLi.querySelector(':scope > ul, :scope > ol');
+      const headerClone = colLi.cloneNode(true);
+      headerClone.querySelector(':scope > ul, :scope > ol')?.remove();
+      const colHeader = headerClone.textContent.trim();
+      const isDone = KB_DONE_NAMES.includes(colHeader.toLowerCase());
+
+      const col = document.createElement('div');
+      col.className = 'kanban-column';
+      if (isDone) col.dataset.done = '';
+      const headerEl = document.createElement('div');
+      headerEl.className = 'kanban-column-header';
+      headerEl.textContent = colHeader;
+      col.appendChild(headerEl);
+
+      const cardsEl = document.createElement('div');
+      cardsEl.className = 'kanban-cards';
+      if (nestedUl) {
+        for (const cardLi of nestedUl.querySelectorAll(':scope > li')) {
+          const cardClone = cardLi.cloneNode(true);
+          const bodySub = cardClone.querySelector(':scope > ul, :scope > ol');
+          let cardBody = '';
+          if (bodySub) {
+            const firstBodyLi = bodySub.querySelector(':scope > li');
+            cardBody = firstBodyLi ? firstBodyLi.innerHTML.trim() : '';
+            bodySub.remove();
+          }
+          const pills = extractTrailingPills(cardClone);
+          const cardTitle = cardClone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
+          let size = '', lane = '', status = '';
+          for (const pill of pills) {
+            const lc = pill.toLowerCase();
+            if (!size && KB_SIZE.includes(lc))         { size = pill.toUpperCase(); }
+            else if (!status && KB_STATUS.includes(lc)) { status = pill; }
+            else if (!lane)                              { lane = pill; }
+          }
+          const laneColor = getLaneColor(lane);
+          const card = document.createElement('div');
+          card.className = 'kanban-card';
+          if (status) card.dataset.s = status;
+          if (laneColor) card.style.setProperty('--lane-color', laneColor);
+          const metaParts = [
+            size   ? '<span class="kanban-size">'  + chartEscAttr(size)   + '</span>' : '',
+            lane   ? '<span class="kanban-lane" style="--lane-color:' + (laneColor || 'var(--accent)') + '">' + chartEscAttr(lane) + '</span>' : '',
+            status ? '<span class="chart-status" data-s="' + chartEscAttr(status) + '">' + chartEscAttr(status) + '</span>' : '',
+          ].filter(Boolean).join('');
+          card.innerHTML =
+            '<div class="kanban-card-title">' + cardTitle + '</div>' +
+            (metaParts ? '<div class="kanban-card-meta">' + metaParts + '</div>' : '') +
+            (cardBody  ? '<div class="kanban-card-body">'  + cardBody  + '</div>' : '');
+          cardsEl.appendChild(card);
+        }
+      }
+      col.appendChild(cardsEl);
+      board.appendChild(col);
+    }
+    return board;
+  }
+
   function transformChartSection(section, layout) {
     if (section.querySelector(':scope > .chart-header')) return;
     const h2 = section.querySelector(':scope > h2');
@@ -1025,9 +1201,12 @@
 
     let chartContainer;
     const isDonut = section.classList.contains('donut');
+    const eyebrowText = eyebrowEl ? eyebrowEl.firstElementChild.textContent : '';
     if (layout === 'progress')           chartContainer = buildProgressBars(list);
     else if (layout === 'timeline-list') chartContainer = buildTimelineSpine(list);
     else if (layout === 'piechart')      chartContainer = buildPieChart(list, isDonut);
+    else if (layout === 'gantt')         chartContainer = buildGanttChart(list, eyebrowText);
+    else if (layout === 'kanban')        chartContainer = buildKanbanBoard(list);
     else return;
 
     let captionEl = null;
