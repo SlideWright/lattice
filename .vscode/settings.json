@@ -1,6 +1,7 @@
 {
     "markdown.marp.themes": [
         "lattice.css",
+        "lattice-backgrounds.css",
         "themes/cuoio.css",
         "themes/cuoio-dark.css",
         "themes/indaco.css",
