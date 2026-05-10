@@ -934,11 +934,11 @@ section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); f
  */
 section.cards-wide h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.cards-wide .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
 section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
 section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
-section.cards-wide .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.cards-wide .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
+section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:6px; padding:3px 9px; }
@@ -1054,22 +1054,23 @@ section.glossary h2 .range-pill {
 
 /* ── FEATURED ──
  * ## heading  ul: first li = .feat-card hero (50%), rest = .sub-row > .sub-card (50%)
+ * Titles emit as <strong>; container sets fs-body base — same model as cards-grid/compare-prose.
  */
 section.featured h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; position:relative; overflow:hidden; }
+section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--text-body); }
 section.featured .feat-card::after {
   content:'✧'; position:absolute; top:8px; right:8px;
   font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.featured .feat-card h3 { font-weight:700; letter-spacing:0.12em; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:2.5rem; }
-section.featured .feat-card p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:2.5rem; }
+section.featured .feat-card strong { display:block; font-weight:700; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:2.5rem; }
+section.featured .feat-card p { color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:2.5rem; }
 section.featured .sub-row { display:grid; grid-auto-rows:1fr; gap:var(--sp-sm); }
-section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; }
-section.featured .sub-card h3 { font-size:var(--fs-md); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); text-transform:none; letter-spacing:0; }
-section.featured .sub-card p  { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; font-size:var(--fs-body); color:var(--text-body); }
+section.featured .sub-card strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.featured .sub-card p  { color:var(--text-body); line-height:var(--lh-base); margin:0; }
 
 /* ── STEPS ──
  * ## heading  ol with: **Step N title** \n body text

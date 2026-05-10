@@ -1259,10 +1259,10 @@ function parseSlide(raw, index) {
         };
         const [first, ...rest] = items;
         const { title: featTitle, body: featBody } = extractCard(first);
-        const featCard = `<div class="feat-card"><h3>${featTitle}</h3><p>${featBody}</p></div>`;
+        const featCard = `<div class="feat-card"><strong>${featTitle}</strong><p>${featBody}</p></div>`;
         const subCards = rest.map(content => {
           const { title, body } = extractCard(content);
-          return `<div class="sub-card"><h3>${title}</h3><p>${body}</p></div>`;
+          return `<div class="sub-card"><strong>${title}</strong><p>${body}</p></div>`;
         });
         html = html.slice(0, ulIdx) + `<div class="feat-layout">${featCard}<div class="sub-row">${subCards.join('')}</div></div>` + html.slice(ulEnd + 5);
       }
