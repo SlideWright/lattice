@@ -633,6 +633,31 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 ---
 
+<!-- _class: image museum -->
+<!-- _footer: "Image museum · editorial plate · image museum" -->
+
+`Image Layout · Museum Modifier`
+
+## The museum modifier mounts the image as an editorial plate
+
+The image panel carries a `--bg-alt` matte with a 20px inset on three sides, flush only at the split line. A 1px border frames it like a mounted print. Add `museum` alongside `image` — the anchor border is replaced by the matte and frame.
+
+![bg right](sample-image-landscape.svg)
+
+---
+
+<!-- _class: image museum full -->
+<!-- _footer: "Image museum full · full bleed · image museum full" -->
+<!-- _paginate: false -->
+
+## Architecture dependencies — every node visible
+
+Full-bleed museum centres the asset on a generous `--bg-alt` matte with uniform 40px inset on all four sides. The border frames it as an object, not a wallpaper. No text overlaid on the image.
+
+![bg](sample-image-landscape.svg)
+
+---
+
 <!-- _class: divider dark -->
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
