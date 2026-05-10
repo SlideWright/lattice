@@ -1104,6 +1104,85 @@ The discipline is the same as `compact` from the other side: do not change the t
 
 ---
 
+<!-- _class: content with-period -->
+<!-- _footer: "Modifier — with-period · content with-period" -->
+
+`Modifier · with-period`
+
+## Headings gain a closing period automatically
+
+Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe.
+
+The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
+
+---
+
+<!-- _class: content no-period -->
+<!-- _footer: "Modifier — no-period · content no-period" -->
+
+`Modifier · no-period`
+
+<!-- markdownlint-disable-next-line MD026 -->
+## Authors typed this heading with a period. It is gone.
+
+Some teams author headings with periods out of habit, then strip them in review. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
+
+Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through untouched. Combine with any layout class; the modifier composes cleanly because it operates on the heading text alone and touches no structural chrome.
+
+---
+
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Background Library — section break · divider" -->
+
+`Background Library · Any Layout Class`
+
+# bg-* classes add peripheral accents from the active palette
+
+Add a `bg-*` class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
+
+---
+
+<!-- _class: content bg-corner-tl -->
+<!-- _footer: "Background — corner glow · content bg-corner-tl" -->
+
+`Background · Corner Glow`
+
+## A radial glow anchored at the corner fades before reaching the content zone
+
+`bg-corner-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `bg-corner-*` variants share the same weight and fade profile; only the anchor differs.
+
+All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides.
+
+---
+
+<!-- _class: content bg-orbit-br dark -->
+<!-- _footer: "Background — SVG marks · content bg-orbit-br dark" -->
+
+`Background · SVG Marks · Dark`
+
+## SVG accent marks are painted through a mask in the active accent colour
+
+`bg-orbit-br` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
+
+---
+
+<!-- _class: content bg-vignette bg-edge-right -->
+<!-- _footer: "Background — layered radial + linear · content bg-vignette bg-edge-right" -->
+
+`Background · Layered`
+
+## One class from each slot layers without conflict
+
+Every `bg-*` class writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
+
+- `bg-vignette` — radial slot — accent-tinted perimeter, open center
+- `bg-edge-right` — linear slot — wash bleeding in from the right edge
+
+The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently.
+
+---
+
 <!-- _class: closing accent -->
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->

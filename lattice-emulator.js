@@ -220,10 +220,10 @@ if (!fs.existsSync(palettePath)) {
 // cuoio-dark.css imports cuoio.css). The palette parser scans `:root`
 // blocks of this combined string, so the dark variants inherit every
 // token defined in the parent without duplicating declarations.
-function loadPaletteWithImports(filePath, seen = new Set()) {
+function loadPaletteWithImports(filePath, seen = new Set(), label = null) {
   if (seen.has(filePath)) return '';
   seen.add(filePath);
-  const content = readFileOrDie(filePath, `palette '${path.basename(filePath, '.css')}'`);
+  const content = readFileOrDie(filePath, label ?? `palette '${path.basename(filePath, '.css')}'`);
   // Match `@import 'name';` and `@import "name";` and `@import name;`.
   // The lattice palette convention is single-token names (cuoio, indaco)
   // resolved relative to the themes/ directory.
@@ -244,7 +244,7 @@ function loadPaletteWithImports(filePath, seen = new Set()) {
 }
 
 const paletteCSS = loadPaletteWithImports(palettePath);
-const themeCSS   = readFileOrDie(cssFile, 'layout CSS');
+const themeCSS   = loadPaletteWithImports(cssFile, new Set(), 'layout CSS');
 const css = paletteCSS + '\n' + themeCSS;
 
 // ── Mermaid renderer ─────────────────────────────────────────────────────────

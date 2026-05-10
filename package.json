@@ -29,6 +29,7 @@
     "lattice-emulator.js",
     "lattice-runtime.js",
     "lattice.css",
+    "lattice-backgrounds.css",
     "marp.config.js",
     "mermaid-v11.min.js",
     "lib/",

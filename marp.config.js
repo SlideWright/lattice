@@ -419,6 +419,7 @@ const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-fam
 module.exports = {
   themeSet: [
     "lattice.css",
+    "lattice-backgrounds.css",
     "themes/indaco.css",
     "themes/indaco-dark.css",
     "themes/cuoio.css",
