@@ -63,3 +63,8 @@ it is load-bearing.
   ASCII layout preview in `templates.md`, plus the
   [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
   and builder library.
+- [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
+  open exploration workspace for the SlideWright desktop app on
+  Tauri. Frames the integration question (Tauri shell + Node/Puppeteer
+  renderer), lists open questions, hypotheses to probe, and decision
+  criteria. No desktop code yet.
