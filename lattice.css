@@ -2271,6 +2271,95 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
+/* ── SPLIT-BRIEF ── scratch concept ─────────────────────────────────────────
+ * Executive brief. Dark left anchor. Right panel: findings via left-rule only.
+ * Raw HTML structure: .brief-left / .brief-right
+ */
+section.split-brief { padding:0; flex-direction:row; }
+section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-brief .brief-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-brief .brief-left h2 { font-size:var(--fs-3xl); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-brief .brief-left p { font-size:var(--fs-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-brief .findings { display:flex; flex-direction:column; flex:1; justify-content:space-between; }
+section.split-brief .finding { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-brief .finding strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:5px; }
+section.split-brief .finding p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+
+/* ── SPLIT-METRIC ── scratch concept ────────────────────────────────────────
+ * One number owns the room. Light left / dark right — inverted scheme.
+ * Raw HTML structure: .metric-left / .metric-right
+ */
+section.split-metric { padding:0; flex-direction:row; }
+section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
+section.split-metric .unit-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
+section.split-metric .number { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin-bottom:var(--sp-sm); }
+section.split-metric .number em { font-size:var(--fs-3xl); font-weight:700; font-style:normal; color:var(--text-muted); }
+section.split-metric .metric-context { display:block; font-size:var(--fs-sm); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-metric .metric-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
+section.split-metric .implications { display:flex; flex-direction:column; gap:var(--sp-md); flex:1; justify-content:space-evenly; }
+section.split-metric .implication { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
+section.split-metric .implication strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-metric .implication p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+
+/* ── SPLIT-STEPS ── scratch concept ─────────────────────────────────────────
+ * Sequential process. CSS-drawn vertical timeline with connecting line.
+ * Raw HTML structure: .steps-left / .steps-right > .timeline > .step
+ */
+section.split-steps { padding:0; flex-direction:row; }
+section.split-steps .steps-left { width:30%; flex-shrink:0; background:var(--bg-alt); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-steps .phase-num { display:block; font-size:var(--fs-watermark); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; margin-bottom:-24px; position:relative; z-index:0; }
+section.split-steps .steps-left h2 { font-size:var(--fs-2xl); color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; position:relative; z-index:1; }
+section.split-steps .steps-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; position:relative; z-index:1; }
+section.split-steps .steps-right { flex:1; background:var(--bg); padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; justify-content:center; }
+section.split-steps .timeline { display:flex; flex-direction:column; }
+section.split-steps .step { display:grid; grid-template-columns:40px 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
+section.split-steps .step:last-child { padding-bottom:0; }
+section.split-steps .step:not(:last-child)::after { content:''; position:absolute; left:19px; top:40px; bottom:0; width:2px; background:var(--border); }
+section.split-steps .step-num { grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
+section.split-steps .step-title { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:40px; }
+section.split-steps .step-body { grid-column:2; grid-row:2; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:2px 0 0; }
+
+/* ── SPLIT-COMPARE ── scratch concept ───────────────────────────────────────
+ * Two options, one verdict. 2-column grid + spanning accent verdict row.
+ * Raw HTML structure: .compare-left / .compare-right > .options + .verdict
+ */
+section.split-compare { padding:0; flex-direction:row; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.split-compare .compare-left h2 { font-size:var(--fs-xl); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
+section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
+section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
+section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); }
+section.split-compare .option-header { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin-bottom:var(--sp-sm); }
+section.split-compare .option.preferred .option-header { color:var(--accent); border-color:var(--accent); }
+section.split-compare .option ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+section.split-compare .option ul li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); padding-left:var(--sp-sm); position:relative; }
+section.split-compare .option ul li::before { content:'–'; position:absolute; left:0; color:var(--text-muted); }
+section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
+section.split-compare .verdict-label { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
+section.split-compare .verdict p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
+
+/* ── SPLIT-STATEMENT ── scratch concept ─────────────────────────────────────
+ * Pull quote. Half the slide committed to one idea — no apology.
+ * Raw HTML structure: .statement-left (blockquote + cite) / .statement-right
+ */
+section.split-statement { padding:0; flex-direction:row; }
+section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-28px; left:14px; font-size:220px; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
+section.split-statement .statement-left blockquote { font-size:var(--fs-xl); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-md); position:relative; z-index:1; }
+section.split-statement .statement-left cite { font-size:var(--fs-body); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
+section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-statement .statement-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-statement .points { display:flex; flex-direction:column; gap:var(--sp-md); flex:1; justify-content:space-evenly; }
+section.split-statement .point strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-statement .point p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+
 /* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
  * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
  * Optional eyebrow = p>code placed before h2 (identical to other slide types).
