@@ -2112,7 +2112,7 @@ section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-chil
 /* Marp CLI path (plugin ran): strip outer-li styling so .badge span shows through cleanly */
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset all inherited card styles */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
 section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
