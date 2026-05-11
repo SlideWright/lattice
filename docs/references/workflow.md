@@ -11,6 +11,15 @@
 
 Branch names use kebab-case. No ticket numbers, no dates in the name.
 
+### Agent-created branches
+
+Branches created by an agent harness carry a `claude/` namespace prefix.
+The fix/feat/chore/docs token still goes inside it, so the work type is
+visible at a glance: `claude/fix/<slug>`, `claude/feat/<slug>`,
+`claude/docs/<slug>`. A bare `claude/<slug>` is non-conforming — rename
+it before opening a PR, or pick the right token when starting the
+branch.
+
 ## Starting a feature
 
 Always branch from `main`:
@@ -42,9 +51,21 @@ Each worktree is fully independent — you can run `npm test` in both simultaneo
 ## Commit discipline
 
 - Small, focused units. One logical change per commit.
-- Message format: `area(scope): short summary` — follow `git log` for the established pattern.
-- If a fix is non-obvious, add a `docs/references/gotchas.md` entry **before** committing. The commit message then links to it.
-- Gallery edits: rebuild the PDF and include it in the same commit as the Markdown change.
+- Message format: `type(scope): short summary` — follow `git log` for
+  the established pattern.
+- **The `type` tracks the user-visible effect of the change, not the
+  file type.** A doc-only edit that corrects a defective rule is
+  `fix(workflow):`, not `docs(workflow):`. A doc-only edit that adds
+  new authoring guidance is `feat(docs):` or `docs(...)`. If the
+  change fixes a bug — in code or in a rule — use `fix`. If it adds
+  a capability — even a documented one — use `feat`. `docs(...)` is
+  for additions and clarifications, not corrections.
+- The `type` on the commit should match the branch's `type` token
+  (see Branch naming). A `fix/...` branch produces `fix(...)` commits.
+- If a fix is non-obvious, add a `docs/references/gotchas.md` entry
+  **before** committing. The commit message then links to it.
+- Gallery edits: rebuild the PDF and include it in the same commit as
+  the Markdown change.
 
 ## Before opening a PR
 
