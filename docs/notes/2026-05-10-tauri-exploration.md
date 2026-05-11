@@ -1898,6 +1898,220 @@ cheaper and can run in parallel with everything above.
 Everything else — editor work, ThemeStudio, AI hook, export adapters
 beyond PDF/PNG/HTML — waits on H3, H5, H6.
 
+## Gaps to close before v1
+
+The architecture above is coherent; the items below are genuine
+design decisions or operational realities still to address before
+v1 ships. Most are small individually; together they're the
+difference between "complete spec" and "shippable product."
+
+### Critical — design or decide now
+
+#### Speaker notes + presentation mode
+
+Two features most slide apps have; neither named in the note yet.
+
+- **Speaker notes.** Markdown convention worth deciding now —
+  HTML comments are already used for directives, so notes need
+  their own syntax. Proposal: fenced block with a custom
+  infostring (` ```notes `) — reuses existing parser, lives in
+  the slide's source, carried as metadata in `Y.Doc`, exported
+  as PDF notes pages, PPTX speaker view, HTML reveal-style.
+- **Presentation mode.** Full-screen runtime: current slide,
+  upcoming slide, timer, speaker notes, remote-friendly keyboard
+  shortcuts. Reuses the WebView render — it's a different window
+  mode. v1 minimum: forward / back / go-to-slide / fullscreen /
+  exit.
+
+**Decide both now even if presentation mode lands in v1.x.** The
+speaker-notes syntax affects the document format; backfilling
+later is awkward.
+
+#### Save semantics + conflict resolution + crash recovery
+
+The Storage adapter is designed but the *when* and *how* of
+persistence isn't:
+
+- **Auto-save** on idle (debounced ~1 s after last edit), with
+  explicit "Save" still available. Status bar shows "Saving…" /
+  "Saved" / "Modified externally."
+- **External file changes during a session.** File watcher
+  detects; if Yjs has unsaved ops, surface a modal — merge / keep
+  yours / reload.
+- **Crash recovery.** `y-indexeddb` persistence in the WebView
+  captures every op locally. Relaunch finds the persisted CRDT
+  and offers to recover unsaved state.
+- **Backup retention.** Last N saved snapshots in
+  `.slidewright/.backups/<slug>/`. N = 10 default; workspace
+  setting.
+
+#### Operational infrastructure
+
+Desktop-app realities not yet planned:
+
+- **Auto-update.** Tauri's updater. Signed manifests on a release
+  CDN. Two channels — stable + beta. Default opt-in; manual check
+  available. Rollback by shipping a reverting release.
+- **Crash reporting.** Sentry or self-hosted compatible service.
+  Opt-in by default on stable, opt-out on beta. Anonymized stack
+  traces only — **no document content ever**.
+- **Telemetry.** Anonymous, aggregate, opt-out. Helpful: feature
+  usage frequency, version/OS distribution, crash correlation.
+  **Never collected:** deck contents, file paths, AI prompts,
+  user IDs.
+
+#### Code signing / notarization — lead time matters
+
+- **Apple Developer ID** ($99/yr) + notarization. Sign + notarize
+  every release. 1–2 weeks for first-time enrollment.
+- **Microsoft code signing** — EV cert recommended for instant
+  SmartScreen reputation. $300–700/yr; 1–3 weeks vetting.
+- **Linux** — Snap/Flatpak/AppImage each have signing conventions.
+  AppImage + GPG sig + Snap via snapcraft are the common paths.
+
+**Enroll in Apple's program now**; the cert paperwork shouldn't
+gate a launch later.
+
+#### Import strategy — adoption blocker
+
+Maya has 50+ decks in Google Slides today. Without migration she
+chooses between her history and our tool. Priority:
+
+| Source | Difficulty | Priority |
+|---|---|---|
+| Marp / Slidev (markdown) | Trivial — same dialect family | v1.x |
+| Reveal.js / RemarkJS | Easy — similar markdown structure | v1.x |
+| PowerPoint (`.pptx`) | Hard but high-value (Naveen + Maya) | v1.x — best-effort with cleanup |
+| Google Slides | Easy via Drive API → PPTX → our PPTX importer | v1.x (after PPTX) |
+| Keynote | Hard, smaller audience | v2 |
+
+**PPTX import is the big lever.** Even ugly best-effort ("we got
+most of it; clean up the rest") is the difference between viral
+adoption and inert tool.
+
+#### Math rendering — decide now
+
+- KaTeX (preferred — faster, smaller than MathJax, MIT) renders
+  inline + block math in markdown
+- ~70 KB additional bundle
+- Real audiences: academic / research, technical engineering,
+  finance / quant, data science
+
+**Lean: yes, in v1.x.** Never adding excludes a serious chunk of
+the technical audience.
+
+#### App accessibility — load-bearing, not optional
+
+WCAG AA in palettes is for *output*. The app itself needs:
+
+- **Screen reader support** — ARIA labels, proper roles on every
+  interactive element, sensible focus order, live regions for
+  status changes
+- **Keyboard navigation end-to-end** — every action reachable
+  without a mouse; focus management in modals; visible focus
+  indicators
+- **Reduced motion** preference respected (PiP, transitions,
+  spotlight overlays must respect it)
+- **Font scaling** that doesn't break layouts
+- **High-contrast mode** for app chrome
+
+Government / enterprise procurement often **requires** this.
+Built in from day one, or retrofit forever.
+
+#### Basic editor features — table stakes
+
+Easy to forget because they're expected:
+
+- **Find / Replace** in the open deck
+- **Find in Files** across the workspace
+- **Outline view** — collapsible deck structure; click-to-jump
+- **Slide list panel** — drag to reorder
+- **Go to slide N** (`:42` in palette already; navigator panel
+  also)
+- **Multi-cursor** — CodeMirror supports it; confirm enabled
+
+Maya will silently check whether these exist before adopting.
+
+#### Performance budgets — name the numbers
+
+Without targets, "fast" is unmeasurable:
+
+| Metric | v1 target |
+|---|---|
+| Cold startup → editable | < 2 s |
+| Warm startup → editable | < 800 ms |
+| Edit → preview update | < 100 ms (incremental); < 500 ms (cold) |
+| 100-slide deck stays interactive | yes (degraded preview OK) |
+| Memory ceiling for 100-slide deck | < 500 MB |
+| PDF export of 50-slide deck | < 5 s |
+
+These become gates in CI. Regression past them blocks the merge.
+
+#### Document format versioning
+
+What format do decks save in:
+
+- **The `.md` file is the source.** Version via front matter:
+  ```yaml
+  schema: lattice/1
+  ```
+- **Companion `.slidewright/decks/<slug>.json`** for things that
+  don't fit in markdown — chat history, AI tool-call history,
+  comments, ambient state. Also versioned.
+
+When the format evolves, `lattice-engine` runs migration functions
+keyed on `schema:`. Old decks open cleanly in new versions;
+new-version decks may open with warnings in older versions.
+
+### Worth naming — decide direction, defer implementation
+
+- **Slide transitions / animations.** Lattice's ink-on-paper
+  positioning argues *no transitions*, but bullet-by-bullet reveal
+  is *common* and orthogonal to print quality. **Lean: yes for
+  reveal, no for fade / zoom / spin transitions.**
+- **Audio / video embedding.** Pulls toward presentation-runner
+  territory; conflicts with print quality. **Lean: no in v1.**
+  Re-evaluate if presentation mode demands it.
+- **Diff view + git integration.** Workspace under git could
+  surface slide-level diffs. Power-user feature. **v1.x or v2.**
+  Architecturally trivial (Yjs + markdown = easy to diff).
+- **Multi-window.** Already an open question. **Lean: yes in v1**,
+  one `Y.Doc` per window. Tauri supports it cleanly.
+- **Internationalization architecture.** v1 ships English only,
+  but **externalize strings from day one** — retrofitting is
+  painful. Welcome deck + tour content are already data; i18n is
+  mostly mechanical when we want it.
+- **CLI integration.** A script invokes the desktop app to render
+  a deck headlessly. `lattice-emulator.js` already does this; the
+  desktop CLI surface stays minimal — open file, render, version.
+  **v1 minimum.**
+- **Snippets format + trigger UX.** The `.slidewright/snippets/`
+  layout is named; format and trigger aren't. Lean: VS Code-style
+  JSON with prefix triggers. **v1.x.**
+- **RTL languages.** Arabic / Hebrew need RTL CSS — significant
+  but mechanical. **v2** unless a strategic customer demands it.
+- **Distribution channels.** Direct download is the v1 path
+  (control over signing + update channel). App Store / MS Store /
+  Snap / Flatpak come later — each has policies that constrain
+  features (e.g., MAS forbids self-update).
+
+### Architectural impact
+
+Most of these are decisions, not subsystems. The ones that *do*
+add to the architecture:
+
+| Addition | Where it lands |
+|---|---|
+| Speaker-notes syntax | Document model + export adapters |
+| Auto-save policy + crash recovery | Storage adapter (extends `Y.Doc` persistence) |
+| Math rendering | New module (`MathRenderer`) — small; KaTeX wrapper |
+| Telemetry + crash reporting | Cross-cutting; opt-out toggle in Settings |
+| Auto-update channel | Tauri updater config + release CDN endpoint |
+| Import adapters | Reverse of export adapters; same interface, opposite direction |
+| Format version field | `lattice-engine` migration table |
+
+Nothing forces a redesign. They're additions to known seams.
+
 ## Development leverage with Claude
 
 The architecture above implies ~18–24 person-months of v1 work for
