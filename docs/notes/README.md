@@ -66,13 +66,15 @@ it is load-bearing.
 - [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
   v1 architectural shape for the SlideWright desktop app on Tauri.
   Captures the product vision (markdown authoring, focused/split/PiP
-  editor layouts, multi-format export, cloud storage, collaboration,
-  AI, brand theming, extensions & connectors) and the load-bearing
-  decisions: no Node in v1, Yjs document model, `EditorHost` facade
-  over CodeMirror 6, `DiagramService` for Mermaid (with render
-  cache), `SlideSegmenter` + `RenderCache` + `PreviewPane` for
-  incremental rendering keyed by slide content hash, `LayoutShell`
-  for focused/split/PiP modes, `ThemeStudio` for brand palettes,
+  editor layouts, collapsible workspace sidebar, multi-format export,
+  cloud storage, collaboration, AI, brand theming, extensions &
+  connectors) and the load-bearing decisions: no Node in v1, Yjs
+  document model, `EditorHost` facade over CodeMirror 6,
+  `DiagramService` for Mermaid (with render cache), `SlideSegmenter`
+  + `RenderCache` + `PreviewPane` for incremental rendering keyed by
+  slide content hash, `LayoutShell` for focused/split/PiP modes,
+  `WorkspaceView` for the file tree (storage-adapter-blind, opens
+  with a file/folder/last-session), `ThemeStudio` for brand palettes,
   worker-sandboxed extension runtime with capability hubs (the
   export/storage/AI/diagram/layout adapter interfaces become the
   public plugin API; first-party features dogfood the same API).

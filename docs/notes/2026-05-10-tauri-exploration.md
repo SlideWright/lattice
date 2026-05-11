@@ -23,6 +23,14 @@ Direct from authoring intent (May 2026):
   the current slide always stays in view. Edits reflect immediately,
   with **incremental rendering**: only the actually-changed slide
   re-renders.
+- **Workspace.** Collapsible file/folder sidebar (`WorkspaceView`).
+  App launches with a file, a folder, or last session: opening a
+  file sets the parent folder as workspace root; opening a folder
+  sets it as root with no file open. Click `.md` to edit, image to
+  preview, theme `.css` to open in ThemeStudio. Drag an image into
+  the editor inserts a markdown reference. Right-click for
+  new/rename/delete. External changes watched. The sidebar is
+  **orthogonal** to focused/split/PiP modes.
 - **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
   Marp's experimental *native PPTX* path), Confluence, slides.com,
   Google Slides (scope TBD).
@@ -91,6 +99,7 @@ Constraints the desktop shell must absorb:
 | Diagrams | **`DiagramService`** (named subsystem) | One owner for Mermaid lifecycle across editor, preview, exports |
 | Preview pipeline | **`SlideSegmenter` + `RenderCache` + `PreviewPane`** | Incremental rendering (only changed slides re-render) keyed by slide content hash |
 | Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
+| Workspace view | **`WorkspaceView`** (sidebar) | File tree consumed from storage adapter; orthogonal to editor/preview modes |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
@@ -280,8 +289,17 @@ changes.
 
 ### Workspace layout — `LayoutShell`
 
-Three editor/preview layouts, expressed as the same two children
-(editor + preview) under a different container.
+Three editor/preview layouts plus an **orthogonal sidebar** for the
+`WorkspaceView` file tree.
+
+```
+LayoutShell
+  ├─ WorkspaceView (sidebar — collapsible, resizable, left or right)
+  └─ EditorPreviewArea
+       ├─ Focused        (editor only, tap-to-peek preview)
+       ├─ Split          (editor + preview, horizontal/vertical, user-arranged)
+       └─ Picture-in-pic (editor + floating preview)
+```
 
 | Mode | Layout |
 |---|---|
@@ -289,8 +307,60 @@ Three editor/preview layouts, expressed as the same two children
 | **Split** | Editor + preview as flex children. Direction (`row` / `column`) and order (which side each pane appears) user-controlled. Resizable divider. |
 | **Picture-in-picture** | Editor full-pane; preview as absolute-positioned overlay; resizable + draggable. **Freeform position in v1; corner-snap in v1.x.** |
 
+The sidebar is orthogonal — open it in any mode, or collapse it.
 User preferences (mode, split ratio, orientation, side assignment,
-PiP position + size) persist via Tauri session state, per-window.
+PiP position + size, sidebar visible + width + side) persist via
+Tauri session state, per window.
+
+### Workspace view — `WorkspaceView`
+
+Collapsible sidebar pane showing a tree of files and folders rooted
+at the current workspace. Storage-adapter-blind: consumes the
+adapter's `list` + `watch` + `capabilities`, so the same component
+renders local FS today and Drive / OneDrive later.
+
+#### Launch modes
+
+| Invocation | Behavior |
+|---|---|
+| `slidewright` | Last workspace + last open file from session state; welcome screen on first run |
+| `slidewright deck.md` | Opens file in editor; workspace root = **parent folder**; tree expanded to reveal the file |
+| `slidewright myfolder/` | Opens folder as workspace root; no file open |
+
+Handled by Tauri's CLI plugin on startup. Same path also covers OS
+"Open With" (file association on `.md`) and drag-drop a file or
+folder onto the app icon.
+
+#### v1 capabilities
+
+- Tree render, expand/collapse, file-type icons (deck / theme /
+  image / mermaid)
+- Click `.md` → editor; click `.css` in `themes/` → ThemeStudio if
+  it passes the palette-contract check, else plain text (v1 can
+  simplify to plain text only — ThemeStudio integration is v1.x
+  polish)
+- Click image → small in-app preview overlay
+- Right-click menu: new file / folder / rename / delete / reveal in
+  OS — degrades per the adapter's `capabilities`
+- Drag an image into the editor → inserts `![](path)`
+- File watcher refreshes the tree on external changes
+- Hidden files toggled off by default; "Show hidden" available
+
+#### Small UX decisions
+
+- **Out-of-workspace file open.** If the user opens a file via "Open
+  File…" outside the current workspace, **reset workspace** to its
+  parent. Simpler and less surprising. Loose-file model deferred.
+- **Workspace persistence.** Both the workspace *and* the last open
+  file are remembered separately — workspace is the working
+  context; the file is the most recent edit.
+
+#### Deferred to v1.x
+
+- Multi-root workspaces
+- Open multiple decks in tabs
+- Loose-file model (file opened outside workspace without resetting
+  the workspace)
 
 ### Export — adapter interface
 
@@ -311,7 +381,20 @@ independently.
 
 ### Storage — adapter interface
 
-Signature: `(docId) ↔ Doc`. Implementations:
+Tree-shaped namespace, not just doc-by-id:
+
+```
+StorageAdapter
+  ├─ list(path)              → [{ name, kind, path, modified, size }]
+  ├─ read(path)              → Doc | bytes
+  ├─ write(path, doc|bytes)
+  ├─ delete(path)
+  ├─ rename(from, to)
+  ├─ watch(path, callback)   // optional; broker polls if missing
+  └─ capabilities            // { canWatch, canRename, canCreateFolder, … }
+```
+
+Implementations:
 
 - **Local FS** — Tauri FS API (v1)
 - **Google Drive / Workspace** — OAuth via Tauri deep-link plugin +
@@ -321,8 +404,13 @@ Signature: `(docId) ↔ Doc`. Implementations:
 OAuth flows and secure token storage are where Tauri's Rust core
 pays off (system keychain integration).
 
-Themes ride the same adapter — a user-authored theme is just another
-`Doc`.
+`capabilities` lets UIs (especially `WorkspaceView`) degrade
+gracefully — if an adapter can't `rename`, the right-click menu
+hides Rename. Cloud adapters expose tree-shaped namespaces too, so
+the same file view renders local and cloud transparently.
+
+Themes ride the same adapter — a user-authored theme is just
+another `Doc`.
 
 ### Theme system
 
