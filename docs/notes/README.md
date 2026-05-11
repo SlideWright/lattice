@@ -65,7 +65,7 @@ it is load-bearing.
   and builder library.
 - [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) —
   decision note for multi-resolution support (HD + 4K, candidate 4:3):
-  native Marp `@size` + px→rem refactor + CSS container query on section.
+  native Marp `@size` + px→cqi refactor + `container-type:size` on section.
   No theme changes; authors opt in via front-matter `size:` key.
 - [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
   v1 architectural shape for the SlideWright desktop app on Tauri.
@@ -132,3 +132,8 @@ it is load-bearing.
   analysis: disciplined use of Claude Code realistically
   compresses v1 from ~18 months to ~10, with the architecture
   doc itself as the high-fidelity prompt. No desktop code yet.
+- [2026-05-11-4k-rendering-audit.md](2026-05-11-4k-rendering-audit.md) —
+  continuation guide: 65 remaining component-level px values to convert,
+  root cause analysis for every reported 4K visual defect, section-level cqi
+  ambiguity (padding bleed into header/footer), Mermaid sizing investigation,
+  and step-by-step implementation order for the next session.
