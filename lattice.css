@@ -2269,8 +2269,7 @@ section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var
 section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
 section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:5px; }
-section.split-brief .brief-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
-section.split-brief .brief-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── SPLIT-METRIC ─────────────────────────────────────────────────────────────
@@ -2288,8 +2287,7 @@ section.split-metric .metric-right h3 { font-size:var(--fs-label); font-family:v
 section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
 section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
-section.split-metric .metric-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
-section.split-metric .metric-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
 
 /* ── SPLIT-STEPS ──────────────────────────────────────────────────────────────
@@ -2311,8 +2309,7 @@ section.split-steps .steps-right > :is(ul,ol) > li:not(:last-child)::after { con
 section.split-steps .steps-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
 section.split-steps .steps-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
 section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:40px; }
-section.split-steps .steps-right > :is(ul,ol) > li > ul { grid-column:2; grid-row:2; list-style:disc; padding:2px 0 0 var(--sp-md); margin:0; }
-section.split-steps .steps-right > :is(ul,ol) > li > ol { grid-column:2; grid-row:2; list-style:decimal; padding:2px 0 0 var(--sp-md); margin:0; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
 section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── SPLIT-COMPARE ────────────────────────────────────────────────────────────
@@ -2359,8 +2356,7 @@ section.split-statement .statement-right { flex:1; background:var(--bg); display
 section.split-statement .statement-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
-section.split-statement .statement-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
-section.split-statement .statement-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
