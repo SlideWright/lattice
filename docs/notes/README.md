@@ -81,6 +81,8 @@ it is load-bearing.
   tier in the OS app-config dir, workspace tier in
   `.slidewright/settings.json` parallel to `.vscode/`; extensions
   install at user scope only; secrets stay in keychain),
+  `Onboarding` (welcome screen + welcome deck authored as a real
+  Lattice deck + spotlight tour engine; extension-contributable),
   `ThemeStudio` for brand palettes, worker-sandboxed
   extension runtime with capability hubs (the
   export/storage/AI/diagram/layout adapter interfaces become the

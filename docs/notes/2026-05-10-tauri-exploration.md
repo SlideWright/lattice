@@ -39,6 +39,13 @@ Direct from authoring intent (May 2026):
   never live in settings — credentials are referenced by ID and
   resolved from the system keychain, so workspace settings can be
   safely committed to git.
+- **Onboarding.** First-run welcome screen, a **welcome deck**
+  authored as a real Lattice deck (every important layout, palette,
+  Mermaid diagram, code highlight — dogfooded), and a small
+  spotlight tour for things only the live UI can show (drag
+  dividers, command palette, mode shortcuts). Re-entrant from Help
+  menu; skippable from anywhere; never modal-blocking. Extensions
+  can contribute their own tours.
 - **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
   Marp's experimental *native PPTX* path), Confluence, slides.com,
   Google Slides (scope TBD).
@@ -111,6 +118,7 @@ Constraints the desktop shell must absorb:
 | Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
 | Workspace view | **`WorkspaceView`** (sidebar) | File tree consumed from storage adapter; orthogonal to editor/preview modes |
 | Settings | **`Settings`** subsystem (defaults → user → workspace) | Layered config; workspace tier travels with the project; extensions extend the schema |
+| Onboarding | **`Onboarding`** subsystem | Welcome screen + welcome deck (Lattice deck) + spotlight tour engine; extensions can contribute tours |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
@@ -643,6 +651,162 @@ Sibling `.slidewright/extensions.json`:
 When a workspace opens, the Extensions panel surfaces
 recommended-but-missing extensions with one-click install (gated
 on user action — see trust caveat above).
+
+### Onboarding — `Onboarding`
+
+Lattice is what we make. The most credible introduction is **a deck
+that uses every important layout, palette, diagram, and code
+highlight**. So the centerpiece of onboarding is a real Lattice
+deck, opened on first launch, that dogfoods the product.
+
+Four pieces, in order of value.
+
+#### 1. Welcome screen — first-run landing
+
+Shows on first launch (and on demand from `Help → Welcome`):
+
+- Hero (project name + tagline)
+- Three primary actions: **Open the welcome deck**, **New deck**,
+  **Open folder…**
+- Recent workspaces (empty on first run)
+- Help links: Take the tour, View shortcuts, Open docs
+- "Don't show on startup" checkbox (persists to user state)
+
+After dismissal, never re-shows unless the user opts back in.
+
+#### 2. The welcome deck — onboarding *as a deck*
+
+A focused ~12-slide deck shipped with the app, authored as Lattice
+markdown. Opened on first launch (and from the welcome screen).
+
+The user reads beautifully-rendered slides while the same source
+sits in their editor. They learn by example — far stickier than
+tooltips.
+
+| Slide | Demonstrates |
+|---|---|
+| 1 | Title slide; "Welcome to SlideWright" |
+| 2 | Editor / preview side-by-side (app screenshot) |
+| 3 | Layout vocabulary (highlight reel from `examples/gallery.md`) |
+| 4 | Mermaid integration — a flowchart inline |
+| 5 | Code block with syntax highlighting |
+| 6 | Palette switching — same slide in `indaco` vs `cuoio` |
+| 7 | The `<!-- _class: -->` directive — source + result |
+| 8 | Editor modes — focused / split / PiP (screenshots) |
+| 9 | Workspace sidebar — drag image to insert, right-click for ops |
+| 10 | ThemeStudio — author your brand |
+| 11 | Export — PDF / HTML / PNG (PPTX coming) |
+| 12 | "Where to next" — links to docs, sample deck, settings |
+
+Existing assets (`examples/gallery.md`, `examples/mermaid-gallery.md`)
+are the *ingredients*; the welcome deck is the curated highlight
+reel.
+
+#### 3. Spotlight tours — for what a deck can't show
+
+Some things only make sense in the live UI: dragging a divider,
+invoking the command palette, switching themes. Coachmark overlays
+for these.
+
+Declarative format (so tours are *content*, not code):
+
+```jsonc
+{
+  "id": "first-run-tour",
+  "title": "Quick tour",
+  "trigger": "first-run",
+  "steps": [
+    {
+      "target": "data-tour-id=workspace-sidebar",
+      "title": "Files live here",
+      "body": "Click .md to edit. Drag images into the editor.",
+      "placement": "right"
+    },
+    {
+      "target": "data-tour-id=editor-mode-toggle",
+      "title": "Three layout modes",
+      "body": "Focused, split, picture-in-picture. ⌘1 / ⌘2 / ⌘3.",
+      "placement": "bottom"
+    }
+  ]
+}
+```
+
+UI components target via `data-tour-id` attributes — decoupled from
+CSS class names so refactors don't silently break tours.
+
+#### 4. "What's New" on version update
+
+After an upgrade, if `state/onboarding.json` records a previous
+version, show a non-modal "What's new" notice with optional
+spotlight tour for new features. Dismissable; never blocking.
+
+#### Design principles — load-bearing, not nice-to-have
+
+- **Skippable from anywhere** — every step has Skip
+- **One-time by default** — tours don't re-show unless the user
+  asks (Help menu) or a new version arrives
+- **No modal interruption** — no dialogs that block the editor;
+  spotlights overlay and dismiss
+- **No video links, no out-of-app docs trips** — if it needs >2
+  sentences, it doesn't belong in a spotlight
+- **Keyboard-first** — show the shortcut next to the action;
+  dismissal and advance both keyboard-reachable
+- **Opt-outable** — `onboarding.enabled: false` kills it entirely
+
+#### Extension-contributed tours
+
+Extensions register tours via the manifest:
+
+```jsonc
+"contributes": {
+  "tours": [
+    {
+      "id": "d2-diagrams-intro",
+      "title": "Authoring D2 diagrams",
+      "trigger": "first-d2-block-created",
+      "steps": [...]
+    }
+  ]
+}
+```
+
+Triggers:
+
+- `first-run` — only the built-in welcome tour uses this
+- `first-X-action` — contextual (first time the user creates a
+  mermaid block, opens a theme file, etc.)
+- `manual` — Help menu only
+- `version-update` — after install or upgrade
+
+#### State
+
+User-scope (`<app-config>/SlideWright/state/onboarding.json`) —
+onboarding is per-person, not per-project:
+
+```jsonc
+{
+  "welcomeShownAt": "2026-05-11T…",
+  "toursCompleted": ["first-run-tour"],
+  "toursDismissed": ["pptx-export-walkthrough"],
+  "lastSeenVersion": "1.0.0",
+  "showWelcomeOnStartup": true
+}
+```
+
+#### v1 / v1.x / v2
+
+- **v1** — welcome screen, welcome deck (real Lattice deck in the
+  app bundle), one built-in first-run tour, Help-menu re-entry,
+  user-state persistence.
+- **v1.x** — extension-contributed tours; "What's New" on version
+  update.
+- **v2** — full localization (tour content + welcome deck source
+  are already data, so this is straightforward).
+
+The v1 commitment worth nailing: **the welcome deck as a deck**,
+authored with the same care as the gallery fixtures and themed in
+`indaco` so the default palette shows at its best.
 
 ### Export — adapter interface
 
