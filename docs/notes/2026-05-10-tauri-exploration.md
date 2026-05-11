@@ -1903,13 +1903,35 @@ New v1-load-bearing hypotheses:
 - **H5.** WebView `print_to_pdf` produces output visually
   indistinguishable from `marp-cli --pdf` for `examples/gallery.md`
   (vector text, embedded Mermaid SVG, syntax-highlighted code).
+- **H5b.** *(v1.0 — load-bearing for shipping)* H5 holds **across
+  all three WebView platforms** — macOS WebKit, Windows WebView2,
+  Linux WebKitGTK. Same render quality, no platform-specific
+  divergence in Mermaid SVG, fonts, code highlighting, or page
+  layout. Probed in CI from day one of v1.0 work.
 - **H6.** WebView screenshot-per-slide produces a PNG set matching
   `marp-cli --images png --image-scale 3` (3840×2160) within a
   diff tolerance.
+- **H6b.** *(v1.0 — load-bearing for shipping)* H6 holds across
+  all three WebView platforms. PNGs from macOS, Windows, and Linux
+  builds are mutually within diff tolerance.
 - **H7.** Yjs + `y-codemirror.next` adds < 100 KB minified+gz to the
   bundle.
 - **H8.** Per-palette app-chrome tokens pass WCAG AA on `indaco` and
   `cuoio` without manual tuning beyond the brand-scaffold recipe.
+- **H9 — local AI quality.** *(v1.2 — load-bearing for the AI
+  launch)* A small instruction-tuned local model (Phi-3-mini /
+  Llama 3.2 3B / Qwen 2.5 3B) + `DocsIndex` RAG produces useful
+  Lattice-aware suggestions when graded against 10 canonical
+  authoring tasks (slide-ify prose → layout selection, mermaid
+  type pick, palette query, layout-class lookup, voice rewrite,
+  etc.). Human grader rubric. Probe this **during v1.0 work** so
+  the v1.2 plan is grounded in measurement, not hope.
+- **H10 — doc-drift.** *(continuous)* CI check that
+  `lattice.css` layout classes are referenced in
+  `docs/references/templates.md` and vice versa, and that
+  `DocsIndex` corpus parses without errors. Doc rot is treated as
+  a build failure — `DocsIndex` quality directly depends on docs
+  staying accurate.
 
 ## Decision criteria
 
@@ -2423,6 +2445,131 @@ explicitly removed:
 - **Native PPTX (Marp's experimental text-to-XML path).** Standard
   PPTX via raster + `pptxgenjs` in v1.5 is sufficient. Native PPTX
   is a reimplementation cost with no proportionate user benefit.
+
+## Plan evaluation
+
+Honest health check on the plan as it stands. Aggregate score:
+**73 / 100**, up from 60 when v1 was a single 18-24 month release.
+
+### Score by dimension
+
+| Dimension | Score | Why |
+|---|---:|---|
+| Persona clarity | 8/10 | Strong; Maya primary, Naveen secondary, Diana excluded. OSS positioning reinforces fit. |
+| Technical feasibility | 7.5/10 | Marp bootstrap reduces engine risk; cross-platform WebView still unverified (H5b, H6b) |
+| Architectural soundness | 9/10 | Capability hubs throughout; Yjs from day one; three enterprise seams in v1.0 |
+| Differentiation | 7/10 | Combination is sharper: OSS + private local AI grounded in our docs + brand theming |
+| Scope risk | 7/10 | Up from 4: phased v1.0-v1.5; v1.0 ships in 4-5 months; spotlight tours + native PPTX dropped |
+| Maintenance burden | 6.5/10 | OSS opens external contribution; extension API doesn't open until v1.5 |
+| Adoption potential | 7/10 | Channels named (GitHub, conferences, Lattice ecosystem, viral PDF badge, GitHub Sponsors) |
+| Monetization | 7.5/10 | Open-core plan explicit; three v1.0 seams preserve enterprise optionality |
+| Competitive position | 7/10 | Sharper niche; combination is unique even without a single 10× moat |
+| Team-effort honesty | 6/10 | Phased ship + Claude leverage analyzed; solo-dev fragility still real |
+| **Aggregate** | **73/100** | up from 60 (+13) |
+
+### What materially improved
+
+- **Scope (4 → 7).** Biggest gain. 18-24 month single v1 became
+  4-5 month v1.0 + 2-4 month follow-ups. Cost-minimum architecture
+  removed Anthropic dependency from launch. Spotlight tours and
+  native PPTX explicitly cut.
+- **Monetization (5 → 7.5).** Open-source-first + MIT + potential
+  enterprise tier later. Three v1.0 seams (policy tier,
+  audit-event emission, identity hub) cost almost nothing now and
+  preserve enterprise optionality.
+- **Adoption (5 → 7).** Channels named explicitly: GitHub
+  presence as marketing surface, conference talks, Lattice
+  ecosystem effect, viral "made with SlideWright" PDF badge,
+  GitHub Sponsors.
+- **Differentiation (6 → 7).** Combination is unique: OSS +
+  private local AI grounded in our own docs + brand theming + viral
+  PDF surface. No single competitor has all of these.
+
+### Remaining real risks
+
+The honest list of what's still unverified or fragile, with
+mitigations:
+
+#### 1. Maya pain depth is unverified
+OSS removes price friction, but Maya's *core* pain (Slides is slow
+but tolerable) hasn't deepened. Real test happens at v1.0 in her
+hands. **Mitigation:** ship v1.0 to ~20 Mayas as early access;
+measure switch rate before investing v1.1+.
+
+#### 2. Local AI quality is hypothesized, not measured
+3B model + RAG → capable Lattice assistant assumed but unproven.
+**Mitigation:** **H9** added — measure during v1.0 work so the v1.2
+plan is grounded.
+
+#### 3. Cross-platform WebView risk unverified
+PDF + PNG parity across macOS WebKit, Windows WebView2, Linux
+WebKitGTK is the load-bearing assumption for "one engine, three
+platforms." **Mitigation:** **H5b + H6b** added — probed in CI
+from day one.
+
+#### 4. Solo-developer fragility
+15-18 months solo is a long time without burnout or life events.
+**Mitigation:** v1.0 framed as **abandonment-tolerant** — complete
+and usable on its own. If v1.1+ never lands, v1.0 is still a
+finished product.
+
+#### 5. AI-less v1.0 is contrarian in 2026
+Risk: users who bounce at v1.0 don't return for v1.2. **Mitigation:**
+public `ROADMAP.md` showing v1.0 → v1.5 commitments so adopters
+know AI is coming and AI-curious users know to come back.
+
+#### 6. GitHub Sponsors is symbolic, not funding
+Most OSS projects get $0-$200/mo at v1.0. **Mitigation:** plan
+v1.0-v1.5 as self-funded (your time + ~$500-1,200/yr fixed ops).
+Sponsors become meaningful only around enterprise revenue.
+
+#### 7. No fallback if Tauri WebView can't deliver
+If H3/H5/H5b/H6/H6b fail, the whole architecture needs revisiting.
+**Mitigation:** Plan B is **Electron + Puppeteer** as the shell
+fallback if WebView can't host the renderer faithfully. Same
+JavaScript code; different shell. Documented decision tree:
+WebView first → if H5b/H6b fail on Windows or Linux specifically,
+swap shell to Electron for that platform → if all three fail,
+swap globally.
+
+#### 8. Extension API as long-term liability
+Once v1.5 opens the API, every breaking change is a community tax.
+**Mitigation:** declare semver policy now — **v1.5 API marked
+experimental**; major-version bumps required for breaking changes
+with migration guides. Document policy in `EXTENSIONS.md` before
+v1.5.
+
+#### 9. Doc rot directly degrades AI quality
+`DocsIndex` grounds AI in our own docs. **Mitigation:** **H10**
+added — CI check that docs are parseable into `DocsIndex` chunks
+and that `lattice.css` layouts and `templates.md` stay in sync.
+Doc drift is a build failure.
+
+### Operational adds beyond hypotheses
+
+Four non-hypothesis commitments derived from this evaluation:
+
+1. **`ROADMAP.md`** in the repo before v1.0 ships — public v1.0
+   → v1.5 commitments
+2. **`EXTENSIONS.md`** before v1.5 — extension-API semver policy
+3. **Plan B for shell** documented (Electron + Puppeteer fallback)
+4. **v1.0 framed as abandonment-tolerant** — must be complete on
+   its own
+
+### The honest take
+
+The plan moved from "beautiful design doc that's hard to act on"
+to **"actionable phased shipping plan with named risks and named
+mitigations."** That's the work that mattered.
+
+What remains is **verification probes (H5b, H6b, H9, H10), not
+redesigns.** The architecture is sound. The release plan is
+shippable. The business model is consistent with the technical
+decisions. The remaining risks are knowable, measurable, and
+mostly mitigable.
+
+**73/100 means: this is a plan you can build against — and a plan
+that still has honest gaps.** Both are true. Neither is invented.
 
 ## Development leverage with Claude
 

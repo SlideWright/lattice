@@ -118,7 +118,13 @@ it is load-bearing.
   with three impactful capabilities per release and a cost
   constraint — no dependency on runtime costs we can't control,
   so cloud AI arrives at v1.5 as user-supplied keys only; local
-  AI lands at v1.2 instead. Closes with a development-leverage
+  AI lands at v1.2 instead. Honest plan evaluation: 73/100
+  (up from 60 when v1 was monolithic), with named remaining risks
+  and probe-style mitigations (H5b / H6b for cross-platform
+  WebView parity, H9 for local-AI quality, H10 for doc-drift CI;
+  plus operational adds: public ROADMAP.md, Plan B shell of
+  Electron + Puppeteer, extension-API semver policy, v1.0 framed
+  as abandonment-tolerant). Closes with a development-leverage
   analysis: disciplined use of Claude Code realistically
   compresses v1 from ~18 months to ~10, with the architecture
   doc itself as the high-fidelity prompt. No desktop code yet.
