@@ -1260,6 +1260,110 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 ---
 
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Split Layouts · split-brief + split-metric + split-steps + split-compare + split-statement" -->
+
+`Split Layouts · five variants`
+
+## A structured left panel drives five two-column layouts
+
+---
+
+<!-- _class: split-brief -->
+<!-- _footer: "Split — brief · split-brief" -->
+
+`Q2 Performance Review`
+
+## Enterprise revenue stalled in Q2
+
+Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+
+- Renewal pricing complexity is driving churn at the segment ceiling
+  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
+- Competitive displacement accelerated in the $80–200K ACV tier
+  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+
+---
+
+<!-- _class: split-metric -->
+<!-- _footer: "Split — metric · split-metric" -->
+
+`Net Revenue Retention`
+
+## 114*%*
+
+Measured across all customers active for 12+ months, March 31 cohort.
+
+- Existing customers are growing faster than we lose them
+  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
+- Expansion is concentrated — three segments drive 80% of the gain
+  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
+- Sustained above 110%, this unlocks a capital-efficient growth path
+  - NRR above 110% meets the investor threshold for venture-category efficiency.
+
+---
+
+<!-- _class: split-steps -->
+<!-- _footer: "Split — steps · split-steps" -->
+
+`02`
+
+## Discovery & Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data quality review.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, what requires a separate decision.
+
+---
+
+<!-- _class: split-compare -->
+<!-- _footer: "Split — compare · split-compare" -->
+
+`Decision Required`
+
+## Build the data layer or buy it?
+
+Both paths are viable. The difference is where we spend the next 18 months.
+
+- Build in-house
+  - Full control over schema and roadmap
+  - 2–3 engineer-quarters to reach feature parity
+  - Ongoing maintenance burden stays internal
+- Buy + configure
+  - Ship in 6 weeks, not 9 months
+  - Engineering capacity redirects to product-layer features
+  - Exit risk manageable — data export contractually guaranteed
+
+> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+
+---
+
+<!-- _class: split-statement -->
+<!-- _footer: "Split — statement · split-statement" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- Clarity is a product decision, not a marketing one
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- Onboarding is the product's first argument for itself
+  - The moment a user first succeeds defines their frame for everything that follows.
+- Understanding, not delight, is the retention driver at scale
+  - Users who understand the system's logic stay through friction. Build for comprehension.
+
+---
+
 <!-- _class: closing accent -->
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->

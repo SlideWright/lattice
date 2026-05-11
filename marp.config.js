@@ -149,7 +149,7 @@ function checklistItemStates(markdown) {
  * Idempotent: skips items whose first inline child is already `strong_open`.
  */
 function slotLabelLift(markdown) {
-  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision)\b/;
+  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision|split-brief|split-metric|split-steps|split-compare|split-statement)\b/;
   markdown.core.ruler.after("marpit_slide_containers", "slot_label_lift", (state) => {
     let active = false;
     let listDepth = 0;
@@ -414,12 +414,12 @@ function registerMermaidHljs(marp) {
 }
 
 const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
+const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
   themeSet: [
     "lattice.css",
-    "lattice-backgrounds.css",
     "themes/indaco.css",
     "themes/indaco-dark.css",
     "themes/cuoio.css",
@@ -451,6 +451,7 @@ module.exports = {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
         result.html = applyChartFamilyToHtml(result.html);
+        result.html = applySplitPanelsToHtml(result.html);
       }
       return result;
     };

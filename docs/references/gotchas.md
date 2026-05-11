@@ -359,6 +359,29 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   build deps.
 - **Commits:** `8607e65`.
 
+### marp-vscode webview CSP blocks `<script>` — structural transforms must use the engine render hook
+
+- **Symptom:** A DOM transform authored in `lattice-runtime.js` (or any
+  `<script src="...">` tag in the markdown) works in PDF export and the
+  browser but never fires in VS Code Marp preview. The slide HTML looks
+  correct in the build output but wrong in preview.
+- **Cause:** marp-vscode loads preview content in a sandboxed webview with
+  a strict Content Security Policy that disallows script execution. Even
+  with `enableHtml: true`, relative `<script src="...">` paths do not
+  resolve reliably inside the webview context.
+- **Mitigation:** Structural DOM transforms (split panels, chart-family)
+  are implemented as HTML-string rewrites in `lib/split-panels.js` and
+  `lib/chart-family.js`, called from the `engine` render wrapper in
+  [marp.config.js](../../marp.config.js). The wrapper runs at render time
+  — before the webview CSP applies — so the HTML is baked correctly before
+  the preview displays it. `lattice-runtime.js` DOM transforms remain as a
+  fallback for the web-export path only.
+- **Triggered by:** Any new structural transform that needs to work in the
+  VS Code Marp preview.
+- **Removable when:** marp-vscode lifts its CSP for trusted workspace
+  scripts. No indication this is planned.
+- **Commits:** Split-panel feature commit.
+
 ### marp-cli timeouts under load (60-90s on small fixtures)
 
 - **Symptom:** `npx --no-install marp ...` runs for >60s on a fixture
@@ -496,6 +519,27 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Any JS read of a custom property whose value
   contains a CSS function.
 - **Removable when:** Never — this is by design.
+
+### CSS `ul > li` matches nested sublists — chain `> ul > li` for top-level-only styling
+
+- **Symptom:** A `border-left` (or any decoration) intended for top-level
+  list items in a layout also appears on sub-items nested inside those
+  items.
+- **Cause:** `section.foo .container ul > li` uses a descendant combinator
+  before `ul`. It matches any `ul > li` at any depth within `.container` —
+  including `.container > ul > li > ul > li` (the nested items). The `> li`
+  only constrains the item being a direct child of its own list; it says
+  nothing about where that list sits in the tree.
+- **Mitigation:** Chain the direct-child combinator from the container:
+  `section.foo .container > ul > li`. This requires the `ul` to be a direct
+  child of `.container` AND the `li` to be a direct child of that `ul`.
+  Nested sublists live at `> ul > li > ul > li` and do not match.
+- **Triggered by:** Any layout where top-level `li` items have nested
+  `ul`/`ol` sublists and the container receives descendant-scoped styling.
+  Hit on the `split-brief` right-panel border-left accent.
+- **Removable when:** Never — this is correct CSS scoping; note it here to
+  avoid the same mistake in future layouts.
+- **Commits:** Split-panel feature commit.
 
 ### `:where(:root)` zero-specificity defaults
 
