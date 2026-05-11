@@ -2356,7 +2356,7 @@ A trailing inline `` `code` `` on any row floats right as a small mono-font pill
 
 ---
 
-## Template 29: Chart Family (`progress`, `timeline-list`, `piechart`)
+## Template 29: Chart Family (`progress`, `timeline-list`, `piechart`, `gantt`, `kanban`)
 
 A small family of list-and-pill chart layouts that share one **chart-frame** skeleton: a lucent header strip with eyebrow + h2 + subtitle, a dominant chart body, and an optional caption. Authors write a flat list with trailing inline `` `code` `` pills; the renderer rewrites the section into chart-specific markup at build time (`lattice-emulator.js`) and at preview time (`lattice-runtime.js`).
 
@@ -2533,6 +2533,153 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 _Refreshed weekly · last updated 2026-05-07_
 ```
+
+### 29d — `gantt` (categorical bar chart across a time axis)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · 2026 Q1 → 2026 Q4           │
+│  ## What ships in each phase.           │
+│  Three workstreams across four qtrs.   │
+│                                         │
+│        Q1      Q2      Q3      Q4       │
+│  Plat  ████████                         │
+│                ████████                 │
+│                        ████████         │
+│  Ops   ████████                         │
+│                ████████                 │
+│                        ░░░░░░░░         │
+│  Comp  ████████                         │
+│                ████████                 │
+│                        ░░░░░░░░         │
+│                                         │
+│  Product roadmap · 2026-05-07           │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `gantt` (composes with `dark`, `minimal`)
+
+- Top-level bullets are **swimlanes** (rows). Each swimlane label becomes a row header on the left.
+- Second-level bullets are **bars**. Bar text is the label rendered inside the bar. Two trailing inline codes are required: `start → end` (tick range) then an optional status pill.
+- The tick axis is inferred from all `start` and `end` values across the slide. Short month names (`Jan`–`Dec`) and quarter shorthands (`Q1`–`Q4`) are both recognised.
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: gantt -->
+
+`2026 Q1 → 2026 Q4`
+
+## What ships in each phase, by workstream.
+
+Three workstreams across four quarters.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4`
+
+_Product roadmap · committed baseline · 2026-05-07_
+```
+
+- The eyebrow (`\`2026 Q1 → 2026 Q4\``) is a human label only — the axis is built from the bar tick codes, not from it.
+- Bars without a status pill render in the neutral track colour.
+- Status pill colours match the shared vocabulary table above.
+
+---
+
+### 29e — `kanban` (board from a three-level list)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · PHASE 2 · SPRINT 14         │
+│  ## Where Phase 2 work stands today.   │
+│  Four columns, mixed card density.     │
+│                                         │
+│  Backlog   In progress  Review  Done░░  │
+│  ┌───────┐ ┌─────────┐ ┌─────┐ ┌─────┐ │
+│  │Title M│ │Title  M │ │Titl │ │Titl │ │
+│  │compl  │ │plat✗risk│ │ plat│ │plat │ │
+│  ├───────┤ ├─────────┤ └─────┘ │  ✓  │ │
+│  │Title S│ │Title  L │         └─────┘ │
+│  │platfrm│ │complianc│                 │
+│  └───────┘ └─────────┘                 │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `kanban` (composes with `dark`, `minimal`)
+
+- **Top-level bullet** = column header.
+- **Second-level bullet** = card. One optional trailing inline code is the **size badge** (`S` / `M` / `L` / `XL`), rendered as a square chip right-aligned in the title row.
+- **First sub-bullet of a card** = meta line. Prose is the **label** (drives the coloured left stripe and a tinted lane pill on the meta row). One optional trailing inline code is the **status** (shared vocabulary — pushes right via `margin-left: auto`).
+- **Second sub-bullet of a card** (optional) = **body text**, rendered italic and muted below the meta row, single line with ellipsis.
+- The `Done` column dims automatically (`opacity: 0.52`).
+
+**Card anatomy:**
+
+```text
+┌─────────────────────────────────┐
+│ ▌ (3px left border — lane col.) │
+│ Title text, up to 2 lines  [ M ]│  ← title row: text + size badge
+│ [compliance]          [at-risk] │  ← meta row: label left, status right
+│ Body text, one line, italic…    │  ← optional body
+└─────────────────────────────────┘
+```
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: kanban -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+- Backlog
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
+  - Dependency dashboard `S`
+- In progress
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
+- Review
+  - Automated rotation `M`
+    - platform
+- Done
+  - Codebook signing `L`
+    - platform `done`
+  - HSM audit trail `M`
+    - compliance `done`
+```
+
+Card with body text (third sub-bullet):
+
+```markdown
+  - External audit firm `M`
+    - compliance `blocked`
+    - Firm selection paused pending legal sign-off. Resuming W20.
+```
+
+**Rules:**
+
+- One inline code per line. Size on the card title line; status on the label line. Never two codes on the same line.
+- All three sub-levels are optional. A card with no sub-bullet gets no meta row.
+- Label text (the prose on the first sub-bullet) drives the lane colour. Labels are free-form; the renderer maps them to categorical palette slots (`--cat-blue`, `--cat-green`, `--cat-purple`, …) consistently within a slide.
+- Status tokens are a closed set — see the vocabulary table above.
+
+---
 
 ### Shared frame (`chart-frame`)
 
