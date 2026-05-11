@@ -921,9 +921,23 @@ section.list-editorial > :is(ul, ol) > li > ul > li {
 }
 section.list-editorial > :is(ul, ol) > li > ul > li::marker { content:''; }
 
-/* .lede — first **strong** in each li becomes a display-serif headline */
+/* .lede — first **strong** becomes a display-serif headline.
+ * Switches off the grid so the trailing inline text after the strong flows
+ * naturally instead of getting auto-placed into the 84px counter column. */
 section.list-editorial.lede > :is(ul, ol) > li {
-  align-items:start;
+  display:block;
+  position:relative;
+  padding-left:calc(84px + var(--sp-md));
+}
+section.list-editorial.lede > ol > li::before {
+  position:absolute;
+  left:0; top:-2px;
+  width:84px;
+}
+section.list-editorial.lede > ul > li::before {
+  position:absolute;
+  left:72px; top:0.55em;
+  margin-top:0;
 }
 section.list-editorial.lede > :is(ul, ol) > li > strong:first-child {
   display:block;
@@ -1076,9 +1090,12 @@ section.list-spectrum.sequence > :is(ul, ol) {
   padding-left:0;
 }
 section.list-spectrum.sequence > :is(ul, ol) > li {
-  grid-template-columns:36px 1fr;
+  grid-template-columns:44px 1fr;
   padding-left:var(--sp-md);
   border-left:4px solid var(--accent);
+}
+section.list-spectrum.sequence > ol > li::before {
+  font-size:var(--fs-sm);
 }
 section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(1) { border-left-color:var(--scale-300); }
 section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(2) { border-left-color:var(--scale-500); }
