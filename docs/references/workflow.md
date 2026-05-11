@@ -50,7 +50,16 @@ Each worktree is fully independent — you can run `npm test` in both simultaneo
 
 1. `npm test` — unit suite must be green (<100 ms, no child processes).
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
-3. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
+3. If you touched CSS or themes, **render and inspect** the affected
+   slides — source review will not catch grid auto-placement
+   collisions, baseline drift, or overflow. The sandbox can almost
+   always render: `npm install` + `apt-get install -y poppler-utils`,
+   then `node lattice-emulator.js <deck>.md /tmp/out.pdf indaco`,
+   `pdftoppm -r 110 -png /tmp/out.pdf /tmp/slides/s`, and Read each
+   PNG. Only if the render genuinely fails do you hand off the visual
+   check — and say what you tried. Don't pre-emptively claim a
+   limitation you haven't tested. Recipe + failure modes:
+   `docs/notes/2026-05-11-rendering-in-the-sandbox.md`.
 4. Rebase onto current `main` if the branch has drifted:
    ```bash
    git fetch origin

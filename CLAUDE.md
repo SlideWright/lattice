@@ -64,6 +64,19 @@ The integration tier asserts cross-renderer parity on slide count.
 ## When you can't see the result
 
 For visual changes (CSS, layouts, themes, gallery), tests verify code
-correctness, not visual correctness. If you cannot rebuild and inspect
-the gallery PDFs, **say so explicitly** rather than claim success. Hand
-off to the desktop session for the visual check.
+correctness, not visual correctness. **Always try to render and inspect
+before declaring a layout done** — the sandbox almost always can.
+Recipe: `npm install` if `node_modules` is absent, `apt-get install -y
+poppler-utils` if `pdftoppm` is absent, then
+`node lattice-emulator.js <deck>.md /tmp/out.pdf indaco`, rasterise
+with `pdftoppm -r 110 -png /tmp/out.pdf /tmp/slides/s`, and Read each
+PNG. Source review will not catch CSS-grid auto-placement collisions,
+baseline drift, text overflow, or contrast failures on the real
+surface.
+
+Only if the render genuinely fails (Puppeteer can't start, fonts won't
+resolve, a deck is too large to build in-session) do you hand the
+visual check off — and say so explicitly, with what you tried. Do not
+pre-emptively claim a limitation you haven't tested. Full recipe and
+failure modes in
+`docs/notes/2026-05-11-rendering-in-the-sandbox.md`.

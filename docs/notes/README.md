@@ -67,3 +67,9 @@ it is load-bearing.
   decision note for multi-resolution support (HD + 4K, candidate 4:3):
   native Marp `@size` + px→rem refactor + CSS container query on section.
   No theme changes; authors opt in via front-matter `size:` key.
+- [2026-05-11-rendering-in-the-sandbox.md](2026-05-11-rendering-in-the-sandbox.md) —
+  the sandbox can render and rasterise slides — agents should try
+  before claiming a visual check needs hand-off. Two-line install
+  recipe (`npm install` + `apt-get install poppler-utils`), then build
+  with `lattice-emulator.js` and Read the PNGs. Captures the
+  `list-editorial .lede` bug that source review missed.
