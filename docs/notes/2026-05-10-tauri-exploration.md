@@ -46,6 +46,15 @@ Direct from authoring intent (May 2026):
   dividers, command palette, mode shortcuts). Re-entrant from Help
   menu; skippable from anywhere; never modal-blocking. Extensions
   can contribute their own tours.
+- **UI surfaces.** Minimalist by default, powerful for experts.
+  Application menu + right-click context menus for discovery;
+  **command palette (⌘K)** as the power-user equalizer with every
+  action reachable; status bar for state indication; **toolbar off
+  by default**. All surfaces consume from one central command
+  registry — extensions contribute commands, menus, status-bar
+  items, and keybindings via the manifest. `when` clauses hide
+  irrelevant items rather than greying them out, so menus stay
+  focused.
 - **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
   Marp's experimental *native PPTX* path), Confluence, slides.com,
   Google Slides (scope TBD).
@@ -128,6 +137,7 @@ Constraints the desktop shell must absorb:
 | Workspace view | **`WorkspaceView`** (sidebar) | File tree consumed from storage adapter; orthogonal to editor/preview modes |
 | Settings | **`Settings`** subsystem (defaults → user → workspace) | Layered config; workspace tier travels with the project; extensions extend the schema |
 | Onboarding | **`Onboarding`** subsystem | Welcome screen + welcome deck (Lattice deck) + spotlight tour engine; extensions can contribute tours |
+| UI surfaces | **Command registry + palette (⌘K) + quick switcher (⌘P) + status bar + optional toolbar** | One registry, many surfaces; extension-contributable; `when` clauses hide irrelevant items |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
@@ -450,6 +460,199 @@ folder onto the app icon.
 - Open multiple decks in tabs
 - Loose-file model (file opened outside workspace without resetting
   the workspace)
+
+### UI surfaces & the command registry
+
+The tension between "minimalist for newcomers" and "powerful for
+power users" resolves with one pattern: **a central command
+registry that every visible surface consumes from.** Power users
+hit ⌘K and reach any action in a keystroke. Newcomers find features
+through menus and right-click. Same commands, different surfaces.
+
+#### Command registry — the single source of truth
+
+```
+app.commands.register({
+  id: "slide.insertAfter",
+  title: "Insert Slide After",
+  description: "Insert a new slide after the current one",
+  category: "Slide",
+  keybinding: "Cmd+Enter",
+  icon: "plus",
+  when: "editorFocused && hasOpenDeck",
+  run: (context) => { … }
+})
+```
+
+Application menu, command palette, toolbar, right-click context
+menus, and keybindings all reference command IDs. The architectural
+commitment that makes this work: **make it the single source of
+truth for every UI surface**, not just editor commands.
+First-party features ship as commands through the same API
+extensions use.
+
+#### Surface priorities
+
+| Surface | Purpose | Default | Density |
+|---|---|---|---|
+| Application menu | Discoverability; complete reference | Always present (native OS) | Full |
+| Command palette (⌘K) | Power-user execution | Always one keystroke away | Full |
+| Right-click context menus | In-context discovery + speed | Always present | Contextual subset |
+| Status bar | State indication | Always (toggle-able) | Minimal |
+| Toolbar | Optional state + quick actions | **Off by default** | Minimal if shown |
+
+#### Command palette — the power-user equalizer
+
+⌘K opens a fuzzy-searched list of every command. ⌘P opens a quick
+switcher (file + slide + recent) sharing the same fuzzy
+infrastructure. Design specifics:
+
+- Recent commands at top when query is empty
+- Fuzzy match on title, description, category
+- Category prefixes shown — `Slide: Insert verdict-grid`,
+  `View: Toggle Chat`
+- Keyboard shortcut shown next to each entry (palette *teaches*
+  the shortcut)
+- Argument support — `Insert Slide ▸` sub-pick for layout choice
+- Mode prefixes: `>` for commands, `:42` to jump to slide 42, empty
+  for recent files
+
+Because every command is reachable here, **the visible UI doesn't
+have to carry power users** — it can be designed for casual users
+without slowing the experts.
+
+#### Application menu — complete, organized for newcomers
+
+Where every command exists. Power users rarely use it after
+onboarding; newcomers find features here.
+
+Top-level structure: **File, Edit, View, Slide, Insert, Theme, AI,
+Tools, Help.** Submenus use the existing layout vocabulary directly
+(`Slide ▸ Insert ▸ verdict-grid`) — discoverability value *and*
+teaches the layout names.
+
+#### Right-click — context-aware, self-documenting
+
+Casual users discover features by right-clicking on things. Each
+menu is **deeply contextual** — what you clicked determines what's
+offered:
+
+| Context | Sample menu items |
+|---|---|
+| Slide in preview | Insert Above / Below, Duplicate, Delete, Apply Layout ▸, Move Up / Down, Open in Focused View, Copy as Image, Export This Slide |
+| Selected text in editor | Cut / Copy / Paste, **AI ▸** (Rewrite, Summarize, Tone), Wrap in Block, Apply Layout |
+| Mermaid block | Edit in Diagram Studio, Render Inline, Rasterize, Show Source, Insert Skeleton ▸ |
+| Code block | Change Language ▸, Format, Copy with Highlighting |
+| Image in editor | Replace, Edit, Reveal in Workspace, Copy Path |
+| File in `WorkspaceView` | Open, Open in ThemeStudio (if `.css`), Rename, Delete, Reveal in OS, Copy Path |
+| Folder in `WorkspaceView` | New File, New Folder, Refresh, Reveal in OS, Set as Workspace Root |
+| Theme `.css` file | Open in ThemeStudio, Set as Default, Duplicate, Edit Source |
+| Editor gutter | Toggle Comment, Add Slide Break, Bookmark |
+
+Conventions: most-used at top; verbs on the *thing* first; separators
+group related items; keyboard shortcut shown next to each item
+(palette + right-click + menu all reinforce the shortcut).
+
+#### Status bar — minimal but useful
+
+Always-on (toggle-able), thin row at the bottom. Right-aligned items;
+each click runs a registered command:
+
+```
+slide 3 / 47    indaco    split    AI: local    sync: ✓
+```
+
+Clicking "split" cycles modes. Clicking "indaco" opens palette picker.
+Clicking "AI: local" opens provider switcher. Extensions contribute
+items (e.g., Jira: "JIRA: 3 open issues").
+
+#### Toolbar — off by default; opinionated when on
+
+Two reasons to default off: takes vertical space (minimalist); palette
++ menus already cover discoverability + speed. Users who turn it on
+(`View → Toolbar`) get a minimal default — six items:
+
+1. Workspace sidebar toggle
+2. Editor mode switcher (visual indicator + cycle Focused / Split / PiP)
+3. Active palette indicator (color chip; click to pick)
+4. Chat toggle
+5. Export button (drops to format menu)
+6. Quick search (opens command palette)
+
+Configurable density (comfortable / compact); extensions can
+contribute toolbar items.
+
+#### Declarative surface contributions
+
+Extensions (and first-party features) contribute via the manifest:
+
+```jsonc
+{
+  "contributes": {
+    "menus": {
+      "main.file":     [{ "command": "deck.new", "group": "1_new" }],
+      "context.slide": [{ "command": "slide.insertAfter" }],
+      "context.text":  [{ "command": "ai.rewrite", "when": "hasSelection" }]
+    },
+    "keybindings": [
+      { "command": "ai.openChat", "key": "Cmd+L" }
+    ],
+    "statusBar": [
+      { "id": "jira-status", "alignment": "right", "command": "jira.show" }
+    ]
+  }
+}
+```
+
+First-party menus declared the same way as third-party — dogfooding
+the API.
+
+#### `when` clauses
+
+Context-sensitive visibility evaluated against editor + workspace +
+AI state. Small DSL:
+
+| Clause | Meaning |
+|---|---|
+| `editorFocused` | Editor pane has focus |
+| `previewFocused` | Preview pane has focus |
+| `hasSelection` | Editor has a non-empty selection |
+| `hasOpenDeck` | A deck is open |
+| `inMermaidBlock` | Cursor inside a mermaid fenced block |
+| `inCodeBlock` | Cursor inside a code fenced block |
+| `aiAvailable` | At least one AI provider is configured |
+| `extensionInstalled('id')` | Specific extension present |
+
+Items that fail their `when` are **hidden** (not greyed out —
+invisible). Keeps menus focused for power users.
+
+#### Design principles worth nailing
+
+1. **Progressive disclosure** — clean UI by default; power users
+   add toolbar / shortcuts / workspace pins
+2. **Command palette as the great equalizer** — every action
+   reachable from there
+3. **Right-click teaches the UI** — self-documenting via contextual
+   menus
+4. **Keyboard parity** — every action has a (customizable) shortcut
+5. **Status bar over toolbar** — state indication uses minimal space
+6. **One command registry** — single source of truth for first-party
+   and extensions alike
+7. **`when` clauses hide, don't grey out** — focused menus, not
+   noisy ones
+
+#### v1 / v1.x / v2
+
+- **v1** — application menu (complete), command palette + quick
+  switcher (⌘K / ⌘P), right-click context menus (slide, text, file,
+  folder, mermaid block, code block, gutter), status bar, default
+  keybindings + user-overridable `keybindings.json`. **No toolbar
+  by default.**
+- **v1.x** — optional toolbar (off by default), Vim/Emacs preset
+  packs, workspace-pinned commands (per-project shortcuts),
+  extension-contributed menus / status-bar items / commands.
+- **v2** — macros / recorded actions, customizable status bar
+  layout, theme-aware command palette iconography.
 
 ### Settings — `Settings`
 

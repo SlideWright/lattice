@@ -77,7 +77,10 @@ it is load-bearing.
   for incremental rendering keyed by slide content hash,
   `LayoutShell` for focused/split/PiP modes, `WorkspaceView` for the
   file tree (storage-adapter-blind, opens with a file/folder/last-
-  session), `Settings` (layered defaults → user → workspace; user
+  session), UI surfaces via a central command registry (palette ⌘K
+  + quick switcher ⌘P + native menu + right-click + status bar;
+  toolbar off by default; `when`-clause DSL hides irrelevant items),
+  `Settings` (layered defaults → user → workspace; user
   tier in the OS app-config dir, workspace tier in
   `.slidewright/settings.json` parallel to `.vscode/`; extensions
   install at user scope only; secrets stay in keychain),
