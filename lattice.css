@@ -860,7 +860,337 @@ section.list-tabular ol > li > ul > li { font-size:var(--fs-body); font-weight:4
 section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
 section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
 
+/* ── LIST-EDITORIAL ──
+ * ## heading  then ol/ul of points
+ * No card chrome. Hanging Playfair numeral / accent dot on a 84px column;
+ * body text in fs-content on the rest. The "trust the typography" choice.
+ *
+ * .lede modifier: a leading **strong** in each item becomes a display-serif
+ * pull-line; the rest of the item is body-font support.
+ *   1. **Pricing is not a one-time correction.** We expect two more tests.
+ */
+section.list-editorial h2 { margin-bottom:var(--sp-lg); }
+section.list-editorial > :is(ul, ol) {
+  list-style:none; padding:0; margin:0;
+  counter-reset:editorial-counter;
+  display:flex; flex-direction:column; gap:var(--sp-md);
+  flex:1; justify-content:center;
+}
+section.list-editorial > :is(ul, ol) > li {
+  counter-increment:editorial-counter;
+  display:grid;
+  grid-template-columns:84px 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+  font-size:var(--fs-content);
+  line-height:var(--lh-base);
+  color:var(--text-body);
+}
+section.list-editorial > ol > li::before {
+  content:counter(editorial-counter, decimal-leading-zero);
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.02em;
+  text-align:right;
+  align-self:baseline;
+}
+section.list-editorial > ul > li {
+  align-items:start;
+}
+section.list-editorial > ul > li::before {
+  content:'';
+  display:block;
+  width:12px; height:12px;
+  border-radius:50%;
+  background:var(--accent);
+  justify-self:end;
+  align-self:start;
+  margin-top:0.55em;
+}
+/* Nested ul (sub-detail) renders as a tight indented block under the parent text. */
+section.list-editorial > :is(ul, ol) > li > ul {
+  list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+  font-size:var(--fs-body); color:var(--text-label);
+  line-height:var(--lh-snug);
+}
+section.list-editorial > :is(ul, ol) > li > ul > li {
+  padding-left:0;
+}
+section.list-editorial > :is(ul, ol) > li > ul > li::marker { content:''; }
 
+/* .lede — first **strong** in each li becomes a display-serif headline */
+section.list-editorial.lede > :is(ul, ol) > li {
+  align-items:start;
+}
+section.list-editorial.lede > :is(ul, ol) > li > strong:first-child {
+  display:block;
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-weight:700;
+  color:var(--text-heading);
+  line-height:var(--lh-tight);
+  letter-spacing:-0.01em;
+  margin-bottom:var(--sp-xs);
+}
+
+/* ── LIST-TRIBUNE ──
+ * ## heading  then ol/ul of points
+ * Pro-card: full-bleed accent block on the left holds a large mono numeral,
+ * body text on a --bg-alt card. The "bold" choice. ul renders with an 8px
+ * accent rail instead of the number block.
+ *
+ * Nested ul under each item renders as `— sub-point` lines inside the card.
+ */
+section.list-tribune h2 { margin-bottom:var(--sp-md); }
+section.list-tribune > :is(ul, ol) {
+  list-style:none; padding:0; margin:0;
+  counter-reset:tribune-counter;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1; justify-content:center;
+}
+section.list-tribune > ol > li {
+  counter-increment:tribune-counter;
+  position:relative;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(72px + var(--sp-md));
+  min-height:72px;
+  display:flex; flex-direction:column; justify-content:center;
+  font-size:var(--fs-md);
+  color:var(--text-heading);
+  font-weight:600;
+  line-height:var(--lh-snug);
+}
+section.list-tribune > ol > li::before {
+  content:counter(tribune-counter, decimal-leading-zero);
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:72px;
+  background:var(--accent);
+  color:var(--on-accent, #fff);
+  font-family:var(--font-mono);
+  font-size:var(--fs-xl);
+  font-weight:800;
+  letter-spacing:-0.02em;
+  display:flex; align-items:center; justify-content:center;
+}
+section.list-tribune > ol > li > ul {
+  list-style:none;
+  padding:var(--sp-xs) 0 0 0;
+  margin:0;
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+section.list-tribune > ol > li > ul > li::marker { content:''; }
+section.list-tribune > ol > li > ul > li::before {
+  content:'— ';
+  color:var(--text-muted);
+}
+/* ul (unordered) variant: 8px accent rail instead of the number block */
+section.list-tribune > ul > li {
+  position:relative;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(8px + var(--sp-md));
+  min-height:56px;
+  display:flex; align-items:center;
+  font-size:var(--fs-md);
+  color:var(--text-heading);
+  font-weight:600;
+  line-height:var(--lh-snug);
+}
+section.list-tribune > ul > li::before {
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:8px;
+  background:var(--accent);
+}
+
+/* ── LIST-SPECTRUM ──
+ * ## heading  then ol/ul of points
+ * Vertical spectrum gradient as a 6px rail down the left of the list region.
+ * Items are clean typography anchored to the rail by a small mono counter
+ * (ol) or accent dot (ul). The "signature lattice" choice — only layout
+ * that uses the brand spectrum inside content.
+ *
+ * .sequence modifier: replaces the collective rail with per-item left
+ * borders ramping through --scale-300 → --scale-900 → --accent, for
+ * "phases" lists where each step builds on the last.
+ */
+section.list-spectrum h2 { margin-bottom:var(--sp-md); }
+section.list-spectrum > :is(ul, ol) {
+  list-style:none; padding:0 0 0 var(--sp-md); margin:0;
+  counter-reset:spectrum-counter;
+  display:flex; flex-direction:column; gap:var(--sp-md);
+  flex:1; justify-content:center;
+  border-left:6px solid;
+  border-image-source:var(--spectrum-vertical, var(--spectrum));
+  border-image-slice:1;
+}
+section.list-spectrum > :is(ul, ol) > li {
+  counter-increment:spectrum-counter;
+  display:grid;
+  grid-template-columns:36px 1fr;
+  column-gap:var(--sp-sm);
+  align-items:baseline;
+  font-size:var(--fs-content);
+  line-height:var(--lh-base);
+  color:var(--text-body);
+}
+section.list-spectrum > ol > li::before {
+  content:counter(spectrum-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.08em;
+  align-self:baseline;
+}
+section.list-spectrum > ul > li {
+  align-items:start;
+}
+section.list-spectrum > ul > li::before {
+  content:'';
+  display:block;
+  width:10px; height:10px;
+  border-radius:50%;
+  background:var(--accent);
+  align-self:start;
+  margin-top:0.55em;
+  justify-self:start;
+}
+
+/* .sequence — drop the collective rail; per-item ordinal scale ramp */
+section.list-spectrum.sequence > :is(ul, ol) {
+  border-left:none;
+  padding-left:0;
+}
+section.list-spectrum.sequence > :is(ul, ol) > li {
+  grid-template-columns:36px 1fr;
+  padding-left:var(--sp-md);
+  border-left:4px solid var(--accent);
+}
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(1) { border-left-color:var(--scale-300); }
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(2) { border-left-color:var(--scale-500); }
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(3) { border-left-color:var(--scale-700); }
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(4) { border-left-color:var(--scale-900); }
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(5) { border-left-color:var(--accent); }
+section.list-spectrum.sequence > :is(ul, ol) > li:nth-child(6) { border-left-color:var(--text-heading); }
+
+/* ── LIST-SCORECARD ──
+ * ## heading  then ol/ul of `**stat** — body` rows
+ * Each item starts with a display-serif stat anchor in --accent, followed
+ * by an em-dashed body description. Hairline-ruled rows. The "outcomes
+ * ledger" choice — different from big-number (one hero stat) and stats
+ * (row of stats without body).
+ *
+ * Author convention: `- **9pp** — Net revenue retention lift after reset.`
+ * The stat string is whatever you bold; --, $, %, units all work.
+ */
+section.list-scorecard h2 { margin-bottom:var(--sp-md); }
+section.list-scorecard > :is(ul, ol) {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  flex:1; justify-content:center;
+}
+section.list-scorecard > :is(ul, ol) > li {
+  display:flex; align-items:baseline;
+  gap:var(--sp-md);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  font-size:var(--fs-md);
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+section.list-scorecard > :is(ul, ol) > li:first-child {
+  border-top:1px solid var(--border);
+}
+section.list-scorecard > :is(ul, ol) > li::marker { content:''; }
+section.list-scorecard > :is(ul, ol) > li > strong:first-child {
+  display:block;
+  flex:0 0 160px;
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.02em;
+  text-align:left;
+}
+
+/* ── LIST-INDEX ──
+ * ## heading  then ol/ul of points
+ * Atlas / contents-page pattern: 48px mono counter column, title text,
+ * hairline rules above first row and between every row. Quiet,
+ * authoritative — for "this quarter's index of decisions" type content.
+ *
+ * .spread modifier: the trailing **strong** floats to the right as a
+ * mono meta column, giving a ledger feel for `Title — **Owner · Budget**`.
+ */
+section.list-index h2 { margin-bottom:var(--sp-md); }
+section.list-index > :is(ul, ol) {
+  list-style:none; padding:0; margin:0;
+  counter-reset:index-counter;
+  display:flex; flex-direction:column;
+  flex:1; justify-content:center;
+}
+section.list-index > :is(ul, ol) > li {
+  counter-increment:index-counter;
+  display:flex; align-items:baseline;
+  column-gap:var(--sp-md);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  font-size:var(--fs-md);
+  color:var(--text-heading);
+  font-weight:500;
+  line-height:var(--lh-snug);
+}
+section.list-index > :is(ul, ol) > li:first-child {
+  border-top:1px solid var(--border);
+}
+section.list-index > :is(ul, ol) > li::marker { content:''; }
+section.list-index > ol > li::before {
+  content:counter(index-counter, decimal-leading-zero);
+  flex:0 0 48px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.08em;
+  align-self:baseline;
+}
+section.list-index > ul > li::before {
+  content:'\00b7';
+  flex:0 0 48px;
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  color:var(--accent);
+  line-height:1;
+  text-align:center;
+  align-self:center;
+}
+
+/* .spread — trailing **strong** floats right as a mono meta column */
+section.list-index.spread > :is(ul, ol) > li > strong:last-child {
+  margin-left:auto;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  color:var(--text-heading);
+  text-align:right;
+  white-space:nowrap;
+  padding-left:var(--sp-md);
+}
 
 /* ── BIG-NUMBER ──
  * ##### eyebrow  - number\n  - description
