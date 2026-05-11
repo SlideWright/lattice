@@ -1120,19 +1120,24 @@ section.image {
   --image-matte: var(--bg-alt);
 }
 
-/* ─ HALF-CANVAS: image right, 6px --accent left border ─ */
+/* ─ HALF-CANVAS: image right ─ */
 section.image:not(.full) {
-  border-left: 6px solid var(--accent);
   padding-right: calc(50% + var(--sp-2xl));
-  padding-left: calc(var(--sp-2xl) + 6px);
+  padding-left: var(--sp-2xl);
   background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
 }
 section.image:not(.full) h2 { font-size: var(--fs-xl); margin-bottom: var(--sp-sm); }
 section.image:not(.full) p  { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
 
+/* Anchor decoration — guarded so museum slides never inherit the border */
+section.image:not(.full):not(.museum) {
+  border-left: 6px solid var(--accent);
+  padding-left: calc(var(--sp-2xl) + 6px);
+}
+
 /* Mirror: border and text slot move to right */
-section.image:not(.full).mirror,
-section.image:not(.full).left {
+section.image:not(.full):not(.museum).mirror,
+section.image:not(.full):not(.museum).left {
   border-left: none;
   border-right: 6px solid var(--accent);
   padding-left: calc(50% + var(--sp-2xl));
@@ -1243,18 +1248,14 @@ section.image.full.mirror p:last-of-type {
  * 20px inset (flush at the split) and a 1px frame. Full-bleed museum
  * centres the image on the matte with uniform 40px inset. */
 
-/* Half-canvas museum: no border, --bg-alt on image side, inset image */
+/* Half-canvas museum: --bg-alt matte on image side, inset image */
 section.image:not(.full).museum {
-  border-left: none;
-  border-right: none;
   padding-left: var(--sp-2xl);
   padding-right: calc(50% + var(--sp-2xl));
   background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
 }
 section.image:not(.full).museum.mirror,
 section.image:not(.full).museum.left {
-  border-left: none;
-  border-right: none;
   padding-left: calc(50% + var(--sp-2xl));
   padding-right: var(--sp-2xl);
   background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
@@ -1287,7 +1288,7 @@ section.image:not(.full).museum .lattice-bg-right {
 section.image:not(.full).museum .lattice-bg-right img {
   width: 100%; height: 100%; display: block;
   object-fit: cover; object-position: center;
-  box-shadow: 0 0 0 1px var(--border);
+  box-shadow: 0 0 0 1px var(--border) !important;
 }
 section.image:not(.full).museum.contain .lattice-bg-right img { object-fit: contain; }
 section.image:not(.full).museum.mirror .lattice-bg-right,

@@ -357,7 +357,7 @@ _Source: pilot retrospective, six months across four product teams._
 
 - Tool A · Chorus
   - [x] Speed
-  - [~] Auditability
+  - [-] Auditability
   - [x] Adoption
   - [ ] Calibration
   - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
@@ -370,7 +370,7 @@ _Source: pilot retrospective, six months across four product teams._
 - Tool C · Notion
   - [x] Speed
   - [x] Auditability
-  - [~] Adoption
+  - [-] Adoption
   - [ ] Calibration
   - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
 - Tool D · Sprig + Decision Log
@@ -638,9 +638,9 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 `Image Layout · Museum Modifier`
 
-## The museum modifier mounts the image as an editorial plate
+## Museum modifier — editorial plate
 
-The image panel carries a `--bg-alt` matte with a 20px inset on three sides, flush only at the split line. A 1px border frames it like a mounted print. Add `museum` alongside `image` — the anchor border is replaced by the matte and frame.
+Add `museum` alongside `image`. The image panel gets a `--bg-alt` matte, 20px inset on three sides, and a 1px border. Flush at the split line, framed like a mounted print.
 
 ![bg right](sample-image-landscape.svg)
 
