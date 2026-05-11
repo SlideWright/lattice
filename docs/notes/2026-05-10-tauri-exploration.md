@@ -31,6 +31,14 @@ Direct from authoring intent (May 2026):
   the editor inserts a markdown reference. Right-click for
   new/rename/delete. External changes watched. The sidebar is
   **orthogonal** to focused/split/PiP modes.
+- **Settings.** Layered configuration — defaults → user → workspace
+  — with **workspace-scoped overrides that travel with the project**
+  (`.slidewright/settings.json`, parallel to VS Code's `.vscode/`).
+  Settings editable via UI or JSON. Extensions contribute to the
+  schema (autocomplete + validation in the JSON editor). Secrets
+  never live in settings — credentials are referenced by ID and
+  resolved from the system keychain, so workspace settings can be
+  safely committed to git.
 - **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
   Marp's experimental *native PPTX* path), Confluence, slides.com,
   Google Slides (scope TBD).
@@ -102,6 +110,7 @@ Constraints the desktop shell must absorb:
 | Preview pipeline | **`SlideSegmenter` + `RenderCache` + `PreviewPane`** | Incremental rendering (only changed slides re-render) keyed by slide content hash |
 | Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
 | Workspace view | **`WorkspaceView`** (sidebar) | File tree consumed from storage adapter; orthogonal to editor/preview modes |
+| Settings | **`Settings`** subsystem (defaults → user → workspace) | Layered config; workspace tier travels with the project; extensions extend the schema |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
@@ -424,6 +433,159 @@ folder onto the app icon.
 - Open multiple decks in tabs
 - Loose-file model (file opened outside workspace without resetting
   the workspace)
+
+### Settings — `Settings`
+
+Layered configuration. VS Code-style: settings travel with the
+project so a workspace can pin its theme, linter rules, export
+defaults, and recommended extensions.
+
+#### Convention — `.slidewright/` folder
+
+Hidden folder at workspace root, parallel to `.vscode/`. Folder
+beats single file because we'll want more than just settings:
+
+```
+.slidewright/
+├── settings.json        # main settings
+├── extensions.json      # recommended extensions for this workspace
+├── snippets/            # workspace-scoped slide snippets
+└── themes/              # workspace-scoped palettes
+```
+
+#### Layered resolution
+
+| Tier | Where | Notes |
+|---|---|---|
+| Defaults | shipped in app | sensible baseline |
+| User | platform-specific user config | global preferences |
+| Workspace | `.slidewright/settings.json` | project overrides; commits to git |
+| Folder | per-folder in multi-root | v1.x |
+
+Each tier overrides the previous. Settings UI surfaces effective
+value plus provenance ("from workspace", "from user").
+
+#### API
+
+```
+Settings
+  ├─ resolve(key)               → effective value + provenance
+  ├─ get<T>(key)                → typed value
+  ├─ set(key, value, scope)     → write at user or workspace tier
+  ├─ observe(key, handler)      → subscribe to changes
+  ├─ registerSchema(extension)  → extensions contribute settings keys
+  └─ migrate(file, fromVersion) → schema migrations
+```
+
+Most subsystems become Settings consumers — `LayoutShell`,
+`WorkspaceView`, `ThemeStudio`, `DiagramService`, every export
+adapter, every storage adapter, the linter. Subscribing to changes
+means edits apply live.
+
+#### Schema is extensible
+
+Extensions declare their settings keys via the manifest's `settings`
+field (already in the extension manifest sketch). Their keys join
+the schema, get autocomplete + validation in the JSON editor, and
+appear in the Settings UI under the extension's section. Dual-mode
+UI: settings panel for browsing, JSON editor for power users —
+same pattern VS Code uses.
+
+#### Two important caveats
+
+**Secrets never live in `settings.json`.** API keys, OAuth tokens
+→ system keychain only (the reason Tauri's Rust core was
+load-bearing). Settings reference credentials by ID:
+
+```jsonc
+"storage": {
+  "defaultAdapter": "google-drive",
+  "driveFolderId": "0AbcDefGhIjK",
+  "credentialId": "drive-personal"   // resolves to keychain
+}
+```
+
+This is what makes workspace settings safely committable to git.
+
+**Workspace trust deferred to v1.x.** A workspace can recommend
+extensions that execute code. v1 sidesteps the problem by gating
+extension installation on explicit user action (no auto-install
+from `extensions.json`). v1.x adds an explicit trust prompt
+following VS Code's pattern.
+
+#### Scope per setting
+
+| Setting | User | Workspace |
+|---|---|---|
+| Default editor mode, split orientation, font | yes | yes (override) |
+| Color scheme preference (system/light/dark) | yes | no |
+| Window/session state | yes | no |
+| Default deck theme when not declared in front matter | yes | yes (override) |
+| Linter rules + per-rule config | yes | yes (override) |
+| Export defaults | yes | yes (override) |
+| Storage adapter + non-secret config | yes | yes (override) |
+| Recommended/required extensions | no | yes |
+| Workspace name + asset dirs + project metadata | no | yes |
+
+Settings declare their scope in the schema.
+
+#### Concrete example — `.slidewright/settings.json`
+
+```jsonc
+{
+  "$schema": "slidewright://schemas/settings/v1",
+  "version": 1,
+  "workspace": {
+    "name": "Q3 Investor Updates",
+    "defaultTheme": "acme-brand",
+    "assetDirs": ["./assets", "./brand"]
+  },
+  "editor": {
+    "defaultMode": "split",
+    "splitOrientation": "horizontal",
+    "splitOrder": "editor-left"
+  },
+  "linter": {
+    "enabled": ["terminology", "wcag-aa", "no-empty-slides"],
+    "terminology.dictionary": "./brand/terms.json"
+  },
+  "export": {
+    "pdf": {
+      "outputDir": "./out",
+      "metadata": {
+        "author": "Acme Corp",
+        "subjectTemplate": "{{deckTitle}} – Q3 2026"
+      }
+    },
+    "mermaid": { "flattenForExport": true }
+  },
+  "storage": {
+    "defaultAdapter": "google-drive",
+    "driveFolderId": "0AbcDefGhIjK",
+    "credentialId": "drive-acme"
+  },
+  "extensions": {
+    "settings": {
+      "com.acme.d2-diagrams": { "layoutEngine": "elk" }
+    }
+  }
+}
+```
+
+Sibling `.slidewright/extensions.json`:
+
+```jsonc
+{
+  "recommendations": [
+    { "id": "com.acme.d2-diagrams",   "version": "^0.3" },
+    { "id": "com.confluence.export",  "version": "^1.0" }
+  ]
+}
+```
+
+When a workspace opens, the Extensions panel surfaces
+recommended-but-missing extensions with one-click install (gated
+on user action — see trust caveat above).
 
 ### Export — adapter interface
 

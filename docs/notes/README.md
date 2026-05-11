@@ -77,7 +77,10 @@ it is load-bearing.
   for incremental rendering keyed by slide content hash,
   `LayoutShell` for focused/split/PiP modes, `WorkspaceView` for the
   file tree (storage-adapter-blind, opens with a file/folder/last-
-  session), `ThemeStudio` for brand palettes, worker-sandboxed
+  session), `Settings` (layered defaults → user → workspace, with
+  workspace tier in `.slidewright/settings.json` parallel to
+  `.vscode/`; secrets stay in keychain), `ThemeStudio` for brand
+  palettes, worker-sandboxed
   extension runtime with capability hubs (the
   export/storage/AI/diagram/layout adapter interfaces become the
   public plugin API; first-party features dogfood the same API).
