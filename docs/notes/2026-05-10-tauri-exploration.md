@@ -1897,3 +1897,108 @@ cheaper and can run in parallel with everything above.
 
 Everything else — editor work, ThemeStudio, AI hook, export adapters
 beyond PDF/PNG/HTML — waits on H3, H5, H6.
+
+## Development leverage with Claude
+
+The architecture above implies ~18–24 person-months of v1 work for
+a small team. With disciplined use of **Claude Code** (the CLI for
+software-engineering work), realistic compression is **50–60%** —
+v1 in **9–12 months** rather than 18–24.
+
+### Where Claude cuts time materially
+
+**High compression (3-4×):**
+
+- Scaffolding — project structure, configs, build pipelines
+- Pattern-matched code — every capability hub is the same shape;
+  build one carefully, generate the rest
+- Adapter implementations against well-defined contracts (local-FS,
+  PDF export, file watcher)
+- Schema-driven work — settings schema → validators → types → docs
+  all generated from one schema
+- Glue code wiring subsystems (Yjs ↔ CodeMirror, commands ↔ menus,
+  Settings observers ↔ subsystems)
+- Tests for well-specified behaviors
+- Documentation — README, JSDoc, in-app help, error messages,
+  welcome-deck content, CHANGELOG
+
+**Moderate compression (1.5–2×):**
+
+- UX prototyping (Claude generates options; you pick taste)
+- Library integration (Tauri, Candle, Yjs)
+- Cross-platform hypothesis generation (real debugging still needs
+  real machines)
+- Mechanical refactoring
+
+**Low compression (1× or less):**
+
+- Product decisions (scope cuts, positioning, what to ship)
+- Hard performance optimization
+- Real-user testing
+- Visual design taste
+- Brand / marketing
+- Security audit of own work
+
+### This document IS the prompt
+
+The underrated leverage: **this architecture doc is itself a
+high-fidelity prompt.** ~15 named subsystems with explicit API
+surfaces, 8 capability hubs with contracts, personas with
+jobs-to-be-done, v1/v1.x/v2 staging, concrete file-format examples,
+8 hypotheses with pass criteria.
+
+Every implementation session starts: *"Here's the architecture
+doc. Build `SlideSegmenter` per the spec. Run tests against
+`examples/gallery.md`."* Claude inherits months of design work in
+one prompt and writes the right code first try.
+
+Without this doc, every session would relearn context. With it,
+Claude operates at near-full architectural fluency from minute one.
+
+### Disciplined usage — recommendations for this project
+
+1. **Treat this doc as source of truth.** Every PR references the
+   section it implements; drift gets called out.
+2. **One subsystem per session.** `EditorHost` is a session;
+   `SlideSegmenter` is a session; `WorkspaceView` is a session.
+   Don't try to build everything at once.
+3. **Tests first when contracts are clear.** Capability hubs
+   especially. Catches Claude-hallucinated API misuse early.
+4. **Code review every commit.** Velocity illusion is real —
+   high-volume AI code accrues debt if not reviewed.
+5. **Build v0.5 first.** Ship a tight minimum (editor + preview +
+   workspace + Claude chat + PDF) before the full v1. Real usage
+   reshapes v1 priorities.
+6. **Use Claude Code, not chat-only Claude.** Purpose-built for
+   software engineering — file editing, tests, git, MCP.
+7. **Claude for the boring docs.** Welcome-deck content, help
+   text, error messages, CHANGELOG — writable in your voice.
+8. **Don't have Claude decide UX taste.** Prototype 3 options;
+   you pick.
+
+### Honest risks of leaning on Claude
+
+1. **Velocity illusion** — code volume goes up; quality varies;
+   review takes real attention
+2. **Context drift across sessions** — each session needs the doc
+   + relevant code in context
+3. **Over-engineering** — Claude tends toward "clean" abstractions
+   that may not match real usage. This doc's opinionated structure
+   constrains that.
+4. **API hallucination** — especially for newer libraries (Tauri 2,
+   Candle, Yjs newer features); always verify against actual docs
+5. **Cross-platform subtleties** — WebView quirks, paths, timing
+   need real machines, not just Claude review
+6. **Bottleneck shifts from typing to judgment** — code review
+   becomes the constraint; plan for that
+
+### Strategic implication
+
+The time Claude saves should be **reinvested in what Claude can't
+do** — getting Maya in front of v0.5, iterating on positioning,
+polishing the welcome deck, debugging cross-platform issues,
+making product decisions. Those are where the product is won or
+lost.
+
+**Plan as if Claude cuts v1 from 18 months to 10.** Then use the
+eight saved months on the product work that doesn't compress.

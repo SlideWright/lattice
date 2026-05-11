@@ -101,5 +101,8 @@ it is load-bearing.
   export/storage/AI/diagram/layout adapter interfaces become the
   public plugin API; first-party features dogfood the same API).
   v1-load-bearing probes (live preview parity, single-slide render,
-  PDF, PNG, engine retirement) named as the next step. No desktop
+  PDF, PNG, engine retirement) named as the next step. Closes with
+  a development-leverage analysis: disciplined use of Claude Code
+  realistically compresses v1 from ~18 months to ~10, with the
+  architecture doc itself as the high-fidelity prompt. No desktop
   code yet.
