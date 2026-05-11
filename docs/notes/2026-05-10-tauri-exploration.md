@@ -440,7 +440,7 @@ Layered configuration. VS Code-style: settings travel with the
 project so a workspace can pin its theme, linter rules, export
 defaults, and recommended extensions.
 
-#### Convention — `.slidewright/` folder
+#### Workspace config — `.slidewright/` folder
 
 Hidden folder at workspace root, parallel to `.vscode/`. Folder
 beats single file because we'll want more than just settings:
@@ -453,12 +453,57 @@ beats single file because we'll want more than just settings:
 └── themes/              # workspace-scoped palettes
 ```
 
+#### User config — the other half
+
+User-tier settings + per-user state live in the platform's
+conventional app-config directory:
+
+| Platform | Path |
+|---|---|
+| macOS | `~/Library/Application Support/SlideWright/` |
+| Linux | `~/.config/slidewright/` (XDG) |
+| Windows | `%APPDATA%\SlideWright\` |
+
+Resolved at runtime via Tauri's `path::app_config_dir()` — never
+hardcoded. Folder layout mirrors `.slidewright/`, with two
+additions:
+
+```
+<app-config>/SlideWright/
+├── settings.json          # user-tier settings
+├── keybindings.json       # custom keyboard shortcuts
+├── snippets/              # user-level snippets
+├── themes/                # user-authored themes (not tied to a workspace)
+├── extensions/            # installed extensions (actual code)
+└── state/
+    ├── recent-workspaces.json
+    ├── window-state.json
+    ├── welcome-shown.json
+    └── …
+```
+
+`extensions/` holds installed extension code (extensions install at
+user scope — see caveat below). `state/` holds the things that
+only make sense per-user: window position, recent workspaces,
+onboarding flags.
+
+#### User-only — what can never be workspace-scoped
+
+- Window/session state — your monitor, not your project's
+- OS color-scheme preference — your eyes
+- Recent workspaces list — meaningless to share
+- Welcome / onboarding state — per-user, one-time
+- Telemetry / auto-update preferences
+- Installed extensions — global; workspaces *recommend*, users
+  *install*
+- Keybindings — user-controlled
+
 #### Layered resolution
 
 | Tier | Where | Notes |
 |---|---|---|
 | Defaults | shipped in app | sensible baseline |
-| User | platform-specific user config | global preferences |
+| User | `<app-config>/SlideWright/settings.json` (platform-specific path above) | global preferences |
 | Workspace | `.slidewright/settings.json` | project overrides; commits to git |
 | Folder | per-folder in multi-root | v1.x |
 
@@ -507,11 +552,23 @@ load-bearing). Settings reference credentials by ID:
 
 This is what makes workspace settings safely committable to git.
 
-**Workspace trust deferred to v1.x.** A workspace can recommend
-extensions that execute code. v1 sidesteps the problem by gating
-extension installation on explicit user action (no auto-install
-from `extensions.json`). v1.x adds an explicit trust prompt
-following VS Code's pattern.
+**Extensions install at user scope, not workspace scope.**
+Workspaces *recommend* via `.slidewright/extensions.json`; users
+*install* via an explicit prompt. Installed code lives in
+`<app-config>/SlideWright/extensions/`. **No auto-install in v1**,
+even from workspace recommendations — that's what preserves the
+trust property until v1.x adds an explicit "trust this workspace"
+prompt. If extensions could be installed *by* workspace files,
+opening a hostile workspace could execute arbitrary code on the
+machine; VS Code learned this lesson explicitly and we adopt it
+without paying the tuition.
+
+**User config can be cloud-synced; secrets still can't go there.**
+A user might sync `<app-config>/SlideWright/` through Dropbox /
+iCloud / OneDrive. That makes the keychain-only rule for secrets
+*more* important, not less. User config holds the *index* of
+credentials (which IDs exist, which connector each belongs to);
+the tokens themselves live in the OS keychain via Tauri.
 
 #### Scope per setting
 
