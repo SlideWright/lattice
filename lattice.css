@@ -35,9 +35,15 @@
    * declaring them in its own :root block. */
 
   /* ── Fonts ────────────────────────────────────────────────────────── */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body:    'Outfit', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+  /* Emoji fallbacks (Apple/Segoe/Noto) are appended to every stack so raw
+     unicode emoji in headings, body, and chrome render inline at the local
+     font's metrics. Without them, Chromium falls back unpredictably and the
+     emoji may render larger than the text and push lines around. The
+     marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
+     section img.emoji handles that variant. */
+  --font-display: 'Playfair Display', Georgia, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', serif;
+  --font-body:    'Outfit', system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
 
   /* ── Spacing scale ────────────────────────────────────────────────── */
   --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
@@ -423,7 +429,20 @@ section:not(.quote):not(.featured) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+
+/* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
+   They must render inline at text size and not pick up the block image styling
+   above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
+   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+section img.emoji {
+  display:inline-block;
+  height:1em; width:auto;
+  max-width:none; max-height:none;
+  border-radius:0; object-fit:fill;
+  vertical-align:-0.1em;
+  margin:0 0.05em;
+}
 section header {
   position:absolute; top:24px; left:30px; right:30px;
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
