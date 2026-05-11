@@ -1,286 +1,9 @@
 ---
 marp: true
-theme: indaco
+theme: cuoio
 size: 16:9
 header: "Lattice · Background Gallery"
-style: |
-  /* ── Boardroom Background Library (lattice-backgrounds.css) ── */
-
-  /* Compositor: assembles gradient slots into background-image.
-     Stack one radial-slot class + one linear-slot class to layer both. */
-  section[class*="bg-"] {
-    background-image: var(--_bg-radial, none), var(--_bg-linear, none);
-  }
-
-  /* Corner glows */
-  section.bg-corner-tl {
-    --_bg-radial: radial-gradient(
-      ellipse 62% 55% at 0% 0%,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      transparent 100%
-    );
-  }
-  section.bg-corner-tr {
-    --_bg-radial: radial-gradient(
-      ellipse 62% 55% at 100% 0%,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      transparent 100%
-    );
-  }
-  section.bg-corner-bl {
-    --_bg-radial: radial-gradient(
-      ellipse 62% 55% at 0% 100%,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      transparent 100%
-    );
-  }
-  section.bg-corner-br {
-    --_bg-radial: radial-gradient(
-      ellipse 62% 55% at 100% 100%,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      transparent 100%
-    );
-  }
-
-  /* Edge washes */
-  section.bg-edge-top {
-    --_bg-linear: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 6%,
-      transparent 35%
-    );
-  }
-  section.bg-edge-bottom {
-    --_bg-linear: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 6%,
-      transparent 35%
-    );
-  }
-  section.bg-edge-left {
-    --_bg-linear: linear-gradient(
-      to right,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 4%,
-      transparent 30%
-    );
-  }
-  section.bg-edge-right {
-    --_bg-linear: linear-gradient(
-      to left,
-      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 10%, transparent) 4%,
-      transparent 30%
-    );
-  }
-
-  /* Atmospheric */
-  section.bg-vignette {
-    --_bg-radial: radial-gradient(
-      ellipse 88% 85% at center,
-      transparent 0%,
-      transparent 45%,
-      color-mix(in srgb, var(--accent) 6%, transparent) 70%,
-      color-mix(in srgb, var(--accent) 11%, transparent) 100%
-    );
-  }
-  section.bg-spotlight {
-    --_bg-radial: radial-gradient(
-      ellipse 55% 50% at center,
-      color-mix(in srgb, var(--accent) 7%, transparent) 0%,
-      transparent 70%
-    );
-  }
-  section.bg-horizon {
-    --_bg-linear: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--accent) 11%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 6%, transparent) 15%,
-      transparent 45%
-    );
-  }
-  section.bg-ground {
-    --_bg-linear: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--accent) 11%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 6%, transparent) 15%,
-      transparent 45%
-    );
-  }
-
-  /* Multi-accent */
-  section.bg-duotone {
-    --_bg-radial:
-      radial-gradient(ellipse 55% 50% at 0% 0%, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 100%),
-      radial-gradient(ellipse 55% 50% at 100% 100%, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 100%);
-  }
-  section.bg-frame {
-    --_bg-linear:
-      linear-gradient(to bottom, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 22%),
-      linear-gradient(to top,    color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 22%),
-      linear-gradient(to right,  color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 22%),
-      linear-gradient(to left,   color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 22%);
-  }
-  section.bg-sweep {
-    --_bg-linear: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
-      color-mix(in srgb, var(--accent)  4%, transparent) 30%,
-      transparent 55%
-    );
-  }
-  section.bg-ambient {
-    --_bg-linear: linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--accent) 7%, transparent) 0%,
-      transparent 45%
-    );
-  }
-
-  /* SVG accent marks — shapes rendered via ::before mask for palette-aware
-     visibility in both light and dark modes. The mask SVG uses fill='white'
-     (alpha channel) so color-mix(var(--accent) 28%) shows through at shape
-     positions only. var(--accent) resolves via the theme's light-dark()
-     token, keeping shapes on-brand in every presentation mode. */
-  section.bg-micro-tr {
-    --_bg-radial: radial-gradient(ellipse 50% 45% at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 100%);
-  }
-  section.bg-micro-tr::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1192' cy='80' r='4.5' fill='white' fill-opacity='1'/><circle cx='1215' cy='74' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1240' cy='82' r='3' fill='white' fill-opacity='0.85'/><circle cx='1262' cy='75' r='2.5' fill='white' fill-opacity='0.8'/><circle cx='1206' cy='97' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1232' cy='100' r='3' fill='white' fill-opacity='0.8'/><circle cx='1256' cy='93' r='2' fill='white' fill-opacity='0.7'/><circle cx='1221' cy='113' r='3' fill='white' fill-opacity='0.75'/><circle cx='1248' cy='110' r='2' fill='white' fill-opacity='0.65'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-tick-right {
-    --_bg-linear: linear-gradient(to left, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 18%);
-  }
-  section.bg-tick-right::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-orbit-br {
-    --_bg-radial: radial-gradient(ellipse 50% 45% at 100% 100%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 100%);
-  }
-  section.bg-orbit-br::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1200' cy='617' r='22' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><circle cx='1200' cy='617' r='13' fill='none' stroke='white' stroke-width='1' stroke-opacity='0.75'/><circle cx='1200' cy='617' r='2.5' fill='white' fill-opacity='1'/><circle cx='1226' cy='601' r='2' fill='white' fill-opacity='0.8'/><circle cx='1242' cy='624' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1184' cy='608' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-slash-tr {
-    --_bg-radial: radial-gradient(ellipse 48% 42% at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 100%);
-  }
-  section.bg-slash-tr::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1188' y1='112' x2='1201' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1204' y1='105' x2='1217' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><line x1='1220' y1='112' x2='1233' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='1236' y1='105' x2='1249' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.7'/><line x1='1252' y1='98' x2='1265' y2='85' stroke='white' stroke-width='1.5' stroke-opacity='0.6'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-seeds {
-    --_bg-radial: radial-gradient(ellipse 88% 85% at center, transparent 0%, transparent 48%, color-mix(in srgb, var(--accent) 5%, transparent) 75%, color-mix(in srgb, var(--accent) 9%, transparent) 100%);
-  }
-  section.bg-seeds::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-pills-right {
-    --_bg-linear: linear-gradient(to left, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 15%);
-  }
-  section.bg-pills-right::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-asterisk-scatter {
-    --_bg-radial:
-      radial-gradient(ellipse 45% 40% at 100% 0%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 100%),
-      radial-gradient(ellipse 35% 32% at 0% 100%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 100%);
-  }
-  section.bg-asterisk-scatter::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1206.5' y1='88' x2='1213.5' y2='88' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1211.8' y1='85' x2='1208.2' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1208.2' y1='85' x2='1211.8' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1238' y1='100' x2='1244' y2='100' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1242.5' y1='97.4' x2='1239.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1239.5' y1='97.4' x2='1242.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><circle cx='1228' cy='78' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1258' cy='85' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1195' cy='105' r='1.5' fill='white' fill-opacity='0.65'/><line x1='62' y1='628' x2='68' y2='628' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='66.5' y1='625.4' x2='63.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='63.5' y1='625.4' x2='66.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='107.5' y1='640' x2='112.5' y2='640' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='111.25' y1='637.8' x2='108.75' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='108.75' y1='637.8' x2='111.25' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><circle cx='85' cy='618' r='1.5' fill='white' fill-opacity='0.65'/><circle cx='142' cy='632' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-thread-diagonal {
-    --_bg-radial: radial-gradient(ellipse 45% 40% at 100% 0%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 100%);
-  }
-  section.bg-thread-diagonal::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1257' y1='90' x2='1278' y2='69' stroke='white' stroke-width='1' stroke-opacity='1'/><line x1='1244' y1='90' x2='1265' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1231' y1='90' x2='1252' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.7'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-bracket-right {
-    --_bg-linear: linear-gradient(to left, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 15%);
-  }
-  section.bg-bracket-right::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><path d='M1268,310 L1274,310 L1274,326 L1268,326' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><path d='M1268,422 L1274,422 L1274,438 L1268,438' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-grid-micro {
-    --_bg-radial: radial-gradient(ellipse 48% 42% at 100% 0%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 100%);
-  }
-  section.bg-grid-micro::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1244' cy='72' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='72' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='72' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='72' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='84' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='84' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='84' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='84' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='96' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='96' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='96' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='96' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='108' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='108' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='108' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='108' r='1.5' fill='white' fill-opacity='0.7'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-  section.bg-chevron-bl {
-    --_bg-radial: radial-gradient(ellipse 40% 38% at 0% 100%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 100%);
-  }
-  section.bg-chevron-bl::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: color-mix(in srgb, var(--accent) 28%, transparent);
-    --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><polyline points='34,625 42,631 34,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><polyline points='52,625 60,631 52,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><polyline points='70,625 78,631 70,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
-    -webkit-mask-image: var(--m); mask-image: var(--m);
-    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  }
-
-  /* Reset */
-  section.bg-none { --_bg-radial: none; --_bg-linear: none; }
+class: bg-seeds
 paginate: true
 ---
 
@@ -309,7 +32,7 @@ A radial ellipse anchored at the top-left corner bleeds the theme's accent color
 
 ---
 
-<!-- _class: stats bg-corner-tr dark -->
+<!-- _class: stats bg-corner-bl bg-seeds  -->
 <!-- _footer: "02 · bg-corner-tr · radial glow, top-right corner" -->
 
 `Corner Glow · Top Right`
@@ -641,31 +364,29 @@ Three right-pointing chevron marks — each 8×12px, open stroke — sit at the 
 
 ---
 
-<!-- _class: content bg-corner-tl bg-edge-right -->
-<!-- _footer: "30 · bg-corner-tl + bg-edge-right · radial slot + linear slot layered" -->
+<!-- _class: content bg-vignette bg-micro-tr -->
+<!-- _footer: "30 · bg-vignette + bg-micro-tr · gradient + mark, slot-free" -->
 
-`Layered · Radial + Linear`
+`Layered · Any Gradient + Any Mark`
 
-## Corner glow meets edge wash
+## Marks carry no slot — combine freely
 
-Two separate classes. Two separate slots. Both render.
+`bg-vignette` fills `--_bg-radial`. `bg-micro-tr` renders its dot cluster via `::before` without touching any gradient slot. Previously this would have been a slot conflict — both were radial. Now marks are slot-free: any gradient pairs with any mark.
 
-`bg-corner-tl` writes `--_bg-radial`; `bg-edge-right` writes `--_bg-linear`. The compositor assembles them into a single `background-image` with both layers active.
-
-`<!-- _class: content bg-corner-tl bg-edge-right -->`
+`<!-- _class: content bg-vignette bg-micro-tr -->`
 
 ---
 
-<!-- _class: content bg-vignette bg-tick-right dark -->
-<!-- _footer: "31 · bg-vignette + bg-tick-right · atmospheric + SVG marks, dark" -->
+<!-- _class: content bg-corner-tl bg-edge-bottom bg-slash-tr -->
+<!-- _footer: "31 · bg-corner-tl + bg-edge-bottom + bg-slash-tr · two gradients + one mark" -->
 
-`Layered · Atmospheric + SVG · Dark`
+`Layered · Two Gradients + One Mark`
 
-## Perimeter tint with right-margin ticks
+## Three classes. Three layers
 
-`bg-vignette` sets the radial slot — accent at the edges, open center. `bg-tick-right` brings a linear haze on the right plus the five `::before` tick marks. Dark canvas.
+`bg-corner-tl` fills the radial slot. `bg-edge-bottom` fills the linear slot. `bg-slash-tr` contributes its slash marks via `::before` — no slot, no conflict. The compositor assembles both gradients; the mark rides alongside.
 
-`<!-- _class: content bg-vignette bg-tick-right dark -->`
+`<!-- _class: content bg-corner-tl bg-edge-bottom bg-slash-tr -->`
 
 ---
 

@@ -93,7 +93,7 @@ Two or more gradient layers composed. Each layer runs at ~8–9% so the total ma
 
 ### SVG accent marks
 
-Geometric shapes placed in the known-empty peripheral slots. The compositor rule plus a `::before` mask render each mark in the active `--accent` color.
+Geometric shapes placed in the known-empty peripheral slots. A `::before` mask renders each mark in the active `--accent` color. Marks occupy **no gradient slot** — they combine freely with any gradient class.
 
 | Class | Mark | Location |
 |---|---|---|
@@ -119,7 +119,7 @@ Geometric shapes placed in the known-empty peripheral slots. The compositor rule
 
 ## Layer composability
 
-Each class writes to one of two CSS custom property slots rather than `background-image` directly. A single compositor rule assembles both slots:
+The 16 gradient classes use two custom property slots assembled by a single compositor rule:
 
 ```css
 section[class*="bg-"] {
@@ -127,24 +127,29 @@ section[class*="bg-"] {
 }
 ```
 
-| Slot | Classes |
-|---|---|
-| `--_bg-radial` | Corner glows, `bg-vignette`, `bg-spotlight`, `bg-duotone`, `bg-asterisk-scatter`, and all SVG patterns with a radial haze (micro-tr, orbit-br, slash-tr, seeds, thread-diagonal, grid-micro, chevron-bl) |
-| `--_bg-linear` | Edge washes, `bg-horizon`, `bg-ground`, `bg-sweep`, `bg-ambient`, `bg-frame`, and all SVG patterns with a linear haze (tick-right, pills-right, bracket-right) |
+| Slot | Gradient classes |
+| --- | --- |
+| `--_bg-radial` | Corner glows, `bg-vignette`, `bg-spotlight`, `bg-duotone`, `bg-asterisk-scatter` |
+| `--_bg-linear` | Edge washes, `bg-horizon`, `bg-ground`, `bg-sweep`, `bg-ambient`, `bg-frame` |
 
-**Valid combinations:** one class from the radial column + one from the linear column. Both layers render independently.
+The 11 SVG mark classes set **no slot property**. They render only via `::before` and are unconstrained — add any mark to any gradient without conflict.
+
+**Valid combinations:**
 
 ```markdown
-<!-- _class: content bg-vignette bg-tick-right -->      ✓ radial + linear
-<!-- _class: content bg-corner-tl bg-edge-right -->     ✓ radial + linear
-<!-- _class: content bg-seeds bg-ground dark -->        ✓ radial + linear + dark
+<!-- _class: content bg-corner-tl bg-edge-right -->          ✓ radial + linear
+<!-- _class: content bg-vignette bg-micro-tr -->             ✓ gradient + any mark
+<!-- _class: content bg-corner-tl bg-edge-right bg-seeds --> ✓ two gradients + mark
+<!-- _class: content bg-horizon bg-seeds dark -->            ✓ gradient + mark + dark
 ```
 
-**Slot conflict (two radials or two linears):** the class defined later in the file wins the slot. The first class's gradient is lost. SVG `::before` marks are also a singleton per element — only the last SVG class's shapes render when two SVG classes are stacked.
+**Gradient slot conflict (two radials or two linears):** the class defined later in `lattice.css` wins; the first gradient is silently dropped.
 
 ```markdown
 <!-- _class: content bg-corner-tl bg-corner-tr -->    ✗ both radial — corner-tr wins
 ```
+
+**Two SVG marks:** both `::before` rules apply but `::before` is a singleton — only the last-defined mark's shapes render. Avoid stacking two marks.
 
 ---
 
