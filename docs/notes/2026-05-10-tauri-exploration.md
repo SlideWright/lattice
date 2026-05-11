@@ -16,6 +16,13 @@ Direct from authoring intent (May 2026):
 - **Core.** Intuitive, seamless desktop authoring of PDF-quality slide
   decks using *native markdown*. The source the user writes is the
   source Lattice already renders.
+- **Editor experience.** Three layout modes — *focused* (markdown
+  only), *split* (markdown + preview, resizable divider, orientation
+  and side both user-controlled), and *picture-in-picture* (markdown
+  full-pane + floating, resizable preview). Preview tracks the caret —
+  the current slide always stays in view. Edits reflect immediately,
+  with **incremental rendering**: only the actually-changed slide
+  re-renders.
 - **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
   Marp's experimental *native PPTX* path), Confluence, slides.com,
   Google Slides (scope TBD).
@@ -76,6 +83,8 @@ Constraints the desktop shell must absorb:
 | Document model | **Yjs (`Y.Doc`) from day one** | Unblocks AI editing + collaboration without retrofit |
 | Markdown → slides | `@marp-team/marp-core` (browser bundle) | Pure JS in WebView; no Node needed |
 | Diagrams | **`DiagramService`** (named subsystem) | One owner for Mermaid lifecycle across editor, preview, exports |
+| Preview pipeline | **`SlideSegmenter` + `RenderCache` + `PreviewPane`** | Incremental rendering (only changed slides re-render) keyed by slide content hash |
+| Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
@@ -189,6 +198,92 @@ Consumers:
   Mermaid" flag).
 - **Command palette** — "Insert diagram → flowchart / sequence /
   class / state / gantt …" drops a working skeleton.
+
+**Render cache (sub-cache).** Internal cache keyed by `(source,
+paletteSig) → SVG`. Mermaid is the slowest renderer (hundreds of ms
+per diagram); the cache makes editing prose around a diagram-heavy
+slide cheap — the diagram's SVG is reused while the surrounding
+slide re-renders. Independent of the slide-level `RenderCache`:
+survives slide invalidations as long as the Mermaid source itself
+is unchanged. Same pattern (smaller win) for highlight.js code
+renders.
+
+### Preview pipeline — `SlideSegmenter` + `RenderCache`
+
+Naive "re-render the whole deck on every keystroke" hits a wall
+fast — a 70-slide deck with Mermaid is hundreds of ms per
+keystroke. The v1 architecture uses **slide-level diffing with
+content-hashed caching**, two coupled subsystems.
+
+#### `SlideSegmenter`
+
+```
+segment(markdown) → [{ index, lineRange, source, hash }]
+slideAtLine(line) → index           // caret → slide mapping
+diff(prev, next)  → { added, removed, changed, moved }
+```
+
+Runs on every `Y.Text` change observer event. Hashing is by
+*content*, not index — inserting a slide doesn't cache-miss every
+slide after it.
+
+#### `RenderCache`
+
+```
+get(hash, paletteSig)        → renderedSlide | null
+set(hash, paletteSig, slide) → void
+```
+
+LRU eviction with ~200 entries (covers a 70-slide deck × 3 recent
+palettes). Cache key includes the palette signature so a palette
+change invalidates exactly what the palette controls.
+
+#### Render loop on each edit
+
+1. `Y.Text` change → `SlideSegmenter` recomputes the slide list
+2. Diff against previous → typically 0–1 changed slides
+3. For each changed slide: render via marp-core's single-slide path
+   (see **H3a** below); store in `RenderCache`
+4. For *moved* or *unchanged* slides: reuse cached DOM nodes
+5. `PreviewPane` patches only the affected slide nodes
+
+Cost per keystroke: sub-millisecond segment + a few ms render of
+one slide + instant DOM swap. Hits "edits reflected immediately"
+easily.
+
+The fallback (if H3a fails): full-deck render but slide-level DOM
+patching only — slower but still incremental at the DOM layer.
+
+### Preview — `PreviewPane`
+
+Owns the rendered-slide DOM and its scroll state.
+
+- Consumes the slide list and `RenderCache` entries; performs
+  keyed DOM diffing (reorder, replace, insert, remove)
+- Scrolls the active slide into view (driven by
+  `SlideSegmenter.slideAtLine` on caret moves); smooth scroll,
+  configurable
+- Optional active-slide highlight ring in the deck's accent color
+  (toggle in View menu)
+- **Preview click → editor caret** (preview-to-source navigation) —
+  deferred to v1.x
+
+Same component in all three layout modes; only its container
+changes.
+
+### Workspace layout — `LayoutShell`
+
+Three editor/preview layouts, expressed as the same two children
+(editor + preview) under a different container.
+
+| Mode | Layout |
+|---|---|
+| **Focused** | Editor full-pane; preview hidden. **Tap-to-peek** shortcut shows preview transiently — preserves focus without forcing a mode change. |
+| **Split** | Editor + preview as flex children. Direction (`row` / `column`) and order (which side each pane appears) user-controlled. Resizable divider. |
+| **Picture-in-picture** | Editor full-pane; preview as absolute-positioned overlay; resizable + draggable. **Freeform position in v1; corner-snap in v1.x.** |
+
+User preferences (mode, split ratio, orientation, side assignment,
+PiP position + size) persist via Tauri session state, per-window.
 
 ### Export — adapter interface
 
@@ -414,6 +509,12 @@ Earlier hypotheses re-scoped to the no-Node v1 architecture:
 - **H3.** *(v1 — load-bearing)* `@marp-team/marp-core` browser
   bundle + `lattice-runtime.js` reaches feature parity with the
   emulator for live preview, with theme switching in real time.
+- **H3a.** *(v1 — load-bearing for incremental rendering)*
+  `@marp-team/marp-core` supports rendering individual slides (or
+  can be wrapped cleanly to do so) such that a single-slide render
+  is identical to the same slide rendered inside a full-deck pass.
+  If false, fallback is full-deck render + slide-level DOM patching
+  only — slower but still workable.
 - **H4.** ~~Bundled Chromium adds < 200 MB to the installer.~~ N/A —
   no Chromium bundle (Tauri WebView).
 
@@ -459,10 +560,14 @@ toolchain costs are *not*, by themselves, replacement triggers.
 
 Three v1-load-bearing probes, in dependency order:
 
-1. **H3 — Live preview parity.** Minimal HTML page in a Tauri
-   WebView that loads `@marp-team/marp-core` + `lattice-runtime.js`,
-   renders `examples/gallery.md` from a string, and switches palette
-   in real time. If this works, the v1 architecture is live.
+1. **H3 + H3a — Live preview parity & single-slide render.**
+   Minimal HTML page in a Tauri WebView that loads
+   `@marp-team/marp-core` + `lattice-runtime.js`, renders
+   `examples/gallery.md` from a string, switches palette in real
+   time, **and renders a single slide independently and compares it
+   to the same slide inside a full-deck render** (H3a). If both
+   pass, the v1 architecture is live and incremental rendering is
+   unlocked.
 2. **H5 — PDF export.** Trigger `webview.print_to_pdf()` on the
    rendered output. Compare visually to `marp-cli --pdf` reference.
 3. **H6 — PNG export.** Screenshot each rendered slide via the
