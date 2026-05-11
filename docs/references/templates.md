@@ -2726,3 +2726,265 @@ section.<layout>.chart-frame
 - Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image full contain dark`
 
 ---
+
+## Template 30: Split Brief
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ EYEBROW      │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ │ ## Heading.  │                      │ │
+│ │              │  • Lead point        │ │
+│ │ Intro para.  │    Body detail.      │ │
+│ │              │                      │ │
+│ │  [dark]      │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-brief`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-brief -->
+```
+
+- Left panel (38%, dark): eyebrow label, `h2` heading, intro paragraph
+- Right panel (62%, light): 2–4 list items, each with a lead label (auto-bolded) and one sub-bullet body
+- Accent `border-left` on each top-level item; items distribute with `space-evenly`
+- SlotLabelLift auto-bolds the first line of each top-level `li` — do not write explicit `**bold**`
+- Sub-items use native list markers (`ul` → disc, `ol` → decimal)
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-brief -->
+
+`Q2 Performance Review`
+
+## Enterprise revenue stalled in Q2.
+
+Three structural factors explain 90% of the shortfall.
+
+- Renewal pricing complexity is driving churn at the segment ceiling
+  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap.
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+  - Contract length increased 18 days on average.
+- Competitive displacement accelerated in the $80–200K ACV tier
+  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+```
+
+---
+
+## Template 31: Split Metric
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ UNIT LABEL   │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ │ ## 114%      │                      │ │
+│ │              │  • Lead point        │ │
+│ │ Context      │    Body detail.      │ │
+│ │ sentence.    │                      │ │
+│ │  [light]     │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-metric`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-metric -->
+```
+
+- Left panel (44%, light): unit label, `h2` metric value, context sentence
+- Right panel (56%, dark): 2–4 list items with lead label + body sub-bullet
+- `h2` renders in display font at hero size; wrap a suffix in `*em*` for a smaller muted suffix (e.g. `## 114*%*`)
+- SlotLabelLift auto-bolds lead lines; sub-items use native list markers
+- Items distribute with `space-evenly`
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-metric -->
+
+`Net Revenue Retention`
+
+## 114*%*
+
+Measured across all customers active for 12+ months.
+
+- Existing customers are growing faster than we lose them
+  - At 114%, every churned dollar is offset by $1.14 in expansion.
+- Expansion is concentrated — three segments drive 80% of the gain
+  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
+- Sustained above 110%, this unlocks a capital-efficient growth path
+  - NRR above 110% meets the investor threshold for venture-category efficiency.
+```
+
+---
+
+## Template 32: Split Steps
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ 02  [corner] │  ① Step label        │ │
+│ │              │    Body detail.      │ │
+│ │ ## Phase.    │  ② Step label        │ │
+│ │              │    Body detail.      │ │
+│ │ Intro para.  │  ③ Step label        │ │
+│ │              │    Body detail.      │ │
+│ │  [alt]       │  ④ Step label        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-steps`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-steps -->
+```
+
+- Left panel (30%, `--bg-alt`): phase number as decorative corner watermark, `h2` heading, intro paragraph
+- Right panel (70%, light): step list with connecting timeline spine between items
+- **`ol`** → numbered accent circles (40px); **`ul`** → filled accent circles without numbers
+- SlotLabelLift auto-bolds each step label; nested `ul`/`ol` sub-items use native markers
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-steps -->
+
+`02`
+
+## Discovery & Scoping
+
+Four weeks. Shared definition of the problem before solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data quality review.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out.
+```
+
+---
+
+## Template 33: Split Compare
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ FRAME LABEL  │ ┌────────┬────────┐  │ │
+│ │              │ │OPTION  │OPTION ✦│  │ │
+│ │ ## Question? │ │────────│────────│  │ │
+│ │              │ │• point │• point │  │ │
+│ │ Framing      │ │• point │• point │  │ │
+│ │ sentence.    │ └────────┴────────┘  │ │
+│ │  [dark]      │ ▓ Recommendation ▓   │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-compare`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-compare -->
+```
+
+- Left panel (30%, dark): frame label, `h2` question, framing paragraph
+- Right panel (70%, light): two option cards in a 2-column grid + optional verdict strip
+- **First** top-level list item → left option; **second** → right option (automatically preferred: accent label + `✦` corner marker)
+- SlotLabelLift auto-bolds the option label (first line of each top-level `li`)
+- Sub-items under each option are the option's bullet points; `ul` → bullets, `ol` → numbers
+- Verdict: optional `> blockquote` after the list; renders as an accent-background recommendation strip
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-compare -->
+
+`Decision Required`
+
+## Build the data layer or buy it?
+
+Both paths are viable. The difference is where we spend the next 18 months.
+
+- Build in-house
+  - Full control over schema and roadmap
+  - 2–3 engineer-quarters to reach feature parity
+- Buy + configure
+  - Ship in 6 weeks, not 9 months
+  - Engineering capacity redirects to product-layer features
+
+> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+```
+
+---
+
+## Template 34: Split Statement
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────────┬──────────────────┐ │
+│ │ "                │  • Lead point    │ │
+│ │                  │    Body detail.  │ │
+│ │  Pull quote      │                  │ │
+│ │  spanning        │  • Lead point    │ │
+│ │  lines."         │    Body detail.  │ │
+│ │                  │                  │ │
+│ │  — Attribution   │  • Lead point    │ │
+│ │  [dark]          │    Body detail.  │ │
+│ └──────────────────┴──────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-statement`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-statement -->
+```
+
+- Left panel (50%, dark): blockquote pull quote + citation; decorative oversized `"` watermark
+- Right panel (50%, light): 2–4 list items with lead label + body sub-bullet
+- Blockquote: `> text` — renders in display italic at `--fs-xl`
+- Citation: `` `Author · Role, Company, Year` `` — renders as `<cite>` in muted body type
+- SlotLabelLift auto-bolds lead lines; sub-items use native list markers
+- Items distribute with `space-evenly`
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-statement -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- Clarity is a product decision, not a marketing one
+  - If a prospect cannot articulate our value in one sentence, it is a communication architecture problem.
+- Onboarding is the product's first argument for itself
+  - The moment a user first succeeds defines their frame for everything that follows.
+- Understanding, not delight, is the retention driver at scale
+  - Users who understand the system's logic stay through friction.
+```
+
+---
