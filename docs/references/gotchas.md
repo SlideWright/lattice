@@ -658,3 +658,27 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Every Marp preview re-render (one per keystroke).
 - **Removable when:** Never — idempotency is a permanent invariant.
 - **Commits:** Original slot-label-lift commit.
+
+### `image museum` slides inherit the anchor `border-left` via cascade
+
+- **Symptom:** A slide with `<!-- _class: image museum -->` shows a
+  6px left border and a squished text panel — as if the museum modifier
+  is not applied. Mirror variant affected in the same way.
+- **Cause:** The base rule `section.image:not(.full)` carried
+  `border-left: 6px solid var(--accent)` and `padding-left:
+  calc(var(--sp-2xl) + 6px)`. The museum override at higher specificity
+  cleared the border with `border-left: none`, but the `padding-left`
+  adjustment (the extra 6px) still leaked through in practice, and any
+  future reordering of rules could let the border re-emerge. The emulator
+  path also had a missing `!important` on the museum frame box-shadow,
+  so the base hairline shadow (`!important` at lower specificity) won.
+- **Mitigation:** Anchor decoration moved into a guarded rule
+  `section.image:not(.full):not(.museum)` — museum slides structurally
+  never receive the border or its padding offset. Museum rules no longer
+  need explicit `border: none` resets. Museum emulator box-shadow
+  promoted to `!important` ([lattice.css](../../lattice.css), image
+  half-canvas block).
+- **Triggered by:** Any `image museum` or `image museum mirror` slide.
+- **Removable when:** Never — the guard is cheap and the alternative
+  (cascade-order dependence) is fragile.
+- **Commits:** `d3ffaca`
