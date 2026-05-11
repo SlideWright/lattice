@@ -63,3 +63,7 @@ it is load-bearing.
   ASCII layout preview in `templates.md`, plus the
   [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
   and builder library.
+- [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) —
+  decision note for multi-resolution support (HD + 4K, candidate 4:3):
+  native Marp `@size` + px→rem refactor + CSS container query on section.
+  No theme changes; authors opt in via front-matter `size:` key.
