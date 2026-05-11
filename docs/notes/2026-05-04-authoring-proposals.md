@@ -492,7 +492,7 @@ Small layout, very high payoff for technical decks. A row of colour/shape marker
 
 ### 3.12 `checklist` — completion summary  *(implemented — see Template 28 in [templates.md](../references/templates.md#template-28-checklist))*
 
-Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[~]`).
+Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[-]`).
 
 ```markdown
 <!-- _class: checklist -->
@@ -502,11 +502,11 @@ Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[~]`).
 - [x] Codebook signing in production
 - [x] HSM-anchored audit trail
 - [x] One client integrated end-to-end
-- [~] TTL refresh under cold-start load — _open, see slide 27_
+- [-] TTL refresh under cold-start load — _open, see slide 27_
 - [ ] Multi-tenant operation — _Phase 2_
 ```
 
-States colour-mapped: ✓ pass, ~ warn, ☐ pending. Reuses the `--pass`/`--warn`/`--fail` palette.
+States colour-mapped: ✓ pass, – warn, ☐ pending. Reuses the `--pass`/`--warn`/`--fail` palette.
 
 ### 3.13 `manifesto` — formal proclamation
 
