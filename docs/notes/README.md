@@ -65,8 +65,13 @@ it is load-bearing.
   and builder library.
 - [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
   v1 architectural shape for the SlideWright desktop app on Tauri.
-  Captures the product vision (markdown authoring, focused/split/PiP
-  editor layouts, collapsible workspace sidebar, multi-format export,
+  Names the personas (primary: Maya, the engineering leader;
+  secondaries: Naveen the consultant, Jessamine the solo founder,
+  Theo the DevRel/OSS maintainer, Camila the brand-conscious PM,
+  Khoa the OSS maintainer; explicit anti-persona Diana, the visual
+  designer — we don't compete with Figma/Keynote/Canva). Captures
+  the product vision (markdown authoring, focused/split/PiP editor
+  layouts, collapsible workspace sidebar, multi-format export,
   cloud storage, collaboration, AI, brand theming, extensions &
   connectors) and the load-bearing decisions: no Node in v1, **own
   the engine** (`lattice-engine` replaces the runtime dependency on

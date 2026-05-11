@@ -91,6 +91,153 @@ Direct from authoring intent (May 2026):
 The vision is deliberately ambitious. The v1 architecture is shaped
 to make each later item *additive* rather than a rewrite.
 
+## Personas
+
+Every architectural decision so far assumes someone wants
+markdown-native deck authoring at boardroom quality. This section
+names who.
+
+### Primary — Maya, the Engineering Leader
+
+- Staff engineer or eng manager at a mid-size tech company
+- **1–3 decks/week** — design reviews, project updates,
+  postmortems, planning
+- Audience: peers and execs internally
+- Lives in markdown (PRs, docs, Notion). Uses Mermaid weekly.
+- **Pain today:** Google Slides is slow for the volume; PPT is
+  heavy; existing markdown deck tools (Marp, Slidev) look "techie"
+  and have weak layout vocabulary.
+- **What pulls her in:** speed of markdown + decks that look like
+  the design team made them; mermaid first-class; decks live
+  alongside design docs in git.
+
+**Why Maya is primary:** zero learning curve, daily volume justifies
+the tool, decision-maker for her own tooling, influences team
+adoption. Lowest switching cost, highest word-of-mouth leverage.
+
+### Secondary personas
+
+#### Naveen — the Strategy Consultant
+- Senior consultant at a firm with strict house style
+- **5–10 client decks/week**
+- Audience: client executives
+- Brand discipline non-negotiable; editorial conventions strict
+- **Pain today:** PPT is the lowest common denominator but slow;
+  junior consultants reinvent layouts; brand templates rot.
+- **What pulls him in:** enforced layout vocabulary, locked brand
+  palette, **native PPTX export** for client handoff, **local AI
+  for client-data safety**.
+
+Privacy is selling point #1 for Naveen. Cloud-AI tools are
+non-starters in client work; on-machine AI grounded in the firm's
+playbook is genuinely differentiating.
+
+#### Jessamine — the Solo Founder / CEO
+- Founder, Series A startup
+- Board decks, fundraise decks, all-hands
+- Markdown-comfortable (Notion + GitHub daily)
+- Cares deeply about visual quality — investor-facing
+- Has a brand identity but no design team
+- **Pain today:** hours fighting Slides instead of editing copy;
+  designer-built templates are inflexible; "boardroom-quality"
+  usually means hiring a designer.
+- **What pulls her in:** `ThemeStudio` gives designer-quality
+  output without a designer; AI helps shape narrative; fast
+  iteration.
+
+#### Theo — the Developer Advocate / OSS Maintainer
+- DevRel at a tech company or OSS maintainer
+- Conference talks, release announcements, demo decks
+- Audience: developers
+- Lives in markdown; uses Slidev / Marp / Reveal today
+- **Pain today:** existing markdown deck tools are visually
+  mediocre; theming is fiddly; exports inconsistent.
+- **What pulls him in:** Lattice's layout polish, Reveal.js export
+  (via extension) for web embedding, project-branded theming,
+  mermaid first-class.
+
+#### Camila — the Brand-Conscious PM / Marketer
+- Senior PM or product marketing at a brand-disciplined company
+- Positioning decks, customer presentations, internal storytelling
+- Markdown comfort variable — willing to learn if payoff is real
+- Cares about brand consistency more than personal expression
+- **Pain today:** brand templates in PPT/Slides degrade; nobody
+  follows them.
+- **What pulls her in:** brand palette enforced architecturally
+  (literally can't break it); layout vocabulary as a discoverable
+  menu; AI helps maintain voice.
+
+#### Khoa — the Open Source Maintainer
+- Maintainer of a popular OSS project
+- Release announcements, RFC presentations, meetup talks
+- Audience: developer community
+- Cares about clean, consistent look for the project
+- **Pain today:** presentation infrastructure eats time away from
+  content.
+- **What pulls him in:** project-branded theme committed in the
+  repo; plain markdown source; web export for blog/site embedding.
+
+### Anti-persona — explicit non-target
+
+#### Diana — the Visual Designer / Marketing Creative
+- Wants pixel-precise control: drag-to-position, freeform shapes,
+  custom typography per text block
+- Markdown is a non-starter
+- Uses Figma, Keynote, or Canva
+
+**We don't compete here.** Naming Diana is what lets us *say no* to
+feature requests that would drag us toward visual-tool territory.
+When someone asks "why can't I just drag a text box?", the honest
+answer is **"you're a Diana; our tool is for Mayas."**
+
+### What designing for Maya first sharpens
+
+| Decision | Maya signal |
+|---|---|
+| Markdown-native | Zero learning curve |
+| Mermaid first-class | Already in her workflow |
+| `WorkspaceView` opens folders | Git-versioned decks alongside docs |
+| Command palette ⌘K | Power-user pattern she expects |
+| `lattice.css` opinionated layouts | Quality without design effort |
+| `ThemeStudio` | One-time team setup; then never touched |
+| AI chat + suggestions | Speed accelerator, not novelty |
+| `.slidewright/` workspace settings | Commits next to deck source |
+| Local AI as default (v1.x) | No friction; not load-bearing for Maya |
+| Tauri vs Electron | She doesn't care; only feel matters |
+
+### What designing for Naveen second changes
+
+Naveen's needs sharpen things currently soft:
+
+- **Native PPTX export** becomes non-negotiable, not optional
+  (consultants live and die by PPTX)
+- **Local AI / privacy mode** becomes a *marketing headline*, not
+  a Settings toggle (firms can't use cloud AI on client data)
+- **Brand palette enforcement** must be strictly mandatory —
+  can't be overridden by slide-level styles
+- **`ThemeStudio` brand-scaffold** matters more than initially
+  credited — consulting firms have brand bibles; capturing one in
+  a palette is high-value
+- **Extension marketplace** matters more — firms want to publish
+  their playbook as an extension
+
+### The strategic ordering
+
+**Maya primary, Naveen secondary.** The architecture already speaks
+Maya's language fluently. Building for Naveen first would
+front-load PPTX, enterprise auth, and strict brand-lockdown work
+that's currently v1.x.
+
+Maya-first means:
+
+- v1 ships and gets adopted quickly via developer word-of-mouth
+- Real usage data shapes Naveen-targeted features in v1.x
+- We have a working product before tackling enterprise sales motion
+
+Naveen-first is bigger market + willingness-to-pay, but longer
+time-to-shipping-anything and higher feature bar before initial
+sale. Probably wrong order for a v1.
+
 ## What Lattice brings to the table
 
 Constraints the desktop shell must absorb:
