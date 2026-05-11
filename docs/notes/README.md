@@ -108,7 +108,11 @@ it is load-bearing.
   telemetry, code signing lead time, import strategy with PPTX as
   the lever, math rendering, app accessibility, table-stakes
   editor features, performance budgets, document format
-  versioning). Closes with a development-leverage analysis:
-  disciplined use of Claude Code realistically compresses v1 from
-  ~18 months to ~10, with the architecture doc itself as the
-  high-fidelity prompt. No desktop code yet.
+  versioning). Authoritative six-release plan (v1.0 → v1.5)
+  with three impactful capabilities per release and a cost
+  constraint — no dependency on runtime costs we can't control,
+  so cloud AI arrives at v1.5 as user-supplied keys only; local
+  AI lands at v1.2 instead. Closes with a development-leverage
+  analysis: disciplined use of Claude Code realistically
+  compresses v1 from ~18 months to ~10, with the architecture
+  doc itself as the high-fidelity prompt. No desktop code yet.

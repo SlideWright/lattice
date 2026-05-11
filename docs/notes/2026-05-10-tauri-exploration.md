@@ -39,13 +39,12 @@ Direct from authoring intent (May 2026):
   never live in settings — credentials are referenced by ID and
   resolved from the system keychain, so workspace settings can be
   safely committed to git.
-- **Onboarding.** First-run welcome screen, a **welcome deck**
+- **Onboarding.** First-run welcome screen + a **welcome deck**
   authored as a real Lattice deck (every important layout, palette,
-  Mermaid diagram, code highlight — dogfooded), and a small
-  spotlight tour for things only the live UI can show (drag
-  dividers, command palette, mode shortcuts). Re-entrant from Help
-  menu; skippable from anywhere; never modal-blocking. Extensions
-  can contribute their own tours.
+  Mermaid diagram, and code highlight — dogfooded). Re-entrant from
+  the Help menu; skippable; never modal-blocking. "What's New" notice
+  on version updates. **No spotlight-tour engine** — the welcome deck
+  + right-click context menus do that work.
 - **UI surfaces.** Minimalist by default, powerful for experts.
   Application menu + right-click context menus for discovery;
   **command palette (⌘K)** as the power-user equalizer with every
@@ -283,7 +282,7 @@ Constraints the desktop shell must absorb:
 | Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
 | Workspace view | **`WorkspaceView`** (sidebar) | File tree consumed from storage adapter; orthogonal to editor/preview modes |
 | Settings | **`Settings`** subsystem (defaults → user → workspace) | Layered config; workspace tier travels with the project; extensions extend the schema |
-| Onboarding | **`Onboarding`** subsystem | Welcome screen + welcome deck (Lattice deck) + spotlight tour engine; extensions can contribute tours |
+| Onboarding | **`Onboarding`** subsystem | Welcome screen + welcome deck (Lattice deck demonstrating every layout / palette / diagram); "What's New" notice on version update; no spotlight-tour engine (decided against) |
 | UI surfaces | **Command registry + palette (⌘K) + quick switcher (⌘P) + status bar + optional toolbar** | One registry, many surfaces; extension-contributable; `when` clauses hide irrelevant items |
 | Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
@@ -1061,82 +1060,29 @@ Existing assets (`examples/gallery.md`, `examples/mermaid-gallery.md`)
 are the *ingredients*; the welcome deck is the curated highlight
 reel.
 
-#### 3. Spotlight tours — for what a deck can't show
-
-Some things only make sense in the live UI: dragging a divider,
-invoking the command palette, switching themes. Coachmark overlays
-for these.
-
-Declarative format (so tours are *content*, not code):
-
-```jsonc
-{
-  "id": "first-run-tour",
-  "title": "Quick tour",
-  "trigger": "first-run",
-  "steps": [
-    {
-      "target": "data-tour-id=workspace-sidebar",
-      "title": "Files live here",
-      "body": "Click .md to edit. Drag images into the editor.",
-      "placement": "right"
-    },
-    {
-      "target": "data-tour-id=editor-mode-toggle",
-      "title": "Three layout modes",
-      "body": "Focused, split, picture-in-picture. ⌘1 / ⌘2 / ⌘3.",
-      "placement": "bottom"
-    }
-  ]
-}
-```
-
-UI components target via `data-tour-id` attributes — decoupled from
-CSS class names so refactors don't silently break tours.
-
-#### 4. "What's New" on version update
+#### 3. "What's New" on version update
 
 After an upgrade, if `state/onboarding.json` records a previous
-version, show a non-modal "What's new" notice with optional
-spotlight tour for new features. Dismissable; never blocking.
+version, show a non-modal "What's new" notice with the release's
+highlight reel (can re-open the welcome deck filtered to new
+features). Dismissable; never blocking. Lands in v1.1+.
 
-#### Design principles — load-bearing, not nice-to-have
+#### Decision against spotlight tours
 
-- **Skippable from anywhere** — every step has Skip
-- **One-time by default** — tours don't re-show unless the user
-  asks (Help menu) or a new version arrives
-- **No modal interruption** — no dialogs that block the editor;
-  spotlights overlay and dismiss
-- **No video links, no out-of-app docs trips** — if it needs >2
-  sentences, it doesn't belong in a spotlight
-- **Keyboard-first** — show the shortcut next to the action;
-  dismissal and advance both keyboard-reachable
-- **Opt-outable** — `onboarding.enabled: false` kills it entirely
+The earlier design included a **spotlight-tour engine** (coachmark
+overlays pointing at UI elements). **Decided against.** Reasons:
 
-#### Extension-contributed tours
+- Coachmark overlays tend to feel patronizing in practice
+- The welcome deck (which uses every important layout, palette,
+  diagram, and shortcut) does the same work more elegantly — and
+  is itself a demonstration of the product
+- Right-click context menus already teach the UI in-context
+- Saves implementation cost and removes a maintenance surface
+  (no `data-tour-id` attributes, no tour-content schema, no
+  extension-contribution surface for tours)
 
-Extensions register tours via the manifest:
-
-```jsonc
-"contributes": {
-  "tours": [
-    {
-      "id": "d2-diagrams-intro",
-      "title": "Authoring D2 diagrams",
-      "trigger": "first-d2-block-created",
-      "steps": [...]
-    }
-  ]
-}
-```
-
-Triggers:
-
-- `first-run` — only the built-in welcome tour uses this
-- `first-X-action` — contextual (first time the user creates a
-  mermaid block, opens a theme file, etc.)
-- `manual` — Help menu only
-- `version-update` — after install or upgrade
+The welcome deck is the canonical onboarding path. The decision
+frees up implementation budget and removes a patronizing UX.
 
 #### State
 
@@ -1146,24 +1092,19 @@ onboarding is per-person, not per-project:
 ```jsonc
 {
   "welcomeShownAt": "2026-05-11T…",
-  "toursCompleted": ["first-run-tour"],
-  "toursDismissed": ["pptx-export-walkthrough"],
   "lastSeenVersion": "1.0.0",
   "showWelcomeOnStartup": true
 }
 ```
 
-#### v1 / v1.x / v2
+#### Release placement
 
-- **v1** — welcome screen, welcome deck (real Lattice deck in the
-  app bundle), one built-in first-run tour, Help-menu re-entry,
-  user-state persistence.
-- **v1.x** — extension-contributed tours; "What's New" on version
-  update.
-- **v2** — full localization (tour content + welcome deck source
-  are already data, so this is straightforward).
+- **v1.0** — welcome screen + minimal welcome deck (3-4 slides)
+- **v1.1** — welcome deck expanded to ~12 polished slides
+- **v1.1+** — "What's New" notice on version update
+- **never** — spotlight tour engine (decided against above)
 
-The v1 commitment worth nailing: **the welcome deck as a deck**,
+The commitment worth nailing: **the welcome deck as a deck**,
 authored with the same care as the gallery fixtures and themed in
 `indaco` so the default palette shows at its best.
 
@@ -2111,6 +2052,240 @@ add to the architecture:
 | Format version field | `lattice-engine` migration table |
 
 Nothing forces a redesign. They're additions to known seams.
+
+## Release plan — v1.0 through v1.5
+
+A six-release arc. Each release ships a working product; each
+builds on the previous with minimal friction; each introduces
+**three impactful capabilities** plus supporting necessities.
+
+Total span: ~15-18 months from start to v1.5 complete (with Claude
+leverage per the Development leverage section below).
+
+**The cost constraint that shapes the arc:** no dependency on
+runtime costs we can't control or absorb. Cloud AI providers
+arrive at v1.5 as user-supplied keys — we never proxy or eat the
+cost.
+
+This release plan is the **authoritative timeline.** Per-subsystem
+`v1 / v1.x / v2` markings elsewhere in the note are local context;
+when in doubt, this plan is the canonical source.
+
+### v1.0 — Author and export (~4-5 mo)
+
+The smallest thing Maya uses weekly. Zero AI runtime cost.
+
+**Three capabilities:**
+
+1. **Markdown-native deck authoring with live preview** —
+   CodeMirror 6 editor + Tauri WebView preview + all 26+ Lattice
+   layouts (`lattice.css` already exists) + `indaco` palette +
+   Mermaid first-class via existing `lattice-runtime.js`.
+2. **Workspace-aware file management** — `WorkspaceView` sidebar
+   (single-root) + open with file / folder / last-session +
+   auto-save on idle + Yjs + `y-indexeddb` crash recovery.
+3. **Boardroom-quality PDF export** — WebView `print_to_pdf` with
+   vector text, embedded Mermaid SVG, and palette-themed code
+   highlighting.
+
+**Supporting necessities (not counted as capabilities):**
+
+- Tauri shell (macOS + Windows; Linux defers)
+- Code signing (Apple Developer ID + Microsoft EV cert) +
+  notarization + auto-update + opt-in crash reporting
+- Command palette + quick switcher + native menus + basic
+  right-click + keybindings.json
+- **App color-scheme honors OS preference** (system / light / dark)
+- Find / Replace in the open deck
+- Workspace + user settings (JSON only — no UI yet)
+- Welcome screen + minimal welcome deck (3-4 slides)
+- Keyboard nav + screen reader basics + reduced motion + WCAG AA
+  (indaco verified)
+- Document format `schema: lattice/1` + companion
+  `.slidewright/decks/<slug>.json` (format defined; mostly empty
+  until later releases use it)
+
+**Architectural seams placed (no consumers yet):**
+
+- Capability hubs (commands, exports, storage, AI, themes,
+  diagrams, layouts)
+- Tool registry contract shaped
+- `DocsIndex` placeholder
+- Extension manifest format decided
+
+**Explicitly out of v1.0:** AI of any kind, presentation mode,
+multi-format export beyond PDF, second palette, `ThemeStudio`,
+extension runtime, status bar, outline view, slide list panel,
+rich right-click, settings UI, drag-drop images, speaker notes,
+focused editor mode.
+
+### v1.1 — Make it presentable (~2-3 mo)
+
+Polish v1.0 into a tool that feels complete for presentation work.
+
+**Three capabilities:**
+
+1. **Presentation mode + speaker notes** — fullscreen current /
+   next slide view with timer; speaker-notes syntax landed
+   (fenced ` ```notes ` block); notes appear in presentation
+   mode. (PDF notes-pages export → v1.4.)
+2. **Multi-format export** — HTML (WebView serialization) + PNG
+   sets (WebView screenshot at 3× scale) + Markdown passthrough.
+3. **UI completeness** — status bar with mode / palette / save
+   status + outline view + slide list panel (drag to reorder) +
+   rich right-click context menus (slide, text, file, folder,
+   mermaid block, code block, gutter) + focused editor mode.
+
+**Side polish:** `cuoio` palette + `indaco-dark`, image drag-drop,
+basic settings UI, welcome deck expanded to the polished
+~12-slide artifact.
+
+**Friction check:** v1.0 decks open unchanged. All additive.
+
+### v1.2 — Add local AI (~3-4 mo)
+
+**The AI launch** — on our timing, with zero runtime cost.
+
+**Three capabilities:**
+
+1. **Local LLM engine** — Candle (Rust-native) running a 1B-3B
+   instruction-tuned model (Phi-3-mini / Llama 3.2 3B /
+   Qwen 2.5 3B). Opt-in download from our CDN (~1-2 GB). Bundled
+   embedding model (~100 MB).
+2. **`ChatPanel` with on-device chat** — sidebar pane with
+   per-deck conversation history in `Y.Map`, privacy indicator
+   badge ("via Local"), `@`-mentions for context, text-only
+   initially (tool use → v1.3).
+3. **`DocsIndex` — RAG grounding over Lattice docs** — built-in
+   corpus (`docs/`, `examples/gallery.md`, etc.) indexed at
+   app-build time; in-memory vector store. This is what makes a
+   3B model actually capable of writing correct Lattice markdown.
+
+**Side:** Ollama auto-detect connector (bring-your-own local
+model). **No cloud AI yet.** Privacy is real, not aspirational —
+no traffic leaves the machine.
+
+**Friction check:** AI is opt-in (download required); users who
+skip see no change.
+
+### v1.3 — AI everywhere + brand theming (~2-3 mo)
+
+Make AI feel woven through the app; unlock brand-driven theming.
+
+**Three capabilities:**
+
+1. **AI suggestions (ambient layer)** — inline completion (Tab to
+   accept) + layout suggestions ("5 bullets — try `cards-grid`?")
+   + quality lint (length, WCAG, structure). All driven by the
+   local model + `DocsIndex`.
+2. **Tool use in chat** — `insertSlideAfter`, `applyLayout`,
+   `proposeRewrite`, `insertDiagram`, `addThemeToken`. Chat that
+   *does*, not just talks. Actions land as Yjs ops with
+   accept/reject UX.
+3. **`ThemeStudio` + app theming** — brand-driven palette
+   authoring (brand colors → ThemeStudio generates valid palette
+   with WCAG AA + Mermaid theme + app-chrome tokens). Live
+   iterative preview against gallery fixtures. Per-palette
+   app-chrome tokens across existing palettes.
+
+**Friction check:** all additive. v1.2 chats keep working; tool
+use is opt-in via chat UI.
+
+### v1.4 — Bring your decks (~2-3 mo)
+
+The adoption-unlock release. Plus performance and math.
+
+**Three capabilities:**
+
+1. **Import from existing tools** — PPTX best-effort (text +
+   structure; assets and complex layouts flagged for cleanup) +
+   Marp / Slidev / Reveal.js markdown (trivial — same dialect
+   family) + Google Slides via Drive API → PPTX → our importer.
+2. **Math rendering (KaTeX)** — inline + block math; ~70 KB
+   bundle addition. Unlocks academic / quant / data-science /
+   technical-engineering audiences.
+3. **Incremental rendering** — `SlideSegmenter` + `RenderCache` +
+   Mermaid render sub-cache. Editor stays responsive on 100+
+   slide decks; only changed slides re-render.
+
+**Side:** PDF notes-pages export (delivers what the v1.1
+speaker-notes syntax promised).
+
+**Friction check:** import is one-way; incremental rendering
+shows up as "it got faster"; math is opt-in via fenced math blocks.
+
+### v1.5 — Open up (~3 mo)
+
+Connect to the broader ecosystem.
+
+**Three capabilities:**
+
+1. **Cloud AI providers (user-supplied keys)** — Anthropic +
+   OpenAI + Gemini + generic OpenAI-compatible (catches Mistral,
+   Cohere, Together, Groq, Fireworks, OpenRouter, LiteLLM, vLLM,
+   LMStudio, Azure OpenAI, AWS Bedrock). All via the existing
+   capability hub. **User adds their own key; we never proxy or
+   eat the cost.**
+2. **Extension runtime + third-party install** — worker sandbox +
+   manifest loader + permission broker. Capability hubs that have
+   existed since v1.0 now have a public API. Side-load via folder;
+   no marketplace yet.
+3. **PPTX export + cloud storage connectors** — Node sidecar
+   (raster path + `pptxgenjs` assembly) for PPTX; native PPTX (via
+   Marp's experimental flag) decided against — reimplementation
+   cost without proportionate benefit. Storage adapters: Google
+   Drive + OneDrive (OAuth via Tauri Rust core + system keychain).
+   Confluence and slides.com publishing land as extensions.
+
+**Friction check:** cloud AI is opt-in per user; existing local
+workflows untouched. Extensions are opt-in install. PPTX is an
+export option, not a new document format.
+
+### Cost story across the arc
+
+| Release | Our runtime cost | User runtime cost |
+|---|---|---|
+| v1.0 – v1.4 | $0 | $0 |
+| v1.5 (cloud AI opt-in) | $0 — user uses their own key | Whatever their cloud bill is |
+
+**Our only ongoing costs:** Apple Developer Program ($99/yr),
+Microsoft EV cert ($300-700/yr), update CDN (~$10-20/mo at low
+scale), local-AI model download CDN (~$20-50/mo at low scale).
+**~$500-1,200/yr fixed.** Doesn't scale with users.
+
+### Friction-minimization properties
+
+| Property | How it stays low-friction |
+|---|---|
+| Document format | `schema: lattice/1` across all v1.x; migration functions handle additive evolution |
+| Settings | Layered + extensible; new keys never break existing files |
+| AI provider abstraction | All providers behind one capability hub; swap is config, not code |
+| Architectural seams | Capability hubs exist from v1.0; v1.5 opens them as public API without rewrite |
+| Backward compat | Every release reads every prior release's decks unchanged |
+| Operational infrastructure | Auto-update + signing + crash reporting from v1.0; doesn't change as features land |
+
+### The marketing arc
+
+Each release has a story that moves the product forward visibly:
+
+- **v1.0** — "The markdown deck tool that doesn't look techie"
+- **v1.1** — "Now presentable" (presentation mode + polish)
+- **v1.2** — "Now with local AI" (the AI launch — private, free)
+- **v1.3** — "AI everywhere" (ambient + agentic + brand theming)
+- **v1.4** — "Bring your existing decks" (import + math)
+- **v1.5** — "Connect to your stack" (cloud + extensions + PPTX)
+
+### What's never built
+
+Two items from the broader scope discussion that should be
+explicitly removed:
+
+- **Spotlight tour engine.** The welcome deck does v1.0/v1.1's
+  onboarding work. Coachmark overlays tend to feel patronizing.
+  (Reflected in the Onboarding section.)
+- **Native PPTX (Marp's experimental text-to-XML path).** Standard
+  PPTX via raster + `pptxgenjs` in v1.5 is sufficient. Native PPTX
+  is a reimplementation cost with no proportionate user benefit.
 
 ## Development leverage with Claude
 
