@@ -926,7 +926,7 @@ function parseSlide(raw, index) {
 
   let html = '';
   const lines = raw.split('\n');
-  let inList = false, inOrderedList = false, inSubList = false, inBlockquote = false, inPre = false;
+  let inList = false, inOrderedList = false, inSubList = false, inSubSubList = false, inBlockquote = false, inPre = false;
   const sp = classAttr.includes('no-period') ? s => s.replace(/\.\s*$/, '') : s => s;
   const ap = classAttr.includes('with-period')   ? s => /[.!?:…]$/.test(s.trimEnd()) ? s : s.trimEnd() + '.' : s => s;
 
@@ -947,6 +947,7 @@ function parseSlide(raw, index) {
     if (inPre) { html += line + '\n'; continue; }
 
     if (!t) {
+      if (inSubSubList)   { html += '</ul></li>';  inSubSubList   = false; }
       if (inSubList)      { html += '</ul></li>';  inSubList      = false; }
       if (inList)         { html += '</ul>';        inList         = false; }
       if (inOrderedList)  { html += '</ol>';        inOrderedList  = false; }
@@ -964,11 +965,19 @@ function parseSlide(raw, index) {
       if (!inBlockquote) { html += '<blockquote>'; inBlockquote = true; }
       html += `<p>${parseInline(t.slice(2))}</p>`;
     }
-    else if (/^ {2,}- /.test(line)) {
-      if (!inSubList) { html += '<ul>'; inSubList = true; }
+    else if (/^ {4,}- /.test(line)) {
+      if (!inSubSubList) { html += '<ul>'; inSubSubList = true; }
       html += `<li>${parseInline(t.slice(2))}</li>`;
     }
+    else if (/^ {2,}- /.test(line)) {
+      if (inSubSubList)   { html += '</ul></li>'; inSubSubList = false; }
+      if (!inSubList)     { html += '<ul>'; inSubList = true; }
+      html += `<li>${parseInline(t.slice(2))}`;
+      const nextL2 = i + 1 < lines.length ? lines[i + 1] : '';
+      if (!/^ {4,}- /.test(nextL2)) html += '</li>';
+    }
     else if (t.startsWith('- ')) {
+      if (inSubSubList)   { html += '</ul></li>'; inSubSubList  = false; }
       if (inSubList)      { html += '</ul></li>'; inSubList     = false; }
       if (inOrderedList)  { html += '</ol>';       inOrderedList = false; }
       if (!inList)        { html += '<ul>';        inList        = true;  }
@@ -978,27 +987,25 @@ function parseSlide(raw, index) {
     }
     else if (/^\d+\. /.test(t)) {
       // Ordered list item — e.g. "1. item text"
-      if (inList)   { html += '</ul>'; inList = false; }
-      if (inSubList) { html += '</ul></li>'; inSubList = false; }
+      if (inList)        { html += '</ul>'; inList = false; }
+      if (inSubSubList)  { html += '</ul></li>'; inSubSubList = false; }
+      if (inSubList)     { html += '</ul></li>'; inSubList = false; }
       if (!inOrderedList) { html += '<ol>'; inOrderedList = true; }
       html += `<li>${parseInline(t.replace(/^\d+\. /, ''))}`;
       // Check if next line is a sub-list — if not, close immediately
       const nextOl = i + 1 < lines.length ? lines[i + 1] : '';
       if (!/^ {2,}- /.test(nextOl) && !/^   /.test(nextOl)) html += '</li>';
     }
-    else if (/^ {2,}- /.test(line) || /^   - /.test(line)) {
-      // Sub-list item inside parent list item (2-5 space indent)
-      if (!inSubList) { html += '<ul>'; inSubList = true; }
-      html += `<li>${parseInline(t.replace(/^-\s+/, ''))}</li>`;
-    }
     else if (t.startsWith('<')) { html += t + '\n'; }
     else {
       if (inBlockquote) { html += '</blockquote>'; inBlockquote = false; }
+      if (inSubSubList) { html += '</ul></li>';    inSubSubList = false; }
       if (inSubList)    { html += '</ul></li>';    inSubList    = false; }
       if (inList)       { html += '</ul>';         inList       = false; }
       html += `<p>${parseInline(t)}</p>`;
     }
   }
+  if (inSubSubList) html += '</ul></li>';
   if (inSubList)    html += '</ul></li>';
   if (inList)       html += '</ul>';
   if (inOrderedList) html += '</ol>';
@@ -1152,50 +1159,12 @@ function parseSlide(raw, index) {
     });
   }
 
-  // verdict-grid: ul > li(title + ul(badge items + last body)) → grid-verdict.
-  // Title can be bare text or wrapped in <strong> — CSS bolds it either way.
+  // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.
+  // The ul > li card structure and last-inner-li body text are left intact for CSS.
   if (cls.includes('verdict-grid')) {
-    // Greedy match on outer ul so nested uls don't split the match
-    html = html.replace(/<ul>([\s\S]*)<\/ul>/, (_, outerInner) => {
-      // Split into top-level <li>…</li> blocks, depth-aware.
-      const items = [];
-      const re = /<li>|<\/li>|<(?:ul|ol)>|<\/(?:ul|ol)>/g;
-      let depth = 0, liStart = -1, mm;
-      while ((mm = re.exec(outerInner)) !== null) {
-        const tok = mm[0];
-        if (tok === '<li>') { if (depth === 0) liStart = mm.index + tok.length; depth++; }
-        else if (tok === '</li>') { depth--; if (depth === 0 && liStart >= 0) { items.push(outerInner.slice(liStart, mm.index)); liStart = -1; } }
-        else if (tok === '<ul>' || tok === '<ol>') depth++;
-        else depth--;
-      }
-      const hasNested = items.some(c => /<ul>/.test(c));
-      if (hasNested) {
-        const vcards = items.map(content => {
-          const innerUlMatch = content.match(/<ul>([\s\S]*)<\/ul>\s*$/);
-          let titleRaw = innerUlMatch ? content.slice(0, innerUlMatch.index) : content;
-          titleRaw = titleRaw.trim();
-          const strongOnly = titleRaw.match(/^<strong>([\s\S]*?)<\/strong>$/);
-          const title = strongOnly ? strongOnly[1] : titleRaw;
-          const nestedItems = innerUlMatch ? [...innerUlMatch[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(n => n[1].trim()) : [];
-          const badgeItems = nestedItems.slice(0, -1);
-          const bodyText = nestedItems[nestedItems.length - 1] ?? '';
-          const badges = badgeItems.map(b => {
-            const bc = /^\[x\]/.test(b) ? 'badge pass' : /^\[-\]/.test(b) ? 'badge warn' : 'badge fail';
-            const label = b.replace(/^\[[x\-\s]\]\s*/, '');
-            return `<span class="${bc}">${label}</span>`;
-          }).join('');
-          return `<div class="vcard"><div class="vcard-title">${title}</div><div class="badge-row">${badges}</div><div class="vcard-body">${bodyText}</div></div>`;
-        });
-        return `<div class="grid-verdict">${vcards.join('')}</div>`;
-      }
-      // Legacy flat format: li with optional <strong> title + inline body
-      const vcards = items.map(content => {
-        const titleMatch = content.match(/<strong>(.*?)<\/strong>/);
-        const title = titleMatch ? titleMatch[1] : content.trim();
-        const body = titleMatch ? content.replace(/<strong>.*?<\/strong>/, '').trim() : '';
-        return `<div class="vcard"><div class="vcard-title">${title}</div><div class="vcard-body">${body}</div></div>`;
-      });
-      return `<div class="grid-verdict">${vcards.join('')}</div>`;
+    html = html.replace(/<li>\s*\[([x\- ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
+      const bc = marker === 'x' ? 'badge pass' : marker === '-' ? 'badge warn' : 'badge fail';
+      return `<li><span class="${bc}">${label.trim()}</span></li>`;
     });
   }
 
@@ -1287,6 +1256,160 @@ function parseSlide(raw, index) {
       .replace(codeP, '')
       .trim();
     html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${codeP}${h5}${h2}</div><div class="panel-right">${rest}</div>`;
+  }
+
+  // Depth-aware lift of each top-level <li> in the first ul/ol of `src`.
+  // Mirrors the slot-label-lift Marpit plugin for the emulator path.
+  function liftListItems(src) {
+    const listMatch = src.match(/<(ul|ol)>/);
+    if (!listMatch) return src;
+    const listTag = listMatch[1];
+    const openList = `<${listTag}>`, closeList = `</${listTag}>`;
+    const listStart = src.indexOf(openList);
+    let depth = 0, pos = listStart, listEnd = -1;
+    while (pos < src.length) {
+      if (src.startsWith(openList, pos)) { depth++; pos += openList.length; }
+      else if (src.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
+      else pos++;
+    }
+    if (listEnd === -1) return src;
+    const inner = src.slice(listStart + openList.length, listEnd);
+    const out = []; let liDepth = 0, liStart = -1, i = 0, lastEmitted = 0;
+    while (i < inner.length) {
+      if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+      else if (inner.startsWith('</li>', i)) {
+        liDepth--;
+        if (liDepth === 0 && liStart !== -1) {
+          out.push(inner.slice(lastEmitted, liStart));
+          out.push(liftSlotLabel(inner.slice(liStart, i)));
+          lastEmitted = i; liStart = -1;
+        }
+        i += 5;
+      } else i++;
+    }
+    out.push(inner.slice(lastEmitted));
+    return src.slice(0, listStart) + openList + out.join('') + closeList + src.slice(listEnd + closeList.length);
+  }
+
+  // split-brief: `eyebrow` code-p + h2 + first non-code p → brief-left;
+  // tight ul (title / -- body sub-item pairs, title auto-lifted) → brief-right.
+  if (cls.includes('split-brief')) {
+    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
+    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
+    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
+    const eyebrow = codePMatch ? `<span class="eyebrow">${codePMatch[1]}</span>` : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
+    const h2 = h2Match ? h2Match[0] : '';
+    const introP = introPMatch ? introPMatch[0] : '';
+    let right = html;
+    if (codeP) right = right.replace(codeP, '');
+    if (h2) right = right.replace(h2, '');
+    if (introP) right = right.replace(introP, '');
+    right = liftListItems(right.trim());
+    html = `<div class="brief-left">${eyebrow}${h2}${introP}</div><div class="brief-right">${right}</div>`;
+  }
+
+  // split-metric: `unit-label` code-p → span.unit-label; h2 = hero number;
+  // first non-code p → span.metric-context; tight ul (title auto-lifted) → metric-right.
+  if (cls.includes('split-metric')) {
+    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
+    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
+    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
+    const unitLabel = codePMatch ? `<span class="unit-label">${codePMatch[1]}</span>` : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
+    const h2 = h2Match ? h2Match[0] : '';
+    const introP = introPMatch ? introPMatch[0] : '';
+    const context = introP ? `<span class="metric-context">${introP.replace(/<\/?p>/g, '')}</span>` : '';
+    let right = html;
+    if (codeP) right = right.replace(codeP, '');
+    if (h2) right = right.replace(h2, '');
+    if (introP) right = right.replace(introP, '');
+    right = liftListItems(right.trim());
+    html = `<div class="metric-left">${unitLabel}${h2}${context}</div><div class="metric-right">${right}</div>`;
+  }
+
+  // split-steps: `phase-num` code-p → span.phase-num; h2 + first non-code p →
+  // steps-left; tight ol (title auto-lifted / -- body sub-item) → steps-right.
+  if (cls.includes('split-steps')) {
+    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
+    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
+    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
+    const phaseNum = codePMatch ? `<span class="phase-num">${codePMatch[1]}</span>` : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
+    const h2 = h2Match ? h2Match[0] : '';
+    const introP = introPMatch ? introPMatch[0] : '';
+    let right = html;
+    if (codeP) right = right.replace(codeP, '');
+    if (h2) right = right.replace(h2, '');
+    if (introP) right = right.replace(introP, '');
+    right = liftListItems(right.trim());
+    html = `<div class="steps-left">${phaseNum}${h2}${introP}</div><div class="steps-right">${right}</div>`;
+  }
+
+  // split-compare: `frame-label` code-p + h2 + first non-code p → compare-left;
+  // ul/ol top-level li items → .option / .option.preferred; blockquote → .verdict.
+  // Second top-level list item is always the preferred option.
+  if (cls.includes('split-compare')) {
+    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
+    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
+    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
+    const bqMatch = html.match(/<blockquote>([\s\S]*?)<\/blockquote>/);
+    const frameLabel = codePMatch ? `<span class="frame-label">${codePMatch[1]}</span>` : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
+    const h2 = h2Match ? h2Match[0] : '';
+    const introP = introPMatch ? introPMatch[0] : '';
+    const bq = bqMatch ? bqMatch[0] : '';
+    let body = html;
+    if (codeP) body = body.replace(codeP, '');
+    if (h2) body = body.replace(h2, '');
+    if (introP) body = body.replace(introP, '');
+    if (bq) body = body.replace(bq, '');
+    body = body.trim();
+    // Split the first ul/ol into top-level li items → .option divs.
+    const listMatch = body.match(/<(ul|ol)>/);
+    let options = '';
+    if (listMatch) {
+      const listTag = listMatch[1];
+      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
+      const listStart = body.indexOf(openList);
+      let depth = 0, pos = listStart, listEnd = -1;
+      while (pos < body.length) {
+        if (body.startsWith(openList, pos)) { depth++; pos += openList.length; }
+        else if (body.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
+        else pos++;
+      }
+      if (listEnd !== -1) {
+        const inner = body.slice(listStart + openList.length, listEnd);
+        const items = []; let liDepth = 0, liStart = -1, i = 0;
+        while (i < inner.length) {
+          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
+          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
+          else i++;
+        }
+        options = items.map((item, idx) => {
+          const optCls = idx === 1 ? 'option preferred' : 'option';
+          return `<div class="${optCls}">${liftSlotLabel(item)}</div>`;
+        }).join('');
+      }
+    }
+    const verdict = bq ? `<div class="verdict">${bq}</div>` : '';
+    html = `<div class="compare-left">${frameLabel}${h2}${introP}</div>`
+         + `<div class="compare-right"><div class="options">${options}</div>${verdict}</div>`;
+  }
+
+  // split-statement: leading blockquote → statement-left; `cite` code-p → cite
+  // element; tight ul (title auto-lifted / -- body sub-item pairs) → statement-right.
+  if (cls.includes('split-statement')) {
+    const bqMatch = html.match(/<blockquote>([\s\S]*?)<\/blockquote>/);
+    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
+    const bq = bqMatch ? bqMatch[0] : '';
+    const codeP = codePMatch ? codePMatch[0] : '';
+    const cite = codePMatch ? `<cite>${codePMatch[1]}</cite>` : '';
+    let right = html;
+    if (bq) right = right.replace(bq, '');
+    if (codeP) right = right.replace(codeP, '');
+    right = liftListItems(right.trim());
+    html = `<div class="statement-left">${bq}${cite}</div><div class="statement-right">${right}</div>`;
   }
 
   // cards-wide: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
@@ -1861,38 +1984,46 @@ function parseSlide(raw, index) {
               const bodyUl = extractFirstUl(cardContent);
               const cardLead = (bodyUl ? cardContent.slice(0, bodyUl.start) : cardContent)
                 .replace(/<\/?p>/g, '').trim();
-              let cardBody = '';
+              // Size: one trailing size code on the title line
+              let size = '', cardTitle = cardLead;
+              const sizeM = cardLead.match(/^([\s\S]*?)\s*<code>([^<]+)<\/code>\s*$/);
+              if (sizeM && KB_SIZE.includes(sizeM[2].trim().toLowerCase())) {
+                size = sizeM[2].trim().toUpperCase();
+                cardTitle = sizeM[1].trim();
+              }
+
+              // Label + status: first sub-bullet (prose = label, trailing code = status)
+              let label = '', status = '', cardBody = '';
               if (bodyUl) {
-                const bodyItems = parseTopLevelLis(bodyUl.inner);
-                cardBody = bodyItems[0] ? bodyItems[0].replace(/<\/?p>/g, '').trim() : '';
+                const subItems = parseTopLevelLis(bodyUl.inner);
+                if (subItems[0]) {
+                  const metaLine = subItems[0].replace(/<\/?p>/g, '').trim();
+                  const statM = metaLine.match(/^([\s\S]*?)\s*<code>([^<]+)<\/code>\s*$/);
+                  if (statM && KB_STATUS.includes(statM[2].trim().toLowerCase())) {
+                    status = statM[2].trim();
+                    label  = statM[1].replace(/<[^>]+>/g, '').trim();
+                  } else {
+                    label = metaLine.replace(/<[^>]+>/g, '').trim();
+                  }
+                }
+                cardBody = subItems[1] ? subItems[1].replace(/<\/?p>/g, '').trim() : '';
               }
 
-              const { leadStripped, pills } = stripTrailingPills(cardLead);
-              const cardTitle = leadStripped.trim();
-              let size = '', lane = '', status = '';
-              for (const pill of pills) {
-                const lc = pill.toLowerCase();
-                if (!size && KB_SIZE.includes(lc))   { size = pill.toUpperCase(); }
-                else if (!status && KB_STATUS.includes(lc)) { status = pill; }
-                else if (!lane)                            { lane = pill; }
-              }
-
-              const laneColor = getLaneColor(lane);
+              const laneColor = getLaneColor(label);
               const laneStyle = laneColor ? ` style="--lane-color:${laneColor}"` : '';
               const sAttr     = status ? ` data-s="${escAttr(status)}"` : '';
-              const sizeEl    = size   ? `<span class="kanban-size">${size}</span>` : '';
-              const laneEl    = lane
-                ? `<span class="kanban-lane" style="--lane-color:${laneColor || 'var(--accent)'}">${lane}</span>`
+              const sizeEl    = size  ? `<span class="kanban-size">${size}</span>` : '';
+              const laneEl    = label
+                ? `<span class="kanban-lane" style="--lane-color:${laneColor || 'var(--accent)'}">${label}</span>`
                 : '';
               const statusEl  = status
                 ? `<span class="chart-status" data-s="${escAttr(status)}">${status}</span>`
                 : '';
+              const titleEl   = `<div class="kanban-card-title"><span class="kanban-title-text">${cardTitle}</span>${sizeEl}</div>`;
+              const metaEl    = (laneEl || statusEl) ? `<div class="kanban-card-meta">${laneEl}${statusEl}</div>` : '';
               const bodyEl    = cardBody ? `<div class="kanban-card-body">${cardBody}</div>` : '';
-              const metaContent = [sizeEl, laneEl, statusEl].filter(Boolean).join('');
-              const metaEl    = metaContent ? `<div class="kanban-card-meta">${metaContent}</div>` : '';
 
-              return `<div class="kanban-card"${sAttr}${laneStyle}>` +
-                `<div class="kanban-card-title">${cardTitle}</div>${metaEl}${bodyEl}</div>`;
+              return `<div class="kanban-card"${sAttr}${laneStyle}>${titleEl}${metaEl}${bodyEl}</div>`;
             }).join('');
           }
 
@@ -1986,7 +2117,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-panel','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-panel','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

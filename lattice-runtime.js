@@ -397,6 +397,11 @@
     transformVerdictGridBadges();
     transformChecklistItemStates();
     transformSlotLabels();
+    transformSplitBrief();
+    transformSplitMetric();
+    transformSplitSteps();
+    transformSplitCompare();
+    transformSplitStatement();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -494,7 +499,6 @@
   function transformVerdictGridBadges() {
     if (typeof document === 'undefined') return;
     for (const section of document.querySelectorAll('section.verdict-grid')) {
-      if (section.querySelector('.grid-verdict')) continue; // Marp CLI plugin already ran
       for (const outerLi of section.querySelectorAll(':scope > ul > li')) {
         const innerUl = outerLi.querySelector(':scope > ul');
         if (!innerUl) continue;
@@ -561,7 +565,7 @@
    */
   function transformSlotLabels() {
     if (typeof document === 'undefined') return;
-    const SELECTOR = 'section.compare-prose, section.before-after, section.decision';
+    const SELECTOR = 'section.compare-prose, section.before-after, section.decision, section.split-brief, section.split-metric, section.split-steps, section.split-compare, section.split-statement';
     for (const section of document.querySelectorAll(SELECTOR)) {
       // compare-prose authored with the build pipeline already has the
       // .compare-prose-inner / .card structure with the strong inside.
@@ -596,6 +600,184 @@
           li.insertBefore(strong, cursor);
         }
       }
+    }
+  }
+
+  // ── Split panel DOM transforms ──────────────────────────────────────────────
+  // Each mirrors the matching block in lattice-emulator.js. Idempotent: skips
+  // sections already wrapped (left/right div present). Called from initAndRun.
+  // Sibling implementations:
+  //   lattice-emulator.js  — post-process per-slide transform
+  //   lib/split-panels.js  — HTML-string transform run by marp.config.js render
+  //                          hook (primary path for marp-vscode preview)
+  // These DOM transforms act as a fallback for web export where scripts execute
+  // but the marp.config.js engine hook has not run.
+
+  function transformSplitBrief() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-brief')) {
+      if (sec.querySelector('.brief-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'brief-left';
+      if (codeP) {
+        const eyebrow = document.createElement('span');
+        eyebrow.className = 'eyebrow';
+        eyebrow.textContent = codeP.textContent;
+        left.appendChild(eyebrow);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      const right = document.createElement('div');
+      right.className = 'brief-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitMetric() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-metric')) {
+      if (sec.querySelector('.metric-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'metric-left';
+      if (codeP) {
+        const unitLabel = document.createElement('span');
+        unitLabel.className = 'unit-label';
+        unitLabel.textContent = codeP.textContent;
+        left.appendChild(unitLabel);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) {
+        const context = document.createElement('span');
+        context.className = 'metric-context';
+        context.innerHTML = introP.innerHTML;
+        left.appendChild(context);
+        introP.remove();
+      }
+      const right = document.createElement('div');
+      right.className = 'metric-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitSteps() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-steps')) {
+      if (sec.querySelector('.steps-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'steps-left';
+      if (codeP) {
+        const phaseNum = document.createElement('span');
+        phaseNum.className = 'phase-num';
+        phaseNum.textContent = codeP.textContent;
+        left.appendChild(phaseNum);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      const right = document.createElement('div');
+      right.className = 'steps-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitCompare() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-compare')) {
+      if (sec.querySelector('.compare-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const bq = sec.querySelector(':scope > blockquote');
+      const left = document.createElement('div');
+      left.className = 'compare-left';
+      if (codeP) {
+        const frameLabel = document.createElement('span');
+        frameLabel.className = 'frame-label';
+        frameLabel.textContent = codeP.textContent;
+        left.appendChild(frameLabel);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      // Split top-level li items from the options list into .option divs.
+      // transformSlotLabels has already run, so li > strong is in place.
+      const optionList = sec.querySelector(':scope > ul, :scope > ol');
+      const right = document.createElement('div');
+      right.className = 'compare-right';
+      const opts = document.createElement('div');
+      opts.className = 'options';
+      if (optionList) {
+        [...optionList.children].filter(el => el.tagName === 'LI').forEach((li, i) => {
+          const div = document.createElement('div');
+          div.className = i === 1 ? 'option preferred' : 'option';
+          [...li.childNodes].forEach(n => div.appendChild(n));
+          opts.appendChild(div);
+        });
+        optionList.remove();
+      }
+      right.appendChild(opts);
+      if (bq) {
+        const verdict = document.createElement('div');
+        verdict.className = 'verdict';
+        verdict.appendChild(bq);
+        right.appendChild(verdict);
+      }
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitStatement() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-statement')) {
+      if (sec.querySelector('.statement-left')) continue;
+      const bq = sec.querySelector(':scope > blockquote');
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const left = document.createElement('div');
+      left.className = 'statement-left';
+      if (bq) left.appendChild(bq);
+      if (codeP) {
+        const cite = document.createElement('cite');
+        cite.textContent = codeP.textContent;
+        left.appendChild(cite);
+        codeP.remove();
+      }
+      const right = document.createElement('div');
+      right.className = 'statement-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
     }
   }
 
@@ -1127,35 +1309,43 @@
         for (const cardLi of nestedUl.querySelectorAll(':scope > li')) {
           const cardClone = cardLi.cloneNode(true);
           const bodySub = cardClone.querySelector(':scope > ul, :scope > ol');
-          let cardBody = '';
+          let label = '', status = '', cardBody = '';
           if (bodySub) {
-            const firstBodyLi = bodySub.querySelector(':scope > li');
-            cardBody = firstBodyLi ? firstBodyLi.innerHTML.trim() : '';
+            const subLis = Array.from(bodySub.querySelectorAll(':scope > li'));
+            if (subLis[0]) {
+              const metaClone = subLis[0].cloneNode(true);
+              const trailingCode = metaClone.querySelector('code:last-child');
+              const trailingText = trailingCode ? trailingCode.textContent.trim() : '';
+              if (trailingText && KB_STATUS.includes(trailingText.toLowerCase())) {
+                status = trailingText;
+                trailingCode.remove();
+              }
+              label = metaClone.textContent.trim();
+            }
+            if (subLis[1]) cardBody = subLis[1].innerHTML.trim();
             bodySub.remove();
           }
-          const pills = extractTrailingPills(cardClone);
-          const cardTitle = cardClone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
-          let size = '', lane = '', status = '';
-          for (const pill of pills) {
-            const lc = pill.toLowerCase();
-            if (!size && KB_SIZE.includes(lc))         { size = pill.toUpperCase(); }
-            else if (!status && KB_STATUS.includes(lc)) { status = pill; }
-            else if (!lane)                              { lane = pill; }
+          // Size: one trailing size code on the title line
+          const titleCode = cardClone.querySelector('code:last-child');
+          const titleCodeText = titleCode ? titleCode.textContent.trim() : '';
+          let size = '';
+          if (titleCodeText && KB_SIZE.includes(titleCodeText.toLowerCase())) {
+            size = titleCodeText.toUpperCase();
+            titleCode.remove();
           }
-          const laneColor = getLaneColor(lane);
+          const cardTitle = cardClone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
+          const laneColor = getLaneColor(label);
           const card = document.createElement('div');
           card.className = 'kanban-card';
           if (status) card.dataset.s = status;
           if (laneColor) card.style.setProperty('--lane-color', laneColor);
-          const metaParts = [
-            size   ? '<span class="kanban-size">'  + chartEscAttr(size)   + '</span>' : '',
-            lane   ? '<span class="kanban-lane" style="--lane-color:' + (laneColor || 'var(--accent)') + '">' + chartEscAttr(lane) + '</span>' : '',
-            status ? '<span class="chart-status" data-s="' + chartEscAttr(status) + '">' + chartEscAttr(status) + '</span>' : '',
-          ].filter(Boolean).join('');
+          const sizeEl   = size   ? '<span class="kanban-size">' + chartEscAttr(size) + '</span>' : '';
+          const laneEl   = label  ? '<span class="kanban-lane" style="--lane-color:' + (laneColor || 'var(--accent)') + '">' + chartEscAttr(label) + '</span>' : '';
+          const statusEl = status ? '<span class="chart-status" data-s="' + chartEscAttr(status) + '">' + chartEscAttr(status) + '</span>' : '';
           card.innerHTML =
-            '<div class="kanban-card-title">' + cardTitle + '</div>' +
-            (metaParts ? '<div class="kanban-card-meta">' + metaParts + '</div>' : '') +
-            (cardBody  ? '<div class="kanban-card-body">'  + cardBody  + '</div>' : '');
+            '<div class="kanban-card-title"><span class="kanban-title-text">' + cardTitle + '</span>' + sizeEl + '</div>' +
+            ((laneEl || statusEl) ? '<div class="kanban-card-meta">' + laneEl + statusEl + '</div>' : '') +
+            (cardBody ? '<div class="kanban-card-body">' + cardBody + '</div>' : '');
           cardsEl.appendChild(card);
         }
       }

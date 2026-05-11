@@ -26,7 +26,6 @@
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import 'lattice-backgrounds';
 
 :root {
   /* Color tokens are defined by the active palette (themes/<name>.css),
@@ -987,25 +986,10 @@ section.list-criteria .crit-body ul li::before { display:none !important; conten
  * ## heading  then 4× pairs: ### tool-name  p badges+body
  */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-section.verdict-grid .grid-verdict { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:var(--sp-sm); flex:1; }
-section.verdict-grid .vcard { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.verdict-grid .vcard:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
-section.verdict-grid .vcard:last-child::after {
-  content:'✧'; position:absolute; top:8px; right:8px;
-  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
-  font-family:var(--font-body); font-weight:400; letter-spacing:0;
-  pointer-events:none;
-}
-section.verdict-grid .vcard:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid .vcard-title { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); padding-right:2.5rem; }
-section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body); line-height:var(--lh-snug); }
-section.verdict-grid .vcard:last-child .vcard-body { padding-right:2.5rem; }
 .badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass::before { content:"✓"; color:var(--pass); font-weight:700; }
 .badge.fail::before { content:"✗"; color:var(--fail); font-weight:700; }
 .badge.warn::before { content:"–"; color:var(--warn); font-weight:700; }
-.badge-row { display:flex; flex-wrap:wrap; gap:5px; }
 
 /* ── COMPARE-TABLE ──
  * ## heading  markdown table  p note
@@ -2082,40 +2066,38 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
- * Nested-list format: ul > li(strong title + ul(badge items + last = body))
+ * Nested-list format: ul > li(title + ul(badge items + last = body))
  * All selectors use > from section root to prevent outer card styles from
  * cascading into the nested badge/body items. */
-section.verdict-grid:not(:has(.grid-verdict)) > ul {
+section.verdict-grid > ul {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
+section.verdict-grid > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child::after {
+section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); position:relative; overflow:hidden; padding-right:2.5rem; }
+section.verdict-grid > ul > li:last-child::after {
   content:'✧'; position:absolute; top:8px; right:8px;
   font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > strong { font-weight:inherit; color:inherit; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-}
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { color:var(--accent); padding-right:2.5rem; }
+section.verdict-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; align-content:flex-start; }
-/* Badge items (all but last nested li) — neutral pill matching .badge base style */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
-/* Marp CLI path (plugin ran): strip outer-li styling so .badge span shows through cleanly */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
-/* Body text (last nested li) — reset all inherited card styles */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
+section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:0; align-content:flex-start; }
+/* Badge items (all but last nested li) — neutral pill */
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+/* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
+section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
+/* Body text (last nested li) — reset inherited card-title styles */
+section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
+section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
  * First li → hero col (50%); rest → column of sub-cards (50%)               */
@@ -2272,9 +2254,9 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
-/* ── SPLIT-BRIEF ── scratch concept ─────────────────────────────────────────
- * Executive brief. Dark left anchor. Right panel: findings via left-rule only.
- * Raw HTML structure: .brief-left / .brief-right
+/* ── SPLIT-BRIEF ──────────────────────────────────────────────────────────────
+ * Executive brief. Dark left anchor. Right panel: findings list via left-rule.
+ * Author: `eyebrow` · ## h2 · p · tight ul (title / -- body). SlotLabelLift bolts title.
  */
 section.split-brief { padding:0; flex-direction:row; }
 section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
@@ -2284,49 +2266,59 @@ section.split-brief .brief-left h2 { font-size:var(--fs-3xl); color:var(--on-dar
 section.split-brief .brief-left p { font-size:var(--fs-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
 section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-brief .findings { display:flex; flex-direction:column; flex:1; justify-content:space-between; }
-section.split-brief .finding { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
-section.split-brief .finding strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:5px; }
-section.split-brief .finding p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:5px; }
+section.split-brief .brief-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-brief .brief-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* ── SPLIT-METRIC ── scratch concept ────────────────────────────────────────
+/* ── SPLIT-METRIC ─────────────────────────────────────────────────────────────
  * One number owns the room. Light left / dark right — inverted scheme.
- * Raw HTML structure: .metric-left / .metric-right
+ * Author: `unit label` · ## number · p · tight ul (title / -- body). SlotLabelLift bolts title.
  */
 section.split-metric { padding:0; flex-direction:row; }
 section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
 section.split-metric .unit-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
-section.split-metric .number { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin-bottom:var(--sp-sm); }
-section.split-metric .number em { font-size:var(--fs-3xl); font-weight:700; font-style:normal; color:var(--text-muted); }
+section.split-metric .metric-left h2 { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-metric .metric-left h2 em { font-size:var(--fs-3xl); font-weight:700; font-style:normal; color:var(--text-muted); }
 section.split-metric .metric-context { display:block; font-size:var(--fs-sm); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
 section.split-metric .metric-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
-section.split-metric .implications { display:flex; flex-direction:column; gap:var(--sp-md); flex:1; justify-content:space-evenly; }
-section.split-metric .implication { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
-section.split-metric .implication strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
-section.split-metric .implication p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
+section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-metric .metric-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-metric .metric-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
 
-/* ── SPLIT-STEPS ── scratch concept ─────────────────────────────────────────
- * Sequential process. CSS-drawn vertical timeline with connecting line.
- * Raw HTML structure: .steps-left / .steps-right > .timeline > .step
+/* ── SPLIT-STEPS ──────────────────────────────────────────────────────────────
+ * Sequential process. CSS counter timeline with connecting line.
+ * Author: `phase` · ## h2 · p · tight ol (title / -- body sub-item). SlotLabelLift bolts title.
  */
 section.split-steps { padding:0; flex-direction:row; }
 section.split-steps .steps-left { width:30%; flex-shrink:0; background:var(--bg-alt); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
-section.split-steps .phase-num { display:block; font-size:var(--fs-watermark); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; margin-bottom:-24px; position:relative; z-index:0; }
+section.split-steps .phase-num { position:absolute; top:var(--sp-lg); left:var(--sp-lg); font-size:var(--fs-watermark); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; pointer-events:none; z-index:0; }
 section.split-steps .steps-left h2 { font-size:var(--fs-2xl); color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; position:relative; z-index:1; }
 section.split-steps .steps-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; position:relative; z-index:1; }
 section.split-steps .steps-right { flex:1; background:var(--bg); padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; justify-content:center; }
-section.split-steps .timeline { display:flex; flex-direction:column; }
-section.split-steps .step { display:grid; grid-template-columns:40px 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
-section.split-steps .step:last-child { padding-bottom:0; }
-section.split-steps .step:not(:last-child)::after { content:''; position:absolute; left:19px; top:40px; bottom:0; width:2px; background:var(--border); }
-section.split-steps .step-num { grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
-section.split-steps .step-title { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:40px; }
-section.split-steps .step-body { grid-column:2; grid-row:2; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:2px 0 0; }
+section.split-steps .steps-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; }
+section.split-steps .steps-right > ol { counter-reset:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li { display:grid; grid-template-columns:40px 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
+section.split-steps .steps-right > ol > li { counter-increment:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
+section.split-steps .steps-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:19px; top:40px; bottom:0; width:2px; background:var(--border); }
+section.split-steps .steps-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
+section.split-steps .steps-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
+section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:40px; }
+section.split-steps .steps-right > :is(ul,ol) > li > ul { grid-column:2; grid-row:2; list-style:disc; padding:2px 0 0 var(--sp-md); margin:0; }
+section.split-steps .steps-right > :is(ul,ol) > li > ol { grid-column:2; grid-row:2; list-style:decimal; padding:2px 0 0 var(--sp-md); margin:0; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* ── SPLIT-COMPARE ── scratch concept ───────────────────────────────────────
+/* ── SPLIT-COMPARE ────────────────────────────────────────────────────────────
  * Two options, one verdict. 2-column grid + spanning accent verdict row.
- * Raw HTML structure: .compare-left / .compare-right > .options + .verdict
+ * Author: `frame label` · ## h2 · p · ul/ol (- opt1 / -- items · - opt2 / -- items) · > verdict.
+ * Second top-level list item is always the preferred option. SlotLabelLift bolts option label.
  */
 section.split-compare { padding:0; flex-direction:row; }
 section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
@@ -2336,30 +2328,40 @@ section.split-compare .compare-left h2 { font-size:var(--fs-xl); color:var(--on-
 section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
 section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
-section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); }
-section.split-compare .option-header { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin-bottom:var(--sp-sm); }
-section.split-compare .option.preferred .option-header { color:var(--accent); border-color:var(--accent); }
-section.split-compare .option ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
-section.split-compare .option ul li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); padding-left:var(--sp-sm); position:relative; }
-section.split-compare .option ul li::before { content:'–'; position:absolute; left:0; color:var(--text-muted); }
+section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
+section.split-compare .option > strong { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
+section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
+section.split-compare .option.preferred::after { content:'✦'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-label); color:var(--accent); line-height:1; pointer-events:none; }
+section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ul > li,
+section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:6px; }
+section.split-compare .option ul > li:last-child,
+section.split-compare .option ol > li:last-child { margin-bottom:0; }
 section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
-section.split-compare .verdict-label { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
-section.split-compare .verdict p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
+section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
+section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
+section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
 
-/* ── SPLIT-STATEMENT ── scratch concept ─────────────────────────────────────
+/* ── SPLIT-STATEMENT ──────────────────────────────────────────────────────────
  * Pull quote. Half the slide committed to one idea — no apology.
- * Raw HTML structure: .statement-left (blockquote + cite) / .statement-right
+ * Author: > blockquote · `cite` · tight ul (title / -- body). SlotLabelLift bolts title.
  */
 section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-28px; left:14px; font-size:220px; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
-section.split-statement .statement-left blockquote { font-size:var(--fs-xl); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-md); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote,
+section.split-statement .statement-left blockquote p { font-size:var(--fs-xl); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
+section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-body); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
 section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
 section.split-statement .statement-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-statement .points { display:flex; flex-direction:column; gap:var(--sp-md); flex:1; justify-content:space-evenly; }
-section.split-statement .point strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
-section.split-statement .point p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-statement .statement-right > ul > li > ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-statement .statement-right > ul > li > ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
  * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
@@ -4582,15 +4584,22 @@ section.gantt.chart-frame .chart-body {
  * left  = (col−1) / N × 100% + inset
  * width =  span   / N × 100% − inset×2
  * A 3px inset gives visible air between adjacent bars that share a column
- * boundary (e.g. "Q1→Q2" and "Q2→Q3"). */
+ * boundary (e.g. "Q1→Q2" and "Q2→Q3").
+ *
+ * Fill approach mirrors the progress chart default:
+ *   color-mix(in oklab, var(--semantic) 70%, var(--bg-alt))
+ * — a tinted fill, not the raw semantic colour. This keeps bars visually
+ * proportional to the progress fill (which is 14px, no text) even though
+ * gantt bars are 34px tall and carry a label. Dark ink (--text-heading)
+ * sits on every tinted fill at ≥ 5.3:1. */
 .gantt-bar {
   position: absolute;
   top: 5px; bottom: 5px;
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 6px;
-  background: color-mix(in oklab, var(--accent) 85%, var(--bg));
-  color: var(--on-accent);
+  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
+  color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -4603,47 +4612,59 @@ section.gantt.chart-frame .chart-body {
   min-width: 0;
 }
 
-/* Status fills — override default accent fill, matching the progress contract */
+/* Status fills — tinted with the same formula as the default bar.
+ * All use --text-heading (dark ink) inherited from .gantt-bar. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { background: var(--pass); }
+.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { background: var(--warn); }
+.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { background: var(--fail); }
-.gantt-bar[data-s="deferred"] { background: color-mix(in oklab, var(--text-muted) 55%, var(--bg-alt)); }
+.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
+/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
+ * on this surface while still conveying the "inactive" register). */
+.gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
+  color: var(--text-body);
+}
+/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
+ * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { background: color-mix(in oklab, var(--accent) 80%, var(--bg)); }
+.gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
 
-/* Dark canvas — lift status fills (same pattern as section.progress.dark) and
- * switch bar text to dark navy so it reads against the lightened fills. */
+/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
+ * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
+ * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
 section.gantt.dark .gantt-bar {
-  background: color-mix(in oklab, var(--accent) 60%, var(--bg-alt));
+  background: var(--accent);
   color: var(--bg-dark);
 }
 section.gantt.dark .gantt-bar[data-s="on-track"],
 section.gantt.dark .gantt-bar[data-s="done"],
-section.gantt.dark .gantt-bar[data-s="live"]   { background: color-mix(in oklab, var(--pass) 40%, white); }
+section.gantt.dark .gantt-bar[data-s="live"]     {
+  background: color-mix(in oklab, var(--pass) 40%, white);
+  color: var(--bg-dark);
+}
 section.gantt.dark .gantt-bar[data-s="at-risk"],
-section.gantt.dark .gantt-bar[data-s="warn"]   { background: color-mix(in oklab, var(--warn) 45%, white); }
+section.gantt.dark .gantt-bar[data-s="warn"]     {
+  background: color-mix(in oklab, var(--warn) 45%, white);
+  color: var(--bg-dark);
+}
 section.gantt.dark .gantt-bar[data-s="blocked"],
-section.gantt.dark .gantt-bar[data-s="fail"]   { background: color-mix(in oklab, var(--fail) 45%, white); }
+section.gantt.dark .gantt-bar[data-s="fail"]     {
+  background: color-mix(in oklab, var(--fail) 45%, white);
+  color: var(--bg-dark);
+}
+/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
 section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 75%, var(--bg-alt));
+  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
   color: var(--on-dark-secondary);
 }
-section.gantt.dark .gantt-bar[data-s="pilot"],
-section.gantt.dark .gantt-bar[data-s="decision"] { background: color-mix(in oklab, var(--accent) 60%, white); }
+/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
+ * by light-dark() on those tokens; no explicit override needed. */
 
-/* Axis tick label on dark canvas — lighten to contrast against dark strip */
-section.gantt.dark .gantt-tick { color: color-mix(in oklab, var(--text-label) 60%, white); }
-section.gantt.dark .gantt-axis-row {
-  border-bottom-color: color-mix(in oklab, var(--accent) 35%, transparent);
-}
-section.gantt.dark .gantt-lane {
-  border-bottom-color: color-mix(in oklab, var(--border) 60%, white);
-}
-section.gantt.dark .gantt-lane-label { color: var(--dark-text-heading, white); }
+/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
+section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
 
 /* ── KANBAN ──────────────────────────────────────────────────────────────────
  * Board layout from a two-level list. Column = top-level bullet;
@@ -4676,16 +4697,19 @@ section.kanban.chart-frame .chart-body {
   gap: 0;
 }
 
-/* Column header — monospace uppercase, same register as h3 eyebrows */
+/* Column header — monospace uppercase label register.
+ * --text-label (brand blue light / dark-text-label dark) gives it the same
+ * visual weight as eyebrows and axis ticks: identifiable but not competing
+ * with card titles. 5.47:1 on light bg (AA), 6.95:1 on dark bg (AA). */
 .kanban-column-header {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-label);
   padding: 0 var(--sp-xs) 10px;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid color-mix(in oklab, var(--accent) 25%, transparent);
   margin-bottom: var(--sp-sm);
   white-space: nowrap;
   overflow: hidden;
@@ -4721,13 +4745,22 @@ section.kanban.chart-frame .chart-body {
 }
 
 .kanban-card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-xs);
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-heading);
   line-height: var(--lh-tight);
+}
+
+.kanban-title-text {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -4736,7 +4769,6 @@ section.kanban.chart-frame .chart-body {
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  flex-wrap: wrap;
   min-height: 20px;
 }
 
@@ -4779,6 +4811,7 @@ section.kanban.chart-frame .chart-body {
   padding: 0 7px;
   font-size: var(--fs-xs);
   flex: 0 0 auto;
+  margin-left: auto;
 }
 
 /* Optional card body (from a third-level sub-bullet) */
@@ -4792,12 +4825,9 @@ section.kanban.chart-frame .chart-body {
   text-overflow: ellipsis;
 }
 
-/* Dark canvas — the light-dark() tokens already remap bg, bg-alt, border,
- * text-heading, and text-muted, so the card chrome adapts automatically.
- * Only the column header needs lifting since it rides var(--text-muted). */
-section.kanban.dark .kanban-column-header {
-  color: color-mix(in oklab, var(--text-muted) 55%, white);
-}
+/* Dark canvas — --text-label uses light-dark() so column headers adapt
+ * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
+ * explicit because --pass doesn't use light-dark(). */
 section.kanban.dark .kanban-column[data-done] .kanban-column-header {
   color: color-mix(in oklab, var(--pass) 35%, white);
 }
@@ -4805,3 +4835,399 @@ section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }
 
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * BACKGROUND LIBRARY
+ * 27 utility classes (16 gradient accents + 11 SVG accent marks) for
+ * peripheral atmospheric accents. All colors go through var(--accent) so
+ * palette swap = background color swap automatically.
+ *
+ * Layer composability: 16 gradient classes use two slots (radial/linear).
+ * SVG marks are slot-free — combine with any gradient, no conflicts.
+ *   <!-- _class: content bg-vignette bg-micro-tr -->              gradient + mark
+ *   <!-- _class: content bg-corner-tl bg-edge-right bg-seeds -->  two gradients + mark
+ *
+ * Slot reference (gradient classes only — SVG marks carry no slot)
+ *   --_bg-radial  corner glows, vignette, spotlight, duotone, asterisk-scatter
+ *   --_bg-linear  edge washes, horizon, ground, sweep, ambient, frame
+ *
+ * See docs/references/backgrounds.md for the full catalogue and constraints.
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── COMPOSITOR ───────────────────────────────────────────────────────
+ * Assembles the two gradient slots into background-image. Each bg-*
+ * class writes --_bg-radial or --_bg-linear; this rule combines them.
+ * Combine any radial-slot class with any linear-slot class by stacking
+ * both on the same slide — layers compose without extra authoring.
+ */
+section[class*="bg-"] {
+  background-image: var(--_bg-radial, none), var(--_bg-linear, none);
+}
+
+
+/* ── CORNER GLOWS ─────────────────────────────────────────────────────
+ * Radial ellipse anchored at a corner. The ellipse is sized so its
+ * farthest edge reaches roughly the slide center — accent is present
+ * at the corner, gone before it reaches the content zone.
+ *
+ * Ellipse sizing at 1280×720 (16:9):
+ *   62% h × 55% v = ~793px × ~396px — fills roughly the outer third
+ *   of the slide from that corner before fading to zero.
+ */
+
+section.bg-corner-tl {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 0% 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-tr {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 100% 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-bl {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 0% 100%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-br {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 100% 100%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+
+/* ── EDGE WASHES ──────────────────────────────────────────────────────
+ * Linear gradient from one edge. Gone well before mid-slide so the
+ * content zone is always on a clean surface.
+ *
+ * Opacity profile: 10% at the physical edge → 0% at 35%.
+ * A mid-stop at 12% is added 6% in from the edge to give the gradient
+ * a slight "full saturation zone" right at the border before it fades —
+ * without it the thinness of the wash makes it read as a printing error
+ * rather than a deliberate accent.
+ */
+
+section.bg-edge-top {
+  --_bg-linear: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 6%,
+    transparent 35%
+  );
+}
+
+section.bg-edge-bottom {
+  --_bg-linear: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 6%,
+    transparent 35%
+  );
+}
+
+section.bg-edge-left {
+  --_bg-linear: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 4%,
+    transparent 30%
+  );
+}
+
+section.bg-edge-right {
+  --_bg-linear: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 4%,
+    transparent 30%
+  );
+}
+
+
+/* ── ATMOSPHERIC ──────────────────────────────────────────────────────
+ * Full-canvas tonal effects. The gradient is still peripheral —
+ * the center remains transparent — but the effect wraps all four
+ * edges rather than originating from one point or one edge.
+ */
+
+/* Vignette: accent-tinted perimeter, fully open at center.
+ * The opaque stop begins at 55% radius so a 16:9 slide has
+ * roughly a 700×400 clean zone in the middle. */
+section.bg-vignette {
+  --_bg-radial: radial-gradient(
+    ellipse 88% 85% at center,
+    transparent 0%,
+    transparent 45%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 70%,
+    color-mix(in srgb, var(--accent) 11%, transparent) 100%
+  );
+}
+
+/* Spotlight: gentle reverse-vignette — center slightly warmer,
+ * edges fully transparent. The accent is at most 7% so it reads
+ * as warmth rather than color. */
+section.bg-spotlight {
+  --_bg-radial: radial-gradient(
+    ellipse 55% 50% at center,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* Horizon: accent heaviest at the top edge, fades to nothing by 45%.
+ * Simulates a light source above the frame — suits slides about
+ * ambition, aspiration, or the view from the top floor. */
+section.bg-horizon {
+  --_bg-linear: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 11%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 15%,
+    transparent 45%
+  );
+}
+
+/* Ground: mirror of horizon — heaviest at bottom.
+ * Suits slides that are closing arguments, summaries,
+ * or anything that signals conclusion and landing. */
+section.bg-ground {
+  --_bg-linear: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--accent) 11%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 15%,
+    transparent 45%
+  );
+}
+
+
+/* ── MULTI-ACCENT ─────────────────────────────────────────────────────
+ * Two or more gradient layers composed. Weight budget is split between
+ * them so the total perceived ink stays equivalent to a single-gradient
+ * pattern — each layer runs at ~8% rather than 12%.
+ * These patterns own their slot exclusively (duotone/asterisk-scatter
+ * own --_bg-radial; frame owns --_bg-linear) and cannot safely share it
+ * with another class in the same slot.
+ */
+
+/* Duotone: opposing corner pair. The two glows never overlap in the
+ * center — they meet around mid-slide and both fade to transparent
+ * before intersecting. Creates a natural diagonal axis. */
+section.bg-duotone {
+  --_bg-radial:
+    radial-gradient(
+      ellipse 55% 50% at 0% 0%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 55% 50% at 100% 100%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 100%
+    );
+}
+
+/* Frame: all four edges at half-weight. Quiet all-round accent —
+ * the slide has a presence at every edge without any one side
+ * dominating. The four gradients each reach 0% at 22% inset,
+ * leaving the inner ~56% × ~56% completely clean. */
+section.bg-frame {
+  --_bg-linear:
+    linear-gradient(to bottom, color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to top,    color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to right,  color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to left,   color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%);
+}
+
+/* Sweep: diagonal accent wash from top-right to bottom-left.
+ * The most directional pattern — suits decks about forward motion
+ * or where the visual language should read left-to-right. */
+section.bg-sweep {
+  --_bg-linear: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+    color-mix(in srgb, var(--accent)  4%, transparent) 30%,
+    transparent 55%
+  );
+}
+
+/* Ambient: broad off-axis tint at the lowest opacity.
+ * The safest option — a barely-there suggestion of color that
+ * ensures the slide never reads as plain white. Use on content-dense
+ * slides or wherever any stronger accent would compete. */
+section.bg-ambient {
+  --_bg-linear: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+    transparent 45%
+  );
+}
+
+
+/* ── SVG ACCENT MARKS ─────────────────────────────────────────────────
+ * Architecture: one CSS layer per pattern — no gradient slot occupied.
+ *
+ *   section.bg-*::before  mask-image: SVG + accent paint — the shapes
+ *
+ * Marks carry no --_bg-radial or --_bg-linear value, so they combine
+ * freely with any gradient class. Stack one gradient + one mark; both
+ * render independently. Two marks on the same slide: both ::before rules
+ * apply but only one set of shapes wins (last defined in this file).
+ *
+ * The ::before uses the SVG geometry as a CSS luminance/alpha mask.
+ * Paint: color-mix(in srgb, var(--accent) 28%, transparent). Because
+ * var(--accent) resolves via the theme's light-dark() token, marks are
+ * always on-brand in both light and dark — no media-query duplication.
+ *
+ * Mask SVGs use fill='white' / stroke='white'. White = paint shows
+ * through; transparent = paint hidden. fill-opacity / stroke-opacity
+ * grade each shape within the 28% accent ceiling.
+ *
+ * Safe peripheral slots:
+ *   Top-right band   x > 1100, y 68–118   header band right of text
+ *   Right margin     x > 1250, y 70–640   clear of all content
+ *   Bottom-right     x > 1100, y 595–652  above footer + pagination
+ *   Bottom-left      x < 200,  y 595–652
+ */
+
+/* bg-micro-tr — 9 micro circles, top-right header band. r 2–4.5. */
+section.bg-micro-tr::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1192' cy='80' r='4.5' fill='white' fill-opacity='1'/><circle cx='1215' cy='74' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1240' cy='82' r='3' fill='white' fill-opacity='0.85'/><circle cx='1262' cy='75' r='2.5' fill='white' fill-opacity='0.8'/><circle cx='1206' cy='97' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1232' cy='100' r='3' fill='white' fill-opacity='0.8'/><circle cx='1256' cy='93' r='2' fill='white' fill-opacity='0.7'/><circle cx='1221' cy='113' r='3' fill='white' fill-opacity='0.75'/><circle cx='1248' cy='110' r='2' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537. */
+section.bg-tick-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right. */
+section.bg-orbit-br::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1200' cy='617' r='22' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><circle cx='1200' cy='617' r='13' fill='none' stroke='white' stroke-width='1' stroke-opacity='0.75'/><circle cx='1200' cy='617' r='2.5' fill='white' fill-opacity='1'/><circle cx='1226' cy='601' r='2' fill='white' fill-opacity='0.8'/><circle cx='1242' cy='624' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1184' cy='608' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-slash-tr — 5 parallel slash lines at 45°, top-right corner. */
+section.bg-slash-tr::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1188' y1='112' x2='1201' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1204' y1='105' x2='1217' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><line x1='1220' y1='112' x2='1233' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='1236' y1='105' x2='1249' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.7'/><line x1='1252' y1='98' x2='1265' y2='85' stroke='white' stroke-width='1.5' stroke-opacity='0.6'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-seeds — 12 elongated micro ellipses, three per corner, rotated. */
+section.bg-seeds::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-pills-right — 4 horizontal pill shapes, far-right margin. */
+section.bg-pills-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-asterisk-scatter — asterisks + micro dots, opposing corners. */
+section.bg-asterisk-scatter::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1206.5' y1='88' x2='1213.5' y2='88' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1211.8' y1='85' x2='1208.2' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1208.2' y1='85' x2='1211.8' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1238' y1='100' x2='1244' y2='100' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1242.5' y1='97.4' x2='1239.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1239.5' y1='97.4' x2='1242.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><circle cx='1228' cy='78' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1258' cy='85' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1195' cy='105' r='1.5' fill='white' fill-opacity='0.65'/><line x1='62' y1='628' x2='68' y2='628' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='66.5' y1='625.4' x2='63.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='63.5' y1='625.4' x2='66.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='107.5' y1='640' x2='112.5' y2='640' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='111.25' y1='637.8' x2='108.75' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='108.75' y1='637.8' x2='111.25' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><circle cx='85' cy='618' r='1.5' fill='white' fill-opacity='0.65'/><circle cx='142' cy='632' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-thread-diagonal — 3 hairline slash strokes, top-right corner. */
+section.bg-thread-diagonal::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1257' y1='90' x2='1278' y2='69' stroke='white' stroke-width='1' stroke-opacity='1'/><line x1='1244' y1='90' x2='1265' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1231' y1='90' x2='1252' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.7'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-bracket-right — two ] bracket marks, far-right margin. */
+section.bg-bracket-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><path d='M1268,310 L1274,310 L1274,326 L1268,326' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><path d='M1268,422 L1274,422 L1274,438 L1268,438' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-grid-micro — 4×4 dot grid, top-right, rightmost column edge-bleeds. */
+section.bg-grid-micro::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1244' cy='72' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='72' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='72' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='72' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='84' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='84' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='84' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='84' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='96' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='96' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='96' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='96' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='108' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='108' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='108' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='108' r='1.5' fill='white' fill-opacity='0.7'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-chevron-bl — 3 right-pointing chevrons, bottom-left corner. */
+section.bg-chevron-bl::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><polyline points='34,625 42,631 34,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><polyline points='52,625 60,631 52,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><polyline points='70,625 78,631 70,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+
+/* ── RESET ────────────────────────────────────────────────────────────
+ * Per-slide opt-out when a bg-* is set deck-wide and one slide
+ * needs a clean surface (full-bleed image, neutral chart page, TOC).
+ */
+section.bg-none {
+  --_bg-radial: none;
+  --_bg-linear: none;
+}
