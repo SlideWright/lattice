@@ -237,6 +237,135 @@ Naveen-first is bigger market + willingness-to-pay, but longer
 time-to-shipping-anything and higher feature bar before initial
 sale. Probably wrong order for a v1.
 
+## Project positioning & business model
+
+**Open-source first.** No consumer revenue motion. **Potential
+enterprise tier later**, architecturally enabled by three small
+seams in v1.0.
+
+This resolves the "no monetization plan" gap flagged in the honest
+evaluation. The architecture is already open-core friendly — every
+internal feature is a registered capability — so the open-core
+business model fits cleanly.
+
+### License
+
+**MIT** for SlideWright — matches Lattice's existing MIT license.
+Maximum permissive, easy adoption, easy enterprise upsell. The
+eventual enterprise tier sells *features and support*, not the
+license itself.
+
+### Repository structure
+
+Separate repos under the `slidewright/` GitHub organization:
+
+- `slidewright/lattice` — engine layer (this repo)
+- `slidewright/slidewright` — desktop app
+- `slidewright/themes` — palette packs (future)
+- First-party extensions — in-tree, in the app repo
+- Third-party extensions — out-of-tree (separate repos), installed
+  via the v1.5 extension runtime
+
+### Governance
+
+- **Solo / BDFL to start.** Evolve as contributors arrive.
+- **Code of Conduct** from day one (Contributor Covenant default).
+- **`CONTRIBUTING.md`** with explicit "what's accepted / what's
+  not" — protects against unsolicited PR burden.
+- **RFC process** for significant changes (large architectural,
+  format-breaking, or new-subsystem proposals).
+- **Conventional commits** — already in use across Lattice.
+
+### Telemetry — opt-in (changed from opt-out)
+
+OSS users are more telemetry-averse than consumer-app users.
+**Flip both crash reporting and analytics to opt-in.** Trust
+signal matters more than the data signal — and the data signal
+isn't worth losing trust over.
+
+This supersedes the earlier "opt-in stable, opt-out beta" framing
+in the Gaps section.
+
+### Adoption channels — GitHub-shaped
+
+1. **GitHub presence is the marketing surface** — README with
+   demo GIFs, contributing guide, issue templates, releases page,
+   demo video. The repo is the marketing site for phase one.
+2. **Conference talks** — Maya / Theo / Khoa attend; "we use
+   SlideWright" is the cleanest pitch.
+3. **Lattice ecosystem effect** — existing Lattice users get a
+   natural upgrade path to the desktop app.
+4. **Viral PDF badge** — exported PDFs include a small "made
+   with SlideWright" footer (toggleable on by default; removable
+   in the eventual enterprise tier). Cheap, organic, durable.
+5. **dev.to / Show HN / Reddit posts** at v1.0, v1.2 (AI launch),
+   v1.5 (ecosystem opens).
+6. **GitHub Sponsors** — funding signal before any paid tier exists.
+
+### Eventual enterprise tier — what it might add
+
+Open core stays MIT and free. Enterprise tier sells features and
+support that organizations specifically need:
+
+| Feature | How v1.0 architecture enables it |
+|---|---|
+| SSO / identity (SAML, OIDC) | Identity capability hub placeholder |
+| Centralized policy (org locks workspace settings) | Policy tier in Settings, layered above workspace |
+| Audit logs | Command registry emits events; audit consumer plugs in |
+| Hosted AI proxy (one corporate AI key for the org) | Already free — AI provider connector |
+| Fleet management (central config + updates) | Tauri updater + remote config endpoint |
+| Private extension marketplace | v1.5 extension runtime + org-scoped allowlist |
+| Workspace encryption / vault | Storage adapter pattern |
+| Compliance certs (SOC 2, ISO 27001) | Operational; architectural seams in place |
+| Priority support, SLAs | Operational |
+
+### Three small seams in v1.0 that unlock the enterprise option
+
+Cost almost nothing now; substantial optionality later. All are
+*naming* exercises in v1.0 — small commits, big unlock.
+
+1. **Policy tier in `Settings`.** Declare a fourth tier above
+   workspace: `defaults → user → workspace → policy`. v1.0 has
+   no policy provider; resolution code knows the tier exists.
+   Enterprise plugs in a policy source later.
+2. **Audit-event emission** from the command registry. Every
+   registered command fires an event when executed. v1.0 has no
+   consumer (events drop into the void); enterprise plugs in an
+   audit consumer. Cost: a few lines in the command-execution
+   path.
+3. **Identity capability hub** placeholder. Declare `app.identity.*`
+   exists. No providers in v1.0. Enterprise SSO connectors plug in
+   here.
+
+### Personas re-checked under OSS positioning
+
+OSS positioning sharpens the persona ranking:
+
+| Persona | Effect |
+|---|---|
+| **Maya** (engineering leader) | **Stronger fit.** Devs love OSS; will star the repo; word-of-mouth engine |
+| **Theo** (DevRel / OSS) | **Strong fit.** Brand-aligned values; possible contributor |
+| **Khoa** (OSS maintainer) | **Strong fit.** Same as Theo |
+| Jessamine (founder) | Neutral — doesn't care about OSS positioning per se; cares that it works |
+| Camila (brand PM) | Neutral — cares about brand discipline, not licensing |
+| **Naveen** (consultant) | **Future enterprise target** — firms will want SSO, audit, central policy, hosted AI gateway |
+| Diana (anti-persona) | Unchanged |
+
+Maya / Theo / Khoa are the OSS adoption engine. **Naveen is the
+eventual enterprise revenue path.**
+
+### Cost discipline (reaffirmed)
+
+Open-source-first reinforces what the release plan already does:
+
+- v1.0 - v1.4: **$0 to us, $0 to user**
+- v1.5 cloud AI: user-supplied keys only — never proxy or eat cost
+- Operational: ~$500-1,200/yr fixed (certs, CDN), doesn't scale
+  with users
+- **GitHub Sponsors** is the early funding signal
+- **Enterprise tier** is the v2+ funding signal — optional, not
+  required
+
 ## What Lattice brings to the table
 
 Constraints the desktop shell must absorb:
@@ -2092,7 +2221,8 @@ The smallest thing Maya uses weekly. Zero AI runtime cost.
 
 - Tauri shell (macOS + Windows; Linux defers)
 - Code signing (Apple Developer ID + Microsoft EV cert) +
-  notarization + auto-update + opt-in crash reporting
+  notarization + auto-update + **opt-in** crash reporting (OSS-
+  appropriate — trust over data)
 - Command palette + quick switcher + native menus + basic
   right-click + keybindings.json
 - **App color-scheme honors OS preference** (system / light / dark)
@@ -2104,14 +2234,21 @@ The smallest thing Maya uses weekly. Zero AI runtime cost.
 - Document format `schema: lattice/1` + companion
   `.slidewright/decks/<slug>.json` (format defined; mostly empty
   until later releases use it)
+- **Viral PDF badge** — "made with SlideWright" footer on exported
+  PDFs (toggleable on by default; removable in eventual enterprise
+  tier)
 
 **Architectural seams placed (no consumers yet):**
 
 - Capability hubs (commands, exports, storage, AI, themes,
-  diagrams, layouts)
+  diagrams, layouts, **identity**)
 - Tool registry contract shaped
 - `DocsIndex` placeholder
 - Extension manifest format decided
+- **Policy tier in `Settings`** — fourth layer above workspace;
+  no policy provider yet (enterprise unlock)
+- **Audit-event emission** from command registry — every command
+  fires an event; no consumer yet (enterprise unlock)
 
 **Explicitly out of v1.0:** AI of any kind, presentation mode,
 multi-format export beyond PDF, second palette, `ThemeStudio`,

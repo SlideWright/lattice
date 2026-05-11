@@ -69,7 +69,13 @@ it is load-bearing.
   secondaries: Naveen the consultant, Jessamine the solo founder,
   Theo the DevRel/OSS maintainer, Camila the brand-conscious PM,
   Khoa the OSS maintainer; explicit anti-persona Diana, the visual
-  designer — we don't compete with Figma/Keynote/Canva). Captures
+  designer — we don't compete with Figma/Keynote/Canva).
+  **Project positioning: open-source first (MIT, matching Lattice),
+  no consumer sales motion, potential enterprise tier later via
+  three small v1.0 seams (policy tier in Settings, audit-event
+  emission, identity capability hub).** Telemetry flipped to
+  opt-in; viral "made with SlideWright" PDF badge; GitHub Sponsors
+  funding before any paid tier. Captures
   the product vision (markdown authoring, focused/split/PiP editor
   layouts, collapsible workspace sidebar, multi-format export,
   cloud storage, collaboration, AI, brand theming, extensions &
