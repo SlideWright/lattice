@@ -40,6 +40,12 @@ Direct from authoring intent (May 2026):
 - **Brand theming.** Users author their own palettes from brand
   colors with live iterative preview, producing portable
   `themes/<brand>.css` files.
+- **Extensions & connectors.** Public plugin API. First-party
+  features (PDF export, Mermaid, Anthropic, etc.) ship as extensions
+  through the same API third parties will use. Connectors share
+  auth / lifecycle / capability machinery — **Google Workspace** is
+  one connector that provides `storage` (Drive), `export` (Slides),
+  and `asset-source` (Drive image search) at once.
 
 The vision is deliberately ambitious. The v1 architecture is shaped
 to make each later item *additive* rather than a rewrite.
@@ -90,6 +96,7 @@ Constraints the desktop shell must absorb:
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
 | Storage | **Adapter interface** | Lets Drive / OneDrive / 365 land additively |
 | AI | Anthropic SDK in WebView | Plugs into Yjs as another client when ready |
+| Extensions & connectors | **Capability hubs + worker runtime + manifest** | Adapter interfaces above become the public API; first-party features dogfood the same API third parties will use |
 
 ### No Node in v1
 
@@ -432,6 +439,160 @@ in scope.
 
 Yjs is what makes this clean — AI is just another client of the
 same document, same as a remote collaborator.
+
+### Extension runtime — capability hubs + connector pattern
+
+The export, storage, AI, diagram, layout, linter, and theme
+interfaces named above aren't just internal abstractions — they
+are the **public API of an extension runtime**. Third parties (and
+the app's own first-party features) plug into the host through the
+same registries.
+
+This is what makes the long-term vision tractable. Drive, OneDrive,
+Confluence, slides.com, multiple LLM providers, brand asset
+systems, datasource integrations — each becomes an *extension*
+rather than another hardcoded subsystem.
+
+#### Two categories under one model
+
+- **Extension.** Code that changes what the *app* does — new
+  diagram types, slide layouts, editor commands, linter rules,
+  export formats, AI capabilities.
+- **Connector.** Code that links the app to an *external service*.
+  Implements one or more existing adapter interfaces. Shares an
+  auth / lifecycle pattern worth standardizing.
+
+Connectors are a subset of extensions, separated by category for
+the shared machinery.
+
+#### Runtime model
+
+- Extensions run in a **Web Worker**, not the main thread
+- No direct DOM, network, or file access
+- All capability requests go through a **broker** on the main
+  thread that enforces manifest-declared permissions
+- Communication is structured message passing — no synchronous
+  calls
+
+Isolates extension bugs, contains misbehavior, keeps the editor
+responsive even when an extension is busy.
+
+#### Manifest
+
+```jsonc
+{
+  "id": "com.acme.d2-diagrams",
+  "name": "D2 Diagrams",
+  "version": "0.3.1",
+  "engine": "slidewright >= 1.0",
+  "contributes": {
+    "diagramTypes": [{ "name": "d2", "fence": "d2" }]
+  },
+  "permissions": {
+    "network": [],
+    "storage": "none"
+  },
+  "settings": [
+    { "id": "layout-engine", "type": "enum", "values": ["dagre", "elk"] }
+  ]
+}
+```
+
+Declares **contributions** (what it provides), **permissions**
+(what it needs), **settings** (auto-rendered in the app's
+settings UI), and **engine** (semver against host API).
+
+#### Capability hubs — the public API
+
+```
+app.diagrams.registerType({ name, parse, render, rasterize })
+app.exports.registerAdapter(adapter)
+app.storage.registerAdapter(adapter)
+app.ai.registerProvider(provider)
+app.layouts.registerClass({ className, css, manifest })
+app.editor.registerCommand({ id, run })
+app.linter.registerRule(rule)
+app.connectors.registerService({ name, auth, capabilities })
+```
+
+**The architectural commitment that makes this real:** first-party
+features ship as extensions through this same API. The built-in
+PDF export *is* a registered export adapter. The built-in local-FS
+storage *is* a registered storage adapter. This forces the API to
+be honest — if we can build PDF export against it, third parties
+can build Beamer/LaTeX against it.
+
+Same pattern as VS Code, and the reason its ecosystem works.
+
+#### Connector pattern
+
+```
+Connector
+  ├─ id, name, icon
+  ├─ auth: { kind: "oauth2" | "apiKey" | "none", config }
+  ├─ capabilities: [ "storage", "export", "ai", "datasource",
+                      "asset-source", "palette-source" ]
+  ├─ status: "disconnected" | "connecting" | "connected" | "error"
+  └─ connect() / disconnect() / refresh()
+```
+
+One connector can implement multiple capabilities at once —
+**Google Workspace** is a single connector that provides `storage`
+(Drive), `export` (Slides), and `asset-source` (Drive image
+search). OAuth tokens live in the system keychain via Tauri's Rust
+core (the reason that decision was load-bearing earlier).
+
+#### Examples
+
+**Extensions:**
+
+1. **D2 diagrams** — registers a new diagram type; runs D2 engine
+   in the worker; returns SVG. Flows through `DiagramService`
+   exactly like Mermaid — render cache, rasterization fallback,
+   theming all reused.
+2. **`comparison-3col` layout** — declares a CSS class + body via
+   `layouts.registerClass`. Author uses `<!-- _class: comparison-3col -->`.
+3. **Terminology linter** — registers a linter rule; flags
+   off-brand wording in titles/body; quick-fix applies the
+   canonical term. Useful for orgs with voice guidelines.
+4. **Reveal.js export** — implements the export adapter interface;
+   walks slides; emits Reveal.js HTML.
+5. **Generate TOC** — registers an editor command; walks the deck;
+   builds an outline slide; inserts via Yjs ops (undoable as one
+   action).
+
+**Connectors:**
+
+1. **Google Drive** — `storage` capability. Same interface as
+   local-FS — every storage consumer works against it transparently.
+2. **Confluence** — `export` capability (publish flavor — pushes
+   artifact to a remote page rather than disk). Picker for space +
+   parent page; renders deck to Confluence-flavored markdown.
+3. **Anthropic / OpenAI / Ollama** — each is a connector providing
+   `ai`. App offers a default + per-task override. The Yjs-based AI
+   flow doesn't care which provider it is.
+4. **Frontify / BrandKit** — `palette-source` capability into
+   ThemeStudio; often also `asset-source` for logos.
+5. **Jira / Linear** — `datasource` capability. Author writes a
+   directive (e.g., `<!-- jira: PROJ-123 -->`); the connector
+   fetches issue metadata; renders into a status-card layout.
+   Refreshable.
+
+#### Scope progression
+
+- **v1** — runtime + capability hubs + manifest format, with
+  **first-party extensions only**. PDF export, local-FS storage,
+  Mermaid, Anthropic ship as built-in extensions through the
+  public API. No third-party install; no marketplace.
+- **v1.x** — local install (drop a folder), manifest verification,
+  permission prompts. Side-loaded extensions for early adopters and
+  enterprises.
+- **v2** — marketplace, publishing, signing, ratings, auto-update.
+
+The v1 cost is mostly **architectural discipline**: every internal
+adapter is registered through the public API even though no third
+party can install one yet. That's what guarantees the API is real
+on day one rather than a stub we promise to make real later.
 
 ## Open questions
 
