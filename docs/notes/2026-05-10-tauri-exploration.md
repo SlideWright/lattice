@@ -1,134 +1,448 @@
 # Tauri exploration — desktop authoring app for Lattice
 
-**Status:** open exploration. No code yet. This note is the workspace
-for figuring out *whether and how* to build the SlideWright desktop
-app on Tauri — and what the alternative would have to look like to
-displace it.
+**Status:** in progress. Strategy discussion 2026-05-11 narrowed the
+architecture from "should we use Tauri?" to "what's the v1 shape, and
+what runway do we leave for the long-term vision?" This note captures
+both the decisions taken and the open questions still to probe.
 
-The repo README already names Tauri as the chosen stack for
-SlideWright ("the desktop app (Tauri). Wraps the Lattice engine with a
-markdown editor, live preview, theme picker, and PDF export"). That
-choice predates this note. This exploration revisits it deliberately,
-before any desktop code is written, because the integration shape
-between Lattice (Node + Puppeteer + Marp) and a Tauri shell (Rust core
-+ system WebView) is non-trivial and worth pressure-testing.
+The repo README names Tauri as the chosen stack for SlideWright. This
+note revisits that choice deliberately — and ends up keeping it, but
+with a much sharper picture of what the v1 app actually is.
 
-## Frame
+## Product vision
 
-One sentence: **can a Tauri shell host the Lattice render pipeline
-faithfully, or does the Node/Puppeteer dependency force a different
-architecture?**
+Direct from authoring intent (May 2026):
 
-The decision is not "Tauri vs Electron" in the abstract — it's "given
-*this* renderer, what's the cleanest integration?" Electron only
-becomes interesting if the Tauri integration story turns out to be
-worse than just shipping Chromium + Node in the app bundle.
+- **Core.** Intuitive, seamless desktop authoring of PDF-quality slide
+  decks using *native markdown*. The source the user writes is the
+  source Lattice already renders.
+- **Exports.** PDF (primary), HTML, PNG sets, Markdown, PPTX (including
+  Marp's experimental *native PPTX* path), Confluence, slides.com,
+  Google Slides (scope TBD).
+- **Mermaid is first-class.** Authored, validated, rendered, themed,
+  and rasterized to image for platforms that don't render Mermaid
+  natively.
+- **Cloud storage.** Google Drive, Google Workspace, Microsoft 365,
+  OneDrive, SharePoint.
+- **Collaboration.** Real-time multi-user editing (eventually).
+- **AI assistance.** Claude integration for authoring assistance
+  (eventually).
+- **App theming.** App chrome adopts the active deck palette —
+  subtle accent on by default, full immersive opt-in. App
+  color-scheme stays independent of the deck palette.
+- **Brand theming.** Users author their own palettes from brand
+  colors with live iterative preview, producing portable
+  `themes/<brand>.css` files.
+
+The vision is deliberately ambitious. The v1 architecture is shaped
+to make each later item *additive* rather than a rewrite.
 
 ## What Lattice brings to the table
 
-Constraints the desktop shell has to absorb, not the other way around:
+Constraints the desktop shell must absorb:
 
-- **Renderer is Node.** `lattice-emulator.js` is the build-time path;
-  `lattice-runtime.js` is the in-browser path. Both are JavaScript.
-- **Puppeteer + Chromium.** Mermaid pre-rendering and PDF emission
-  both run through a headless Chromium that `npm install` downloads.
-  ~150 MB on disk per platform.
-- **marp-cli is a runtime dependency.** Not dev-only. The cross-renderer
-  parity contract (emulator vs marp-cli) is asserted in the integration
-  test suite — the desktop app inherits that contract.
-- **Output formats:** PDF, HTML, PPTX, PNG sets. PPTX assembly is its
-  own pipeline step (see `docs/references/pipeline.md`).
-- **Themes are CSS files.** `themes/indaco.css`, `themes/cuoio.css`.
-  Live preview means re-applying CSS without rebuilding the deck.
-- **Slides are 1280×720.** PNG export is `--image-scale 3` (3840×2160).
+- **Renderer is JavaScript.** `lattice-emulator.js` (build-time) and
+  `lattice-runtime.js` (browser) — both pure JS. The runtime path is
+  what the desktop app actually uses.
+- **Marp.** `@marp-team/marp-core` ships a *browser bundle* — pure JS,
+  runs in any WebView. Marp CLI is a Node wrapper around it; we don't
+  need the wrapper.
+- **Puppeteer + bundled Chromium.** Required only by the CLI's PDF
+  path. **Not needed in the desktop app** — Tauri's WebView is itself
+  Chromium/WebKit, with native print-to-PDF.
+- **Themes are CSS files.** Live preview is "change a CSS custom
+  property" — already supported by `lattice-runtime.js`.
+- **Output formats.** PDF / HTML / PPTX / PNG sets from the same
+  source. PPTX is the one format that genuinely needs a Node sidecar
+  (Marp's PPTX pipeline). All others are achievable from inside the
+  WebView.
+- **11+ palettes** already in `themes/`. Any palette-contract
+  extension we add has to apply to all of them.
+- **Slides are 1280×720.** PNG export at `--image-scale 3` (3840×2160).
+- **Two galleries** (`examples/gallery.md`, `examples/mermaid-gallery.md`)
+  are the authoritative test fixtures. Reused as preview surfaces in
+  ThemeStudio.
+
+## V1 architectural shape
+
+### Stack at a glance
+
+| Layer | Choice | Why load-bearing now |
+|---|---|---|
+| Shell | **Tauri** | Rust core pays off for OAuth + system keychain; WebView is Chromium |
+| UI framework | **Svelte 5** | Smallest WebView footprint; not load-bearing (Solid/React also viable) |
+| UI components | **Headless or hand-rolled**, token-driven CSS | Required for the app-theming feature to work |
+| Editor | **CodeMirror 6 behind `EditorHost` facade** | Swappable to Monaco trivially; ProseMirror/Tiptap is a UX shift |
+| Document model | **Yjs (`Y.Doc`) from day one** | Unblocks AI editing + collaboration without retrofit |
+| Markdown → slides | `@marp-team/marp-core` (browser bundle) | Pure JS in WebView; no Node needed |
+| Diagrams | **`DiagramService`** (named subsystem) | One owner for Mermaid lifecycle across editor, preview, exports |
+| Theme contract | **Palette contract library** (lifted from test suite) | One source of truth: app, CLI, CI, ThemeStudio |
+| Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
+| Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
+| Storage | **Adapter interface** | Lets Drive / OneDrive / 365 land additively |
+| AI | Anthropic SDK in WebView | Plugs into Yjs as another client when ready |
+
+### No Node in v1
+
+Tauri's WebView *is* Chromium/WebKit. Everything Puppeteer does
+(render HTML, print to PDF, screenshot) is native to the shell. v1
+ships with **no Node runtime, no Puppeteer, no `marp-cli`, no
+LibreOffice**.
+
+Implications:
+
+- Small installer.
+- One language for the app proper (JS/TS in the WebView; Rust only
+  for shell-native concerns).
+- The export-adapter interface is shaped so a Node sidecar adapter
+  is a *one-file addition* the day PPTX ships. We pay the design
+  cost now, not the bundle cost.
+
+### What we add into the WebView
+
+| Lib | Purpose | Already in repo? |
+|---|---|---|
+| `@marp-team/marp-core` (browser) | Markdown → slide HTML | No — add |
+| `mermaid` | Diagram rendering | Yes (`mermaid-v11.min.js`) |
+| `highlight.js` | Render-side code highlighting | Yes (dep) |
+| `@codemirror/state` + `view` + `lang-markdown` + nested language packages | Editor + markdown highlighting | No — add |
+| `yjs` + `y-codemirror.next` | CRDT document model | No — add |
+| Anthropic SDK | AI integration | No — add later |
+| `lattice.css` + theme CSS | Layouts + palettes | Yes |
+| `lattice-runtime.js` | Theme variable plumbing, Mermaid theming | Yes |
+
+Curated nested-language set for v1: JS/TS, Python, Rust, Bash, YAML,
+JSON, HTML/CSS, SQL, Markdown.
+
+### What we use Tauri for
+
+- File I/O (open/save `.md`, asset path resolution)
+- `webview.print_to_pdf()`
+- Save-as / open dialogs
+- File watcher (external edits to the open deck)
+- Window / session state
+- System keychain (OAuth tokens, later)
+- Bundler (DMG / MSI / AppImage / deb)
+
+## Named subsystems
+
+### Document model — `Y.Doc`
+
+A `Doc` is **not** "the open .md file." It's a Yjs CRDT containing:
+
+- Source markdown (`Y.Text`)
+- Theme reference, metadata, asset refs (`Y.Map`)
+- Sync state
+
+The .md file is *one* representation — what the local-FS storage
+adapter persists. The same `Doc` can:
+
+- Sync to Drive / OneDrive via a sync provider
+- Get AI-edited as another Yjs client (with human accept/reject via
+  `Y.UndoManager`)
+- Host live multi-user collaboration when a websocket provider is
+  attached
+
+Picking up Yjs *now*, with zero sync providers attached, costs ~50 KB
+of bundle and adds undo/redo + dirty tracking for free. Retrofitting
+it later would mean replacing the editor's entire state layer.
+
+### Editor — `EditorHost` facade
+
+A thin interface in our own code:
+
+```
+EditorHost
+  ├─ mount(node, ydoc) / unmount
+  ├─ focus / scroll-to / get & set selection
+  ├─ addDecorations(ranges, kind)   // syntax, AI suggestions, lint
+  └─ events: caret, selection, viewport-change
+```
+
+CodeMirror 6 is the v1 implementation. The app never imports
+CodeMirror directly. Monaco swaps cleanly behind the facade;
+ProseMirror / Tiptap is a UX shift, not just a code shift.
+
+Most editor work goes through Yjs anyway, so the facade stays small
+(~200 lines of glue).
+
+### Diagrams — `DiagramService`
+
+Mermaid handling is consolidated into one named module:
+
+```
+DiagramService
+  ├─ parse(source)         → { ast, errors }
+  ├─ render(source, theme) → SVGElement
+  ├─ themeVars(palette)    → Mermaid themeVariables (per lattice-runtime.js)
+  ├─ rasterize(svg, scale) → PNG blob
+  └─ skeleton(type)        → starter source for flowchart / sequence / gantt / …
+```
+
+Consumers:
+
+- **Editor** — syntax highlighting in mermaid fenced blocks; focused-
+  block preview; parse errors in the editor gutter.
+- **Live preview** — already works via `lattice-runtime.js`.
+- **Export adapters** — pass-through for platforms that render
+  Mermaid; rasterize for those that don't (deck-wide "flatten
+  Mermaid" flag).
+- **Command palette** — "Insert diagram → flowchart / sequence /
+  class / state / gantt …" drops a working skeleton.
+
+### Export — adapter interface
+
+Signature: `(doc, options) → artifact`. Implementations land
+independently.
+
+| Adapter | Backend | Phase |
+|---|---|---|
+| PDF | WebView `print_to_pdf` | v1 |
+| HTML | serialize rendered output | v1 |
+| PNG set | WebView screenshot per slide | v1 |
+| Markdown | passthrough + dialect transforms (e.g. Confluence-flavored) | v1 |
+| Mermaid → PNG (deck-wide flatten) | canvas rasterize SVG | v1 |
+| PPTX | Node sidecar + `marp-cli` | v1.x |
+| Native PPTX | Node sidecar + Marp experimental flag | v1.x |
+| Confluence | HTTP adapter | later |
+| slides.com / Google Slides | HTTP adapter | later |
+
+### Storage — adapter interface
+
+Signature: `(docId) ↔ Doc`. Implementations:
+
+- **Local FS** — Tauri FS API (v1)
+- **Google Drive / Workspace** — OAuth via Tauri deep-link plugin +
+  Drive API (later)
+- **OneDrive / Microsoft 365 / SharePoint** — same pattern (later)
+
+OAuth flows and secure token storage are where Tauri's Rust core
+pays off (system keychain integration).
+
+Themes ride the same adapter — a user-authored theme is just another
+`Doc`.
+
+### Theme system
+
+Two pieces.
+
+#### Palette contract library
+
+Lifted out of `test/unit/` (the var-map check) into a first-class
+runtime module. One source of truth for "what a valid Lattice
+palette is," consumed by:
+
+- The app (live validation in ThemeStudio)
+- The CLI (`lattice-emulator.js` pre-render check)
+- CI (existing test gate)
+- ThemeStudio (its core dependency)
+
+Mostly a refactor of existing logic.
+
+#### `ThemeStudio` — user-authored themes with iterative preview
+
+**Brand-driven scaffold (default).** User enters 1–3 brand colors
+plus a light/dark choice. ThemeStudio generates a complete valid
+palette:
+
+- Tints / shades for surfaces
+- Complementary neutrals
+- Ink colors that hit WCAG AA on every surface
+- App-chrome tokens via the same color logic
+- Mermaid `themeVariables` derivation
+
+**Per-token editor (drill-down).** Override any individual token.
+Power-user surface; most users never open it.
+
+**Live preview tabs.** Same render path as the rest of the app —
+change a token → all surfaces update instantly via CSS custom
+properties.
+
+| Tab | Shows | Source |
+|---|---|---|
+| Slide gallery | All 26+ layouts under the in-progress palette | `examples/gallery.md` |
+| Mermaid gallery | All 25 diagram types | `examples/mermaid-gallery.md` |
+| App chrome | Toolbar, panels, dialogs, focus states | Synthetic mock screen |
+| Contrast matrix | WCAG AA result for every text-on-surface pair | Token-pair derivation |
+
+**Output.** A real `themes/<brand>.css` file — same shape as built-in
+palettes. Themes authored in the app are **portable**: drop the file
+into a CLI Lattice install and it works. No proprietary lock-in.
+
+**Draft state.** Themes-in-progress save without passing validation
+but can't apply to a deck until they do.
+
+**v1 scope:** colors only. Typography deferred.
+
+### Palette contract extension — app-chrome tokens
+
+Every palette declares its own app-chrome tokens (option 1 from the
+mapping discussion — explicit per-palette control rather than a
+derivation recipe):
+
+```
+--app-window-bg     --app-panel-bg      --app-toolbar-bg
+--app-divider       --app-text          --app-text-muted
+--app-accent        --app-accent-fg
+--app-focus-ring    --app-hover         --app-selected
+```
+
+Token list above is a sketch — final list takes a design pass.
+
+**Rollout for the 11+ existing palettes:**
+
+1. Finalize the app-chrome token contract on `indaco` + `cuoio`.
+2. Port the rest mechanically.
+3. Extend the var-map test to require app-chrome tokens.
+4. Extend the WCAG AA check to cover app-chrome text-on-bg pairs.
+
+### Code highlighting — two surfaces
+
+- **Editor (live as the user types):** `@codemirror/lang-markdown`
+  with nested languages. Each language is its own small package.
+- **Render (in actual slides):** highlight.js, already wired through
+  Marp. `lib/mermaid-hljs.js` already extends it for Mermaid source.
+
+Two libraries, intentionally separate (incremental + error-tolerant
+vs. fast one-shot). Colors won't exactly match across editor and
+preview; this is normal in code-aware apps and not worth unifying.
+
+### App theming — three orthogonal knobs
+
+1. **App color-scheme** — system / light / dark (user preference, OS-aware)
+2. **App palette tint** — none / **subtle accent (default)** / full immersive (opt-in)
+3. **Deck palette** — whatever the deck declares (always reflected in preview pane)
+
+The preview pane always reflects #3. The rest of the app respects
+#1 and #2. Collapsing them into one knob is the trap.
+
+### UI component layer
+
+Headless component libraries (Bits UI / melt-ui for Svelte; Radix
+for React) or hand-rolled components. **No heavily-themed UI
+libraries** (Material, Chakra, etc.) — they bring their own theme
+system that fights the palette tokens.
+
+Token-driven CSS throughout. Components consume the active palette's
+CSS custom properties; tint #2 above just changes which tokens are
+in scope.
+
+### AI / Claude integration
+
+- Anthropic SDK runs in the WebView — no IPC overhead.
+- AI-suggested edits translate to Yjs ops and apply to `Y.Doc`.
+- Human accept/reject of suggestions via `Y.UndoManager`.
+- Tauri's HTTP client is a fallback if CORS issues arise on any
+  endpoint.
+
+Yjs is what makes this clean — AI is just another client of the
+same document, same as a remote collaborator.
 
 ## Open questions
 
-Each of these needs a clear answer (or an explicit "deferred") before
-desktop work starts.
+The original integration questions are largely resolved by the
+architecture above:
 
-### 1. How does Tauri talk to the Node renderer?
+- **~~Q1 (Tauri ↔ Node)~~** — no Node in v1. Sidecar lands in v1.x
+  for PPTX only.
+- **~~Q2 (Chromium location)~~** — Tauri's WebView is Chromium; no
+  separate bundle.
+- **~~Q3 (Live preview model)~~** — runtime-in-WebView via
+  `@marp-team/marp-core` + `lattice-runtime.js`.
+- **~~Q4 (PPTX)~~** — deferred to v1.x via Node sidecar; native PPTX
+  uses Marp's experimental flag through the same sidecar.
 
-The Tauri shell is Rust + system WebView. It cannot run Node in-process.
-Options on the table:
+Still open:
 
-- **Sidecar Node process.** Tauri spawns `node lattice-emulator.js`
-  for each render. Same as the CLI today. Simple, faithful, slow per
-  invocation (Node + Puppeteer startup).
-- **Long-lived Node sidecar.** One Node process per app session,
-  IPC over stdio or a local socket. Faster repeat renders. More moving
-  parts (lifecycle, crash recovery).
-- **Port the renderer to the WebView.** `lattice-runtime.js` already
-  runs in a browser. Could the desktop preview pane *be* the renderer,
-  with PDF export delegated to a sidecar only for final delivery?
-  Cleanest UX for live preview; splits the rendering contract in two.
+### 1. Multi-window / multi-deck
 
-### 2. Where does Chromium live?
+Out of scope for v1, or shape the architecture now? Tauri supports
+it cleanly; one `Y.Doc` per window is fine. Affects state-management
+organization in the UI layer.
 
-Puppeteer downloads a per-platform Chromium. The desktop app either:
+### 2. Inline Mermaid in the editor pane
 
-- Bundles it (large installer, predictable behavior),
-- Downloads on first run (small installer, network dependency),
-- Or skips Puppeteer entirely if the WebView-as-renderer path wins
-  question 1.
+| Option | What it looks like | Cost | Editor implication |
+|---|---|---|---|
+| 1. None | Editor = source only; preview pane shows rendered | Lowest | CodeMirror fine |
+| 2. Focused side-pane | Caret in mermaid block → small pane renders just that diagram | Moderate | CodeMirror fine |
+| 3. Inline overlay | Source visually replaced by rendered diagram, click to edit (Notion-style) | High | Pushes toward ProseMirror / Tiptap |
 
-### 3. What does live preview actually mean?
+Option 3 is the editor-choice-pivoting decision. Lean: 1 or 2 for
+v1, revisit 3 later.
 
-- Re-render on every keystroke (latency budget?),
-- Re-render on save,
-- Or the runtime path (`lattice-runtime.js`) drives the preview in
-  real time and the build path only runs on export.
+### 3. Google Workspace scope
 
-The third option is the most responsive but requires the runtime to
-reach feature parity with the emulator for preview purposes (it
-already does for the marp-cli preview path).
+- **File sync** — `.md` / `.pdf` / `.pptx` lives in Drive (just a
+  storage adapter)
+- **Bidirectional with Google Slides** — round-trip markdown ↔
+  Slides API (a new export+import adapter pair)
 
-### 4. PPTX export?
+Very different scopes. v1 lean: file sync only.
 
-PPTX assembly is the most stack-coupled step in the pipeline. Whatever
-the answer to question 1, PPTX export almost certainly goes through
-the sidecar. Worth confirming.
+### 4. Brand-scaffold algorithm
 
-### 5. Multi-window / multi-deck?
+v1: deterministic recipe (tint/shade math + WCAG constraint check).
+v2: AI-assisted via the Claude hook. Tracking item.
 
-Out of scope for v1? Or a constraint that shapes the architecture
-now? Tauri supports multi-window cleanly; the renderer side does not
-care.
+### 5. Typography in the palette contract
+
+Deferred to v1.x as an additive extension. Implications when it
+lands:
+
+- New tokens (`--font-display`, `--font-body`, `--font-mono`,
+  weights)
+- Font embedding in PDFs (browser print path already handles)
+- Font name mapping for PPTX (PPTX doesn't embed fonts)
+- Bundled set vs. user-provided fonts in the app
+
+### 6. Collaboration backend
+
+Yjs document model is ready; the sync transport is open. Options:
+self-hosted `y-websocket`, hosted (Liveblocks, Hocuspocus), or
+WebRTC for peer-to-peer. Decision can wait until collaboration ships.
 
 ## Hypotheses to test
 
-Concrete claims that can be confirmed or falsified by a small probe.
-Each probe lives under `.scratch/tauri/` (gitignored) until findings
-are written back here.
+Earlier hypotheses re-scoped to the no-Node v1 architecture:
 
-- **H1.** A Tauri sidecar invocation of `lattice-emulator.js` produces
-  byte-identical output to the CLI for `examples/gallery.md`.
-- **H2.** Cold render latency (sidecar spawn + render) for a 10-slide
-  deck is under 3 s on a modern laptop. (Threshold is a guess —
-  revise after first measurement.)
-- **H3.** `lattice-runtime.js` can drive the WebView preview pane
-  directly without a build step, with theme switching working in
-  real time.
-- **H4.** Bundled Chromium adds < 200 MB to the installer.
+- **H1.** *(v1.x — PPTX only)* A Tauri Node sidecar invocation of
+  `lattice-emulator.js` produces byte-identical output to the CLI
+  for `examples/gallery.md`.
+- **H2.** *(v1.x — PPTX only)* Sidecar cold render latency for a
+  10-slide deck is under 3 s.
+- **H3.** *(v1 — load-bearing)* `@marp-team/marp-core` browser
+  bundle + `lattice-runtime.js` reaches feature parity with the
+  emulator for live preview, with theme switching in real time.
+- **H4.** ~~Bundled Chromium adds < 200 MB to the installer.~~ N/A —
+  no Chromium bundle (Tauri WebView).
+
+New v1-load-bearing hypotheses:
+
+- **H5.** WebView `print_to_pdf` produces output visually
+  indistinguishable from `marp-cli --pdf` for `examples/gallery.md`
+  (vector text, embedded Mermaid SVG, syntax-highlighted code).
+- **H6.** WebView screenshot-per-slide produces a PNG set matching
+  `marp-cli --images png --image-scale 3` (3840×2160) within a
+  diff tolerance.
+- **H7.** Yjs + `y-codemirror.next` adds < 100 KB minified+gz to the
+  bundle.
+- **H8.** Per-palette app-chrome tokens pass WCAG AA on `indaco` and
+  `cuoio` without manual tuning beyond the brand-scaffold recipe.
 
 ## Decision criteria
 
-Tauri stays as the chosen stack if:
+Tauri stays as the chosen shell if **H3, H5, H6** all pass — each
+is load-bearing for the no-Node v1 architecture:
 
-- Sidecar integration is faithful (H1) and fast enough (H2), **or**
-- The runtime-in-WebView path works for preview (H3) and the sidecar
-  is only needed for export.
+- **H3** — live preview parity (the editor inner loop)
+- **H5** — PDF export fidelity (the primary delivery format)
+- **H6** — PNG export fidelity (image-set exports)
 
-Tauri is replaced (likely by Electron) if:
-
-- Sidecar lifecycle proves brittle in practice (crashes, zombie
-  Chromium processes, IPC stalls under load), **and**
-- The runtime-in-WebView path can't reach parity for preview.
-
-The case for Electron is mostly stack homogeneity: Node + Chromium
-ship in-process, the renderer runs as a module rather than a sidecar,
-and there's no Rust toolchain in the contributor onboarding path. The
-cost is installer size and the usual Electron memory profile.
+Tauri gets replaced (likely by Electron) only if one of these can't
+be made to work — i.e., the WebView genuinely can't host the
+renderer faithfully. Bundle size, contributor friction, and Rust
+toolchain costs are *not*, by themselves, replacement triggers.
 
 ## Trials
 
@@ -143,6 +457,20 @@ cost is installer size and the usual Electron memory profile.
 
 ## Next step
 
-Stand up one probe against **H1** (sidecar produces identical output)
-before any UI work. That's the load-bearing assumption; everything
-else can wait on its answer.
+Three v1-load-bearing probes, in dependency order:
+
+1. **H3 — Live preview parity.** Minimal HTML page in a Tauri
+   WebView that loads `@marp-team/marp-core` + `lattice-runtime.js`,
+   renders `examples/gallery.md` from a string, and switches palette
+   in real time. If this works, the v1 architecture is live.
+2. **H5 — PDF export.** Trigger `webview.print_to_pdf()` on the
+   rendered output. Compare visually to `marp-cli --pdf` reference.
+3. **H6 — PNG export.** Screenshot each rendered slide via the
+   WebView API. Compare to `marp-cli --images png` reference at 3×
+   scale.
+
+H7 (Yjs bundle size) and H8 (per-palette app-chrome WCAG) are
+cheaper and can run in parallel.
+
+Everything else — editor work, ThemeStudio, AI hook, export adapters
+beyond PDF/PNG/HTML — waits on these three.

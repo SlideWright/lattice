@@ -64,7 +64,12 @@ it is load-bearing.
   [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
   and builder library.
 - [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
-  open exploration workspace for the SlideWright desktop app on
-  Tauri. Frames the integration question (Tauri shell + Node/Puppeteer
-  renderer), lists open questions, hypotheses to probe, and decision
-  criteria. No desktop code yet.
+  v1 architectural shape for the SlideWright desktop app on Tauri.
+  Captures the product vision (markdown authoring, multi-format
+  export, cloud storage, collaboration, AI, brand theming) and the
+  load-bearing decisions: no Node in v1, Yjs document model,
+  `EditorHost` facade over CodeMirror 6, `DiagramService` for
+  Mermaid, `ThemeStudio` for brand palettes, export/storage adapter
+  interfaces, app-chrome token extension to the palette contract.
+  Three v1-load-bearing probes (live preview parity, PDF, PNG)
+  named as the next step. No desktop code yet.
