@@ -55,8 +55,17 @@ Direct from authoring intent (May 2026):
 - **Cloud storage.** Google Drive, Google Workspace, Microsoft 365,
   OneDrive, SharePoint.
 - **Collaboration.** Real-time multi-user editing (eventually).
-- **AI assistance.** Claude integration for authoring assistance
-  (eventually).
+- **AI assistance.** Chat panel for conversation + ambient
+  suggestions (inline completion, layout / quality / structural
+  hints). **Any LLM** plugs in through a provider-agnostic
+  capability hub — Anthropic, OpenAI, Ollama, self-hosted, and a
+  bundled small local model (v1.x, opt-in download, **suggested
+  default** once available) all work the same way. AI is
+  **grounded** in our docs via RAG (`DocsIndex`), so the assistant
+  knows the 26+ layouts, palettes, editorial rules, and Mermaid
+  patterns. **Privacy mode** forces local-only. AI edits land as
+  Yjs ops the user accepts/rejects — same path as collaborator
+  edits.
 - **App theming.** App chrome adopts the active deck palette —
   subtle accent on by default, full immersive opt-in. App
   color-scheme stays independent of the deck palette.
@@ -123,7 +132,7 @@ Constraints the desktop shell must absorb:
 | Theme authoring | **`ThemeStudio`** (named subsystem) | Brand-driven palette authoring with live preview |
 | Export | **Adapter interface** | Lets PPTX / Confluence / slides.com land additively |
 | Storage | **Adapter interface** | Lets Drive / OneDrive / 365 land additively |
-| AI | Anthropic SDK in WebView | Plugs into Yjs as another client when ready |
+| AI | **Capability hub (any provider) + `DocsIndex` (RAG over Lattice docs) + `ChatPanel` + `Suggestions`** | Provider-agnostic — local default in v1.x, cloud optional; grounded in our docs; chat with tool use + ambient hints; privacy mode forces local-only |
 | Extensions & connectors | **Capability hubs + worker runtime + manifest** | Adapter interfaces above become the public API; first-party features dogfood the same API third parties will use |
 
 ### No Node in v1
@@ -963,16 +972,261 @@ Token-driven CSS throughout. Components consume the active palette's
 CSS custom properties; tint #2 above just changes which tokens are
 in scope.
 
-### AI / Claude integration
+### AI — providers, grounding, chat, suggestions
 
-- Anthropic SDK runs in the WebView — no IPC overhead.
-- AI-suggested edits translate to Yjs ops and apply to `Y.Doc`.
-- Human accept/reject of suggestions via `Y.UndoManager`.
-- Tauri's HTTP client is a fallback if CORS issues arise on any
-  endpoint.
+AI is woven through the app via four pieces:
 
-Yjs is what makes this clean — AI is just another client of the
-same document, same as a remote collaborator.
+1. **Provider-agnostic capability hub** — any LLM plugs in
+2. **`DocsIndex`** — RAG grounding over Lattice's own documentation
+3. **`ChatPanel`** — user-initiated conversation with tool-using assistant
+4. **`Suggestions`** — ambient, AI-initiated hints in the editor
+
+All four ride on the existing Yjs document model — AI edits land
+as ops the user accepts/rejects exactly like collaborator edits.
+
+#### 1. Provider-agnostic capability hub
+
+The architectural property: **the editor doesn't know which model
+wrote a suggestion.** Every provider routes through one interface:
+
+```
+app.ai.registerProvider({
+  id, name,
+  capabilities: ["completion", "embedding", "tool-use"],
+  auth: { kind: "oauth2" | "apiKey" | "none", config },
+  stream(prompt, context, options) → AsyncIterable<token>,
+  embed(text)                       → vector,
+  status: "ready" | "error" | …
+})
+```
+
+**First-party connectors:**
+
+| Connector | Phase | Notes |
+|---|---|---|
+| **Anthropic / Claude** | v1 | Built-in; user provides API key |
+| **Local** (Candle on-device) | v1.x | Built-in; opt-in download; **suggested default** once available |
+| **Ollama** | v1.x | Auto-detects local Ollama server; works with any pulled model |
+| **OpenAI** | v1.x | Built-in; user provides API key |
+
+**Third-party (via extensions):** Mistral, Cohere, Google Gemini,
+Together, Groq, Fireworks, OpenRouter, LiteLLM, vLLM / LMStudio /
+llama.cpp-server (via a generic OpenAI-compatible connector), Azure
+OpenAI, AWS Bedrock. Most LLM APIs follow an OpenAI-compatible HTTP
+shape, so a single **generic OpenAI-compatible connector** covers
+dozens of providers.
+
+**Privacy mode** (`ai.privacyMode: true` in Settings) forces *all*
+AI traffic to local-only providers. Cloud connectors return
+"unavailable." For sensitive content this is the on-machine
+guarantee — and it's free architecturally because providers are
+routed through a capability, not hardcoded.
+
+**Hybrid routing.** Different tasks route to different providers
+based on user preference and provider availability:
+
+| Task | Default route |
+|---|---|
+| Inline completion | Local (latency) |
+| Slide-level rewrite | User choice (local for privacy, Claude for quality) |
+| Multi-slide generation / restructure | Claude (quality) |
+| Embeddings (`DocsIndex`) | Local (privacy + cost) |
+
+All configurable in Settings; provider-agnostic.
+
+#### 2. `DocsIndex` — RAG grounding over Lattice docs
+
+Without grounding, a 3B model writing Lattice markdown will invent
+directive names and layout classes. With **RAG over our docs**, the
+same model becomes a real Lattice authoring assistant.
+
+```
+DocsIndex
+  ├─ build()                       // run at build time; serialize index
+  ├─ retrieve(query, k=6)          → [{ chunk, source, score }]
+  ├─ retrieveByContext(slide)      → context-aware retrieval
+  ├─ addSource(path|extension)     // workspace + extensions extend
+  └─ rebuild(reason)               // when docs change or sources added
+```
+
+**Built-in index sources:**
+
+- `docs/skill.md`, `docs/references/templates.md`,
+  `docs/references/design.md`, `docs/references/mermaid.md`,
+  `docs/editorial.md`, `docs/theming.md`
+- `examples/gallery.md` (the canonical working examples)
+- `examples/mermaid-gallery.md`
+
+Chunked by section + template entry, ~150–500 tokens per chunk,
+with metadata (source file, section heading, layout class).
+
+**Extensible — workspace + extensions add to the corpus.**
+
+Workspace:
+
+```jsonc
+"knowledge": {
+  "sources": [
+    "./brand/voice-guide.md",
+    "./brand/example-decks/"
+  ]
+}
+```
+
+Extension manifest:
+
+```jsonc
+"contributes": {
+  "knowledgeSources": [
+    { "type": "docs", "path": "./d2-syntax-reference.md" }
+  ]
+}
+```
+
+A workspace teaches the assistant its brand voice. An extension
+teaches it new syntax. The assistant grows capability as the user
+installs extensions.
+
+**Embedding model — cheap.** ~80–150 MB for a small model
+(`all-MiniLM-L6-v2`, `bge-small-en-v1.5`). Bundled with the
+opt-in local-AI download, not separately.
+
+**Vector store.** In-memory (Vec<Vector> + cosine similarity) is
+fine for the built-in corpus. SQLite + sqlite-vec when the
+user-extensible corpus grows.
+
+**Cloud providers benefit too.** Same retrieval pipeline; same
+context injection. Claude with our docs in context is *better*
+Claude; the local model with our docs in context becomes *capable*
+where it otherwise wouldn't be.
+
+#### 3. `ChatPanel` — conversational with tool use
+
+Sidebar pane, sibling to `WorkspaceView`. Orthogonal to
+focused/split/PiP modes. Default right side; resizable, collapsible.
+Optional pop-out window for users who want the editor full-width.
+
+**Context the chat always has:**
+
+- Current deck (or summary if long)
+- Current slide
+- Current selection
+- `DocsIndex` retrievals for Lattice docs
+
+User-scoped via `@`-mentions: `@slide:3`, `@theme:indaco`,
+`@docs:layouts`, `@selection`, `@workspace`.
+
+**Tool use — chat that *does*, not just talks:**
+
+```
+tools = [
+  insertSlideAfter(slideIndex, markdown),
+  replaceSelection(text),
+  proposeRewrite(range, newText),     // inline accept/reject diff
+  applyLayout(slideIndex, layoutClass),
+  insertDiagram(slideIndex, mermaidSource),
+  addThemeToken(tokenName, value),    // hooks into ThemeStudio
+  searchDocs(query),                  // explicit DocsIndex retrieval
+]
+```
+
+Tool calls surface in chat as **proposed actions**:
+
+> *Claude wants to **insert a new slide** after slide 5 with a
+> `verdict-grid` layout summarizing your Q3 results.*
+> [Preview] [Approve] [Edit] [Reject]
+
+All actions land as Yjs ops — same path as human edits, same undo
+behavior. Extensions can register additional tools.
+
+**Provider considerations for tool use.** Most modern LLMs support
+it (Claude, GPT-4+, Gemini, Llama 3.1+, Mistral). Smaller local
+models vary. **Graceful degradation**: when the provider doesn't
+support tool use, the assistant suggests text the user copies.
+Lesser UX, still functional.
+
+**Persistence.** Chat history stored **per-deck** in the deck's
+`Y.Map` metadata. Open the deck → its conversation history is
+there.
+
+**Privacy indicator** in the chat header — small badge: "via
+Claude" / "via Local" / "Privacy mode: Local only." Users always
+know where their text is going.
+
+#### 4. `Suggestions` — ambient hints
+
+Five categories, each with its own surface:
+
+| Type | Surface | Default provider |
+|---|---|---|
+| **Inline completion** | Ghost text at caret; Tab to accept | Local |
+| **Layout** | Non-modal banner above current slide ("5 bullets — try `cards-grid`?"); one-click apply | Local (grounded via `DocsIndex`) |
+| **Content** | Gentle nudges ("Draft a closing slide?") | Local |
+| **Quality / lint** | Gutter markers + tooltips (WCAG, length, brand-voice) | Local |
+| **Structural** | Deck-level ("Add a TOC?"); less frequent | Local; cloud opt-in for richer analysis |
+
+**Discipline — these run continuously:**
+
+- Debounce aggressively (fire on idle pauses, not every keystroke)
+- Cheap providers first (local for inline; cloud only on explicit
+  request)
+- **Intensity setting** — `suggestions.intensity: off | sparse |
+  active`. Default sparse.
+- No surprise commitments — every suggestion is a single-click
+  apply that lands as one undoable Yjs op
+- Never block the editor
+
+#### Tool registry — the extensibility surface
+
+Tools that chat (and agentic AI flows generally) can call are
+registered through a hub, same pattern as everything else:
+
+```
+app.tools.register({
+  id, name, description,
+  parameters: jsonSchema,
+  execute(args) → result,
+})
+```
+
+First-party tools cover the deck/slide/theme/diagram operations
+above. Extensions register more — Jira's `fetchIssue(key)`,
+Confluence's `findPage(query)`, Frontify's `fetchAsset(id)`, etc.
+The chat-using model decides which tool to invoke based on the
+schema.
+
+**v1 commitment worth nailing now:** shape the tool-registry
+contract even before tools land. So when v1.x adds them, the chat
+surface is already designed for action-taking — we're not
+retrofitting tool support onto a text-only chat.
+
+#### Extensions plug in across all four pieces
+
+- **New providers** — an entire LLM service via extension
+- **New knowledge sources** — extension contributes to `DocsIndex`
+- **New tools** — extension exposes capabilities to the chat-using
+  model
+- **New suggestion rules** — extension contributes lint markers
+  grounded in its own docs
+
+Same capability-hub pattern; same dogfood-the-API discipline —
+first-party features ship as extensions through the same surface.
+
+#### v1 / v1.x / v2
+
+- **v1** — Anthropic connector (built-in); `ChatPanel` UI with
+  text-only chat (suggests text the user pastes — tool-registry
+  contract shaped but actions not yet wired); `Suggestions` named
+  with inline completion + a couple of basic lint rules; `DocsIndex`
+  placeholder in the architecture, not built yet.
+- **v1.x** — Local LLM connector (Candle, opt-in download,
+  suggested default); Ollama connector; OpenAI connector;
+  `DocsIndex` shipped with built-in corpus + workspace extension;
+  tool use in chat wired (insert / replace / apply layout / propose
+  rewrite); all five `Suggestions` categories live.
+- **v2** — Multi-turn branching, image input (paste a sketch → get
+  a deck draft), extension-contributed slash commands + lint rules
+  at maturity, RAG over the user's deck library.
 
 ### Extension runtime — capability hubs + connector pattern
 

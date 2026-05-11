@@ -83,7 +83,12 @@ it is load-bearing.
   install at user scope only; secrets stay in keychain),
   `Onboarding` (welcome screen + welcome deck authored as a real
   Lattice deck + spotlight tour engine; extension-contributable),
-  `ThemeStudio` for brand palettes, worker-sandboxed
+  provider-agnostic AI (capability hub for any LLM — Claude in v1,
+  bundled local model as suggested default in v1.x, Ollama / OpenAI
+  / etc. via connectors; `DocsIndex` for RAG grounding over our own
+  docs; `ChatPanel` with tool use; `Suggestions` for ambient hints;
+  privacy mode forces local-only), `ThemeStudio` for brand palettes,
+  worker-sandboxed
   extension runtime with capability hubs (the
   export/storage/AI/diagram/layout adapter interfaces become the
   public plugin API; first-party features dogfood the same API).
