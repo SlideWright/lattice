@@ -68,15 +68,19 @@ it is load-bearing.
   Captures the product vision (markdown authoring, focused/split/PiP
   editor layouts, collapsible workspace sidebar, multi-format export,
   cloud storage, collaboration, AI, brand theming, extensions &
-  connectors) and the load-bearing decisions: no Node in v1, Yjs
-  document model, `EditorHost` facade over CodeMirror 6,
-  `DiagramService` for Mermaid (with render cache), `SlideSegmenter`
-  + `RenderCache` + `PreviewPane` for incremental rendering keyed by
-  slide content hash, `LayoutShell` for focused/split/PiP modes,
-  `WorkspaceView` for the file tree (storage-adapter-blind, opens
-  with a file/folder/last-session), `ThemeStudio` for brand palettes,
-  worker-sandboxed extension runtime with capability hubs (the
+  connectors) and the load-bearing decisions: no Node in v1, **own
+  the engine** (`lattice-engine` replaces the runtime dependency on
+  `@marp-team/marp-core`; marp-core stays as a bootstrap until
+  gallery parity, then is dropped), Yjs document model, `EditorHost`
+  facade over CodeMirror 6, `DiagramService` for Mermaid (with
+  render cache), `SlideSegmenter` + `RenderCache` + `PreviewPane`
+  for incremental rendering keyed by slide content hash,
+  `LayoutShell` for focused/split/PiP modes, `WorkspaceView` for the
+  file tree (storage-adapter-blind, opens with a file/folder/last-
+  session), `ThemeStudio` for brand palettes, worker-sandboxed
+  extension runtime with capability hubs (the
   export/storage/AI/diagram/layout adapter interfaces become the
   public plugin API; first-party features dogfood the same API).
   v1-load-bearing probes (live preview parity, single-slide render,
-  PDF, PNG) named as the next step. No desktop code yet.
+  PDF, PNG, engine retirement) named as the next step. No desktop
+  code yet.

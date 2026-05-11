@@ -65,9 +65,11 @@ Constraints the desktop shell must absorb:
 - **Renderer is JavaScript.** `lattice-emulator.js` (build-time) and
   `lattice-runtime.js` (browser) — both pure JS. The runtime path is
   what the desktop app actually uses.
-- **Marp.** `@marp-team/marp-core` ships a *browser bundle* — pure JS,
-  runs in any WebView. Marp CLI is a Node wrapper around it; we don't
-  need the wrapper.
+- **Marp (bootstrap only).** `@marp-team/marp-core` ships a *browser
+  bundle* — pure JS, runs in any WebView. Used to validate the
+  no-Node WebView architecture in the H3 probe; retired once
+  `lattice-engine` reaches gallery parity (see "Own the engine"
+  below). Marp CLI is a Node wrapper we never adopt.
 - **Puppeteer + bundled Chromium.** Required only by the CLI's PDF
   path. **Not needed in the desktop app** — Tauri's WebView is itself
   Chromium/WebKit, with native print-to-PDF.
@@ -75,8 +77,8 @@ Constraints the desktop shell must absorb:
   property" — already supported by `lattice-runtime.js`.
 - **Output formats.** PDF / HTML / PPTX / PNG sets from the same
   source. PPTX is the one format that genuinely needs a Node sidecar
-  (Marp's PPTX pipeline). All others are achievable from inside the
-  WebView.
+  in v1.x — but via PNG-per-slide + `pptxgenjs` assembly, not Marp.
+  All other formats are achievable from inside the WebView.
 - **11+ palettes** already in `themes/`. Any palette-contract
   extension we add has to apply to all of them.
 - **Slides are 1280×720.** PNG export at `--image-scale 3` (3840×2160).
@@ -95,7 +97,7 @@ Constraints the desktop shell must absorb:
 | UI components | **Headless or hand-rolled**, token-driven CSS | Required for the app-theming feature to work |
 | Editor | **CodeMirror 6 behind `EditorHost` facade** | Swappable to Monaco trivially; ProseMirror/Tiptap is a UX shift |
 | Document model | **Yjs (`Y.Doc`) from day one** | Unblocks AI editing + collaboration without retrofit |
-| Markdown → slides | `@marp-team/marp-core` (browser bundle) | Pure JS in WebView; no Node needed |
+| Markdown → slides | **`lattice-engine`** (ours; bootstrapped with `@marp-team/marp-core`) | Owned engine; finishes Lattice's positioning as "the engine layer"; source-compat with Marp dialect |
 | Diagrams | **`DiagramService`** (named subsystem) | One owner for Mermaid lifecycle across editor, preview, exports |
 | Preview pipeline | **`SlideSegmenter` + `RenderCache` + `PreviewPane`** | Incremental rendering (only changed slides re-render) keyed by slide content hash |
 | Workspace layout | **`LayoutShell`** | Focused / split / PiP modes with persisted user prefs |
@@ -123,11 +125,70 @@ Implications:
   is a *one-file addition* the day PPTX ships. We pay the design
   cost now, not the bundle cost.
 
+### Own the engine — bootstrap with Marp
+
+The v1 commitment: **`lattice-engine` is ours.** Markdown → slides,
+directive parsing, and slide HTML output absorbed into the existing
+Lattice codebase. The README already positions Lattice as "the
+engine layer of SlideWright" — this finishes that positioning,
+replacing the runtime dependency on `@marp-team/marp-core` and
+`@marp-team/marp-cli`.
+
+#### Why
+
+Marp's contribution to Lattice is small — a few hundred lines of
+slide splitting + directive parsing on top of community markdown
+libraries we'd use directly anyway. Everything else Lattice
+delivers (26+ layouts, 11+ palettes, Mermaid integration, runtime,
+emulator, docs) is already ours. The cost of staying coupled is
+bigger than the cost of owning the parser:
+
+- Bug fixes happen on Marp's release clock
+- Single-maintainer project — dormancy risk on a multi-year horizon
+- Design tension: Marp guards scope; needs that are central to us
+  (palette switching mid-deck, layout variants, asset directives)
+  end up worked *around* the engine rather than expressed *with* it
+- We can't extend the directive surface without negotiating upstream
+
+#### Source compatibility, not runtime dependency
+
+`lattice-engine` reads **Marp-flavored markdown** at the source
+level — same `---` separators, front matter directives,
+`<!-- _class: -->` syntax. Existing Lattice and Marp decks continue
+to work. Output HTML matches Marp's, so `lattice.css` is unchanged.
+We're free to extend the dialect upward; decks stay portable
+downward.
+
+#### Bootstrap strategy
+
+Marp earns its keep validating the architecture, then retires:
+
+1. **H3 bootstrap.** `@marp-team/marp-core` in the WebView proves
+   the no-Node architecture. Quick to stand up.
+2. **Build `lattice-engine` in parallel.** ~500 lines of focused
+   parser on top of `markdown-it` (or `remark`). Self-contained
+   chunk; doesn't block other v1 work.
+3. **Swap.** When `lattice-engine` passes `examples/gallery.md` and
+   `examples/mermaid-gallery.md` (the same regression bar Lattice
+   already uses), drop `marp-core` from the bundle and the dep
+   list.
+
+We don't gate on Marp, and we don't ship with it.
+
+#### What stays Marp's risk we accept
+
+- **Native PPTX** — Marp's experimental text-to-PPTX-XML path is a
+  real reimplementation cost. Defer indefinitely. Standard PPTX
+  (PNG-per-slide + `pptxgenjs` assembly in v1.x) doesn't need Marp.
+- **Edge cases Marp has discovered** — we rediscover or import fixes
+  as the galleries surface them.
+
 ### What we add into the WebView
 
 | Lib | Purpose | Already in repo? |
 |---|---|---|
-| `@marp-team/marp-core` (browser) | Markdown → slide HTML | No — add |
+| **`lattice-engine`** (ours; bootstrapped with `@marp-team/marp-core`) | Markdown → slide HTML | New module to build; marp-core retired once `lattice-engine` reaches gallery parity |
+| `markdown-it` (or `remark`) | Underlying markdown parser used by `lattice-engine` | No — add |
 | `mermaid` | Diagram rendering | Yes (`mermaid-v11.min.js`) |
 | `highlight.js` | Render-side code highlighting | Yes (dep) |
 | `@codemirror/state` + `view` + `lang-markdown` + nested language packages | Editor + markdown highlighting | No — add |
@@ -258,8 +319,10 @@ change invalidates exactly what the palette controls.
 
 1. `Y.Text` change → `SlideSegmenter` recomputes the slide list
 2. Diff against previous → typically 0–1 changed slides
-3. For each changed slide: render via marp-core's single-slide path
-   (see **H3a** below); store in `RenderCache`
+3. For each changed slide: render via `lattice-engine`'s
+   single-slide path (designed in from the start since we own the
+   engine; during the H3 bootstrap phase, marp-core's equivalent —
+   see **H3a** below); store in `RenderCache`
 4. For *moved* or *unchanged* slides: reuse cached DOM nodes
 5. `PreviewPane` patches only the affected slide nodes
 
@@ -692,9 +755,11 @@ architecture above:
 - **~~Q2 (Chromium location)~~** — Tauri's WebView is Chromium; no
   separate bundle.
 - **~~Q3 (Live preview model)~~** — runtime-in-WebView via
-  `@marp-team/marp-core` + `lattice-runtime.js`.
-- **~~Q4 (PPTX)~~** — deferred to v1.x via Node sidecar; native PPTX
-  uses Marp's experimental flag through the same sidecar.
+  `lattice-engine` + `lattice-runtime.js` (bootstrapped on
+  `@marp-team/marp-core` until parity).
+- **~~Q4 (PPTX)~~** — deferred to v1.x via Node sidecar; standard
+  PPTX is PNG-per-slide + `pptxgenjs` assembly (no Marp needed).
+  Native PPTX (Marp experimental) deferred indefinitely.
 
 Still open:
 
@@ -755,15 +820,24 @@ Earlier hypotheses re-scoped to the no-Node v1 architecture:
   for `examples/gallery.md`.
 - **H2.** *(v1.x — PPTX only)* Sidecar cold render latency for a
   10-slide deck is under 3 s.
-- **H3.** *(v1 — load-bearing)* `@marp-team/marp-core` browser
-  bundle + `lattice-runtime.js` reaches feature parity with the
-  emulator for live preview, with theme switching in real time.
-- **H3a.** *(v1 — load-bearing for incremental rendering)*
-  `@marp-team/marp-core` supports rendering individual slides (or
-  can be wrapped cleanly to do so) such that a single-slide render
-  is identical to the same slide rendered inside a full-deck pass.
-  If false, fallback is full-deck render + slide-level DOM patching
-  only — slower but still workable.
+- **H3 (bootstrap).** *(v1 — load-bearing)* `@marp-team/marp-core`
+  browser bundle + `lattice-runtime.js` reaches feature parity with
+  the emulator for live preview, with theme switching in real time.
+  Validates the no-Node WebView architecture before `lattice-engine`
+  lands.
+- **H3-engine.** *(v1 — load-bearing for engine retirement)*
+  `lattice-engine` reaches output parity with `marp-core` on
+  `examples/gallery.md` and `examples/mermaid-gallery.md`. When this
+  passes, `marp-core` is dropped from the bundle and the dep list.
+- **H3a.** *(v1 — load-bearing for incremental rendering during
+  bootstrap; obviated post-swap)* `@marp-team/marp-core` supports
+  rendering individual slides (or can be wrapped to do so) such that
+  a single-slide render is identical to the same slide inside a
+  full-deck pass. `lattice-engine` is *designed* for single-slide
+  render from the start, so the property is built in post-swap. If
+  H3a fails during bootstrap, fallback is full-deck render + slide-
+  level DOM patching — slower but workable until `lattice-engine`
+  ships.
 - **H4.** ~~Bundled Chromium adds < 200 MB to the installer.~~ N/A —
   no Chromium bundle (Tauri WebView).
 
@@ -807,24 +881,32 @@ toolchain costs are *not*, by themselves, replacement triggers.
 
 ## Next step
 
-Three v1-load-bearing probes, in dependency order:
+Three v1-load-bearing probes (gating), plus engine retirement
+(parallel):
 
-1. **H3 + H3a — Live preview parity & single-slide render.**
-   Minimal HTML page in a Tauri WebView that loads
+1. **H3 + H3a — Live preview parity & single-slide render
+   (bootstrap).** Minimal HTML page in a Tauri WebView that loads
    `@marp-team/marp-core` + `lattice-runtime.js`, renders
    `examples/gallery.md` from a string, switches palette in real
    time, **and renders a single slide independently and compares it
    to the same slide inside a full-deck render** (H3a). If both
    pass, the v1 architecture is live and incremental rendering is
-   unlocked.
+   unlocked. Marp here is the *bootstrap*; H3-engine retires it
+   later.
 2. **H5 — PDF export.** Trigger `webview.print_to_pdf()` on the
    rendered output. Compare visually to `marp-cli --pdf` reference.
 3. **H6 — PNG export.** Screenshot each rendered slide via the
    WebView API. Compare to `marp-cli --images png` reference at 3×
    scale.
+4. **H3-engine — Engine retirement (parallel, non-gating).** Build
+   `lattice-engine` against `examples/gallery.md` and
+   `examples/mermaid-gallery.md`. When output matches `marp-core`
+   on both fixtures, drop `marp-core` from the bundle and the dep
+   list. Self-contained — runs alongside editor / ThemeStudio /
+   etc., doesn't gate them.
 
 H7 (Yjs bundle size) and H8 (per-palette app-chrome WCAG) are
-cheaper and can run in parallel.
+cheaper and can run in parallel with everything above.
 
 Everything else — editor work, ThemeStudio, AI hook, export adapters
-beyond PDF/PNG/HTML — waits on these three.
+beyond PDF/PNG/HTML — waits on H3, H5, H6.
