@@ -1,7 +1,9 @@
 
 /*
  * @theme lattice
- * @size 16:9 1280px 720px
+ * @size 16:9     1280px 720px
+ * @size 16:9-4k  3840px 2160px
+ * @size 4:3      960px  720px
  *
  * Lattice — Marp slide layout engine.
  * Layouts are palette-blind: every color token is consumed via var()
@@ -45,17 +47,20 @@
   --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
   --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
-  /* ── Spacing scale ────────────────────────────────────────────────── */
-  --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
+  /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
+   * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
+   * At HD (1280px) these resolve to the original px values exactly.
+   * At 4K (3840px) they triple automatically — no extra rules needed. */
+  --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
-  /* ── Font sizes ───────────────────────────────────────────────────── */
-  --fs-label:13px; --fs-xs:12px; --fs-sm:15px; --fs-body:16px; --fs-md:18px;
-  --fs-emphasis:17px; --fs-content:19px; --fs-lg:22px; --fs-xl:30px; --fs-2xl:34px;
-  --fs-3xl:48px; --fs-display:60px; --fs-stat:52px; --fs-quote:80px;
-  --fs-hero:110px; --fs-watermark:180px;
+  /* ── Font sizes (cqi) ────────────────────────────────────────────── */
+  --fs-label:1.015625cqi; --fs-xs:0.9375cqi; --fs-sm:1.171875cqi; --fs-body:1.25cqi; --fs-md:1.40625cqi;
+  --fs-emphasis:1.328125cqi; --fs-content:1.484375cqi; --fs-lg:1.71875cqi; --fs-xl:2.34375cqi; --fs-2xl:2.65625cqi;
+  --fs-3xl:3.75cqi; --fs-display:4.6875cqi; --fs-stat:4.0625cqi; --fs-quote:6.25cqi;
+  --fs-hero:8.59375cqi; --fs-watermark:14.0625cqi;
 
   /* ── Radii / line-heights ─────────────────────────────────────────── */
-  --radius-sm:8px; --radius-md:12px; --radius-lg:14px;
+  --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
   --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
 
   /* ── Marp chrome mappings ── */
@@ -225,14 +230,15 @@
 
 /* ── BASE ── */
 section {
-  width:1280px; height:720px; box-sizing:border-box; overflow:hidden; position:relative;
+  width:1280px; height:720px; container-type:size;
+  box-sizing:border-box; overflow:hidden; position:relative;
   display:flex; flex-direction:column;
-  padding:var(--sp-xl) var(--sp-2xl); padding-top:88px; padding-bottom:88px;
+  padding:var(--sp-xl) var(--sp-2xl); padding-top:6.875cqi; padding-bottom:6.875cqi;
   background: var(--bg); color:var(--text-body);
   font-family:var(--font-body); font-size:var(--fs-md); line-height:var(--lh-base);
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
-  border-top: 4px solid; border-image-source: var(--spectrum); border-image-slice: 1;
+  border-top: 0.3125cqi solid; border-image-source: var(--spectrum); border-image-slice: 1;
 }
 
 section h1 { font-family:var(--font-display); font-size:var(--fs-display); font-weight:700; color:var(--text-display); line-height:var(--lh-tight); margin:0; border:none; }
@@ -244,7 +250,7 @@ section h5 { font-family:var(--font-mono); font-size:var(--fs-label); font-weigh
 section p { margin:0 0 var(--sp-xs) 0; }
 section strong { color:var(--text-heading); font-weight:600; }
 section em { font-style:italic; }
-section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:2px 6px; border-radius:4px; color:var(--accent); border:1px solid var(--border); }
+section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; color:var(--accent); border:1px solid var(--border); }
 /* Reset inline-code chip styling for code that's inside a fenced block.
  * Covers both `<pre>` (lattice-emulator output, where mermaid is pre-rendered
  * to SVG) and `<marp-pre>` (Marp Preview's custom element, where mermaid
@@ -252,7 +258,7 @@ section code { font-family:var(--font-mono); font-size:0.85em; background:var(--
  * the marp-pre branch, mermaid source blocks render briefly as inline-code
  * chips in VS Code preview before the upgrade lands. */
 section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
-section hr { border:none; height:2px; background:var(--spectrum); border-radius:2px; width:72px; margin:var(--sp-sm) auto; }
+section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
 section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
@@ -444,13 +450,13 @@ section img.emoji {
   margin:0 0.05em;
 }
 section header {
-  position:absolute; top:24px; left:30px; right:30px;
+  position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
-  position:absolute; bottom:24px; left:30px; right:80px;
+  position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
@@ -464,8 +470,8 @@ section header > p, section footer > p { font-family:var(--font-mono); font-size
    are also !important because the scaffold sets defaults that don't match our footer. */
 section::after {
   position:absolute !important;
-  bottom:24px !important;
-  right:30px !important;
+  bottom:1.875cqi !important;
+  right:2.34375cqi !important;
   padding:0 !important;
   margin:0 !important;
   font-family:var(--font-mono) !important;
@@ -525,19 +531,19 @@ section.content { justify-content:flex-start; }
  * The mermaid-svg fills flex:1 automatically.
  */
 section.diagram { align-items:center; }
-section.diagram h3 { margin-bottom:4px; }
+section.diagram h3 { margin-bottom:0.3125cqi; }
 section.diagram h2 { font-size:var(--fs-xl); margin-bottom:4px; }
 section.diagram > p { font-size:var(--fs-sm); color:var(--text-muted); margin-bottom:var(--sp-sm); }
 /* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
    Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
    query the container width before rendering. width:100% on a freshly-inserted flex child
    can resolve to 0 before the browser commits a layout pass.
-   1280px section − 2 × var(--sp-2xl) padding = 1152px. */
-section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
+   100cqi (slide width) − 2 × var(--sp-2xl) padding = 90cqi. */
+section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; box-sizing:border-box; }
 /* Source <pre> in pending/error states occupies the same slot as the rendered
  * diagram so the slide layout does not reflow when the diagram swaps in. */
 section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
-  flex:1; width:calc(1280px - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
+  flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
 }
 section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
 /* Key Insight panel on diagram slides must stretch full-width to match every
@@ -551,10 +557,10 @@ section.diagram > blockquote { align-self:stretch; }
  */
 section.stats { justify-content:center; align-items:center; }
 section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
-section.stats h3 { margin-bottom:4px; }
+section.stats h3 { margin-bottom:0.3125cqi; }
 section.stats > p, section.stats > em { font-size:var(--fs-body); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
-section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
+section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
 section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
@@ -2177,7 +2183,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [
   box-sizing:border-box;
 }
 section.diagram > .mermaid-error {
-  width:calc(1280px - 2 * var(--sp-2xl));
+  width:calc(100cqi - 2 * var(--sp-2xl));
 }
 section.diagram > .mermaid-error-label,
 .mermaid-error-label {
@@ -5137,23 +5143,23 @@ section.checklist > ol > li em {
  * Chrome reservation (top/bottom 88px) is intentionally preserved so header
  * and footer never collide with content. */
 section.compact {
-  --sp-xs: 6px;
-  --sp-sm: 12px;
-  --sp-md: 18px;
-  --sp-lg: 24px;
-  --sp-xl: 36px;
-  --sp-2xl: 48px;
+  --sp-xs: 0.46875cqi;
+  --sp-sm: 0.9375cqi;
+  --sp-md: 1.40625cqi;
+  --sp-lg: 1.875cqi;
+  --sp-xl: 2.8125cqi;
+  --sp-2xl: 3.75cqi;
 }
 
 /* ── loose ──────────────────────────────────────────────────────────────
  * More breathing room. Inverse of compact. */
 section.loose {
-  --sp-xs: 10px;
-  --sp-sm: 20px;
-  --sp-md: 30px;
-  --sp-lg: 40px;
-  --sp-xl: 60px;
-  --sp-2xl: 80px;
+  --sp-xs: 0.78125cqi;
+  --sp-sm: 1.5625cqi;
+  --sp-md: 2.34375cqi;
+  --sp-lg: 3.125cqi;
+  --sp-xl: 4.6875cqi;
+  --sp-2xl: 6.25cqi;
 }
 
 /* ── accent ─────────────────────────────────────────────────────────────
@@ -5161,7 +5167,7 @@ section.loose {
  * tints the slide heading. Used when a slide carries a single editorial
  * argument — the accent stripe signals "this is the point". */
 section.accent {
-  border-top: 4px solid var(--accent);
+  border-top: 0.3125cqi solid var(--accent);
   border-image: none;
 }
 section.accent h2 { color: var(--accent); }
@@ -5169,7 +5175,7 @@ section.accent h2 { color: var(--accent); }
  * modifier restores a single-colour stripe so the visual signal still reads. */
 section.accent.dark {
   background:
-    linear-gradient(to right, var(--accent), var(--accent)) top / 100% 4px no-repeat,
+    linear-gradient(to right, var(--accent), var(--accent)) top / 100% 0.3125cqi no-repeat,
     var(--bg);
   border-top: none;
 }
@@ -5624,7 +5630,7 @@ section.chart-frame .chart-body {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  width: calc(1280px - 2 * var(--sp-2xl));
+  width: calc(100cqi - 2 * var(--sp-2xl));
   max-width: 100%;
   margin: 0 auto;
   padding: var(--sp-lg) var(--sp-2xl);
