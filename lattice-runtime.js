@@ -405,6 +405,7 @@
     transformRoadmapStatus();
     transformRoadmapHorizons();
     transformJourney();
+    transformWordCloud();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -948,6 +949,246 @@
         wrap.appendChild(card);
       });
       table.replaceWith(wrap);
+    }
+  }
+
+  // ── Word-cloud layout transform ─────────────────────────────────────────
+  // Mirrors the build-time spiral packer in lib/word-cloud.js so the
+  // marp-vscode preview (which never runs marp.config.js's render hook
+  // — see gotchas: webview CSP) produces the same layout the export
+  // pipeline produces. The algorithm is the same; the only difference
+  // is DOM-construction vs HTML-string emission.
+  //
+  // Sibling implementations (parity contract):
+  //   lib/word-cloud.js     — HTML-string transform run by marp.config.js render hook
+  //   lattice-emulator.js   — per-slide emulator path delegates to lib/word-cloud.js
+  const WC_CANVAS_W = 1100;
+  const WC_CANVAS_H = 320;
+  const WC_CHAR_W_COEFF = 0.54;
+  const WC_BBOX_PAD_EM = 0.12;
+  const WC_GOLDEN_ANGLE = 2.399963229728653;
+  const WC_SHRINK_FACTOR = 0.9;
+  const WC_SHRINK_RETRIES = 4;
+  const WC_CAT_ROTATION = [
+    'var(--cat-blue)', 'var(--cat-orange)', 'var(--cat-teal)',
+    'var(--cat-rose)', 'var(--cat-purple)', 'var(--cat-green)',
+  ];
+  const WC_VARIANT_OPTS = {
+    default: {
+      sizeSpread: [16, 84], sizeCurve: 1.35,
+      spiral: { dr: 0.5,  dtheta: 0.12, maxIter: 3000 },
+      rotation: { chance: 0.22, minWeight: 1.5, maxWeight: 3.5, rotated: 90 },
+      color: 'cat-rotate',
+    },
+    constellation: {
+      sizeSpread: [14, 100], sizeCurve: 1.55,
+      spiral: { dr: 0.9,  dtheta: 0.18, maxIter: 2500 },
+      rotation: { chance: 0, minWeight: 0, maxWeight: 0, rotated: 0 },
+      color: 'accent-pair',
+    },
+    dense: {
+      sizeSpread: [12, 60], sizeCurve: 1.20,
+      spiral: { dr: 0.3,  dtheta: 0.09, maxIter: 4000 },
+      rotation: { chance: 0.32, minWeight: 1, maxWeight: 3.5, rotated: 90 },
+      color: 'cat-rotate',
+    },
+    spectrum: {
+      sizeSpread: [14, 76], sizeCurve: 1.35,
+      spiral: { dr: 0.45, dtheta: 0.12, maxIter: 3000 },
+      rotation: { chance: 0, minWeight: 0, maxWeight: 0, rotated: 0 },
+      color: 'heat-ramp',
+    },
+    focal: {
+      sizeSpread: [12, 128], sizeCurve: 1.80,
+      spiral: { dr: 0.45, dtheta: 0.12, maxIter: 3200 },
+      rotation: { chance: 0.15, minWeight: 1, maxWeight: 2.5, rotated: 90 },
+      color: 'focal-cats',
+    },
+  };
+
+  function wcClampWeight(n) {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return 3;
+    if (v < 1) return 1;
+    if (v > 5) return 5;
+    return v;
+  }
+  function wcLerp(a, b, t) { return a + (b - a) * t; }
+  function wcSizeFromWeight(w, opts) {
+    const t = (w - 1) / 4;
+    const e = Math.pow(t, opts.sizeCurve);
+    return wcLerp(opts.sizeSpread[0], opts.sizeSpread[1], e);
+  }
+  function wcRotatedForRank(rank, weight, opts) {
+    const r = opts.rotation;
+    if (!r.chance) return false;
+    if (weight > r.maxWeight || weight < r.minWeight) return false;
+    return (((rank * 17) + 11) % 100) < r.chance * 100;
+  }
+  function wcColorForWord(rank, weight, opts) {
+    if (opts.color === 'heat-ramp') {
+      if (weight >= 4.5) return 'var(--accent)';
+      if (weight >= 3.5) return 'var(--scale-700)';
+      if (weight >= 2.5) return 'var(--scale-500)';
+      if (weight >= 1.5) return 'var(--scale-400)';
+      return 'var(--text-muted)';
+    }
+    if (opts.color === 'accent-pair') {
+      if (weight >= 4) return 'var(--accent)';
+      if (weight >= 2.5) return 'var(--cat-mauve)';
+      return 'var(--text-muted)';
+    }
+    if (opts.color === 'focal-cats') {
+      if (weight >= 4.5) return 'var(--accent)';
+      if (weight <= 1.5) return 'var(--text-muted)';
+      return WC_CAT_ROTATION[(rank - 1) % WC_CAT_ROTATION.length];
+    }
+    if (weight >= 4.5) return 'var(--accent)';
+    if (weight <= 1.5) return 'var(--text-muted)';
+    return WC_CAT_ROTATION[(rank - 1) % WC_CAT_ROTATION.length];
+  }
+  function wcBboxFor(text, size) {
+    const len = text.length || 1;
+    const padX = size * WC_BBOX_PAD_EM;
+    const padY = size * WC_BBOX_PAD_EM;
+    return { w: len * size * WC_CHAR_W_COEFF + padX * 2, h: size * 1.05 + padY * 2 };
+  }
+  function wcRectsCollide(a, b) {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x ||
+             a.y + a.h <= b.y || b.y + b.h <= a.y);
+  }
+  function wcTryPlace(bbox, startTheta, canvas, placed, spiralOpts) {
+    const cx = canvas.w / 2, cy = canvas.h / 2;
+    const aspect = canvas.w / canvas.h;
+    let theta = startTheta, r = 0;
+    for (let i = 0; i < spiralOpts.maxIter; i++) {
+      const px = r * aspect * Math.cos(theta);
+      const py = r * Math.sin(theta);
+      const x = cx + px - bbox.w / 2;
+      const y = cy + py - bbox.h / 2;
+      if (x < 0 || y < 0 || x + bbox.w > canvas.w || y + bbox.h > canvas.h) {
+        theta += spiralOpts.dtheta; r += spiralOpts.dr; continue;
+      }
+      const cand = { x, y, w: bbox.w, h: bbox.h };
+      let coll = false;
+      for (const p of placed) { if (wcRectsCollide(cand, p)) { coll = true; break; } }
+      if (coll) { theta += spiralOpts.dtheta; r += spiralOpts.dr; continue; }
+      return cand;
+    }
+    return null;
+  }
+  function wcPackCloud(words, canvas, spiralOpts) {
+    const placed = [];
+    for (let wi = 0; wi < words.length; wi++) {
+      const w = words[wi];
+      const startTheta = wi * WC_GOLDEN_ANGLE;
+      let found = null, finalSize = w.size, finalBbox = null;
+      for (let retry = 0; retry <= WC_SHRINK_RETRIES; retry++) {
+        const trialSize = w.size * Math.pow(WC_SHRINK_FACTOR, retry);
+        const plain = (w.text || '').replace(/<[^>]+>/g, '');
+        const natBbox = wcBboxFor(plain, trialSize);
+        const trialBbox = w.rotated
+          ? { w: natBbox.h, h: natBbox.w }
+          : natBbox;
+        const cand = wcTryPlace(trialBbox, startTheta, canvas, placed, spiralOpts);
+        if (cand) { found = cand; finalSize = trialSize; finalBbox = trialBbox; break; }
+      }
+      if (found) {
+        placed.push(found);
+        w.x = found.x + finalBbox.w / 2;
+        w.y = found.y + finalBbox.h / 2;
+        w.size = finalSize;
+        w.placed = true;
+      } else {
+        w.placed = false;
+      }
+    }
+    return words.filter(w => w.placed);
+  }
+  function wcPickVariant(classList) {
+    for (const mod of ['constellation', 'dense', 'spectrum', 'focal']) {
+      if (classList.contains(mod)) return mod;
+    }
+    return 'default';
+  }
+
+  function transformWordCloud() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.word-cloud')) {
+      if (section.querySelector(':scope > .word-cloud-canvas')) continue;
+      const ul = section.querySelector(':scope > ul');
+      if (!ul) continue;
+      const variant = wcPickVariant(section.classList);
+      const opts = WC_VARIANT_OPTS[variant] || WC_VARIANT_OPTS.default;
+
+      const items = [];
+      let sourceIdx = 0;
+      for (const li of ul.children) {
+        if (li.tagName !== 'LI') continue;
+        // Last <code> child = weight pill; default 3 otherwise. Mirror
+        // the [^<] anchor logic in lib/word-cloud.js — only the trailing
+        // <code> counts, an earlier inline-code mention isn't the weight.
+        const children = [...li.childNodes];
+        let weight = 3;
+        let lastCodeIdx = -1;
+        for (let i = children.length - 1; i >= 0; i--) {
+          const n = children[i];
+          if (n.nodeType === 1 && n.tagName === 'CODE') { lastCodeIdx = i; break; }
+          if (n.nodeType === 1) break;
+          if (n.nodeType === 3 && n.nodeValue.trim()) break;
+        }
+        let textHtml = li.innerHTML;
+        if (lastCodeIdx >= 0) {
+          weight = wcClampWeight(children[lastCodeIdx].textContent.trim());
+          const tmp = document.createElement('div');
+          for (let i = 0; i < lastCodeIdx; i++) tmp.appendChild(children[i].cloneNode(true));
+          textHtml = tmp.innerHTML;
+        }
+        textHtml = textHtml.replace(/\s+$/, '');
+        if (!textHtml.trim()) continue;
+        items.push({ text: textHtml, weight, source: sourceIdx });
+        sourceIdx++;
+      }
+      if (items.length === 0) continue;
+
+      items.sort((a, b) => b.weight - a.weight || a.source - b.source);
+      const visualed = items.map((it, idx) => {
+        const rank = idx + 1;
+        const size = wcSizeFromWeight(it.weight, opts);
+        return {
+          text: it.text,
+          weight: it.weight,
+          rank,
+          size,
+          rotated: wcRotatedForRank(rank, it.weight, opts),
+          color: wcColorForWord(rank, it.weight, opts),
+        };
+      });
+      const packed = wcPackCloud(visualed, { w: WC_CANVAS_W, h: WC_CANVAS_H }, opts.spiral);
+      if (packed.length === 0) continue;
+
+      const canvas = document.createElement('div');
+      canvas.className = 'word-cloud-canvas';
+      canvas.dataset.count = String(packed.length);
+      canvas.dataset.variant = variant;
+      canvas.style.setProperty('--wc-canvas-w', WC_CANVAS_W + 'px');
+      canvas.style.setProperty('--wc-canvas-h', WC_CANVAS_H + 'px');
+      for (const w of packed) {
+        const span = document.createElement('span');
+        span.className = 'wc-word';
+        span.dataset.weight = String(w.weight);
+        span.dataset.rank = String(w.rank);
+        if (w.rotated) span.dataset.rotated = '1';
+        const rotDeg = w.rotated ? opts.rotation.rotated : 0;
+        span.style.setProperty('--wc-x',     w.x.toFixed(1) + 'px');
+        span.style.setProperty('--wc-y',     w.y.toFixed(1) + 'px');
+        span.style.setProperty('--wc-size',  w.size.toFixed(1) + 'px');
+        span.style.setProperty('--wc-rot',   rotDeg + 'deg');
+        span.style.setProperty('--wc-color', w.color);
+        span.innerHTML = w.text;
+        canvas.appendChild(span);
+      }
+      ul.replaceWith(canvas);
     }
   }
 

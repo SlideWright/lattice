@@ -6405,6 +6405,112 @@ section.kanban.dark .kanban-size {
 }
 
 
+/* ── WORD-CLOUD ──────────────────────────────────────────────────────────────
+ * Curated word cloud: real 2D spiral packing, multi-hue, axis-aligned.
+ *
+ * Source contract: one <ul> per slide. Each <li> is a word; the trailing
+ * <code> element holds a continuous weight in [1, 5] (defaults to 3
+ * when omitted, clamped). lib/word-cloud.js runs a build-time
+ * Archimedean spiral packer, computes per-word size / rotation /
+ * color from rank + weight, and emits absolute-positioned spans with
+ * CSS variables. No client-side packing or randomness — every layout
+ * is deterministic across rebuilds.
+ *
+ * Layout output:
+ *   <div class="word-cloud-canvas" style="--wc-canvas-w:1200px;--wc-canvas-h:540px">
+ *     <span class="wc-word" data-weight="5" data-rank="1"
+ *           style="--wc-x:..;--wc-y:..;--wc-size:..;--wc-rot:..;--wc-color:..">Word</span>
+ *     …
+ *   </div>
+ *
+ * The CSS reads the per-word variables and positions each span at its
+ * center coordinate; the packer's collision rects are bbox-aligned
+ * (top-left), so the CSS translate(-50%,-50%) converts coordinates
+ * back. Rotation policy is rank-keyed in the packer; CSS just applies
+ * the value.
+ *
+ * Five variants share the engine; per-variant behavior lives entirely
+ * in lib/word-cloud.js's VARIANT_OPTS table — CSS treats them all the
+ * same. The data-variant attribute is informational, not required.
+ *
+ *   word-cloud                 moderate, multi-cat, occasional 90°
+ *   word-cloud constellation   sparse, accent + supporting cat, 0° only
+ *   word-cloud dense           tight, full cat rotation, 0° + 90° mix
+ *   word-cloud spectrum        moderate, heat-ramp by weight, 0° only
+ *   word-cloud focal           tight, hero top tier + cat satellites
+ *
+ * Sibling implementations:
+ *   - lib/word-cloud.js     transform module (shared)
+ *   - lattice-emulator.js   per-slide HTML-string transform
+ *   - marp.config.js        marp-cli render hook
+ *   - lattice-runtime.js    DOM transform for marp-vscode preview
+ */
+
+section.word-cloud {
+  display: flex;
+  flex-direction: column;
+}
+
+section.word-cloud > h2 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-sm);
+}
+
+/* Canvas is a fixed-pixel rectangle (1200×540) — the packer works in
+ * the same coordinate space. The slide is fixed at 1280×720 by Marp,
+ * so this fits with 40px horizontal breathing room and ~180px for
+ * h2 + below-note + header chrome. Centered horizontally. */
+section.word-cloud .word-cloud-canvas {
+  position: relative;
+  width: var(--wc-canvas-w);
+  height: var(--wc-canvas-h);
+  margin: 0 auto;
+  flex: 0 0 auto;
+}
+
+section.word-cloud .wc-word {
+  position: absolute;
+  left: var(--wc-x);
+  top:  var(--wc-y);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--wc-size);
+  color: var(--wc-color);
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: -0.015em;
+  transform: translate(-50%, -50%) rotate(var(--wc-rot, 0deg));
+  transform-origin: center;
+}
+
+/* Bottom-tier words read as supporting vocabulary — lighter weight and
+ * tracked tighter so the eye groups them as ambient context rather
+ * than competing with the focal tier. */
+section.word-cloud .wc-word[data-weight="1"],
+section.word-cloud .wc-word[data-weight^="1."] {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Top tier — slight letter-spacing tightening for visual mass. */
+section.word-cloud .wc-word[data-weight="5"],
+section.word-cloud .wc-word[data-weight^="4.5"],
+section.word-cloud .wc-word[data-weight^="4.6"],
+section.word-cloud .wc-word[data-weight^="4.7"],
+section.word-cloud .wc-word[data-weight^="4.8"],
+section.word-cloud .wc-word[data-weight^="4.9"] {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Vertical (90°) words pick up tighter spacing — when read top-to-bottom
+ * they need to feel like they belong to the same family as the
+ * horizontal ones, not like inserted captions. */
+section.word-cloud .wc-word[data-rotated="1"] {
+  letter-spacing: -0.01em;
+}
+
+
 /* ════════════════════════════════════════════════════════════════════════════
  * BACKGROUND LIBRARY
  * 27 utility classes (16 gradient accents + 11 SVG accent marks) for
