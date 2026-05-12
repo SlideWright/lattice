@@ -1,8 +1,85 @@
 # Theming
 
-How to author a new palette for Lattice. Covers the CSS variable contract,
-the per-diagram Mermaid theming surface, and the Mermaid parser limits a
-palette author needs to know about.
+Deep reference for authoring a Lattice palette. Covers the mental model
+the engine has of a palette, the CSS variable contract, the per-diagram
+Mermaid theming surface, and the parser limits a palette author needs
+to know about.
+
+> **First time here?** Start with `themes/README.md` — it's the
+> one-screen mental model with ASCII diagrams and a five-minute
+> scaffolded path. This file is the deep reference you graduate to
+> when the README points you here.
+
+## How to think about a palette
+
+Two channels leave every palette file. The engine reads the file once
+and routes each channel to its consumer:
+
+```
+ themes/<name>.css
+ ─────────────────
+   @theme <name>; @import 'lattice';
+
+   :root {
+     --bg, --accent, --cat-*, …        ╮
+   }                                    │  channel 1
+   :root { --dark-* }                   │  CSS variables
+   :root { --hljs-* }                   │  ──────────────→  lattice.css
+   :root { --mermaid-* }                ╯  via var(--token)  rules consume
+                                                             the tokens at
+                                                             every use site
+   /* ===== MERMAID THEME CSS ===== */  ←  sentinel
+
+   section .person { fill: … }          ╮
+   section .venn-set-0 { … }            │  channel 2
+   section .architecture-… { … }        │  Mermaid CSS  ──→  injected as
+   …                                    ╯  (per-diagram)     themeCSS into
+                                                             every Mermaid
+                                                             SVG at build
+                                                             time
+```
+
+The split exists because Mermaid exposes a `themeVariables` API for most
+diagrams, but several types (journey, mindmap, c4, radar, venn, ishikawa,
+treemap, packet, architecture, sankey) hardcode internal palettes that
+ignore that API. Channel 2 is the patch surface for those gaps. Channel 1
+is everything else — layout colours, ink, accents, semantic signals,
+categorical hues, code syntax, and the slot tokens that Mermaid's
+`themeVariables` API *does* respect.
+
+Channel 1 is declarative: define the tokens, layouts pick them up.
+Channel 2 is corrective: CSS selectors against rendered SVG, one rule
+per Mermaid bug or gap. Authoring a new palette mostly edits channel 1
+values and inherits channel 2 unchanged — because every override below
+the sentinel uses `var(--token)`, your new values flow through without
+touching a selector.
+
+### Two lightness bands
+
+Almost every colour choice collapses onto one rule: fills go in one of
+two bands. The bands exist because Mermaid's kanban renderer applies
+an internal lighten step (≈+10 lightness) before emitting fills. Feed
+it L≈60 and it lands on L≈70 — pale enough for dark text, not invisible
+on white. Feed it L≈90 and it lands on L≈100 — invisible.
+
+```
+   L ≈ 90  pale band       primary, secondary, all fillType*, pie slices,
+                           gantt bars, sequence actor bg, c4 boxes, venn
+                           sets, flowchart/sequence/class/ER/quadrant —
+                           anywhere dark text sits on a colour
+   L ≈ 60  mid-tone band   --cat-blue … --cat-mauve, cScale0..11, git0..7
+                           — kanban lightens these in flight; mindmap and
+                           actor pills consume them directly
+   sat.    alarm only      --mermaid-error-bg, --mermaid-gantt-critical
+                           — the deck's one saturated red, nowhere else
+```
+
+A palette that respects the bands inherits all the per-diagram overrides
+correctly. A palette that pushes `--cat-*` to L≈90 to "make it pale"
+breaks kanban; a palette that pushes the pale fills to L≈75 to "give them
+some colour" breaks contrast on flowchart text. The two non-obvious
+rules — kanban lightens, mindmap doesn't — are the entire reason for
+the band split.
 
 ## Anatomy of a palette
 
@@ -24,12 +101,8 @@ contains:
 
 Sections 3-6 define the *what* (color values). Section 7 defines the
 *where* (which diagram element gets which value, expressed as CSS
-selectors against the rendered SVG).
-
-The renderer reads the palette file once. It hands sections 1-4 to the
-slide CSS pipeline as palette tokens. It pulls section 5 out (split on
-the sentinel) and hands it to Mermaid's `themeCSS` parameter. Both halves
-of the palette ship in one file.
+selectors against the rendered SVG). `themes/indaco.css` is the
+canonical reference; every shipped palette follows this layout.
 
 ## The variable contract
 
@@ -275,20 +348,71 @@ file but not in the rendered SVG), check for these two patterns first.
 
 ## Authoring a new palette
 
+The scaffolder is the fastest path. It copies `themes/indaco.css`,
+rewrites the `@theme` directive, stamps `TODO(palette):` markers on
+every value you're expected to change, and creates the matching
+`<name>-dark.css` wrapper so the dark variant works on day one.
+
+```sh
+npm run new:theme verdigris
+# → themes/verdigris.css       (starter palette, TODOs at every author-edit point)
+# → themes/verdigris-dark.css  (3-line wrapper flipping color-scheme to dark)
+```
+
+Then, in order of impact:
+
+1. **Brand axis** (`--brand-<hue>-deep`, `-mid`, `<hue>`). Pick three to
+   five shades along a single hue; everything else hangs off them.
+   `--bg-dark`, `--accent`, `--text-label`, and the spectrum gradient
+   all derive from these.
+2. **Surfaces** (`--bg`, `--bg-alt`, `--border`). Use `light-dark(…)`
+   pairs so the dark variant works automatically.
+3. **Ink ramp** (`--text-heading`, `-body`, `-label`, `-muted`,
+   `--text-display`). Every text-bearing token must clear WCAG AA
+   (4.5:1) against the surface it appears on.
+4. **Accent** (`--accent`, `--accent-soft`, `--on-accent`). Most-seen
+   colour after ink. Must clear contrast against `--bg` *and* against
+   `--accent-soft`.
+5. **Mermaid pale slots** (`--mermaid-primary-color`,
+   `--mermaid-secondary-color`, `--mermaid-pie-*`). Pale band, L≈90.
+   Used by flowchart/sequence/journey/pie/c4/venn fills.
+6. **Categorical hues** (`--cat-blue` … `--cat-mauve`). Mid-tone band,
+   L≈60. Used by kanban, mindmap, actor pills, corner tags. Inherit
+   indaco's on a first pass if you don't have strong opinions.
+7. **Dark-variant tokens** (`--dark-bg`, `--dark-text-*`, etc).
+   Consumed by every `light-dark()` pair above and by `section.dark`.
+8. **Semantic signals** (`--pass`, `--fail`, `--warn`). Usually the same
+   green/red/amber across palettes; override if your brand specifies.
+
+You can leave the per-diagram Mermaid CSS overrides untouched. They all
+reference tokens by `var(--token)`, so your new colour values flow
+through unchanged.
+
+When the values look right:
+
+```sh
+# Build the regression galleries with your palette and inspect each PDF.
+node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         <name>
+node lattice-emulator.js examples/mermaid-gallery.md /tmp/<name>-mermaid.pdf <name>
+node lattice-emulator.js examples/kpi-gallery.md     /tmp/<name>-kpi.pdf     <name>
+```
+
+Then register the palette in `.vscode/settings.json` under
+`markdown.marp.themes` so the Marp VS Code extension picks it up
+for live preview.
+
+### Authoring it by hand
+
+If you prefer not to run the scaffolder:
+
 1. Copy `themes/indaco.css` to `themes/<name>.css`.
 2. Update the `@theme <name>` directive at the top of the file to match
    the filename (this is the value authors will type in front matter).
 3. Edit the hex values in each `:root` block. Keep the variable names —
    the renderer's variable map references them by name.
-4. Decide whether the per-diagram Mermaid CSS section needs updating.
-   For most palettes, the same selectors work; you'll just want to
-   verify the pale fills reference your new color values rather than
-   the original ones.
-5. Register the palette in `.vscode/settings.json` under
-   `markdown.marp.themes` so the Marp VS Code extension picks it up.
-6. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
-7. Re-render `examples/mermaid-gallery.md` with your palette to verify
-   every diagram type renders correctly.
+4. Copy `themes/indaco-dark.css` to `themes/<name>-dark.css` and change
+   the `@theme` directive and `@import` target to match.
+5. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
 
 ## Verifying a palette
 
