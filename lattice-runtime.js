@@ -891,11 +891,25 @@
         const eyebrow = document.createElement('span');
         eyebrow.className = 'horizon-eyebrow';
         eyebrow.textContent = 'Phase ' + String(idx + 1).padStart(2, '0');
+        // Lift a trailing <code> into a meta pill — mirrors lib/roadmap.js.
+        let headerHtml = header;
+        let metaText = '';
+        const trailingCode = header.match(/\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*$/);
+        if (trailingCode) {
+          headerHtml = header.slice(0, trailingCode.index).trim();
+          metaText = trailingCode[1];
+        }
         const title = document.createElement('span');
         title.className = 'horizon-title';
-        title.innerHTML = header;
+        title.innerHTML = headerHtml;
         head.appendChild(eyebrow);
         head.appendChild(title);
+        if (metaText) {
+          const meta = document.createElement('span');
+          meta.className = 'horizon-meta';
+          meta.innerHTML = metaText;
+          head.appendChild(meta);
+        }
         const ul = document.createElement('ul');
         ul.className = 'horizon-rows';
         for (const r of bodyRows) {

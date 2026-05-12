@@ -32,14 +32,14 @@ Five table-driven roadmap layouts, all built from the same markdown source contr
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01          | Phase 02              | Phase 03              |
-| ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
-| SDK        | Java              |                       | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
+| SDK        | Java                 |                     | Polyglot parity       |
 
-Workstream column carries a categorical lane stripe; phase headers carry numbered chrome; empty cells render as a thin dash.
+Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line, carrying the column's categorical accent. Empty cells render as a thin dash.
 
 ---
 
@@ -50,7 +50,7 @@ Workstream column carries a categorical lane stripe; phase headers carry numbere
 
 ## Where every workstream lands this quarter.
 
-| Workstream | Phase 01              | Phase 02                  | Phase 03                  |
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`       | Scale `Q4 2026`           |
 | ---------- | --------------------- | ------------------------- | ------------------------- |
 | Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs     | [ ] Per-purpose codebooks |
 | Operations | [x] Manual rotation   | [-] Automated rotation    | [ ] Crypto-shred          |
@@ -68,14 +68,14 @@ Workstream column carries a categorical lane stripe; phase headers carry numbere
 
 ## Now, next, and later — by workstream.
 
-| Workstream | Now · Q2 2026          | Next · Q3 2026         | Later · Q4 2026       |
+| Workstream | Now `Q2 2026`          | Next `Q3 2026`         | Later `Q4 2026`       |
 | ---------- | ---------------------- | ---------------------- | --------------------- |
 | Platform   | Codebook signing       | Multi-tenant DEKs      | Per-purpose codebooks |
 | Operations | Manual rotation        | Automated rotation     | Crypto-shred          |
 | Compliance | Audit trail (HSM)      | Centralised log        | Examiner pack         |
 | SDK        | Java                   |                        | Polyglot parity       |
 
-Same source table, transposed into three phase cards. Each card carries the phase eyebrow, the phase title from the header, and the workstream commitments stacked below.
+Same source table, transposed into three phase cards. Each card carries the phase eyebrow, the phase title, the trailing meta pill (lifted from the header's inline `code`), and the workstream commitments stacked below.
 
 ---
 
@@ -86,12 +86,12 @@ Same source table, transposed into three phase cards. Each card carries the phas
 
 ## Each workstream as its own track.
 
-| Workstream | Phase 01          | Phase 02              | Phase 03              |
-| ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
-| SDK        | Java              |                       | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
+| SDK        | Java                 |                     | Polyglot parity       |
 
 Workstream cell becomes a lane label on its row's categorical ground; phase cells read as outlined cards along the track.
 
@@ -104,14 +104,14 @@ Workstream cell becomes a lane label on its row's categorical ground; phase cell
 
 ## Phased rollout against the fiscal calendar.
 
-| Workstream | Phase 01<br>*Q2 2026* | Phase 02<br>*Q3 2026* | Phase 03<br>*Q4 2026* |
-| ---------- | --------------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing      | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation       | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM)     | Centralised log       | Examiner pack         |
-| SDK        | Java                  |                       | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
+| SDK        | Java                 |                     | Polyglot parity       |
 
-Phase headers carry a date subtitle authored with `<br>*Q2 2026*`. A coloured tick anchors each phase column to the spectrum-gradient timeline beneath the header.
+Same meta-pill convention as the other roadmaps — the difference is the calendar identity: phase columns get a soft alternating tint so the timeline reads as a fiscal grid.
 
 ---
 

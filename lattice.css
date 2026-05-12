@@ -3017,10 +3017,15 @@ section.principles.bullet ol > li::before { content:'·'; }
  *
  * Multi-phase rollout grid. First column = workstream label (sticky,
  * bold, on tinted ground with a categorical lane stripe). Phase
- * columns get phase chrome: a numbered badge inline with the phase
- * name, the spectrum-gradient separator under the header row, and a
- * hairline rule between columns. Empty cells render as a thin muted
- * dash so the eye reads "not in this phase" rather than "missing".
+ * column headers carry two things:
+ *   1. The author's phase NAME (e.g. "Foundation", "Discovery")
+ *   2. An optional trailing inline-code meta pill (the universal
+ *      pill convention) — author writes `Foundation \`Q1 2026\``;
+ *      the `<code>` is right-anchored, sits on the spectrum line,
+ *      and carries the categorical phase accent.
+ * The pill is meta, never sequence — no auto-counter duplicating
+ * what the author wrote. Empty cells render as a thin muted dash so
+ * the eye reads "not in this phase" rather than "missing".
  *
  * Modifiers — compose with the base by adding a second class:
  *   .status      — cells carry state markers ([x]/[-]/[ ]/[/]) and
@@ -3053,33 +3058,41 @@ section.roadmap thead th {
   padding:var(--sp-sm) var(--sp-md);
   white-space:nowrap;
 }
-/* Phase columns get a numbered badge inline with the phase name. */
+/* Phase column headers: the header text is the author's phase NAME.
+   An optional trailing inline-code element becomes a meta pill,
+   right-anchored on the spectrum line under the th, carrying the
+   column's categorical accent. Authoring guidance: header text =
+   phase name; pill = optional meta (date, status tag, owner). */
 section.roadmap thead th:not(:first-child) {
-  counter-increment:phase-counter;
-  padding-top:var(--sp-md);
-  padding-bottom:var(--sp-md);
-  border-left:1px solid var(--border);
+  position:relative;
+  padding-top:var(--sp-sm);
+  padding-bottom:calc(var(--sp-md) + 6px);
+  padding-right:var(--sp-md);
 }
-section.roadmap thead { counter-reset:phase-counter; }
-section.roadmap thead th:not(:first-child)::before {
-  content:counter(phase-counter, decimal-leading-zero);
-  display:inline-block;
-  margin-right:var(--sp-sm);
+/* Universal trailing pill — overrides the global `section code` chrome
+   (bg-alt fill, square radius). The pill sits ON the spectrum line
+   at the bottom-right of the header cell. */
+section.roadmap thead th:not(:first-child) > code {
+  position:absolute;
+  right:var(--sp-md);
+  bottom:-7px;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:11px;
   font-weight:700;
-  color:var(--phase-accent, var(--accent));
-  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 14%, transparent);
-  border:1px solid var(--phase-accent, var(--accent));
-  border-radius:999px;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
   padding:2px 9px;
+  border:2px solid var(--bg);
+  border-radius:999px;
   letter-spacing:0.04em;
-  line-height:1;
-  vertical-align:middle;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
 }
 /* Categorical rotation across phase columns and workstream rows.
    The workstream column reads `--phase-accent` for its lane stripe
-   per row; phase columns read it for their badge chrome per column. */
+   per row; phase columns read it for their leading column-accent
+   stripe per column. */
 section.roadmap thead th:nth-child(8n+2),
 section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-blue); }
 section.roadmap thead th:nth-child(8n+3),
@@ -3208,6 +3221,26 @@ section.roadmap.horizons .horizon-head {
   margin-bottom:var(--sp-sm);
   padding-bottom:var(--sp-sm);
   border-bottom:1px solid var(--border);
+  position:relative;
+}
+/* Universal meta pill — right-anchored on the head's bottom border,
+   matching the trailing-code pill on the non-transposed roadmaps. */
+section.roadmap.horizons .horizon-meta {
+  position:absolute;
+  right:0;
+  bottom:-7px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
+  padding:2px 9px;
+  border:2px solid var(--bg-alt);
+  border-radius:999px;
+  letter-spacing:0.04em;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
 }
 section.roadmap.horizons .horizon-eyebrow {
   font-family:var(--font-mono);
@@ -3311,53 +3344,16 @@ section.roadmap.swimlane tbody td:empty::after {
   color:var(--text-muted);
   font-family:var(--font-mono);
 }
-section.roadmap.swimlane thead th {
-  padding-left:var(--sp-md);
-  border-left:0;
-}
+/* Swimlane thead keeps the categorical column tab from the base rule;
+   it carries the column identity that the lane-band rows reinforce. */
 
 /* ── ROADMAP MILESTONES — quarter-anchored timeline ──────────────────
- * Author writes each phase header as `Phase 01<br>*Q1 2026*` — the
- * post-`<br>` italic span renders as a small date subtitle (non-mono,
- * non-uppercase, body weight). A coloured tick anchors each phase
- * column to the spectrum line beneath the header row, and phase
- * columns carry a soft alternating ground so the timeline reads.
+ * Identity: the meta pill on every phase header is the quarter/date.
+ * Phase columns get a soft alternating ground so the timeline reads
+ * as a calendar. The pill itself is the universal meta pill from
+ * the base rule — no milestone-specific pill chrome.
  * ──────────────────────────────────────────────────────────────────── */
-section.roadmap.milestones thead th {
-  white-space:normal;
-  line-height:1.4;
-  padding-bottom:calc(var(--sp-md) + 8px);
-  position:relative;
-}
-/* Italic span on a header line becomes the date subtitle —
-   non-mono, non-uppercase, body size, serif italic. */
-section.roadmap.milestones thead th em {
-  display:block;
-  margin-top:4px;
-  font-family:var(--font-serif);
-  font-style:italic;
-  font-size:var(--fs-body);
-  font-weight:500;
-  letter-spacing:0;
-  text-transform:none;
-  color:var(--text-heading);
-}
-/* Tick sits ON the spectrum line inherited from the base thead tr.
-   Anchored to the left edge of the cell content (under the badge) so
-   it reads as the phase's mark on the timeline. */
-section.roadmap.milestones thead th:not(:first-child)::after {
-  content:'';
-  position:absolute;
-  left:calc(var(--sp-md) + 18px);
-  bottom:-5px;
-  width:11px; height:11px;
-  border-radius:50%;
-  background:var(--bg);
-  border:2px solid var(--phase-accent, var(--accent));
-  z-index:1;
-}
 section.roadmap.milestones tbody td:not(:first-child) {
-  /* Soft column tint so the timeline columns read distinctly. */
   background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
