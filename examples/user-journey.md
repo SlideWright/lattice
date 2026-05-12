@@ -59,15 +59,22 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 <!-- _class: journey -->
 <!-- _footer: "Classic variant · journey" -->
 
-## My working day
+## Customer onboarding · trial → activation
 
-- Go to work
-  - Make tea `@me` `:5`
-  - Go upstairs `@me` `:3`
-  - Do work `@me` `@cat` `:1`
-- Go home
-  - Go downstairs `@me` `:5`
-  - Sit down `@me` `:5`
+> **Setup is the chokepoint.** Mood drops three points between trial
+> signup and first report — the only stretch we own end-to-end and the
+> only place we can move conversion this quarter.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
 
 ---
 
@@ -84,18 +91,23 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 <!-- _class: journey heatmap -->
 <!-- _footer: "Heatmap variant · journey heatmap" -->
 
-## Onboarding · where do we lose people?
+## Support escalation · where customers cool off
 
-- Acquisition
-  - Land on site `@visitor` `:4`
-  - Read pricing `@visitor` `:3`
-- Sign-up
-  - Create account `@visitor` `:3`
-  - Verify email `@visitor` `:2`
-  - First login `@user` `:3`
-- Activation
-  - Tour `@user` `:4`
-  - First action `@user` `:5`
+> **Routing latency, not solution quality, drives the orange band.**
+> Customers rate the resolution itself a 4 (Solution, Close-out), but
+> mood stalls between acknowledge and route. Cutting that gap below
+> four hours reclaims the dip.
+
+- Submission
+  - Find help article `@customer` `:3`
+  - Open ticket `@customer` `:2`
+- Triage
+  - Acknowledged `@customer` `:3`
+  - Routed `@customer` `:2`
+- Resolution
+  - First reply `@customer` `:3`
+  - Solution delivered `@customer` `:4`
+  - Close-out `@customer` `:4`
 
 ---
 
@@ -112,19 +124,23 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 <!-- _class: journey curve -->
 <!-- _footer: "Curve variant · journey curve" -->
 
-## Quarterly close · the shape of the week
+## Quarterly close · the J-curve of the cycle
 
-- Monday
+> **The trough is the audit, not the math.** Close itself is
+> technically straightforward; the dip is reconciliation rework and
+> first-audit-pass surprises. Pre-audit prep is the cycle-time unlock.
+
+- Open
   - Kickoff `@finance` `:4`
   - Pull data `@finance` `:3`
-- Mid-week
-  - Reconcile `@finance` `:2`
-  - First draft `@finance` `:3`
-  - Review cycle 1 `@finance` `@cfo` `:2`
-- Late week
-  - Review cycle 2 `@finance` `@cfo` `:3`
+- Reconcile
+  - Cleanse data `@finance` `:2`
+  - First draft `@finance` `:2`
+  - Audit cycle 1 `@finance` `@auditor` `:1`
+- Close
+  - Audit cycle 2 `@finance` `@auditor` `:3`
   - Board pack `@finance` `:4`
-  - Submit `@finance` `:5`
+  - Submit `@finance` `@cfo` `:5`
 
 ---
 
@@ -141,18 +157,23 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 <!-- _class: journey swimlane -->
 <!-- _footer: "Swimlane variant · journey swimlane" -->
 
-## Support escalation · two perspectives
+## Loan application · two perspectives diverge
 
-- Intake
-  - Submit ticket `@customer` `:2`
-  - Triage `@agent` `:4`
-- Resolution
-  - First reply `@agent` `:4`
-  - Wait `@customer` `:1`
-  - Follow-up `@agent` `@customer` `:3`
-- Close
-  - Solution `@agent` `:5`
-  - Confirm `@customer` `:4`
+> **Customer pain peaks where underwriter mood holds.** Their lowest
+> point — doc requests at mood 1 — is our steady state. NPS will trail
+> underwriting efficiency until doc-request UX is fixed.
+
+- Application
+  - Start app `@customer` `:3`
+  - Submit docs `@customer` `:2`
+- Review
+  - Initial review `@underwriter` `:3`
+  - Doc requests `@customer` `:1`
+  - Re-submit `@customer` `:2`
+  - Approve `@underwriter` `:4`
+- Funding
+  - Sign `@customer` `:5`
+  - Disburse `@customer` `@underwriter` `:5`
 
 ---
 
@@ -169,14 +190,18 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 <!-- _class: journey weighted -->
 <!-- _footer: "Weighted variant · journey weighted" -->
 
-## Where to invest · prioritized by traffic
+## Subscription funnel · prioritized by traffic × pain
+
+> **Verify is the highest-leverage fix.** 10% of traffic hits mood 1
+> at a single step we fully control. One week of work here outranks
+> any home-page optimization on the roadmap.
 
 - Discover
   - Home `@visitor` `:4` `+45`
   - Pricing `@visitor` `:3` `+18`
 - Convert
   - Sign-up `@visitor` `:2` `+12`
-  - Verify `@visitor` `:1` `+10`
+  - Verify email `@visitor` `:1` `+10`
 - Retain
   - Dashboard `@user` `:4` `+8`
   - Settings `@user` `:3` `+4`

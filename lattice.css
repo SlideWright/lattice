@@ -3782,6 +3782,12 @@ section.roadmap.milestones tbody td:not(:first-child) {
    * the PDF rasterizer) silently drops `oklab` color-mix(... transparent)
    * in stroke/border-color/background contexts. */
   --journey-axis:         color-mix(in srgb, var(--fg) 32%, transparent);
+
+  /* Per-row height in the mood band. Drives both the band's total
+   * height (5 rows = 5 × this) and the plumb-line length calc. Smaller
+   * value = more vertical room for the rest of the board (legend,
+   * sections, insight callout). */
+  --journey-mood-row: 26px;
 }
 
 /* Shared base — applies to every journey variant. */
@@ -3798,10 +3804,23 @@ section.journey h2 {
 section.journey .journey-board {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-md);
+  gap: var(--sp-sm);
   width: 100%;
   flex: 1;
   min-height: 0;
+}
+/* When the slide carries an insight blockquote, the board sits below
+ * it and needs to compress further. Tighten chip height and section
+ * padding so the moods band + faces still fit. */
+section.journey:has(> blockquote) .journey-task {
+  min-height: 50px;
+  padding: var(--sp-sm) var(--sp-xs) var(--sp-xs);
+}
+section.journey:has(> blockquote) .journey-section {
+  padding: var(--sp-xs) var(--sp-sm);
+}
+section.journey:has(> blockquote) > blockquote {
+  margin: 0 0 var(--sp-sm) 0;
 }
 
 /* ── Legend ─────────────────────────────────────────────────────────── */
@@ -3932,13 +3951,13 @@ section.journey .journey-task {
   grid-column: var(--col);
   background: var(--journey-task-bg);
   color: var(--journey-task-fg);
-  padding: var(--sp-md) var(--sp-sm) var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-xs) var(--sp-xs);
   border-radius: var(--radius-sm);
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 64px;
+  min-height: 56px;
   font-size: var(--fs-sm);
   text-align: center;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 8%, transparent);
@@ -4003,7 +4022,7 @@ section.journey .journey-moods {
   display: grid;
   grid-template-columns: repeat(var(--task-count), 1fr);
   grid-template-rows: repeat(5, 1fr);
-  height: 200px;
+  height: calc(5 * var(--journey-mood-row));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -4025,10 +4044,10 @@ section.journey .journey-mood-line {
   left: 50%;
   /* Anchor the top of the line at the top of the moods band; the line
    * extends down to the top of the face cell. For mood-5 (row 1) the
-   * height collapses to 0; mood-1 (row 5) is 160px tall. */
-  top: calc(-1 * (5 - var(--mood)) * 40px);
+   * height collapses to 0; mood-1 (row 5) is the full band tall. */
+  top: calc(-1 * (5 - var(--mood)) * var(--journey-mood-row));
   width: 0;
-  height: calc((5 - var(--mood)) * 40px);
+  height: calc((5 - var(--mood)) * var(--journey-mood-row));
   /* Split into longhands — Chromium 1194 (Playwright build used for the
    * PDF rasterizer) fails to parse `border` shorthand when the color
    * slot contains a complex `var(...)` with color-mix. */
