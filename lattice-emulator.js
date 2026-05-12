@@ -778,7 +778,11 @@ const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] 
 function readGlobalStyle(fmText) {
   const inline = fmText.match(/^\s*style:\s*(["'])([\s\S]*?)\1\s*$/m);
   if (inline) return inline[2];
-  const block = fmText.match(/^\s*style:\s*\|\s*\r?\n([\s\S]*?)(?=^\S|\Z)/m);
+  // `(?=^\S|$(?![\s\S]))` — stop at the next top-level YAML key or at the
+  // absolute end of the frontmatter string. JS regex has no `\Z` anchor,
+  // so we spell end-of-input as `$` with a negative lookahead for any
+  // remaining characters.
+  const block = fmText.match(/^\s*style:\s*\|\s*\r?\n([\s\S]*?)(?=^\S|$(?![\s\S]))/m);
   if (block) {
     return block[1]
       .split(/\r?\n/)
