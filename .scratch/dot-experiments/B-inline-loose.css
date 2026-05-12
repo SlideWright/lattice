@@ -1,0 +1,31 @@
+/* Experiment B: actor dot becomes a label prefix inside the chip.
+ * Loose gaps. */
+
+/* Make the chip a centered flex row that wraps so dots prefix the label. */
+section.journey .journey-task {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--sp-xs);
+  padding-bottom: var(--sp-xs);
+  gap: 4px;
+  text-align: center;
+}
+
+section.journey .journey-task-actors {
+  position: static;
+  display: inline-flex;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+section.journey .journey-task .journey-actor-dot {
+  width: 8px;
+  height: 8px;
+  border: none;
+}
+
+section.journey .journey-task-label {
+  flex: 0 1 auto;
+}

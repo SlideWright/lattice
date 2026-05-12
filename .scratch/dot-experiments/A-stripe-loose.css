@@ -1,0 +1,30 @@
+/* Experiment A: actor dot becomes a top-edge color stripe.
+ * Loose gaps: keep board gap at sp-sm. */
+
+/* Floating dot wrapper becomes a 3px stripe along chip top edge. */
+section.journey .journey-task-actors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  display: flex;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  overflow: hidden;
+}
+
+/* Each actor dot becomes a flex cell of the stripe (auto-splits for multi-actor). */
+section.journey .journey-task .journey-actor-dot {
+  flex: 1;
+  width: auto;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: var(--actor-color);
+  box-sizing: border-box;
+}
+
+/* Chip recovers the top padding once reserved for the dot's lower half. */
+section.journey .journey-task {
+  padding-top: var(--sp-xs);
+}

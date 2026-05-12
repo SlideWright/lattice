@@ -1,0 +1,35 @@
+/* Experiment A + tight: top-edge stripe + tightened inter-band gaps. */
+
+section.journey .journey-task-actors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  display: flex;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  overflow: hidden;
+}
+
+section.journey .journey-task .journey-actor-dot {
+  flex: 1;
+  width: auto;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: var(--actor-color);
+  box-sizing: border-box;
+}
+
+section.journey .journey-task {
+  padding-top: var(--sp-xs);
+}
+
+/* Tightened inter-band gaps. Board still uses flex column; we just shrink
+ * the negative space around the section/task/timeline triplet. */
+section.journey .journey-board {
+  gap: var(--sp-xs);
+}
+section.journey .journey-timeline {
+  margin: 2px 0;
+}
