@@ -75,9 +75,16 @@ reviewer can see the work without rebuilding locally:
 4. Link the PDF in the PR body (and in chat replies) using the **raw**
    URL — `/raw/`, not `/blob/`, so the file downloads directly:
    `https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf`.
+   **Share the URL plain — no markdown bold, no backticks, no link
+   text wrapping. Plain URLs paste cleanly everywhere.**
 
-Feature decks are independent of `examples/gallery.md` (the regression
-baseline). Full convention in `docs/references/workflow.md`.
+**Isolate feature/fix content from the long-running galleries.** Do
+not add slides or modifier examples to `examples/gallery.md` or
+`examples/gallery-guide.md` while the feature is in development —
+those decks are the regression baseline. The new layout graduates
+into them in a separate commit after review.
+
+Full convention in `docs/references/workflow.md`.
 
 ## When you can't see the result
 

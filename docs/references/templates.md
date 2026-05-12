@@ -385,49 +385,27 @@ Numbered list of declarative one-liners in display weight. Each item is one para
 
 ### `roadmap` — phased multi-workstream grid
 
-A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold) with a categorical lane stripe per row. Phase columns (everything after the first) get phase chrome — a numbered badge inline with the phase name, with a categorical accent rotating across columns. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
+A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold) with a categorical lane stripe per row. Phase columns (everything after the first) carry the phase NAME as the header text plus an optional trailing inline-code element that becomes a right-anchored meta pill seated on the spectrum line — the pill takes the column's categorical accent and carries author-supplied meta (a date, an owner, a status tag). Header text and pill carry different information; the pill is never an auto-counter. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
 
 ```markdown
 <!-- _class: roadmap -->
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01         | Phase 02           | Phase 03              |
-| ---------- | ---------------- | ------------------ | --------------------- |
-| Platform   | Codebook signing | Multi-tenant DEKs  | Per-purpose codebooks |
-| Operations | Manual rotation  | Automated rotation | Crypto-shred          |
-| SDK        | Java             |                    | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| SDK        | Java                 |                     | Polyglot parity       |
 ```
 
 | Modifier     | Effect                                                                                                                            |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| (default)    | workstream × phase grid; lane stripe per row; numbered phase chrome per column                                                    |
+| (default)    | workstream × phase grid; lane stripe per row; right-anchored meta pill on the spectrum line per phase header                       |
 | `status`     | cells carry state markers — `[x]` shipped, `[-]` in flight, `[ ]` planned, `[/]` out of scope. Marker tints the cell and prints a state eyebrow above the content. |
-| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, and the workstream commitments stacked underneath with their workstream labels. |
+| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, the trailing meta pill (lifted from the header's inline code), and the workstream commitments stacked underneath with their workstream labels. |
 | `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. |
-| `milestones` | quarter-anchored. Write each phase header as `Phase 01<br>*Q1 2026*` — the italic span styles as a small non-mono date subtitle, and a coloured tick anchors each phase column to the spectrum line beneath the header row. |
-
-```markdown
-<!-- _class: roadmap status -->
-
-## Where every workstream lands this quarter.
-
-| Workstream | Phase 01              | Phase 02                  | Phase 03                  |
-| ---------- | --------------------- | ------------------------- | ------------------------- |
-| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs     | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation   | [-] Automated rotation    | [ ] Crypto-shred          |
-| SDK        | [x] Java              | [/] .NET                  | [ ] Polyglot parity       |
-```
-
-```markdown
-<!-- _class: roadmap milestones -->
-
-## Phased rollout against the fiscal calendar.
-
-| Workstream | Phase 01<br>Q2 2026 | Phase 02<br>Q3 2026 | Phase 03<br>Q4 2026   |
-| ---------- | ------------------- | ------------------- | --------------------- |
-| Platform   | Codebook signing    | Multi-tenant DEKs   | Per-purpose codebooks |
-```
+| `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. |
 
 ### `kpi` — metrics dashboard with targets and trends
 
@@ -1720,10 +1698,10 @@ Card-bearing layouts auto-number their cards when the source list is an ordered 
 3. **Implication.** Third card carries badge `3`.
 ```
 
-**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`, `roadmap`
+**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`
 
 - Switching from `-` to `1. ` is the entire authoring surface — no modifier class, no comment directive
-- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers; roadmap numbers the phase columns
+- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers
 - Layouts that **do not** number on `ol` are intentional: state-bearing rows (`actors`, `checklist`, `verdict-grid`), named-slot rows (`featured`, `compare-prose`, `before-after`, `decision`, `matrix-2x2`), equal-weight summaries (`tldr`), and value-display layouts (`kpi`, `stats`, `big-number`)
 
 ---

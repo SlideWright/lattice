@@ -47,6 +47,13 @@ directly from the PR body. It is independent of the long-running
 `gallery.md` / `mermaid-gallery.md` / `backgrounds-gallery.md` decks (which
 remain the regression baseline asserted by integration tests).
 
+**Feature/fix content is isolated to the feature deck until merge.** Do
+not add new slides, new modifiers, or new copy into `gallery.md` or
+`gallery-guide.md` while the feature is in development — they would
+churn the regression baseline (page counts, parity tests) on every
+iteration. The long-running decks pick up the new layout in a separate
+"graduation" commit after the feature has been reviewed and approved.
+
 ### Authoring
 
 1. Create `examples/<feature-slug>.md`. The slug matches the branch noun
@@ -84,6 +91,12 @@ https://github.com/slidewright/lattice/raw/<branch>/examples/<feature-slug>.pdf
 Paste that link into the PR body — and into chat / status updates when
 asked for the feature deck. The link remains stable across pushes; the
 reviewer always sees the latest pushed version of the PDF.
+
+**Format the link as a plain URL — no markdown bold, no surrounding
+backticks, no link text wrapping.** Plain URLs are clickable in every
+context (PR body, GitHub comments, terminal chat, email) and survive
+copy-paste without losing the formatting characters. Write the URL on
+its own line.
 
 (The `/blob/` form renders the PDF inline on github.com with the
 repository chrome around it. The `/raw/` form skips the chrome and
