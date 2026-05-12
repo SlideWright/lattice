@@ -263,6 +263,116 @@ paths or they drift. For inline-code directives:
   the top of `lattice.css`, but FA's webfont CSS pulls font files
   too, so the choice has more moving parts).
 
+### Reference parser (drop-in starting point)
+
+Hand-rolled single-pass dispatcher. The grammar has no recursion
+(directives can't nest inside backticks), so this is both the simplest
+and fastest shape. ~40 lines, no PEG, no parser combinators.
+
+```js
+// lib/inline-directives.js — pure function, no DOM, no markdown-it.
+// Input: text content of a code_inline token (what's between the backticks).
+// Output: { kind, … } describing the directive, or null = "leave literal".
+
+// Longest opener first; first match wins. ~8 entries, linear scan = ~30 char compares worst case.
+const BRACKETS = [
+  ['([', '])',  'pill'           ],
+  ['((', '))',  'circle'         ],
+  ['[[', ']]',  'tag-bordered'   ],
+  ['[',  '>',   'chevron-right'  ],
+  ['<',  ']',   'chevron-left'   ],
+  ['[',  ']',   'tag'            ],
+  ['(',  ')',   'chip'           ],
+  ['{',  '}',   'diamond'        ],
+];
+
+const VAR_RE = /^\$([A-Za-z_][\w.]*)$/;
+const NS_RE  = /^([a-z]+):(.+)$/;
+
+function parse(text) {
+  // 1) variable — first-char dispatch, O(1) reject
+  if (text.charCodeAt(0) === 0x24 /* $ */) {
+    const m = VAR_RE.exec(text);
+    return m ? { kind: 'var', name: m[1] } : null;
+  }
+
+  // 2) bracket pill — first-char dispatch, small lookup table
+  const c0 = text[0];
+  if (c0 === '[' || c0 === '(' || c0 === '{' || c0 === '<') {
+    for (const [open, close, shape] of BRACKETS) {
+      if (!text.startsWith(open)) continue;
+      const closeIdx = text.indexOf(close, open.length);
+      if (closeIdx < open.length) continue;
+      const tail = text.slice(closeIdx + close.length);
+      if (tail && tail[0] !== ':') continue;       // tail must be empty or start with :
+      const value = text.slice(open.length, closeIdx);
+      if (!value) continue;
+      const mods = tail ? tail.slice(1).split(':') : [];
+      return { kind: 'pill', shape, value, mods };
+    }
+  }
+
+  // 3) namespace prefix — single anchored regex, no backtracking
+  const ns = NS_RE.exec(text);
+  if (ns) return { kind: 'prefix', prefix: ns[1], value: ns[2] };
+
+  // 4) literal — caller leaves the <code> alone
+  return null;
+}
+```
+
+Properties to preserve in the implementation:
+
+- **O(n) single pass.** No backtracking, no recursion. `n` is the
+  code-token text length, typically 5–30 chars.
+- **First-char dispatch routes to disjoint branches** ($, brackets,
+  lowercase letters). Literal text falls through without allocating.
+- **No allocation on the literal path.** Return `null`; the
+  markdown-it ruler leaves the token untouched — no new tokens, no
+  string churn.
+- **Two anchored regexes total.** Both linear, no alternation.
+
+For a 70-page deck with ~500 inline-code tokens, total parse cost is
+well under a millisecond per render. Dominant cost on preview
+re-render remains mermaid and the marp pipeline — directive parsing
+is dust.
+
+**Approaches to resist:**
+
+- PEG / parser combinators. Overkill — no recursive structure here.
+- One mega-regex with alternation + capture groups. Slower and harder
+  to read than the dispatch above.
+- Memoization. Tokens are unique enough per deck that cache hit rate
+  isn't worth the map.
+
+Handler dispatch (separate from parsing) is a plain object keyed by
+`kind` and (for `kind: 'prefix'`) by `prefix`:
+
+```js
+const PREFIX_HANDLERS = {
+  fa: (value, mods) => `<i class="fa-solid fa-${escapeAttr(value)}"></i>`,
+  kbd: (value, mods) => renderKbdChord(value),
+  // …
+};
+
+const PILL_COLORS = ['c1','c2','c3','c4','c5','c6','c7','c8']; // → --cat-*
+const PILL_SIZES  = ['sm','md','lg'];
+
+function render(parsed, ctx) {
+  switch (parsed.kind) {
+    case 'var':    return ctx.vars[parsed.name] ?? `??${parsed.name}??`;
+    case 'pill':   return renderPill(parsed.shape, parsed.value, parsed.mods);
+    case 'prefix': {
+      const h = PREFIX_HANDLERS[parsed.prefix];
+      return h ? h(parsed.value) : null;  // null = warn + leave literal
+    }
+  }
+}
+```
+
+Pill mod resolution sorts mods into axes (color = `c[1-8]`, size =
+`sm|md|lg`) so `:c4:lg` and `:lg:c4` produce identical output.
+
 ### Tests to add
 
 - `test/unit/inline-directives.test.js` — pure-function tests for
