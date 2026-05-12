@@ -39,12 +39,68 @@ git worktree remove ../Lattice-contrast-audit
 
 Each worktree is fully independent — you can run `npm test` in both simultaneously. The `.git` metadata is shared; branches see each other.
 
+## Feature decks
+
+**Every feature or visual-bug branch ships a per-feature demo deck.** This
+is how reviewers see the work: a small, focused PDF on the branch, linked
+directly from the PR body. It is independent of the long-running
+`gallery.md` / `mermaid-gallery.md` / `backgrounds-gallery.md` decks (which
+remain the regression baseline asserted by integration tests).
+
+### Authoring
+
+1. Create `examples/<feature-slug>.md`. The slug matches the branch noun
+   (e.g. branch `feat/roadmap-redesign` → `examples/roadmap.md`,
+   branch `fix/mermaid-catdeep` → `examples/mermaid-catdeep.md`).
+2. Keep the deck small — title slide, one slide per surface the work
+   changes, closing. Six to ten slides is the comfortable cap.
+3. Use the same front matter as the galleries (`marp: true`, `theme:
+   indaco`, `paginate: true`, a deck-scoped `header:`).
+4. Author the slides as you would any boardroom deck — the eyebrow
+   above the heading, the heading itself, the demo, and a one-line
+   below-note explaining the change.
+
+### Build
+
+Run the emulator directly — no npm script is added per feature:
+
+```bash
+node lattice-emulator.js examples/<feature-slug>.md examples/<feature-slug>.pdf
+```
+
+Commit `examples/<feature-slug>.md` and `examples/<feature-slug>.pdf`
+together. If you push without the rebuilt PDF the reviewer's link
+404s — that is the bug the convention prevents.
+
+### Share
+
+The PDF is browsable on GitHub at:
+
+```
+https://github.com/slidewright/lattice/blob/<branch>/examples/<feature-slug>.pdf
+```
+
+Paste that link into the PR body. GitHub renders the PDF inline, so the
+reviewer clicks once and sees the work. Update the deck (and rebuild)
+on every iteration that changes the visual outcome; the link remains
+stable across pushes.
+
+### When the deck retires
+
+Feature decks live on the branch. They are not deleted when the branch
+merges — they stay in `examples/` as a permanent record of what each
+feature looked like at ship time, and as ready-made source for the
+gallery editor to fold into the long-running decks if the layout
+graduates from "new" to "documented". Treat them like
+`chart-family-experiment.md` and `image-concepts.md`.
+
 ## Commit discipline
 
 - Small, focused units. One logical change per commit.
 - Message format: `area(scope): short summary` — follow `git log` for the established pattern.
 - If a fix is non-obvious, add a `docs/references/gotchas.md` entry **before** committing. The commit message then links to it.
 - Gallery edits: rebuild the PDF and include it in the same commit as the Markdown change.
+- Feature decks: rebuild `examples/<slug>.pdf` and include it in the same commit as the `.md` change.
 
 ## Before opening a PR
 

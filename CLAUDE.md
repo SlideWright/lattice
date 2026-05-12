@@ -61,6 +61,23 @@ The integration tier asserts cross-renderer parity on slide count.
 - `.scratch/` has a 14-day lifecycle (`npm run clean:scratch`). Use it
   for throwaway experiments.
 
+## Per-feature demo decks
+
+Every feature or visual-bug branch ships a focused demo deck so the
+reviewer can see the work without rebuilding locally:
+
+1. Create `examples/<feature-slug>.md` (slug matches the branch noun
+   — e.g. `examples/roadmap.md` for `feat/roadmap-redesign`).
+2. Keep it small — title, one slide per surface the work changes,
+   closing. Six to ten slides.
+3. Build with the emulator one-liner and commit the PDF alongside:
+   `node lattice-emulator.js examples/<slug>.md examples/<slug>.pdf`.
+4. Link the PDF in the PR body — GitHub renders inline:
+   `https://github.com/slidewright/lattice/blob/<branch>/examples/<slug>.pdf`.
+
+Feature decks are independent of `examples/gallery.md` (the regression
+baseline). Full convention in `docs/references/workflow.md`.
+
 ## When you can't see the result
 
 For visual changes (CSS, layouts, themes, gallery), tests verify code
