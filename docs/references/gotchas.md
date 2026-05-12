@@ -49,6 +49,34 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   Unlikely; they use the custom element for their own DOM hooks.
 - **Commits:** `17784c2`.
 
+### Marp Core wraps emoji in `<img class="emoji">` (twemoji)
+
+- **Symptom:** A line like `Hello 👋 there!` renders with the wave on
+  its own line — heading wraps, card body breaks, footer chrome shifts
+  vertically. Affects every text element (header, footer, title, card
+  heading, card content, eyebrow, key insight, below-note, etc.).
+- **Cause:** Marp Core's built-in emoji plugin rewrites every unicode
+  emoji in source markdown to `<img class="emoji" data-marp-twemoji
+  src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@…/<cp>.svg">`. That
+  img then gets picked up by the catch-all rule
+  `section img { …; display:block; max-width:100% }`, which is intended
+  for author-inserted figures. Block + 100% width = own line, full slide
+  width. The marp-cli build and the marp-vscode preview both hit this;
+  lattice-emulator leaves emoji as raw text (no rewrite) but inherits
+  the inline alignment issue when no emoji font is in the stack.
+- **Mitigation:** Two parts in [lattice.css](../../lattice.css):
+  1. Exempt the emoji class from the block image rule — the catch-all
+     is now `section img:not(.emoji)`, and `section img.emoji` is set
+     to `display:inline-block; height:1em; vertical-align:-0.1em`.
+  2. Append `'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'`
+     to every `--font-*` stack in `:root` so the lattice-emulator path
+     (raw unicode) also has a defined emoji font and doesn't fall back
+     to a glyph with wildly different metrics.
+- **Triggered by:** Any unicode emoji anywhere in a deck.
+- **Removable when:** Never — Marp Core's emoji rewrite is built in
+  and on by default. The `:not(.emoji)` carve-out is the correct shape.
+- **Commits:** `claude/fix-emoji-rendering-WO4vI`.
+
 ### Marpit "spot replaces global" for the `class:` directive
 
 - **Symptom:** Adding `class: dark` to front matter does nothing on a

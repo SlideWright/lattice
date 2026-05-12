@@ -82,7 +82,7 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | -------------- | ------------------------------------------------------- | ---------------------------------------------- |
 | Structural     | T1 Title, T2 Divider, T3 Sub-Topic, T18 Closing         | `title` `divider` `subtopic` `closing`         |
 | Text           | T4 Content, T12 Quote, T14 List, T20 Criteria, T28 Checklist | `content` `quote` `list` `list-criteria` `checklist` |
-| Text variant   | T14v Tabular Inline                                     | `list-tabular`                                 |
+| Text variant   | T14 Tabular                                             | `list-tabular` (+ `def` / `metric` / `spec` / `register` variants) |
 | Data           | T5 Diagram, T6 Stats, T16 Big Number, T22 Compare Table, T27 Glossary | `diagram` `stats` `big-number` `compare-table` `glossary` |
 | Cards          | T7 Grid 2×2, T8 Grid 2+1, T9 Stacked, T10 Side-by-Side  | `cards-grid` `cards-stack` `cards-side`       |
 | Cards cont.    | T19 Three-Row Wide, T21 Verdict Grid                    | `cards-wide` `verdict-grid`                  |
@@ -385,19 +385,29 @@ Numbered list of declarative one-liners in display weight. Each item is one para
 
 ### `roadmap` — phased multi-workstream grid
 
-A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold, on tinted ground). Phase columns (everything after the first) get phase chrome — a numbered badge in the header. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
+A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold) with a categorical lane stripe per row. Phase columns (everything after the first) carry the phase NAME as the header text plus an optional trailing inline-code element that becomes a right-anchored meta pill seated on the spectrum line — the pill takes the column's categorical accent and carries author-supplied meta (a date, an owner, a status tag). Header text and pill carry different information; the pill is never an auto-counter. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
 
 ```markdown
 <!-- _class: roadmap -->
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01         | Phase 02           | Phase 03              |
-| ---------- | ---------------- | ------------------ | --------------------- |
-| Platform   | Codebook signing | Multi-tenant DEKs  | Per-purpose codebooks |
-| Operations | Manual rotation  | Automated rotation | Crypto-shred          |
-| SDK        | Java             |                    | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| SDK        | Java                 |                     | Polyglot parity       |
 ```
+
+**State markers are universal.** Any cell in any roadmap variant can start with `[x]` shipped / `[-]` in flight / `[ ]` planned / `[/]` out of scope (the marker vocabulary is shared with `checklist` and `verdict-grid`). lib/roadmap.js strips the marker, tags the cell with a state class, and the CSS draws a small state-coloured glyph before the cell text — ✓ check for shipped, ◐ half-filled disc for in flight, ○ outlined empty disc for planned, ╱ diagonal slash plus strike-through for out of scope. Shipped / in flight / planned share a fullness gradient (filled → half → empty); out of scope sits outside that axis. The `status` modifier upgrades this to the heavy treatment.
+
+| Modifier     | Effect                                                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| (default)    | workstream × phase grid; lane stripe per row; right-anchored meta pill on the spectrum line per phase header. State markers render as small coloured dots. |
+| `status`     | upgrades the universal state markers to the heavy treatment: full left-edge ribbon, state-tinted ground, and a mono-caps state eyebrow (SHIPPED / IN FLIGHT / PLANNED / OUT OF SCOPE) above each cell's text. |
+| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, the trailing meta pill (lifted from the header's inline code), and the workstream commitments stacked underneath with their workstream labels. State markers flow through onto the card rows. |
+| `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. State markers render as dots. |
+| `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. State markers render as dots. |
 
 ### `kpi` — executive KPI system (one base, five layout modifiers)
 
@@ -1711,10 +1721,10 @@ Card-bearing layouts auto-number their cards when the source list is an ordered 
 3. **Implication.** Third card carries badge `3`.
 ```
 
-**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`, `roadmap`
+**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`
 
 - Switching from `-` to `1. ` is the entire authoring surface — no modifier class, no comment directive
-- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers; roadmap numbers the phase columns
+- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers
 - Layouts that **do not** number on `ol` are intentional: state-bearing rows (`actors`, `checklist`, `verdict-grid`), named-slot rows (`featured`, `compare-prose`, `before-after`, `decision`, `matrix-2x2`), equal-weight summaries (`tldr`), and value-display layouts (`kpi`, `stats`, `big-number`)
 
 ---
@@ -1906,9 +1916,9 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 
 ---
 
-### Variant: T14 Tabular Inline
+### Variant: T14 Tabular
 
-Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
+Extends Template 15 (List / Bullet Points). Each list item carries a name, a description, and a piece of metadata in a tabular row — table scannability with list authoring.
 
 ```text
 ┌─────────────────────────────────────────┐
@@ -1916,51 +1926,86 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 │  LABEL                                  │
 │  Growth is a change in thinking.        │
 │                                         │
-│  01  Remember    Recall facts  Feature  │
-│  02  Understand  Explain it    Module   │
-│  03  Apply       Use patterns  Service  │
-│  04  Analyze     Decompose     System   │
-│ 05  Evaluate    Judge option  Org       │
-│  06  Create      Synthesize    Entrp.   │
+│  01  Remember     Recall facts  FEATURE │
+│  02  Understand   Explain it    MODULE  │
+│  03  Apply        Use patterns  SERVICE │
+│  04  Analyze      Decompose     SYSTEM  │
+│  05  Evaluate     Judge option  ORG     │
+│  06  Create       Synthesize    ENTRP.  │
 │                                         │
 │  footer                           3/19  │
 └─────────────────────────────────────────┘
 ```
 
-**CSS class:** `list-tabular`
+**CSS class:** `list-tabular` — one base class with optional visual variants and fine-tuning modifiers. Author picks the class, modifiers compose with it.
 
-**Layout spec:**
-
-- `section.list-tabular ol`: `list-style: none; counter-reset; display: flex; flex-direction: column; gap: 10px; justify-content: center`
-- Each top-level `li`: `display: grid; grid-template-columns: 44px 160px 1fr 240px; align-items: baseline; column-gap: var(--sp-sm)`
-- Counter column: `::before` renders `counter(..., decimal-leading-zero)` in mono `--accent`
-- Name column: inherits `--fs-emphasis` weight 700 `--text-heading` from the parent li — **author writes plain text, CSS does the bolding** (a leading `**name**` still works but is no longer required)
-- Description column: `--fs-body`, `--text-body`
-- Metadata column: `--fs-xs`, `--text-label`, right-aligned, set via author's `_italic_` span
-
-**Marp markdown source:**
+**The authoring contract** (same across base + all variants):
 
 ```markdown
 <!-- _class: list-tabular -->
 
-## Six dimensions, what they measure, how they are scored.
+## Slide heading.
 
-1. Confidence
-   - Number of independent sources corroborating the signal
-   - _1–5 · Auto-scored_
-2. Recency
-   - Time-decay from signal date, configurable half-life
-   - _0.0–1.0 · Auto-scored_
-3. Relevance
-   - Alignment to current strategic bets, owner-scored
-   - _1–5 · Manual_
+1. Name `Meta string`
+   - Description sentence.
+2. Next name `Other meta`
+   - Description sentence.
 ```
 
-**How the renderer maps this:** Each top-level `<li>` carries the row name as plain text (or wrapped in `**...**` — both work). The nested `<ul>` carries two children: the description, then the metadata as `_italic_`. `lattice-emulator.js` flattens the nested form to `<li><strong>name</strong>desc<em>meta</em></li>`; in the VS Code preview, CSS `display:contents` promotes the inner `<li>`s into the parent grid so the same markdown renders correctly without the build step.
+Two lines per item: the name with inline-code meta adjacent to it on the title line, then a single nested bullet for the description.
 
-**Authoring rule:** the leading `**bold**` is optional. The framework's "CSS does the emphasis, not the author" convention applies here as it does on `list-criteria`, `actors`, `decision`, and the other structured layouts.
+**The meta convention.** Metadata renders as inline code (backticks) **adjacent to what it qualifies** — on the same line as the name. This is the same convention `cards-stack` / `cards-grid` use for badge-style meta on card titles. Why adjacent: meta inherently labels something specific. A piece of meta on its own bullet isn't meta — it's just another bullet. Authoring it next to the name makes the relationship explicit and gives CSS a deterministic hook to pull the meta into its visual column at render time.
+
+**Visual variants** (mutually exclusive — pick one or none):
+
+| Modifier | Look |
+|---|---|
+| (none) | Default — hairline-ruled rows, display-serif name, mono uppercase meta right-aligned. The quiet boardroom-accounting look. |
+| `def` | Editorial — counter at `fs-2xl` display-serif spans both rows; eyebrow caption above the name; name at `fs-lg`; description vertically centred in the right column. Glossary / definition look. |
+| `metric` | Meta renders as a tile on the right (`132%`, `$14.2M`, `4.1d`). Scorecard pattern — OKRs, KPIs, capability scores. |
+| `spec` | Name in mono (treated as a key), mono accent meta right-aligned. API-reference / spec-sheet feel. |
+| `register` | Meta renders as an `--accent-soft` pill. Categorical-meta tables — risk registers, decision logs, status tables. |
+
+**Fine-tuning modifiers** (compose with the variant above):
+
+| Modifier | Works with | Effect |
+|---|---|---|
+| `compact` | any | Tighter row padding for 7-8 row decks |
+| `rule` | `def` | Single continuous full-height accent rail down the ol's left edge |
+| `solid` | `metric` | Filled accent tile with on-accent text, for hero stats |
+| `stacked` | `spec` | Description on its own row beneath the name; counter scales up to `fs-2xl` and spans both rows |
+| `outline` | `register` | Hairline-bordered tag instead of filled pill, for outline IDs (ADR-014, ticket numbers) |
+
+**Composing:**
+
+```markdown
+<!-- _class: list-tabular -->                  ← default ledger
+<!-- _class: list-tabular compact -->          ← default, tighter rows
+<!-- _class: list-tabular def -->              ← editorial
+<!-- _class: list-tabular def rule -->         ← editorial with accent rail
+<!-- _class: list-tabular metric -->           ← scorecard with bordered tile
+<!-- _class: list-tabular metric solid -->     ← scorecard with filled tile
+<!-- _class: list-tabular spec -->             ← spec sheet
+<!-- _class: list-tabular spec stacked -->     ← spec sheet, long descriptions
+<!-- _class: list-tabular register -->         ← register with pill
+<!-- _class: list-tabular register outline --> ← register with outlined tag
+```
+
+**Layout spec:**
+
+- `section.list-tabular ol`: `display: flex; flex-direction: column`. No flex `gap` — hairlines between rows do the row separation.
+- Each top-level `li`: `display: grid` with `grid-template-columns: 44px 200px 1fr auto` for the default. Variants override the grid template as needed (`def` uses 3 cols + 2 rows; `spec` widens col 2 to 260px; `spec.stacked` swaps to 2-row layout).
+- Counter column: `::before` renders `counter(..., decimal-leading-zero)` in mono `--accent`. Size scales with item height — `fs-md` for single-row items, `fs-2xl` (spans rows, centred) for multi-row items like `def` and `spec.stacked`.
+- Name comes from the `li`'s direct text node, placed by auto-flow into the name column.
+- Description comes from the nested `<ul><li>` flattened via `display: contents`, explicit `grid-column` placement.
+- Meta comes from the inline `<code>` element, explicit `grid-column` placement on the meta cell. Default reset (`background: none; border: none; padding: 0; border-radius: 0`) strips the chip styling from the global `section code` rule; each variant then adds its own meta treatment.
+- All three render paths (marp-cli, `lattice-emulator.js`, `lattice-runtime.js`) ship the same markdown shape through identical CSS — no per-renderer DOM transform.
+
+**One markdown gotcha:** if meta contains intraword underscores (`ml_v2`, `notify_batch`), the inline-code form works directly — `` `Flag · ml_v2` `` is unambiguous. The italic form `_Flag · ml_v2_` (legacy convention) would fail because CommonMark blocks the outer `_` pair from forming emphasis across an unpaired inner `_`.
 
 **When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T22 if readers need to scan down columns as much as across rows.
+
+**Example deck:** `examples/list-tabular-gallery.md` ships ten slides — base default + four visual variants + their modifiers — for side-by-side comparison.
 
 ---
 

@@ -35,9 +35,15 @@
    * declaring them in its own :root block. */
 
   /* ── Fonts ────────────────────────────────────────────────────────── */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body:    'Outfit', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+  /* Emoji fallbacks (Apple/Segoe/Noto) are appended to every stack so raw
+     unicode emoji in headings, body, and chrome render inline at the local
+     font's metrics. Without them, Chromium falls back unpredictably and the
+     emoji may render larger than the text and push lines around. The
+     marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
+     section img.emoji handles that variant. */
+  --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale ────────────────────────────────────────────────── */
   --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
@@ -423,7 +429,20 @@ section:not(.quote):not(.featured) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+
+/* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
+   They must render inline at text size and not pick up the block image styling
+   above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
+   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+section img.emoji {
+  display:inline-block;
+  height:1em; width:auto;
+  max-width:none; max-height:none;
+  border-radius:0; object-fit:fill;
+  vertical-align:-0.1em;
+  margin:0 0.05em;
+}
 section header {
   position:absolute; top:24px; left:30px; right:30px;
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
@@ -840,26 +859,286 @@ section.list ol { list-style:none; counter-reset:list-counter; display:flex; fle
 section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
 section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
-/* ── LIST-TABULAR ──
- * ## heading  ol with items: each rendered as 4-column row
- * **num** *verb* description `meta`
- */
-section.list-tabular h2 { margin-bottom:var(--sp-md); }
-section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:center; }
-section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); line-height:var(--lh-base); }
-section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
-section.list-tabular ol > li strong { font-size:inherit; font-weight:inherit; color:inherit; }
-section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); font-weight:400; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-/* VS Code / CLI fallback: nested format before runtime flattening.
- * display:contents makes the inner ul transparent to the parent grid, so its
- * li children become grid items and slot into columns 3 (desc) and 4 (meta).
- * Inner li's reset weight/size so only the parent li (column 2 = the name)
- * carries the emphasis typography — author writes plain text, CSS bolds it. */
-section.list-tabular ol > li > ul { display:contents; }
-section.list-tabular ol > li > ul > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); }
-section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
-section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
+/* ── LIST-TABULAR ──────────────────────────────────────────────────────────
+ * Ordered tabular list — counter | name | description | meta per row.
+ * Default look is hairline-ruled rows, display-serif name, mono uppercase
+ * meta. Counter sits at fs-md on the name baseline.
+ *
+ * Authoring contract (same across base + all variants):
+ *
+ *   N. Name `Meta string`
+ *      - Description sentence.
+ *
+ * The inline code is the meta — adjacent to the name in source because
+ * that's what it qualifies. CSS pulls it into the right column at render.
+ *
+ * Visual variants (mutually exclusive — pick one or none):
+ *
+ *   (none)    Default — hairline ledger; display-serif name; mono meta
+ *   def       Editorial — big counter spans rows, eyebrow above name
+ *   metric    Meta renders as a tile on the right
+ *   spec      Mono name as a key (technical-reference feel)
+ *   register  Meta renders as an accent-soft pill
+ *
+ * Fine-tuning modifiers (compose with the variant above):
+ *
+ *   compact   Tighter row padding (any variant)
+ *   rule      def: full-height accent rail down the ol's left edge
+ *   solid     metric: filled accent tile instead of bordered
+ *   stacked   spec: description on its own row beneath the name; counter
+ *               scales up and spans both rows
+ *   outline   register: hairline-bordered tag instead of filled pill
+ *
+ * Counter sizing rule across the family: counter size scales with item
+ * height. Single-row items → fs-md (paired with the name baseline).
+ * Multi-row items (def, spec.stacked) → fs-2xl, spans rows, centered.
+ * ───────────────────────────────────────────────────────────────────────── */
 
+/* ── Base (default = hairline ledger) ─────────────────────────────────── */
+section.list-tabular h2 { margin-bottom:var(--sp-md); }
+section.list-tabular ol {
+  list-style:none; counter-reset:tabular-counter;
+  padding:0; margin:0;
+  display:flex; flex-direction:column;
+}
+section.list-tabular ol > li {
+  counter-increment:tabular-counter;
+  display:grid;
+  grid-template-columns:44px 200px 1fr auto;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-display);
+  font-size:var(--fs-emphasis);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-snug);
+}
+section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
+section.list-tabular ol > li::before {
+  content:counter(tabular-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.06em;
+  align-self:baseline;
+}
+section.list-tabular ol > li > ul { display:contents; }
+section.list-tabular ol > li > ul > li::marker { content:''; }
+section.list-tabular ol > li > ul > li:first-child {
+  grid-column:3; grid-row:1;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  letter-spacing:0;
+}
+/* Legacy italic-meta compatibility: when a second nested li is present
+ * (the 3-line authoring contract), treat it as the meta column. The new
+ * 2-line contract uses inline <code> instead and never produces a second
+ * nested li. */
+section.list-tabular ol > li > ul > li:nth-child(2) {
+  grid-column:4; grid-row:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+section.list-tabular ol > li > ul > li:nth-child(2) em { font-style:normal; }
+section.list-tabular ol > li > code {
+  grid-column:4; grid-row:1;
+  background:none;
+  border:none;
+  padding:0;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* ── Variant: def (editorial) ─────────────────────────────────────────── */
+section.list-tabular.def ol {
+  gap:var(--sp-md);
+  flex:1; justify-content:center;
+}
+section.list-tabular.def ol > li {
+  grid-template-columns:64px 220px 1fr;
+  grid-template-rows:auto auto;
+  row-gap:4px;
+  padding:0;
+  border:none;
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-tight);
+}
+section.list-tabular.def ol > li:first-child { border-top:none; }
+section.list-tabular.def ol > li::before {
+  grid-column:1; grid-row:1 / span 2;
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.02em;
+  align-self:center;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > code {
+  grid-column:2; grid-row:1;
+  display:block;
+  width:fit-content;
+  margin:0;
+  padding:0;
+  background:none;
+  border:none;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  color:var(--text-muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:left;
+  white-space:nowrap;
+  align-self:end;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > ul > li {
+  grid-column:3; grid-row:1 / span 2;
+  font-family:var(--font-body);
+  font-size:var(--fs-md);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+  letter-spacing:0;
+  align-self:center;
+}
+
+/* def.rule — single continuous full-height accent rail */
+section.list-tabular.def.rule ol {
+  border-left:4px solid var(--accent);
+  padding-left:var(--sp-md);
+}
+
+/* ── Variant: metric (tile) ───────────────────────────────────────────── */
+section.list-tabular.metric ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+}
+section.list-tabular.metric ol > li > code {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:6px 14px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-0.01em;
+  text-align:center;
+  text-transform:none;
+  align-self:center;
+  min-width:100px;
+  white-space:nowrap;
+}
+
+/* metric.solid — filled accent tile */
+section.list-tabular.metric.solid ol > li > code {
+  background:var(--accent);
+  border-color:var(--accent);
+  color:var(--on-accent, #fff);
+}
+
+/* ── Variant: spec (mono key) ─────────────────────────────────────────── */
+section.list-tabular.spec ol > li {
+  grid-template-columns:44px 260px 1fr auto;
+  font-family:var(--font-mono);
+  font-size:var(--fs-body);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:0;
+}
+section.list-tabular.spec ol > li > code {
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* spec.stacked — description below name; counter spans rows */
+section.list-tabular.spec.stacked ol > li {
+  grid-template-columns:44px 1fr auto;
+  grid-template-rows:auto auto;
+  row-gap:var(--sp-xs);
+  font-size:var(--fs-md);
+}
+section.list-tabular.spec.stacked ol > li::before {
+  grid-row:1 / span 2;
+  align-self:center;
+  font-size:var(--fs-2xl);
+  line-height:1;
+  letter-spacing:-0.02em;
+}
+section.list-tabular.spec.stacked ol > li > ul > li {
+  grid-column:2; grid-row:2;
+}
+section.list-tabular.spec.stacked ol > li > code {
+  grid-column:3; grid-row:2;
+  justify-self:end;
+  align-self:baseline;
+}
+
+/* ── Variant: register (pill) ─────────────────────────────────────────── */
+section.list-tabular.register ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+}
+section.list-tabular.register ol > li > code {
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:none;
+  padding:4px 14px;
+  border-radius:9999px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:center;
+  white-space:nowrap;
+  justify-self:end;
+  align-self:center;
+}
+
+/* register.outline — hairline-bordered tag */
+section.list-tabular.register.outline ol > li > code {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text-label);
+}
+
+/* ── Universal modifier: compact ──────────────────────────────────────── */
+section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
 
 /* ── BIG-NUMBER ──
@@ -3016,10 +3295,28 @@ section.principles.bullet ol > li::before { content:'·'; }
  * | Platform   | …        | …        | …        |
  *
  * Multi-phase rollout grid. First column = workstream label (sticky,
- * bold). Phase columns get phase chrome: a numbered badge in the
- * header row, and a left-to-right accent gradient on the column rule.
- * Empty cells render as a thin dash so the eye does not interpret
- * blank as missing.
+ * bold, on tinted ground with a categorical lane stripe). Phase
+ * column headers carry two things:
+ *   1. The author's phase NAME (e.g. "Foundation", "Discovery")
+ *   2. An optional trailing inline-code meta pill (the universal
+ *      pill convention) — author writes `Foundation \`Q1 2026\``;
+ *      the `<code>` is right-anchored, sits on the spectrum line,
+ *      and carries the categorical phase accent.
+ * The pill is meta, never sequence — no auto-counter duplicating
+ * what the author wrote. Empty cells render as a thin muted dash so
+ * the eye reads "not in this phase" rather than "missing".
+ *
+ * Modifiers — compose with the base by adding a second class:
+ *   .status      — cells carry state markers ([x]/[-]/[ ]/[/]) and
+ *                  render as a status board (shipped / WIP / planned /
+ *                  out-of-scope). DOM tagging lives in lib/roadmap.js.
+ *   .horizons    — table is transposed into Now/Next/Later vertical
+ *                  phase cards. DOM rewrite in lib/roadmap.js.
+ *   .swimlane    — each workstream renders as a horizontal track of
+ *                  outlined phase pills on a lane tint.
+ *   .milestones  — calendar-aware: header carries a date subtitle
+ *                  (write `Phase 01<br>Q1 2026`), and a tick scale
+ *                  runs under the phase columns.
  * ──────────────────────────────────────────────────────────────────────── */
 section.roadmap { display:flex; flex-direction:column; }
 section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -3035,58 +3332,76 @@ section.roadmap thead th {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--text-label);
-  text-align:center;
+  text-align:left;
   vertical-align:middle;
   padding:var(--sp-sm) var(--sp-md);
-}
-section.roadmap thead th:first-child { text-align:left; }
-/* Phase columns get a numbered badge stacked above the phase name. */
-section.roadmap thead th:not(:first-child) {
-  counter-increment:phase-counter;
-  padding-top:var(--sp-md);
-  padding-bottom:var(--sp-md);
-}
-section.roadmap thead { counter-reset:phase-counter; }
-section.roadmap thead th:not(:first-child)::before {
-  content:counter(phase-counter, decimal-leading-zero);
-  display:inline-block;
-  margin-right:var(--sp-sm);
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  color:var(--text-body);
-  background:var(--bg);
-  border:1px solid var(--phase-accent, var(--accent));
-  border-radius:999px;
-  padding:2px 9px;
-  letter-spacing:0.04em;
-  line-height:1;
-  vertical-align:middle;
-}
-section.roadmap thead th:not(:first-child) {
   white-space:nowrap;
 }
-/* Categorical rotation across phase columns. */
-section.roadmap thead th:nth-child(8n+2) { --phase-accent:var(--cat-blue); }
-section.roadmap thead th:nth-child(8n+3) { --phase-accent:var(--cat-green); }
-section.roadmap thead th:nth-child(8n+4) { --phase-accent:var(--cat-purple); }
-section.roadmap thead th:nth-child(8n+5) { --phase-accent:var(--cat-orange); }
-section.roadmap thead th:nth-child(8n+6) { --phase-accent:var(--cat-teal); }
-section.roadmap thead th:nth-child(8n+7) { --phase-accent:var(--cat-rose); }
-section.roadmap thead th:nth-child(8n)   { --phase-accent:var(--cat-mauve); }
-section.roadmap thead th:nth-child(8n+1) { --phase-accent:var(--cat-slate); }
+/* Phase column headers: the header text is the author's phase NAME.
+   An optional trailing inline-code element becomes a meta pill,
+   right-anchored on the spectrum line under the th, carrying the
+   column's categorical accent. Authoring guidance: header text =
+   phase name; pill = optional meta (date, status tag, owner). */
+section.roadmap thead th:not(:first-child) {
+  position:relative;
+  padding-top:var(--sp-sm);
+  padding-bottom:calc(var(--sp-md) + 6px);
+  padding-right:var(--sp-md);
+}
+/* Universal trailing pill — overrides the global `section code` chrome
+   (bg-alt fill, square radius). The pill sits ON the spectrum line
+   at the bottom-right of the header cell. */
+section.roadmap thead th:not(:first-child) > code {
+  position:absolute;
+  right:var(--sp-md);
+  bottom:-7px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
+  padding:2px 9px;
+  border:2px solid var(--bg);
+  border-radius:999px;
+  letter-spacing:0.04em;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
+}
+/* Categorical rotation across phase columns and workstream rows.
+   The workstream column reads `--phase-accent` for its lane stripe
+   per row; phase columns read it for their leading column-accent
+   stripe per column. */
+section.roadmap thead th:nth-child(8n+2),
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-blue); }
+section.roadmap thead th:nth-child(8n+3),
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--cat-green); }
+section.roadmap thead th:nth-child(8n+4),
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--cat-purple); }
+section.roadmap thead th:nth-child(8n+5),
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--cat-orange); }
+section.roadmap thead th:nth-child(8n+6),
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--cat-teal); }
+section.roadmap thead th:nth-child(8n+7),
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--cat-rose); }
+section.roadmap thead th:nth-child(8n),
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--cat-mauve); }
+section.roadmap thead th:nth-child(8n+1),
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--cat-slate); }
+
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
   border-bottom:1px solid var(--border);
+  border-left:1px solid var(--border);
   color:var(--text-body);
   vertical-align:top;
   line-height:var(--lh-snug);
 }
 section.roadmap td:first-child {
-  font-weight:600;
+  font-weight:700;
   color:var(--text-heading);
-  background:var(--bg-alt);
-  border-right:1px solid var(--border);
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 6%, var(--bg-alt));
+  border-left:4px solid var(--phase-accent, var(--accent));
 }
 /* Empty cells render as a muted dash. */
 section.roadmap td:empty::before {
@@ -3099,6 +3414,312 @@ section.roadmap > p {
   font-style:italic;
   color:var(--text-muted);
   margin-top:var(--sp-md);
+}
+
+/* ── ROADMAP STATE MARKERS — universal `[x]/[-]/[ ]/[/]` per cell ─────
+ * Cells in ANY roadmap variant can carry a state marker as the leading
+ * token. lib/roadmap.js strips the marker, tags the <td> with a state
+ * class, and wraps the label in a state-label eyebrow + state-text
+ * span. Empty cells (no marker) keep the default muted dash from base.
+ *
+ * Two visual treatments:
+ *   - Light (default, any variant):  small filled state-coloured dot
+ *                                    before the cell text. Eyebrow
+ *                                    label is rendered but hidden.
+ *   - Heavy (`.status` modifier):    full ribbon + tinted ground +
+ *                                    visible state-label eyebrow.
+ *
+ * State token vocabulary:
+ *   [x] shipped   → state-shipped  (pass green)
+ *   [-] in flight → state-wip      (warn amber)
+ *   [ ] planned   → state-planned  (neutral muted)
+ *   [/] skipped   → state-skipped  (fail red — explicitly out of scope)
+ * ──────────────────────────────────────────────────────────────────── */
+
+/* Per-state colour tokens — used by both light + heavy treatments. */
+section.roadmap td.cell-state.state-shipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
+  --cell-state-color:var(--pass);
+  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
+}
+section.roadmap td.cell-state.state-wip,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
+  --cell-state-color:var(--warn);
+  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
+}
+section.roadmap td.cell-state.state-planned,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
+  --cell-state-color:var(--text-label);
+  --cell-state-bg:var(--bg-alt);
+}
+section.roadmap td.cell-state.state-skipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
+  --cell-state-color:var(--text-muted);
+  --cell-state-bg:transparent;
+}
+
+/* Light treatment (default, any variant): a small state-coloured
+   indicator with an inset white glyph sits before the cell text.
+   Glyph vocabulary:
+     shipped  → ✓ check                (filled / complete)
+     wip      → ◐ half-filled disc     (in progress / halfway done)
+     planned  → ○ outlined disc, empty (committed / not started)
+     skipped  → ╱ diagonal slash       (out of scope; plus strike-through
+                                        on the cell text)
+   Shipped / wip / planned share a fullness gradient (filled → half →
+   empty); skipped sits outside that axis as the "not in this phase"
+   mark. The eyebrow label is rendered for the heavy treatment but
+   hidden here. */
+section.roadmap td.cell-state .cell-state-label { display:none; }
+section.roadmap td.cell-state .cell-state-text {
+  display:inline;
+  color:var(--text-body);
+}
+section.roadmap td.cell-state .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before {
+  content:'';
+  display:inline-block;
+  width:0.95em;
+  height:0.95em;
+  margin-right:0.45em;
+  border-radius:50%;
+  background-color:var(--cell-state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:72% 72%;
+  vertical-align:-0.08em;
+  box-sizing:border-box;
+}
+section.roadmap td.cell-state.state-shipped .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped .row-text::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
+}
+section.roadmap td.cell-state.state-wip .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::before {
+  /* Half-filled disc: state colour fills the left half (the "done"
+     portion); white covers the right half (the "remaining" portion).
+     Sits on the fullness gradient between full (shipped) and empty
+     (planned), reading instantly as "in progress / halfway done". */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='8' y='0' width='8' height='16' fill='white'/></svg>");
+  background-size:100% 100%;
+}
+section.roadmap td.cell-state.state-planned .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
+  background-color:transparent;
+  border:1.5px solid var(--cell-state-color, var(--text-muted));
+}
+section.roadmap td.cell-state.state-skipped .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M12 4 L4 12'/></svg>");
+}
+section.roadmap td.cell-state.state-skipped .cell-state-text,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+
+/* Horizons row left rail picks up the state colour (overrides the
+   default phase-accent rail when a state class is present). */
+section.roadmap.horizons .horizon-rows > li.cell-state {
+  border-left-color:color-mix(in srgb, var(--cell-state-color) 60%, var(--border));
+}
+
+/* Heavy treatment (`.status` modifier): full ribbon + tinted ground +
+   visible state-label eyebrow. Wins over the light treatment via
+   higher specificity. */
+section.roadmap.status td.cell-state {
+  position:relative;
+  background:var(--cell-state-bg, transparent);
+  border-left:4px solid var(--cell-state-color, var(--border));
+  padding-left:calc(var(--sp-md) - 4px + 6px);
+  display:table-cell;
+}
+section.roadmap.status td.cell-state .cell-state-label {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--cell-state-color, var(--text-muted));
+  margin-bottom:2px;
+  line-height:1.2;
+}
+section.roadmap.status td.cell-state .cell-state-text {
+  display:block;
+  color:var(--text-body);
+}
+/* In heavy mode the cell already conveys state via ribbon + ground;
+   suppress the inline dot to keep the cell uncluttered. */
+section.roadmap.status td.cell-state .cell-state-text::before {
+  display:none;
+}
+
+/* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────
+ * lib/roadmap.js transposes the workstream × phase table into a row
+ * of phase cards. Each card has a categorical top stripe, an eyebrow
+ * (Phase 01/02/…), a phase title (the phase header text), and a list
+ * of workstream rows underneath.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.horizons .horizons {
+  display:grid;
+  grid-template-columns:repeat(var(--horizon-count, 3), 1fr);
+  gap:var(--sp-md);
+  flex:1;
+  min-height:0;
+}
+section.roadmap.horizons .horizon-card {
+  display:flex;
+  flex-direction:column;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-top:4px solid var(--phase-accent, var(--accent));
+  border-radius:var(--radius-md);
+  padding:var(--sp-md) var(--sp-md) var(--sp-sm);
+  min-width:0;
+}
+section.roadmap.horizons .horizon-head {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-bottom:var(--sp-sm);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+/* Universal meta pill — right-anchored on the head's bottom border,
+   matching the trailing-code pill on the non-transposed roadmaps. */
+section.roadmap.horizons .horizon-meta {
+  position:absolute;
+  right:0;
+  bottom:-7px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
+  padding:2px 9px;
+  border:2px solid var(--bg-alt);
+  border-radius:999px;
+  letter-spacing:0.04em;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
+}
+section.roadmap.horizons .horizon-eyebrow {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--phase-accent, var(--accent));
+}
+section.roadmap.horizons .horizon-title {
+  font-family:var(--font-serif);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .horizon-rows {
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--sp-sm);
+}
+section.roadmap.horizons .horizon-rows > li {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-left:var(--sp-sm);
+  border-left:2px solid color-mix(in srgb, var(--phase-accent, var(--accent)) 40%, var(--border));
+}
+section.roadmap.horizons .row-label {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-label);
+}
+section.roadmap.horizons .row-text {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .row-text.row-empty {
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+
+/* ── ROADMAP SWIMLANE — per-workstream track of phase pills ──────────
+ * Same source as the default; visual shifts so each row reads as a
+ * track. Workstream cell carries a strong lane label on a tinted lane
+ * ground; phase cells render as outlined pills separated by gaps.
+ * Pure CSS — no DOM rewrite.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.swimlane table {
+  border-spacing:0 var(--sp-sm);
+  border-collapse:separate;
+}
+section.roadmap.swimlane tbody tr > td:first-child {
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 14%, var(--bg-alt));
+  border-left:6px solid var(--phase-accent, var(--accent));
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  border-right:0;
+  border-radius:var(--radius-md) 0 0 var(--radius-md);
+  font-family:var(--font-serif);
+  font-weight:700;
+  color:var(--text-heading);
+  font-size:var(--fs-md);
+  padding:var(--sp-sm) var(--sp-md);
+}
+section.roadmap.swimlane tbody td:not(:first-child) {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-left:0;
+  border-radius:0;
+  padding:var(--sp-sm) var(--sp-md);
+  position:relative;
+}
+section.roadmap.swimlane tbody td:not(:first-child)::before {
+  content:'';
+  position:absolute;
+  left:0; top:25%; bottom:25%;
+  width:3px;
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 60%, var(--border));
+  border-radius:2px;
+}
+section.roadmap.swimlane tbody tr > td:last-child {
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+}
+section.roadmap.swimlane tbody td:empty {
+  background:transparent;
+  border:1px dashed var(--border);
+}
+section.roadmap.swimlane tbody td:empty::before {
+  display:none;
+}
+section.roadmap.swimlane tbody td:empty::after {
+  content:'—';
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+/* Swimlane thead keeps the categorical column tab from the base rule;
+   it carries the column identity that the lane-band rows reinforce. */
+
+/* ── ROADMAP MILESTONES — quarter-anchored timeline ──────────────────
+ * Identity: the meta pill on every phase header is the quarter/date.
+ * Phase columns get a soft alternating ground so the timeline reads
+ * as a calendar. The pill itself is the universal meta pill from
+ * the base rule — no milestone-specific pill chrome.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.milestones tbody td:not(:first-child) {
+  background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
 /* ── KPI ───────────────────────────────────────────────────────────────

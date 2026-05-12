@@ -4,9 +4,11 @@ tokenization/
 
 # Marp / build outputs
 # (note: examples/*.pdf are intentionally tracked as ship-with-the-package
-# demos; the rule below catches ad-hoc renders elsewhere in the tree.)
+# demos and per-feature decks — see docs/references/workflow.md. The
+# rule below catches ad-hoc renders elsewhere in the tree.)
 *.pptx
 *.pdf
+!examples/*.pdf
 
 # LibreOffice lock files
 .~lock.*#

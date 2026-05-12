@@ -805,6 +805,10 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 const { splitSlides }    = require('./lib/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
 const { liftSlotLabel }  = require('./lib/slot-label-lift');
+// Roadmap modifier transforms — `roadmap status` (cell state markers) and
+// `roadmap horizons` (table → three-card transpose). Shared with the
+// Marp Core engine wrapper in marp.config.js (parity contract).
+const { transformRoadmapSection } = require('./lib/roadmap');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1163,6 +1167,15 @@ function parseSlide(raw, index) {
     });
   }
 
+  // roadmap status / horizons: state-marker tagging on <td> cells, or
+  // transpose the workstream × phase table into a horizons-card grid.
+  // Implementation lives in lib/roadmap.js — shared with marp.config.js
+  // and mirrored by the runtime DOM transform in lattice-runtime.js so
+  // every render path produces the same DOM.
+  if (cls.includes('roadmap')) {
+    html = transformRoadmapSection(html, cls);
+  }
+
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.
   // The ul > li card structure and last-inner-li body text are left intact for CSS.
   if (cls.includes('verdict-grid')) {
@@ -1514,53 +1527,10 @@ function parseSlide(raw, index) {
   }
 
   // steps: ol already renders correctly via CSS counter + strong
-  // list-tabular: nested format — name (optional **bold**) / - description / - _meta_
-  // Flatten nested ul into: <li><strong>name</strong>description<em>meta</em></li>
-  // The leading **bold** is optional — if the author writes plain text the
-  // runtime auto-wraps it in <strong> so the column-2 typography is consistent
-  // with the rest of the framework's "CSS does the bolding" authoring rule.
-  if (cls.includes('list-tabular')) {
-    const olIdx = html.indexOf('<ol>');
-    if (olIdx !== -1) {
-      let depth = 0, pos = olIdx, olEnd = -1;
-      while (pos < html.length) {
-        if (html.startsWith('<ol>', pos))       { depth++; pos += 4; }
-        else if (html.startsWith('</ol>', pos)) { depth--; if (depth === 0) { olEnd = pos; break; } pos += 5; }
-        else pos++;
-      }
-      if (olEnd !== -1) {
-        const olInner = html.slice(olIdx + 4, olEnd);
-        const processedItems = [];
-        let liDepth = 0, liStart = -1, i = 0;
-        while (i < olInner.length) {
-          if (olInner.startsWith('<li>', i))       { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (olInner.startsWith('</li>', i)) {
-            liDepth--;
-            if (liDepth === 0 && liStart !== -1) {
-              const content = olInner.slice(liStart, i);
-              const innerUlIdx = content.indexOf('<ul>');
-              if (innerUlIdx !== -1) {
-                const head = content.slice(0, innerUlIdx).trim();
-                const strongMatch = head.match(/^<strong>(.*?)<\/strong>$/);
-                const name = strongMatch ? strongMatch[1] : head;
-                // Inner items have no further nesting — non-greedy regex is safe
-                const innerItems = [...content.slice(innerUlIdx).matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1].trim());
-                const desc = innerItems[0] || '';
-                const meta = innerItems[1] || '';
-                processedItems.push(`<li><strong>${name}</strong>${desc}${meta}</li>`);
-              } else {
-                processedItems.push(`<li>${content}</li>`);
-              }
-              liStart = -1;
-            }
-            i += 5;
-          }
-          else i++;
-        }
-        html = html.slice(0, olIdx + 4) + '\n' + processedItems.join('\n') + '\n' + html.slice(olEnd);
-      }
-    }
-  }
+  // list-tabular: nested ul flattens into the parent grid via CSS
+  // `display:contents`, so no runtime DOM transform is needed — all three
+  // render paths (this emulator, marp-cli, lattice-runtime) ship the same
+  // markdown shape through identical CSS.
 
   // ── glossary: nested-list → table transform ──────────────────────────────
   // Author writes:
