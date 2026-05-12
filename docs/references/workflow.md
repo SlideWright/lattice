@@ -39,19 +39,44 @@ git worktree remove ../Lattice-contrast-audit
 
 Each worktree is fully independent — you can run `npm test` in both simultaneously. The `.git` metadata is shared; branches see each other.
 
+## The two gallery sets
+
+The repo distinguishes **two kinds of long-running decks**, and the
+isolation rule below applies to both:
+
+**Regression baseline** — page counts asserted in CI via
+`test/fixtures/expected-page-counts.json`:
+
+| Deck | npm script | Slides |
+| --- | --- | --- |
+| `examples/gallery.md` | `build:gallery` | 89 |
+| `examples/mermaid-gallery.md` | `build:mermaid` | 31 |
+| `examples/kpi-gallery.md` | `build:kpi` | 13 |
+
+A page-count drift on any of these fails `npm run test:integration`.
+
+**Editorial long-runners** — stable, hand-curated, not page-count
+asserted (but still long-running and shared):
+
+| Deck | npm script | Purpose |
+| --- | --- | --- |
+| `examples/backgrounds-gallery.md` | `build:backgrounds` | Background tokens |
+| `examples/gallery-guide.md` | (manual) | Layout field guide |
+| `examples/gallery-jargon.md` | (manual) | Decision-framework deck |
+
 ## Feature decks
 
 **Every feature or visual-bug branch ships a per-feature demo deck.** This
 is how reviewers see the work: a small, focused PDF on the branch, linked
-directly from the PR body. It is independent of the long-running
-`gallery.md` / `mermaid-gallery.md` / `backgrounds-gallery.md` decks (which
-remain the regression baseline asserted by integration tests).
+directly from the PR body. It is independent of all six long-running
+decks listed above.
 
 **Feature/fix content is isolated to the feature deck until merge.** Do
-not add new slides, new modifiers, or new copy into `gallery.md` or
-`gallery-guide.md` while the feature is in development — they would
-churn the regression baseline (page counts, parity tests) on every
-iteration. The long-running decks pick up the new layout in a separate
+not add new slides, new modifiers, or new copy into any of the six
+long-running decks while the feature is in development — the
+regression baseline would churn (page counts, parity tests) on every
+iteration, and the editorial decks would lose their hand-curated
+coherence. The long-running decks pick up the new layout in a separate
 "graduation" commit after the feature has been reviewed and approved.
 
 ### Authoring
@@ -89,7 +114,7 @@ pill," "what glyphs make sense?"), write the model first: name the
 axes you're working on, list the candidate moves, recommend one.
 Confirm direction in a single round trip before touching CSS. This
 avoids the "ship → critique → re-ship" loop that ends up costing
-five build cycles to land what could be done in one.
+three or more build cycles to land what could be done in one.
 
 **Bundle adjacent decisions.** When one design move depends on two
 or three downstream picks, surface all of them in one
@@ -110,8 +135,21 @@ After every push that updates a feature-deck PDF, paste the raw URL
 markdown bold, no backticks, no link text, nothing else on the line.
 
 ```
-https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf
+https://raw.githubusercontent.com/slidewright/lattice/<branch>/examples/<slug>.pdf
 ```
+
+**Every link presented to the reviewer must use the
+`raw.githubusercontent.com` host.** That's the canonical CDN for
+downloadable file content — the file streams straight to the
+reviewer's browser at full fidelity. Never present:
+
+- `github.com/.../blob/<branch>/<path>` — this renders as the GitHub
+  web preview UI (chrome, headers, blob viewer). The reviewer has to
+  click "Raw" or "Download" to actually see the file. PDFs render in
+  GitHub's viewer at lower fidelity than the raw stream.
+- `github.com/.../raw/<branch>/<path>` — superficially works but
+  302-redirects to `raw.githubusercontent.com`. Use the canonical
+  host directly; one hop is fewer than two.
 
 This is the reviewer's only entry point to see the work. Forgetting
 it means the reviewer has to ask, which adds a round trip and erodes

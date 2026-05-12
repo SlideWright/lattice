@@ -409,28 +409,49 @@ A markdown table that becomes a phased rollout grid. The first column carries th
 | `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. State markers render as dots. |
 | `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. State markers render as dots. |
 
-### `kpi` — metrics dashboard with targets and trends
+### `kpi` — executive KPI system (one base, five layout modifiers)
 
-Ordered or unordered list. Each item is a card: bold = the metric (display weight), first nested bullet = the label, optional second nested bullet = the target/trend sub-line. Cards lay out in an auto-fit grid (3-4 across at standard widths, wraps to a second row beyond that). Each card carries a categorical top-stripe rotating through the `--cat-*` palette.
+Ordered or unordered list. Each item is one metric: bold = the figure, first nested bullet = the label, optional second nested bullet = the target/trend caption with **inline `` `code` ``** rendering as **pills** (status + audience).
 
-| Modifier  | Effect                                                                         |
-| --------- | ------------------------------------------------------------------------------ |
-| (default) | sub-line renders in muted body colour                                          |
-| `target`  | promotes the sub-line to accent colour with semi-bold weight                   |
+Bare `kpi` defaults to the **briefing** layout (hero + 3 supports). Explicit modifiers cover the other executive use-cases:
+
+| Modifier | Use-case | Layout |
+| --- | --- | --- |
+| (bare / `briefing`) | Board / financial summary | Hero card (✦, accent-soft, watermark numerals) on the left + three hairline supports stacked on the right |
+| `ops`               | SLO / SLA review          | 2×2 equal grid; slipping metrics (rows 1 + 3 by default) render in `--warn` |
+| `compliance`        | Legal / regulatory        | Vertical list with binary-state pills + optional source footnote paragraph |
+| `trajectory`        | Investor / period-over-period | 4-up cards with categorical top stripes, content-centred |
+| `spotlight`         | Single hero metric, monumentalised | Hero left with body copy + serif italic narrative + ✦; three muted supports right |
+
+Additional modifier:
+
+| Modifier | Effect |
+| --- | --- |
+| `attention` | Colours the hero card (row 1) in `--warn` — use when the headline metric is the one slipping. Stackable with any layout modifier (`kpi attention`, `kpi briefing attention`, …). |
+
+**Pills.** Any trailing inline `` `code` `` on the target line becomes a pill. The first pill on each row carries the **status** colour (set per-row by the active modifier — pass / warn / fail); subsequent pills are neutral (audience / period / framework owner).
+
+**Eyebrow.** An optional `h3` (`### Domain · Period`) above the `h2` renders as mono small-caps tracked uppercase, sitting above the headline. On decks with a global slide header, suppress it per-slide with `<!-- _header: '' -->` to avoid collision.
 
 ```markdown
-<!-- _class: kpi target -->
+<!-- _class: kpi attention -->
+<!-- _header: '' -->
 
+### Authentication · Q4 2026
 ## Where we are against quarter targets.
 
 1. **94%**
    - Token-issuance success
-   - target 99%, +2pp QoQ
+   - target 99% · -5pp `At risk` `Board`
 2. **8 ms**
    - p99 detokenize
-   - target 10 ms, -3 ms QoQ
+   - target 10 ms `On plan` `SRE`
 3. **0**
    - Examiner findings
+   - target 0 `On plan` `Audit`
+4. **3.2×**
+   - Detokenize headroom
+   - target 2× `On plan` `Platform`
 ```
 
 ### `agenda` — auto-numbered table of contents
@@ -1727,7 +1748,7 @@ The named-slot sibling of the numbered corner tag. The slot label sits at the to
 
 - **Authoring is plain.** Write the slot label as the first line of each list item — no bold, no syntax. The build pipeline lifts it into a `<strong>` automatically because in these named-slot layouts the leading text is structurally a slot label, not editorial emphasis. Authors don't carry presentational markup.
 - Tag chrome matches the numbered corner tag — accent fill, white mono text, flush top-left geometry. The labeled and numbered variants are visually a family.
-- `before-after` and `compare-prose` use the unified accent fill because their slots have semantic ordering (before/after, A/B). `decision` is the categorical case: each slot is an independent reason, so the tag and the bottom border cycle through the categorical palette (`--cat-blue`, `--cat-green`, `--cat-purple`, …) — same palette and cycle as `kpi`, inverted to the bottom edge so the two layouts read as siblings (kpi = top accent, decision = bottom accent).
+- `before-after` and `compare-prose` use the unified accent fill because their slots have semantic ordering (before/after, A/B). `decision` is the categorical case: each slot is an independent reason, so the tag and the bottom border cycle through the categorical palette (`--cat-blue`, `--cat-green`, `--cat-purple`, …) — same palette and cycle as `kpi.trajectory`, inverted to the bottom edge so the two layouts read as siblings (kpi.trajectory = top accent, decision = bottom accent).
 - Composes with `compare-prose` modifiers: `chosen` and `decision` continue to recolour / strike the lifted label, so the corner tag inherits the modifier's editorial signal.
 - **Banner variant (`banner-tag` modifier).** Add `banner-tag` to the slide directive (e.g. `<!-- _class: decision banner-tag -->`) to flip each card from a flush-corner tag into a full-width header strip. The card becomes a vertical column-flex: tag fits its content height and spans the full card width; body stretches into the remaining height (vertically centred). Use when the slot label is the architectural signal of the card — the categorical case (`BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) — rather than a quiet marker. Default flush-corner stays for the editorial register where the body owns the card. Same lift infrastructure feeds both styles, so authoring is unchanged. Composes with all existing modifiers (`chosen`, `decision`, `mirror`, `vertical`).
 - Named-slot only — `before-after`, `compare-prose`, and `decision` exist precisely to label their cards. Other card-bearing layouts (`cards-grid`, `cards-stack`, etc.) keep the in-card title row because their card titles are editorial sentences, not categorical labels.
