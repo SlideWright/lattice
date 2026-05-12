@@ -809,6 +809,9 @@ const { liftSlotLabel }  = require('./lib/slot-label-lift');
 // `roadmap horizons` (table → three-card transpose). Shared with the
 // Marp Core engine wrapper in marp.config.js (parity contract).
 const { transformRoadmapSection } = require('./lib/roadmap');
+// Journey transform — nested list → .journey-board DOM. Shared with
+// marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
+const { transformJourneySection } = require('./lib/journey');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1174,6 +1177,15 @@ function parseSlide(raw, index) {
   // every render path produces the same DOM.
   if (cls.includes('roadmap')) {
     html = transformRoadmapSection(html, cls);
+  }
+
+  // journey: nested list → user-journey board (legend, section ribbon,
+  // task chips, plumb lines, mood faces, swimlanes, mood curve). One
+  // shared DOM; CSS varies the look per variant (heatmap, curve,
+  // swimlane, weighted). Shared with marp.config.js and mirrored in
+  // lattice-runtime.js for the marp-vscode preview.
+  if (cls.includes('journey')) {
+    html = transformJourneySection(html, cls);
   }
 
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.
