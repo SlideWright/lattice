@@ -1071,82 +1071,10 @@ The below-note explains what *caused* the shift. Use it to credit the architectu
 | ---------- | ------------------- | --------------------- | ---------------------- |
 | Workstream | The leftmost column | is the sticky label   |                        |
 | Phase row  | Each row is a       | workstream's          | trajectory             |
-| Empty cell | Renders as          | a thin                | dash                   |
-| Lane band  | Each row's label    | gets a categorical    | left-edge stripe       |
+| Empty cell | Render as           | a thin                | dash                   |
+| Pill style | Phase columns       | carry numbered chrome |                        |
 
-The first column is the sticky workstream label with a categorical lane stripe; phase columns carry numbered chrome; empty cells render as a thin dash.
-
----
-
-<!-- _class: roadmap status -->
-<!-- _footer: "New layout — roadmap status · roadmap status" -->
-
-`Layout · roadmap status`
-
-## Add `status` to turn cells into a state board.
-
-| Workstream | Phase 01           | Phase 02           | Phase 03           |
-| ---------- | ------------------ | ------------------ | ------------------ |
-| Marker     | [x] Shipped        | [-] In flight      | [ ] Planned        |
-| Empty cell | [/] Out of scope   |                    |                    |
-| Chrome     | [x] State eyebrow  | [-] Tinted ground  | [ ] Lane-coloured edge |
-| Source     | [x] Same markdown  | [x] Plus a marker  | [x] As prefix      |
-
-Markers mirror the checklist vocabulary: `[x]` shipped (pass-green), `[-]` in flight (warn-amber), `[ ]` planned (neutral muted), `[/]` out of scope (strike-through muted).
-
----
-
-<!-- _class: roadmap horizons -->
-<!-- _footer: "New layout — roadmap horizons · roadmap horizons" -->
-
-`Layout · roadmap horizons`
-
-## Add `horizons` to transpose the table into Now / Next / Later cards.
-
-| Workstream | Now · Phase 01     | Next · Phase 02     | Later · Phase 03    |
-| ---------- | ------------------ | ------------------- | ------------------- |
-| Workstream | Becomes the row    | label inside each   | phase card          |
-| Phase header | Becomes the card | title (one card per | non-leftmost column) |
-| Eyebrow    | Phase 01           | Phase 02            | Phase 03            |
-| Empty cell | Renders as a       | muted dash inside   | the relevant card   |
-
-The phase header text becomes the card title; the phase number is auto-derived. Each card collects the workstream commitments for its phase column.
-
----
-
-<!-- _class: roadmap swimlane -->
-<!-- _footer: "New layout — roadmap swimlane · roadmap swimlane" -->
-
-`Layout · roadmap swimlane`
-
-## Add `swimlane` to read each row as a workstream track.
-
-| Workstream | Phase 01            | Phase 02            | Phase 03            |
-| ---------- | ------------------- | ------------------- | ------------------- |
-| Track      | The workstream cell | becomes a strong    | lane label          |
-| Pill       | Each phase cell     | reads as an outlined| card with a lane tick |
-| Lane tint  | The row's accent    | tints the label     | ground              |
-| Empty cell | Renders as a        | dashed slot         | (no pill)           |
-
-Same source as the default. No DOM rewrite — only the CSS shifts so the row direction becomes the dominant axis.
-
----
-
-<!-- _class: roadmap milestones -->
-<!-- _footer: "New layout — roadmap milestones · roadmap milestones" -->
-
-`Layout · roadmap milestones`
-
-## Add `milestones` to anchor each phase to a fiscal date.
-
-| Workstream | Phase 01<br>*Q1 2026* | Phase 02<br>*Q2 2026* | Phase 03<br>*Q3 2026* |
-| ---------- | --------------------- | --------------------- | --------------------- |
-| Header     | The first line        | is the phase label    | (mono caps badge)     |
-| Subtitle   | The italic after `<br>` | reads as a small    | non-mono date         |
-| Tick       | A coloured dot        | sits on the           | spectrum line         |
-| Column tint | Phase columns        | carry a soft          | timeline ground       |
-
-Author the phase header on two lines using `<br>*…*` — the italic span becomes the date subtitle. The spectrum-gradient timeline beneath the header carries a coloured tick per phase.
+The first column is the sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
 
 ---
 
