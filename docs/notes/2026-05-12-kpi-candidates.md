@@ -3,13 +3,16 @@ marp: true
 theme: indaco
 size: 16:9
 paginate: true
-header: "Lattice · KPI redesign candidates"
+header: "Lattice · KPI redesign candidates v2"
 style: |
   /* ─────────────────────────────────────────────────────────────────────
-   * Shared base — applies to every candidate.
+   * Shared base
    * ───────────────────────────────────────────────────────────────────── */
   section[class*="kpi-"] { display: flex; flex-direction: column; }
-  section[class*="kpi-"] h2 { font-size: var(--fs-lg); margin: 0 0 var(--sp-lg) 0; }
+  section[class*="kpi-"] h2 {
+    font-size: var(--fs-lg);
+    margin: 0 0 var(--sp-lg) 0;
+  }
   section[class*="kpi-"] > ol,
   section[class*="kpi-"] > ul {
     list-style: none;
@@ -23,304 +26,146 @@ style: |
   section[class*="kpi-"] > ul > li > ul {
     list-style: none; padding: 0; margin: 0;
   }
-  section[class*="kpi-"] > p {
-    font-size: var(--fs-label);
-    font-style: italic;
-    color: var(--text-muted);
-    margin-top: var(--sp-md);
-  }
 
   /* ─────────────────────────────────────────────────────────────────────
-   * 1. ANCHOR — hero on the left, supporting stacked right with hairlines.
-   * Works for 3 or 4 items (1 hero + 2 or 3 supporting).
+   * 1. STATUS GRID — fill the canvas with the numbers. 2-up to 3-up
+   *    auto-fit grid; numerals at fs-hero (110px) dominate every cell.
+   *    Target line promoted to peer weight via --accent (no longer muted).
    * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-anchor > ol {
+  section.kpi-status > ol {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    grid-template-rows: repeat(3, 1fr);
-    column-gap: var(--sp-2xl);
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: var(--sp-xl) var(--sp-2xl);
+    align-content: stretch;
   }
-  section.kpi-anchor > ol > li {
-    min-width: 0;
-  }
-  section.kpi-anchor > ol > li:first-child {
-    grid-column: 1;
-    grid-row: 1 / -1;
-    border-right: 1px solid var(--border);
-    padding-right: var(--sp-2xl);
+  section.kpi-status > ol > li {
     display: flex; flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding-top: var(--sp-md);
+    border-top: 2px solid var(--text-heading);
   }
-  section.kpi-anchor > ol > li:not(:first-child) {
-    grid-column: 2;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-items: baseline;
-    column-gap: var(--sp-lg);
-    padding: var(--sp-md) 0;
-    border-top: 1px solid var(--border);
-  }
-  section.kpi-anchor > ol > li:last-child {
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* Hero typography */
-  section.kpi-anchor > ol > li:first-child > strong {
-    display: block;
+  section.kpi-status > ol > li > strong {
     font-family: var(--font-display, var(--font-sans));
     font-size: var(--fs-hero);
     font-weight: 700;
     color: var(--text-heading);
-    line-height: var(--lh-tight);
-    letter-spacing: -0.03em;
-    margin-bottom: var(--sp-md);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
+    margin-bottom: var(--sp-sm);
   }
-  section.kpi-anchor > ol > li:first-child > ul > li:first-child {
-    font-size: var(--fs-xl);
+  section.kpi-status > ol > li > ul > li:first-child {
+    font-size: var(--fs-content);
     color: var(--text-heading);
     font-weight: 600;
     line-height: var(--lh-snug);
   }
-  section.kpi-anchor > ol > li:first-child > ul > li + li {
-    font-size: var(--fs-md);
-    color: var(--text-muted);
-    margin-top: var(--sp-sm);
+  section.kpi-status > ol > li > ul > li + li {
+    font-size: var(--fs-emphasis);
     font-family: var(--font-mono);
-  }
-
-  /* Supporting typography — number left, labels right */
-  section.kpi-anchor > ol > li:not(:first-child) > strong {
-    font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-2xl);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: var(--lh-tight);
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-  section.kpi-anchor > ol > li:not(:first-child) > ul {
-    align-self: center;
-  }
-  section.kpi-anchor > ol > li:not(:first-child) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 600;
-    line-height: var(--lh-snug);
-  }
-  section.kpi-anchor > ol > li:not(:first-child) > ul > li + li {
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    margin-top: 2px;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * 2. LEDGER — datasheet rows: label · value · target. No chrome.
-   * `display: contents` lets the inner ul participate in the row grid.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-ledger > ol {
-    display: flex; flex-direction: column;
-    justify-content: center;
-    border-top: 2px solid var(--text-heading);
-    border-bottom: 2px solid var(--text-heading);
-  }
-  section.kpi-ledger > ol > li {
-    display: flex;
-    align-items: baseline;
-    gap: var(--sp-xl);
-    padding: var(--sp-sm) var(--sp-sm);
-    border-bottom: 1px solid var(--border);
-  }
-  section.kpi-ledger > ol > li:last-child { border-bottom: none; }
-  section.kpi-ledger > ol > li > ul { display: contents; }
-  section.kpi-ledger > ol > li > ul > li:first-child {
-    order: 1;
-    flex: 1;
-    font-family: var(--font-body);
-    font-size: var(--fs-md);
-    color: var(--text-heading);
+    color: var(--accent);
     font-weight: 500;
-    line-height: 1;
-  }
-  section.kpi-ledger > ol > li > strong {
-    order: 2;
-    min-width: 5ch;
-    text-align: right;
-    font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-2xl);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 1;
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-  }
-  section.kpi-ledger > ol > li > ul > li + li {
-    order: 3;
-    min-width: 18ch;
-    text-align: right;
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--text-muted);
+    margin-top: var(--sp-xs);
     letter-spacing: 0.02em;
-    line-height: 1;
+  }
+  /* Demo-only status colouring. Production would expose pass/warn/fail
+   * as a per-cell modifier; here the colours show what's possible. */
+  section.kpi-status.demo > ol > li:nth-child(1) {
+    border-top-color: var(--warn);
+  }
+  section.kpi-status.demo > ol > li:nth-child(1) > ul > li + li {
+    color: var(--warn);
+  }
+  section.kpi-status.demo > ol > li:nth-child(2),
+  section.kpi-status.demo > ol > li:nth-child(3),
+  section.kpi-status.demo > ol > li:nth-child(4) {
+    border-top-color: var(--pass);
+  }
+  section.kpi-status.demo > ol > li:nth-child(2) > ul > li + li,
+  section.kpi-status.demo > ol > li:nth-child(3) > ul > li + li,
+  section.kpi-status.demo > ol > li:nth-child(4) > ul > li + li {
+    color: var(--pass);
   }
 
   /* ─────────────────────────────────────────────────────────────────────
-   * 3. SLAT — full-width horizontal rows. Big numeral right-aligned,
-   * label stack left. Hairline dividers between, nothing else.
+   * 2. GAP-BAR — the gap to target IS the slide. Each row shows label
+   *    + a literal progress bar coloured by status (pass / warn / fail),
+   *    with the current number on the right.
    * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-slat > ol {
-    display: flex; flex-direction: column;
+  section.kpi-gap > ol {
+    display: flex;
+    flex-direction: column;
     justify-content: space-evenly;
   }
-  section.kpi-slat > ol > li {
+  section.kpi-gap > ol > li {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-items: center;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 2fr);
+    grid-template-rows: auto auto;
     column-gap: var(--sp-xl);
-    padding: var(--sp-xs) 0;
-    border-top: 1px solid var(--border);
+    row-gap: var(--sp-sm);
+    padding: var(--sp-sm) 0;
+    --pct: 100;
+    --status: var(--pass);
   }
-  section.kpi-slat > ol > li:last-child { border-bottom: 1px solid var(--border); }
-  section.kpi-slat > ol > li > strong {
-    font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-3xl);
-    font-weight: 700;
+  section.kpi-gap > ol > li:nth-child(1) { --pct: 95; --status: var(--warn); }
+  section.kpi-gap > ol > li:nth-child(2) { --pct: 100; --status: var(--pass); }
+  section.kpi-gap > ol > li:nth-child(3) { --pct: 100; --status: var(--pass); }
+  section.kpi-gap > ol > li:nth-child(4) { --pct: 100; --status: var(--pass); }
+
+  section.kpi-gap > ol > li > ul { display: contents; }
+  section.kpi-gap > ol > li > ul > li:first-child {
+    grid-column: 1; grid-row: 1;
+    font-size: var(--fs-content);
     color: var(--text-heading);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    align-self: end;
+  }
+  section.kpi-gap > ol > li > strong {
+    grid-column: 2; grid-row: 1;
     text-align: right;
-    padding-right: var(--sp-lg);
-    border-right: 1px solid var(--border);
-  }
-  section.kpi-slat > ol > li > ul > li:first-child {
-    font-size: var(--fs-xl);
-    color: var(--text-heading);
-    font-weight: 600;
-    line-height: var(--lh-snug);
-  }
-  section.kpi-slat > ol > li > ul > li + li {
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.02em;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * 4. MARQUEE — horizontal ticker band, vertical hairlines between
-   * equal-width panels. Mono small-caps label below numeral.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-marquee > ol {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    align-items: center;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  section.kpi-marquee > ol > li {
-    padding: var(--sp-lg) var(--sp-md);
-    border-right: 1px solid var(--border);
-    text-align: center;
-    display: flex; flex-direction: column;
-    align-items: center;
-    gap: var(--sp-sm);
-  }
-  section.kpi-marquee > ol > li:last-child { border-right: none; }
-  section.kpi-marquee > ol > li > strong {
     font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-display);
+    font-size: var(--fs-stat);
     font-weight: 700;
     color: var(--text-heading);
-    line-height: var(--lh-tight);
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
+    align-self: end;
   }
-  section.kpi-marquee > ol > li > ul {
-    display: flex; flex-direction: column;
-    align-items: center;
-    gap: 2px;
+  section.kpi-gap > ol > li::after {
+    content: '';
+    grid-column: 1; grid-row: 2;
+    height: 14px;
+    background: linear-gradient(to right,
+      var(--status) 0% calc(var(--pct) * 1%),
+      var(--bg-alt) calc(var(--pct) * 1%) 100%);
+    border-radius: 999px;
+    align-self: start;
   }
-  section.kpi-marquee > ol > li > ul > li:first-child {
-    font-family: var(--font-mono);
+  section.kpi-gap > ol > li > ul > li + li {
+    grid-column: 2; grid-row: 2;
+    text-align: right;
     font-size: var(--fs-label);
-    font-weight: 600;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    color: var(--text-label);
-  }
-  section.kpi-marquee > ol > li > ul > li + li {
-    font-size: var(--fs-xs);
-    color: var(--text-muted);
     font-family: var(--font-mono);
+    color: var(--text-muted);
+    align-self: start;
     letter-spacing: 0.02em;
   }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * 5. GRID — refined card grid. No border, no fill, no radius. Single
-   * 2px categorical left rule, left-aligned typography. Drop-in for the
-   * shipped kpi class.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-grid > ol {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    column-gap: var(--sp-2xl);
-    row-gap: var(--sp-xl);
-    align-content: center;
-  }
-  section.kpi-grid > ol > li {
-    padding-left: var(--sp-md);
-    border-left: 2px solid var(--kpi-accent, var(--accent));
-    display: flex; flex-direction: column;
-    gap: var(--sp-xs);
-  }
-  section.kpi-grid > ol > li > strong {
-    font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-display);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: var(--lh-tight);
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-  }
-  section.kpi-grid > ol > li > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 600;
-    line-height: var(--lh-snug);
-  }
-  section.kpi-grid > ol > li > ul > li + li {
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.02em;
-  }
-  /* Categorical rotation across cells (matches shipped kpi cycle) */
-  section.kpi-grid > ol > li:nth-child(8n+1) { --kpi-accent: var(--cat-blue); }
-  section.kpi-grid > ol > li:nth-child(8n+2) { --kpi-accent: var(--cat-green); }
-  section.kpi-grid > ol > li:nth-child(8n+3) { --kpi-accent: var(--cat-purple); }
-  section.kpi-grid > ol > li:nth-child(8n+4) { --kpi-accent: var(--cat-orange); }
-  section.kpi-grid > ol > li:nth-child(8n+5) { --kpi-accent: var(--cat-teal); }
-  section.kpi-grid > ol > li:nth-child(8n+6) { --kpi-accent: var(--cat-rose); }
-  section.kpi-grid > ol > li:nth-child(8n+7) { --kpi-accent: var(--cat-mauve); }
-  section.kpi-grid > ol > li:nth-child(8n)   { --kpi-accent: var(--cat-slate); }
 ---
 
 <!-- _class: title -->
 <!-- _paginate: false -->
-<!-- _footer: "KPI redesign · candidates" -->
+<!-- _footer: "KPI redesign · v2 candidates" -->
 
-# KPI redesign — five candidates
+# KPI redesign — round two
 
 `Internal review · 2026-05-12`
 
-Five layout directions, one winner per direction. Same metrics, same
-authoring contract. Inspect side-by-side and pick the one (or two) to
-promote into `lattice.css`.
+Round one failed on direction, not tuning. The five v1 layouts under-sold
+the numbers and treated status as decoration. Two new directions here.
 
 ---
 
@@ -328,9 +173,9 @@ promote into `lattice.css`.
 <!-- _paginate: false -->
 <!-- _footer: "Before · the shipped layout" -->
 
-`Section 01 · Where we start`
+`The starting point`
 
-## The current KPI — chunky cards, rainbow stripes, no hierarchy.
+## What we're replacing — chunky cards, rainbow stripes, no hierarchy.
 
 ---
 
@@ -356,40 +201,58 @@ promote into `lattice.css`.
 
 <!-- _class: divider -->
 <!-- _paginate: false -->
-<!-- _footer: "After · five candidates" -->
+<!-- _footer: "After · the two new directions" -->
 
-`Section 02 · The redesign`
+`The redesign`
 
-## Five directions. Same numbers. Pick the one that earns its slide.
+## Make the numbers loud. Let status carry the colour.
 
 ---
 
-<!-- _class: kpi-anchor -->
-<!-- _footer: "Candidate 01 · kpi-anchor" -->
+<!-- _class: kpi-status demo -->
+<!-- _footer: "Candidate A · kpi-status — fill the canvas" -->
 
 ## Where we are against quarter targets.
 
 1. **94%**
    - Token-issuance success
-   - target 99%, +2pp QoQ
+   - target 99% · -5pp
 2. **8 ms**
    - p99 detokenize
-   - target 10 ms · -3 ms QoQ
+   - target 10 ms · -2 ms
 3. **0**
    - Examiner findings
    - target 0 · flat
 4. **3.2×**
    - Detokenize headroom
-   - target 2× · +0.4× QoQ
-
-Hero on the left carries the headline metric at `--fs-hero`. Supporting metrics stack on the right with hairline dividers, number right-aligned to a shared axis.
+   - target 2× · +1.2×
 
 ---
 
-<!-- _class: kpi-ledger -->
-<!-- _footer: "Candidate 02 · kpi-ledger" -->
+<!-- _class: kpi-gap -->
+<!-- _footer: "Candidate B · kpi-gap — the gap is the slide" -->
 
 ## Where we are against quarter targets.
+
+1. **94%**
+   - Token-issuance success
+   - target 99%
+2. **8 ms**
+   - p99 detokenize
+   - target 10 ms
+3. **0**
+   - Examiner findings
+   - target 0
+4. **3.2×**
+   - Detokenize headroom
+   - target 2×
+
+---
+
+<!-- _class: kpi-status -->
+<!-- _footer: "kpi-status · neutral (no demo modifier)" -->
+
+## Same layout without the demo status colours — for general use.
 
 1. **94%**
    - Token-issuance success
@@ -403,144 +266,3 @@ Hero on the left carries the headline metric at `--fs-hero`. Supporting metrics 
 4. **3.2×**
    - Detokenize headroom
    - target 2× · +0.4× QoQ
-
-A spec-sheet read. No tables; CSS Grid with `display: contents` puts label, value, and target on a single baseline-aligned row. Tabular-nums keep digits on axis.
-
----
-
-<!-- _class: kpi-slat -->
-<!-- _footer: "Candidate 03 · kpi-slat" -->
-
-## Where we are against quarter targets.
-
-1. **94%**
-   - Token-issuance success
-   - target 99% · +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms · -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0 · flat
-4. **3.2×**
-   - Detokenize headroom
-   - target 2× · +0.4× QoQ
-
-Full-width slats, one per metric. Numeral right-aligned against a hairline rule; label stack starts where the rule ends. Reads top-to-bottom like a financial report.
-
----
-
-<!-- _class: kpi-marquee -->
-<!-- _footer: "Candidate 04 · kpi-marquee" -->
-
-## Where we are against quarter targets.
-
-1. **94%**
-   - Issuance success
-   - +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - flat
-4. **3.2×**
-   - Detok headroom
-   - +0.4× QoQ
-
-Equal-width panels separated by vertical hairlines, like an index header. Mono small-caps label below the numeral gives the ticker register. Best for 3–5 indicators of equal weight.
-
----
-
-<!-- _class: kpi-grid -->
-<!-- _footer: "Candidate 05 · kpi-grid" -->
-
-## Where we are against quarter targets.
-
-1. **94%**
-   - Token-issuance success
-   - target 99% · +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms · -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0 · flat
-4. **3.2×**
-   - Detokenize headroom
-   - target 2× · +0.4× QoQ
-
-The shipped layout, refined. Card chrome gone — no border, no fill, no radius. Categorical signal survives as a single 2px left rule. Drop-in replacement for the existing `kpi` class.
-
----
-
-<!-- _class: divider -->
-<!-- _paginate: false -->
-<!-- _footer: "Cross-cut · 3 vs 5 metrics" -->
-
-`Section 03 · How they handle different counts`
-
-## Anchor with 3, ledger with 5, marquee with 5. Stress-testing the favourites.
-
----
-
-<!-- _class: kpi-anchor -->
-<!-- _footer: "kpi-anchor · 3 metrics" -->
-
-## The headline, with two follow-on metrics.
-
-1. **94%**
-   - Token-issuance success
-   - target 99%, +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms · -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0 · flat
-
----
-
-<!-- _class: kpi-ledger -->
-<!-- _footer: "kpi-ledger · 5 metrics" -->
-
-## Quarter-end ledger, five lines.
-
-1. **94%**
-   - Token-issuance success
-   - target 99% · +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms · -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0 · flat
-4. **3.2×**
-   - Detokenize headroom
-   - target 2× · +0.4× QoQ
-5. **+12%**
-   - Throughput Δ vs last quarter
-   - +6pp above plan
-
----
-
-<!-- _class: kpi-marquee -->
-<!-- _footer: "kpi-marquee · 5 metrics" -->
-
-## Index strip, five indicators.
-
-1. **94%**
-   - Issuance
-   - +2pp QoQ
-2. **8 ms**
-   - p99 detok
-   - -3 ms QoQ
-3. **0**
-   - Findings
-   - flat
-4. **3.2×**
-   - Headroom
-   - +0.4× QoQ
-5. **+12%**
-   - Throughput Δ
-   - +6pp plan
