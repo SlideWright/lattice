@@ -140,6 +140,17 @@ test('horizons: cycles the categorical accent across cards', () => {
   assert.match(out, /--phase-accent:var\(--cat-green\)/);
 });
 
+test('horizons: carries state classes from source cells onto card rows', () => {
+  // First run state markers (universal), then transpose to cards. The
+  // card row li should carry the state class so the horizons row gets
+  // the light state styling via CSS.
+  const tagged = applyStatusMarkers(STATUS_TABLE);
+  const out = applyHorizons(tagged);
+  assert.match(out, /<li class="cell-state state-shipped">/);
+  assert.match(out, /<li class="cell-state state-wip">/);
+  assert.match(out, /<li class="cell-state state-planned">/);
+});
+
 // ── applyToRenderedHtml — section dispatch ─────────────────────────────
 
 const STATUS_SECTION = (
@@ -155,25 +166,28 @@ const NON_ROADMAP_SECTION = (
   '<section id="4" class="kpi" data-marpit-slide="4">' + STATUS_TABLE + '</section>'
 );
 
-test('dispatch: applies status transform only when the modifier is present', () => {
+test('dispatch: tags state markers on .status sections', () => {
   const out = applyToRenderedHtml(STATUS_SECTION);
   assert.match(out, /cell-state state-shipped/);
+});
+
+test('dispatch: tags state markers on plain roadmap sections too (universal)', () => {
+  // The .status modifier only controls visual treatment now; the marker
+  // transform fires on any roadmap section so authors can sprinkle
+  // [x]/[-]/[ ]/[/] into default, swimlane, milestones, horizons cells.
+  const out = applyToRenderedHtml(PLAIN_ROADMAP_SECTION);
+  assert.match(out, /cell-state state-shipped/);
+  assert.match(out, /cell-state state-wip/);
+  // No horizons wrapper without the modifier
+  assert.ok(!out.includes('class="horizons"'));
+  // Markers are stripped from the rendered HTML
+  assert.ok(!out.includes('[x] Codebook signing'));
 });
 
 test('dispatch: applies horizons transform only when the modifier is present', () => {
   const out = applyToRenderedHtml(HORIZONS_SECTION);
   assert.match(out, /class="horizons"/);
   assert.ok(!out.includes('<table>'));
-});
-
-test('dispatch: leaves the default roadmap section untouched', () => {
-  const out = applyToRenderedHtml(PLAIN_ROADMAP_SECTION);
-  // No state classes, no horizons wrapper
-  assert.ok(!out.includes('cell-state'));
-  assert.ok(!out.includes('class="horizons"'));
-  // Markers in the input survive (they weren't intended as state markers
-  // on a plain roadmap section).
-  assert.match(out, /\[x\] Codebook signing/);
 });
 
 test('dispatch: leaves non-roadmap sections untouched', () => {

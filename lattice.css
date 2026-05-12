@@ -3137,16 +3137,94 @@ section.roadmap > p {
   margin-top:var(--sp-md);
 }
 
-/* ── ROADMAP STATUS — workstream × phase status board ─────────────────
- * Cells carry a state marker as the leading token:
+/* ── ROADMAP STATE MARKERS — universal `[x]/[-]/[ ]/[/]` per cell ─────
+ * Cells in ANY roadmap variant can carry a state marker as the leading
+ * token. lib/roadmap.js strips the marker, tags the <td> with a state
+ * class, and wraps the label in a state-label eyebrow + state-text
+ * span. Empty cells (no marker) keep the default muted dash from base.
+ *
+ * Two visual treatments:
+ *   - Light (default, any variant):  small filled state-coloured dot
+ *                                    before the cell text. Eyebrow
+ *                                    label is rendered but hidden.
+ *   - Heavy (`.status` modifier):    full ribbon + tinted ground +
+ *                                    visible state-label eyebrow.
+ *
+ * State token vocabulary:
  *   [x] shipped   → state-shipped  (pass green)
  *   [-] in flight → state-wip      (warn amber)
  *   [ ] planned   → state-planned  (neutral muted)
  *   [/] skipped   → state-skipped  (fail red — explicitly out of scope)
- * lib/roadmap.js strips the marker, tags the <td> with a state class,
- * and wraps the label in a state-label eyebrow + state-text span.
- * Empty cells (no marker) keep the default muted dash from the base.
  * ──────────────────────────────────────────────────────────────────── */
+
+/* Per-state colour tokens — used by both light + heavy treatments. */
+section.roadmap td.cell-state.state-shipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
+  --cell-state-color:var(--pass);
+  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
+}
+section.roadmap td.cell-state.state-wip,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
+  --cell-state-color:var(--warn);
+  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
+}
+section.roadmap td.cell-state.state-planned,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
+  --cell-state-color:var(--text-label);
+  --cell-state-bg:var(--bg-alt);
+}
+section.roadmap td.cell-state.state-skipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
+  --cell-state-color:var(--text-muted);
+  --cell-state-bg:transparent;
+}
+
+/* Light treatment (default, any variant): dot before the text;
+   eyebrow hidden. */
+section.roadmap td.cell-state .cell-state-label { display:none; }
+section.roadmap td.cell-state .cell-state-text {
+  display:inline;
+  color:var(--text-body);
+}
+section.roadmap td.cell-state .cell-state-text::before {
+  content:'';
+  display:inline-block;
+  width:0.55em;
+  height:0.55em;
+  margin-right:0.5em;
+  border-radius:50%;
+  background:var(--cell-state-color, var(--text-muted));
+  vertical-align:0.08em;
+}
+section.roadmap td.cell-state.state-skipped .cell-state-text {
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+
+/* Horizons row state dot — same light treatment on the lifted row. */
+section.roadmap.horizons .horizon-rows > li.cell-state {
+  border-left-color:color-mix(in srgb, var(--cell-state-color) 60%, var(--border));
+}
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before {
+  content:'';
+  display:inline-block;
+  width:0.55em;
+  height:0.55em;
+  margin-right:0.5em;
+  border-radius:50%;
+  background:var(--cell-state-color, var(--text-muted));
+  vertical-align:0.08em;
+}
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+
+/* Heavy treatment (`.status` modifier): full ribbon + tinted ground +
+   visible state-label eyebrow. Wins over the light treatment via
+   higher specificity. */
 section.roadmap.status td.cell-state {
   position:relative;
   background:var(--cell-state-bg, transparent);
@@ -3169,26 +3247,10 @@ section.roadmap.status td.cell-state .cell-state-text {
   display:block;
   color:var(--text-body);
 }
-section.roadmap.status td.cell-state.state-shipped {
-  --cell-state-color:var(--pass);
-  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
-}
-section.roadmap.status td.cell-state.state-wip {
-  --cell-state-color:var(--warn);
-  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
-}
-section.roadmap.status td.cell-state.state-planned {
-  --cell-state-color:var(--text-label);
-  --cell-state-bg:var(--bg-alt);
-}
-section.roadmap.status td.cell-state.state-skipped {
-  --cell-state-color:var(--text-muted);
-  --cell-state-bg:transparent;
-}
-section.roadmap.status td.cell-state.state-skipped .cell-state-text {
-  color:var(--text-muted);
-  text-decoration:line-through;
-  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+/* In heavy mode the cell already conveys state via ribbon + ground;
+   suppress the inline dot to keep the cell uncluttered. */
+section.roadmap.status td.cell-state .cell-state-text::before {
+  display:none;
 }
 
 /* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────

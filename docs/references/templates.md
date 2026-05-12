@@ -399,13 +399,15 @@ A markdown table that becomes a phased rollout grid. The first column carries th
 | SDK        | Java                 |                     | Polyglot parity       |
 ```
 
+**State markers are universal.** Any cell in any roadmap variant can start with `[x]` shipped / `[-]` in flight / `[ ]` planned / `[/]` out of scope (the marker vocabulary is shared with `checklist` and `verdict-grid`). lib/roadmap.js strips the marker, tags the cell with a state class, and the CSS draws a small state-coloured dot before the cell text. Skipped cells render with a strike-through. The `status` modifier upgrades this to the heavy treatment.
+
 | Modifier     | Effect                                                                                                                            |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| (default)    | workstream × phase grid; lane stripe per row; right-anchored meta pill on the spectrum line per phase header                       |
-| `status`     | cells carry state markers — `[x]` shipped, `[-]` in flight, `[ ]` planned, `[/]` out of scope. Marker tints the cell and prints a state eyebrow above the content. |
-| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, the trailing meta pill (lifted from the header's inline code), and the workstream commitments stacked underneath with their workstream labels. |
-| `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. |
-| `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. |
+| (default)    | workstream × phase grid; lane stripe per row; right-anchored meta pill on the spectrum line per phase header. State markers render as small coloured dots. |
+| `status`     | upgrades the universal state markers to the heavy treatment: full left-edge ribbon, state-tinted ground, and a mono-caps state eyebrow (SHIPPED / IN FLIGHT / PLANNED / OUT OF SCOPE) above each cell's text. |
+| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, the trailing meta pill (lifted from the header's inline code), and the workstream commitments stacked underneath with their workstream labels. State markers flow through onto the card rows. |
+| `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. State markers render as dots. |
+| `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. State markers render as dots. |
 
 ### `kpi` — metrics dashboard with targets and trends
 

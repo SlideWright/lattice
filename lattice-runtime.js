@@ -816,8 +816,11 @@
   }
 
   function transformRoadmapStatus() {
+    // State markers `[x]/[-]/[ ]/[/]` work on any roadmap variant. The
+    // .status modifier adds the heavy treatment via CSS; other variants
+    // get the light treatment (state-coloured dot + skip strike).
     if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.roadmap.status')) {
+    for (const section of document.querySelectorAll('section.roadmap')) {
       const rows = section.querySelectorAll(':scope > table > tbody > tr');
       for (const tr of rows) {
         const tds = tr.querySelectorAll(':scope > td');
@@ -875,7 +878,18 @@
           const cells = [...tr.children];
           return {
             label: cells[0] ? cells[0].innerHTML.trim() : '',
-            cells: cells.slice(1).map(c => c.innerHTML.trim()),
+            cells: cells.slice(1).map(c => {
+              // Pull the state class (set by transformRoadmapStatus
+              // upstream when a [x]/[-]/[ ]/[/] marker was present)
+              // and the plain text content out of the cell.
+              let state = '';
+              for (const cls of c.classList) {
+                if (/^state-/.test(cls)) { state = cls; break; }
+              }
+              const textSpan = c.querySelector(':scope > .cell-state-text');
+              const text = textSpan ? textSpan.innerHTML.trim() : c.innerHTML.trim();
+              return { text, state };
+            }),
           };
         })
         .filter(r => r.label !== '');
@@ -913,11 +927,13 @@
         const ul = document.createElement('ul');
         ul.className = 'horizon-rows';
         for (const r of bodyRows) {
+          const cell = r.cells[idx] || { text: '', state: '' };
           const li = document.createElement('li');
+          if (cell.state) li.className = 'cell-state ' + cell.state;
           const lbl = document.createElement('span');
           lbl.className = 'row-label';
           lbl.innerHTML = r.label;
-          const text = (r.cells[idx] || '').trim();
+          const text = cell.text;
           const isEmpty = !text || text === '—' || text === '-';
           const txt = document.createElement('span');
           txt.className = isEmpty ? 'row-text row-empty' : 'row-text';

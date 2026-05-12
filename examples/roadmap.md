@@ -32,14 +32,14 @@ Five table-driven roadmap layouts, all built from the same markdown source contr
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
-| ---------- | -------------------- | ------------------- | --------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
-| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
-| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
-| SDK        | Java                 |                     | Polyglot parity       |
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail (HSM) | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
 
-Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line, carrying the column's categorical accent. Empty cells render as a thin dash.
+Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line. State markers `[x]/[-]/[ ]/[/]` are universal — they render as a small state-coloured dot before the cell text.
 
 ---
 
@@ -57,7 +57,7 @@ Header text is the phase NAME; the trailing inline-code element becomes a right-
 | Compliance | [x] Audit trail (HSM) | [x] Centralised log       | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET                  | [ ] Polyglot parity       |
 
-`[x]` shipped, `[-]` in flight, `[ ]` planned, `[/]` out of scope. Each marker tints the cell and prints a state eyebrow above the content.
+Same `[x]/[-]/[ ]/[/]` markers as the other variants. The `status` modifier upgrades them from the universal light treatment to a heavy one: full left-edge ribbon, tinted ground, and a mono-caps state eyebrow (SHIPPED / IN FLIGHT / PLANNED / OUT OF SCOPE) above the cell text.
 
 ---
 
@@ -68,14 +68,14 @@ Header text is the phase NAME; the trailing inline-code element becomes a right-
 
 ## Now, next, and later — by workstream.
 
-| Workstream | Now `Q2 2026`          | Next `Q3 2026`         | Later `Q4 2026`       |
-| ---------- | ---------------------- | ---------------------- | --------------------- |
-| Platform   | Codebook signing       | Multi-tenant DEKs      | Per-purpose codebooks |
-| Operations | Manual rotation        | Automated rotation     | Crypto-shred          |
-| Compliance | Audit trail (HSM)      | Centralised log        | Examiner pack         |
-| SDK        | Java                   |                        | Polyglot parity       |
+| Workstream | Now `Q2 2026`           | Next `Q3 2026`            | Later `Q4 2026`           |
+| ---------- | ----------------------- | ------------------------- | ------------------------- |
+| Platform   | [x] Codebook signing    | [-] Multi-tenant DEKs     | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation     | [-] Automated rotation    | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail (HSM)   | [x] Centralised log       | [ ] Examiner pack         |
+| SDK        | [x] Java                |                           | [ ] Polyglot parity       |
 
-Same source table, transposed into three phase cards. Each card carries the phase eyebrow, the phase title, the trailing meta pill (lifted from the header's inline `code`), and the workstream commitments stacked below.
+Same source table, transposed into three phase cards. State markers on the source cells flow through onto the card rows — each row's left rail picks up the state colour and the row carries the state dot.
 
 ---
 
@@ -86,12 +86,12 @@ Same source table, transposed into three phase cards. Each card carries the phas
 
 ## Each workstream as its own track.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
-| ---------- | -------------------- | ------------------- | --------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
-| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
-| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
-| SDK        | Java                 |                     | Polyglot parity       |
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail (HSM) | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              |                        | [ ] Polyglot parity       |
 
 Workstream cell becomes a lane label on its row's categorical ground; phase cells read as outlined cards along the track.
 
@@ -104,12 +104,12 @@ Workstream cell becomes a lane label on its row's categorical ground; phase cell
 
 ## Phased rollout against the fiscal calendar.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
-| ---------- | -------------------- | ------------------- | --------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
-| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
-| Compliance | Audit trail (HSM)    | Centralised log     | Examiner pack         |
-| SDK        | Java                 |                     | Polyglot parity       |
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail (HSM) | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              |                        | [ ] Polyglot parity       |
 
 Same meta-pill convention as the other roadmaps — the difference is the calendar identity: phase columns get a soft alternating tint so the timeline reads as a fiscal grid.
 
