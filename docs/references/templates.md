@@ -385,7 +385,7 @@ Numbered list of declarative one-liners in display weight. Each item is one para
 
 ### `roadmap` — phased multi-workstream grid
 
-A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold, on tinted ground). Phase columns (everything after the first) get phase chrome — a numbered badge in the header. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
+A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold) with a categorical lane stripe per row. Phase columns (everything after the first) get phase chrome — a numbered badge inline with the phase name, with a categorical accent rotating across columns. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
 
 ```markdown
 <!-- _class: roadmap -->
@@ -397,6 +397,36 @@ A markdown table that becomes a phased rollout grid. The first column carries th
 | Platform   | Codebook signing | Multi-tenant DEKs  | Per-purpose codebooks |
 | Operations | Manual rotation  | Automated rotation | Crypto-shred          |
 | SDK        | Java             |                    | Polyglot parity       |
+```
+
+| Modifier     | Effect                                                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| (default)    | workstream × phase grid; lane stripe per row; numbered phase chrome per column                                                    |
+| `status`     | cells carry state markers — `[x]` shipped, `[-]` in flight, `[ ]` planned, `[/]` out of scope. Marker tints the cell and prints a state eyebrow above the content. |
+| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, and the workstream commitments stacked underneath with their workstream labels. |
+| `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. |
+| `milestones` | quarter-anchored. Write each phase header as `Phase 01<br>*Q1 2026*` — the italic span styles as a small non-mono date subtitle, and a coloured tick anchors each phase column to the spectrum line beneath the header row. |
+
+```markdown
+<!-- _class: roadmap status -->
+
+## Where every workstream lands this quarter.
+
+| Workstream | Phase 01              | Phase 02                  | Phase 03                  |
+| ---------- | --------------------- | ------------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs     | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation    | [ ] Crypto-shred          |
+| SDK        | [x] Java              | [/] .NET                  | [ ] Polyglot parity       |
+```
+
+```markdown
+<!-- _class: roadmap milestones -->
+
+## Phased rollout against the fiscal calendar.
+
+| Workstream | Phase 01<br>Q2 2026 | Phase 02<br>Q3 2026 | Phase 03<br>Q4 2026   |
+| ---------- | ------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing    | Multi-tenant DEKs   | Per-purpose codebooks |
 ```
 
 ### `kpi` — metrics dashboard with targets and trends
