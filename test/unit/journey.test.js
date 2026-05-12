@@ -170,12 +170,47 @@ test('emit: renders the single shared DOM shape with all variant layers', () => 
   assert.match(html, /--task-count:5/);
   assert.match(html, /--actor-count:2/);
   assert.match(html, /<ol class="journey-legend">/);
+  assert.match(html, /<ol class="journey-mood-legend"/);
   assert.match(html, /<ol class="journey-sections">/);
   assert.match(html, /<ol class="journey-tasks">/);
   assert.match(html, /<div class="journey-timeline"/);
   assert.match(html, /<ol class="journey-moods">/);
   assert.match(html, /<svg class="journey-curve"/);
   assert.match(html, /<ol class="journey-lanes">/);
+});
+
+test('emit: mood legend has 5 ramp swatches plus Pain/Delight endpoint labels', () => {
+  const m = parseJourney(SAMPLE_UL_INNER);
+  const html = emitJourneyBoard(m);
+  const legend = html.match(/<ol class="journey-mood-legend"[\s\S]*?<\/ol>/)[0];
+  for (let i = 1; i <= 5; i++) {
+    assert.match(legend, new RegExp(`journey-mood-key" data-mood="${i}"`));
+  }
+  assert.match(legend, /journey-mood-key-low">Pain<\/li>/);
+  assert.match(legend, /journey-mood-key-high">Delight<\/li>/);
+});
+
+test('emit: each section carries --section-volume aggregated from its tasks', () => {
+  const ul = (
+    '<li>A<ul>' +
+      '<li>a <code>:3</code> <code>+10</code></li>' +
+      '<li>b <code>:4</code> <code>+5</code></li>' +
+    '</ul></li>' +
+    '<li>B<ul>' +
+      '<li>c <code>:2</code> <code>+30</code></li>' +
+    '</ul></li>'
+  );
+  const m = parseJourney(ul);
+  const html = emitJourneyBoard(m);
+  assert.match(html, /data-section="0"[^"]*"[^"]*--section-volume:15/);
+  assert.match(html, /data-section="1"[^"]*"[^"]*--section-volume:30/);
+});
+
+test('emit: section --section-volume defaults to task count when volumes absent', () => {
+  const m = parseJourney(SAMPLE_UL_INNER);
+  const html = emitJourneyBoard(m);
+  assert.match(html, /data-section="0"[^"]*"[^"]*--section-volume:3/);
+  assert.match(html, /data-section="1"[^"]*"[^"]*--section-volume:2/);
 });
 
 test('emit: section spans match task counts (3 + 2)', () => {

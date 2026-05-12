@@ -1085,14 +1085,28 @@
     if (taskCount === 0) return '';
     const actorColor = jAssignActorColors(model);
     const actors = [...actorColor.entries()];
+    const sectionVolumes = model.sections.map(function (s) {
+      return s.tasks.reduce(function (sum, t) { return sum + (t.volume == null ? 1 : t.volume); }, 0);
+    });
     const legendHtml = actors.map(([n, c]) =>
       '<li class="journey-actor" data-actor="' + jEscAttr(n) + '" style="--actor-color:' + c + '">' +
         '<span class="journey-actor-dot" aria-hidden="true"></span>' +
         '<span class="journey-actor-name">' + jEscHtml(n) + '</span>' +
       '</li>'
     ).join('');
+    const moodLegendHtml = (
+      '<li class="journey-mood-key journey-mood-key-low">Pain</li>' +
+      [1, 2, 3, 4, 5].map(function (m) {
+        return '<li class="journey-mood-key" data-mood="' + m + '">' +
+                 '<span class="journey-mood-key-swatch" aria-hidden="true"></span>' +
+                 '<span class="journey-mood-key-label">' + m + '</span>' +
+               '</li>';
+      }).join('') +
+      '<li class="journey-mood-key journey-mood-key-high">Delight</li>'
+    );
     const sectionsHtml = model.sections.map((s, i) =>
-      '<li class="journey-section" data-section="' + i + '" style="--span:' + s.tasks.length + '; --section-index:' + i + '">' +
+      '<li class="journey-section" data-section="' + i + '" ' +
+      'style="--span:' + s.tasks.length + '; --section-index:' + i + '; --section-volume:' + sectionVolumes[i] + '">' +
         '<span class="journey-section-name">' + jEscHtml(s.name) + '</span>' +
       '</li>'
     ).join('');
@@ -1159,6 +1173,7 @@
     return (
       '<div class="journey-board" style="--task-count:' + taskCount + '; --actor-count:' + actors.length + '">' +
         '<ol class="journey-legend">' + legendHtml + '</ol>' +
+        '<ol class="journey-mood-legend" aria-label="Mood scale: 1 (pain) to 5 (delight)">' + moodLegendHtml + '</ol>' +
         '<ol class="journey-sections">' + sectionsHtml + '</ol>' +
         '<ol class="journey-tasks">' + taskParts.join('') + '</ol>' +
         '<div class="journey-timeline" aria-hidden="true"></div>' +

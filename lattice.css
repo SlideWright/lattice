@@ -3832,6 +3832,50 @@ section.journey .journey-actor-name {
   font-weight: 500;
 }
 
+/* ── Mood legend (the color ramp key) ──────────────────────────────── */
+section.journey .journey-mood-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-xs);
+  color: var(--fg-muted, var(--fg));
+  letter-spacing: 0.02em;
+}
+section.journey .journey-mood-key {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+section.journey .journey-mood-key-low,
+section.journey .journey-mood-key-high {
+  font-variant: small-caps;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0 var(--sp-xs);
+  opacity: 0.75;
+}
+section.journey .journey-mood-key-swatch {
+  width: 20px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--mood-color);
+}
+section.journey .journey-mood-key-label {
+  font-size: 10px;
+  opacity: 0.65;
+}
+section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
+section.journey .journey-mood-key[data-mood="4"] { --mood-color: var(--journey-mood-4); }
+section.journey .journey-mood-key[data-mood="3"] { --mood-color: var(--journey-mood-3); }
+section.journey .journey-mood-key[data-mood="2"] { --mood-color: var(--journey-mood-2); }
+section.journey .journey-mood-key[data-mood="1"] { --mood-color: var(--journey-mood-1); }
+
 /* ── Section ribbon ─────────────────────────────────────────────────── */
 section.journey .journey-sections {
   display: grid;
@@ -4218,11 +4262,19 @@ section.journey.weighted .journey-curve,
 section.journey.weighted .journey-lanes {
   display: none;
 }
-/* Weighted ribbon uses flex (not equal-column grid) so widths can
- * flex by --volume. The sections band stays in its original grid
- * because section spans need to track task counts, not volumes. */
+/* Sections also flex by total volume so the section ribbon visually
+ * tracks the chip row beneath. Discover (45+18=63%) dominates Convert
+ * (12+10=22%) at both the section and task level — the volume story
+ * reads at both granularities. */
 section.journey.weighted .journey-sections {
-  grid-template-columns: repeat(var(--task-count), 1fr);
+  display: flex;
+  gap: 4px;
+}
+section.journey.weighted .journey-section {
+  flex-grow: var(--section-volume);
+  flex-basis: 0;
+  flex-shrink: 1;
+  min-width: 80px;
 }
 section.journey.weighted .journey-tasks {
   display: flex;
@@ -4233,11 +4285,13 @@ section.journey.weighted .journey-task {
   flex-grow: var(--volume);
   flex-basis: 0;
   flex-shrink: 1;
-  min-width: 60px;
+  min-width: 56px;
   padding: var(--sp-md) var(--sp-sm) var(--sp-sm);
   min-height: 88px;
   background: color-mix(in oklab, var(--mood-bg) 28%, var(--bg-alt));
-  border-top: 4px solid var(--mood-bg);
+  border-top-width: 4px;
+  border-top-style: solid;
+  border-top-color: var(--mood-bg);
   position: relative;
 }
 section.journey.weighted .journey-task[data-mood="5"] { --mood-bg: var(--journey-mood-5); }
@@ -4245,17 +4299,35 @@ section.journey.weighted .journey-task[data-mood="4"] { --mood-bg: var(--journey
 section.journey.weighted .journey-task[data-mood="3"] { --mood-bg: var(--journey-mood-3); }
 section.journey.weighted .journey-task[data-mood="2"] { --mood-bg: var(--journey-mood-2); }
 section.journey.weighted .journey-task[data-mood="1"] { --mood-bg: var(--journey-mood-1); }
-/* Volume percentage badge in the corner of each chip. */
+/* Volume percentage badge — large, dropped to top-center so the
+ * "this is the volume share" read is the dominant signal alongside
+ * the task name. */
 section.journey.weighted .journey-task::after {
   content: counter(volume) "%";
   counter-reset: volume var(--volume-pct);
   position: absolute;
-  top: var(--sp-xs);
-  right: var(--sp-xs);
-  font-size: var(--fs-xs);
+  top: 4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--fs-sm);
   font-weight: 700;
-  color: var(--fg-muted, var(--fg));
-  opacity: 0.7;
+  color: var(--mood-bg);
+  letter-spacing: 0.02em;
+}
+/* Pull the task label down so it sits below the % badge — gives the
+ * narrowest chips (3-4% support, settings) a fighting chance at being
+ * legible. */
+section.journey.weighted .journey-task-label {
+  margin-top: auto;
+  font-size: var(--fs-xs);
+}
+section.journey.weighted .journey-task-actors {
+  /* Move actor dots from top-left to top-right corner so they don't
+   * clip the % badge on narrow chips. */
+  left: auto;
+  right: 4px;
+  top: -6px;
 }
 
 /* ── KPI ───────────────────────────────────────────────────────────────
