@@ -74,16 +74,20 @@ together. If you push without the rebuilt PDF the reviewer's link
 
 ### Share
 
-The PDF is browsable on GitHub at:
+Use the **raw URL** so the reviewer downloads (or opens directly in the
+browser's PDF viewer) without GitHub's blob-preview UI wrapping it:
 
 ```
-https://github.com/slidewright/lattice/blob/<branch>/examples/<feature-slug>.pdf
+https://github.com/slidewright/lattice/raw/<branch>/examples/<feature-slug>.pdf
 ```
 
-Paste that link into the PR body. GitHub renders the PDF inline, so the
-reviewer clicks once and sees the work. Update the deck (and rebuild)
-on every iteration that changes the visual outcome; the link remains
-stable across pushes.
+Paste that link into the PR body — and into chat / status updates when
+asked for the feature deck. The link remains stable across pushes; the
+reviewer always sees the latest pushed version of the PDF.
+
+(The `/blob/` form renders the PDF inline on github.com with the
+repository chrome around it. The `/raw/` form skips the chrome and
+serves the file directly — that is what we want for review.)
 
 ### When the deck retires
 

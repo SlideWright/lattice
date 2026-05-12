@@ -72,8 +72,9 @@ reviewer can see the work without rebuilding locally:
    closing. Six to ten slides.
 3. Build with the emulator one-liner and commit the PDF alongside:
    `node lattice-emulator.js examples/<slug>.md examples/<slug>.pdf`.
-4. Link the PDF in the PR body — GitHub renders inline:
-   `https://github.com/slidewright/lattice/blob/<branch>/examples/<slug>.pdf`.
+4. Link the PDF in the PR body (and in chat replies) using the **raw**
+   URL — `/raw/`, not `/blob/`, so the file downloads directly:
+   `https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf`.
 
 Feature decks are independent of `examples/gallery.md` (the regression
 baseline). Full convention in `docs/references/workflow.md`.
