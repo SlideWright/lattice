@@ -110,8 +110,21 @@ After every push that updates a feature-deck PDF, paste the raw URL
 markdown bold, no backticks, no link text, nothing else on the line.
 
 ```
-https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf
+https://raw.githubusercontent.com/slidewright/lattice/<branch>/examples/<slug>.pdf
 ```
+
+**Every link presented to the reviewer must use the
+`raw.githubusercontent.com` host.** That's the canonical CDN for
+downloadable file content — the file streams straight to the
+reviewer's browser at full fidelity. Never present:
+
+- `github.com/.../blob/<branch>/<path>` — this renders as the GitHub
+  web preview UI (chrome, headers, blob viewer). The reviewer has to
+  click "Raw" or "Download" to actually see the file. PDFs render in
+  GitHub's viewer at lower fidelity than the raw stream.
+- `github.com/.../raw/<branch>/<path>` — superficially works but
+  302-redirects to `raw.githubusercontent.com`. Use the canonical
+  host directly; one hop is fewer than two.
 
 This is the reviewer's only entry point to see the work. Forgetting
 it means the reviewer has to ask, which adds a round trip and erodes

@@ -73,14 +73,18 @@ reviewer can see the work without rebuilding locally:
    closing. Six to ten slides.
 3. Build with the emulator one-liner and commit the PDF alongside:
    `node lattice-emulator.js examples/<slug>.md examples/<slug>.pdf`.
-4. Link the PDF in the PR body (and in chat replies) using the **raw**
-   URL — `/raw/`, not `/blob/`, so the file downloads directly:
-   `https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf`.
+4. Link the PDF in the PR body (and in chat replies) using the
+   **`raw.githubusercontent.com`** host so the file downloads directly:
+   `https://raw.githubusercontent.com/slidewright/lattice/<branch>/examples/<slug>.pdf`.
+   Never use `github.com/.../blob/...` (renders as the web preview) or
+   `github.com/.../raw/...` (302-redirects through an extra hop).
 
 **Always present the raw URL after every push.** Last paragraph of the
 reply, plain text, on its own line, no markdown bold, no backticks, no
-link-text wrapping. Forgetting it means the user has to ask — adds a
-round trip and erodes the workflow.
+link-text wrapping. **Every link presented to the user must be a
+`raw.githubusercontent.com` URL** — that's the canonical host for
+downloadable file content. Forgetting it means the user has to ask —
+adds a round trip and erodes the workflow.
 
 **Isolate feature/fix content from the long-running galleries.** Do
 not add slides or modifier examples to `examples/gallery.md` or
