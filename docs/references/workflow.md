@@ -1,5 +1,113 @@
 # Lattice — branching and feature workflow
 
+## Walkthrough — from idea to merged
+
+End-to-end procedure for a new feature or fix. The detailed sections
+below are the reference; this one is the recipe.
+
+### 1 · Start the branch
+
+```bash
+git checkout main && git pull
+git checkout -b feat/<noun>          # feat/ fix/ chore/ docs/, kebab-case
+git push -u origin feat/<noun>       # remote backup from day one
+```
+
+Parallel work uses worktrees (`git worktree add ../Lattice-X feat/X`)
+so you don't stash.
+
+### 2 · Design (only for visual or rethink work)
+
+If the task is a "rethink X" or any open-ended visual decision,
+**respond with the design model first** before touching code: name
+the axes, list candidate moves, recommend one. Bundle adjacent open
+questions into one `AskUserQuestion`. Confirm direction in one
+round trip. Skip this step for mechanical fixes.
+
+### 3 · Build in the engine
+
+Change goes in `lattice.css` (visual contract) and/or `lib/*.js`
+(transforms). Pure-CSS work is single-file; transform work has to
+land in all three render paths — see "Three-renderer rule" below.
+
+### 4 · Build the per-feature demo deck
+
+This is the reviewer's entry point. They read the PDF via the PR
+link; they don't rebuild locally.
+
+```bash
+$EDITOR examples/<noun>.md           # e.g. examples/roadmap.md
+                                     # 6-10 slides: title → demo → closing
+node lattice-emulator.js examples/<noun>.md examples/<noun>.pdf
+```
+
+**Do not touch the six long-running decks** during iteration — see
+"The two gallery sets" below for the list and rationale.
+
+### 5 · Iterate, commit, push
+
+Each design decision is **one commit** that bundles
+`lattice.css` + `lib/*.js` + `examples/<noun>.md` +
+`examples/<noun>.pdf` together. Don't split mechanically — the
+design move is the atom.
+
+Commit messages: `area(scope): short summary` (match `git log`).
+
+For non-obvious fixes, add a `docs/references/gotchas.md` entry
+**before** committing; link to it from the commit body.
+
+### 6 · Share — after every push
+
+Last paragraph of every reply that updates a PDF:
+
+```
+https://raw.githubusercontent.com/slidewright/lattice/<branch>/examples/<noun>.pdf
+```
+
+Plain text, on its own line, no markdown. Never `github.com/.../blob/...`
+or `github.com/.../raw/...` — see "Share — every push, every time"
+below for the full convention.
+
+### 7 · Before opening the PR
+
+```bash
+npm test                             # unit, must pass (<100ms)
+npm run test:integration             # rebuilds baselines, ~30s
+git fetch origin && git rebase origin/main   # if drifted
+```
+
+If you touched visuals but can't rebuild and inspect, **say so
+explicitly** rather than claim success.
+
+### 8 · Open the PR, review, merge
+
+- PRs merge via squash or clean rebase. No merge commits.
+- After merge: delete the remote branch, remove the local worktree.
+
+The per-feature deck stays in `examples/` as a permanent record of
+what the feature looked like at ship time. (An archive policy is
+proposed in `docs/notes/2026-05-12-workflow-debt.md` — not yet
+adopted.)
+
+### 9 · Graduate (separate commit, post-review)
+
+If the new layout or fix belongs in the long-running decks
+(usually yes), file a **separate commit** on a short-lived
+`chore/<noun>-graduation` branch that:
+
+- Adds a slide to `gallery.md` and / or `gallery-guide.md` showing
+  the new layout in context.
+- Updates `test/fixtures/expected-page-counts.json` if the page
+  count drifts.
+- Rebuilds the baseline PDF in the same commit.
+- Updates `docs/references/templates.md` if a new modifier is being
+  documented.
+
+The graduation trigger is currently manual. Automation is proposed
+in `docs/notes/2026-05-12-workflow-debt.md`.
+
+---
+
 ## Branch naming
 
 | Prefix | When to use | Example |
