@@ -143,7 +143,11 @@ levels, journey sections, c4 layers, pie slices, treemap leaves, gitgraph
 label pills. Slot 1 doubles as the primary fill for any single-band
 diagram (flowchart node, sequence actor).
 
-- `--diagram-band-1`..`--diagram-band-12` — pale fills at L≈90.
+- `--diagram-band-1`..`--diagram-band-12` — tinted fills at L≈83.
+  Deep enough that each band reads as visibly coloured on the white
+  slide canvas (the original L≈90 values washed out below projector
+  distance, especially band-1); pale enough that the paired dark
+  band-text-N still clears AA with ~11:1 margin.
 - `--diagram-band-text-1`..`--diagram-band-text-12` — paired text colors.
   Pin to a fixed dark hex (not `light-dark(--text-heading,…)`); the band
   itself stays pale in dark mode, so the text on top must too.
@@ -226,9 +230,9 @@ Audit and design rationale: `docs/notes/2026-05-12-diagram-elevation.md`.
 
 The default `indaco` palette uses two distinct lightness bands:
 
-- **Pale band, L≈90.** `--diagram-band-1..12`, quadrant fills, gantt task
+- **Tinted band, L≈83.** `--diagram-band-1..12`, quadrant fills, gantt task
   bars (via `taskBkgColor`), sequence actor backgrounds, pie slices, and
-  most light surfaces. Dark text reads on these with 13:1+ contrast.
+  most light surfaces. Dark text reads on these with 10:1+ contrast.
 - **Mid-tone band, L≈60.** `--cat-*` (feeds `cScale0..11` and `git0..7`).
   Fed at L≈60 because Mermaid's kanban renderer applies an internal
   lighten step that brings emitted fills to L≈70 (where dark text still

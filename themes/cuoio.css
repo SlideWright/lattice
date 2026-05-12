@@ -20,7 +20,7 @@
  *      is set explicitly.
  *
  *   2. Two lightness bands for fills:
- *        Pale band (L≈90)   — --diagram-band-1..12, used directly by
+ *        Tinted band (L≈83) — --diagram-band-1..12, used directly by
  *                              flowchart, sequence, class, state, ER,
  *                              quadrant, and most layouts. Cream/parchment
  *                              family (#F3EDE4 → #FAF7F2).
@@ -299,25 +299,25 @@ section .hljs-strong { font-weight:700; }
  * same across every palette; this file supplies cuoio's warm-earth
  * values. */
 :root {
-  /* ── Band cycle (12 slots, pale cream/parchment L≈90) ─────────────
+  /* ── Band cycle (12 slots, cream/parchment L≈83) ─────────────────
    * Categorical surfaces: timeline periods, kanban columns, mindmap
    * levels, journey sections, c4 layers, pie slices, treemap leaves,
    * gitgraph label pills. Slot 1 doubles as the canonical primary fill
    * for any single-band diagram (flowchart node, sequence actor).
    * Cuoio's band is a tonal ladder of warm cream variations rather
    * than indaco's six-hue rotation — keeps the "ink-on-vellum" voice. */
-  --diagram-band-1:  #F3EDE4;  /* warm cream (canonical primary) */
-  --diagram-band-2:  #E0D8CC;  /* deeper cream */
-  --diagram-band-3:  #EAE6F0;  /* pale iris */
-  --diagram-band-4:  #F5EDE0;  /* pale gold wash */
-  --diagram-band-5:  #E0EAEC;  /* pale petrol */
-  --diagram-band-6:  #F0E6EC;  /* pale rose */
-  --diagram-band-7:  #F5E8D8;  /* pale wheat */
-  --diagram-band-8:  #F0E0E0;  /* pale sienna */
-  --diagram-band-9:  #E8E4DE;  /* pale taupe */
-  --diagram-band-10: #E4EAD8;  /* pale moss */
-  --diagram-band-11: #E8E4F0;  /* pale lilac */
-  --diagram-band-12: #EBE4D8;  /* pale parchment */
+  --diagram-band-1:  #E6DAC8;  /* warm cream (canonical primary) */
+  --diagram-band-2:  #D1C5B3;  /* deeper cream */
+  --diagram-band-3:  #D5CCE1;  /* iris */
+  --diagram-band-4:  #EBDBC1;  /* gold wash */
+  --diagram-band-5:  #C7D9DC;  /* petrol */
+  --diagram-band-6:  #E1CCD9;  /* rose */
+  --diagram-band-7:  #EDD5B8;  /* wheat */
+  --diagram-band-8:  #E3C5C5;  /* sienna */
+  --diagram-band-9:  #D7D0C6;  /* taupe */
+  --diagram-band-10: #D2DCBD;  /* moss */
+  --diagram-band-11: #D2CAE1;  /* lilac */
+  --diagram-band-12: #DDD1BD;  /* parchment */
 
   /* Paired text for each band slot. AA (4.5:1) against the matching
    * band, asserted by test/unit/contrast.test.js. Bands remain cream

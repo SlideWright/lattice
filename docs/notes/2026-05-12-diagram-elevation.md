@@ -241,20 +241,34 @@ to register against white at projector distance.
   (don't try to apply the kanban rule to timeline/journey — it looks
   consistent in source but produces invisible cards in the SVG).
 
-### Follow-up: band tonality
+### Follow-up: band tonality (shipped in the same branch)
 
-The real fix for the user's "looks white" concern is a palette
-adjustment. Candidate moves, in order of surgical-ness:
+Adopted option (2) from the candidate list — uniform deepening of
+all 12 band slots in both indaco and cuoio, dropping HSL lightness
+from L≈90 to L≈83 (~8 percentage points). Rationale for going
+straight to the whole-cycle move:
 
-1. **Deepen `--diagram-band-1` only** in indaco (e.g. `#DCE9F5` →
-   ~`#C7DAE9`, L≈92 → L≈85). Lowest-risk: only band-1 changes;
-   contrast pair `--diagram-band-text-1` (#0A1628) already clears
-   AA with margin to spare even at L≈80.
-2. **Deepen the whole band cycle** uniformly by 5–7 lightness points.
-   More cohesive; touches every diagram. Re-run `contrast.test.js`.
-3. **Layered solution: pale band for kanban, deeper "strong band" for
-   timeline/journey.** New token `--diagram-band-strong-N`. Most
-   complex; only worth it if (1) and (2) compromise kanban readability.
+- The first per-slot test against `band-1` alone showed that one slot
+  in isolation creates an awkward step where band-1 reads as
+  "anchored" while band-2..12 still wash out. Treating the cycle as a
+  unit preserves the tonal ladder.
+- Contrast against the paired `band-text-N` (pinned to a fixed dark
+  hex per palette) drops from ~14:1 to ~11:1 across the cycle — well
+  above the AA 4.5:1 threshold. `contrast.test.js` still passes.
+- Kanban tickets (`--bg-alt`, L=97 in indaco) gain ~14 lightness
+  points of separation from their lane (now L=83), strengthening the
+  card-on-band reading instead of compromising it.
+- Treemap, mindmap, pie, journey all gain visible cycle
+  differentiation; timeline events now read as colored against the
+  white canvas.
 
-Recommendation: start with (1). If timeline still doesn't read well,
-escalate to (2).
+Token changes:
+
+- `themes/indaco.css` — all 12 `--diagram-band-N` values deepened
+  while preserving hue.
+- `themes/cuoio.css` — same treatment for the cream/parchment ladder.
+- `docs/theming.md` — "Pale band, L≈90" updated to "Tinted band, L≈83";
+  contrast claim updated from 13:1+ to 10:1+.
+
+No layout CSS changes. The card-on-band rule scope (kanban-only)
+established in the revert commit is unaffected.
