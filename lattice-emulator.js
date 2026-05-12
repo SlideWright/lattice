@@ -812,6 +812,10 @@ const { transformRoadmapSection } = require('./lib/roadmap');
 // Journey transform — nested list → .journey-board DOM. Shared with
 // marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
 const { transformJourneySection } = require('./lib/journey');
+// Word-cloud layout transform — list-to-canvas rewrite for the
+// word-cloud layout (default + 4 modifier variants). Shared with
+// marp.config.js and mirrored by lattice-runtime.js.
+const { transformWordCloudSection } = require('./lib/word-cloud');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1186,6 +1190,16 @@ function parseSlide(raw, index) {
   // lattice-runtime.js for the marp-vscode preview.
   if (cls.includes('journey')) {
     html = transformJourneySection(html, cls);
+  }
+
+  // word-cloud: rewrite the first <ul> into a .word-cloud-canvas with
+  // weighted <span class="wc-word"> children. One source contract feeds
+  // the default and four modifier variants — all the visual difference
+  // comes from CSS, the transform output is identical across variants.
+  // Implementation lives in lib/word-cloud.js — shared with marp.config.js
+  // and mirrored by the runtime DOM transform in lattice-runtime.js.
+  if (cls.includes('word-cloud')) {
+    html = transformWordCloudSection(html, cls);
   }
 
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.

@@ -417,6 +417,7 @@ const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-fam
 const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/journey');
+const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/word-cloud');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
@@ -456,6 +457,7 @@ module.exports = {
         result.html = applySplitPanelsToHtml(result.html);
         result.html = applyRoadmapToHtml(result.html);
         result.html = applyJourneyToHtml(result.html);
+        result.html = applyWordCloudToHtml(result.html);
       }
       return result;
     };

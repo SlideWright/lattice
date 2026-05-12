@@ -14,7 +14,7 @@ Every layout falls into one of two categories. The distinction matters because i
 
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
 | Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code`         | no — CSS-only                   |
 
 Modifiers (`dark`, `mirror`, and image-specific `full` / `contain`, etc.) compose with both categories.
@@ -509,6 +509,46 @@ Unordered or ordered list of one-line takeaways. Optionally end each line with a
 - Rotation is a version-floor increment, not a coordinated cutover. → slide 12
 - Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
 ```
+
+### `word-cloud` — spiral-packed weighted word cloud
+
+Unordered list of words, each ending with a trailing inline-code element that holds the weight in `[1, 5]` (continuous floats allowed; defaults to `3` when omitted). `lib/word-cloud.js` sorts items by weight descending, computes size / rotation / colour per word from rank + weight, then runs a build-time Archimedean spiral packer to place each span at an absolute coordinate. No client-side JS, no randomness — the same source always produces the same layout.
+
+```markdown
+<!-- _class: word-cloud -->
+
+## What the team called out in this quarter's retrospective.
+
+- Execution `5`
+- Discipline `4.5`
+- Velocity `4`
+- Talent `4`
+- Focus `3`
+- Trust `3`
+- Risk `3`
+- Capital `2`
+- Brand `2`
+- Cadence `1`
+- Latency `1`
+```
+
+**Weight is continuous.** `Word `4.3`` is valid; the size interpolates via an ease-in curve over the variant's size spread. Out-of-range values clamp to `[1, 5]`; non-numeric trailing code defaults to weight `3`.
+
+**Colour follows rank.** Top-weight words always render in `--accent` so the focal tier is unambiguous; bottom-weight words render in `--text-muted`. Mid-weight words rotate through six categorical tokens (`--cat-blue`, `--cat-orange`, `--cat-teal`, `--cat-rose`, `--cat-purple`, `--cat-green`) by rank. The `spectrum` modifier swaps the categorical rotation for the sequential `--scale-N` heat ramp; `constellation` tightens to a three-hue palette.
+
+**Rotation is rank-keyed and deterministic.** A deterministic hash decides whether each mid-weight word renders at 90° (vertical). The top tier is never rotated; the bottom tier is never rotated in most variants. Variant `chance` settings: default 22%, dense 32%, focal 15%, constellation/spectrum 0%.
+
+| Modifier        | Effect                                                                                                                                              |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (default)       | Moderate density, six-hue categorical rotation, occasional 90° on mid-weight words. The boardroom default — clean hierarchy with visible breadth. |
+| `constellation` | Sparse. The spiral steps wider so words spread further from the centre, the size spread is steeper, the palette tightens to accent + one supporting hue + muted ink. 0° only. Use for 8–12 words that need air. |
+| `dense`         | Packed mosaic. Tighter spiral step, smaller size spread, 32% rotation rate so the cloud locks together. Fits 25+ terms without spilling. Full categorical rotation. |
+| `spectrum`      | Monochromatic. Same packer as the default, but colour follows weight via the `--scale-N` ramp instead of categorical rotation — size and saturation both encode importance. 0° only. |
+| `focal`         | Hero treatment. Dramatic size spread (top tier ≈ 10× the bottom); the packer's shrink-to-fit keeps the hero anchored at centre even when its bounding box approaches the canvas edge. Cat satellites around the hero. |
+
+**Canvas dimensions.** The packer works in a fixed 1100×320 px frame, sized to clear section chrome (h2 above, below-note paragraph beneath, section padding) without triggering the overflow watcher. If a word can't pack at its target size, the engine shrinks it up to 4× by 10% steps; if it still can't fit, it is dropped silently (authors should reduce its weight in that case).
+
+**Determinism.** Same source → same layout. The spiral is parameterised, not random; rotation is rank-keyed; colour is rank-keyed. Rebuilds and renderer-cross-checks produce identical output.
 
 ## Template 1: Title (dark bookend)
 
