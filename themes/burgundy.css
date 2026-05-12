@@ -133,19 +133,19 @@
   --dark-text-display: #F0E2CE;
 
   /* ── Mermaid extensions — champagne pop on second curve ────────────── */
-  --mermaid-primary-color:   #EAD4D8;
-  --mermaid-secondary-color: #F0E2CE;
-  --mermaid-border:          #48202A;
-  --mermaid-accent-warm:     var(--brand-champagne);
-  --mermaid-pie-purple:  #EAD4D8;  /* pale wine-rose */
-  --mermaid-pie-orange:  #F0E2CE;  /* pale champagne */
-  --mermaid-pie-teal:    #D5E0E5;  /* pale steel-teal */
-  --mermaid-pie-rose:    #F0D4D8;  /* deeper pale rose */
-  --mermaid-pie-yellow:  #F0E8C8;  /* pale champagne-gold */
-  --mermaid-pie-red:     #F0CCCC;  /* pale faded-wine */
-  --mermaid-pie-slate:   #E0D5D8;  /* pale mauve-slate */
-  --mermaid-pie-sage:    #D8E0D5;  /* pale sage */
-  --mermaid-pie-violet:  #E5D0E8;  /* pale violet pop */
+  --diagram-band-1:   #EAD4D8;
+  --diagram-band-2: #F0E2CE;
+  --diagram-stroke:          #48202A;
+  --diagram-accent-warm:     var(--brand-champagne);
+  --diagram-band-3:  #EAD4D8;  /* pale wine-rose */
+  --diagram-band-4:  #F0E2CE;  /* pale champagne */
+  --diagram-band-5:    #D5E0E5;  /* pale steel-teal */
+  --diagram-band-6:    #F0D4D8;  /* deeper pale rose */
+  --diagram-band-7:  #F0E8C8;  /* pale champagne-gold */
+  --diagram-band-8:     #F0CCCC;  /* pale faded-wine */
+  --diagram-band-9:   #E0D5D8;  /* pale mauve-slate */
+  --diagram-band-10:    #D8E0D5;  /* pale sage */
+  --diagram-band-11:  #E5D0E8;  /* pale violet pop */
   /* cScale / gitgraph — wine + champagne family */
   --cat-blue:   #7A2230;  /* wine */
   --cat-green:  #8A6E38;  /* champagne mid */

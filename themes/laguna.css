@@ -112,19 +112,19 @@
   --dark-text-display: #EFE8D7;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #D2E8EA;
-  --mermaid-secondary-color: #F4DBD0; /* warm coral pale */
-  --mermaid-border:          #0F2D31;
-  --mermaid-accent-warm:     var(--brand-coral); /* the coral pop */
-  --mermaid-pie-purple:  #D2E8EA;  /* pale teal */
-  --mermaid-pie-orange:  #F4DBD0;  /* pale coral */
-  --mermaid-pie-teal:    #CBE0E0;  /* deeper pale teal */
-  --mermaid-pie-rose:    #F8E8D8;  /* pale sandy peach */
-  --mermaid-pie-yellow:  #F2E5C0;  /* pale warm sand */
-  --mermaid-pie-red:     #F5D8CC;  /* pale salmon */
-  --mermaid-pie-slate:   #D8E5E8;  /* pale slate-teal */
-  --mermaid-pie-sage:    #D8E0D5;  /* pale sage-green */
-  --mermaid-pie-violet:  #DCE6E8;  /* very pale aqua */
+  --diagram-band-1:   #D2E8EA;
+  --diagram-band-2: #F4DBD0; /* warm coral pale */
+  --diagram-stroke:          #0F2D31;
+  --diagram-accent-warm:     var(--brand-coral); /* the coral pop */
+  --diagram-band-3:  #D2E8EA;  /* pale teal */
+  --diagram-band-4:  #F4DBD0;  /* pale coral */
+  --diagram-band-5:    #CBE0E0;  /* deeper pale teal */
+  --diagram-band-6:    #F8E8D8;  /* pale sandy peach */
+  --diagram-band-7:  #F2E5C0;  /* pale warm sand */
+  --diagram-band-8:     #F5D8CC;  /* pale salmon */
+  --diagram-band-9:   #D8E5E8;  /* pale slate-teal */
+  --diagram-band-10:    #D8E0D5;  /* pale sage-green */
+  --diagram-band-11:  #DCE6E8;  /* very pale aqua */
   /* cScale / gitgraph — coastal teal + warm coral family */
   --cat-blue:   #286870;  /* deep teal */
   --cat-green:  #A85E40;  /* coral */

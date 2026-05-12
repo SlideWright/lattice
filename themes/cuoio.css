@@ -20,10 +20,10 @@
  *      is set explicitly.
  *
  *   2. Two lightness bands for fills:
- *        Pale band (L≈90)   — primary / secondary / pie tints, used
- *                              directly by flowchart, sequence, class,
- *                              state, ER, quadrant, and most layouts.
- *                              Cream/parchment family (#F3EDE4 → #FAF7F2).
+ *        Pale band (L≈90)   — --diagram-band-1..12, used directly by
+ *                              flowchart, sequence, class, state, ER,
+ *                              quadrant, and most layouts. Cream/parchment
+ *                              family (#F3EDE4 → #FAF7F2).
  *        Mid-tone band      — categorical pigments (--cat-*) used as
  *                              foreground marks on the cream surface
  *                              (radar curves, kpi accents, status dots).
@@ -31,13 +31,13 @@
  *
  *   3. Saturation reserved for two purposes:
  *        a. Borders. Deep taupe #8B7E6D reads on every cream fill.
- *        b. Alarm signal. Saturated red #9b1c1c only on critBkgColor
- *           and errorBkgColor — never on routine fills.
+ *        b. Alarm signal. Saturated red #9b1c1c only on diagram-state-
+ *           critical and diagram-error-bg — never on routine fills.
  *
  *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
- *      surface it appears on (bg, bg-alt, accent-soft). Decorative
- *      tokens (--text-muted, borders, hairlines, spectrum gradient) are
- *      WCAG-exempt per design.
+ *      surface it appears on, asserted by test/unit/contrast.test.js.
+ *      Decorative tokens (--text-muted, borders, hairlines, spectrum
+ *      gradient) are WCAG-exempt per design.
  *
  * Palette divergence from indaco
  * ──────────────────────────────
@@ -45,17 +45,17 @@
  * step (L≈70 emitted, light enough for dark text on top). Cuoio's --cat-*
  * are L≈30-45 dark earth pigments because the warm brand reads as
  * "ink on vellum" — categorical fills want saturation, not pastels. The
- * Mermaid kanban / mindmap overrides in this file route fills through
- * --mermaid-pie-* (pale tints) instead of --cat-*, so the two contracts
+ * Mermaid diagram overrides route categorical fills through
+ * --diagram-band-* (pale tints) instead of --cat-*, so the two contracts
  * coexist without conflict.
  *
- * Mermaid theme extension
- * ───────────────────────
- * Per-diagram Mermaid CSS overrides live below the sentinel comment.
- * Lattice's renderer extracts both the :root tokens and the additional
- * CSS rules from this single palette file at build time. See indaco.css
- * for the per-diagram rationale (rules here mirror that file's coverage
- * with cuoio palette tokens).
+ * Diagram overrides
+ * ─────────────────
+ * Palette-blind per-diagram Mermaid overrides live at the bottom of
+ * lattice.css, imported transitively via `@import 'lattice';`. Authoring
+ * a new palette is purely a token-declaration job — no per-palette CSS
+ * rules are needed. See docs/notes/2026-05-12-diagram-tokens.md for the
+ * architecture.
  */
 
 @import 'lattice';
@@ -292,34 +292,69 @@ section .hljs-link { color:#C8885A; }
 section .hljs-emphasis { font-style:italic; }
 section .hljs-strong { font-weight:700; }
 
-/* ── Mermaid color extensions ──────────────────────────────────────────
- * Warm earth pigment palette. Tonal ladder for large surfaces (kanban
- * columns, mindmap levels, treemap containers): cream → deeper cream.
- * Saturated pigments reserved for small accent marks (cScale/git dots
- * via themeVariables, radar curves via themeCSS). */
+/* ── Diagram tokens ────────────────────────────────────────────────────
+ * Role-named, palette-blind tokens consumed by lattice-diagram.css and
+ * the renderer bridges (lattice-runtime.js, lattice-emulator.js). The
+ * structural shape — which slot is band, stroke, state, etc. — is the
+ * same across every palette; this file supplies cuoio's warm-earth
+ * values. */
 :root {
-  /* Pale fills for primary/secondary surfaces (node fills, actor bkgs) */
-  --mermaid-primary-color:   #F3EDE4;  /* node fill — warm cream */
-  --mermaid-secondary-color: #E0D8CC;  /* container fill — deeper cream */
+  /* ── Band cycle (12 slots, pale cream/parchment L≈90) ─────────────
+   * Categorical surfaces: timeline periods, kanban columns, mindmap
+   * levels, journey sections, c4 layers, pie slices, treemap leaves,
+   * gitgraph label pills. Slot 1 doubles as the canonical primary fill
+   * for any single-band diagram (flowchart node, sequence actor).
+   * Cuoio's band is a tonal ladder of warm cream variations rather
+   * than indaco's six-hue rotation — keeps the "ink-on-vellum" voice. */
+  --diagram-band-1:  #F3EDE4;  /* warm cream (canonical primary) */
+  --diagram-band-2:  #E0D8CC;  /* deeper cream */
+  --diagram-band-3:  #EAE6F0;  /* pale iris */
+  --diagram-band-4:  #F5EDE0;  /* pale gold wash */
+  --diagram-band-5:  #E0EAEC;  /* pale petrol */
+  --diagram-band-6:  #F0E6EC;  /* pale rose */
+  --diagram-band-7:  #F5E8D8;  /* pale wheat */
+  --diagram-band-8:  #F0E0E0;  /* pale sienna */
+  --diagram-band-9:  #E8E4DE;  /* pale taupe */
+  --diagram-band-10: #E4EAD8;  /* pale moss */
+  --diagram-band-11: #E8E4F0;  /* pale lilac */
+  --diagram-band-12: #EBE4D8;  /* pale parchment */
 
-  /* Pale tints for the 6-slot pie cycle and per-diagram overrides */
-  --mermaid-pie-purple:  #EAE6F0;  /* pale iris tint */
-  --mermaid-pie-orange:  #F5EDE0;  /* pale gold wash */
-  --mermaid-pie-teal:    #E0EAEC;  /* pale petrol tint */
-  --mermaid-pie-rose:    #F0E6EC;  /* pale rose tint */
+  /* Paired text for each band slot. AA (4.5:1) against the matching
+   * band, asserted by test/unit/contrast.test.js. Bands remain cream
+   * in both light and dark canvas modes (a Mermaid diagram is a
+   * "figure window" with its own ink/paper contract, not a panel
+   * that flips with the surrounding canvas), so band-text is pinned
+   * to a fixed dark espresso hex rather than light-dark(--text-heading,…).
+   * Slots are separate so future palettes can vary per-band if needed. */
+  --diagram-band-text-1:  #1E1A15;
+  --diagram-band-text-2:  #1E1A15;
+  --diagram-band-text-3:  #1E1A15;
+  --diagram-band-text-4:  #1E1A15;
+  --diagram-band-text-5:  #1E1A15;
+  --diagram-band-text-6:  #1E1A15;
+  --diagram-band-text-7:  #1E1A15;
+  --diagram-band-text-8:  #1E1A15;
+  --diagram-band-text-9:  #1E1A15;
+  --diagram-band-text-10: #1E1A15;
+  --diagram-band-text-11: #1E1A15;
+  --diagram-band-text-12: #1E1A15;
 
-  /* Borders and lines */
-  --mermaid-border: #8B7E6D;  /* deep taupe — reads on every pale fill */
-  --mermaid-line:   #6B5D4F;  /* warm brown ink — edges and arrows */
+  /* ── Structural ───────────────────────────────────────────────────
+   * Universal stroke for any band fill; deep taupe reads on every
+   * cream tint. Line is for edges/arrows — warm brown ink. */
+  --diagram-stroke: #8B7E6D;  /* deep taupe */
+  --diagram-line:   #6B5D4F;  /* warm brown ink */
 
-  /* Dark-pigment categorical palette — 8 earth pigments. Brand-level vars,
-   * source of truth for any layout that needs categorical colour. Unlike
-   * indaco's L≈60 mid-tones (kanban-lighten compatible), cuoio's --cat-*
-   * are L≈30-45 dark pigments used as foreground marks ON the cream
-   * surface (radar curves, kpi accents, status dots). Every value clears
-   * WCAG AA (≥4.5:1) on --bg #FAF7F2 so direct-on-cream usage is safe.
-   * Mermaid kanban / mindmap fills route through --mermaid-pie-* (pale
-   * tints) instead of --cat-*, so the cScale lighten step is bypassed. */
+  /* Cross-deck contrast accent — radar's second curve, where a single
+   * warm hue against the cream band reads better than a second pale
+   * tint. */
+  --diagram-accent-warm: var(--brand-leather);
+
+  /* ── Mid-tone categorical palette (L≈30–45) ───────────────────────
+   * Dark earth pigments used as foreground marks ON the cream surface
+   * (radar curves, kpi accents, status dots, gitgraph dots, mermaid
+   * cScale fed at saturation, not pastel). Every value clears WCAG AA
+   * (≥4.5:1) on --bg #FAF7F2 so direct-on-cream usage is safe. */
   --cat-blue:    #3E5C6B;  /* petrol — 6.67:1 on bg AA */
   --cat-green:   #5D6A2C;  /* moss   — 5.51:1 on bg AA */
   --cat-purple:  #4F4770;  /* iris   — 7.96:1 on bg AAA */
@@ -329,400 +364,37 @@ section .hljs-strong { font-weight:700; }
   --cat-slate:   #7A6B59;  /* taupe  — 4.82:1 on bg AA */
   --cat-mauve:   #6E4558;  /* deeper rose — 7.40:1 on bg AAA */
 
-  /* Pie cycle extension (slots 7-12, distinct warm tints) */
-  --mermaid-pie-yellow:  #F5EDE0;  /* pale gold wash */
-  --mermaid-pie-red:     #F0E0E0;  /* pale sienna wash */
-  --mermaid-pie-slate:   #E8E4DE;  /* pale taupe */
-  --mermaid-pie-sage:    #E4EAD8;  /* pale moss */
-  --mermaid-pie-violet:  #E8E4F0;  /* pale iris */
+  /* ── Quadrant (4-slot tonal ladder, fill + text paired) ──────────── */
+  --diagram-quadrant-1-fill: #F5EFE0;
+  --diagram-quadrant-2-fill: #F3EDE4;
+  --diagram-quadrant-3-fill: #E8DECF;
+  --diagram-quadrant-4-fill: #E0D8CC;
+  --diagram-quadrant-1-text: #1E1A15;
+  --diagram-quadrant-2-text: #1E1A15;
+  --diagram-quadrant-3-text: #1E1A15;
+  --diagram-quadrant-4-text: #1E1A15;
 
-  /* Quadrant fills — four-step tonal ladder */
-  --mermaid-quadrant-1-fill: #F5EFE0;
-  --mermaid-quadrant-2-fill: #F3EDE4;
-  --mermaid-quadrant-3-fill: #E8DECF;
-  --mermaid-quadrant-4-fill: #E0D8CC;
-  --mermaid-quadrant-1-text: #1E1A15;
-  --mermaid-quadrant-2-text: #1E1A15;
-  --mermaid-quadrant-3-text: #1E1A15;
-  --mermaid-quadrant-4-text: #1E1A15;
+  /* ── State (gantt task lifecycle — semantic, not a band cycle) ─── */
+  --diagram-state-active:          var(--brand-leather); /* saddle bars */
+  --diagram-state-active-stroke:   #6B5D4F;                /* warm brown */
+  --diagram-state-done:            #E0D8CC;                /* deeper cream */
+  --diagram-state-done-stroke:     #A69882;                /* muted taupe */
+  --diagram-state-critical:        var(--fail);
+  --diagram-state-critical-stroke: #7A1212;
+  --diagram-state-today:           var(--brand-leather);
+  --diagram-state-grid:            #E0D8CC;
 
-  /* Gantt task-state fills. taskBkg uses --bg-alt from main palette;
-   * the rest are Mermaid-specific. critBkg keeps saturated red as the
-   * deck's only alarm signal. */
-  --mermaid-gantt-active:         var(--brand-leather); /* saddle bars     */
-  --mermaid-gantt-active-border:  #6B5D4F;  /* warm brown ink              */
-  --mermaid-gantt-done:           #E0D8CC;  /* secondary cream             */
-  --mermaid-gantt-done-border:    #A69882;  /* muted taupe                 */
-  --mermaid-gantt-critical:       var(--fail);
-  --mermaid-gantt-critical-border:#7A1212;
-  --mermaid-gantt-today:          var(--brand-leather); /* saddle today-line */
-  --mermaid-gantt-grid:           #E0D8CC;
+  /* ── Note (sequence diagram aside) ──
+   * Warm parchment tint with saddle border, the one accent-bordered
+   * surface in the diagram layer. Signals "aside". */
+  --diagram-note-bg:     #F5EFE0;
+  --diagram-note-stroke: var(--brand-leather);
 
-  /* Note (sequence diagram) — warm parchment tint with saddle border, the
-   * one accent-bordered surface in the Mermaid layer. Signals "aside". */
-  --mermaid-note-bg:     #F5EFE0;
-  --mermaid-note-border: var(--brand-leather);
-
-  /* Error state — saturated red, paired with cream text. The deck's
-   * one alarm color, used by errorBkgColor across all diagrams. */
-  --mermaid-error-bg:    var(--fail);
-  --mermaid-error-text:  var(--bg);
+  /* ── Error / alarm ──
+   * Saturated red paired with white text. The deck's one alarm color,
+   * used by errorBkgColor across all diagrams. Text pinned to white
+   * (not var(--bg), which flips to dark in dark mode — would fail AA
+   * on the saturated red fill). */
+  --diagram-error-bg:   var(--fail);
+  --diagram-error-text: #FFFFFF;
 }
-
-/* ════════════════════════════════════════════════════════════════════════
- * MERMAID THEME CSS
- * ════════════════════════════════════════════════════════════════════════
- * Everything below the sentinel is extracted by lattice.js at build time
- * and injected as the Mermaid themeCSS parameter for the mmdc CLI path.
- * Selectors are prefixed with 'section ' for Marp preview isolation —
- * each slide section scopes its own diagram rules so cuoio and indaco
- * cannot cross-contaminate when both theme files are in scope.
- * lattice.js strips the prefix before injection into the SVG context.
- * ════════════════════════════════════════════════════════════════════════ */
-/* ===== MERMAID THEME CSS ===== */
-
-  /* ── DIAGRAM TITLE SUPPRESSION ──
-   * The slide's `## heading` is the canonical title. Hide Mermaid's own
-   * title (frontmatter `title:` or in-body `title`) so the audience sees one
-   * source of truth, not two. Class names verified from rendered SVG output
-   * (Mermaid 11.14). Known gap: sequence, journey, C4, quadrant, timeline,
-   * xy-chart render bare <text> titles with no class — those cannot be
-   * class-targeted from CSS and will still render. See references/mermaid.md
-   * §5.3 for the diagnostic recipe when Mermaid adds new diagram types.
-   * Parser-safe: no nested comments, no `>` combinator, attribute selectors
-   * with brackets are accepted (already used by the mindmap section rules).
-   */
-  section .titleText,
-  section .pieTitleText,
-  section .radarTitle,
-  section .packetTitle,
-  section [class$="TitleText"] { display: none; }
-
-  /* ── JOURNEY ── */
-  section .journey-section, section .journey-section rect, section .section0 rect, section .section1 rect, section .section2 rect {
-    fill: var(--mermaid-primary-color) !important;
-  }
-  section .journey-section text, section .section0 text, section .section1 text, section .section2 text {
-    fill: var(--text-heading) !important;
-    font-weight: 600 !important;
-  }
-  section .task0 rect, section .task-type-0 rect { fill: var(--mermaid-primary-color) !important; }
-  section .task1 rect, section .task-type-1 rect { fill: var(--mermaid-secondary-color) !important; }
-  section .task2 rect, section .task-type-2 rect { fill: var(--mermaid-pie-purple) !important; }
-  section .task-type-0 text, section .task-type-1 text, section .task-type-2 text,
-  section .task0 text, section .task1 text, section .task2 text {
-    fill: var(--text-heading) !important;
-  }
-  section .legend text { fill: var(--text-heading) !important; }
-
-  /* ── MINDMAP ── */
-  section .mindmap-node[class*="section-0"] rect,
-  section .mindmap-node[class*="section-0"] circle,
-  section .mindmap-node[class*="section-0"] polygon,
-  section .mindmap-node[class*="section-0"] path { fill: var(--mermaid-primary-color) !important; }
-  section .mindmap-node[class*="section-1"] rect,
-  section .mindmap-node[class*="section-1"] circle,
-  section .mindmap-node[class*="section-1"] polygon,
-  section .mindmap-node[class*="section-1"] path { fill: var(--mermaid-secondary-color) !important; }
-  section .mindmap-node[class*="section-2"] rect,
-  section .mindmap-node[class*="section-2"] circle,
-  section .mindmap-node[class*="section-2"] polygon,
-  section .mindmap-node[class*="section-2"] path { fill: var(--mermaid-pie-purple) !important; }
-  section .mindmap-node[class*="section-3"] rect,
-  section .mindmap-node[class*="section-3"] circle,
-  section .mindmap-node[class*="section-3"] polygon,
-  section .mindmap-node[class*="section-3"] path { fill: var(--mermaid-pie-orange) !important; }
-  section .mindmap-node[class*="section-4"] rect,
-  section .mindmap-node[class*="section-4"] circle,
-  section .mindmap-node[class*="section-4"] polygon,
-  section .mindmap-node[class*="section-4"] path { fill: var(--mermaid-pie-teal) !important; }
-  section .section-root rect, section .section-root circle,
-  section .section-root polygon, section .section-root path,
-  section .section--1 rect, section .section--1 circle,
-  section .section--1 polygon,
-  section .section--1 path { fill: var(--mermaid-primary-color) !important; }
-  section .section-root text, section .section-root span,
-  section .section--1 text,  section .section--1 span {
-    fill: var(--text-heading) !important;
-    color: var(--text-heading) !important;
-  }
-  section .mindmap-node text, section .mindmap-node tspan, section .mindmap-node foreignObject * {
-    fill: var(--text-heading) !important;
-    color: var(--text-heading) !important;
-  }
-
-  /* ── KANBAN ──
-   * section-0..N: covers timeline, journey, and kanban.
-   * Timeline uses section-0 for its first period; kanban starts at section-1.
-   */
-  section .cluster.section-0 rect, section .section-0 rect,
-  section .section-0 path, section .section-0 circle { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster.section-1 rect, section .section-1 rect,
-  section .section-1 path, section .section-1 circle { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster.section-2 rect, section .section-2 rect,
-  section .section-2 path, section .section-2 circle { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
-  section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster.section-3 rect, section .section-3 rect,
-  section .section-3 path, section .section-3 circle { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
-  section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster.section-4 rect, section .section-4 rect,
-  section .section-4 path, section .section-4 circle { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
-  section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster.section-5 rect, section .section-5 rect,
-  section .section-5 path, section .section-5 circle { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
-  section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
-  section .cluster .items .node rect.basic.label-container,
-  section .cluster .items .node .label-container,
-  section .items .node rect.basic.label-container,
-  section .items .node .label-container {
-    fill: var(--bg) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-
-  /* Flowchart node fill coverage */
-  section .node .label-container,
-  section .node .basic.label-container,
-  section .node .outer-path {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-
-  /* ── GITGRAPH ARROW FILLS ── */
-  section .arrow, section .arrow0, section .arrow1, section .arrow2, section .arrow3, section .arrow4,
-  section .arrow5, section .arrow6, section .arrow7 {
-    fill: none !important;
-  }
-
-  /* Gitgraph branch label pills */
-  section rect.branchLabelBkg.label0 { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label1 { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label2 { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label3 { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label4 { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label5 { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label6 { fill: var(--mermaid-pie-yellow) !important; stroke: var(--mermaid-border) !important; }
-  section rect.branchLabelBkg.label7 { fill: var(--mermaid-pie-red) !important; stroke: var(--mermaid-border) !important; }
-  section g.branchLabel text, section .branchLabel text { fill: var(--text-heading) !important; }
-
-  /* ── TREEMAP ── */
-  section .treemapSection rect, section .treemapNode rect { fill: var(--bg-alt) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf0x rect.treemapLeaf { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf1x rect.treemapLeaf { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf2x rect.treemapLeaf { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf3x rect.treemapLeaf { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf4x rect.treemapLeaf { fill: var(--mermaid-pie-teal) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf5x rect.treemapLeaf { fill: var(--mermaid-pie-rose) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf6x rect.treemapLeaf { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section g.leaf7x rect.treemapLeaf { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section rect.treemapLeaf { fill-opacity: 1 !important; }
-  section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--text-heading) !important; }
-
-  /* ── C4 ── */
-  section .person, section .person_ext { fill: var(--mermaid-primary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .system, section .system_ext { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section .container, section .container_ext { fill: var(--mermaid-pie-purple) !important; stroke: var(--mermaid-border) !important; }
-  section .component, section .component_ext { fill: var(--mermaid-pie-orange) !important; stroke: var(--mermaid-border) !important; }
-  section .person text, section .system text, section .container text, section .component text,
-  section .person_ext text, section .system_ext text, section .container_ext text, section .component_ext text,
-  section text.legendW, section text.legendT { fill: var(--text-heading) !important; }
-
-  /* ── RADAR ── cuoio curves: gold + petrol (earth pigment pair) */
-  section .radarGraticule {
-    fill: var(--mermaid-primary-color) !important;
-    fill-opacity: 0.25 !important;
-    stroke: var(--mermaid-border) !important;
-    stroke-opacity: 0.20 !important;
-    stroke-width: 1 !important;
-  }
-  section .radarAxisLine {
-    stroke: var(--mermaid-border) !important;
-    stroke-width: 1.5 !important;
-    stroke-opacity: 0.5 !important;
-  }
-  section .radarCurve-0 {
-    fill: var(--cat-orange) !important;
-    fill-opacity: 0.30 !important;
-    stroke: var(--cat-orange) !important;
-    stroke-width: 2.5 !important;
-  }
-  section .radarCurve-1 {
-    fill: var(--cat-blue) !important;
-    fill-opacity: 0.30 !important;
-    stroke: var(--cat-blue) !important;
-    stroke-width: 2.5 !important;
-  }
-  section .radarLegendBox-0 { fill: var(--cat-orange) !important; }
-  section .radarLegendBox-1 { fill: var(--cat-blue) !important; }
-  section .radarAxisLabel {
-    fill: var(--text-heading) !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-  }
-  section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
-
-  /* ── VENN ── */
-  section .venn-set-0, section g.venn-set-0 path, section .venn-set-0 path {
-    fill: var(--mermaid-primary-color) !important;
-    fill-opacity: 1 !important;
-    stroke: var(--mermaid-border) !important;
-    stroke-width: 2 !important;
-    stroke-opacity: 1 !important;
-  }
-  section .venn-set-1, section g.venn-set-1 path, section .venn-set-1 path {
-    fill: var(--mermaid-secondary-color) !important;
-    fill-opacity: 1 !important;
-    stroke: var(--mermaid-border) !important;
-    stroke-width: 2 !important;
-    stroke-opacity: 1 !important;
-  }
-  section .venn-set-2, section g.venn-set-2 path, section .venn-set-2 path {
-    fill: var(--mermaid-pie-purple) !important;
-    fill-opacity: 1 !important;
-    stroke: var(--mermaid-border) !important;
-    stroke-width: 2 !important;
-    stroke-opacity: 1 !important;
-  }
-  section .venn-area text, section text.label, section text.label tspan, section .label tspan {
-    fill: var(--text-heading) !important;
-    fill-opacity: 1 !important;
-    paint-order: normal !important;
-    stroke: none !important;
-    stroke-width: 0 !important;
-    font-weight: 500 !important;
-  }
-  section .venn-intersection path, section g.venn-intersection path {
-    fill: var(--mermaid-border) !important;
-    fill-opacity: 0.08 !important;
-    stroke: var(--mermaid-border) !important;
-    stroke-width: 1.5 !important;
-    stroke-dasharray: 4 3 !important;
-    stroke-opacity: 0.7 !important;
-  }
-
-  /* ── ISHIKAWA ── */
-  section .ishikawa-head-label { fill: var(--text-heading) !important; font-weight: 600 !important; }
-  section .ishikawa-label.cause, section .ishikawa-label.align { fill: var(--text-heading) !important; }
-  section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, section .ishikawa-sub-branch {
-    stroke: var(--mermaid-line) !important;
-  }
-
-  /* ── GANTT ── */
-  section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
-
-  /* ── JOURNEY · ACTOR FACES + STROKES ──
-   * See indaco.css for the full rationale. Mirror the same overrides
-   * with cuoio palette tokens so the diagram-coverage stays in sync
-   * across themes. */
-  section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section circle.face {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section path.mouth, section line.mouth { stroke: var(--mermaid-line) !important; }
-  section circle.actor-0 { fill: var(--mermaid-primary-color)   !important; stroke: var(--mermaid-border) !important; }
-  section circle.actor-1 { fill: var(--mermaid-secondary-color) !important; stroke: var(--mermaid-border) !important; }
-  section circle.actor-2 { fill: var(--mermaid-pie-purple)      !important; stroke: var(--mermaid-border) !important; }
-  section circle.actor-3 { fill: var(--mermaid-pie-orange)      !important; stroke: var(--mermaid-border) !important; }
-  section circle.actor-4 { fill: var(--mermaid-pie-teal)        !important; stroke: var(--mermaid-border) !important; }
-  section circle.actor-5 { fill: var(--mermaid-pie-rose)        !important; stroke: var(--mermaid-border) !important; }
-  section .legend > title, section title { fill: var(--text-heading) !important; }
-  section rect.section0, section rect.section1, section rect.section2,
-  section rect.task0, section rect.task1, section rect.task2,
-  section rect[class*="section-type-"], section rect[class*="task-type-"],
-  section rect.journey-section, section rect.task {
-    stroke: var(--mermaid-border) !important;
-  }
-
-  /* ── C4 — INNER ELEMENT COVERAGE ── (see indaco.css for rationale) */
-  section g[class*="person"] > rect, section g[class*="system"] > rect,
-  section g[class*="container"] > rect, section g[class*="component"] > rect,
-  section g[class*="boundary"] > rect, section g[class*="node-bkg"] > rect {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section svg:has(g[class*="person"]) text,
-  section svg:has(g[class*="person"]) tspan,
-  section svg:has(g[class*="system"]) text,
-  section svg:has(g[class*="system"]) tspan {
-    fill: var(--text-heading) !important;
-  }
-  section svg:has(g[class*="person"]) line,
-  section svg:has(g[class*="person"]) path:not([class]),
-  section svg:has(g[class*="system"]) line,
-  section svg:has(g[class*="system"]) path:not([class]) {
-    stroke: var(--mermaid-line) !important;
-  }
-
-  /* ── MINDMAP + TIMELINE CONNECTOR LINES ── */
-  section line.node-line-, section line[class*="node-line-"] {
-    stroke: var(--mermaid-line) !important;
-    stroke-width: 1.5 !important;
-  }
-
-  /* ── SANKEY ── (see indaco.css for rationale) */
-  section g.nodes g.node rect, section g.node > rect {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section g.node-labels text, section g.nodes text { fill: var(--text-heading) !important; }
-  section g.link path, section g.links path {
-    stroke: var(--mermaid-line) !important;
-    stroke-opacity: 0.20 !important;
-    fill: none !important;
-  }
-
-  /* ── PACKET ── */
-  section rect.packetBlock {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section text.packetLabel, section text.packetByte, section text.packetTitle {
-    fill: var(--text-heading) !important;
-  }
-
-  /* ── ARCHITECTURE ── (see indaco.css for rationale) */
-  section g.architecture-groups rect:not(.background):not(.node-bkg),
-  section g.architecture-services rect:not(.background):not(.node-bkg),
-  section g.architecture-service rect:not(.background):not(.node-bkg) {
-    fill: var(--mermaid-primary-color) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section g.architecture-groups path.edge,
-  section g.architecture-edges path.edge {
-    stroke: var(--mermaid-line) !important;
-    stroke-width: 1.5 !important;
-  }
-  section g.architecture-groups svg path,
-  section g.architecture-groups svg circle,
-  section g.architecture-groups svg ellipse,
-  section g.architecture-groups svg line,
-  section g.architecture-service svg path,
-  section g.architecture-service svg circle,
-  section g.architecture-service svg ellipse,
-  section g.architecture-service svg line {
-    fill: var(--mermaid-border) !important;
-    stroke: var(--mermaid-border) !important;
-  }
-  section g.architecture-groups svg path[style*="fill: none"],
-  section g.architecture-groups svg circle[style*="fill: none"],
-  section g.architecture-groups svg ellipse[style*="fill: none"],
-  section g.architecture-groups svg line[style*="fill: none"],
-  section g.architecture-service svg path[style*="fill: none"],
-  section g.architecture-service svg circle[style*="fill: none"],
-  section g.architecture-service svg ellipse[style*="fill: none"],
-  section g.architecture-service svg line[style*="fill: none"] {
-    fill: none !important;
-  }
-  section g.architecture-groups text, section g.architecture-groups tspan,
-  section g.architecture-service text, section g.architecture-service tspan {
-    fill: var(--text-heading) !important;
-  }
-
-  /* ── ER ROW-RECT EVEN/ODD ── */
-  section g.row-rect-even > path { fill: var(--bg-alt) !important; }
-  section g.row-rect-odd > path  { fill: #FFFFFF !important; }

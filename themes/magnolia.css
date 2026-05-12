@@ -114,19 +114,19 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #F5DDD8;
-  --mermaid-secondary-color: #EFD5C9;
-  --mermaid-border:          #5A2530;
-  --mermaid-accent-warm:     #BD5000;
-  --mermaid-pie-purple:  #F5DDD8;  /* pale dusty-rose */
-  --mermaid-pie-orange:  #F0DBBF;  /* pale peach-gold */
-  --mermaid-pie-teal:    #D8E8DC;  /* pale sage-green */
-  --mermaid-pie-rose:    #EFD5C9;  /* pale peach */
-  --mermaid-pie-yellow:  #F5EDCC;  /* pale cream-gold */
-  --mermaid-pie-red:     #F2D2D0;  /* pale faded-rose */
-  --mermaid-pie-slate:   #E0D8E0;  /* pale dusty-mauve */
-  --mermaid-pie-sage:    #D5E5D8;  /* pale sage */
-  --mermaid-pie-violet:  #EAD8E5;  /* pale dusty-violet */
+  --diagram-band-1:   #F5DDD8;
+  --diagram-band-2: #EFD5C9;
+  --diagram-stroke:          #5A2530;
+  --diagram-accent-warm:     #BD5000;
+  --diagram-band-3:  #F5DDD8;  /* pale dusty-rose */
+  --diagram-band-4:  #F0DBBF;  /* pale peach-gold */
+  --diagram-band-5:    #D8E8DC;  /* pale sage-green */
+  --diagram-band-6:    #EFD5C9;  /* pale peach */
+  --diagram-band-7:  #F5EDCC;  /* pale cream-gold */
+  --diagram-band-8:     #F2D2D0;  /* pale faded-rose */
+  --diagram-band-9:   #E0D8E0;  /* pale dusty-mauve */
+  --diagram-band-10:    #D5E5D8;  /* pale sage */
+  --diagram-band-11:  #EAD8E5;  /* pale dusty-violet */
   /* cScale / gitgraph — dusty rose + sage family */
   --cat-blue:   #A06070;  /* dusty rose */
   --cat-green:  #587848;  /* sage */

@@ -244,77 +244,27 @@ function loadPaletteWithImports(filePath, seen = new Set(), label = null) {
 }
 
 const paletteCSS = loadPaletteWithImports(palettePath);
-const themeCSS   = loadPaletteWithImports(cssFile, new Set(), 'layout CSS');
-const css = paletteCSS + '\n' + themeCSS;
+const layoutCSS  = loadPaletteWithImports(cssFile, new Set(), 'layout CSS');
+const css = paletteCSS + '\n' + layoutCSS;
 
 // ── Mermaid renderer ─────────────────────────────────────────────────────────
-// Theme CSS — accessibility overrides injected into every rendered SVG.
+// Two surfaces wire the rendered SVG to the active palette:
 //
-// themeVariables alone can't reach all of Mermaid's text-on-color combinations.
-// Several diagrams (especially the experimental ones) hard-code default colors
-// that fail WCAG AA against our brand palette. This CSS uses targeted class
-// selectors with !important to force AA-compliant pairs everywhere.
+//   1. themeVariables.  Mermaid inlines a handful of values into the SVG
+//      as attributes (gradient stops, gantt grid lines, marker fills).
+//      CSS can't reach those — they must come from this map. The map below
+//      is structural metadata; values come from the active palette's
+//      --diagram-* / --cat-* / --text-* tokens.
 //
-// Audited from rendered SVG output, slide-by-slide, on Mermaid 11.14.0.
-// Each rule below addresses a real failure observed in the gallery PDF;
-// none of these are speculative.
-// ═══════════════════════════════════════════════════════════════════════════
-// MERMAID THEME — Path A
-// ═══════════════════════════════════════════════════════════════════════════
+//   2. lattice.css "DIAGRAM OVERRIDES" section.  Per-diagram CSS
+//      (`section .section-N rect { fill: var(--diagram-band-3) }` and so
+//      on) that target classes Mermaid emits but doesn't theme. Loaded as
+//      a normal page stylesheet via lattice.css; the mmdc-produced SVG is
+//      embedded inline in the host HTML, so the host stylesheet cascades
+//      onto it at PDF-rasterize time — same mechanism the runtime preview
+//      already uses. No Mermaid `themeCSS` init parameter is used.
 //
-// Single design contract: dark text (#0A1628) on light fills.
-// This contract requires picking input lightness so that *after* Mermaid's
-// per-diagram math (some darken, some lighten, some clamp), every fill lands
-// at L≥80 against which dark text clears WCAG AA.
-//
-// Two lightness bands are chosen deliberately:
-//
-//   Pale band (L≈90)   — for primary/secondary/tertiary, where the value is
-//                         used directly or only mildly transformed. This is
-//                         the band that flowchart, sequence, class, state,
-//                         ER, and quadrant consume.
-//
-//   Mid-tone band (L≈60) — for cScale0..11, where Mermaid's per-diagram
-//                         lighten step in kanban (and similar) brings the
-//                         emitted fill back up to L≈68-73 — pale enough for
-//                         dark text to read cleanly. cScale fed at L=90
-//                         would clamp toward white in kanban; fed at L=60
-//                         it lands well.
-//
-// All semantic and per-diagram saturated colors (gantt taskBkg, git0..7,
-// pie1..12, pass/fail/warn) are set on dedicated leaf variables that
-// Mermaid does not put through HSL math. They render verbatim.
-//
-// Brand axis: Lattice navy / blue / green. Saturated brand colors are
-// reserved for borders, lines, accents, and saturated leaf-level diagram
-// elements (gantt bars, gitgraph branches, pie slices).
-//
-// Verified: kanban, mindmap, quadrant, sequence, flowchart probes all
-// render with this contract. Three diagrams override the contract via
-// targeted themeCSS rules (journey, c4, mindmap) because they ignore
-// cScale or have hardcoded internal palettes.
-
-// ── Mermaid theme CSS, loaded from active palette ────────────────────────
-// The palette file (themes/<palette>.css) is split by a sentinel comment
-// "/* ===== MERMAID THEME CSS ===== */". Everything before the sentinel is
-// the slide stylesheet (loaded by the renderer above as paletteCSS, then
-// prepended to lattice.css). Everything after the sentinel is per-diagram
-// Mermaid CSS — extracted here and used as Mermaid's themeCSS parameter.
-//
-// This single-file architecture means a palette author edits one CSS file
-// and gets both slide colors and per-diagram Mermaid overrides at once.
-// See docs/theming.md for the per-diagram override surface and parser limits.
-const MERMAID_CSS_SENTINEL = '/* ===== MERMAID THEME CSS ===== */';
-let MERMAID_THEME_CSS = '';
-{
-  const sentinelIndex = paletteCSS.indexOf(MERMAID_CSS_SENTINEL);
-  if (sentinelIndex >= 0) {
-    MERMAID_THEME_CSS = paletteCSS.slice(sentinelIndex + MERMAID_CSS_SENTINEL.length);
-  } else {
-    console.warn(`  ⚠ Palette ${paletteName}.css has no Mermaid sentinel; diagrams will use only themeVariables (no CSS overrides).`);
-  }
-}
-
+// See docs/notes/2026-05-12-diagram-tokens.md for the architecture.
 
 // ── Mermaid theme variables — structural map only ───────────────────────
 // The mapping below names which Mermaid theme variable corresponds to which
@@ -335,12 +285,12 @@ const MERMAID_VAR_MAP = {
   background:               { var: 'bg' },
 
   // Primary/secondary/tertiary fills (pale band)
-  primaryColor:             { var: 'mermaid-primary-color' },
-  secondaryColor:           { var: 'mermaid-secondary-color' },
+  primaryColor:             { var: 'diagram-band-1' },
+  secondaryColor:           { var: 'diagram-band-2' },
   tertiaryColor:            { var: 'bg-alt' },
-  primaryBorderColor:       { var: 'mermaid-border' },
-  secondaryBorderColor:     { var: 'mermaid-border' },
-  tertiaryBorderColor:      { var: 'mermaid-border' },
+  primaryBorderColor:       { var: 'diagram-stroke' },
+  secondaryBorderColor:     { var: 'diagram-stroke' },
+  tertiaryBorderColor:      { var: 'diagram-stroke' },
 
   // Text — single dark slate everywhere
   primaryTextColor:         { var: 'text-heading' },
@@ -354,17 +304,17 @@ const MERMAID_VAR_MAP = {
   labelColor:               { var: 'text-heading' },
 
   // Lines (near-black on white canvas)
-  lineColor:                { var: 'mermaid-line' },
-  defaultLinkColor:         { var: 'mermaid-line' },
+  lineColor:                { var: 'diagram-line' },
+  defaultLinkColor:         { var: 'diagram-line' },
   edgeLabelBackground:      { var: 'bg' },
   labelBackground:          { var: 'bg' },
 
   // Main background paths
-  mainBkg:                  { var: 'mermaid-primary-color' },
-  nodeBorder:               { var: 'mermaid-border' },
+  mainBkg:                  { var: 'diagram-band-1' },
+  nodeBorder:               { var: 'diagram-stroke' },
   nodeTextColor:            { var: 'text-heading' },
   clusterBkg:               { var: 'bg-alt' },
-  clusterBorder:            { var: 'mermaid-border' },
+  clusterBorder:            { var: 'diagram-stroke' },
 
   // cScale (mid-tone band) — kanban lighten brings to L≈70
   cScale0:                  { var: 'cat-blue' },
@@ -380,51 +330,71 @@ const MERMAID_VAR_MAP = {
   cScale10:                 { var: 'cat-teal' },
   cScale11:                 { var: 'cat-rose' },
 
+  // cScaleLabel — text fill in Mermaid's auto-generated
+  // `.section-${r-1} text { fill: cScaleLabel${r} }` rule. Mermaid's own
+  // contrast-aware derivation lands on white when fed mid-tone cScale,
+  // which fails against our pale band fills. Setting each slot to the
+  // paired band-text token (all map to --text-heading in shipped palettes)
+  // ensures the auto rule renders dark ink, regardless of whether our
+  // explicit CSS overrides match the diagram in question.
+  cScaleLabel0:  { var: 'diagram-band-text-1' },
+  cScaleLabel1:  { var: 'diagram-band-text-1' },
+  cScaleLabel2:  { var: 'diagram-band-text-2' },
+  cScaleLabel3:  { var: 'diagram-band-text-3' },
+  cScaleLabel4:  { var: 'diagram-band-text-4' },
+  cScaleLabel5:  { var: 'diagram-band-text-5' },
+  cScaleLabel6:  { var: 'diagram-band-text-6' },
+  cScaleLabel7:  { var: 'diagram-band-text-7' },
+  cScaleLabel8:  { var: 'diagram-band-text-8' },
+  cScaleLabel9:  { var: 'diagram-band-text-9' },
+  cScaleLabel10: { var: 'diagram-band-text-10' },
+  cScaleLabel11: { var: 'diagram-band-text-11' },
+
   // fillType (subgraph / mindmap-level fills, pale band)
-  fillType0: { var: 'mermaid-primary-color' },
-  fillType1: { var: 'mermaid-secondary-color' },
-  fillType2: { var: 'mermaid-pie-purple' },
-  fillType3: { var: 'mermaid-pie-orange' },
-  fillType4: { var: 'mermaid-pie-teal' },
-  fillType5: { var: 'mermaid-pie-rose' },
-  fillType6: { var: 'mermaid-primary-color' },
-  fillType7: { var: 'mermaid-secondary-color' },
+  fillType0: { var: 'diagram-band-1' },
+  fillType1: { var: 'diagram-band-2' },
+  fillType2: { var: 'diagram-band-3' },
+  fillType3: { var: 'diagram-band-4' },
+  fillType4: { var: 'diagram-band-5' },
+  fillType5: { var: 'diagram-band-6' },
+  fillType6: { var: 'diagram-band-1' },
+  fillType7: { var: 'diagram-band-2' },
 
   // Sequence diagram
-  actorBkg:                 { var: 'mermaid-primary-color' },
-  actorBorder:              { var: 'mermaid-border' },
+  actorBkg:                 { var: 'diagram-band-1' },
+  actorBorder:              { var: 'diagram-stroke' },
   actorTextColor:           { var: 'text-heading' },
-  actorLineColor:           { var: 'mermaid-line' },
-  signalColor:              { var: 'mermaid-line' },
+  actorLineColor:           { var: 'diagram-line' },
+  signalColor:              { var: 'diagram-line' },
   signalTextColor:          { var: 'text-heading' },
   labelBoxBkgColor:         { var: 'bg-alt' },
-  labelBoxBorderColor:      { var: 'mermaid-border' },
-  activationBorderColor:    { var: 'mermaid-border' },
-  activationBkgColor:       { var: 'mermaid-primary-color' },
+  labelBoxBorderColor:      { var: 'diagram-stroke' },
+  activationBorderColor:    { var: 'diagram-stroke' },
+  activationBkgColor:       { var: 'diagram-band-1' },
   sequenceNumberColor:      { var: 'text-heading' },
 
   // Notes (yellow accent — category-distinct)
-  noteBkgColor:             { var: 'mermaid-note-bg' },
+  noteBkgColor:             { var: 'diagram-note-bg' },
   noteTextColor:            { var: 'text-heading' },
-  noteBorderColor:          { var: 'mermaid-note-border' },
+  noteBorderColor:          { var: 'diagram-note-stroke' },
 
   // Error (alarm — saturated red)
-  errorBkgColor:            { var: 'mermaid-error-bg' },
-  errorTextColor:           { var: 'mermaid-error-text' },
+  errorBkgColor:            { var: 'diagram-error-bg' },
+  errorTextColor:           { var: 'diagram-error-text' },
 
-  // Pie chart (pale palette — unified contract)
-  pie1:  { var: 'mermaid-primary-color' },
-  pie2:  { var: 'mermaid-secondary-color' },
-  pie3:  { var: 'mermaid-pie-purple' },
-  pie4:  { var: 'mermaid-pie-orange' },
-  pie5:  { var: 'mermaid-pie-teal' },
-  pie6:  { var: 'mermaid-pie-rose' },
-  pie7:  { var: 'mermaid-pie-yellow' },
-  pie8:  { var: 'mermaid-pie-red' },
-  pie9:  { var: 'mermaid-pie-slate' },
-  pie10: { var: 'mermaid-pie-sage' },
-  pie11: { var: 'mermaid-pie-violet' },
-  pie12: { var: 'mermaid-primary-color' },
+  // Pie chart (pale band cycle — unified contract)
+  pie1:  { var: 'diagram-band-1' },
+  pie2:  { var: 'diagram-band-2' },
+  pie3:  { var: 'diagram-band-3' },
+  pie4:  { var: 'diagram-band-4' },
+  pie5:  { var: 'diagram-band-5' },
+  pie6:  { var: 'diagram-band-6' },
+  pie7:  { var: 'diagram-band-7' },
+  pie8:  { var: 'diagram-band-8' },
+  pie9:  { var: 'diagram-band-9' },
+  pie10: { var: 'diagram-band-10' },
+  pie11: { var: 'diagram-band-11' },
+  pie12: { var: 'diagram-band-12' },
   pieTitleTextSize:    { literal: '18px' },
   pieTitleTextColor:   { var: 'text-heading' },
   pieSectionTextSize:  { literal: '14px' },
@@ -434,27 +404,27 @@ const MERMAID_VAR_MAP = {
   pieStrokeColor:      { var: 'bg' },
   pieStrokeWidth:      { literal: '2px' },
   pieOuterStrokeWidth: { literal: '2px' },
-  pieOuterStrokeColor: { var: 'mermaid-border' },
+  pieOuterStrokeColor: { var: 'diagram-stroke' },
   pieOpacity:          { literal: '1' },
 
   // Gantt (pale bars, dark text, alarm-only saturation)
   sectionBkgColor:        { var: 'bg-alt' },
   altSectionBkgColor:     { var: 'bg' },
-  sectionBkgColor2:       { var: 'mermaid-primary-color' },
-  taskBkgColor:           { var: 'mermaid-primary-color' },
+  sectionBkgColor2:       { var: 'diagram-band-1' },
+  taskBkgColor:           { var: 'diagram-band-1' },
   taskTextColor:          { var: 'text-heading' },
   taskTextLightColor:     { var: 'text-heading' },
   taskTextOutsideColor:   { var: 'text-heading' },
   taskTextClickableColor: { var: 'text-heading' },
-  taskBorderColor:        { var: 'mermaid-border' },
-  activeTaskBkgColor:     { var: 'mermaid-gantt-active' },
-  activeTaskBorderColor:  { var: 'mermaid-gantt-active-border' },
-  gridColor:              { var: 'mermaid-gantt-grid' },
-  doneTaskBkgColor:       { var: 'mermaid-gantt-done' },
-  doneTaskBorderColor:    { var: 'mermaid-gantt-done-border' },
-  critBkgColor:           { var: 'mermaid-gantt-critical' },
-  critBorderColor:        { var: 'mermaid-gantt-critical-border' },
-  todayLineColor:         { var: 'mermaid-gantt-today' },
+  taskBorderColor:        { var: 'diagram-stroke' },
+  activeTaskBkgColor:     { var: 'diagram-state-active' },
+  activeTaskBorderColor:  { var: 'diagram-state-active-stroke' },
+  gridColor:              { var: 'diagram-state-grid' },
+  doneTaskBkgColor:       { var: 'diagram-state-done' },
+  doneTaskBorderColor:    { var: 'diagram-state-done-stroke' },
+  critBkgColor:           { var: 'diagram-state-critical' },
+  critBorderColor:        { var: 'diagram-state-critical-stroke' },
+  todayLineColor:         { var: 'diagram-state-today' },
 
   // Git graph
   git0: { var: 'cat-blue' },
@@ -476,24 +446,24 @@ const MERMAID_VAR_MAP = {
   commitLabelColor:      { var: 'text-heading' },
   commitLabelBackground: { var: 'bg-alt' },
   tagLabelColor:         { var: 'bg' },
-  tagLabelBackground:    { var: 'mermaid-border' },
+  tagLabelBackground:    { var: 'diagram-stroke' },
   tagLabelBorder:        { var: 'text-heading' },
 
   // Quadrant chart
-  quadrant1Fill:                    { var: 'mermaid-quadrant-1-fill' },
-  quadrant2Fill:                    { var: 'mermaid-quadrant-2-fill' },
-  quadrant3Fill:                    { var: 'mermaid-quadrant-3-fill' },
-  quadrant4Fill:                    { var: 'mermaid-quadrant-4-fill' },
-  quadrant1TextFill:                { var: 'mermaid-quadrant-1-text' },
-  quadrant2TextFill:                { var: 'mermaid-quadrant-2-text' },
-  quadrant3TextFill:                { var: 'mermaid-quadrant-3-text' },
-  quadrant4TextFill:                { var: 'mermaid-quadrant-4-text' },
-  quadrantPointFill:                { var: 'mermaid-border' },
+  quadrant1Fill:                    { var: 'diagram-quadrant-1-fill' },
+  quadrant2Fill:                    { var: 'diagram-quadrant-2-fill' },
+  quadrant3Fill:                    { var: 'diagram-quadrant-3-fill' },
+  quadrant4Fill:                    { var: 'diagram-quadrant-4-fill' },
+  quadrant1TextFill:                { var: 'diagram-quadrant-1-text' },
+  quadrant2TextFill:                { var: 'diagram-quadrant-2-text' },
+  quadrant3TextFill:                { var: 'diagram-quadrant-3-text' },
+  quadrant4TextFill:                { var: 'diagram-quadrant-4-text' },
+  quadrantPointFill:                { var: 'diagram-stroke' },
   quadrantPointTextFill:            { var: 'text-heading' },
   quadrantXAxisTextFill:            { var: 'text-heading' },
   quadrantYAxisTextFill:            { var: 'text-heading' },
   quadrantInternalBorderStrokeFill: { var: 'cat-slate' },
-  quadrantExternalBorderStrokeFill: { var: 'mermaid-border' },
+  quadrantExternalBorderStrokeFill: { var: 'diagram-stroke' },
   quadrantTitleFill:                { var: 'text-heading' },
 
   // State / class
@@ -539,11 +509,21 @@ function parsePaletteVars(paletteCSSContent) {
     const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
     if (ld) vars[k] = isDark ? ld[2] : ld[1];
   }
-  // Resolve var() references one level deep (e.g. --bg-dark: var(--brand-blue-deep))
-  for (const k of Object.keys(vars)) {
-    const v = vars[k];
-    const ref = v.match(/^var\(--([a-z0-9-]+)\)$/i);
-    if (ref && vars[ref[1]]) vars[k] = vars[ref[1]];
+  // Resolve var() references iteratively. The new --diagram-band-text-N
+  // tokens chain `var(--text-heading)` → `var(--brand-leather-deep)` →
+  // hex (in cuoio), so a single pass leaves them mid-chain. Iterate to
+  // a fixed point (capped) so every chained var() lands on its literal.
+  for (let pass = 0; pass < 8; pass++) {
+    let changed = false;
+    for (const k of Object.keys(vars)) {
+      const v = vars[k];
+      const ref = v.match(/^var\(--([a-z0-9-]+)\)$/i);
+      if (ref && vars[ref[1]] && vars[ref[1]] !== v) {
+        vars[k] = vars[ref[1]];
+        changed = true;
+      }
+    }
+    if (!changed) break;
   }
   return vars;
 }
@@ -578,26 +558,6 @@ function resolveMermaidThemeVars(paletteVars) {
 
 const PALETTE_VARS = parsePaletteVars(paletteCSS);
 const MERMAID_THEME_VARS = resolveMermaidThemeVars(PALETTE_VARS);
-
-// ── Post-process themeCSS: resolve var() and strip section scope prefix ──────
-// The theme file writes themeCSS selectors prefixed with 'section ' (for
-// preview path isolation — each slide section scopes its own diagram styles
-// so rules from one theme cannot bleed into slides rendered by another theme).
-// The mmdc path injects themeCSS inside the SVG's own <style> tag where there
-// is no wrapping <section> element; strip the prefix so bare class selectors
-// reach the SVG DOM. Also expand var(--name) to literal hex values because
-// Mermaid's %%{init}%% parser requires resolved literals in themeCSS.
-function resolveVarsInThemeCSS(css, paletteVars) {
-  return css.replace(/var\(--([a-z0-9-]+)\)/gi, (_, name) => {
-    const val = paletteVars[name];
-    if (!val) console.warn(`  ⚠ themeCSS references undefined CSS variable: --${name}`);
-    return val ?? `var(--${name})`;
-  });
-}
-if (MERMAID_THEME_CSS) {
-  MERMAID_THEME_CSS = resolveVarsInThemeCSS(MERMAID_THEME_CSS, PALETTE_VARS)
-    .replace(/\bsection (?=[.#\[a-zA-Z*])/g, '');
-}
 
 // ── Puppeteer config — chrome auto-detection ─────────────────────────────
 // The renderer shells out to mmdc (mermaid-cli) which uses puppeteer to
@@ -666,28 +626,21 @@ if (!CHROME_EXEC) {
 }
 
 function renderMermaid(definition) {
-  // Prepend theme init block if not already present.
+  // Prepend the Mermaid init block if not already present.
   // JetBrains Mono is bundled by the lattice.css font import and is the
   // safe default for diagrams: predictable character widths, no measurement
-  // drift between the layout pass and render pass. (See font note above.)
+  // drift between the layout pass and render pass.
+  //
+  // No `themeCSS` field is set: per-diagram CSS overrides live in
+  // lattice-diagram.css and reach the SVG via the host page's stylesheet
+  // cascade (the mmdc-produced SVG is embedded inline in the host HTML at
+  // PDF-rasterize time). themeVariables is enough here because it covers
+  // the values Mermaid inlines as SVG attributes — gradient stops, marker
+  // fills, gantt grid lines — which no external CSS can reach.
   const hasInit = definition.includes('%%{init');
-  // themeCSS must be on one line — Mermaid's %%{init}%% directive parser
-  // does not tolerate newlines inside the JSON. We also strip CSS comments
-  // before injection because they break Mermaid's init parser when combined
-  // with certain content (the parser appears to misinterpret content inside
-  // /* */ blocks). Comments are useful for humans reading the source, but
-  // useless inside the rendered SVG <style> tag — so we strip them entirely
-  // before injecting. This was identified by section-bisect: a single CSS
-  // comment in the FLOWCHART section caused all themeCSS to be silently
-  // rejected (the SVG rendered without any of our overrides applied).
-  const css = MERMAID_THEME_CSS
-    .replace(/\/\*[\s\S]*?\*\//g, '')   // strip /* ... */ comments
-    .replace(/\s+/g, ' ')
-    .trim();
   const initObj = {
     theme: 'base',
     themeVariables: MERMAID_THEME_VARS,
-    themeCSS: css,
   };
   // Mermaid requires YAML frontmatter (--- ... ---) to be the FIRST thing in
   // the source. If the diagram opens with frontmatter, inject %%{init}%%

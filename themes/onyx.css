@@ -117,19 +117,19 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions — saturated red is the only chroma ───────── */
-  --mermaid-primary-color:   #F5F5F5;
-  --mermaid-secondary-color: #D9D9D9;
-  --mermaid-border:          #000000;
-  --mermaid-accent-warm:     var(--brand-red);
-  --mermaid-pie-purple:  #F5F5F5;  /* near-white */
-  --mermaid-pie-orange:  #FAEAE8;  /* pale red-tint */
-  --mermaid-pie-teal:    #EBEBEB;  /* light neutral */
-  --mermaid-pie-rose:    #F5EEEE;  /* pale rose-neutral */
-  --mermaid-pie-yellow:  #F5F5EE;  /* pale cream */
-  --mermaid-pie-red:     #F5E5E5;  /* pale rose */
-  --mermaid-pie-slate:   #E8E8E8;  /* medium neutral */
-  --mermaid-pie-sage:    #F0F0EB;  /* pale warm-neutral */
-  --mermaid-pie-violet:  #F0F0F5;  /* pale cool-neutral */
+  --diagram-band-1:   #F5F5F5;
+  --diagram-band-2: #D9D9D9;
+  --diagram-stroke:          #000000;
+  --diagram-accent-warm:     var(--brand-red);
+  --diagram-band-3:  #F5F5F5;  /* near-white */
+  --diagram-band-4:  #FAEAE8;  /* pale red-tint */
+  --diagram-band-5:    #EBEBEB;  /* light neutral */
+  --diagram-band-6:    #F5EEEE;  /* pale rose-neutral */
+  --diagram-band-7:  #F5F5EE;  /* pale cream */
+  --diagram-band-8:     #F5E5E5;  /* pale rose */
+  --diagram-band-9:   #E8E8E8;  /* medium neutral */
+  --diagram-band-10:    #F0F0EB;  /* pale warm-neutral */
+  --diagram-band-11:  #F0F0F5;  /* pale cool-neutral */
   /* cScale / gitgraph — achromatic with one saturated red pop */
   --cat-blue:   #5A5A5A;
   --cat-green:  #8A8A8A;

@@ -1,55 +1,77 @@
 /**
  * Unit: palette resolution.
  *
- * Both palettes (indaco, cuoio) must:
- *   - Carry the Mermaid CSS sentinel.
- *   - Define every CSS custom property the emulator's Mermaid
- *     theme-variable map references.
+ * Both canonical palettes (indaco, cuoio) must define every --diagram-*
+ * token the renderer bridges (lattice-emulator.js, lattice-runtime.js)
+ * and the palette-blind overrides (lattice-diagram.css) consume.
  *
- * The required-vars list mirrors what `lattice-emulator.js` consumes via its
- * MERMAID_VAR_MAP. Phase 6 will derive this list from the source
- * directly to remove the manual sync.
+ * The required-vars list mirrors what `lattice-emulator.js` consumes via
+ * its MERMAID_VAR_MAP plus the band-text/band slots referenced by
+ * lattice-diagram.css. test/unit/mermaid-var-map.test.js cross-checks
+ * the emulator map against this list automatically; this file is the
+ * source-of-truth list.
  */
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const { loadPalette } = require('../helpers/palette');
 
-const REQUIRED_MERMAID_VARS = [
+const REQUIRED_DIAGRAM_VARS = [
+  // Brand primitives consumed by the renderer
   'bg', 'bg-alt', 'text-heading',
-  'mermaid-primary-color', 'mermaid-secondary-color',
-  'mermaid-pie-purple', 'mermaid-pie-orange', 'mermaid-pie-teal', 'mermaid-pie-rose',
-  'mermaid-pie-yellow', 'mermaid-pie-red', 'mermaid-pie-slate', 'mermaid-pie-sage',
-  'mermaid-pie-violet',
-  'mermaid-line', 'mermaid-border',
-  'cat-blue', 'cat-green', 'cat-purple',
-  'cat-orange', 'cat-teal', 'cat-rose',
-  'cat-slate', 'cat-mauve',
-  'mermaid-quadrant-1-fill', 'mermaid-quadrant-2-fill',
-  'mermaid-quadrant-3-fill', 'mermaid-quadrant-4-fill',
-  'mermaid-quadrant-1-text', 'mermaid-quadrant-2-text',
-  'mermaid-quadrant-3-text', 'mermaid-quadrant-4-text',
-  'mermaid-gantt-active', 'mermaid-gantt-active-border',
-  'mermaid-gantt-done',   'mermaid-gantt-done-border',
-  'mermaid-gantt-critical', 'mermaid-gantt-critical-border',
-  'mermaid-gantt-today', 'mermaid-gantt-grid',
-  'mermaid-note-bg', 'mermaid-note-border',
-  'mermaid-error-bg', 'mermaid-error-text',
+
+  // Band cycle (12 slots) + paired text
+  'diagram-band-1',  'diagram-band-2',  'diagram-band-3',  'diagram-band-4',
+  'diagram-band-5',  'diagram-band-6',  'diagram-band-7',  'diagram-band-8',
+  'diagram-band-9',  'diagram-band-10', 'diagram-band-11', 'diagram-band-12',
+  'diagram-band-text-1',  'diagram-band-text-2',  'diagram-band-text-3',
+  'diagram-band-text-4',  'diagram-band-text-5',  'diagram-band-text-6',
+  'diagram-band-text-7',  'diagram-band-text-8',  'diagram-band-text-9',
+  'diagram-band-text-10', 'diagram-band-text-11', 'diagram-band-text-12',
+
+  // Structural
+  'diagram-stroke', 'diagram-line', 'diagram-accent-warm',
+
+  // Mid-tone categorical (consumed beyond Mermaid by chart-family / kpi)
+  'cat-blue', 'cat-green', 'cat-purple', 'cat-orange',
+  'cat-teal', 'cat-rose', 'cat-slate', 'cat-mauve',
+
+  // Quadrant (4-slot, fill + text paired)
+  'diagram-quadrant-1-fill', 'diagram-quadrant-2-fill',
+  'diagram-quadrant-3-fill', 'diagram-quadrant-4-fill',
+  'diagram-quadrant-1-text', 'diagram-quadrant-2-text',
+  'diagram-quadrant-3-text', 'diagram-quadrant-4-text',
+
+  // State (gantt lifecycle)
+  'diagram-state-active',   'diagram-state-active-stroke',
+  'diagram-state-done',     'diagram-state-done-stroke',
+  'diagram-state-critical', 'diagram-state-critical-stroke',
+  'diagram-state-today',    'diagram-state-grid',
+
+  // Note (sequence aside) + error (alarm)
+  'diagram-note-bg', 'diagram-note-stroke',
+  'diagram-error-bg', 'diagram-error-text',
 ];
 
 for (const name of ['indaco', 'cuoio']) {
-  test(`palette: ${name} carries Mermaid CSS sentinel`, () => {
+  test(`palette: ${name} defines all ${REQUIRED_DIAGRAM_VARS.length} required --diagram-* tokens`, () => {
     const p = loadPalette(name);
-    assert.ok(p.mermaidSentinelIndex > 0, `sentinel missing in themes/${name}.css`);
-    assert.ok(
-      p.raw.length > p.mermaidSentinelIndex + 100,
-      `Mermaid CSS section is empty in themes/${name}.css`,
+    const missing = REQUIRED_DIAGRAM_VARS.filter(v => !p.vars[v]);
+    assert.deepEqual(missing, [], `missing vars in themes/${name}.css: ${missing.join(', ')}`);
+  });
+
+  test(`palette: ${name} no longer carries the legacy MERMAID THEME CSS sentinel`, () => {
+    const p = loadPalette(name);
+    assert.equal(
+      p.raw.indexOf('===== MERMAID THEME CSS ====='),
+      -1,
+      `themes/${name}.css still contains the legacy sentinel comment; the post-sentinel CSS now lives in lattice-diagram.css`,
     );
   });
 
-  test(`palette: ${name} defines all ${REQUIRED_MERMAID_VARS.length} required Mermaid vars`, () => {
+  test(`palette: ${name} no longer declares legacy --mermaid-* tokens`, () => {
     const p = loadPalette(name);
-    const missing = REQUIRED_MERMAID_VARS.filter(v => !p.vars[v]);
-    assert.deepEqual(missing, [], `missing vars in themes/${name}.css: ${missing.join(', ')}`);
+    const legacy = Object.keys(p.vars).filter(v => v.startsWith('mermaid-'));
+    assert.deepEqual(legacy, [], `themes/${name}.css still declares legacy tokens: ${legacy.join(', ')}`);
   });
 }

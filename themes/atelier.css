@@ -22,7 +22,7 @@
  *                           dark). High-contrast monochrome, warm-tinted.
  *
  *   3. Saturation reserved for one purpose: the deep-amber tag accent
- *      (#6B4F28 light → #C8A878 dark) used via --mermaid-accent-warm.
+ *      (#6B4F28 light → #C8A878 dark) used via --diagram-accent-warm.
  *      The deck has no chromatic brand; amber is the deliberate pop.
  *
  *   4. Every text-bearing token clears WCAG AAA (7:1) against the surface
@@ -114,19 +114,19 @@
   --dark-text-display: #F0EDE6;
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
-  --mermaid-primary-color:   #E5E0D2;
-  --mermaid-secondary-color: #DBD5C0;
-  --mermaid-border:          #38332A;
-  --mermaid-accent-warm:     var(--brand-amber); /* the amber pop */
-  --mermaid-pie-purple:  #E5E0D2;  /* pale warm-oat */
-  --mermaid-pie-orange:  #E8D8B0;  /* pale amber-oat */
-  --mermaid-pie-teal:    #D5DDD5;  /* pale warm-neutral-sage */
-  --mermaid-pie-rose:    #EDE0D8;  /* pale warm-blush */
-  --mermaid-pie-yellow:  #E8E0B8;  /* pale warm-cream */
-  --mermaid-pie-red:     #EDD8CC;  /* pale warm-terracotta */
-  --mermaid-pie-slate:   #D5D5CC;  /* pale warm-gray */
-  --mermaid-pie-sage:    #D8DDD0;  /* pale warm-sage */
-  --mermaid-pie-violet:  #E0D8E5;  /* pale warm-lavender */
+  --diagram-band-1:   #E5E0D2;
+  --diagram-band-2: #DBD5C0;
+  --diagram-stroke:          #38332A;
+  --diagram-accent-warm:     var(--brand-amber); /* the amber pop */
+  --diagram-band-3:  #E5E0D2;  /* pale warm-oat */
+  --diagram-band-4:  #E8D8B0;  /* pale amber-oat */
+  --diagram-band-5:    #D5DDD5;  /* pale warm-neutral-sage */
+  --diagram-band-6:    #EDE0D8;  /* pale warm-blush */
+  --diagram-band-7:  #E8E0B8;  /* pale warm-cream */
+  --diagram-band-8:     #EDD8CC;  /* pale warm-terracotta */
+  --diagram-band-9:   #D5D5CC;  /* pale warm-gray */
+  --diagram-band-10:    #D8DDD0;  /* pale warm-sage */
+  --diagram-band-11:  #E0D8E5;  /* pale warm-lavender */
   /* cScale / gitgraph — warm achromatic with amber pop */
   --cat-blue:   #5A5048;
   --cat-green:  #906838;  /* amber mid-tone */

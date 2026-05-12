@@ -112,22 +112,22 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #E8E8E7;
-  --mermaid-secondary-color: #DCDCDB;
-  --mermaid-border:          #2A2A2A;
+  --diagram-band-1:   #E8E8E7;
+  --diagram-band-2: #DCDCDB;
+  --diagram-stroke:          #2A2A2A;
   /* Warm-gold pop — the deliberate "coolness break" on second curve.
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */
-  --mermaid-accent-warm:     #C8B89A;
-  --mermaid-pie-purple:  #E8E8E7;  /* pale neutral */
-  --mermaid-pie-orange:  #F0E8D0;  /* pale warm-gold */
-  --mermaid-pie-teal:    #D8E0E0;  /* pale cool neutral */
-  --mermaid-pie-rose:    #EDE5E2;  /* pale warm-neutral */
-  --mermaid-pie-yellow:  #F0EDD5;  /* very pale gold */
-  --mermaid-pie-red:     #EEE0DC;  /* pale warm-taupe */
-  --mermaid-pie-slate:   #DCDCDB;  /* pale neutral */
-  --mermaid-pie-sage:    #D8E0D8;  /* pale warm-sage */
-  --mermaid-pie-violet:  #E5E0EC;  /* pale gray-violet */
+  --diagram-accent-warm:     #C8B89A;
+  --diagram-band-3:  #E8E8E7;  /* pale neutral */
+  --diagram-band-4:  #F0E8D0;  /* pale warm-gold */
+  --diagram-band-5:    #D8E0E0;  /* pale cool neutral */
+  --diagram-band-6:    #EDE5E2;  /* pale warm-neutral */
+  --diagram-band-7:  #F0EDD5;  /* very pale gold */
+  --diagram-band-8:     #EEE0DC;  /* pale warm-taupe */
+  --diagram-band-9:   #DCDCDB;  /* pale neutral */
+  --diagram-band-10:    #D8E0D8;  /* pale warm-sage */
+  --diagram-band-11:  #E5E0EC;  /* pale gray-violet */
   /* cScale / gitgraph — warm achromatic with one warm-gold pop */
   --cat-blue:   #4E4E48;
   --cat-green:  #A8946A;  /* warm gold */

@@ -115,19 +115,19 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #E5DEEB;
-  --mermaid-secondary-color: #DDEAE5;
-  --mermaid-border:          #3F2A5C;
-  --mermaid-accent-warm:     #BD5000;
-  --mermaid-pie-purple:  #E5DEEB;  /* pale lavender */
-  --mermaid-pie-orange:  #F5E8C8;  /* pale amber */
-  --mermaid-pie-teal:    #D8EEF3;  /* pale cyan */
-  --mermaid-pie-rose:    #EDE3E8;  /* pale mauve */
-  --mermaid-pie-yellow:  #F3EDD0;  /* pale gold */
-  --mermaid-pie-red:     #F3DDE0;  /* pale coral-rose */
-  --mermaid-pie-slate:   #D8D5E5;  /* pale violet-slate */
-  --mermaid-pie-sage:    #DDE9E6;  /* pale sage-mint */
-  --mermaid-pie-violet:  #E0D8EC;  /* pale deep-violet */
+  --diagram-band-1:   #E5DEEB;
+  --diagram-band-2: #DDEAE5;
+  --diagram-stroke:          #3F2A5C;
+  --diagram-accent-warm:     #BD5000;
+  --diagram-band-3:  #E5DEEB;  /* pale lavender */
+  --diagram-band-4:  #F5E8C8;  /* pale amber */
+  --diagram-band-5:    #D8EEF3;  /* pale cyan */
+  --diagram-band-6:    #EDE3E8;  /* pale mauve */
+  --diagram-band-7:  #F3EDD0;  /* pale gold */
+  --diagram-band-8:     #F3DDE0;  /* pale coral-rose */
+  --diagram-band-9:   #D8D5E5;  /* pale violet-slate */
+  --diagram-band-10:    #DDE9E6;  /* pale sage-mint */
+  --diagram-band-11:  #E0D8EC;  /* pale deep-violet */
   /* cScale / gitgraph — twilight violet + amber family */
   --cat-blue:   #7B5B9E;  /* mid-violet */
   --cat-green:  #A8841E;  /* mid-amber */

@@ -131,20 +131,20 @@
   --dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --mermaid-primary-color:   #2A2A2E;
-  --mermaid-secondary-color: #2C3D2F;
-  --mermaid-border:          var(--brand-lime);
-  --mermaid-accent-warm:     #FFD166;
+  --diagram-band-1:   #2A2A2E;
+  --diagram-band-2: #2C3D2F;
+  --diagram-stroke:          var(--brand-lime);
+  --diagram-accent-warm:     #FFD166;
   /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
-  --mermaid-pie-purple:  #2E2A38;
-  --mermaid-pie-orange:  #382E22;
-  --mermaid-pie-teal:    #223328;
-  --mermaid-pie-rose:    #342830;
-  --mermaid-pie-yellow:  #35332A;
-  --mermaid-pie-red:     #38282A;
-  --mermaid-pie-slate:   #2A2E38;
-  --mermaid-pie-sage:    #253328;
-  --mermaid-pie-violet:  #2C2838;
+  --diagram-band-3:  #2E2A38;
+  --diagram-band-4:  #382E22;
+  --diagram-band-5:    #223328;
+  --diagram-band-6:    #342830;
+  --diagram-band-7:  #35332A;
+  --diagram-band-8:     #38282A;
+  --diagram-band-9:   #2A2E38;
+  --diagram-band-10:    #253328;
+  --diagram-band-11:  #2C2838;
   /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
   --cat-blue:   #4A9C56;  /* darker lime */
   --cat-green:  #9A7820;  /* darker amber */
