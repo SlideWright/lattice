@@ -3185,7 +3185,7 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
      shipped  → ✓ check
      wip      → − dash      (mirrors checklist's [-] warn glyph)
      planned  → ○ outlined circle, no fill (the "to come" mark)
-     skipped  → × cross, plus strike-through on the cell text
+     skipped  → ╱ diagonal slash, plus strike-through on the cell text
    Eyebrow label is rendered for the heavy treatment but hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
 section.roadmap td.cell-state .cell-state-text {
@@ -3222,7 +3222,7 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M4 4 L12 12 M12 4 L4 12'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M12 4 L4 12'/></svg>");
 }
 section.roadmap td.cell-state.state-skipped .cell-state-text,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
