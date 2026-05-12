@@ -187,6 +187,41 @@ red paired with fixed white text. Used by Mermaid's parser-error rendering
 across all diagram types. Pin text to white (not `var(--bg)`, which would
 flip to dark in dark mode and fail AA on the saturated red).
 
+## The card-on-band rule
+
+> **Band coloring stops at one level of nesting.**
+
+When a diagram has an outer categorical grouping that contains inner
+items, the band carries the category and the inner item is a neutral
+`--bg-alt` card. When a diagram has no outer grouping — items
+themselves are the categorical signal — each item gets its own band
+tint.
+
+| Pattern | Outer section | Inner item | Used by |
+|---|---|---|---|
+| **Card-on-band** | `--diagram-band-N` | `--bg-alt` card, `--text-heading` text | kanban, timeline, journey |
+| **Tile-per-element** | (none) | `--diagram-band-N` per item, `--diagram-band-text-N` text | treemap, mindmap, gitgraph, quadrant |
+
+Why this rule:
+
+- **One signal per hue.** The band always means "category." Inner cards
+  always mean "structural — I belong to the category above me, not to
+  another category." The viewer learns the grammar once.
+- **Figure/ground at projector distance.** `--bg-alt` is value-distinct
+  from every pale band tint; a card on a band remains legible from
+  across a boardroom. Hue-on-hue (band-N inside band-M) collapses at
+  distance.
+- **No new contrast pairs.** Text on `--bg-alt` uses `--text-heading`,
+  already AA-tested in `test/unit/contrast.test.js` for every palette
+  in both modes. Section header text on band-N keeps using
+  `--diagram-band-text-N`, also AA-asserted. The rule re-uses pairs
+  rather than introducing new ones.
+
+Sites in `lattice.css`'s DIAGRAM OVERRIDES section that implement the
+rule: the **CARD-ON-BAND ELEVATION** block (kanban + timeline) and the
+**JOURNEY** block (tasks flattened to `--bg-alt`). Design rationale
+captured in `docs/notes/2026-05-12-diagram-elevation.md`.
+
 ## The lightness contract
 
 The default `indaco` palette uses two distinct lightness bands:
