@@ -39,7 +39,7 @@ Five table-driven roadmap layouts, all built from the same markdown source contr
 | Compliance | [x] Audit trail (HSM) | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
 
-Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line. State markers `[x]/[-]/[ ]/[/]` are universal — they render as a small state-coloured dot before the cell text.
+Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line. State markers `[x]/[-]/[ ]/[/]` are universal — they render as a small state-coloured glyph (check / dash / outlined circle / cross) before the cell text.
 
 ---
 
@@ -75,7 +75,7 @@ Same `[x]/[-]/[ ]/[/]` markers as the other variants. The `status` modifier upgr
 | Compliance | [x] Audit trail (HSM)   | [x] Centralised log       | [ ] Examiner pack         |
 | SDK        | [x] Java                |                           | [ ] Polyglot parity       |
 
-Same source table, transposed into three phase cards. State markers on the source cells flow through onto the card rows — each row's left rail picks up the state colour and the row carries the state dot.
+Same source table, transposed into three phase cards. State markers on the source cells flow through onto the card rows — each row's left rail picks up the state colour and the row carries the state glyph.
 
 ---
 
