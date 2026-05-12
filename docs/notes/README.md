@@ -67,3 +67,68 @@ it is load-bearing.
   decision note for multi-resolution support (HD + 4K, candidate 4:3):
   native Marp `@size` + px→rem refactor + CSS container query on section.
   No theme changes; authors opt in via front-matter `size:` key.
+- [2026-05-10-tauri-exploration.md](2026-05-10-tauri-exploration.md) —
+  v1 architectural shape for the SlideWright desktop app on Tauri.
+  Names the personas (primary: Maya, the engineering leader;
+  secondaries: Naveen the consultant, Jessamine the solo founder,
+  Theo the DevRel/OSS maintainer, Camila the brand-conscious PM,
+  Khoa the OSS maintainer; explicit anti-persona Diana, the visual
+  designer — we don't compete with Figma/Keynote/Canva).
+  **Project positioning: open-source first (MIT, matching Lattice),
+  no consumer sales motion, potential enterprise tier later via
+  three small v1.0 seams (policy tier in Settings, audit-event
+  emission, identity capability hub).** Telemetry flipped to
+  opt-in; viral "made with SlideWright" PDF badge; GitHub Sponsors
+  funding before any paid tier. Captures
+  the product vision (markdown authoring, focused/split/PiP editor
+  layouts, collapsible workspace sidebar, multi-format export,
+  cloud storage, collaboration, AI, brand theming, extensions &
+  connectors) and the load-bearing decisions: no Node in v1, **own
+  the engine** (`lattice-engine` replaces the runtime dependency on
+  `@marp-team/marp-core`; marp-core stays as a bootstrap until
+  gallery parity, then is dropped), Yjs document model, `EditorHost`
+  facade over CodeMirror 6, `DiagramService` for Mermaid (with
+  render cache), `SlideSegmenter` + `RenderCache` + `PreviewPane`
+  for incremental rendering keyed by slide content hash,
+  `LayoutShell` for focused/split/PiP modes, `WorkspaceView` for the
+  file tree (storage-adapter-blind, opens with a file/folder/last-
+  session), UI surfaces via a central command registry (palette ⌘K
+  + quick switcher ⌘P + native menu + right-click + status bar;
+  toolbar off by default; `when`-clause DSL hides irrelevant items),
+  `Settings` (layered defaults → user → workspace; user
+  tier in the OS app-config dir, workspace tier in
+  `.slidewright/settings.json` parallel to `.vscode/`; extensions
+  install at user scope only; secrets stay in keychain),
+  `Onboarding` (welcome screen + welcome deck authored as a real
+  Lattice deck + spotlight tour engine; extension-contributable),
+  provider-agnostic AI (capability hub for any LLM — Claude in v1,
+  bundled local model as suggested default in v1.x, Ollama / OpenAI
+  / etc. via connectors; `DocsIndex` for RAG grounding over our own
+  docs; `ChatPanel` with tool use; `Suggestions` for ambient hints;
+  privacy mode forces local-only), `ThemeStudio` for brand palettes,
+  worker-sandboxed
+  extension runtime with capability hubs (the
+  export/storage/AI/diagram/layout adapter interfaces become the
+  public plugin API; first-party features dogfood the same API).
+  v1-load-bearing probes (live preview parity, single-slide render,
+  PDF, PNG, engine retirement) named as the next step, plus a
+  Gaps section covering critical pre-v1 decisions (speaker notes
+  + presentation mode, save semantics + crash recovery,
+  operational infrastructure for auto-update / crash reporting /
+  telemetry, code signing lead time, import strategy with PPTX as
+  the lever, math rendering, app accessibility, table-stakes
+  editor features, performance budgets, document format
+  versioning). Authoritative six-release plan (v1.0 → v1.5)
+  with three impactful capabilities per release and a cost
+  constraint — no dependency on runtime costs we can't control,
+  so cloud AI arrives at v1.5 as user-supplied keys only; local
+  AI lands at v1.2 instead. Honest plan evaluation: 73/100
+  (up from 60 when v1 was monolithic), with named remaining risks
+  and probe-style mitigations (H5b / H6b for cross-platform
+  WebView parity, H9 for local-AI quality, H10 for doc-drift CI;
+  plus operational adds: public ROADMAP.md, Plan B shell of
+  Electron + Puppeteer, extension-API semver policy, v1.0 framed
+  as abandonment-tolerant). Closes with a development-leverage
+  analysis: disciplined use of Claude Code realistically
+  compresses v1 from ~18 months to ~10, with the architecture
+  doc itself as the high-fidelity prompt. No desktop code yet.
