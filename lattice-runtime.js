@@ -392,9 +392,18 @@
   let renderCounter = 0;
 
   function initAndRun({ force = false } = {}) {
+    transformStripHeadingPeriods();
+    transformAddHeadingPeriods();
     transformVerdictGridBadges();
     transformChecklistItemStates();
     transformSlotLabels();
+    transformSplitBrief();
+    transformSplitMetric();
+    transformSplitSteps();
+    transformSplitCompare();
+    transformSplitStatement();
+    transformRoadmapStatus();
+    transformRoadmapHorizons();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -492,7 +501,6 @@
   function transformVerdictGridBadges() {
     if (typeof document === 'undefined') return;
     for (const section of document.querySelectorAll('section.verdict-grid')) {
-      if (section.querySelector('.grid-verdict')) continue; // Marp CLI plugin already ran
       for (const outerLi of section.querySelectorAll(':scope > ul > li')) {
         const innerUl = outerLi.querySelector(':scope > ul');
         if (!innerUl) continue;
@@ -559,7 +567,7 @@
    */
   function transformSlotLabels() {
     if (typeof document === 'undefined') return;
-    const SELECTOR = 'section.compare-prose, section.before-after, section.decision';
+    const SELECTOR = 'section.compare-prose, section.before-after, section.decision, section.split-brief, section.split-metric, section.split-steps, section.split-compare, section.split-statement';
     for (const section of document.querySelectorAll(SELECTOR)) {
       // compare-prose authored with the build pipeline already has the
       // .compare-prose-inner / .card structure with the strong inside.
@@ -593,6 +601,401 @@
           for (const n of lead) strong.appendChild(n);
           li.insertBefore(strong, cursor);
         }
+      }
+    }
+  }
+
+  // ── Split panel DOM transforms ──────────────────────────────────────────────
+  // Each mirrors the matching block in lattice-emulator.js. Idempotent: skips
+  // sections already wrapped (left/right div present). Called from initAndRun.
+  // Sibling implementations:
+  //   lattice-emulator.js  — post-process per-slide transform
+  //   lib/split-panels.js  — HTML-string transform run by marp.config.js render
+  //                          hook (primary path for marp-vscode preview)
+  // These DOM transforms act as a fallback for web export where scripts execute
+  // but the marp.config.js engine hook has not run.
+
+  function transformSplitBrief() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-brief')) {
+      if (sec.querySelector('.brief-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'brief-left';
+      if (codeP) {
+        const eyebrow = document.createElement('span');
+        eyebrow.className = 'eyebrow';
+        eyebrow.textContent = codeP.textContent;
+        left.appendChild(eyebrow);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      const right = document.createElement('div');
+      right.className = 'brief-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitMetric() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-metric')) {
+      if (sec.querySelector('.metric-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'metric-left';
+      if (codeP) {
+        const unitLabel = document.createElement('span');
+        unitLabel.className = 'unit-label';
+        unitLabel.textContent = codeP.textContent;
+        left.appendChild(unitLabel);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) {
+        const context = document.createElement('span');
+        context.className = 'metric-context';
+        context.innerHTML = introP.innerHTML;
+        left.appendChild(context);
+        introP.remove();
+      }
+      const right = document.createElement('div');
+      right.className = 'metric-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitSteps() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-steps')) {
+      if (sec.querySelector('.steps-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const left = document.createElement('div');
+      left.className = 'steps-left';
+      if (codeP) {
+        const phaseNum = document.createElement('span');
+        phaseNum.className = 'phase-num';
+        phaseNum.textContent = codeP.textContent;
+        left.appendChild(phaseNum);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      const right = document.createElement('div');
+      right.className = 'steps-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitCompare() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-compare')) {
+      if (sec.querySelector('.compare-left')) continue;
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const h2 = sec.querySelector('h2');
+      const introP = [...sec.children].find(el => el.tagName === 'P' && el !== codeP);
+      const bq = sec.querySelector(':scope > blockquote');
+      const left = document.createElement('div');
+      left.className = 'compare-left';
+      if (codeP) {
+        const frameLabel = document.createElement('span');
+        frameLabel.className = 'frame-label';
+        frameLabel.textContent = codeP.textContent;
+        left.appendChild(frameLabel);
+        codeP.remove();
+      }
+      if (h2) left.appendChild(h2);
+      if (introP) left.appendChild(introP);
+      // Split top-level li items from the options list into .option divs.
+      // transformSlotLabels has already run, so li > strong is in place.
+      const optionList = sec.querySelector(':scope > ul, :scope > ol');
+      const right = document.createElement('div');
+      right.className = 'compare-right';
+      const opts = document.createElement('div');
+      opts.className = 'options';
+      if (optionList) {
+        [...optionList.children].filter(el => el.tagName === 'LI').forEach((li, i) => {
+          const div = document.createElement('div');
+          div.className = i === 1 ? 'option preferred' : 'option';
+          [...li.childNodes].forEach(n => div.appendChild(n));
+          opts.appendChild(div);
+        });
+        optionList.remove();
+      }
+      right.appendChild(opts);
+      if (bq) {
+        const verdict = document.createElement('div');
+        verdict.className = 'verdict';
+        verdict.appendChild(bq);
+        right.appendChild(verdict);
+      }
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  function transformSplitStatement() {
+    if (typeof document === 'undefined') return;
+    for (const sec of document.querySelectorAll('section.split-statement')) {
+      if (sec.querySelector('.statement-left')) continue;
+      const bq = sec.querySelector(':scope > blockquote');
+      const codeP = [...sec.children].find(
+        el => el.tagName === 'P' && el.childNodes.length === 1 && el.firstChild?.tagName === 'CODE'
+      );
+      const left = document.createElement('div');
+      left.className = 'statement-left';
+      if (bq) left.appendChild(bq);
+      if (codeP) {
+        const cite = document.createElement('cite');
+        cite.textContent = codeP.textContent;
+        left.appendChild(cite);
+        codeP.remove();
+      }
+      const right = document.createElement('div');
+      right.className = 'statement-right';
+      const header = sec.querySelector('header');
+      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      sec.appendChild(left);
+      sec.appendChild(right);
+    }
+  }
+
+  // ── Roadmap modifier transforms ─────────────────────────────────────────
+  // Mirror lib/roadmap.js / lattice-emulator.js. Idempotent: each transform
+  // checks for the marker class on the section/cell and bails early when it
+  // has already run.
+  //
+  // Sibling implementations (parity contract):
+  //   lib/roadmap.js        — HTML-string transform run by marp.config.js render hook
+  //   lattice-emulator.js   — per-slide emulator path delegates to lib/roadmap.js
+  //
+  // These DOM transforms act as a fallback for web export and for any
+  // preview path that didn't run the engine plugin.
+
+  const ROADMAP_HORIZON_ACCENTS = [
+    'var(--cat-blue)',   'var(--cat-green)',  'var(--cat-purple)', 'var(--cat-orange)',
+    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+  ];
+  const ROADMAP_STATE_LABEL = {
+    'state-shipped':  'Shipped',
+    'state-wip':      'In flight',
+    'state-planned':  'Planned',
+    'state-skipped':  'Out of scope',
+  };
+  function roadmapMarkerToState(marker) {
+    switch (marker) {
+      case 'x': return 'state-shipped';
+      case '-': return 'state-wip';
+      case ' ': return 'state-planned';
+      case '/': return 'state-skipped';
+      default:  return '';
+    }
+  }
+
+  function transformRoadmapStatus() {
+    // State markers `[x]/[-]/[ ]/[/]` work on any roadmap variant. The
+    // .status modifier adds the heavy treatment via CSS; other variants
+    // get the light treatment (state-coloured dot + skip strike).
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.roadmap')) {
+      const rows = section.querySelectorAll(':scope > table > tbody > tr');
+      for (const tr of rows) {
+        const tds = tr.querySelectorAll(':scope > td');
+        for (let i = 0; i < tds.length; i++) {
+          if (i === 0) continue; // workstream label cell
+          const td = tds[i];
+          if (td.classList.contains('cell-state')) continue;
+          const text = td.textContent;
+          const m = /^\s*\[([x\-\/ ])\]\s*/.exec(text);
+          if (!m) continue;
+          const state = roadmapMarkerToState(m[1]);
+          if (!state) continue;
+          const label = ROADMAP_STATE_LABEL[state];
+          // Strip the marker from the first text node and wrap the
+          // remaining content in a <span class="cell-state-text">.
+          const firstText = (function () {
+            for (const n of td.childNodes) {
+              if (n.nodeType === 3) return n;
+              if (n.nodeType === 1) return null;
+            }
+            return null;
+          })();
+          if (firstText) {
+            firstText.nodeValue = firstText.nodeValue.replace(/^\s*\[[x\-\/ ]\]\s*/, '');
+          }
+          // Wrap remaining content
+          const wrap = document.createElement('span');
+          wrap.className = 'cell-state-text';
+          while (td.firstChild) wrap.appendChild(td.firstChild);
+          const eyebrow = document.createElement('span');
+          eyebrow.className = 'cell-state-label';
+          eyebrow.textContent = label;
+          td.appendChild(eyebrow);
+          td.appendChild(wrap);
+          td.classList.add('cell-state', state);
+        }
+      }
+    }
+  }
+
+  function transformRoadmapHorizons() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.roadmap.horizons')) {
+      if (section.querySelector('.horizons')) continue;
+      const table = section.querySelector(':scope > table');
+      if (!table) continue;
+      const headRow = table.querySelector(':scope > thead > tr');
+      if (!headRow) continue;
+      const headCells = [...headRow.children];
+      if (headCells.length < 2) continue;
+      const phaseHeaders = headCells.slice(1).map(c => c.innerHTML.trim());
+
+      const bodyRows = [...table.querySelectorAll(':scope > tbody > tr')]
+        .map(tr => {
+          const cells = [...tr.children];
+          return {
+            label: cells[0] ? cells[0].innerHTML.trim() : '',
+            cells: cells.slice(1).map(c => {
+              // Pull the state class (set by transformRoadmapStatus
+              // upstream when a [x]/[-]/[ ]/[/] marker was present)
+              // and the plain text content out of the cell.
+              let state = '';
+              for (const cls of c.classList) {
+                if (/^state-/.test(cls)) { state = cls; break; }
+              }
+              const textSpan = c.querySelector(':scope > .cell-state-text');
+              const text = textSpan ? textSpan.innerHTML.trim() : c.innerHTML.trim();
+              return { text, state };
+            }),
+          };
+        })
+        .filter(r => r.label !== '');
+
+      const wrap = document.createElement('div');
+      wrap.className = 'horizons';
+      phaseHeaders.forEach((header, idx) => {
+        const card = document.createElement('div');
+        card.className = 'horizon-card';
+        card.style.setProperty('--phase-accent', ROADMAP_HORIZON_ACCENTS[idx % ROADMAP_HORIZON_ACCENTS.length]);
+        const head = document.createElement('div');
+        head.className = 'horizon-head';
+        const eyebrow = document.createElement('span');
+        eyebrow.className = 'horizon-eyebrow';
+        eyebrow.textContent = 'Phase ' + String(idx + 1).padStart(2, '0');
+        // Lift a trailing <code> into a meta pill — mirrors lib/roadmap.js.
+        let headerHtml = header;
+        let metaText = '';
+        const trailingCode = header.match(/\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*$/);
+        if (trailingCode) {
+          headerHtml = header.slice(0, trailingCode.index).trim();
+          metaText = trailingCode[1];
+        }
+        const title = document.createElement('span');
+        title.className = 'horizon-title';
+        title.innerHTML = headerHtml;
+        head.appendChild(eyebrow);
+        head.appendChild(title);
+        if (metaText) {
+          const meta = document.createElement('span');
+          meta.className = 'horizon-meta';
+          meta.innerHTML = metaText;
+          head.appendChild(meta);
+        }
+        const ul = document.createElement('ul');
+        ul.className = 'horizon-rows';
+        for (const r of bodyRows) {
+          const cell = r.cells[idx] || { text: '', state: '' };
+          const li = document.createElement('li');
+          if (cell.state) li.className = 'cell-state ' + cell.state;
+          const lbl = document.createElement('span');
+          lbl.className = 'row-label';
+          lbl.innerHTML = r.label;
+          const text = cell.text;
+          const isEmpty = !text || text === '—' || text === '-';
+          const txt = document.createElement('span');
+          txt.className = isEmpty ? 'row-text row-empty' : 'row-text';
+          txt.innerHTML = isEmpty ? '—' : text;
+          li.appendChild(lbl);
+          li.appendChild(txt);
+          ul.appendChild(li);
+        }
+        card.appendChild(head);
+        card.appendChild(ul);
+        wrap.appendChild(card);
+      });
+      table.replaceWith(wrap);
+    }
+  }
+
+  /**
+   * Strips trailing periods from headings on `no-period` slides.
+   * Authors opt in deck-wide via `class: no-period` in front
+   * matter. Walks to the last text node inside each heading so inline markup
+   * (e.g. `<em>text.</em>`) is handled correctly. Mirrors the Marp plugin in
+   * marp.config.js and the `sp` helper in lattice-emulator.js.
+   */
+  function transformStripHeadingPeriods() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.no-period')) {
+      for (const h of section.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (h.dataset.periodsStripped) continue;
+        let lastText = null;
+        (function walk(node) {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) lastText = child;       // TEXT_NODE
+            else if (child.nodeType === 1) walk(child);       // ELEMENT_NODE
+          }
+        })(h);
+        if (lastText) lastText.nodeValue = lastText.nodeValue.replace(/\.\s*$/, '');
+        h.dataset.periodsStripped = '1';
+      }
+    }
+  }
+
+  /**
+   * Appends a period to headings on `with-period` slides that do not
+   * already end with terminal punctuation (.!?:…). Mirrors the Marp plugin in
+   * marp.config.js and the `ap` helper in lattice-emulator.js.
+   */
+  function transformAddHeadingPeriods() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.with-period')) {
+      for (const h of section.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+        if (h.dataset.periodsAdded) continue;
+        let lastText = null;
+        (function walk(node) {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) lastText = child;
+            else if (child.nodeType === 1) walk(child);
+          }
+        })(h);
+        if (lastText && !/[.!?:…]$/.test(lastText.nodeValue.trimEnd())) {
+          lastText.nodeValue = lastText.nodeValue.trimEnd() + '.';
+        }
+        h.dataset.periodsAdded = '1';
       }
     }
   }
@@ -774,7 +1177,7 @@
   // the extension. Same pattern as transformVerdictGridBadges,
   // applyGlossaryListTable, etc. The transform is idempotent: a section
   // already wrapped in `chart-frame` is a no-op.
-  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart'];
+  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
   const PIE_PALETTE = [
     'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
     'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
@@ -937,6 +1340,190 @@
     return figure;
   }
 
+  function buildGanttChart(ul, eyebrowText) {
+    const parseWindow = (text) => {
+      const m = text.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+      if (!m) return { ticks: [], colMap: {} };
+      const norm = (s) => {
+        const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+        const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+        return s.trim();
+      };
+      const start = norm(m[1].trim()), end = norm(m[2].trim());
+      const allQ = ['Q1','Q2','Q3','Q4'];
+      const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const qs = allQ.indexOf(start), qe = allQ.indexOf(end);
+      const ms = allM.indexOf(start), me = allM.indexOf(end);
+      let ticks;
+      if (qs >= 0 && qe >= 0 && qe >= qs)       ticks = allQ.slice(qs, qe + 1);
+      else if (ms >= 0 && me >= 0 && me >= ms)   ticks = allM.slice(ms, me + 1);
+      else return { ticks: [], colMap: {} };
+      const colMap = {};
+      ticks.forEach((t, i) => { colMap[t] = i + 1; });
+      return { ticks, colMap };
+    };
+    const parseRange = (pill, colMap) => {
+      const m = pill.match(/(.+?)\s*(?:→|–|->)\s*(.+)/);
+      if (!m) return { col: 1, span: 1 };
+      const norm = (s) => {
+        const q = s.match(/Q[1-4]/i); if (q) return q[0].toUpperCase();
+        const allM = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mo = allM.find(mn => new RegExp(mn, 'i').test(s)); if (mo) return mo;
+        return s.trim();
+      };
+      const sc = colMap[norm(m[1].trim())], ec = colMap[norm(m[2].trim())];
+      if (!sc || !ec) return { col: 1, span: 1 };
+      return { col: sc, span: ec - sc + 1 };
+    };
+
+    const { ticks, colMap } = parseWindow(eyebrowText || '');
+    const numCols = ticks.length || 4;
+    const chart = document.createElement('div');
+    chart.className = 'gantt-chart';
+    chart.style.setProperty('--gantt-cols', numCols);
+
+    const axisRow = document.createElement('div');
+    axisRow.className = 'gantt-axis-row';
+    const axisSpacer = document.createElement('div');
+    axisSpacer.className = 'gantt-axis-spacer';
+    const ticksEl = document.createElement('div');
+    ticksEl.className = 'gantt-ticks';
+    for (const t of ticks) {
+      const tick = document.createElement('div');
+      tick.className = 'gantt-tick';
+      tick.textContent = t;
+      ticksEl.appendChild(tick);
+    }
+    axisRow.appendChild(axisSpacer);
+    axisRow.appendChild(ticksEl);
+    chart.appendChild(axisRow);
+
+    for (const li of ul.querySelectorAll(':scope > li')) {
+      const nestedUl = li.querySelector(':scope > ul, :scope > ol');
+      const labelClone = li.cloneNode(true);
+      labelClone.querySelector(':scope > ul, :scope > ol')?.remove();
+      const laneLabel = labelClone.textContent.trim();
+
+      const lane = document.createElement('div');
+      lane.className = 'gantt-lane';
+      const labelEl = document.createElement('div');
+      labelEl.className = 'gantt-lane-label';
+      labelEl.textContent = laneLabel;
+      const barsEl = document.createElement('div');
+      barsEl.className = 'gantt-bars';
+
+      if (nestedUl) {
+        for (const barLi of nestedUl.querySelectorAll(':scope > li')) {
+          const clone = barLi.cloneNode(true);
+          clone.querySelector(':scope > ul, :scope > ol')?.remove();
+          const pills = extractTrailingPills(clone);
+          const rangePill  = pills.find(p => /→|–|->/.test(p)) || '';
+          const statusPill = pills.find(p => !/→|–|->/.test(p)) || '';
+          const { col, span } = rangePill ? parseRange(rangePill, colMap) : { col: 1, span: 1 };
+          const bar = document.createElement('div');
+          bar.className = 'gantt-bar';
+          if (statusPill) bar.dataset.s = statusPill;
+          bar.style.setProperty('--gantt-col-start', col);
+          bar.style.setProperty('--gantt-col-span', span);
+          bar.innerHTML = clone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
+          barsEl.appendChild(bar);
+        }
+      }
+      lane.appendChild(labelEl);
+      lane.appendChild(barsEl);
+      chart.appendChild(lane);
+    }
+    return chart;
+  }
+
+  function buildKanbanBoard(ul) {
+    const KB_STATUS = ['on-track','done','live','at-risk','warn','blocked','fail','pilot','decision','deferred'];
+    const KB_SIZE   = ['s','m','l','xl'];
+    const KB_DONE_NAMES = ['done','completed','shipped','closed'];
+    const LANE_COLORS = [
+      'var(--cat-blue)','var(--cat-green)','var(--cat-purple)','var(--cat-orange)',
+      'var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)',
+    ];
+    const laneColorMap = {};
+    let laneColorIdx = 0;
+    const getLaneColor = (lane) => {
+      if (!lane) return '';
+      const key = lane.toLowerCase();
+      if (!laneColorMap[key]) laneColorMap[key] = LANE_COLORS[laneColorIdx++ % LANE_COLORS.length];
+      return laneColorMap[key];
+    };
+
+    const board = document.createElement('div');
+    board.className = 'kanban-board';
+
+    for (const colLi of ul.querySelectorAll(':scope > li')) {
+      const nestedUl = colLi.querySelector(':scope > ul, :scope > ol');
+      const headerClone = colLi.cloneNode(true);
+      headerClone.querySelector(':scope > ul, :scope > ol')?.remove();
+      const colHeader = headerClone.textContent.trim();
+      const isDone = KB_DONE_NAMES.includes(colHeader.toLowerCase());
+
+      const col = document.createElement('div');
+      col.className = 'kanban-column';
+      if (isDone) col.dataset.done = '';
+      const headerEl = document.createElement('div');
+      headerEl.className = 'kanban-column-header';
+      headerEl.textContent = colHeader;
+      col.appendChild(headerEl);
+
+      const cardsEl = document.createElement('div');
+      cardsEl.className = 'kanban-cards';
+      if (nestedUl) {
+        for (const cardLi of nestedUl.querySelectorAll(':scope > li')) {
+          const cardClone = cardLi.cloneNode(true);
+          const bodySub = cardClone.querySelector(':scope > ul, :scope > ol');
+          let label = '', status = '', cardBody = '';
+          if (bodySub) {
+            const subLis = Array.from(bodySub.querySelectorAll(':scope > li'));
+            if (subLis[0]) {
+              const metaClone = subLis[0].cloneNode(true);
+              const trailingCode = metaClone.querySelector('code:last-child');
+              const trailingText = trailingCode ? trailingCode.textContent.trim() : '';
+              if (trailingText && KB_STATUS.includes(trailingText.toLowerCase())) {
+                status = trailingText;
+                trailingCode.remove();
+              }
+              label = metaClone.textContent.trim();
+            }
+            if (subLis[1]) cardBody = subLis[1].innerHTML.trim();
+            bodySub.remove();
+          }
+          // Size: one trailing size code on the title line
+          const titleCode = cardClone.querySelector('code:last-child');
+          const titleCodeText = titleCode ? titleCode.textContent.trim() : '';
+          let size = '';
+          if (titleCodeText && KB_SIZE.includes(titleCodeText.toLowerCase())) {
+            size = titleCodeText.toUpperCase();
+            titleCode.remove();
+          }
+          const cardTitle = cardClone.innerHTML.replace(/^<p[^>]*>([\s\S]*)<\/p>$/, '$1').trim();
+          const laneColor = getLaneColor(label);
+          const card = document.createElement('div');
+          card.className = 'kanban-card';
+          if (status) card.dataset.s = status;
+          if (laneColor) card.style.setProperty('--lane-color', laneColor);
+          const sizeEl   = size   ? '<span class="kanban-size">' + chartEscAttr(size) + '</span>' : '';
+          const laneEl   = label  ? '<span class="kanban-lane" style="--lane-color:' + (laneColor || 'var(--accent)') + '">' + chartEscAttr(label) + '</span>' : '';
+          const statusEl = status ? '<span class="chart-status" data-s="' + chartEscAttr(status) + '">' + chartEscAttr(status) + '</span>' : '';
+          card.innerHTML =
+            '<div class="kanban-card-title"><span class="kanban-title-text">' + cardTitle + '</span>' + sizeEl + '</div>' +
+            ((laneEl || statusEl) ? '<div class="kanban-card-meta">' + laneEl + statusEl + '</div>' : '') +
+            (cardBody ? '<div class="kanban-card-body">' + cardBody + '</div>' : '');
+          cardsEl.appendChild(card);
+        }
+      }
+      col.appendChild(cardsEl);
+      board.appendChild(col);
+    }
+    return board;
+  }
+
   function transformChartSection(section, layout) {
     if (section.querySelector(':scope > .chart-header')) return;
     const h2 = section.querySelector(':scope > h2');
@@ -973,9 +1560,12 @@
 
     let chartContainer;
     const isDonut = section.classList.contains('donut');
+    const eyebrowText = eyebrowEl ? eyebrowEl.firstElementChild.textContent : '';
     if (layout === 'progress')           chartContainer = buildProgressBars(list);
     else if (layout === 'timeline-list') chartContainer = buildTimelineSpine(list);
     else if (layout === 'piechart')      chartContainer = buildPieChart(list, isDonut);
+    else if (layout === 'gantt')         chartContainer = buildGanttChart(list, eyebrowText);
+    else if (layout === 'kanban')        chartContainer = buildKanbanBoard(list);
     else return;
 
     let captionEl = null;

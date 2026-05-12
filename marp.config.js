@@ -149,7 +149,7 @@ function checklistItemStates(markdown) {
  * Idempotent: skips items whose first inline child is already `strong_open`.
  */
 function slotLabelLift(markdown) {
-  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision)\b/;
+  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision|split-brief|split-metric|split-steps|split-compare|split-statement)\b/;
   markdown.core.ruler.after("marpit_slide_containers", "slot_label_lift", (state) => {
     let active = false;
     let listDepth = 0;
@@ -174,6 +174,71 @@ function slotLabelLift(markdown) {
       const open = new Ctor("strong_open", "strong", 1);
       const close = new Ctor("strong_close", "strong", -1);
       token.children = [open, ...token.children, close];
+    }
+  });
+}
+
+/**
+ * Marpit plugin: on a `no-period` slide, strips any trailing
+ * period (and optional trailing whitespace) from every heading token.
+ * Authors opt in deck-wide via `class: no-period` in front
+ * matter. Mirrors the `sp` helper in lattice-emulator.js and the
+ * `transformStripHeadingPeriods` function in lattice-runtime.js.
+ */
+function stripHeadingPeriods(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "strip_heading_periods", (state) => {
+    let active = false;
+    let pendingInline = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        active = /\bno-period\b/.test(token.attrGet("class") || "");
+        pendingInline = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { active = false; continue; }
+      if (!active) continue;
+      if (token.type === "heading_open")  { pendingInline = true;  continue; }
+      if (token.type === "heading_close") { pendingInline = false; continue; }
+      if (token.type !== "inline" || !pendingInline || !token.children) continue;
+      for (let i = token.children.length - 1; i >= 0; i--) {
+        if (token.children[i].type === "text") {
+          token.children[i].content = token.children[i].content.replace(/\.\s*$/, "");
+          break;
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Marpit plugin: on an `with-period` slide, appends a period to any
+ * heading that does not already end with terminal punctuation (.!?:…).
+ * Authors opt in deck-wide via `class: with-period` in front matter.
+ * Mirrors the `ap` helper in lattice-emulator.js and the
+ * `transformAddHeadingPeriods` function in lattice-runtime.js.
+ */
+function addHeadingPeriods(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "add_heading_periods", (state) => {
+    let active = false;
+    let pendingInline = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        active = /\bwith-period\b/.test(token.attrGet("class") || "");
+        pendingInline = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { active = false; continue; }
+      if (!active) continue;
+      if (token.type === "heading_open")  { pendingInline = true;  continue; }
+      if (token.type === "heading_close") { pendingInline = false; continue; }
+      if (token.type !== "inline" || !pendingInline || !token.children) continue;
+      for (let i = token.children.length - 1; i >= 0; i--) {
+        if (token.children[i].type === "text") {
+          const c = token.children[i].content;
+          if (!/[.!?:…]$/.test(c)) token.children[i].content = c + ".";
+          break;
+        }
+      }
     }
   });
 }
@@ -349,6 +414,8 @@ function registerMermaidHljs(marp) {
 }
 
 const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
+const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
+const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
@@ -370,7 +437,9 @@ module.exports = {
         .use(checklistItemStates)
         .use(slotLabelLift)
         .use(glossaryListToTable)
-        .use(glossaryRange);
+        .use(glossaryRange)
+        .use(stripHeadingPeriods)
+        .use(addHeadingPeriods);
 
     // Wrap render() so chart-family slides are rewritten into the
     // chart-frame skeleton in the rendered HTML — same DOM the export
@@ -383,6 +452,8 @@ module.exports = {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
         result.html = applyChartFamilyToHtml(result.html);
+        result.html = applySplitPanelsToHtml(result.html);
+        result.html = applyRoadmapToHtml(result.html);
       }
       return result;
     };
@@ -402,4 +473,6 @@ module.exports.plugins = {
   slotLabelLift,
   glossaryListToTable,
   glossaryRange,
+  stripHeadingPeriods,
+  addHeadingPeriods,
 };

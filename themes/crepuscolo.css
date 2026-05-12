@@ -82,6 +82,19 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Twilight + dusk-warm pop. Brand violet anchors; warm amber is the
+   * CB-safe complement. Deep cyan and coral are analogous siblings;
+   * desaturated mauve is the muted bridge; indigo-black grounds. */
+  --chart-1: light-dark(var(--brand-violet-mid), var(--brand-violet-bright)); /* VIOLET */
+  --chart-2: light-dark(#C49526, #E0B855);   /* AMBER */
+  --chart-3: light-dark(#1B7B92, #5BB5CC);   /* DEEP-CYAN */
+  --chart-4: light-dark(#C66045, #E89070);   /* CORAL */
+  --chart-5: light-dark(#8E7A93, #B5A2BB);   /* MUTED-MAUVE */
+  --chart-6: light-dark(#150F22, #6E5E7E);   /* INDIGO-BLACK */
+
+  --scale-500: var(--brand-violet-mid);
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #1A0F2D;
   --bg-warm-light: #3F2A5C;
@@ -106,6 +119,24 @@
   --mermaid-secondary-color: #DDEAE5;
   --mermaid-border:          #3F2A5C;
   --mermaid-accent-warm:     #BD5000;
+  --mermaid-pie-purple:  #E5DEEB;  /* pale lavender */
+  --mermaid-pie-orange:  #F5E8C8;  /* pale amber */
+  --mermaid-pie-teal:    #D8EEF3;  /* pale cyan */
+  --mermaid-pie-rose:    #EDE3E8;  /* pale mauve */
+  --mermaid-pie-yellow:  #F3EDD0;  /* pale gold */
+  --mermaid-pie-red:     #F3DDE0;  /* pale coral-rose */
+  --mermaid-pie-slate:   #D8D5E5;  /* pale violet-slate */
+  --mermaid-pie-sage:    #DDE9E6;  /* pale sage-mint */
+  --mermaid-pie-violet:  #E0D8EC;  /* pale deep-violet */
+  /* cScale / gitgraph — twilight violet + amber family */
+  --cat-blue:   #7B5B9E;  /* mid-violet */
+  --cat-green:  #A8841E;  /* mid-amber */
+  --cat-purple: #3E7A8A;  /* mid-cyan */
+  --cat-orange: #A45840;  /* mid-coral */
+  --cat-teal:   #6A5880;  /* muted violet */
+  --cat-rose:   #8E6070;  /* mauve */
+  --cat-slate:  #5A5070;  /* deep violet-slate */
+  --cat-mauve:  #8B7298;  /* light violet */
 }
 
 /* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)

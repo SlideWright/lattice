@@ -81,6 +81,21 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Aged-mustard + oxblood (the apothecary duotone). Deep teal is the
+   * cool complement; dusty blue gives a second cool sibling for chart-4;
+   * olive reinforces the warm-archive feel; sepia ink grounds. */
+  --chart-1: light-dark(var(--brand-mustard-mid), var(--brand-mustard-bright)); /* MUSTARD */
+  --chart-2: light-dark(var(--brand-oxblood), var(--brand-oxblood-bright));     /* OXBLOOD */
+  --chart-3: light-dark(#1F6B7C, #5BB5CC);   /* DEEP-TEAL */
+  --chart-4: light-dark(#4D5E8A, #8095BC);   /* DUSTY-BLUE */
+  --chart-5: light-dark(#6B7530, #A5B560);   /* OLIVE */
+  --chart-6: light-dark(var(--brand-mustard-deep), #BDAC78); /* SEPIA-INK */
+
+  --scale-500: var(--brand-mustard-mid);
+
+  /* Tag uses --chart-2 (oxblood) — the apothecary alarm/label pop. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0A03;
   --bg-warm-light: #2A1F0E;
@@ -105,6 +120,24 @@
   --mermaid-secondary-color: #F0E5C8;
   --mermaid-border:          #3D2D14;
   --mermaid-accent-warm:     var(--brand-oxblood);
+  --mermaid-pie-purple:  #F0E8C0;  /* pale parchment-gold */
+  --mermaid-pie-orange:  #F5E5A8;  /* pale mustard-amber */
+  --mermaid-pie-teal:    #D8E5D5;  /* pale sage */
+  --mermaid-pie-rose:    #F0D8CC;  /* pale warm-oxblood */
+  --mermaid-pie-yellow:  #F0E8D0;  /* pale parchment */
+  --mermaid-pie-red:     #EDD5C8;  /* pale terracotta */
+  --mermaid-pie-slate:   #E0D8C5;  /* pale warm-slate */
+  --mermaid-pie-sage:    #D8E0CC;  /* pale sage-green */
+  --mermaid-pie-violet:  #E5E0C8;  /* pale warm-neutral */
+  /* cScale / gitgraph — mustard gold + oxblood family */
+  --cat-blue:   #786010;  /* mustard */
+  --cat-green:  #581A10;  /* oxblood */
+  --cat-purple: #385848;  /* sage contrast */
+  --cat-orange: #906818;  /* amber */
+  --cat-teal:   #305848;  /* deep teal */
+  --cat-rose:   #804838;  /* terracotta */
+  --cat-slate:  #685040;  /* warm sepia */
+  --cat-mauve:  #786050;  /* warm taupe */
 }
 
 section pre.hljs {

@@ -81,6 +81,22 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Brutalist gray-canvas theme. Jet + oxblood is the duotone; three
+   * desaturated chromatic voices give chart distinction without breaking
+   * the architectural quiet. The neutrals (chart-5, chart-6) anchor the
+   * lightness hierarchy on the gray canvas. */
+  --chart-1: light-dark(var(--brand-jet), var(--brand-bone));      /* JET / BONE */
+  --chart-2: light-dark(var(--brand-oxblood), var(--brand-oxblood-soft)); /* OXBLOOD */
+  --chart-3: light-dark(#4D6B7C, #87A0BC);   /* DESAT-BLUE */
+  --chart-4: light-dark(#6B7530, #A8B560);   /* DESAT-OLIVE */
+  --chart-5: light-dark(#585855, #C8C8C5);   /* NEUTRAL-DARK */
+  --chart-6: light-dark(#989895, #B8B8B5);   /* NEUTRAL-MID */
+
+  --scale-500: light-dark(#585855, #B8B8B5);
+
+  /* Tag uses --chart-2 (oxblood) — Concrete's signature accent break. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0F0F;
   --bg-warm-light: #2A2A28;
@@ -105,6 +121,24 @@
   --mermaid-secondary-color: #ECECE8;
   --mermaid-border:          #2A2A28;
   --mermaid-accent-warm:     var(--brand-oxblood);
+  --mermaid-pie-purple:  #D5D5D2;  /* pale concrete */
+  --mermaid-pie-orange:  #E8D8D0;  /* pale warm-oxblood tint */
+  --mermaid-pie-teal:    #CCCCCA;  /* slightly darker concrete */
+  --mermaid-pie-rose:    #E8D8D5;  /* pale warm-gray-rose */
+  --mermaid-pie-yellow:  #E8E5D8;  /* pale warm-bone */
+  --mermaid-pie-red:     #E5D0D0;  /* pale warm-red */
+  --mermaid-pie-slate:   #D5D5CE;  /* concrete-slate */
+  --mermaid-pie-sage:    #D8DDD5;  /* pale warm-sage */
+  --mermaid-pie-violet:  #D8D5E0;  /* pale cool contrast */
+  /* cScale / gitgraph — warm gray with one oxblood pop */
+  --cat-blue:   #585856;
+  --cat-green:  #921E1E;  /* oxblood */
+  --cat-purple: #787876;
+  --cat-orange: #404040;
+  --cat-teal:   #686866;
+  --cat-rose:   #9E9E9C;
+  --cat-slate:  #505050;
+  --cat-mauve:  #8A8A88;
 }
 
 section pre.hljs {

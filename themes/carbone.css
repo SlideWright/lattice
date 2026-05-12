@@ -92,6 +92,23 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Pinned-dark theme. All chart colors are foreground-bright on the
+   * #1A1A1C graphite canvas. Lime + amber is the duotone (the cyber
+   * editorial pop); cyan and magenta complete a CMYK-style 4-hue spread;
+   * bone neutral and graphite-mid ground. */
+  --chart-1: var(--brand-lime);   /* LIME — brand */
+  --chart-2: #FFD166;             /* AMBER */
+  --chart-3: #5BCBDD;             /* CYAN */
+  --chart-4: #F277B8;             /* MAGENTA */
+  --chart-5: #DCDCD7;             /* BONE */
+  --chart-6: #757A82;             /* GRAPHITE-MID */
+
+  --scale-500: var(--brand-lime);
+
+  /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
+   * status badges a cyber-warm pop against the cold graphite. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0E0E10;
   --bg-warm-light: #2A2A2E;
@@ -118,6 +135,25 @@
   --mermaid-secondary-color: #2C3D2F;
   --mermaid-border:          var(--brand-lime);
   --mermaid-accent-warm:     #FFD166;
+  /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
+  --mermaid-pie-purple:  #2E2A38;
+  --mermaid-pie-orange:  #382E22;
+  --mermaid-pie-teal:    #223328;
+  --mermaid-pie-rose:    #342830;
+  --mermaid-pie-yellow:  #35332A;
+  --mermaid-pie-red:     #38282A;
+  --mermaid-pie-slate:   #2A2E38;
+  --mermaid-pie-sage:    #253328;
+  --mermaid-pie-violet:  #2C2838;
+  /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
+  --cat-blue:   #4A9C56;  /* darker lime */
+  --cat-green:  #9A7820;  /* darker amber */
+  --cat-purple: #3E8898;  /* darker cyan */
+  --cat-orange: #8E4870;  /* darker magenta */
+  --cat-teal:   #5DAF68;  /* lime */
+  --cat-rose:   #707878;
+  --cat-slate:  #585E6A;
+  --cat-mauve:  #808080;
 }
 
 section pre.hljs {

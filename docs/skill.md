@@ -16,6 +16,7 @@ Open the relevant file before starting work. Only load what the current task nee
 |------|------|
 | Writing or editing slide content | [references/design.md](./references/design.md) + [references/templates.md](./references/templates.md) |
 | Choosing a layout class or template | [references/templates.md](./references/templates.md) |
+| Adding a background accent (`bg-*` classes) | [references/backgrounds.md](./references/backgrounds.md) |
 | Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |
 | Running the render pipeline (PDF/HTML/PPTX) | [references/pipeline.md](./references/pipeline.md) |
 | Comparing lattice-emulator.js vs marp-cli output | [references/audit.md](./references/audit.md) |

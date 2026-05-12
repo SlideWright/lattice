@@ -81,6 +81,19 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Dusty rose anchor + sage complement (cool-warm balance). Dusty teal
+   * and warm amber give analogous-cool/analogous-warm distinction;
+   * mauve-violet is the muted bridge; garnet ink grounds. */
+  --chart-1: light-dark(var(--brand-rose-mid), var(--brand-rose-bright)); /* ROSE */
+  --chart-2: light-dark(#758C6E, #A5BB95);   /* SAGE */
+  --chart-3: light-dark(#4A8590, #7AB5BC);   /* DUSTY-TEAL */
+  --chart-4: light-dark(#C49526, #E0B855);   /* AMBER */
+  --chart-5: light-dark(#8B6E8C, #B89AAB);   /* MAUVE-VIOLET */
+  --chart-6: light-dark(var(--brand-rose-deep), #B79A93); /* GARNET-INK */
+
+  --scale-500: var(--brand-rose-mid);
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #14060A;
   --bg-warm-light: #3F1A22;
@@ -105,6 +118,24 @@
   --mermaid-secondary-color: #EFD5C9;
   --mermaid-border:          #5A2530;
   --mermaid-accent-warm:     #BD5000;
+  --mermaid-pie-purple:  #F5DDD8;  /* pale dusty-rose */
+  --mermaid-pie-orange:  #F0DBBF;  /* pale peach-gold */
+  --mermaid-pie-teal:    #D8E8DC;  /* pale sage-green */
+  --mermaid-pie-rose:    #EFD5C9;  /* pale peach */
+  --mermaid-pie-yellow:  #F5EDCC;  /* pale cream-gold */
+  --mermaid-pie-red:     #F2D2D0;  /* pale faded-rose */
+  --mermaid-pie-slate:   #E0D8E0;  /* pale dusty-mauve */
+  --mermaid-pie-sage:    #D5E5D8;  /* pale sage */
+  --mermaid-pie-violet:  #EAD8E5;  /* pale dusty-violet */
+  /* cScale / gitgraph — dusty rose + sage family */
+  --cat-blue:   #A06070;  /* dusty rose */
+  --cat-green:  #587848;  /* sage */
+  --cat-purple: #805880;  /* dusty violet */
+  --cat-orange: #A87848;  /* dusty amber */
+  --cat-teal:   #487A68;  /* sage-teal */
+  --cat-rose:   #A87080;  /* dusty pink */
+  --cat-slate:  #6A7880;  /* cool slate */
+  --cat-mauve:  #886070;  /* dusty mauve */
 }
 
 section pre.hljs {

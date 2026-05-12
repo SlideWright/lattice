@@ -15,9 +15,9 @@ Every layout falls into one of two categories. The distinction matters because i
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `split-panel`, `stats`, `verdict-grid` | yes — `lattice-emulator.js` rewrites DOM |
-| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `image left`, `image-full`, `code`         | no — CSS-only                   |
+| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code`         | no — CSS-only                   |
 
-Modifiers (`dark`, image variants like `image left`, etc.) compose with both categories.
+Modifiers (`dark`, `mirror`, and image-specific `full` / `contain`, etc.) compose with both categories.
 
 **Authoring implication:** every structured layout has a single canonical list shape documented in its template entry. Deviating from that shape (wrong list type, wrong nesting depth, missing `**Title.**` marker, etc.) causes the post-processor to fall back to the raw list rendering, which the CSS does not style. When a structured slide looks wrong, check the source list shape first.
 
@@ -82,14 +82,14 @@ This replaces the `_em paragraph_` pattern (`_text_`) for post-heading descripto
 | -------------- | ------------------------------------------------------- | ---------------------------------------------- |
 | Structural     | T1 Title, T2 Divider, T3 Sub-Topic, T18 Closing         | `title` `divider` `subtopic` `closing`         |
 | Text           | T4 Content, T12 Quote, T14 List, T20 Criteria, T28 Checklist | `content` `quote` `list` `list-criteria` `checklist` |
-| Text variant   | T14v Tabular Inline                                     | `list-tabular`                                 |
+| Text variant   | T14 Tabular                                             | `list-tabular` (+ `def` / `metric` / `spec` / `register` variants) |
 | Data           | T5 Diagram, T6 Stats, T16 Big Number, T22 Compare Table, T27 Glossary | `diagram` `stats` `big-number` `compare-table` `glossary` |
 | Cards          | T7 Grid 2×2, T8 Grid 2+1, T9 Stacked, T10 Side-by-Side  | `cards-grid` `cards-stack` `cards-side`       |
 | Cards cont.    | T19 Three-Row Wide, T21 Verdict Grid                    | `cards-wide` `verdict-grid`                  |
 | Comparative    | T11 Comparison, T23 Featured                            | `compare-prose` `featured`                        |
 | Layout         | T13 Timeline, T17 Split Panel                           | `timeline` `split-panel`          |
 | Layout variant | T13v Step Cards                                         | `list-steps`                                        |
-| Visual         | T15 Image Full, T24 Image (text + bg)                   | `image-full` `image` (`image left` variant)         |
+| Visual         | T24 Image (text + bg, full bleed)                       | `image` (`mirror`, `full`, `contain` modifiers)     |
 | Code           | T25 Code, T26 Code Compare                              | `code` `compare-code`                          |
 
 ## State Convention
@@ -198,7 +198,7 @@ Flips the asymmetric half of a layout left/right. Applies only where the layout 
 
 | Layout          | Effect                                                                  |
 | --------------- | ----------------------------------------------------------------------- |
-| `image`         | image side flips from right (default) to left. Alias of legacy `left`. |
+| `image`         | image slot flips from right (default) to left. Alias of legacy `image left`. |
 | `featured`      | hero card moves from the left column to the right column.              |
 | `split-panel`   | accent panel moves from the left to the right.                         |
 | `compare-prose` | left and right cards swap; chosen/decision read from the left.         |
@@ -209,7 +209,7 @@ Flips the asymmetric half of a layout left/right. Applies only where the layout 
 <!-- _class: compare-prose mirror chosen -->
 ```
 
-`image left` is preserved as a deprecated alias; new authoring should prefer `image mirror`.
+`image left` is preserved as a deprecated alias for `image mirror`. The cross-cutting `mirror` modifier composes with `full` and `contain` (e.g. `image full mirror`).
 
 #### `numbered`
 
@@ -385,19 +385,29 @@ Numbered list of declarative one-liners in display weight. Each item is one para
 
 ### `roadmap` — phased multi-workstream grid
 
-A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold, on tinted ground). Phase columns (everything after the first) get phase chrome — a numbered badge in the header. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
+A markdown table that becomes a phased rollout grid. The first column carries the workstream label (sticky, bold) with a categorical lane stripe per row. Phase columns (everything after the first) carry the phase NAME as the header text plus an optional trailing inline-code element that becomes a right-anchored meta pill seated on the spectrum line — the pill takes the column's categorical accent and carries author-supplied meta (a date, an owner, a status tag). Header text and pill carry different information; the pill is never an auto-counter. Empty cells render as a thin muted dash so the eye reads "not in this phase" rather than "missing data."
 
 ```markdown
 <!-- _class: roadmap -->
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01         | Phase 02           | Phase 03              |
-| ---------- | ---------------- | ------------------ | --------------------- |
-| Platform   | Codebook signing | Multi-tenant DEKs  | Per-purpose codebooks |
-| Operations | Manual rotation  | Automated rotation | Crypto-shred          |
-| SDK        | Java             |                    | Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026`       |
+| ---------- | -------------------- | ------------------- | --------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs   | Per-purpose codebooks |
+| Operations | Manual rotation      | Automated rotation  | Crypto-shred          |
+| SDK        | Java                 |                     | Polyglot parity       |
 ```
+
+**State markers are universal.** Any cell in any roadmap variant can start with `[x]` shipped / `[-]` in flight / `[ ]` planned / `[/]` out of scope (the marker vocabulary is shared with `checklist` and `verdict-grid`). lib/roadmap.js strips the marker, tags the cell with a state class, and the CSS draws a small state-coloured glyph before the cell text — ✓ check for shipped, ◐ half-filled disc for in flight, ○ outlined empty disc for planned, ╱ diagonal slash plus strike-through for out of scope. Shipped / in flight / planned share a fullness gradient (filled → half → empty); out of scope sits outside that axis. The `status` modifier upgrades this to the heavy treatment.
+
+| Modifier     | Effect                                                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| (default)    | workstream × phase grid; lane stripe per row; right-anchored meta pill on the spectrum line per phase header. State markers render as small coloured dots. |
+| `status`     | upgrades the universal state markers to the heavy treatment: full left-edge ribbon, state-tinted ground, and a mono-caps state eyebrow (SHIPPED / IN FLIGHT / PLANNED / OUT OF SCOPE) above each cell's text. |
+| `horizons`   | transposes the table into Now/Next/Later vertical phase cards. Each card carries an eyebrow (Phase 01/02/…), the phase header text, the trailing meta pill (lifted from the header's inline code), and the workstream commitments stacked underneath with their workstream labels. State markers flow through onto the card rows. |
+| `swimlane`   | each row reads as a horizontal track: the workstream cell becomes a strong lane label on its row's categorical ground; phase cells render as outlined pills along the track. State markers render as dots. |
+| `milestones` | quarter-anchored. Same authoring contract as the default; the difference is phase columns get a soft alternating tint so the timeline reads as a fiscal grid. State markers render as dots. |
 
 ### `kpi` — metrics dashboard with targets and trends
 
@@ -1090,61 +1100,12 @@ Visual result: accent-colored monospace pill appearing inline within the sentenc
 3. Leadership has agreed to log decisions.
 ```
 
-## Template 15: Image Full
+## Template 15 — folded into Template 24
 
-One class, two authoring modes — caption is optional.
-
-### Without caption
-
-```text
-┌─────────────────────────────────────────┐
-│                 header                  │
-│              [image-full]               │
-│                                         │
-│                                         │
-│                                         │
-└─────────────────────────────────────────┘
-```
-
-### With caption
-
-```text
-
-┌─────────────────────────────────────────┐
-│                 header                  │
-│              [image-full]               │
-│                                         │
-│   ┌─ caption text ──────────────────┐   │
-│   └─────────────────────────────────┘   │
-└─────────────────────────────────────────┘
-```
-
-**CSS class:** `image-full`
-
-**Without caption:**
-
-```markdown
-<!-- _class: image-full -->
-<!-- _paginate: false -->
-
-## [ Placeholder text shown in draft mode ]
-```
-
-**With caption:**
-
-```markdown
-<!-- _class: image-full -->
-<!-- _paginate: false -->
-
-## [ Placeholder text shown in draft mode ]
-
-Caption text that appears as an overlay bar at the bottom.
-```
-
-- Caption bar is controlled by a trailing paragraph — include it or omit it
-- The `## heading` text is the draft placeholder; replaced by the real image at `![bg](url)`
-- `footer` is hidden — use the trailing paragraph for attribution instead
-- Use for product screenshots, reference images, full-canvas visuals
+Full-bleed image is no longer a separate class. It is now a modifier on the
+single `image` template — see Template 24 for the consolidated vocabulary
+(`image`, `image mirror`, `image full`, `image full mirror`, `image contain`,
+`image full contain`).
 
 ## Template 16: Big Number / Single Stat
 
@@ -1739,10 +1700,10 @@ Card-bearing layouts auto-number their cards when the source list is an ordered 
 3. **Implication.** Third card carries badge `3`.
 ```
 
-**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`, `roadmap`
+**Layouts that auto-number when authored as `ol`:** `cards-grid`, `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`, `principles`
 
 - Switching from `-` to `1. ` is the entire authoring surface — no modifier class, no comment directive
-- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers; roadmap numbers the phase columns
+- Each layout owns its counter style: cards-grid / cards-side / cards-stack render an accent corner tag; cards-wide renders an accent header pill; list / list-criteria / list-tabular render a mono `01` rail; list-steps renders "STEP 01"; split-panel renders a large accent block; timeline renders a circle node; principles supports `01` / `A` / `I` format modifiers
 - Layouts that **do not** number on `ol` are intentional: state-bearing rows (`actors`, `checklist`, `verdict-grid`), named-slot rows (`featured`, `compare-prose`, `before-after`, `decision`, `matrix-2x2`), equal-weight summaries (`tldr`), and value-display layouts (`kpi`, `stats`, `big-number`)
 
 ---
@@ -1934,9 +1895,9 @@ Extends Template 14 (Timeline / Process). Replaces the dot-on-line with equal-wi
 
 ---
 
-### Variant: T14 Tabular Inline
+### Variant: T14 Tabular
 
-Extends Template 15 (List / Bullet Points). Each list item carries right-aligned metadata columns — creating a pseudo-table within a list structure.
+Extends Template 15 (List / Bullet Points). Each list item carries a name, a description, and a piece of metadata in a tabular row — table scannability with list authoring.
 
 ```text
 ┌─────────────────────────────────────────┐
@@ -1944,95 +1905,163 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 │  LABEL                                  │
 │  Growth is a change in thinking.        │
 │                                         │
-│  01  Remember    Recall facts  Feature  │
-│  02  Understand  Explain it    Module   │
-│  03  Apply       Use patterns  Service  │
-│  04  Analyze     Decompose     System   │
-│ 05  Evaluate    Judge option  Org       │
-│  06  Create      Synthesize    Entrp.   │
+│  01  Remember     Recall facts  FEATURE │
+│  02  Understand   Explain it    MODULE  │
+│  03  Apply        Use patterns  SERVICE │
+│  04  Analyze      Decompose     SYSTEM  │
+│  05  Evaluate     Judge option  ORG     │
+│  06  Create       Synthesize    ENTRP.  │
 │                                         │
 │  footer                           3/19  │
 └─────────────────────────────────────────┘
 ```
 
-**CSS class:** `list-tabular`
+**CSS class:** `list-tabular` — one base class with optional visual variants and fine-tuning modifiers. Author picks the class, modifiers compose with it.
 
-**Layout spec:**
-
-- `section.list-tabular ol`: `list-style: none; counter-reset; display: flex; flex-direction: column; gap: 10px; justify-content: center`
-- Each top-level `li`: `display: grid; grid-template-columns: 44px 160px 1fr 240px; align-items: baseline; column-gap: var(--sp-sm)`
-- Counter column: `::before` renders `counter(..., decimal-leading-zero)` in mono `--accent`
-- Name column: inherits `--fs-emphasis` weight 700 `--text-heading` from the parent li — **author writes plain text, CSS does the bolding** (a leading `**name**` still works but is no longer required)
-- Description column: `--fs-body`, `--text-body`
-- Metadata column: `--fs-xs`, `--text-label`, right-aligned, set via author's `_italic_` span
-
-**Marp markdown source:**
+**The authoring contract** (same across base + all variants):
 
 ```markdown
 <!-- _class: list-tabular -->
 
-## Six dimensions, what they measure, how they are scored.
+## Slide heading.
 
-1. Confidence
-   - Number of independent sources corroborating the signal
-   - _1–5 · Auto-scored_
-2. Recency
-   - Time-decay from signal date, configurable half-life
-   - _0.0–1.0 · Auto-scored_
-3. Relevance
-   - Alignment to current strategic bets, owner-scored
-   - _1–5 · Manual_
+1. Name `Meta string`
+   - Description sentence.
+2. Next name `Other meta`
+   - Description sentence.
 ```
 
-**How the renderer maps this:** Each top-level `<li>` carries the row name as plain text (or wrapped in `**...**` — both work). The nested `<ul>` carries two children: the description, then the metadata as `_italic_`. `lattice-emulator.js` flattens the nested form to `<li><strong>name</strong>desc<em>meta</em></li>`; in the VS Code preview, CSS `display:contents` promotes the inner `<li>`s into the parent grid so the same markdown renders correctly without the build step.
+Two lines per item: the name with inline-code meta adjacent to it on the title line, then a single nested bullet for the description.
 
-**Authoring rule:** the leading `**bold**` is optional. The framework's "CSS does the emphasis, not the author" convention applies here as it does on `list-criteria`, `actors`, `decision`, and the other structured layouts.
+**The meta convention.** Metadata renders as inline code (backticks) **adjacent to what it qualifies** — on the same line as the name. This is the same convention `cards-stack` / `cards-grid` use for badge-style meta on card titles. Why adjacent: meta inherently labels something specific. A piece of meta on its own bullet isn't meta — it's just another bullet. Authoring it next to the name makes the relationship explicit and gives CSS a deterministic hook to pull the meta into its visual column at render time.
+
+**Visual variants** (mutually exclusive — pick one or none):
+
+| Modifier | Look |
+|---|---|
+| (none) | Default — hairline-ruled rows, display-serif name, mono uppercase meta right-aligned. The quiet boardroom-accounting look. |
+| `def` | Editorial — counter at `fs-2xl` display-serif spans both rows; eyebrow caption above the name; name at `fs-lg`; description vertically centred in the right column. Glossary / definition look. |
+| `metric` | Meta renders as a tile on the right (`132%`, `$14.2M`, `4.1d`). Scorecard pattern — OKRs, KPIs, capability scores. |
+| `spec` | Name in mono (treated as a key), mono accent meta right-aligned. API-reference / spec-sheet feel. |
+| `register` | Meta renders as an `--accent-soft` pill. Categorical-meta tables — risk registers, decision logs, status tables. |
+
+**Fine-tuning modifiers** (compose with the variant above):
+
+| Modifier | Works with | Effect |
+|---|---|---|
+| `compact` | any | Tighter row padding for 7-8 row decks |
+| `rule` | `def` | Single continuous full-height accent rail down the ol's left edge |
+| `solid` | `metric` | Filled accent tile with on-accent text, for hero stats |
+| `stacked` | `spec` | Description on its own row beneath the name; counter scales up to `fs-2xl` and spans both rows |
+| `outline` | `register` | Hairline-bordered tag instead of filled pill, for outline IDs (ADR-014, ticket numbers) |
+
+**Composing:**
+
+```markdown
+<!-- _class: list-tabular -->                  ← default ledger
+<!-- _class: list-tabular compact -->          ← default, tighter rows
+<!-- _class: list-tabular def -->              ← editorial
+<!-- _class: list-tabular def rule -->         ← editorial with accent rail
+<!-- _class: list-tabular metric -->           ← scorecard with bordered tile
+<!-- _class: list-tabular metric solid -->     ← scorecard with filled tile
+<!-- _class: list-tabular spec -->             ← spec sheet
+<!-- _class: list-tabular spec stacked -->     ← spec sheet, long descriptions
+<!-- _class: list-tabular register -->         ← register with pill
+<!-- _class: list-tabular register outline --> ← register with outlined tag
+```
+
+**Layout spec:**
+
+- `section.list-tabular ol`: `display: flex; flex-direction: column`. No flex `gap` — hairlines between rows do the row separation.
+- Each top-level `li`: `display: grid` with `grid-template-columns: 44px 200px 1fr auto` for the default. Variants override the grid template as needed (`def` uses 3 cols + 2 rows; `spec` widens col 2 to 260px; `spec.stacked` swaps to 2-row layout).
+- Counter column: `::before` renders `counter(..., decimal-leading-zero)` in mono `--accent`. Size scales with item height — `fs-md` for single-row items, `fs-2xl` (spans rows, centred) for multi-row items like `def` and `spec.stacked`.
+- Name comes from the `li`'s direct text node, placed by auto-flow into the name column.
+- Description comes from the nested `<ul><li>` flattened via `display: contents`, explicit `grid-column` placement.
+- Meta comes from the inline `<code>` element, explicit `grid-column` placement on the meta cell. Default reset (`background: none; border: none; padding: 0; border-radius: 0`) strips the chip styling from the global `section code` rule; each variant then adds its own meta treatment.
+- All three render paths (marp-cli, `lattice-emulator.js`, `lattice-runtime.js`) ship the same markdown shape through identical CSS — no per-renderer DOM transform.
+
+**One markdown gotcha:** if meta contains intraword underscores (`ml_v2`, `notify_batch`), the inline-code form works directly — `` `Flag · ml_v2` `` is unambiguous. The italic form `_Flag · ml_v2_` (legacy convention) would fail because CommonMark blocks the outer `_` pair from forming emphasis across an unpaired inner `_`.
 
 **When to use:** A list where each item has structured metadata — level + scope, item + type + status, verb + description + context. Gives the list the scannability of a table while preserving the flowing left-to-right reading order of a list. Switch to T22 if readers need to scan down columns as much as across rows.
 
+**Example deck:** `examples/list-tabular-gallery.md` ships ten slides — base default + four visual variants + their modifiers — for side-by-side comparison.
+
 ---
 
-## Template 24: Image (text + background image)
+## Template 24: Image
 
-### Default (image right)
+One class, three modifiers. The `image` template covers every visual slide
+shape in the deck: half-canvas image-right (default), half-canvas mirrored,
+full-bleed cover, full-bleed letterbox, and the editorial-plate variant for
+assets that must not crop.
 
-```text
-┌─────────────────────────────────────────┐
-│  header                                 │
-│  LABEL                ┌──────────────┐  │
-│  Heading              │              │  │
-│                       │  [ image ]   │  │
-│  Body text here.      │              │  │
-│                       └──────────────┘  │
-│  footer                           1/19  │
-└─────────────────────────────────────────┘
-```
-
-### Variant: image left
+### Default — half-canvas, cover
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌──────────────┐     LABEL             │
-│  │              │     Heading           │
-│  │  [ image ]   │                       │
-│  │              │     Body text here.   │
-│  └──────────────┘                       │
-│  footer                           1/19  │
+│  LABEL              │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│  Heading            │ ▓▓▓ image ▓▓▓▓▓▓  │
+│                     │ ▓▓ (cover) ▓▓▓▓▓  │
+│  Body text here.    │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│  footer       1/N   │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+└─────────────────────────────────────────┘
+                       ↑ 1px hairline divider
+```
+
+### Variant: `mirror` — image left
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │       LABEL         │
+│  ▓▓▓ image ▓▓▓▓▓▓ │       Heading       │
+│  ▓▓ (cover) ▓▓▓▓▓ │                     │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │       Body text.    │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │                1/N  │
 └─────────────────────────────────────────┘
 ```
 
-**CSS class:** `image` (default: image right) · `image left` (image left)
+### Variant: `contain` — letterbox on a clean matte (no crop)
 
-**Marp directive:**
-
-```markdown
-<!-- _class: image -->
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  LABEL              │ ░░░ ┌──────┐ ░░░  │
+│  Heading            │ ░░░ │image │ ░░░  │
+│                     │ ░░░ │native│ ░░░  │
+│  Body text here.    │ ░░░ │ ratio│ ░░░  │
+│  footer       1/N   │ ░░░ └──────┘ ░░░  │
+└─────────────────────────────────────────┘
+                       ↑ matte (--bg-alt)
+                                  ↑ 1px frame around image
 ```
 
-- Text occupies left half; background image fills right half
-- Use `image left` modifier to flip: image left, text right
-- Text padding auto-adjusted so content never overlaps the image
+### Variant: `full` — full bleed
+
+```text
+┌─────────────────────────────────────────┐
+│ TITLE OVERLAY ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  │  ← gradient scrim
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│ ▓▓▓▓▓▓ image (cover, full bleed) ▓▓▓▓▓  │
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │
+│ Caption text ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒  │  ← gradient scrim
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `image` plus optional modifiers `mirror`, `full`, `contain`.
+
+| Class                       | Effect                                                |
+| --------------------------- | ----------------------------------------------------- |
+| `image`                     | half-canvas image right, cover-fill (default)         |
+| `image mirror`              | half-canvas image left, cover-fill                    |
+| `image contain`             | half-canvas image right, letterbox on matte           |
+| `image mirror contain`      | half-canvas image left, letterbox on matte            |
+| `image full`                | full-bleed cover, optional title + caption scrim      |
+| `image full contain`        | full-bleed letterbox on matte (no crop)               |
+| `image full mirror`         | full bleed; title scrim drops to bottom edge          |
+
+`image left` is a deprecated alias for `image mirror`, kept for one release.
 
 **Marp markdown source:**
 
@@ -2041,38 +2070,53 @@ Extends Template 15 (List / Bullet Points). Each list item carries right-aligned
 
 `Layout · Image`
 
-## Images sit naturally beside text when you need visual evidence.
+## Image right is the default — text leads, evidence follows.
 
-Use `_class: image` with `![bg right fit](url)` — image-right is the default. The `fit` keyword tells Marp's renderer (and ours) to letterbox the image inside its slot rather than crop it.
+Body text describing the visual evidence.
 
-![bg right fit](path/to/image.jpg)
+![bg right](path/to/image.jpg)
 ```
 
 ```markdown
-<!-- _class: image left -->
+<!-- _class: image full -->
+<!-- _paginate: false -->
 
-`Layout · Image Left`
+## Optional title overlay at top
 
-## Flip the image to the left when the composition benefits.
+Optional caption overlay at bottom.
 
-![bg left fit](path/to/image.jpg)
+![bg](path/to/image.jpg)
 ```
 
-- `` `inline code` `` paragraph = eyebrow label
-- `h2` = heading
-- `p` = body text
-- `![bg right fit](url)` / `![bg left fit](url)` = Marp background image directive
+- `` `inline code` `` paragraph = eyebrow label (half-canvas only)
+- `h2` = heading (half-canvas) or title overlay (full bleed)
+- `p` body = body text (half-canvas) or caption overlay (last `<p>` in full bleed)
+- `![bg right](url)` / `![bg left](url)` / `![bg](url)` = Marp background image directive
 
-**Image sizing — proportions are always preserved.**
+**Image sizing — the class decides fit, not the markdown.**
 
-Always include the `fit` keyword (`![bg right fit](url)`). It tells Marp to letterbox the image inside its slot at native aspect ratio, never cropped or distorted. Without `fit`, Marp's default is `cover`, which crops arbitrary photos. Whatever bands remain show the lattice pattern as intentional brand framing.
+In the consolidated vocabulary the slide class is the source of truth for
+how the image is fitted into its slot. The Marp `fit` keyword is accepted
+for back-compat but no longer load-bearing — CSS overrides it.
 
-| Layout | Slot aspect | Ideal source |
-|---|---|---|
-| `image` / `image left` | ≈ 8 : 9 (half of 16 : 9 canvas) | 640 × 720, or any 8 : 9 portrait-ish photo |
-| `image-full` | 16 : 9 | 1280 × 720, or any wide landscape |
+| Want                                              | Use                                |
+| ------------------------------------------------- | ---------------------------------- |
+| photo, magazine-tight, mild crop is OK            | `image` or `image full` (default)  |
+| chart / screenshot / diagram, must show in full   | `image contain` / `image full contain` |
+| flip image to the opposite slot                   | add `mirror`                       |
 
-Bring whatever you have. A square crop in a half-canvas slot will show small top/bottom bands. A portrait photo on a full canvas will show wide left/right bands. Both look intentional — the lattice frames the image instead of dead space.
+Slot aspect for reference:
+
+| Layout                  | Slot aspect                    | Crop behaviour (cover)      |
+| ----------------------- | ------------------------------ | --------------------------- |
+| `image`                 | ≈ 8 : 9 (half of 16 : 9 canvas) | crops left/right of wide; top/bottom of tall |
+| `image full`            | 16 : 9                          | crops sides of tall; top/bottom of square    |
+
+Bring whatever asset you have. With the default cover treatment the image
+fills its slot edge-to-edge — no placeholder pattern visible behind a real
+photo. If a crop would destroy meaning (charts, diagrams, schematics),
+add `contain` and the image lands on a clean `--bg-alt` matte at native
+ratio, framed by a 1px hairline.
 
 ---
 
@@ -2357,7 +2401,7 @@ A trailing inline `` `code` `` on any row floats right as a small mono-font pill
 
 ---
 
-## Template 29: Chart Family (`progress`, `timeline-list`, `piechart`)
+## Template 29: Chart Family (`progress`, `timeline-list`, `piechart`, `gantt`, `kanban`)
 
 A small family of list-and-pill chart layouts that share one **chart-frame** skeleton: a lucent header strip with eyebrow + h2 + subtitle, a dominant chart body, and an optional caption. Authors write a flat list with trailing inline `` `code` `` pills; the renderer rewrites the section into chart-specific markup at build time (`lattice-emulator.js`) and at preview time (`lattice-runtime.js`).
 
@@ -2535,6 +2579,153 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 _Refreshed weekly · last updated 2026-05-07_
 ```
 
+### 29d — `gantt` (categorical bar chart across a time axis)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · 2026 Q1 → 2026 Q4           │
+│  ## What ships in each phase.           │
+│  Three workstreams across four qtrs.   │
+│                                         │
+│        Q1      Q2      Q3      Q4       │
+│  Plat  ████████                         │
+│                ████████                 │
+│                        ████████         │
+│  Ops   ████████                         │
+│                ████████                 │
+│                        ░░░░░░░░         │
+│  Comp  ████████                         │
+│                ████████                 │
+│                        ░░░░░░░░         │
+│                                         │
+│  Product roadmap · 2026-05-07           │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `gantt` (composes with `dark`, `minimal`)
+
+- Top-level bullets are **swimlanes** (rows). Each swimlane label becomes a row header on the left.
+- Second-level bullets are **bars**. Bar text is the label rendered inside the bar. Two trailing inline codes are required: `start → end` (tick range) then an optional status pill.
+- The tick axis is inferred from all `start` and `end` values across the slide. Short month names (`Jan`–`Dec`) and quarter shorthands (`Q1`–`Q4`) are both recognised.
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: gantt -->
+
+`2026 Q1 → 2026 Q4`
+
+## What ships in each phase, by workstream.
+
+Three workstreams across four quarters.
+
+- Platform
+  - Codebook signing `Q1 → Q2` `done`
+  - Multi-tenant DEKs `Q2 → Q3` `live`
+  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+- Operations
+  - Manual rotation `Q1 → Q2` `done`
+  - Automated rotation `Q2 → Q3` `live`
+  - Crypto-shred `Q3 → Q4`
+- Compliance
+  - Audit trail `Q1 → Q2` `done`
+  - Centralised log `Q2 → Q3`
+  - Examiner pack `Q3 → Q4`
+
+_Product roadmap · committed baseline · 2026-05-07_
+```
+
+- The eyebrow (`\`2026 Q1 → 2026 Q4\``) is a human label only — the axis is built from the bar tick codes, not from it.
+- Bars without a status pill render in the neutral track colour.
+- Status pill colours match the shared vocabulary table above.
+
+---
+
+### 29e — `kanban` (board from a three-level list)
+
+```text
+┌─────────────────────────────────────────┐
+│  EYEBROW · PHASE 2 · SPRINT 14         │
+│  ## Where Phase 2 work stands today.   │
+│  Four columns, mixed card density.     │
+│                                         │
+│  Backlog   In progress  Review  Done░░  │
+│  ┌───────┐ ┌─────────┐ ┌─────┐ ┌─────┐ │
+│  │Title M│ │Title  M │ │Titl │ │Titl │ │
+│  │compl  │ │plat✗risk│ │ plat│ │plat │ │
+│  ├───────┤ ├─────────┤ └─────┘ │  ✓  │ │
+│  │Title S│ │Title  L │         └─────┘ │
+│  │platfrm│ │complianc│                 │
+│  └───────┘ └─────────┘                 │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `kanban` (composes with `dark`, `minimal`)
+
+- **Top-level bullet** = column header.
+- **Second-level bullet** = card. One optional trailing inline code is the **size badge** (`S` / `M` / `L` / `XL`), rendered as a square chip right-aligned in the title row.
+- **First sub-bullet of a card** = meta line. Prose is the **label** (drives the coloured left stripe and a tinted lane pill on the meta row). One optional trailing inline code is the **status** (shared vocabulary — pushes right via `margin-left: auto`).
+- **Second sub-bullet of a card** (optional) = **body text**, rendered italic and muted below the meta row, single line with ellipsis.
+- The `Done` column dims automatically (`opacity: 0.52`).
+
+**Card anatomy:**
+
+```text
+┌─────────────────────────────────┐
+│ ▌ (3px left border — lane col.) │
+│ Title text, up to 2 lines  [ M ]│  ← title row: text + size badge
+│ [compliance]          [at-risk] │  ← meta row: label left, status right
+│ Body text, one line, italic…    │  ← optional body
+└─────────────────────────────────┘
+```
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: kanban -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+- Backlog
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
+  - Dependency dashboard `S`
+- In progress
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
+- Review
+  - Automated rotation `M`
+    - platform
+- Done
+  - Codebook signing `L`
+    - platform `done`
+  - HSM audit trail `M`
+    - compliance `done`
+```
+
+Card with body text (third sub-bullet):
+
+```markdown
+  - External audit firm `M`
+    - compliance `blocked`
+    - Firm selection paused pending legal sign-off. Resuming W20.
+```
+
+**Rules:**
+
+- One inline code per line. Size on the card title line; status on the label line. Never two codes on the same line.
+- All three sub-levels are optional. A card with no sub-bullet gets no meta row.
+- Label text (the prose on the first sub-bullet) drives the lane colour. Labels are free-form; the renderer maps them to categorical palette slots (`--cat-blue`, `--cat-green`, `--cat-purple`, …) consistently within a slide.
+- Status tokens are a closed set — see the vocabulary table above.
+
+---
+
 ### Shared frame (`chart-frame`)
 
 The renderer wraps every chart-family slide in this skeleton:
@@ -2571,12 +2762,274 @@ section.<layout>.chart-frame
 <!-- _class: content dark -->
 <!-- _class: list dark -->
 <!-- _class: divider dark -->
-<!-- _class: image-full dark -->
+<!-- _class: image full dark -->
 ```
 
 - Retokens: `--bg`, `--bg-alt`, `--border`, `--text-*` all switch to `var(--dark-*)` values
 - Spectrum bar changes: instead of a 4px solid top border, dark slides render a 1px spectrum line as a CSS `background` at the top
 - Use for mid-deck emphasis slides, impactful data reveals, or transitional moments
-- Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image-full dark`
+- Gallery uses: `content dark`, `list dark`, `cards-stack dark`, `divider dark`, `image full contain dark`
+
+---
+
+## Template 30: Split Brief
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ EYEBROW      │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ │ ## Heading.  │                      │ │
+│ │              │  • Lead point        │ │
+│ │ Intro para.  │    Body detail.      │ │
+│ │              │                      │ │
+│ │  [dark]      │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-brief`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-brief -->
+```
+
+- Left panel (38%, dark): eyebrow label, `h2` heading, intro paragraph
+- Right panel (62%, light): 2–4 list items, each with a lead label (auto-bolded) and one sub-bullet body
+- Accent `border-left` on each top-level item; items distribute with `space-evenly`
+- SlotLabelLift auto-bolds the first line of each top-level `li` — do not write explicit `**bold**`
+- Sub-items use native list markers (`ul` → disc, `ol` → decimal)
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-brief -->
+
+`Q2 Performance Review`
+
+## Enterprise revenue stalled in Q2.
+
+Three structural factors explain 90% of the shortfall.
+
+- Renewal pricing complexity is driving churn at the segment ceiling
+  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap.
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+  - Contract length increased 18 days on average.
+- Competitive displacement accelerated in the $80–200K ACV tier
+  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+```
+
+---
+
+## Template 31: Split Metric
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ UNIT LABEL   │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ │ ## 114%      │                      │ │
+│ │              │  • Lead point        │ │
+│ │ Context      │    Body detail.      │ │
+│ │ sentence.    │                      │ │
+│ │  [light]     │  • Lead point        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-metric`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-metric -->
+```
+
+- Left panel (44%, light): unit label, `h2` metric value, context sentence
+- Right panel (56%, dark): 2–4 list items with lead label + body sub-bullet
+- `h2` renders in display font at hero size; wrap a suffix in `*em*` for a smaller muted suffix (e.g. `## 114*%*`)
+- SlotLabelLift auto-bolds lead lines; sub-items use native list markers
+- Items distribute with `space-evenly`
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-metric -->
+
+`Net Revenue Retention`
+
+## 114*%*
+
+Measured across all customers active for 12+ months.
+
+- Existing customers are growing faster than we lose them
+  - At 114%, every churned dollar is offset by $1.14 in expansion.
+- Expansion is concentrated — three segments drive 80% of the gain
+  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
+- Sustained above 110%, this unlocks a capital-efficient growth path
+  - NRR above 110% meets the investor threshold for venture-category efficiency.
+```
+
+---
+
+## Template 32: Split Steps
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ 02  [corner] │  ① Step label        │ │
+│ │              │    Body detail.      │ │
+│ │ ## Phase.    │  ② Step label        │ │
+│ │              │    Body detail.      │ │
+│ │ Intro para.  │  ③ Step label        │ │
+│ │              │    Body detail.      │ │
+│ │  [alt]       │  ④ Step label        │ │
+│ │              │    Body detail.      │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-steps`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-steps -->
+```
+
+- Left panel (30%, `--bg-alt`): phase number as decorative corner watermark, `h2` heading, intro paragraph
+- Right panel (70%, light): step list with connecting timeline spine between items
+- **`ol`** → numbered accent circles (40px); **`ul`** → filled accent circles without numbers
+- SlotLabelLift auto-bolds each step label; nested `ul`/`ol` sub-items use native markers
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-steps -->
+
+`02`
+
+## Discovery & Scoping
+
+Four weeks. Shared definition of the problem before solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data quality review.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out.
+```
+
+---
+
+## Template 33: Split Compare
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────┬──────────────────────┐ │
+│ │ FRAME LABEL  │ ┌────────┬────────┐  │ │
+│ │              │ │OPTION  │OPTION ✦│  │ │
+│ │ ## Question? │ │────────│────────│  │ │
+│ │              │ │• point │• point │  │ │
+│ │ Framing      │ │• point │• point │  │ │
+│ │ sentence.    │ └────────┴────────┘  │ │
+│ │  [dark]      │ ▓ Recommendation ▓   │ │
+│ └──────────────┴──────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-compare`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-compare -->
+```
+
+- Left panel (30%, dark): frame label, `h2` question, framing paragraph
+- Right panel (70%, light): two option cards in a 2-column grid + optional verdict strip
+- **First** top-level list item → left option; **second** → right option (automatically preferred: accent label + `✦` corner marker)
+- SlotLabelLift auto-bolds the option label (first line of each top-level `li`)
+- Sub-items under each option are the option's bullet points; `ul` → bullets, `ol` → numbers
+- Verdict: optional `> blockquote` after the list; renders as an accent-background recommendation strip
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-compare -->
+
+`Decision Required`
+
+## Build the data layer or buy it?
+
+Both paths are viable. The difference is where we spend the next 18 months.
+
+- Build in-house
+  - Full control over schema and roadmap
+  - 2–3 engineer-quarters to reach feature parity
+- Buy + configure
+  - Ship in 6 weeks, not 9 months
+  - Engineering capacity redirects to product-layer features
+
+> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+```
+
+---
+
+## Template 34: Split Statement
+
+```text
+┌─────────────────────────────────────────┐
+│ ┌──────────────────┬──────────────────┐ │
+│ │ "                │  • Lead point    │ │
+│ │                  │    Body detail.  │ │
+│ │  Pull quote      │                  │ │
+│ │  spanning        │  • Lead point    │ │
+│ │  lines."         │    Body detail.  │ │
+│ │                  │                  │ │
+│ │  — Attribution   │  • Lead point    │ │
+│ │  [dark]          │    Body detail.  │ │
+│ └──────────────────┴──────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+**CSS class:** `split-statement`
+
+**Marp directive:**
+
+```markdown
+<!-- _class: split-statement -->
+```
+
+- Left panel (50%, dark): blockquote pull quote + citation; decorative oversized `"` watermark
+- Right panel (50%, light): 2–4 list items with lead label + body sub-bullet
+- Blockquote: `> text` — renders in display italic at `--fs-xl`
+- Citation: `` `Author · Role, Company, Year` `` — renders as `<cite>` in muted body type
+- SlotLabelLift auto-bolds lead lines; sub-items use native list markers
+- Items distribute with `space-evenly`
+
+**Authoring contract:**
+
+```markdown
+<!-- _class: split-statement -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- Clarity is a product decision, not a marketing one
+  - If a prospect cannot articulate our value in one sentence, it is a communication architecture problem.
+- Onboarding is the product's first argument for itself
+  - The moment a user first succeeds defines their frame for everything that follows.
+- Understanding, not delight, is the retention driver at scale
+  - Users who understand the system's logic stay through friction.
+```
 
 ---

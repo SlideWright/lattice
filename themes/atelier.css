@@ -78,6 +78,22 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Warm-achromatic theme. Soft-black anchors; deep amber is the
+   * chrome-break (= --tag-bg). Three desaturated chromatic voices keep
+   * charts readable as categorical without rupturing the artisan-quiet
+   * identity. Dark-oat grounds. */
+  --chart-1: light-dark(var(--brand-soft-black), var(--brand-oat)); /* SOFT-BLACK */
+  --chart-2: light-dark(var(--brand-amber), var(--brand-amber-soft)); /* DEEP-AMBER */
+  --chart-3: light-dark(#4D6B7C, #87A5B5);   /* DESAT-BLUE */
+  --chart-4: light-dark(#8B5A6B, #C295A5);   /* DESAT-WINE */
+  --chart-5: light-dark(#6E7B5C, #A8B58F);   /* DESAT-OLIVE */
+  --chart-6: light-dark(#4F4838, #B5AB95);   /* DARK-OAT */
+
+  --scale-500: var(--brand-soft-black);
+
+  /* Tag uses --chart-2 (deep amber) — atelier's hand-finished gold pop. */
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0F0E0C;
   --bg-warm-light: #28241D;
@@ -102,6 +118,24 @@
   --mermaid-secondary-color: #DBD5C0;
   --mermaid-border:          #38332A;
   --mermaid-accent-warm:     var(--brand-amber); /* the amber pop */
+  --mermaid-pie-purple:  #E5E0D2;  /* pale warm-oat */
+  --mermaid-pie-orange:  #E8D8B0;  /* pale amber-oat */
+  --mermaid-pie-teal:    #D5DDD5;  /* pale warm-neutral-sage */
+  --mermaid-pie-rose:    #EDE0D8;  /* pale warm-blush */
+  --mermaid-pie-yellow:  #E8E0B8;  /* pale warm-cream */
+  --mermaid-pie-red:     #EDD8CC;  /* pale warm-terracotta */
+  --mermaid-pie-slate:   #D5D5CC;  /* pale warm-gray */
+  --mermaid-pie-sage:    #D8DDD0;  /* pale warm-sage */
+  --mermaid-pie-violet:  #E0D8E5;  /* pale warm-lavender */
+  /* cScale / gitgraph — warm achromatic with amber pop */
+  --cat-blue:   #5A5048;
+  --cat-green:  #906838;  /* amber mid-tone */
+  --cat-purple: #706860;
+  --cat-orange: #A08860;  /* pale amber */
+  --cat-teal:   #807870;
+  --cat-rose:   #908078;
+  --cat-slate:  #585048;
+  --cat-mauve:  #908878;
 }
 
 section pre.hljs {

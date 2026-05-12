@@ -460,9 +460,9 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 
 ## Two options with a connector and an explanatory note below.
 
-- Option A
+- Option A · Label
   - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- Option B
+- Option B · Label
   - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
 
 The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
@@ -583,40 +583,78 @@ token = kms.encrypt(
 ---
 
 <!-- _class: image -->
-<!-- _footer: "Real image · image" -->
+<!-- _footer: "Image · default cover · image" -->
 
 `Layout · Image`
 
 ## Image right is the default — text leads, evidence follows.
 
-A landscape asset in a half-canvas slot. The image preserves its native aspect ratio; the lattice pattern frames whatever bands remain. No cropping, ever — authors see the image they dropped in.
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo.
 
-![bg right fit](sample-image.svg)
-
----
-
-<!-- _class: image left -->
-<!-- _footer: "Real image · image left" -->
-
-`Layout · Image Left`
-
-## Lead with the image, follow with the argument.
-
-A portrait asset in a half-canvas slot — the image fits proportionally, and the lattice pattern shows through on either side. Same rule, different aspect.
-
-![bg left fit](sample-image-portrait.svg)
+![bg right](sample-image-landscape.svg)
 
 ---
 
-<!-- _class: image-full -->
-<!-- _footer: "Image full · image-full" -->
+<!-- _class: image mirror -->
+<!-- _footer: "Image · cover, mirrored · image mirror" -->
+
+`Layout · Image Mirror`
+
+## Mirror flips the slot — image left, text right.
+
+`mirror` is the cross-cutting orientation modifier; `image left` is preserved as a deprecated alias for one release.
+
+![bg left](sample-image-landscape.svg)
+
+---
+
+<!-- _class: image contain -->
+<!-- _footer: "Image · contain (no crop) · image contain" -->
+
+`Layout · Image Contain`
+
+## When a chart or screenshot must show in full, opt into `contain`.
+
+The image is centred at native aspect on a clean `--bg-alt` matte — an editorial plate, not a placeholder. Use this for diagrams, schematics, and any asset where cropping would destroy meaning.
+
+![bg right](sample-image-portrait.svg)
+
+---
+
+<!-- _class: image full -->
+<!-- _footer: "Image full · cover · image full" -->
 <!-- _paginate: false -->
 
 ## Signal Pipeline · Reference Visualization
 
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 
-![bg fit](sample-image.svg)
+![bg](sample-image-landscape.svg)
+
+---
+
+<!-- _class: image museum -->
+<!-- _footer: "Image museum · editorial plate · image museum" -->
+
+`Image Layout · Museum Modifier`
+
+## Museum modifier — editorial plate
+
+Add `museum` alongside `image`. The image panel gets a `--bg-alt` matte, 20px inset on three sides, and a 1px border. Flush at the split line, framed like a mounted print.
+
+![bg right](sample-image-landscape.svg)
+
+---
+
+<!-- _class: image museum full -->
+<!-- _footer: "Image museum full · full bleed · image museum full" -->
+<!-- _paginate: false -->
+
+## Architecture dependencies — every node visible
+
+Full-bleed museum centres the asset on a generous `--bg-alt` matte with uniform 40px inset on all four sides. The border frames it as an object, not a wallpaper. No text overlaid on the image.
+
+![bg](sample-image-landscape.svg)
 
 ---
 
@@ -643,15 +681,15 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 
 ---
 
-<!-- _class: image-full dark -->
-<!-- _footer: "Image full dark · image-full dark" -->
+<!-- _class: image full contain dark -->
+<!-- _footer: "Image full contain dark · image full contain dark" -->
 <!-- _paginate: false -->
 
-## [ Signal Pipeline · Portrait Asset — Dark ]
+## Signal Pipeline · Portrait Asset
 
-A tall asset on a wide canvas — the lattice pattern frames the image on the left and right, replacing dead space with brand chrome.
+A tall asset on a wide canvas — `contain` replaces the lattice pattern with a quiet `--bg-alt` matte, so the image reads as a museum plate rather than a placeholder.
 
-![bg fit](sample-image-portrait.svg)
+![bg](sample-image-portrait.svg)
 
 ---
 
@@ -815,9 +853,9 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
-1. **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
-2. **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
-3. **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
+- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+- **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
 
 ---
 
@@ -826,11 +864,11 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · image mirror`
 
-## Mirror flips the image to the other half — alias of legacy `image left`.
+## Mirror flips the image slot — same vocabulary as featured, split-panel, compare-prose.
 
-The half-canvas image moves from the right slot to the left slot, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag; `left` remains as a backwards-compatible alias for one release.
+The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
 
-![bg left fit](sample-image-portrait.svg)
+![bg left](sample-image-landscape.svg)
 
 ---
 
@@ -942,11 +980,11 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 `Decision · 2026 Q1`
 
-- Build
+- **Build**
   - Owns the architecture, owns the operating model, owns the timeline.
-- Why not buy
+- **Why not buy**
   - Three vendors evaluated; none cover the regulatory boundary in-process.
-- Why not delay
+- **Why not delay**
   - The compliance window closes in 18 months.
 
 ---
@@ -958,42 +996,12 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 
 `Latency story · before vs after`
 
-- Before
+- **Before**
   - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
-- After
+- **After**
   - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
 
 The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
-
----
-
-<!-- _class: decision banner-tag -->
-<!-- _footer: "Variant — decision · banner-tag" -->
-
-## Same decision, banner-tag variant.
-
-`Decision · banner-tag modifier`
-
-- Build
-  - Owns the architecture, owns the operating model, owns the timeline.
-- Why not buy
-  - Three vendors evaluated; none cover the regulatory boundary in-process.
-- Why not delay
-  - The compliance window closes in 18 months.
-
----
-
-<!-- _class: before-after banner-tag -->
-<!-- _footer: "Variant — before-after · banner-tag" -->
-
-## Same comparison, banner-tag variant.
-
-`Latency story · banner-tag modifier`
-
-- Before
-  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
-- After
-  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
 
 ---
 
@@ -1088,22 +1096,6 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ---
 
-<!-- _class: checklist -->
-<!-- _footer: "New layout — checklist · checklist" -->
-
-`Phase 1 · Acceptance review`
-
-## What shipped, what slipped, what stayed open.
-
-- [x] Codebook signing live across all production tenants
-- [x] HSM-anchored audit trail readable by Examiner role `shipped 2026-Q1`
-- [x] One reference client integrated end-to-end
-- [-] Examiner pack auto-generation across the four regulated tenants and the two pilot tenants `see slide 27`
-- [ ] Multi-tenant codebook operation `Phase 2`
-- [ ] Crypto-shred runbook hand-off to Platform `Phase 2`
-
----
-
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
@@ -1137,99 +1129,238 @@ The discipline is the same as `compact` from the other side: do not change the t
 
 ---
 
-<!-- _class: progress -->
-<!-- _footer: "Horizontal bars with status pills · progress" -->
+<!-- _class: content with-period -->
+<!-- _footer: "Modifier — with-period · content with-period" -->
 
-`H1 2026 · Phase 1 readiness`
+`Modifier · with-period`
 
-## Phase 1 readiness, by workstream.
+## Headings gain a closing period automatically
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
-
-_Source: Linear · refreshed 2026-05-07_
+The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
 
 ---
 
-<!-- _class: progress dark -->
-<!-- _footer: "Dark canvas · progress dark" -->
+<!-- _class: content no-period -->
+<!-- _footer: "Modifier — no-period · content no-period" -->
 
-`H1 2026 · Phase 1 readiness`
+`Modifier · no-period`
 
-## The same data, dark canvas.
+<!-- markdownlint-disable-next-line MD026 -->
+## Authors typed this heading with a period. It is gone.
 
-Status colours hold their contrast against the dark canvas; the lucent strip darkens proportionally.
+Some teams author headings with periods out of habit, then strip them in review. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through untouched. Combine with any layout class; the modifier composes cleanly because it operates on the heading text alone and touches no structural chrome.
 
 ---
 
-<!-- _class: timeline-list -->
-<!-- _footer: "Horizontal spine with date pills · timeline-list" -->
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Background Library — section break · divider" -->
 
-`Codebook architecture`
+`Background Library · Any Layout Class`
 
-## How the codebook architecture arrived in production.
+# bg-* classes add peripheral accents from the active palette
 
-Four stages over eighteen months. Date pill leads each item; status pill trails. The spine and dots come for free from CSS.
-
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Pilot `pilot`
-   - One internal team, one workload, one quarter. Detokenize p99 lands at 8 ms.
-4. `2026 Q1` Production `live`
-   - Codebook signing live across all production tenants.
-
-_Cross-functional sign-off · 2026-04-29_
+Add a `bg-*` class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
 
 ---
 
-<!-- _class: piechart donut -->
-<!-- _footer: "SVG donut with legend · piechart donut" -->
+<!-- _class: content bg-corner-tl -->
+<!-- _footer: "Background — corner glow · content bg-corner-tl" -->
 
-`H1 2026 · 1,840 person-hours`
+`Background · Corner Glow`
 
-## Where the engineering quarter went.
+## A radial glow anchored at the corner fades before reaching the content zone
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+`bg-corner-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `bg-corner-*` variants share the same weight and fade profile; only the anchor differs.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
-
-_Refreshed weekly · last updated 2026-05-07_
+All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides.
 
 ---
 
-<!-- _class: progress minimal -->
-<!-- _footer: "Minimal modifier · progress minimal" -->
+<!-- _class: content bg-orbit-br dark -->
+<!-- _footer: "Background — SVG marks · content bg-orbit-br dark" -->
 
-`H1 2026 · Phase 1 readiness`
+`Background · SVG Marks · Dark`
 
-## Same data, minimal treatment.
+## SVG accent marks are painted through a mask in the active accent colour
 
-The lucent strip is gone; the header reads as quiet typography with an accent hairline, and the chart dominates more.
+`bg-orbit-br` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+---
 
-_Source: Linear · refreshed 2026-05-07_
+<!-- _class: content bg-vignette bg-edge-right -->
+<!-- _footer: "Background — layered radial + linear · content bg-vignette bg-edge-right" -->
+
+`Background · Layered`
+
+## One class from each slot layers without conflict
+
+Every `bg-*` class writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
+
+- `bg-vignette` — radial slot — accent-tinted perimeter, open center
+- `bg-edge-right` — linear slot — wash bleeding in from the right edge
+
+The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently.
+
+---
+
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Chart — gantt + kanban · divider" -->
+
+`Chart Layouts · gantt + kanban`
+
+## Timeline bars and board columns from a two-level list
+
+---
+
+<!-- _class: gantt -->
+<!-- _footer: "Chart — gantt · gantt" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Feature delivery by workstream
+
+- Design
+  - Foundations `Q1` `done`
+  - Component audit `Q2` `done`
+  - Token refresh `Q3`
+- Engineering
+  - API v2 `Q1` `done`
+  - SDK release `Q2 → Q3` `in-progress`
+  - Migration guide `Q4`
+- Growth
+  - Onboarding v2 `Q2` `done`
+  - Referral flow `Q3 → Q4`
+
+---
+
+<!-- _class: kanban -->
+<!-- _footer: "Chart — kanban · kanban" -->
+
+`Board · Phase 2 delivery`
+
+## Where Phase 2 work stands today
+
+- Backlog
+  - API contract review
+  - Load-test harness
+- In progress
+  - SDK v2 alpha `in-progress`
+  - Onboarding redesign `in-progress`
+- Review
+  - Token migration spec `review`
+- Done
+  - Scope sign-off `done`
+  - Design freeze `done`
+
+---
+
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _footer: "Split Layouts · split-brief + split-metric + split-steps + split-compare + split-statement" -->
+
+`Split Layouts · five variants`
+
+## A structured left panel drives five two-column layouts
+
+---
+
+<!-- _class: split-brief -->
+<!-- _footer: "Split — brief · split-brief" -->
+
+`Q2 Performance Review`
+
+## Enterprise revenue stalled in Q2
+
+Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+
+- Renewal pricing complexity is driving churn at the segment ceiling
+  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
+- Competitive displacement accelerated in the $80–200K ACV tier
+  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+
+---
+
+<!-- _class: split-metric -->
+<!-- _footer: "Split — metric · split-metric" -->
+
+`Net Revenue Retention`
+
+## 114*%*
+
+Measured across all customers active for 12+ months, March 31 cohort.
+
+- Existing customers are growing faster than we lose them
+  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
+- Expansion is concentrated — three segments drive 80% of the gain
+  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
+- Sustained above 110%, this unlocks a capital-efficient growth path
+  - NRR above 110% meets the investor threshold for venture-category efficiency.
+
+---
+
+<!-- _class: split-steps -->
+<!-- _footer: "Split — steps · split-steps" -->
+
+`02`
+
+## Discovery & Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data quality review.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, what requires a separate decision.
+
+---
+
+<!-- _class: split-compare -->
+<!-- _footer: "Split — compare · split-compare" -->
+
+`Decision Required`
+
+## Build the data layer or buy it?
+
+Both paths are viable. The difference is where we spend the next 18 months.
+
+- Build in-house
+  - Full control over schema and roadmap
+  - 2–3 engineer-quarters to reach feature parity
+  - Ongoing maintenance burden stays internal
+- Buy + configure
+  - Ship in 6 weeks, not 9 months
+  - Engineering capacity redirects to product-layer features
+  - Exit risk manageable — data export contractually guaranteed
+
+> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+
+---
+
+<!-- _class: split-statement -->
+<!-- _footer: "Split — statement · split-statement" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- Clarity is a product decision, not a marketing one
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- Onboarding is the product's first argument for itself
+  - The moment a user first succeeds defines their frame for everything that follows.
+- Understanding, not delight, is the retention driver at scale
+  - Users who understand the system's logic stay through friction. Build for comprehension.
 
 ---
 
@@ -1249,5 +1380,5 @@ It composes with `dark`: on the dark canvas the spectrum top-stripe is suppresse
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
-<script src="../mermaid-v11.min.js"></script>
+<script src="../node_modules/mermaid/dist/mermaid.min.js"></script>
 <script src="../lattice-runtime.js"></script>

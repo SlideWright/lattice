@@ -76,6 +76,21 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
+  /* ── Chart palette — curated 6 ─────────────────────────────────────────
+   * Steel + warm-tan complement. Brina's restraint allows charts a touch
+   * more chroma than the rest of the deck — but each chart-N is still
+   * pulled toward the cool/desaturated end so the palette feels Nordic.
+   * Deep wine is the saturated outlier (CB-distinct from steel); mauve-
+   * grey is the muted bridge; graphite ink grounds. */
+  --chart-1: light-dark(var(--brand-steel-mid), var(--brand-steel-bright)); /* STEEL */
+  --chart-2: light-dark(#B5895E, #DBB590);   /* WARM-TAN */
+  --chart-3: light-dark(#4D958F, #7CC0BA);   /* TEAL-CYAN */
+  --chart-4: light-dark(#8B354C, #C56880);   /* DEEP-WINE */
+  --chart-5: light-dark(#7E7390, #B0A6BD);   /* MAUVE-GREY */
+  --chart-6: light-dark(var(--brand-steel-deep), #6F7E8F); /* GRAPHITE-INK */
+
+  --scale-500: var(--brand-steel-mid);
+
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #0C141C;
   --bg-warm-light: #1E2A38;
@@ -100,6 +115,24 @@
   --mermaid-secondary-color: #E5EAF0;
   --mermaid-border:          #1E2A38;
   --mermaid-accent-warm:     #BD5000;
+  --mermaid-pie-purple:  #DAE6EE;  /* pale steel-blue */
+  --mermaid-pie-orange:  #F2E5D5;  /* pale warm peach */
+  --mermaid-pie-teal:    #D0E5E8;  /* pale frost-teal */
+  --mermaid-pie-rose:    #E8E0EE;  /* pale lavender-ice */
+  --mermaid-pie-yellow:  #F0ECD5;  /* pale cream */
+  --mermaid-pie-red:     #F0DDE0;  /* pale arctic-rose */
+  --mermaid-pie-slate:   #D8E0EA;  /* pale glacier-gray */
+  --mermaid-pie-sage:    #D5E5E8;  /* pale sage-ice */
+  --mermaid-pie-violet:  #E0D8EC;  /* pale frost-violet */
+  /* cScale / gitgraph — cool desaturated steel family */
+  --cat-blue:   #3E687C;  /* steel-blue */
+  --cat-green:  #8A6E48;  /* warm brass contrast */
+  --cat-purple: #5A6080;  /* cool lavender */
+  --cat-orange: #4E6070;  /* cool gray-blue */
+  --cat-teal:   #3A7888;  /* glacier teal */
+  --cat-rose:   #7A6890;  /* cool lavender-rose */
+  --cat-slate:  #506080;  /* cool slate-blue */
+  --cat-mauve:  #707080;  /* cool mid-gray */
 }
 
 section pre.hljs {

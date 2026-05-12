@@ -35,9 +35,15 @@
    * declaring them in its own :root block. */
 
   /* ── Fonts ────────────────────────────────────────────────────────── */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body:    'Outfit', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+  /* Emoji fallbacks (Apple/Segoe/Noto) are appended to every stack so raw
+     unicode emoji in headings, body, and chrome render inline at the local
+     font's metrics. Without them, Chromium falls back unpredictably and the
+     emoji may render larger than the text and push lines around. The
+     marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
+     section img.emoji handles that variant. */
+  --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale ────────────────────────────────────────────────── */
   --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
@@ -116,6 +122,105 @@
    * usable as a diagnostic. */
   --code-bg:   var(--bg-dark, #001D33);
   --code-text: #CBD9E8;
+
+  /* ── Chart palette (--chart-1 … --chart-6) ─────────────────────────────
+   * Curated 6-color palette for Lattice's own chart layouts (piechart,
+   * future-progress-stacked, etc.). Distinct from --cat-* (which stays
+   * mid-tone L≈60 for kanban / Mermaid cScale).
+   *
+   * Semantic roles (themes pick deliberately, not auto-derived):
+   *   chart-1  PRIMARY      brand accent — the "answer" / current state
+   *   chart-2  COMPLEMENT    duotone partner; usually == --tag-bg
+   *   chart-3  ANALOGOUS-A   sibling of chart-1, hue-shifted +30..60°
+   *   chart-4  ANALOGOUS-B   sibling of chart-2, hue-shifted +30..60°
+   *   chart-5  MUTED         desaturated mid-tone; the "softer voice"
+   *   chart-6  INK           dark neutral; the grounding anchor
+   *
+   * Design constraints (see docs/notes/2026-05-07-chart-family-* for
+   * the full rationale):
+   *   1. Six is the cap. Perceptual research (Wong 2011, Cleveland-McGill,
+   *      IBM Carbon, Tableau 10) consistently shows distinguishability
+   *      collapses beyond 6-7 categorical hues. If a chart needs more,
+   *      use position / shape / labels — not more colors.
+   *   2. Each chart-N must be visually distinguishable from any other
+   *      chart-M without position context. Reader names a wedge by its
+   *      colour alone, not by "the second one from the top."
+   *   3. chart-1 vs chart-2 (the most-paired pair) must survive
+   *      deuteranopia / protanopia. Blue-orange / wine-champagne pairs
+   *      survive; red-green pairs don't.
+   *   4. Lightness hierarchy beyond hue: chart-1..4 land in the L≈40-60
+   *      foreground band; chart-5 muted (L≈55-70 desaturated); chart-6
+   *      ink (L≈30-45 dark). Three-level lightness gives a fallback
+   *      distinction channel for grayscale prints / CB readers.
+   *   5. Light-dark switching: each chart-N flips via light-dark() so it
+   *      reads on either canvas without the theme having to redeclare
+   *      the cycle.
+   *
+   * Defaults below map back to existing tokens so themes that haven't
+   * adopted chart-* yet still render a coherent (if not curated) palette.
+   * Each theme should override these with hand-picked values. */
+  --chart-1: var(--accent);
+  --chart-2: var(--mermaid-accent-warm, var(--cat-orange, #BD5000));
+  --chart-3: var(--cat-teal,  #6BBDB8);
+  --chart-4: var(--cat-rose,  #C57E8B);
+  --chart-5: var(--cat-slate, #9AA8B8);
+  --chart-6: var(--text-muted, #6B7F9A);
+
+  /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
+   * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
+   * sequential / quantitative encoding: heatmap intensity, progress
+   * intensity ramps, hover/active states, faint grid lines.
+   *
+   * Each theme sets --scale-500 (its anchor — typically the brand mid).
+   * The other nine stops auto-derive from the anchor via OKLab color-mix.
+   * 50-400 are tints toward white; 600-900 are shades toward black.
+   *
+   * Distinct from --chart-* (which is categorical) and --cat-* (which is
+   * Mermaid's mid-tone L≈60 categorical). The scale is for ORDERED data;
+   * categorical palettes are for UNORDERED groups. Don't substitute.
+   *
+   * Default --scale-500 falls back to --accent so unstyled themes still
+   * have a usable ramp, but every theme should set it deliberately. */
+  --scale-500: var(--accent);
+  --scale-50:  color-mix(in oklab, var(--scale-500)  8%, white);
+  --scale-100: color-mix(in oklab, var(--scale-500) 18%, white);
+  --scale-200: color-mix(in oklab, var(--scale-500) 35%, white);
+  --scale-300: color-mix(in oklab, var(--scale-500) 55%, white);
+  --scale-400: color-mix(in oklab, var(--scale-500) 78%, white);
+  --scale-600: color-mix(in oklab, var(--scale-500) 78%, black);
+  --scale-700: color-mix(in oklab, var(--scale-500) 55%, black);
+  --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
+  --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
+
+  /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
+   * Secondary accent for status badges / brand-status pills. Distinct
+   * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;
+   * Burgundy: wine + champagne; Onyx: black + saturated red).
+   *
+   * Default: --tag-bg = --chart-2 (the chart-palette complement) and
+   * --tag-text = readable ink for that color. Achromatic themes that
+   * don't want a duotone identity can collapse --tag-bg to --accent. */
+  --tag-bg:   var(--chart-2);
+  --tag-text: var(--on-accent, #fff);
+
+  /* ── Mermaid supplementary fill palette ─────────────────────────────────
+   * Slots 2-5 (journey/mindmap/kanban section fills, gitgraph label
+   * backgrounds, treemap leaves, venn sets). Themes override slots 0-1
+   * directly via --mermaid-primary-color / --mermaid-secondary-color.
+   * These supplementary slots auto-derive from the chart palette so every
+   * theme gets on-brand fills without per-theme boilerplate.
+   *
+   * light-dark() selects pale pastels for light canvases and dark lifted
+   * fills for dark canvases (carbone, *-dark wrappers). */
+  --mermaid-pie-purple: light-dark(color-mix(in oklab, var(--chart-4) 15%, white), color-mix(in oklab, var(--chart-4) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-orange: light-dark(color-mix(in oklab, var(--chart-2) 15%, white), color-mix(in oklab, var(--chart-2) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-teal:   light-dark(color-mix(in oklab, var(--chart-3) 15%, white), color-mix(in oklab, var(--chart-3) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-rose:   light-dark(color-mix(in oklab, var(--chart-5) 15%, white), color-mix(in oklab, var(--chart-5) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-yellow: light-dark(color-mix(in oklab, var(--chart-5) 20%, white), color-mix(in oklab, var(--chart-5) 35%, var(--bg-dark, #001D33)));
+  --mermaid-pie-red:    light-dark(color-mix(in oklab, var(--chart-2) 12%, white), color-mix(in oklab, var(--chart-2) 20%, var(--bg-dark, #001D33)));
+  --mermaid-pie-slate:  light-dark(color-mix(in oklab, var(--chart-6) 18%, white), color-mix(in oklab, var(--chart-6) 28%, var(--bg-dark, #001D33)));
+  --mermaid-pie-sage:   light-dark(color-mix(in oklab, var(--chart-3) 11%, white), color-mix(in oklab, var(--chart-3) 20%, var(--bg-dark, #001D33)));
+  --mermaid-pie-violet: light-dark(color-mix(in oklab, var(--chart-4) 11%, white), color-mix(in oklab, var(--chart-4) 20%, var(--bg-dark, #001D33)));
 }
 
 /* ── BASE ── */
@@ -324,7 +429,20 @@ section:not(.quote):not(.featured) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+
+/* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
+   They must render inline at text size and not pick up the block image styling
+   above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
+   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+section img.emoji {
+  display:inline-block;
+  height:1em; width:auto;
+  max-width:none; max-height:none;
+  border-radius:0; object-fit:fill;
+  vertical-align:-0.1em;
+  margin:0 0.05em;
+}
 section header {
   position:absolute; top:24px; left:30px; right:30px;
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
@@ -468,7 +586,7 @@ section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-lab
  *                        timeline/list-steps (counter), principles/tldr (own line),
  *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
- *   non-list             content, code, compare-code, image, image-full, diagram
+ *   non-list             content, code, compare-code, image, diagram
  *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
  *                        (grid/scaffold rows where margin-left:auto cannot
  *                        right-anchor; opt in by adding a per-layout rule
@@ -476,7 +594,7 @@ section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-lab
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.image-full):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -741,26 +859,286 @@ section.list ol { list-style:none; counter-reset:list-counter; display:flex; fle
 section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
 section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
-/* ── LIST-TABULAR ──
- * ## heading  ol with items: each rendered as 4-column row
- * **num** *verb* description `meta`
- */
-section.list-tabular h2 { margin-bottom:var(--sp-md); }
-section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:center; }
-section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); line-height:var(--lh-base); }
-section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
-section.list-tabular ol > li strong { font-size:inherit; font-weight:inherit; color:inherit; }
-section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); font-weight:400; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-/* VS Code / CLI fallback: nested format before runtime flattening.
- * display:contents makes the inner ul transparent to the parent grid, so its
- * li children become grid items and slot into columns 3 (desc) and 4 (meta).
- * Inner li's reset weight/size so only the parent li (column 2 = the name)
- * carries the emphasis typography — author writes plain text, CSS bolds it. */
-section.list-tabular ol > li > ul { display:contents; }
-section.list-tabular ol > li > ul > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); }
-section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
-section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
+/* ── LIST-TABULAR ──────────────────────────────────────────────────────────
+ * Ordered tabular list — counter | name | description | meta per row.
+ * Default look is hairline-ruled rows, display-serif name, mono uppercase
+ * meta. Counter sits at fs-md on the name baseline.
+ *
+ * Authoring contract (same across base + all variants):
+ *
+ *   N. Name `Meta string`
+ *      - Description sentence.
+ *
+ * The inline code is the meta — adjacent to the name in source because
+ * that's what it qualifies. CSS pulls it into the right column at render.
+ *
+ * Visual variants (mutually exclusive — pick one or none):
+ *
+ *   (none)    Default — hairline ledger; display-serif name; mono meta
+ *   def       Editorial — big counter spans rows, eyebrow above name
+ *   metric    Meta renders as a tile on the right
+ *   spec      Mono name as a key (technical-reference feel)
+ *   register  Meta renders as an accent-soft pill
+ *
+ * Fine-tuning modifiers (compose with the variant above):
+ *
+ *   compact   Tighter row padding (any variant)
+ *   rule      def: full-height accent rail down the ol's left edge
+ *   solid     metric: filled accent tile instead of bordered
+ *   stacked   spec: description on its own row beneath the name; counter
+ *               scales up and spans both rows
+ *   outline   register: hairline-bordered tag instead of filled pill
+ *
+ * Counter sizing rule across the family: counter size scales with item
+ * height. Single-row items → fs-md (paired with the name baseline).
+ * Multi-row items (def, spec.stacked) → fs-2xl, spans rows, centered.
+ * ───────────────────────────────────────────────────────────────────────── */
 
+/* ── Base (default = hairline ledger) ─────────────────────────────────── */
+section.list-tabular h2 { margin-bottom:var(--sp-md); }
+section.list-tabular ol {
+  list-style:none; counter-reset:tabular-counter;
+  padding:0; margin:0;
+  display:flex; flex-direction:column;
+}
+section.list-tabular ol > li {
+  counter-increment:tabular-counter;
+  display:grid;
+  grid-template-columns:44px 200px 1fr auto;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-display);
+  font-size:var(--fs-emphasis);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-snug);
+}
+section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
+section.list-tabular ol > li::before {
+  content:counter(tabular-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.06em;
+  align-self:baseline;
+}
+section.list-tabular ol > li > ul { display:contents; }
+section.list-tabular ol > li > ul > li::marker { content:''; }
+section.list-tabular ol > li > ul > li:first-child {
+  grid-column:3; grid-row:1;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  letter-spacing:0;
+}
+/* Legacy italic-meta compatibility: when a second nested li is present
+ * (the 3-line authoring contract), treat it as the meta column. The new
+ * 2-line contract uses inline <code> instead and never produces a second
+ * nested li. */
+section.list-tabular ol > li > ul > li:nth-child(2) {
+  grid-column:4; grid-row:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+section.list-tabular ol > li > ul > li:nth-child(2) em { font-style:normal; }
+section.list-tabular ol > li > code {
+  grid-column:4; grid-row:1;
+  background:none;
+  border:none;
+  padding:0;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* ── Variant: def (editorial) ─────────────────────────────────────────── */
+section.list-tabular.def ol {
+  gap:var(--sp-md);
+  flex:1; justify-content:center;
+}
+section.list-tabular.def ol > li {
+  grid-template-columns:64px 220px 1fr;
+  grid-template-rows:auto auto;
+  row-gap:4px;
+  padding:0;
+  border:none;
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-tight);
+}
+section.list-tabular.def ol > li:first-child { border-top:none; }
+section.list-tabular.def ol > li::before {
+  grid-column:1; grid-row:1 / span 2;
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.02em;
+  align-self:center;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > code {
+  grid-column:2; grid-row:1;
+  display:block;
+  width:fit-content;
+  margin:0;
+  padding:0;
+  background:none;
+  border:none;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  color:var(--text-muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:left;
+  white-space:nowrap;
+  align-self:end;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > ul > li {
+  grid-column:3; grid-row:1 / span 2;
+  font-family:var(--font-body);
+  font-size:var(--fs-md);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+  letter-spacing:0;
+  align-self:center;
+}
+
+/* def.rule — single continuous full-height accent rail */
+section.list-tabular.def.rule ol {
+  border-left:4px solid var(--accent);
+  padding-left:var(--sp-md);
+}
+
+/* ── Variant: metric (tile) ───────────────────────────────────────────── */
+section.list-tabular.metric ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+}
+section.list-tabular.metric ol > li > code {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:6px 14px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-0.01em;
+  text-align:center;
+  text-transform:none;
+  align-self:center;
+  min-width:100px;
+  white-space:nowrap;
+}
+
+/* metric.solid — filled accent tile */
+section.list-tabular.metric.solid ol > li > code {
+  background:var(--accent);
+  border-color:var(--accent);
+  color:var(--on-accent, #fff);
+}
+
+/* ── Variant: spec (mono key) ─────────────────────────────────────────── */
+section.list-tabular.spec ol > li {
+  grid-template-columns:44px 260px 1fr auto;
+  font-family:var(--font-mono);
+  font-size:var(--fs-body);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:0;
+}
+section.list-tabular.spec ol > li > code {
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* spec.stacked — description below name; counter spans rows */
+section.list-tabular.spec.stacked ol > li {
+  grid-template-columns:44px 1fr auto;
+  grid-template-rows:auto auto;
+  row-gap:var(--sp-xs);
+  font-size:var(--fs-md);
+}
+section.list-tabular.spec.stacked ol > li::before {
+  grid-row:1 / span 2;
+  align-self:center;
+  font-size:var(--fs-2xl);
+  line-height:1;
+  letter-spacing:-0.02em;
+}
+section.list-tabular.spec.stacked ol > li > ul > li {
+  grid-column:2; grid-row:2;
+}
+section.list-tabular.spec.stacked ol > li > code {
+  grid-column:3; grid-row:2;
+  justify-self:end;
+  align-self:baseline;
+}
+
+/* ── Variant: register (pill) ─────────────────────────────────────────── */
+section.list-tabular.register ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+}
+section.list-tabular.register ol > li > code {
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:none;
+  padding:4px 14px;
+  border-radius:9999px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:center;
+  white-space:nowrap;
+  justify-self:end;
+  align-self:center;
+}
+
+/* register.outline — hairline-bordered tag */
+section.list-tabular.register.outline ol > li > code {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text-label);
+}
+
+/* ── Universal modifier: compact ──────────────────────────────────────── */
+section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
 
 /* ── BIG-NUMBER ──
@@ -835,11 +1213,11 @@ section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); f
  */
 section.cards-wide h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.cards-wide .three-stack { display:flex; flex-direction:column; gap:12px; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
 section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
 section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
-section.cards-wide .wide-card-heading { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.cards-wide .wide-card-body { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); }
+section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
+section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:6px; padding:3px 9px; }
@@ -887,25 +1265,10 @@ section.list-criteria .crit-body ul li::before { display:none !important; conten
  * ## heading  then 4× pairs: ### tool-name  p badges+body
  */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-section.verdict-grid .grid-verdict { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:var(--sp-sm); flex:1; }
-section.verdict-grid .vcard { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; display:flex; flex-direction:column; gap:var(--sp-xs); }
-section.verdict-grid .vcard:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
-section.verdict-grid .vcard:last-child::after {
-  content:'✧'; position:absolute; top:8px; right:8px;
-  font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
-  font-family:var(--font-body); font-weight:400; letter-spacing:0;
-  pointer-events:none;
-}
-section.verdict-grid .vcard:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid .vcard-title { font-size:var(--fs-body); font-weight:700; color:var(--text-heading); }
-section.verdict-grid .vcard:last-child .vcard-title { color:var(--accent); padding-right:2.5rem; }
-section.verdict-grid .vcard-body { font-size:var(--fs-xs); color:var(--text-body); line-height:var(--lh-snug); }
-section.verdict-grid .vcard:last-child .vcard-body { padding-right:2.5rem; }
 .badge { display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass::before { content:"✓"; color:var(--pass); font-weight:700; }
 .badge.fail::before { content:"✗"; color:var(--fail); font-weight:700; }
 .badge.warn::before { content:"–"; color:var(--warn); font-weight:700; }
-.badge-row { display:flex; flex-wrap:wrap; gap:5px; }
 
 /* ── COMPARE-TABLE ──
  * ## heading  markdown table  p note
@@ -955,22 +1318,23 @@ section.glossary h2 .range-pill {
 
 /* ── FEATURED ──
  * ## heading  ul: first li = .feat-card hero (50%), rest = .sub-row > .sub-card (50%)
+ * Titles emit as <strong>; container sets fs-body base — same model as cards-grid/compare-prose.
  */
 section.featured h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
 section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; position:relative; overflow:hidden; }
+section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 26px; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--text-body); }
 section.featured .feat-card::after {
   content:'✧'; position:absolute; top:8px; right:8px;
   font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.featured .feat-card h3 { font-weight:700; letter-spacing:0.12em; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:2.5rem; }
-section.featured .feat-card p { font-size:var(--fs-emphasis); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:2.5rem; }
+section.featured .feat-card strong { display:block; font-weight:700; color:var(--accent); margin-bottom:var(--sp-xs); padding-right:2.5rem; }
+section.featured .feat-card p { color:var(--text-body); line-height:var(--lh-relaxed); margin:0; font-style:normal; padding-right:2.5rem; }
 section.featured .sub-row { display:grid; grid-auto-rows:1fr; gap:var(--sp-sm); }
-section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; }
-section.featured .sub-card h3 { font-size:var(--fs-md); font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); text-transform:none; letter-spacing:0; }
-section.featured .sub-card p  { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); margin:0; }
+section.featured .sub-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:18px 22px; font-size:var(--fs-body); color:var(--text-body); }
+section.featured .sub-card strong { display:block; font-weight:700; color:var(--text-heading); margin-bottom:var(--sp-xs); }
+section.featured .sub-card p  { color:var(--text-body); line-height:var(--lh-base); margin:0; }
 
 /* ── STEPS ──
  * ## heading  ol with: **Step N title** \n body text
@@ -998,84 +1362,662 @@ section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; 
 section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
 
-/* ── IMAGE LAYOUTS ──
- * Two layouts share one placeholder: a tiled lattice-pattern SVG —
- * rhombic cells with a gold dot at each centre. The pattern repeats
- * at its native 80×80 cell, so it looks identical at any container
- * size and never lands on fractional-pixel boundaries.
+/* ── IMAGE ──────────────────────────────────────────────────────────────────
+ * One class (`image`) covers all half-canvas and full-bleed image layouts.
+ * Default visual style: the Anchor — 6px --accent border, solid text panel.
  *
- *   _class: image       → text left, image right (default)
- *   _class: image left  → text right, image left
- *   _class: image-full  → image fills the canvas
+ * Composable modifiers:
+ *   image             text left, image right (6px --accent left border)
+ *   image mirror      image left, text right (border moves to right edge)
+ *   image contain     letterbox on --bg-alt matte (no crop)
+ *   image full        full-bleed: solid --bg column 42% + accent border
+ *   image museum      editorial plate: 20px inset on --bg-alt matte
+ *   image dark        dark color-scheme (token cascade)
  *
- * Authors replace the placeholder by adding a Marp background image:
- *   ![bg right](photo.jpg)   ![bg left](photo.jpg)   ![bg](photo.jpg)
- * The figure Marp emits paints over the section background; the
- * placeholder simply disappears. No pseudo-element, no z-order
- * trick, no inset arithmetic. */
-section.image,
-section.image-full {
-  /* Create a stacking context so the bg-image div's z-index:-1
-   * goes behind sibling content (header, h2, p, footer) but NOT
-   * behind the section's own background painting. Without this,
-   * the section's solid --bg layer hides the image entirely. */
-  isolation: isolate;
-  --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='%23006FA8' stroke-width='1' opacity='0.3'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.6'/></svg>");
-}
-section.image.dark,
-section.image-full.dark {
-  --lattice-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><path d='M0 40L40 0L80 40L40 80Z' fill='none' stroke='white' stroke-width='1' opacity='0.18'/><circle cx='40' cy='40' r='1.6' fill='%23C9A24A' opacity='0.5'/></svg>");
-}
-/* Half-canvas image: hard 50% gradient covers the text side; pattern
- * fills the slide underneath. Pattern + cover meet at exactly 50% —
- * same line Marp's ![bg right]/![bg left] figure paints to. */
+ * Render paths:
+ *   Marp CLI: [data-marpit-advanced-background-container] figure
+ *   Emulator: .lattice-bg, .lattice-bg-right / -left / -full
+ * ───────────────────────────────────────────────────────────────────────── */
 section.image {
-  padding-right: calc(50% + var(--sp-lg));
-  background:
-    linear-gradient(to right, var(--bg) 50%, transparent 50%),
-    var(--lattice-pattern);
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
 }
-section.image.left {
-  padding-right: 0;
-  padding-left: calc(50% + var(--sp-lg));
-  background:
-    linear-gradient(to left, var(--bg) 50%, transparent 50%),
-    var(--lattice-pattern);
+
+/* ─ HALF-CANVAS: image right ─ */
+section.image:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
 }
-section.image h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
-section.image p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
-/* ── IMAGE-FULL ──
- * Pattern fills the whole canvas; ![bg](url) replaces it.
- * h2 = title bar at top · trailing p = optional caption bar at bottom.
- * The dark canvas comes from --bg, which the .dark rule below remaps. */
-section.image-full {
+section.image:not(.full) h2 { font-size: var(--fs-xl); margin-bottom: var(--sp-sm); }
+section.image:not(.full) p  { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
+
+/* Anchor decoration — guarded so museum slides never inherit the border */
+section.image:not(.full):not(.museum) {
+  border-left: 6px solid var(--accent);
+  padding-left: calc(var(--sp-2xl) + 6px);
+}
+
+/* Mirror: border and text slot move to right */
+section.image:not(.full):not(.museum).mirror,
+section.image:not(.full):not(.museum).left {
+  border-left: none;
+  border-right: 6px solid var(--accent);
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: calc(var(--sp-2xl) + 6px);
+  background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
+}
+
+/* Contain: --bg-alt matte fills the image slot */
+section.image:not(.full).contain {
+  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image:not(.full).contain.mirror,
+section.image:not(.full).contain.left {
+  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* ─ COVER (default) — both render paths ─ */
+section.image [data-marpit-advanced-background-container] figure,
+section.image .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* ─ CONTAIN (opt-in) ─ */
+section.image.contain [data-marpit-advanced-background-container] figure,
+section.image.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Split-line hairline — 6px border is on the outer slide edge; this 1px
+ * mark at the split ensures the boundary reads regardless of image tone. */
+section.image:not(.full) [data-marpit-advanced-background-container] figure,
+section.image:not(.full) .lattice-bg img {
+  box-shadow: -1px 0 0 var(--border) !important;
+}
+section.image:not(.full).mirror [data-marpit-advanced-background-container] figure,
+section.image:not(.full).mirror .lattice-bg img,
+section.image:not(.full).left   [data-marpit-advanced-background-container] figure,
+section.image:not(.full).left   .lattice-bg img {
+  box-shadow: 1px 0 0 var(--border) !important;
+}
+section.image:not(.full).contain [data-marpit-advanced-background-container] figure,
+section.image:not(.full).contain .lattice-bg img {
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+
+/* ─ EMULATOR WRAPPER ─ */
+section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
+section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
+section.image .lattice-bg-right { right: 0; top: 0; bottom: 0; width: 50%; }
+section.image .lattice-bg-left  { left: 0; top: 0; bottom: 0; width: 50%; }
+section.image .lattice-bg-full  { inset: 0; }
+section.image.mirror .lattice-bg-right,
+section.image.left   .lattice-bg-right { right: auto; left: 0; }
+
+/* ─ FULL BLEED: solid --bg column 42%, 6px --accent border ─ */
+section.image.full {
   padding: 0;
   border-top: none;
-  background: var(--lattice-pattern), var(--bg);
+  border-left: 6px solid var(--accent);
+  background: none;
+  box-sizing: border-box;
 }
-section.image-full header,
-section.image-full footer { display:none; }
-section.image-full h2 {
-  position:absolute; top:0; left:0; right:0;
-  text-align:center; margin:0;
-  padding:var(--sp-xs) var(--sp-lg);
-  background:var(--accent-soft); color:var(--text-body);
+section.image.full header,
+section.image.full footer { display: none; }
+section.image.full h2 {
+  position: absolute; top: 0; left: 6px; bottom: 0; margin: 0;
+  width: 42%;
+  display: flex; align-items: flex-end;
+  padding: var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: var(--bg);
+  color: var(--text-heading);
+  font-size: var(--fs-xl);
+  box-sizing: border-box;
+  z-index: 1;
+}
+section.image.full p:last-of-type {
+  position: absolute; top: 0; left: 6px; bottom: 0; margin: 0;
+  width: 42%;
+  display: flex; align-items: flex-start;
+  padding: var(--sp-2xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: transparent;
+  color: var(--text-body);
+  font-size: var(--fs-body); line-height: var(--lh-relaxed);
+  box-sizing: border-box;
+  z-index: 1;
+}
+section.image.full.mirror {
+  border-left: none;
+  border-right: 6px solid var(--accent);
+}
+section.image.full.mirror h2 {
+  left: auto; right: 6px;
+  padding-left: var(--sp-xl); padding-right: var(--sp-xl);
+}
+section.image.full.mirror p:last-of-type {
+  left: auto; right: 6px;
+  padding-left: var(--sp-xl); padding-right: var(--sp-xl);
+}
+
+/* ─ MUSEUM MODIFIER — editorial plate, layered over anchor base ─
+ * Removes the accent border; mounts the image on --bg-alt matte with
+ * 20px inset (flush at the split) and a 1px frame. Full-bleed museum
+ * centres the image on the matte with uniform 40px inset. */
+
+/* Half-canvas museum: --bg-alt matte on image side, inset image */
+section.image:not(.full).museum {
+  padding-left: var(--sp-2xl);
+  padding-right: calc(50% + var(--sp-2xl));
+  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image:not(.full).museum.mirror,
+section.image:not(.full).museum.left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Marp CLI — inset figure: flush at split, 20px on outer three sides */
+section.image:not(.full).museum [data-marpit-advanced-background-container] figure {
+  top: 20px !important; right: 20px !important; bottom: 20px !important; left: 0 !important;
+  background-size: cover !important; background-position: center !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+section.image:not(.full).museum.contain [data-marpit-advanced-background-container] figure {
+  background-size: contain !important; background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+section.image:not(.full).museum.mirror [data-marpit-advanced-background-container] figure,
+section.image:not(.full).museum.left   [data-marpit-advanced-background-container] figure {
+  top: 20px !important; right: 0 !important; bottom: 20px !important; left: 20px !important;
+  background-size: cover !important; background-position: center !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+
+/* Emulator — right slot with matte padding */
+section.image:not(.full).museum .lattice-bg-right {
+  background: var(--image-matte);
+  padding: 20px 20px 20px 0;
+  box-sizing: border-box;
+  right: 0; top: 0; bottom: 0; width: 50%;
+}
+section.image:not(.full).museum .lattice-bg-right img {
+  width: 100%; height: 100%; display: block;
+  object-fit: cover; object-position: center;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+section.image:not(.full).museum.contain .lattice-bg-right img { object-fit: contain; }
+section.image:not(.full).museum.mirror .lattice-bg-right,
+section.image:not(.full).museum.left   .lattice-bg-right {
+  background: var(--image-matte);
+  padding: 20px 0 20px 20px;
+  box-sizing: border-box;
+  right: auto; left: 0; top: 0; bottom: 0; width: 50%;
+}
+
+/* Full-bleed museum: image centred on --bg-alt matte, framed as an object */
+section.image.full.museum {
+  border: none;
+  padding: 40px;
+  background: var(--image-matte);
+  box-sizing: border-box;
+}
+section.image.full.museum [data-marpit-advanced-background-container] figure {
+  top: 40px !important; right: 40px !important; bottom: 40px !important; left: 40px !important;
+  background-size: contain !important; background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+section.image.full.museum .lattice-bg-full {
+  background: var(--image-matte);
+  padding: 40px;
+  box-sizing: border-box;
+}
+section.image.full.museum .lattice-bg-full img {
+  width: 100%; height: 100%; display: block;
+  object-fit: contain; object-position: center;
+  box-shadow: 0 0 0 1px var(--border);
+}
+/* Museum full text: label + caption in normal flow on the matte */
+section.image.full.museum h2 {
+  position: relative; top: unset; left: unset; right: unset; bottom: unset;
+  width: auto; display: block;
+  padding: 0; background: none;
+  color: var(--text-label);
+  font-size: var(--fs-label); font-family: var(--font-mono); font-weight: 400;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 var(--sp-xs) 0; z-index: 1;
+}
+section.image.full.museum p:last-of-type {
+  position: relative; top: unset; left: unset; right: unset; bottom: unset;
+  width: auto; display: block;
+  padding: 0; background: transparent;
+  color: var(--text-label);
+  font-size: var(--fs-sm); line-height: var(--lh-base);
+  margin: 0; text-align: center; z-index: 1;
+}
+
+/* ── IMAGE CONCEPT PROTOTYPES ─────────────────────────────────────────────────
+ * Five self-contained image layout concepts with distinct visual identities.
+ * Each is fully independent of .image rules — no inheritance between concepts.
+ *
+ * Classes: image-razor, image-brief, image-museum, image-anchor, image-chamber
+ * Modifiers (same grammar as .image):
+ *   .mirror / .left  — swap image to left slot, text to right
+ *   .contain         — letterbox (object-fit:contain) on --bg-alt matte
+ *   .full            — full-bleed canvas
+ *   .dark            — auto-handled by color-scheme token cascade
+ *
+ * Render path coverage:
+ *   Marp CLI: [data-marpit-advanced-background-container] figure
+ *   Emulator: .lattice-bg, .lattice-bg-right, .lattice-bg-left, .lattice-bg-full
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-RAZOR — The Argument / Evidence Pair
+   A 1.5px vertical --accent hairline at the 50% split, produced entirely via
+   CSS background gradient. No pseudo-elements. Clean rationalism.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-razor {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-razor:not(.full) {
+  padding-right: calc(50% + 56px);
+  padding-left: 56px;
+  background: linear-gradient(to right,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    transparent 50%
+  );
+}
+section.image-razor:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-razor:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror: image left, gradient reverses */
+section.image-razor:not(.full).mirror,
+section.image-razor:not(.full).left {
+  padding-left: calc(50% + 56px);
+  padding-right: 56px;
+  background: linear-gradient(to left,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    transparent 50%
+  );
+}
+
+/* Contain: right panel becomes --bg-alt matte */
+section.image-razor:not(.full).contain {
+  background: linear-gradient(to right,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    var(--image-matte) 50%
+  );
+}
+section.image-razor:not(.full).contain.mirror,
+section.image-razor:not(.full).contain.left {
+  background: linear-gradient(to left,
+    var(--bg) calc(50% - 1.5px),
+    var(--accent) calc(50% - 1.5px),
+    var(--accent) 50%,
+    var(--image-matte) 50%
+  );
+}
+
+/* Cover fill — both render paths */
+section.image-razor [data-marpit-advanced-background-container] figure,
+section.image-razor .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* Contain — opt-in letterbox */
+section.image-razor.contain [data-marpit-advanced-background-container] figure,
+section.image-razor.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper positioning */
+section.image-razor .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-razor .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-razor .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-razor .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-razor .lattice-bg-full  { inset:0; }
+section.image-razor.mirror .lattice-bg-right,
+section.image-razor.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: gradient scrims top and bottom, hairline at 50% for sub-panels */
+section.image-razor.full {
+  padding: 0;
+  border-top: none;
+  background: var(--bg);
+}
+section.image-razor.full header,
+section.image-razor.full footer { display:none; }
+section.image-razor.full h2 {
+  position:absolute; top:0; left:0; right:0; margin:0;
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
+  background:linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  backdrop-filter: brightness(0.35) saturate(0.6);
+  color:rgba(255,255,255,0.96);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
   font-family:var(--font-mono); font-size:var(--fs-label); font-weight:400;
-  letter-spacing:0.1em; text-transform:uppercase;
+  letter-spacing:0.12em; text-transform:uppercase;
+  z-index:1; pointer-events:none;
+}
+section.image-razor.full p:last-of-type {
+  position:absolute; bottom:0; left:0; right:0; margin:0;
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+  background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 55%, transparent 100%);
+  backdrop-filter: brightness(0.35) saturate(0.6);
+  color:rgba(255,255,255,0.92);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  font-size:var(--fs-body); line-height:var(--lh-base);
+  z-index:1; pointer-events:none;
+}
+section.image-razor.full.mirror h2 {
+  top:auto; bottom:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  padding:calc(var(--sp-md) + var(--sp-md)) var(--sp-lg) var(--sp-md);
+}
+section.image-razor.full.mirror p:last-of-type {
+  bottom:auto; top:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 55%, transparent 100%);
+  padding:var(--sp-md) var(--sp-lg) calc(var(--sp-md) + var(--sp-md));
+}
+
+/* ─ IMAGE TONE HINTS (image-razor) — same grammar as base image ─ */
+section.image-razor.full.image-dark h2 {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 50%, transparent 100%);
+  color: rgba(255,255,255,0.96);
+  backdrop-filter: none;
+  text-shadow: none;
+}
+section.image-razor.full.image-dark.mirror h2 {
+  background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 50%, transparent 100%);
+}
+section.image-razor.full.image-dark p:last-of-type {
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.08) 55%, transparent 100%);
+  color: rgba(255,255,255,0.85);
+  backdrop-filter: none;
+  text-shadow: none;
+}
+section.image-razor.full.image-dark.mirror p:last-of-type {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.08) 55%, transparent 100%);
+}
+section.image-razor.full.image-light h2 {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.38) 55%, transparent 100%);
+  color: var(--text-heading);
+  backdrop-filter: none;
+  text-shadow: 0 1px 6px rgba(255,255,255,0.9);
+}
+section.image-razor.full.image-light.mirror h2 {
+  background: linear-gradient(to top, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.38) 55%, transparent 100%);
+}
+section.image-razor.full.image-light p:last-of-type {
+  background: linear-gradient(to top, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.38) 55%, transparent 100%);
+  color: var(--text-body);
+  backdrop-filter: none;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.9);
+}
+section.image-razor.full.image-light.mirror p:last-of-type {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.38) 55%, transparent 100%);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-BRIEF — The Executive Brief
+   A 4px --accent accent strip at the top of the text panel only, signalling
+   formal document authority. No section border-top. Text sits below the strip.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-brief {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+  border-top: none;
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-brief:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  padding-top: calc(var(--sp-xl) + 4px); /* clear the 4px strip */
+  background:
+    linear-gradient(to right, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to right, var(--bg) 50%, transparent 50%);
+}
+section.image-brief:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-brief:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror: strip on right side text panel */
+section.image-brief:not(.full).mirror,
+section.image-brief:not(.full).left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  padding-top: calc(var(--sp-xl) + 4px);
+  background:
+    linear-gradient(to left, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to left, var(--bg) 50%, transparent 50%);
+}
+
+/* Contain variant */
+section.image-brief:not(.full).contain {
+  background:
+    linear-gradient(to right, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
+}
+section.image-brief:not(.full).contain.mirror,
+section.image-brief:not(.full).contain.left {
+  background:
+    linear-gradient(to left, var(--accent) 50%, transparent 50%) 0 0 / 100% 4px no-repeat,
+    linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
+}
+
+/* Cover fill */
+section.image-brief [data-marpit-advanced-background-container] figure,
+section.image-brief .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+section.image-brief.contain [data-marpit-advanced-background-container] figure,
+section.image-brief.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Split-line hairline — 1px --border at the image's inner edge ensures the
+ * boundary reads regardless of image tone (brief has no other split marker). */
+section.image-brief:not(.full) [data-marpit-advanced-background-container] figure,
+section.image-brief:not(.full) .lattice-bg img {
+  box-shadow: -1px 0 0 var(--border) !important;
+}
+section.image-brief:not(.full).mirror [data-marpit-advanced-background-container] figure,
+section.image-brief:not(.full).mirror .lattice-bg img,
+section.image-brief:not(.full).left   [data-marpit-advanced-background-container] figure,
+section.image-brief:not(.full).left   .lattice-bg img {
+  box-shadow: 1px 0 0 var(--border) !important;
+}
+section.image-brief:not(.full).contain [data-marpit-advanced-background-container] figure,
+section.image-brief:not(.full).contain .lattice-bg img {
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+
+/* Emulator wrapper */
+section.image-brief .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-brief .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-brief .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-brief .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-brief .lattice-bg-full  { inset:0; }
+section.image-brief.mirror .lattice-bg-right,
+section.image-brief.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: solid --bg panel left 40%, 4px --accent left border, right 60% image */
+section.image-brief.full {
+  padding: 0;
+  border-top: none;
+  background: none;
+}
+section.image-brief.full header,
+section.image-brief.full footer { display:none; }
+section.image-brief.full h2 {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:40%;
+  display:flex; align-items:flex-end;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) calc(var(--sp-xl) + 4px);
+  background: var(--bg);
+  border-left: 4px solid var(--accent);
+  color:var(--text-heading);
+  font-size:var(--fs-xl);
+  box-sizing:border-box;
   z-index:1;
 }
-section.image-full.dark h2 {
-  background:rgba(0,0,0,0.42); color:rgba(255,255,255,0.9);
+section.image-brief.full p:last-of-type {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:40%;
+  display:flex; align-items:flex-start;
+  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) calc(var(--sp-xl) + 4px);
+  padding-top:var(--sp-2xl);
+  background: transparent;
+  color:var(--text-body);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed);
+  box-sizing:border-box;
+  z-index:1;
 }
-section.image-full p:last-of-type {
-  position:absolute; bottom:0; left:0; right:0; margin:0;
-  display:flex; align-items:center; min-height:2.4em;
-  background:var(--accent-soft); color:var(--text-body);
-  padding:var(--sp-xs) var(--sp-lg); font-size:var(--fs-body); z-index:1;
+section.image-brief.full.mirror h2 {
+  left:auto; right:0;
+  border-left:none; border-right:4px solid var(--accent);
+  padding-left:var(--sp-xl); padding-right:calc(var(--sp-xl) + 4px);
 }
-section.image-full.dark p:last-of-type {
-  background:rgba(0,0,0,0.58); color:rgba(255,255,255,0.85);
+section.image-brief.full.mirror p:last-of-type {
+  left:auto; right:0;
+  padding-left:var(--sp-xl); padding-right:calc(var(--sp-xl) + 4px);
 }
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE-CHAMBER — The Tonal Split
+   Text panel has --bg-alt background. No explicit divider — the tonal shift
+   IS the divider. Image fills the other half cleanly. Depth without decoration.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+section.image-chamber {
+  isolation: isolate;
+  --image-matte: var(--bg-alt);
+}
+
+/* ─ Half-canvas default: image right ─ */
+section.image-chamber:not(.full) {
+  padding-right: calc(50% + var(--sp-2xl));
+  padding-left: var(--sp-2xl);
+  background: linear-gradient(to right, var(--bg-alt) 50%, transparent 50%);
+}
+section.image-chamber:not(.full) h2 { font-size:var(--fs-xl); margin-bottom:var(--sp-sm); }
+section.image-chamber:not(.full) p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
+
+/* Mirror */
+section.image-chamber:not(.full).mirror,
+section.image-chamber:not(.full).left {
+  padding-left: calc(50% + var(--sp-2xl));
+  padding-right: var(--sp-2xl);
+  background: linear-gradient(to left, var(--bg-alt) 50%, transparent 50%);
+}
+
+/* Contain: --bg-alt on both sides — very unified, tonal all round */
+section.image-chamber:not(.full).contain {
+  background: linear-gradient(to right, var(--bg-alt) 50%, var(--image-matte) 50%);
+}
+section.image-chamber:not(.full).contain.mirror,
+section.image-chamber:not(.full).contain.left {
+  background: linear-gradient(to left, var(--bg-alt) 50%, var(--image-matte) 50%);
+}
+
+/* Cover fill */
+section.image-chamber [data-marpit-advanced-background-container] figure,
+section.image-chamber .lattice-bg img {
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+section.image-chamber.contain [data-marpit-advanced-background-container] figure,
+section.image-chamber.contain .lattice-bg img {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+/* Emulator wrapper */
+section.image-chamber .lattice-bg { position:absolute; z-index:-1; overflow:hidden; }
+section.image-chamber .lattice-bg img { width:100%; height:100%; display:block; }
+section.image-chamber .lattice-bg-right { right:0; top:0; bottom:0; width:50%; }
+section.image-chamber .lattice-bg-left  { left:0; top:0; bottom:0; width:50%; }
+section.image-chamber .lattice-bg-full  { inset:0; }
+section.image-chamber.mirror .lattice-bg-right,
+section.image-chamber.left   .lattice-bg-right { right:auto; left:0; }
+
+/* Full-bleed: --bg-dark text column 42% wide, solid hard edge */
+section.image-chamber.full {
+  padding: 0;
+  border-top: none;
+  background: none;
+}
+section.image-chamber.full header,
+section.image-chamber.full footer { display:none; }
+section.image-chamber.full h2 {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-end;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: var(--bg-dark);
+  color:rgba(255,255,255,0.95);
+  font-size:var(--fs-xl);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-chamber.full p:last-of-type {
+  position:absolute; top:0; left:0; bottom:0; margin:0;
+  width:42%;
+  display:flex; align-items:flex-start;
+  padding:var(--sp-2xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
+  background: transparent;
+  color:rgba(255,255,255,0.75);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed);
+  box-sizing:border-box;
+  z-index:1;
+}
+section.image-chamber.full.mirror h2 {
+  left:auto; right:0;
+}
+section.image-chamber.full.mirror p:last-of-type {
+  left:auto; right:0;
+}
+
+/* ── END IMAGE CONCEPT PROTOTYPES ─────────────────────────────────────────── */
 
 /* ── DARK VARIANT ──
  * Per-slide dark canvas. Flips this section's color-scheme to dark; the
@@ -1403,40 +2345,38 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
- * Nested-list format: ul > li(strong title + ul(badge items + last = body))
+ * Nested-list format: ul > li(title + ul(badge items + last = body))
  * All selectors use > from section root to prevent outer card styles from
  * cascading into the nested badge/body items. */
-section.verdict-grid:not(:has(.grid-verdict)) > ul {
+section.verdict-grid > ul {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
+section.verdict-grid > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:18px 22px;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); position:relative; overflow:hidden; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child::after {
+section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); position:relative; overflow:hidden; padding-right:2.5rem; }
+section.verdict-grid > ul > li:last-child::after {
   content:'✧'; position:absolute; top:8px; right:8px;
   font-size:2.2rem; line-height:1; color:var(--accent); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > strong { font-weight:inherit; color:inherit; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li {
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-}
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child { color:var(--accent); padding-right:2.5rem; }
+section.verdict-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; align-content:flex-start; }
-/* Badge items (all but last nested li) — neutral pill matching .badge base style */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
-/* Marp CLI path (plugin ran): strip outer-li styling so .badge span shows through cleanly */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
-/* Body text (last nested li) — reset all inherited card styles */
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); margin-top:var(--sp-xs); background:none; border:none; border-radius:0; padding:0; display:block; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
-section.verdict-grid:not(:has(.grid-verdict)) > ul > li > ul > li::before { display:none !important; content:none !important; }
+section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:5px; list-style:none; padding:0; margin:0; align-content:flex-start; }
+/* Badge items (all but last nested li) — neutral pill */
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:3px 9px; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+/* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
+section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
+/* Body text (last nested li) — reset inherited card-title styles */
+section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:2.5rem; }
+section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
  * First li → hero col (50%); rest → column of sub-cards (50%)               */
@@ -1592,6 +2532,111 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+
+/* ── SPLIT-BRIEF ──────────────────────────────────────────────────────────────
+ * Executive brief. Dark left anchor. Right panel: findings list via left-rule.
+ * Author: `eyebrow` · ## h2 · p · tight ul (title / -- body). SlotLabelLift bolts title.
+ */
+section.split-brief { padding:0; flex-direction:row; }
+section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-brief .brief-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-brief .brief-left h2 { font-size:var(--fs-3xl); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-brief .brief-left p { font-size:var(--fs-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:5px; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── SPLIT-METRIC ─────────────────────────────────────────────────────────────
+ * One number owns the room. Light left / dark right — inverted scheme.
+ * Author: `unit label` · ## number · p · tight ul (title / -- body). SlotLabelLift bolts title.
+ */
+section.split-metric { padding:0; flex-direction:row; }
+section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
+section.split-metric .unit-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
+section.split-metric .metric-left h2 { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-metric .metric-left h2 em { font-size:var(--fs-3xl); font-weight:700; font-style:normal; color:var(--text-muted); }
+section.split-metric .metric-context { display:block; font-size:var(--fs-sm); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-metric .metric-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
+section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
+section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
+
+/* ── SPLIT-STEPS ──────────────────────────────────────────────────────────────
+ * Sequential process. CSS counter timeline with connecting line.
+ * Author: `phase` · ## h2 · p · tight ol (title / -- body sub-item). SlotLabelLift bolts title.
+ */
+section.split-steps { padding:0; flex-direction:row; }
+section.split-steps .steps-left { width:30%; flex-shrink:0; background:var(--bg-alt); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-steps .phase-num { position:absolute; top:var(--sp-lg); left:var(--sp-lg); font-size:var(--fs-watermark); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; pointer-events:none; z-index:0; }
+section.split-steps .steps-left h2 { font-size:var(--fs-2xl); color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; position:relative; z-index:1; }
+section.split-steps .steps-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; position:relative; z-index:1; }
+section.split-steps .steps-right { flex:1; background:var(--bg); padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; justify-content:center; }
+section.split-steps .steps-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; }
+section.split-steps .steps-right > ol { counter-reset:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li { display:grid; grid-template-columns:40px 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
+section.split-steps .steps-right > ol > li { counter-increment:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
+section.split-steps .steps-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:19px; top:40px; bottom:0; width:2px; background:var(--border); }
+section.split-steps .steps-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
+section.split-steps .steps-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:40px; height:40px; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
+section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:40px; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── SPLIT-COMPARE ────────────────────────────────────────────────────────────
+ * Two options, one verdict. 2-column grid + spanning accent verdict row.
+ * Author: `frame label` · ## h2 · p · ul/ol (- opt1 / -- items · - opt2 / -- items) · > verdict.
+ * Second top-level list item is always the preferred option. SlotLabelLift bolts option label.
+ */
+section.split-compare { padding:0; flex-direction:row; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.split-compare .compare-left h2 { font-size:var(--fs-xl); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
+section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
+section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
+section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
+section.split-compare .option > strong { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
+section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
+section.split-compare .option.preferred::after { content:'✦'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-label); color:var(--accent); line-height:1; pointer-events:none; }
+section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ul > li,
+section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:6px; }
+section.split-compare .option ul > li:last-child,
+section.split-compare .option ol > li:last-child { margin-bottom:0; }
+section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
+section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
+section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
+section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
+
+/* ── SPLIT-STATEMENT ──────────────────────────────────────────────────────────
+ * Pull quote. Half the slide committed to one idea — no apology.
+ * Author: > blockquote · `cite` · tight ul (title / -- body). SlotLabelLift bolts title.
+ */
+section.split-statement { padding:0; flex-direction:row; }
+section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-28px; left:14px; font-size:220px; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
+section.split-statement .statement-left blockquote,
+section.split-statement .statement-left blockquote p { font-size:var(--fs-xl); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
+section.split-statement .statement-left blockquote p { margin:0; }
+section.split-statement .statement-left cite { font-size:var(--fs-body); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
+section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-statement .statement-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:4px; }
+section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
  * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
@@ -2250,10 +3295,28 @@ section.principles.bullet ol > li::before { content:'·'; }
  * | Platform   | …        | …        | …        |
  *
  * Multi-phase rollout grid. First column = workstream label (sticky,
- * bold). Phase columns get phase chrome: a numbered badge in the
- * header row, and a left-to-right accent gradient on the column rule.
- * Empty cells render as a thin dash so the eye does not interpret
- * blank as missing.
+ * bold, on tinted ground with a categorical lane stripe). Phase
+ * column headers carry two things:
+ *   1. The author's phase NAME (e.g. "Foundation", "Discovery")
+ *   2. An optional trailing inline-code meta pill (the universal
+ *      pill convention) — author writes `Foundation \`Q1 2026\``;
+ *      the `<code>` is right-anchored, sits on the spectrum line,
+ *      and carries the categorical phase accent.
+ * The pill is meta, never sequence — no auto-counter duplicating
+ * what the author wrote. Empty cells render as a thin muted dash so
+ * the eye reads "not in this phase" rather than "missing".
+ *
+ * Modifiers — compose with the base by adding a second class:
+ *   .status      — cells carry state markers ([x]/[-]/[ ]/[/]) and
+ *                  render as a status board (shipped / WIP / planned /
+ *                  out-of-scope). DOM tagging lives in lib/roadmap.js.
+ *   .horizons    — table is transposed into Now/Next/Later vertical
+ *                  phase cards. DOM rewrite in lib/roadmap.js.
+ *   .swimlane    — each workstream renders as a horizontal track of
+ *                  outlined phase pills on a lane tint.
+ *   .milestones  — calendar-aware: header carries a date subtitle
+ *                  (write `Phase 01<br>Q1 2026`), and a tick scale
+ *                  runs under the phase columns.
  * ──────────────────────────────────────────────────────────────────────── */
 section.roadmap { display:flex; flex-direction:column; }
 section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -2269,58 +3332,76 @@ section.roadmap thead th {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--text-label);
-  text-align:center;
+  text-align:left;
   vertical-align:middle;
   padding:var(--sp-sm) var(--sp-md);
-}
-section.roadmap thead th:first-child { text-align:left; }
-/* Phase columns get a numbered badge stacked above the phase name. */
-section.roadmap thead th:not(:first-child) {
-  counter-increment:phase-counter;
-  padding-top:var(--sp-md);
-  padding-bottom:var(--sp-md);
-}
-section.roadmap thead { counter-reset:phase-counter; }
-section.roadmap thead th:not(:first-child)::before {
-  content:counter(phase-counter, decimal-leading-zero);
-  display:inline-block;
-  margin-right:var(--sp-sm);
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  color:var(--text-body);
-  background:var(--bg);
-  border:1px solid var(--phase-accent, var(--accent));
-  border-radius:999px;
-  padding:2px 9px;
-  letter-spacing:0.04em;
-  line-height:1;
-  vertical-align:middle;
-}
-section.roadmap thead th:not(:first-child) {
   white-space:nowrap;
 }
-/* Categorical rotation across phase columns. */
-section.roadmap thead th:nth-child(8n+2) { --phase-accent:var(--cat-blue); }
-section.roadmap thead th:nth-child(8n+3) { --phase-accent:var(--cat-green); }
-section.roadmap thead th:nth-child(8n+4) { --phase-accent:var(--cat-purple); }
-section.roadmap thead th:nth-child(8n+5) { --phase-accent:var(--cat-orange); }
-section.roadmap thead th:nth-child(8n+6) { --phase-accent:var(--cat-teal); }
-section.roadmap thead th:nth-child(8n+7) { --phase-accent:var(--cat-rose); }
-section.roadmap thead th:nth-child(8n)   { --phase-accent:var(--cat-mauve); }
-section.roadmap thead th:nth-child(8n+1) { --phase-accent:var(--cat-slate); }
+/* Phase column headers: the header text is the author's phase NAME.
+   An optional trailing inline-code element becomes a meta pill,
+   right-anchored on the spectrum line under the th, carrying the
+   column's categorical accent. Authoring guidance: header text =
+   phase name; pill = optional meta (date, status tag, owner). */
+section.roadmap thead th:not(:first-child) {
+  position:relative;
+  padding-top:var(--sp-sm);
+  padding-bottom:calc(var(--sp-md) + 6px);
+  padding-right:var(--sp-md);
+}
+/* Universal trailing pill — overrides the global `section code` chrome
+   (bg-alt fill, square radius). The pill sits ON the spectrum line
+   at the bottom-right of the header cell. */
+section.roadmap thead th:not(:first-child) > code {
+  position:absolute;
+  right:var(--sp-md);
+  bottom:-7px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
+  padding:2px 9px;
+  border:2px solid var(--bg);
+  border-radius:999px;
+  letter-spacing:0.04em;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
+}
+/* Categorical rotation across phase columns and workstream rows.
+   The workstream column reads `--phase-accent` for its lane stripe
+   per row; phase columns read it for their leading column-accent
+   stripe per column. */
+section.roadmap thead th:nth-child(8n+2),
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-blue); }
+section.roadmap thead th:nth-child(8n+3),
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--cat-green); }
+section.roadmap thead th:nth-child(8n+4),
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--cat-purple); }
+section.roadmap thead th:nth-child(8n+5),
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--cat-orange); }
+section.roadmap thead th:nth-child(8n+6),
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--cat-teal); }
+section.roadmap thead th:nth-child(8n+7),
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--cat-rose); }
+section.roadmap thead th:nth-child(8n),
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--cat-mauve); }
+section.roadmap thead th:nth-child(8n+1),
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--cat-slate); }
+
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
   border-bottom:1px solid var(--border);
+  border-left:1px solid var(--border);
   color:var(--text-body);
   vertical-align:top;
   line-height:var(--lh-snug);
 }
 section.roadmap td:first-child {
-  font-weight:600;
+  font-weight:700;
   color:var(--text-heading);
-  background:var(--bg-alt);
-  border-right:1px solid var(--border);
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 6%, var(--bg-alt));
+  border-left:4px solid var(--phase-accent, var(--accent));
 }
 /* Empty cells render as a muted dash. */
 section.roadmap td:empty::before {
@@ -2333,6 +3414,312 @@ section.roadmap > p {
   font-style:italic;
   color:var(--text-muted);
   margin-top:var(--sp-md);
+}
+
+/* ── ROADMAP STATE MARKERS — universal `[x]/[-]/[ ]/[/]` per cell ─────
+ * Cells in ANY roadmap variant can carry a state marker as the leading
+ * token. lib/roadmap.js strips the marker, tags the <td> with a state
+ * class, and wraps the label in a state-label eyebrow + state-text
+ * span. Empty cells (no marker) keep the default muted dash from base.
+ *
+ * Two visual treatments:
+ *   - Light (default, any variant):  small filled state-coloured dot
+ *                                    before the cell text. Eyebrow
+ *                                    label is rendered but hidden.
+ *   - Heavy (`.status` modifier):    full ribbon + tinted ground +
+ *                                    visible state-label eyebrow.
+ *
+ * State token vocabulary:
+ *   [x] shipped   → state-shipped  (pass green)
+ *   [-] in flight → state-wip      (warn amber)
+ *   [ ] planned   → state-planned  (neutral muted)
+ *   [/] skipped   → state-skipped  (fail red — explicitly out of scope)
+ * ──────────────────────────────────────────────────────────────────── */
+
+/* Per-state colour tokens — used by both light + heavy treatments. */
+section.roadmap td.cell-state.state-shipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
+  --cell-state-color:var(--pass);
+  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
+}
+section.roadmap td.cell-state.state-wip,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
+  --cell-state-color:var(--warn);
+  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
+}
+section.roadmap td.cell-state.state-planned,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
+  --cell-state-color:var(--text-label);
+  --cell-state-bg:var(--bg-alt);
+}
+section.roadmap td.cell-state.state-skipped,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
+  --cell-state-color:var(--text-muted);
+  --cell-state-bg:transparent;
+}
+
+/* Light treatment (default, any variant): a small state-coloured
+   indicator with an inset white glyph sits before the cell text.
+   Glyph vocabulary:
+     shipped  → ✓ check                (filled / complete)
+     wip      → ◐ half-filled disc     (in progress / halfway done)
+     planned  → ○ outlined disc, empty (committed / not started)
+     skipped  → ╱ diagonal slash       (out of scope; plus strike-through
+                                        on the cell text)
+   Shipped / wip / planned share a fullness gradient (filled → half →
+   empty); skipped sits outside that axis as the "not in this phase"
+   mark. The eyebrow label is rendered for the heavy treatment but
+   hidden here. */
+section.roadmap td.cell-state .cell-state-label { display:none; }
+section.roadmap td.cell-state .cell-state-text {
+  display:inline;
+  color:var(--text-body);
+}
+section.roadmap td.cell-state .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state .row-text::before {
+  content:'';
+  display:inline-block;
+  width:0.95em;
+  height:0.95em;
+  margin-right:0.45em;
+  border-radius:50%;
+  background-color:var(--cell-state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:72% 72%;
+  vertical-align:-0.08em;
+  box-sizing:border-box;
+}
+section.roadmap td.cell-state.state-shipped .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped .row-text::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
+}
+section.roadmap td.cell-state.state-wip .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::before {
+  /* Half-filled disc: state colour fills the left half (the "done"
+     portion); white covers the right half (the "remaining" portion).
+     Sits on the fullness gradient between full (shipped) and empty
+     (planned), reading instantly as "in progress / halfway done". */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='8' y='0' width='8' height='16' fill='white'/></svg>");
+  background-size:100% 100%;
+}
+section.roadmap td.cell-state.state-planned .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {
+  background-color:transparent;
+  border:1.5px solid var(--cell-state-color, var(--text-muted));
+}
+section.roadmap td.cell-state.state-skipped .cell-state-text::before,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M12 4 L4 12'/></svg>");
+}
+section.roadmap td.cell-state.state-skipped .cell-state-text,
+section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped .row-text {
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+
+/* Horizons row left rail picks up the state colour (overrides the
+   default phase-accent rail when a state class is present). */
+section.roadmap.horizons .horizon-rows > li.cell-state {
+  border-left-color:color-mix(in srgb, var(--cell-state-color) 60%, var(--border));
+}
+
+/* Heavy treatment (`.status` modifier): full ribbon + tinted ground +
+   visible state-label eyebrow. Wins over the light treatment via
+   higher specificity. */
+section.roadmap.status td.cell-state {
+  position:relative;
+  background:var(--cell-state-bg, transparent);
+  border-left:4px solid var(--cell-state-color, var(--border));
+  padding-left:calc(var(--sp-md) - 4px + 6px);
+  display:table-cell;
+}
+section.roadmap.status td.cell-state .cell-state-label {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--cell-state-color, var(--text-muted));
+  margin-bottom:2px;
+  line-height:1.2;
+}
+section.roadmap.status td.cell-state .cell-state-text {
+  display:block;
+  color:var(--text-body);
+}
+/* In heavy mode the cell already conveys state via ribbon + ground;
+   suppress the inline dot to keep the cell uncluttered. */
+section.roadmap.status td.cell-state .cell-state-text::before {
+  display:none;
+}
+
+/* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────
+ * lib/roadmap.js transposes the workstream × phase table into a row
+ * of phase cards. Each card has a categorical top stripe, an eyebrow
+ * (Phase 01/02/…), a phase title (the phase header text), and a list
+ * of workstream rows underneath.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.horizons .horizons {
+  display:grid;
+  grid-template-columns:repeat(var(--horizon-count, 3), 1fr);
+  gap:var(--sp-md);
+  flex:1;
+  min-height:0;
+}
+section.roadmap.horizons .horizon-card {
+  display:flex;
+  flex-direction:column;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-top:4px solid var(--phase-accent, var(--accent));
+  border-radius:var(--radius-md);
+  padding:var(--sp-md) var(--sp-md) var(--sp-sm);
+  min-width:0;
+}
+section.roadmap.horizons .horizon-head {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-bottom:var(--sp-sm);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+/* Universal meta pill — right-anchored on the head's bottom border,
+   matching the trailing-code pill on the non-transposed roadmaps. */
+section.roadmap.horizons .horizon-meta {
+  position:absolute;
+  right:0;
+  bottom:-7px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:700;
+  color:var(--on-cat, #fff);
+  background:var(--phase-accent, var(--accent));
+  padding:2px 9px;
+  border:2px solid var(--bg-alt);
+  border-radius:999px;
+  letter-spacing:0.04em;
+  line-height:1.2;
+  white-space:nowrap;
+  z-index:1;
+}
+section.roadmap.horizons .horizon-eyebrow {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--phase-accent, var(--accent));
+}
+section.roadmap.horizons .horizon-title {
+  font-family:var(--font-serif);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .horizon-rows {
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--sp-sm);
+}
+section.roadmap.horizons .horizon-rows > li {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-left:var(--sp-sm);
+  border-left:2px solid color-mix(in srgb, var(--phase-accent, var(--accent)) 40%, var(--border));
+}
+section.roadmap.horizons .row-label {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-label);
+}
+section.roadmap.horizons .row-text {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .row-text.row-empty {
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+
+/* ── ROADMAP SWIMLANE — per-workstream track of phase pills ──────────
+ * Same source as the default; visual shifts so each row reads as a
+ * track. Workstream cell carries a strong lane label on a tinted lane
+ * ground; phase cells render as outlined pills separated by gaps.
+ * Pure CSS — no DOM rewrite.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.swimlane table {
+  border-spacing:0 var(--sp-sm);
+  border-collapse:separate;
+}
+section.roadmap.swimlane tbody tr > td:first-child {
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 14%, var(--bg-alt));
+  border-left:6px solid var(--phase-accent, var(--accent));
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  border-right:0;
+  border-radius:var(--radius-md) 0 0 var(--radius-md);
+  font-family:var(--font-serif);
+  font-weight:700;
+  color:var(--text-heading);
+  font-size:var(--fs-md);
+  padding:var(--sp-sm) var(--sp-md);
+}
+section.roadmap.swimlane tbody td:not(:first-child) {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-left:0;
+  border-radius:0;
+  padding:var(--sp-sm) var(--sp-md);
+  position:relative;
+}
+section.roadmap.swimlane tbody td:not(:first-child)::before {
+  content:'';
+  position:absolute;
+  left:0; top:25%; bottom:25%;
+  width:3px;
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 60%, var(--border));
+  border-radius:2px;
+}
+section.roadmap.swimlane tbody tr > td:last-child {
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+}
+section.roadmap.swimlane tbody td:empty {
+  background:transparent;
+  border:1px dashed var(--border);
+}
+section.roadmap.swimlane tbody td:empty::before {
+  display:none;
+}
+section.roadmap.swimlane tbody td:empty::after {
+  content:'—';
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+/* Swimlane thead keeps the categorical column tab from the base rule;
+   it carries the column identity that the lane-band rows reinforce. */
+
+/* ── ROADMAP MILESTONES — quarter-anchored timeline ──────────────────
+ * Identity: the meta pill on every phase header is the quarter/date.
+ * Phase columns get a soft alternating ground so the timeline reads
+ * as a calendar. The pill itself is the universal meta pill from
+ * the base rule — no milestone-specific pill chrome.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.milestones tbody td:not(:first-child) {
+  background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
 /* ── KPI ───────────────────────────────────────────────────────────────
@@ -3059,14 +4446,7 @@ section.cards-stack.horizontal .cards-stack-inner {
  * prefer `image.mirror` for consistency with the cross-cutting vocabulary.
  * ──────────────────────────────────────────────────────────────────────── */
 
-/* — image: alias .mirror to existing .left half-bleed treatment — */
-section.image.mirror {
-  padding-right: 0;
-  padding-left: calc(50% + var(--sp-lg));
-  background:
-    linear-gradient(to left, var(--bg) 50%, transparent 50%),
-    var(--lattice-pattern);
-}
+/* — image: .mirror and .left are handled in the main IMAGE block above — */
 
 /* — featured: swap hero (first child) and sub-row (rest) columns —
  * Marp CLI path: section.featured > ul > li (first vs not-first)
@@ -3708,33 +5088,763 @@ section.piechart .piechart-legend .legend-pct {
   font-variant-numeric: tabular-nums;
 }
 
-/* Categorical wedge / swatch palette — eight rotation, matches the
- * decision/before-after rotation already in lattice.css. */
-section.piechart .wedge:nth-child(8n+1),
-section.piechart .legend-swatch:nth-child(8n+1) { fill: var(--cat-blue);   background: var(--cat-blue); }
-section.piechart .wedge:nth-child(8n+2),
-section.piechart .legend-swatch:nth-child(8n+2) { fill: var(--cat-green);  background: var(--cat-green); }
-section.piechart .wedge:nth-child(8n+3),
-section.piechart .legend-swatch:nth-child(8n+3) { fill: var(--cat-purple); background: var(--cat-purple); }
-section.piechart .wedge:nth-child(8n+4),
-section.piechart .legend-swatch:nth-child(8n+4) { fill: var(--cat-orange); background: var(--cat-orange); }
-section.piechart .wedge:nth-child(8n+5),
-section.piechart .legend-swatch:nth-child(8n+5) { fill: var(--cat-teal);   background: var(--cat-teal); }
-section.piechart .wedge:nth-child(8n+6),
-section.piechart .legend-swatch:nth-child(8n+6) { fill: var(--cat-rose);   background: var(--cat-rose); }
-section.piechart .wedge:nth-child(8n+7),
-section.piechart .legend-swatch:nth-child(8n+7) { fill: var(--cat-mauve);  background: var(--cat-mauve); }
-section.piechart .wedge:nth-child(8n),
-section.piechart .legend-swatch:nth-child(8n)   { fill: var(--cat-slate);  background: var(--cat-slate); }
+/* Categorical wedge / swatch palette — six-rotation on --chart-1..6.
+ * Distinct from --cat-* (eight-rotation, used by decision/roadmap/kpi/
+ * actors for chrome stripes at L≈60). The chart palette is curated
+ * per-theme for foreground use at varying lightness; six is the cap
+ * for perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon).
+ * Pies that need >6 categories should consolidate "Other" or split. */
+section.piechart .wedge:nth-child(6n+1),
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-1); background: var(--chart-1); }
+section.piechart .wedge:nth-child(6n+2),
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-2); background: var(--chart-2); }
+section.piechart .wedge:nth-child(6n+3),
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-3); background: var(--chart-3); }
+section.piechart .wedge:nth-child(6n+4),
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-4); background: var(--chart-4); }
+section.piechart .wedge:nth-child(6n+5),
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-5); background: var(--chart-5); }
+section.piechart .wedge:nth-child(6n),
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-6); background: var(--chart-6); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(8n+1) .legend-swatch { background: var(--cat-blue); }
-section.piechart .piechart-legend li:nth-child(8n+2) .legend-swatch { background: var(--cat-green); }
-section.piechart .piechart-legend li:nth-child(8n+3) .legend-swatch { background: var(--cat-purple); }
-section.piechart .piechart-legend li:nth-child(8n+4) .legend-swatch { background: var(--cat-orange); }
-section.piechart .piechart-legend li:nth-child(8n+5) .legend-swatch { background: var(--cat-teal); }
-section.piechart .piechart-legend li:nth-child(8n+6) .legend-swatch { background: var(--cat-rose); }
-section.piechart .piechart-legend li:nth-child(8n+7) .legend-swatch { background: var(--cat-mauve); }
-section.piechart .piechart-legend li:nth-child(8n)   .legend-swatch { background: var(--cat-slate); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-1); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-2); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-3); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-4); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-6); }
+
+/* ── GANTT ──────────────────────────────────────────────────────────────────
+ * Categorical Gantt chart rendered from a two-level list.
+ * Swimlane = top-level bullet; bar = sub-bullet with a range pill and optional
+ * status pill. The axis tick labels (.gantt-ticks) and the bar container
+ * (.gantt-bars) are both flex:1 children inside their respective flex rows,
+ * so they resolve to the same width. Bars are absolutely positioned inside
+ * .gantt-bars using percentage math anchored on --gantt-cols, --gantt-col-start,
+ * and --gantt-col-span — no subgrid needed. */
+
+section.gantt.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-sm);
+  align-items: stretch;
+}
+
+.gantt-chart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Axis row: spacer + tick labels ── */
+.gantt-axis-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: var(--sp-xs);
+  margin-bottom: 4px;
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.gantt-axis-spacer {
+  flex: 0 0 180px;
+  width: 180px;
+}
+
+.gantt-ticks {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--gantt-cols), 1fr);
+}
+
+.gantt-tick {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-label);
+}
+
+/* ── Lane rows: label + bar container ── */
+.gantt-lane {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 50px;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+}
+.gantt-lane:last-child { border-bottom: none; }
+
+.gantt-lane-label {
+  flex: 0 0 180px;
+  width: 180px;
+  padding-right: var(--sp-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-heading);
+  text-align: right;
+  line-height: var(--lh-tight);
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gantt-bars {
+  flex: 1;
+  position: relative;
+  height: 44px;
+}
+
+/* Bar — absolutely positioned within its lane's bars container.
+ * left  = (col−1) / N × 100% + inset
+ * width =  span   / N × 100% − inset×2
+ * A 3px inset gives visible air between adjacent bars that share a column
+ * boundary (e.g. "Q1→Q2" and "Q2→Q3").
+ *
+ * Fill approach mirrors the progress chart default:
+ *   color-mix(in oklab, var(--semantic) 70%, var(--bg-alt))
+ * — a tinted fill, not the raw semantic colour. This keeps bars visually
+ * proportional to the progress fill (which is 14px, no text) even though
+ * gantt bars are 34px tall and carry a label. Dark ink (--text-heading)
+ * sits on every tinted fill at ≥ 5.3:1. */
+.gantt-bar {
+  position: absolute;
+  top: 5px; bottom: 5px;
+  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
+  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Status fills — tinted with the same formula as the default bar.
+ * All use --text-heading (dark ink) inherited from .gantt-bar. */
+.gantt-bar[data-s="on-track"],
+.gantt-bar[data-s="done"],
+.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="at-risk"],
+.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="blocked"],
+.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
+/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
+ * on this surface while still conveying the "inactive" register). */
+.gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
+  color: var(--text-body);
+}
+/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
+ * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
+.gantt-bar[data-s="pilot"],
+.gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
+
+/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
+ * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
+ * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
+section.gantt.dark .gantt-bar {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="on-track"],
+section.gantt.dark .gantt-bar[data-s="done"],
+section.gantt.dark .gantt-bar[data-s="live"]     {
+  background: color-mix(in oklab, var(--pass) 40%, white);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="at-risk"],
+section.gantt.dark .gantt-bar[data-s="warn"]     {
+  background: color-mix(in oklab, var(--warn) 45%, white);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="blocked"],
+section.gantt.dark .gantt-bar[data-s="fail"]     {
+  background: color-mix(in oklab, var(--fail) 45%, white);
+  color: var(--bg-dark);
+}
+/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
+section.gantt.dark .gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
+  color: var(--on-dark-secondary);
+}
+/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
+ * by light-dark() on those tokens; no explicit override needed. */
+
+/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
+section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
+
+/* ── KANBAN ──────────────────────────────────────────────────────────────────
+ * Board layout from a two-level list. Column = top-level bullet;
+ * card = sub-bullet with optional trailing pills: size (S/M/L/XL),
+ * lane (any word), status (shared vocabulary). Pill order is structural;
+ * the linter will enforce it. Lane pills receive categorical colour stripes
+ * via --lane-color inherited from the card's own style attribute. */
+
+section.kanban.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.kanban-board {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-md);
+  width: 100%;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Column header — monospace uppercase label register.
+ * --text-label (brand blue light / dark-text-label dark) gives it the same
+ * visual weight as eyebrows and axis ticks: identifiable but not competing
+ * with card titles. 5.47:1 on light bg (AA), 6.95:1 on dark bg (AA). */
+.kanban-column-header {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  padding: 0 var(--sp-xs) 10px;
+  border-bottom: 2px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  margin-bottom: var(--sp-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* "Done" column: header turns pass-green, cards dim to signal completion */
+.kanban-column[data-done] .kanban-column-header {
+  color: var(--pass);
+  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+}
+.kanban-column[data-done] .kanban-card { opacity: 0.52; }
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: hidden;
+}
+
+/* Card — bg-alt panel with 3px left stripe coloured by --lane-color */
+.kanban-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--lane-color, var(--border));
+  border-radius: 6px;
+  padding: 9px var(--sp-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.kanban-card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-xs);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: var(--lh-tight);
+}
+
+.kanban-title-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.kanban-card-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  min-height: 20px;
+}
+
+/* Size badge — compact square chip */
+.kanban-size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+/* Lane tag — small pill tinted with the lane colour */
+.kanban-lane {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
+  color: var(--lane-color, var(--accent));
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Reuse .chart-status but compact it for the tight card meta row */
+.kanban-card-meta .chart-status {
+  height: 20px;
+  padding: 0 7px;
+  font-size: var(--fs-xs);
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* Optional card body (from a third-level sub-bullet) */
+.kanban-card-body {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  line-height: var(--lh-snug);
+  font-style: italic;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Dark canvas — --text-label uses light-dark() so column headers adapt
+ * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
+ * explicit because --pass doesn't use light-dark(). */
+section.kanban.dark .kanban-column[data-done] .kanban-column-header {
+  color: color-mix(in oklab, var(--pass) 35%, white);
+}
+section.kanban.dark .kanban-size {
+  background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
+}
 
 
+/* ════════════════════════════════════════════════════════════════════════════
+ * BACKGROUND LIBRARY
+ * 27 utility classes (16 gradient accents + 11 SVG accent marks) for
+ * peripheral atmospheric accents. All colors go through var(--accent) so
+ * palette swap = background color swap automatically.
+ *
+ * Layer composability: 16 gradient classes use two slots (radial/linear).
+ * SVG marks are slot-free — combine with any gradient, no conflicts.
+ *   <!-- _class: content bg-vignette bg-micro-tr -->              gradient + mark
+ *   <!-- _class: content bg-corner-tl bg-edge-right bg-seeds -->  two gradients + mark
+ *
+ * Slot reference (gradient classes only — SVG marks carry no slot)
+ *   --_bg-radial  corner glows, vignette, spotlight, duotone, asterisk-scatter
+ *   --_bg-linear  edge washes, horizon, ground, sweep, ambient, frame
+ *
+ * See docs/references/backgrounds.md for the full catalogue and constraints.
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── COMPOSITOR ───────────────────────────────────────────────────────
+ * Assembles the two gradient slots into background-image. Each bg-*
+ * class writes --_bg-radial or --_bg-linear; this rule combines them.
+ * Combine any radial-slot class with any linear-slot class by stacking
+ * both on the same slide — layers compose without extra authoring.
+ */
+section[class*="bg-"] {
+  background-image: var(--_bg-radial, none), var(--_bg-linear, none);
+}
+
+
+/* ── CORNER GLOWS ─────────────────────────────────────────────────────
+ * Radial ellipse anchored at a corner. The ellipse is sized so its
+ * farthest edge reaches roughly the slide center — accent is present
+ * at the corner, gone before it reaches the content zone.
+ *
+ * Ellipse sizing at 1280×720 (16:9):
+ *   62% h × 55% v = ~793px × ~396px — fills roughly the outer third
+ *   of the slide from that corner before fading to zero.
+ */
+
+section.bg-corner-tl {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 0% 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-tr {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 100% 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-bl {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 0% 100%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+section.bg-corner-br {
+  --_bg-radial: radial-gradient(
+    ellipse 62% 55% at 100% 100%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+
+/* ── EDGE WASHES ──────────────────────────────────────────────────────
+ * Linear gradient from one edge. Gone well before mid-slide so the
+ * content zone is always on a clean surface.
+ *
+ * Opacity profile: 10% at the physical edge → 0% at 35%.
+ * A mid-stop at 12% is added 6% in from the edge to give the gradient
+ * a slight "full saturation zone" right at the border before it fades —
+ * without it the thinness of the wash makes it read as a printing error
+ * rather than a deliberate accent.
+ */
+
+section.bg-edge-top {
+  --_bg-linear: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 6%,
+    transparent 35%
+  );
+}
+
+section.bg-edge-bottom {
+  --_bg-linear: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 6%,
+    transparent 35%
+  );
+}
+
+section.bg-edge-left {
+  --_bg-linear: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 4%,
+    transparent 30%
+  );
+}
+
+section.bg-edge-right {
+  --_bg-linear: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 4%,
+    transparent 30%
+  );
+}
+
+
+/* ── ATMOSPHERIC ──────────────────────────────────────────────────────
+ * Full-canvas tonal effects. The gradient is still peripheral —
+ * the center remains transparent — but the effect wraps all four
+ * edges rather than originating from one point or one edge.
+ */
+
+/* Vignette: accent-tinted perimeter, fully open at center.
+ * The opaque stop begins at 55% radius so a 16:9 slide has
+ * roughly a 700×400 clean zone in the middle. */
+section.bg-vignette {
+  --_bg-radial: radial-gradient(
+    ellipse 88% 85% at center,
+    transparent 0%,
+    transparent 45%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 70%,
+    color-mix(in srgb, var(--accent) 11%, transparent) 100%
+  );
+}
+
+/* Spotlight: gentle reverse-vignette — center slightly warmer,
+ * edges fully transparent. The accent is at most 7% so it reads
+ * as warmth rather than color. */
+section.bg-spotlight {
+  --_bg-radial: radial-gradient(
+    ellipse 55% 50% at center,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* Horizon: accent heaviest at the top edge, fades to nothing by 45%.
+ * Simulates a light source above the frame — suits slides about
+ * ambition, aspiration, or the view from the top floor. */
+section.bg-horizon {
+  --_bg-linear: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 11%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 15%,
+    transparent 45%
+  );
+}
+
+/* Ground: mirror of horizon — heaviest at bottom.
+ * Suits slides that are closing arguments, summaries,
+ * or anything that signals conclusion and landing. */
+section.bg-ground {
+  --_bg-linear: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--accent) 11%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 15%,
+    transparent 45%
+  );
+}
+
+
+/* ── MULTI-ACCENT ─────────────────────────────────────────────────────
+ * Two or more gradient layers composed. Weight budget is split between
+ * them so the total perceived ink stays equivalent to a single-gradient
+ * pattern — each layer runs at ~8% rather than 12%.
+ * These patterns own their slot exclusively (duotone/asterisk-scatter
+ * own --_bg-radial; frame owns --_bg-linear) and cannot safely share it
+ * with another class in the same slot.
+ */
+
+/* Duotone: opposing corner pair. The two glows never overlap in the
+ * center — they meet around mid-slide and both fade to transparent
+ * before intersecting. Creates a natural diagonal axis. */
+section.bg-duotone {
+  --_bg-radial:
+    radial-gradient(
+      ellipse 55% 50% at 0% 0%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 55% 50% at 100% 100%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 100%
+    );
+}
+
+/* Frame: all four edges at half-weight. Quiet all-round accent —
+ * the slide has a presence at every edge without any one side
+ * dominating. The four gradients each reach 0% at 22% inset,
+ * leaving the inner ~56% × ~56% completely clean. */
+section.bg-frame {
+  --_bg-linear:
+    linear-gradient(to bottom, color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to top,    color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to right,  color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
+    linear-gradient(to left,   color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%);
+}
+
+/* Sweep: diagonal accent wash from top-right to bottom-left.
+ * The most directional pattern — suits decks about forward motion
+ * or where the visual language should read left-to-right. */
+section.bg-sweep {
+  --_bg-linear: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+    color-mix(in srgb, var(--accent)  4%, transparent) 30%,
+    transparent 55%
+  );
+}
+
+/* Ambient: broad off-axis tint at the lowest opacity.
+ * The safest option — a barely-there suggestion of color that
+ * ensures the slide never reads as plain white. Use on content-dense
+ * slides or wherever any stronger accent would compete. */
+section.bg-ambient {
+  --_bg-linear: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+    transparent 45%
+  );
+}
+
+
+/* ── SVG ACCENT MARKS ─────────────────────────────────────────────────
+ * Architecture: one CSS layer per pattern — no gradient slot occupied.
+ *
+ *   section.bg-*::before  mask-image: SVG + accent paint — the shapes
+ *
+ * Marks carry no --_bg-radial or --_bg-linear value, so they combine
+ * freely with any gradient class. Stack one gradient + one mark; both
+ * render independently. Two marks on the same slide: both ::before rules
+ * apply but only one set of shapes wins (last defined in this file).
+ *
+ * The ::before uses the SVG geometry as a CSS luminance/alpha mask.
+ * Paint: color-mix(in srgb, var(--accent) 28%, transparent). Because
+ * var(--accent) resolves via the theme's light-dark() token, marks are
+ * always on-brand in both light and dark — no media-query duplication.
+ *
+ * Mask SVGs use fill='white' / stroke='white'. White = paint shows
+ * through; transparent = paint hidden. fill-opacity / stroke-opacity
+ * grade each shape within the 28% accent ceiling.
+ *
+ * Safe peripheral slots:
+ *   Top-right band   x > 1100, y 68–118   header band right of text
+ *   Right margin     x > 1250, y 70–640   clear of all content
+ *   Bottom-right     x > 1100, y 595–652  above footer + pagination
+ *   Bottom-left      x < 200,  y 595–652
+ */
+
+/* bg-micro-tr — 9 micro circles, top-right header band. r 2–4.5. */
+section.bg-micro-tr::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1192' cy='80' r='4.5' fill='white' fill-opacity='1'/><circle cx='1215' cy='74' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1240' cy='82' r='3' fill='white' fill-opacity='0.85'/><circle cx='1262' cy='75' r='2.5' fill='white' fill-opacity='0.8'/><circle cx='1206' cy='97' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1232' cy='100' r='3' fill='white' fill-opacity='0.8'/><circle cx='1256' cy='93' r='2' fill='white' fill-opacity='0.7'/><circle cx='1221' cy='113' r='3' fill='white' fill-opacity='0.75'/><circle cx='1248' cy='110' r='2' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537. */
+section.bg-tick-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right. */
+section.bg-orbit-br::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1200' cy='617' r='22' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><circle cx='1200' cy='617' r='13' fill='none' stroke='white' stroke-width='1' stroke-opacity='0.75'/><circle cx='1200' cy='617' r='2.5' fill='white' fill-opacity='1'/><circle cx='1226' cy='601' r='2' fill='white' fill-opacity='0.8'/><circle cx='1242' cy='624' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1184' cy='608' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-slash-tr — 5 parallel slash lines at 45°, top-right corner. */
+section.bg-slash-tr::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1188' y1='112' x2='1201' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1204' y1='105' x2='1217' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><line x1='1220' y1='112' x2='1233' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='1236' y1='105' x2='1249' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.7'/><line x1='1252' y1='98' x2='1265' y2='85' stroke='white' stroke-width='1.5' stroke-opacity='0.6'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-seeds — 12 elongated micro ellipses, three per corner, rotated. */
+section.bg-seeds::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-pills-right — 4 horizontal pill shapes, far-right margin. */
+section.bg-pills-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-asterisk-scatter — asterisks + micro dots, opposing corners. */
+section.bg-asterisk-scatter::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1206.5' y1='88' x2='1213.5' y2='88' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1211.8' y1='85' x2='1208.2' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1208.2' y1='85' x2='1211.8' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1238' y1='100' x2='1244' y2='100' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1242.5' y1='97.4' x2='1239.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1239.5' y1='97.4' x2='1242.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><circle cx='1228' cy='78' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1258' cy='85' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1195' cy='105' r='1.5' fill='white' fill-opacity='0.65'/><line x1='62' y1='628' x2='68' y2='628' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='66.5' y1='625.4' x2='63.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='63.5' y1='625.4' x2='66.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='107.5' y1='640' x2='112.5' y2='640' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='111.25' y1='637.8' x2='108.75' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='108.75' y1='637.8' x2='111.25' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><circle cx='85' cy='618' r='1.5' fill='white' fill-opacity='0.65'/><circle cx='142' cy='632' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-thread-diagonal — 3 hairline slash strokes, top-right corner. */
+section.bg-thread-diagonal::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1257' y1='90' x2='1278' y2='69' stroke='white' stroke-width='1' stroke-opacity='1'/><line x1='1244' y1='90' x2='1265' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1231' y1='90' x2='1252' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.7'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-bracket-right — two ] bracket marks, far-right margin. */
+section.bg-bracket-right::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><path d='M1268,310 L1274,310 L1274,326 L1268,326' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><path d='M1268,422 L1274,422 L1274,438 L1268,438' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-grid-micro — 4×4 dot grid, top-right, rightmost column edge-bleeds. */
+section.bg-grid-micro::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1244' cy='72' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='72' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='72' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='72' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='84' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='84' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='84' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='84' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='96' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='96' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='96' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='96' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='108' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='108' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='108' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='108' r='1.5' fill='white' fill-opacity='0.7'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+/* bg-chevron-bl — 3 right-pointing chevrons, bottom-left corner. */
+section.bg-chevron-bl::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><polyline points='34,625 42,631 34,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><polyline points='52,625 60,631 52,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><polyline points='70,625 78,631 70,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
+  -webkit-mask-image: var(--m); mask-image: var(--m);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+
+
+/* ── RESET ────────────────────────────────────────────────────────────
+ * Per-slide opt-out when a bg-* is set deck-wide and one slide
+ * needs a clean surface (full-bleed image, neutral chart page, TOC).
+ */
+section.bg-none {
+  --_bg-radial: none;
+  --_bg-linear: none;
+}

@@ -49,6 +49,34 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   Unlikely; they use the custom element for their own DOM hooks.
 - **Commits:** `17784c2`.
 
+### Marp Core wraps emoji in `<img class="emoji">` (twemoji)
+
+- **Symptom:** A line like `Hello 👋 there!` renders with the wave on
+  its own line — heading wraps, card body breaks, footer chrome shifts
+  vertically. Affects every text element (header, footer, title, card
+  heading, card content, eyebrow, key insight, below-note, etc.).
+- **Cause:** Marp Core's built-in emoji plugin rewrites every unicode
+  emoji in source markdown to `<img class="emoji" data-marp-twemoji
+  src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@…/<cp>.svg">`. That
+  img then gets picked up by the catch-all rule
+  `section img { …; display:block; max-width:100% }`, which is intended
+  for author-inserted figures. Block + 100% width = own line, full slide
+  width. The marp-cli build and the marp-vscode preview both hit this;
+  lattice-emulator leaves emoji as raw text (no rewrite) but inherits
+  the inline alignment issue when no emoji font is in the stack.
+- **Mitigation:** Two parts in [lattice.css](../../lattice.css):
+  1. Exempt the emoji class from the block image rule — the catch-all
+     is now `section img:not(.emoji)`, and `section img.emoji` is set
+     to `display:inline-block; height:1em; vertical-align:-0.1em`.
+  2. Append `'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji'`
+     to every `--font-*` stack in `:root` so the lattice-emulator path
+     (raw unicode) also has a defined emoji font and doesn't fall back
+     to a glyph with wildly different metrics.
+- **Triggered by:** Any unicode emoji anywhere in a deck.
+- **Removable when:** Never — Marp Core's emoji rewrite is built in
+  and on by default. The `:not(.emoji)` carve-out is the correct shape.
+- **Commits:** `claude/fix-emoji-rendering-WO4vI`.
+
 ### Marpit "spot replaces global" for the `class:` directive
 
 - **Symptom:** Adding `class: dark` to front matter does nothing on a
@@ -359,6 +387,29 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   build deps.
 - **Commits:** `8607e65`.
 
+### marp-vscode webview CSP blocks `<script>` — structural transforms must use the engine render hook
+
+- **Symptom:** A DOM transform authored in `lattice-runtime.js` (or any
+  `<script src="...">` tag in the markdown) works in PDF export and the
+  browser but never fires in VS Code Marp preview. The slide HTML looks
+  correct in the build output but wrong in preview.
+- **Cause:** marp-vscode loads preview content in a sandboxed webview with
+  a strict Content Security Policy that disallows script execution. Even
+  with `enableHtml: true`, relative `<script src="...">` paths do not
+  resolve reliably inside the webview context.
+- **Mitigation:** Structural DOM transforms (split panels, chart-family)
+  are implemented as HTML-string rewrites in `lib/split-panels.js` and
+  `lib/chart-family.js`, called from the `engine` render wrapper in
+  [marp.config.js](../../marp.config.js). The wrapper runs at render time
+  — before the webview CSP applies — so the HTML is baked correctly before
+  the preview displays it. `lattice-runtime.js` DOM transforms remain as a
+  fallback for the web-export path only.
+- **Triggered by:** Any new structural transform that needs to work in the
+  VS Code Marp preview.
+- **Removable when:** marp-vscode lifts its CSP for trusted workspace
+  scripts. No indication this is planned.
+- **Commits:** Split-panel feature commit.
+
 ### marp-cli timeouts under load (60-90s on small fixtures)
 
 - **Symptom:** `npx --no-install marp ...` runs for >60s on a fixture
@@ -497,6 +548,27 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   contains a CSS function.
 - **Removable when:** Never — this is by design.
 
+### CSS `ul > li` matches nested sublists — chain `> ul > li` for top-level-only styling
+
+- **Symptom:** A `border-left` (or any decoration) intended for top-level
+  list items in a layout also appears on sub-items nested inside those
+  items.
+- **Cause:** `section.foo .container ul > li` uses a descendant combinator
+  before `ul`. It matches any `ul > li` at any depth within `.container` —
+  including `.container > ul > li > ul > li` (the nested items). The `> li`
+  only constrains the item being a direct child of its own list; it says
+  nothing about where that list sits in the tree.
+- **Mitigation:** Chain the direct-child combinator from the container:
+  `section.foo .container > ul > li`. This requires the `ul` to be a direct
+  child of `.container` AND the `li` to be a direct child of that `ul`.
+  Nested sublists live at `> ul > li > ul > li` and do not match.
+- **Triggered by:** Any layout where top-level `li` items have nested
+  `ul`/`ol` sublists and the container receives descendant-scoped styling.
+  Hit on the `split-brief` right-panel border-left accent.
+- **Removable when:** Never — this is correct CSS scoping; note it here to
+  avoid the same mistake in future layouts.
+- **Commits:** Split-panel feature commit.
+
 ### `:where(:root)` zero-specificity defaults
 
 - **Symptom:** Theme defaults that should be overridable lose to
@@ -614,3 +686,27 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Every Marp preview re-render (one per keystroke).
 - **Removable when:** Never — idempotency is a permanent invariant.
 - **Commits:** Original slot-label-lift commit.
+
+### `image museum` slides inherit the anchor `border-left` via cascade
+
+- **Symptom:** A slide with `<!-- _class: image museum -->` shows a
+  6px left border and a squished text panel — as if the museum modifier
+  is not applied. Mirror variant affected in the same way.
+- **Cause:** The base rule `section.image:not(.full)` carried
+  `border-left: 6px solid var(--accent)` and `padding-left:
+  calc(var(--sp-2xl) + 6px)`. The museum override at higher specificity
+  cleared the border with `border-left: none`, but the `padding-left`
+  adjustment (the extra 6px) still leaked through in practice, and any
+  future reordering of rules could let the border re-emerge. The emulator
+  path also had a missing `!important` on the museum frame box-shadow,
+  so the base hairline shadow (`!important` at lower specificity) won.
+- **Mitigation:** Anchor decoration moved into a guarded rule
+  `section.image:not(.full):not(.museum)` — museum slides structurally
+  never receive the border or its padding offset. Museum rules no longer
+  need explicit `border: none` resets. Museum emulator box-shadow
+  promoted to `!important` ([lattice.css](../../lattice.css), image
+  half-canvas block).
+- **Triggered by:** Any `image museum` or `image museum mirror` slide.
+- **Removable when:** Never — the guard is cheap and the alternative
+  (cascade-order dependence) is fragile.
+- **Commits:** `d3ffaca`

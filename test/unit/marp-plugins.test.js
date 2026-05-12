@@ -278,3 +278,83 @@ test('splitPanelCounter: counter resets for a new render call (no global state l
     assert.match(html, /data-split-panel-n="01"/);
   }
 });
+
+// ── stripHeadingPeriods ─────────────────────────────────────────────
+
+test('stripHeadingPeriods: removes trailing period from headings on no-period slides', () => {
+  const m = makeMarp(plugins.stripHeadingPeriods);
+  const { html } = m.render('<!-- _class: no-period -->\n## Signal to noise.');
+  assert.match(html, /<h2[^>]*>Signal to noise<\/h2>/);
+});
+
+test('stripHeadingPeriods: strips trailing period from h1, h2, h3', () => {
+  const m = makeMarp(plugins.stripHeadingPeriods);
+  const { html } = m.render([
+    '<!-- _class: no-period -->',
+    '# Title.',
+    '## Section.',
+    '### Sub.',
+  ].join('\n'));
+  assert.match(html, /<h1[^>]*>Title<\/h1>/);
+  assert.match(html, /<h2[^>]*>Section<\/h2>/);
+  assert.match(html, /<h3[^>]*>Sub<\/h3>/);
+});
+
+test('stripHeadingPeriods: leaves headings without a trailing period unchanged', () => {
+  const m = makeMarp(plugins.stripHeadingPeriods);
+  const { html } = m.render('<!-- _class: no-period -->\n## No period here');
+  assert.match(html, /<h2[^>]*>No period here<\/h2>/);
+});
+
+test('stripHeadingPeriods: does NOT fire on slides without the no-period class', () => {
+  const m = makeMarp(plugins.stripHeadingPeriods);
+  const { html } = m.render('## Has a period.');
+  assert.match(html, /<h2[^>]*>Has a period\.<\/h2>/);
+});
+
+// ── addHeadingPeriods ───────────────────────────────────────────────
+
+test('addHeadingPeriods: appends a period to headings that lack one on with-period slides', () => {
+  const m = makeMarp(plugins.addHeadingPeriods);
+  const { html } = m.render('<!-- _class: with-period -->\n## Signal to noise');
+  assert.match(html, /<h2[^>]*>Signal to noise\.<\/h2>/);
+});
+
+test('addHeadingPeriods: appends period to h1, h2, h3', () => {
+  const m = makeMarp(plugins.addHeadingPeriods);
+  const { html } = m.render([
+    '<!-- _class: with-period -->',
+    '# Title',
+    '## Section',
+    '### Sub',
+  ].join('\n'));
+  assert.match(html, /<h1[^>]*>Title\.<\/h1>/);
+  assert.match(html, /<h2[^>]*>Section\.<\/h2>/);
+  assert.match(html, /<h3[^>]*>Sub\.<\/h3>/);
+});
+
+test('addHeadingPeriods: does not double-append when heading already ends with a period', () => {
+  const m = makeMarp(plugins.addHeadingPeriods);
+  const { html } = m.render('<!-- _class: with-period -->\n## Already done.');
+  assert.match(html, /<h2[^>]*>Already done\.<\/h2>/);
+  assert.doesNotMatch(html, /<h2[^>]*>Already done\.\.<\/h2>/);
+});
+
+test('addHeadingPeriods: does not append when heading ends with !, ?, :, or …', () => {
+  const m = makeMarp(plugins.addHeadingPeriods);
+  for (const [src, pattern] of [
+    ['## Urgent!',    /<h2[^>]*>Urgent!<\/h2>/],
+    ['## Question?',  /<h2[^>]*>Question\?<\/h2>/],
+    ['## Note:',      /<h2[^>]*>Note:<\/h2>/],
+    ['## Continued…', /<h2[^>]*>Continued…<\/h2>/],
+  ]) {
+    const { html } = m.render(`<!-- _class: with-period -->\n${src}`);
+    assert.match(html, pattern);
+  }
+});
+
+test('addHeadingPeriods: does NOT fire on slides without the with-period class', () => {
+  const m = makeMarp(plugins.addHeadingPeriods);
+  const { html } = m.render('## No period added');
+  assert.match(html, /<h2[^>]*>No period added<\/h2>/);
+});
