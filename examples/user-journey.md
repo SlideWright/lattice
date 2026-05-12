@@ -61,10 +61,6 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 
 ## Customer onboarding · trial → activation
 
-> **Setup is the chokepoint.** Mood drops three points between trial
-> signup and first report — the only stretch we own end-to-end and the
-> only place we can move conversion this quarter.
-
 - Evaluate
   - Read case study `@prospect` `:5`
   - Book demo `@prospect` `:4`
@@ -75,6 +71,10 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 - Activate
   - First report `@user` `:3`
   - Daily use `@user` `:5`
+
+> **Setup is the chokepoint.** Mood drops three points between trial
+> signup and first report — the only stretch we own end-to-end and the
+> only place we can move conversion this quarter.
 
 ---
 
@@ -93,11 +93,6 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 
 ## Support escalation · where customers cool off
 
-> **Routing latency, not solution quality, drives the orange band.**
-> Customers rate the resolution itself a 4 (Solution, Close-out), but
-> mood stalls between acknowledge and route. Cutting that gap below
-> four hours reclaims the dip.
-
 - Submission
   - Find help article `@customer` `:3`
   - Open ticket `@customer` `:2`
@@ -108,6 +103,11 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
   - First reply `@customer` `:3`
   - Solution delivered `@customer` `:4`
   - Close-out `@customer` `:4`
+
+> **Routing latency, not solution quality, drives the orange band.**
+> Customers rate the resolution itself a 4 (Solution, Close-out), but
+> mood stalls between acknowledge and route. Cutting that gap below
+> four hours reclaims the dip.
 
 ---
 
@@ -126,10 +126,6 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 
 ## Quarterly close · the J-curve of the cycle
 
-> **The trough is the audit, not the math.** Close itself is
-> technically straightforward; the dip is reconciliation rework and
-> first-audit-pass surprises. Pre-audit prep is the cycle-time unlock.
-
 - Open
   - Kickoff `@finance` `:4`
   - Pull data `@finance` `:3`
@@ -141,6 +137,10 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
   - Audit cycle 2 `@finance` `@auditor` `:3`
   - Board pack `@finance` `:4`
   - Submit `@finance` `@cfo` `:5`
+
+> **The trough is the audit, not the math.** Close itself is
+> technically straightforward; the dip is reconciliation rework and
+> first-audit-pass surprises. Pre-audit prep is the cycle-time unlock.
 
 ---
 
@@ -159,10 +159,6 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 
 ## Loan application · two perspectives diverge
 
-> **Customer pain peaks where underwriter mood holds.** Their lowest
-> point — doc requests at mood 1 — is our steady state. NPS will trail
-> underwriting efficiency until doc-request UX is fixed.
-
 - Application
   - Start app `@customer` `:3`
   - Submit docs `@customer` `:2`
@@ -174,6 +170,10 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 - Funding
   - Sign `@customer` `:5`
   - Disburse `@customer` `@underwriter` `:5`
+
+> **Customer pain peaks where underwriter mood holds.** Their lowest
+> point — doc requests at mood 1 — is our steady state. NPS will trail
+> underwriting efficiency until doc-request UX is fixed.
 
 ---
 
@@ -192,10 +192,6 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
 
 ## Subscription funnel · prioritized by traffic × pain
 
-> **Verify is the highest-leverage fix.** 10% of traffic hits mood 1
-> at a single step we fully control. One week of work here outranks
-> any home-page optimization on the roadmap.
-
 - Discover
   - Home `@visitor` `:4` `+45`
   - Pricing `@visitor` `:3` `+18`
@@ -206,6 +202,10 @@ swap `journey` for `journey heatmap`, `journey curve`, etc.
   - Dashboard `@user` `:4` `+8`
   - Settings `@user` `:3` `+4`
   - Support `@user` `:2` `+3`
+
+> **Verify is the highest-leverage fix.** 10% of traffic hits mood 1
+> at a single step we fully control. One week of work here outranks
+> any home-page optimization on the roadmap.
 
 ---
 

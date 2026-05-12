@@ -3809,19 +3809,6 @@ section.journey .journey-board {
   flex: 1;
   min-height: 0;
 }
-/* When the slide carries an insight blockquote, the board sits below
- * it and needs to compress further. Tighten chip height and section
- * padding so the moods band + faces still fit. */
-section.journey:has(> blockquote) .journey-task {
-  min-height: 50px;
-  padding: var(--sp-sm) var(--sp-xs) var(--sp-xs);
-}
-section.journey:has(> blockquote) .journey-section {
-  padding: var(--sp-xs) var(--sp-sm);
-}
-section.journey:has(> blockquote) > blockquote {
-  margin: 0 0 var(--sp-sm) 0;
-}
 
 /* ── Legend ─────────────────────────────────────────────────────────── */
 section.journey .journey-legend {
