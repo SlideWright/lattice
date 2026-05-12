@@ -206,37 +206,32 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Kanban diagrams.
 - **Removable when:** Mermaid exposes a per-diagram cScale that
   bypasses the lighten step.
-- **Commits:** Original palette commit; mindmap override sentinel
-  comment in palette files.
+- **Commits:** Original palette commit; mindmap override now lives in
+  `lattice.css`'s DIAGRAM OVERRIDES section.
 
-### Mermaid's `%%{init}%%` directive is intolerant of CSS comments
+### ~~Mermaid's `%%{init}%%` directive is intolerant of CSS comments~~ (RESOLVED)
 
-- **Symptom:** All themeCSS overrides silently dropped from a rendered
-  SVG even though the input was correct.
-- **Cause:** Mermaid's `%%{init}%%` parser fails to parse the JSON
-  embedded in the directive when certain content (specifically certain
-  characters within `/* … */` blocks) is present. The result isn't an
-  error — the `themeCSS` field just gets discarded silently.
-- **Mitigation:** [lattice-emulator.js:641-643](../../lattice-emulator.js#L641-L643)
-  strips `/* … */` comments from the Mermaid themeCSS before injection.
-- **Triggered by:** Any palette whose Mermaid CSS section contains
-  comments that the init parser chokes on.
-- **Removable when:** Mermaid's init-directive parser handles comments
-  robustly.
-- **Commits:** Identified by section-bisect; see commit log on
-  `lattice-emulator.js` resolveVarsInThemeCSS / `MERMAID_THEME_CSS`
-  pre-processing.
+- **Status:** No longer applicable as of 2026-05-12. Lattice no longer
+  uses Mermaid's `themeCSS` init parameter; per-diagram CSS lives in
+  `lattice.css`'s DIAGRAM OVERRIDES section and reaches the inline SVG
+  via the host page cascade. CSS comments and the `>` child combinator
+  are both safe to use again.
+- **Historical context:** Mermaid's `%%{init}%%` JSON parser silently
+  dropped `themeCSS` payloads containing `/* … */` comments, and
+  similarly rejected the `>` combinator. Both restrictions are gone
+  with the new architecture.
+- **See:** `docs/notes/2026-05-12-diagram-tokens.md`.
 
 ### Mermaid frontmatter must be FIRST; `%%{init}%%` injection comes after
 
-- **Symptom:** Mermaid renders without our themeVariables / themeCSS
-  even though we appear to be passing them.
+- **Symptom:** Mermaid renders without our themeVariables even though we
+  appear to be passing them.
 - **Cause:** Mermaid requires the frontmatter (`---\n…\n---\n`) to be
   the very first thing in the diagram source. Naive prepending of a
   `%%{init}%%` directive breaks frontmatter detection.
-- **Mitigation:** [lattice-emulator.js:650-662](../../lattice-emulator.js#L650-L662)
-  detects an opening frontmatter block and injects the `%%{init}%%`
-  AFTER the closing `---\n` rather than at the top.
+- **Mitigation:** `lattice-emulator.js:renderMermaid` detects an opening
+  frontmatter block and injects the `%%{init}%%` AFTER the closing
+  `---\n` rather than at the top.
 - **Triggered by:** Mermaid sources that include a `title:` or
   `displayMode:` frontmatter block.
 - **Removable when:** Never — this is correct per Mermaid's spec.
@@ -656,14 +651,17 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   Tableau-10 categorical fills (sankey nodes, link gradients); some
   apply internal lightening or darkening to themeVariable inputs
   (kanban cScale lighten step). The themeVariables API is partial.
-- **Mitigation:** Per-diagram-type CSS overrides in the Mermaid CSS
-  section of each palette ([themes/indaco.css](../../themes/indaco.css)
-  / [themes/cuoio.css](../../themes/cuoio.css), below the
-  `/* ===== MERMAID THEME CSS ===== */` sentinel). Coverage is
-  audited periodically — the most recent audit (commit `c57366bf`)
-  identified 35 stray colors across 5 decks / 37 diagrams and added
-  overrides for journey, c4, mindmap, timeline, sankey, packet,
-  architecture, and ER alternation.
+- **Mitigation:** Per-diagram-type CSS overrides in
+  [lattice.css](../../lattice.css)'s "DIAGRAM OVERRIDES" section (at
+  the bottom of the file). Palette-blind — every rule consumes
+  `var(--diagram-*)`, so new palettes inherit coverage by defining the
+  token contract. Coverage is audited periodically — the most recent
+  audit (commit `c57366bf`) identified 35 stray colors across 5 decks
+  / 37 diagrams and added overrides for journey, c4, mindmap, timeline,
+  sankey, packet, architecture, and ER alternation. The 2026-05-12
+  refactor moved these rules out of each palette's post-sentinel
+  section into the layout engine to make new-palette authoring purely
+  token-declaration.
 - **Triggered by:** Any new Mermaid diagram type, any Mermaid version
   bump that adds new internal styling.
 - **Removable when:** Mermaid's themeVariables surface becomes
