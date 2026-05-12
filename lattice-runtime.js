@@ -1080,20 +1080,40 @@
     }
     return map;
   }
+  // Shortest uppercase prefix unique within the actor set. WCAG 1.4.1
+  // redundant encoding mirror of lib/journey.js (assignActorLabels).
+  function jAssignActorLabels(actorNames) {
+    const labels = new Map();
+    for (const name of actorNames) {
+      let chosen = null;
+      for (let len = 1; len <= name.length; len++) {
+        const prefix = name.slice(0, len).toUpperCase();
+        const collides = actorNames.some(function (other) {
+          return other !== name && other.slice(0, len).toUpperCase() === prefix;
+        });
+        if (!collides) { chosen = prefix; break; }
+      }
+      labels.set(name, chosen || name.toUpperCase());
+    }
+    return labels;
+  }
   function jEmitBoard(model) {
     const taskCount = model.sections.reduce((n, s) => n + s.tasks.length, 0);
     if (taskCount === 0) return '';
     const actorColor = jAssignActorColors(model);
     const actors = [...actorColor.entries()];
+    const actorLabel = jAssignActorLabels(actors.map(function (e) { return e[0]; }));
     const sectionVolumes = model.sections.map(function (s) {
       return s.tasks.reduce(function (sum, t) { return sum + (t.volume == null ? 1 : t.volume); }, 0);
     });
-    const legendHtml = actors.map(([n, c]) =>
-      '<li class="journey-actor" data-actor="' + jEscAttr(n) + '" style="--actor-color:' + c + '">' +
-        '<span class="journey-actor-dot" aria-hidden="true"></span>' +
+    const legendHtml = actors.map(function (e) {
+      const n = e[0], c = e[1];
+      const lbl = actorLabel.get(n);
+      return '<li class="journey-actor" data-actor="' + jEscAttr(n) + '" style="--actor-color:' + c + '">' +
+        '<span class="journey-actor-dot" data-label-len="' + lbl.length + '" aria-hidden="true">' + jEscHtml(lbl) + '</span>' +
         '<span class="journey-actor-name">' + jEscHtml(n) + '</span>' +
-      '</li>'
-    ).join('');
+      '</li>';
+    }).join('');
     const moodLegendHtml = (
       '<li class="journey-mood-key journey-mood-key-low">Pain</li>' +
       [1, 2, 3, 4, 5].map(function (m) {
@@ -1116,10 +1136,12 @@
     for (let si = 0; si < model.sections.length; si++) {
       for (const t of model.sections[si].tasks) {
         col++;
-        const dots = t.actors.map(a =>
-          '<span class="journey-actor-dot" data-actor="' + jEscAttr(a) +
-          '" style="--actor-color:' + actorColor.get(a) + '" aria-hidden="true"></span>'
-        ).join('');
+        const dots = t.actors.map(function (a) {
+          const lbl = actorLabel.get(a);
+          return '<span class="journey-actor-dot" data-actor="' + jEscAttr(a) +
+            '" data-label-len="' + lbl.length + '" ' +
+            'style="--actor-color:' + actorColor.get(a) + '" aria-hidden="true">' + jEscHtml(lbl) + '</span>';
+        }).join('');
         const vol = t.volume == null ? 1 : t.volume;
         const volPct = totalVolume > 0 ? Math.round((vol / totalVolume) * 100) : 0;
         taskParts.push(

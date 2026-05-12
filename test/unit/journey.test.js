@@ -16,6 +16,7 @@ const {
   emitJourneyBoard,
   moodFaceSvg,
   assignActorColors,
+  assignActorLabels,
   clampMood,
   findOuterUL,
   splitTopLevelLI,
@@ -149,6 +150,39 @@ test('assignActorColors: assigns palette in order of first appearance, deduped',
   assert.equal(entries[0][1], JOURNEY_ACTOR_PALETTE[0]);
   assert.equal(entries[1][0], 'cat');
   assert.equal(entries[1][1], JOURNEY_ACTOR_PALETTE[1]);
+});
+
+// ── assignActorLabels ─────────────────────────────────────────────────
+
+test('assignActorLabels: single-letter uppercase prefix when unique', () => {
+  const labels = assignActorLabels(['prospect', 'user', 'onboarding']);
+  assert.equal(labels.get('prospect'), 'P');
+  assert.equal(labels.get('user'), 'U');
+  assert.equal(labels.get('onboarding'), 'O');
+});
+
+test('assignActorLabels: colliding initials promote to two-letter prefix', () => {
+  const labels = assignActorLabels(['prospect', 'sales', 'support', 'user']);
+  assert.equal(labels.get('prospect'), 'P');
+  assert.equal(labels.get('sales'), 'SA');
+  assert.equal(labels.get('support'), 'SU');
+  assert.equal(labels.get('user'), 'U');
+});
+
+test('assignActorLabels: only colliding actors get longer labels', () => {
+  // Mixed lengths are acceptable — non-colliding actors stay short.
+  const labels = assignActorLabels(['alpha', 'beta', 'bravo']);
+  assert.equal(labels.get('alpha'), 'A');
+  assert.equal(labels.get('beta'), 'BE');
+  assert.equal(labels.get('bravo'), 'BR');
+});
+
+test('assignActorLabels: full uppercase name when one is a prefix of another', () => {
+  // "user" is a strict prefix of "users", so no prefix of "user" is
+  // unique; fall back to the full uppercase name.
+  const labels = assignActorLabels(['user', 'users']);
+  assert.equal(labels.get('user'), 'USER');
+  assert.equal(labels.get('users'), 'USERS');
 });
 
 // ── moodFaceSvg ──────────────────────────────────────────────────────

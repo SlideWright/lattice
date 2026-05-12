@@ -3800,11 +3800,15 @@ section.journey h2 {
   margin: 0 0 var(--sp-md);
 }
 
-/* The board itself: a vertical flow of column-aligned bands. */
+/* The board itself: a vertical flow of column-aligned bands. The gap
+ * was sp-sm when the floating actor dot needed 6px of overhang headroom
+ * between the section bar and the chip row; with the dot now inset
+ * inside each chip (no overhang) the gap collapses to sp-xs and the
+ * mood band / curve / timeline gets the recovered ~25px. */
 section.journey .journey-board {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-sm);
+  gap: var(--sp-xs);
   width: 100%;
   flex: 1;
   min-height: 0;
@@ -3826,13 +3830,30 @@ section.journey .journey-actor {
   align-items: center;
   gap: var(--sp-xs);
 }
+/* Actor identity is encoded twice (WCAG 1.4.1): the dot's color AND a
+ * one-or-two-letter uppercase initial centered inside it. The label is
+ * the shortest unique prefix of the actor name (see assignActorLabels in
+ * lib/journey.js — mirrored in lattice-runtime.js).
+ *
+ * Two-letter labels (collision fallback) shrink the font so both fit. */
 section.journey .journey-actor-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--actor-color);
+  color: var(--on-accent, #fff);
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
   flex-shrink: 0;
+}
+section.journey .journey-actor-dot[data-label-len="2"] {
+  font-size: 7px;
+  letter-spacing: 0;
 }
 section.journey .journey-actor-name {
   font-weight: 500;
@@ -3938,7 +3959,7 @@ section.journey .journey-task {
   grid-column: var(--col);
   background: var(--journey-task-bg);
   color: var(--journey-task-fg);
-  padding: var(--sp-sm) var(--sp-xs) var(--sp-xs);
+  padding: var(--sp-xs);
   border-radius: var(--radius-sm);
   position: relative;
   display: flex;
@@ -3949,18 +3970,14 @@ section.journey .journey-task {
   text-align: center;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 8%, transparent);
 }
+/* Inset top-left corner — no overhang. The dot's own letter avatar is
+ * the actor identifier; no white ring is needed to lift it off the chip. */
 section.journey .journey-task-actors {
   position: absolute;
-  top: -6px;
-  left: var(--sp-xs);
+  top: 4px;
+  left: 4px;
   display: inline-flex;
   gap: 2px;
-}
-section.journey .journey-task .journey-actor-dot {
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--bg, #fff);
-  box-sizing: content-box;
 }
 section.journey .journey-task-label {
   font-weight: 500;
@@ -3971,7 +3988,7 @@ section.journey .journey-task-label {
 section.journey .journey-timeline {
   height: 12px;
   position: relative;
-  margin: var(--sp-xs) 0;
+  margin: 2px 0;
   flex-shrink: 0;
 }
 section.journey .journey-timeline::before {
@@ -4333,7 +4350,7 @@ section.journey.weighted .journey-task-actors {
    * clip the % badge on narrow chips. */
   left: auto;
   right: 4px;
-  top: -6px;
+  top: 4px;
 }
 
 /* ── KPI ───────────────────────────────────────────────────────────────
