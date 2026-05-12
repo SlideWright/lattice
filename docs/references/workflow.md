@@ -79,28 +79,43 @@ Commit `examples/<feature-slug>.md` and `examples/<feature-slug>.pdf`
 together. If you push without the rebuilt PDF the reviewer's link
 404s — that is the bug the convention prevents.
 
-### Share
+### Iteration cycle
 
-Use the **raw URL** so the reviewer downloads (or opens directly in the
-browser's PDF viewer) without GitHub's blob-preview UI wrapping it:
+Feature decks are built to iterate fast. Three rules keep the cycle
+from churning:
+
+**Design before code.** When a design decision is open ("rethink the
+pill," "what glyphs make sense?"), write the model first: name the
+axes you're working on, list the candidate moves, recommend one.
+Confirm direction in a single round trip before touching CSS. This
+avoids the "ship → critique → re-ship" loop that ends up costing
+five build cycles to land what could be done in one.
+
+**Bundle adjacent decisions.** When one design move depends on two
+or three downstream picks, surface all of them in one
+`AskUserQuestion`, not sequentially as each becomes evident. A
+bundled question costs one round trip; three sequential ones cost
+three build cycles.
+
+**Atomic commits per design decision.** One thematic change (e.g.
+"swap pill placement to meta-on-the-right") ships in one commit that
+covers CSS + transforms + examples + docs together. The commit is
+the unit of "this design move." Smaller mechanical splits (a typo
+in templates.md after the design ships) get their own commit.
+
+### Share — every push, every time
+
+After every push that updates a feature-deck PDF, paste the raw URL
+**on its own line, plain text, last paragraph of the reply**. No
+markdown bold, no backticks, no link text, nothing else on the line.
 
 ```
-https://github.com/slidewright/lattice/raw/<branch>/examples/<feature-slug>.pdf
+https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf
 ```
 
-Paste that link into the PR body — and into chat / status updates when
-asked for the feature deck. The link remains stable across pushes; the
-reviewer always sees the latest pushed version of the PDF.
-
-**Format the link as a plain URL — no markdown bold, no surrounding
-backticks, no link text wrapping.** Plain URLs are clickable in every
-context (PR body, GitHub comments, terminal chat, email) and survive
-copy-paste without losing the formatting characters. Write the URL on
-its own line.
-
-(The `/blob/` form renders the PDF inline on github.com with the
-repository chrome around it. The `/raw/` form skips the chrome and
-serves the file directly — that is what we want for review.)
+This is the reviewer's only entry point to see the work. Forgetting
+it means the reviewer has to ask, which adds a round trip and erodes
+trust in the workflow.
 
 ### When the deck retires
 

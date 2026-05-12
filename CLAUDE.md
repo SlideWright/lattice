@@ -75,14 +75,24 @@ reviewer can see the work without rebuilding locally:
 4. Link the PDF in the PR body (and in chat replies) using the **raw**
    URL — `/raw/`, not `/blob/`, so the file downloads directly:
    `https://github.com/slidewright/lattice/raw/<branch>/examples/<slug>.pdf`.
-   **Share the URL plain — no markdown bold, no backticks, no link
-   text wrapping. Plain URLs paste cleanly everywhere.**
+
+**Always present the raw URL after every push.** Last paragraph of the
+reply, plain text, on its own line, no markdown bold, no backticks, no
+link-text wrapping. Forgetting it means the user has to ask — adds a
+round trip and erodes the workflow.
 
 **Isolate feature/fix content from the long-running galleries.** Do
 not add slides or modifier examples to `examples/gallery.md` or
 `examples/gallery-guide.md` while the feature is in development —
 those decks are the regression baseline. The new layout graduates
 into them in a separate commit after review.
+
+**Design before code on rethink requests.** When the user asks to
+"rethink X," respond with the design model first — name the axes,
+list candidate moves, recommend one. Confirm direction in a single
+round trip before editing CSS or transforms. Bundle adjacent open
+decisions in one `AskUserQuestion`. This kills the ship → critique →
+re-ship churn that costs three build cycles to land one decision.
 
 Full convention in `docs/references/workflow.md`.
 
