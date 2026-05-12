@@ -1,76 +1,70 @@
-# KPI redesign — round one (rejected) and round two
+# KPI redesign — rounds one, two, and three
 
-The shipped `kpi` layout is a grid of four cards: 3px categorical
-top-stripe, 1px border, rounded corners, bg-alt fill, centred numerals.
-It reads as loud and chunky — the rainbow stripes shout for no
-semantic reason, and the chrome competes with the numbers.
+## Round one (rejected) — five "less chrome, more typography" layouts
 
-## Round one — five directions, all rejected
+Sent five candidates: `kpi-anchor`, `kpi-ledger`, `kpi-slat`,
+`kpi-marquee`, `kpi-grid`. All five failed. The common cause:
 
-Five layouts shipped as `kpi-anchor`, `kpi-ledger`, `kpi-slat`,
-`kpi-marquee`, `kpi-grid` (no longer in the deck after the round-two
-replacement). Each had five iterations behind it; the winners still
-failed on review.
+1. Numbers capped at `--fs-display` (60px) when they should command.
+2. Content floated as a thin band, leaving dead zones.
+3. Categorical colour rotated as decoration (blue/green/purple/orange).
+4. Target / trend buried as a 13px muted footnote.
 
-| Direction | Specific failure |
-| --- | --- |
-| anchor   | Invents fake hierarchy by promoting li#1 to hero. Supporting numerals (48px) ended up *smaller than their labels*. |
-| ledger   | Stripped KPI of its assertive purpose — numbers read as balance-sheet line items, not headlines. |
-| slat     | Labels rendered bigger and bolder than the numbers. "Examiner findings" louder than "0", when "0" *is* the entire point. |
-| marquee  | Closest to right, but forces aggressive label truncation and floats on an isolated strip. |
-| grid     | Safest, dullest. Categorical left rules reproduced the rainbow-noise problem in miniature. |
+Wrong axis. Polishing chrome on a layout that wasn't earning the canvas.
 
-**Common failure modes across all five:**
+## Round two (rejected) — `kpi-status` + `kpi-gap`
 
-1. Numbers topped out at `--fs-display` (60px) when they should
-   command the canvas (`--fs-hero` 110px minimum).
-2. Content floated as a thin band in the vertical centre, leaving
-   large dead zones top and bottom.
-3. Categorical colours rotated decoratively (blue / green / purple /
-   orange) when colour should signal status, not identity.
-4. Target / trend was treated as a 13px muted footnote, but the
-   gap between current and target is usually the actual story.
+`kpi-status`: 2×2 grid with fs-hero numerals and a status-coloured top
+rule. `kpi-gap`: literal progress bars showing current-vs-target.
 
-The wrong axis. The right axis is: **make the numbers do the work,
-and let status carry the colour.**
+Both rejected as "competent dashboard layouts" — not boardroom. Honest
+self-critique:
 
-## Round two — two directions
+- `kpi-status` was a tidier card grid. Bigger numbers but still "four
+  cells in a grid." Memorable in no particular way.
+- `kpi-gap` was decoration disguised as data viz. Three bars at 100%,
+  one at 95% — the bars carried no information the numbers didn't.
+  Progress-bar pattern reads as a 2010 admin dashboard.
 
-Two layouts that fill the canvas, promote the gap to peer status,
-and use semantic colour tokens (`--pass` / `--warn` / `--fail`)
-already in the palette.
+The look was the issue, not the structure.
 
-### A. `kpi-status` — fill the canvas
+## Round three (shipped here) — `kpi-board`
 
-`repeat(auto-fit, minmax(380px, 1fr))` grid with `grid-auto-rows: 1fr`.
-Numerals at `--fs-hero` (110px) anchored to the top of each cell.
-Each cell carries a 2px top rule whose colour signals status — `--warn`
-for behind, `--pass` for on-track, `--fail` for off-track. The target
-line drops the `muted` treatment and adopts the cell's status colour
-at `--fs-emphasis` (17px) — so the *gap* is what the reader sees
-after the number.
+Earnings-report typography. The reference is an annual report or a
+McKinsey performance summary, not a SaaS dashboard.
 
-A `demo` modifier hardcodes the status colours per `nth-child` for
-the candidates inspection. Production needs a per-cell modifier
-mechanism — likely a trailing italic word on the metric line
-(`*behind*` / `*on-track*`) read by CSS `:has()`. That's a v2
-decision after the layout itself is approved.
+**Structural recipe:**
 
-### B. `kpi-gap` — the gap is the slide
+1. **Eyebrow** — h3 in mono, small caps, 0.22em tracked, muted. Sets
+   section / period: `AUTHENTICATION · Q4 2026`.
+2. **Headline** — h2 in Playfair Display, bold, no padding-bottom rule
+   weight game. One sentence: `Where we are against quarter targets.`
+3. **1.5px hairline rule** spanning the headline's bottom. Earnings-
+   report convention.
+4. **Four metric rows**, each a 3-column grid:
+   - col 1: metric name in sans, weight 500, fs-content
+   - col 2: number in Playfair, fs-stat (52px), tabular nums,
+     right-aligned in its own column
+   - col 3: target + gap in mono, fs-emphasis (17px), tabular nums,
+     muted by default
+5. **Hairline 1px rule** between rows; **1.5px closing rule** on the
+   last row.
+6. **Single warn-colour leader bar** on the underperforming row
+   (4px left-edge), and that row's gap text in `--warn`. The reader's
+   eye lands on that one row first — no other status decoration.
 
-Each metric is a horizontal row with a literal progress bar showing
-current vs target. Bar colour is the status (`--pass` / `--warn` /
-`--fail`); fill is `calc(var(--pct) * 1%)`. Label sits above the bar
-on the left, current number and target on the right at `--fs-stat`
-(52px). The bar *is* the message — when row 1's bar visibly stops
-short and goes amber, "94% vs 99% target" is read instantly without
-having to compute the delta.
+**Variants exercised in the deck:**
 
-Demo per-row `--pct` and `--status` are set via `nth-child`. Production
-needs the author to set those via the existing `progress-track`
-mechanism (see `lattice-emulator.js`) or inline custom-property
-authoring — leaving the authoring choice open until the layout
-itself is approved.
+- `demo` modifier — one warn callout (typical case)
+- no modifier — all on track (neutral case)
+- `mixed` modifier — one warn + one fail (stress test)
+
+**Authoring story for production.** The demo hardcodes the callout
+row via `nth-child` for inspection. The intended authoring is a
+per-row class hint — likely a trailing italic on the metric line
+(`*behind*` / `*off-track*`) that CSS `:has()` reads, mirroring how
+the audit layouts already work. Final mechanism is left open until
+this look is approved.
 
 ## Inspection
 
@@ -80,6 +74,6 @@ node lattice-emulator.js \
   out.pdf
 ```
 
-Seven slides: title → before (shipped) → divider → A (status with demo
-colours) → B (gap-bar with demo statuses) → C (status, neutral, no
-demo modifier — for cases where status isn't applicable).
+Five slides: title → before (shipped) → kpi-board with single warn
+callout → kpi-board neutral (all on track) → kpi-board mixed
+(warn + fail stress test).

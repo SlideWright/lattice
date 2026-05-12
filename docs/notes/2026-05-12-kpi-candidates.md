@@ -3,184 +3,155 @@ marp: true
 theme: indaco
 size: 16:9
 paginate: true
-header: "Lattice · KPI redesign candidates v2"
+header: "Lattice · KPI redesign · round three"
 style: |
   /* ─────────────────────────────────────────────────────────────────────
-   * Shared base
+   * kpi-board — boardroom-grade earnings-report layout.
+   *
+   *   Eyebrow (h3, mono small caps)                   ┐
+   *   Headline (h2, Playfair display)                 │ all three on a
+   *   1.5px hairline rule                             ┘ shared top stack
+   *
+   *   ┌ Token-issuance success           94%   target 99% · -5pp
+   *   │ p99 detokenize                  8 ms   target 10 ms · -2 ms
+   *   │ Examiner findings                  0   target 0 · flat
+   *   └ Detokenize headroom             3.2×   target 2× · +1.2×
+   *
+   *   1.5px closing rule, mono source line in muted small caps.
+   *
+   * Status communicated by a single warn-colour leader bar on the
+   * underperforming row (and that row's gap text in --warn). Author
+   * picks which row gets the callout via a per-row class; the `demo`
+   * modifier here hardcodes it to li#1 for inspection.
    * ───────────────────────────────────────────────────────────────────── */
-  section[class*="kpi-"] { display: flex; flex-direction: column; }
-  section[class*="kpi-"] h2 {
-    font-size: var(--fs-lg);
-    margin: 0 0 var(--sp-lg) 0;
+  section.kpi-board {
+    display: flex;
+    flex-direction: column;
   }
-  section[class*="kpi-"] > ol,
-  section[class*="kpi-"] > ul {
+  section.kpi-board h3 {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-xs) 0;
+  }
+  section.kpi-board h2 {
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: var(--lh-tight);
+    margin: 0 0 var(--sp-sm) 0;
+    padding-bottom: var(--sp-xs);
+    border-bottom: 1.5px solid var(--text-heading);
+  }
+  section.kpi-board > ol {
     list-style: none;
     padding: 0;
     margin: 0;
-    flex: 1;
   }
-  section[class*="kpi-"] > ol > li::marker,
-  section[class*="kpi-"] > ul > li::marker { content: ''; }
-  section[class*="kpi-"] > ol > li > ul,
-  section[class*="kpi-"] > ul > li > ul {
-    list-style: none; padding: 0; margin: 0;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * 1. STATUS GRID — fill the canvas with the numbers. 2-up to 3-up
-   *    auto-fit grid; numerals at fs-hero (110px) dominate every cell.
-   *    Target line promoted to peer weight via --accent (no longer muted).
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-status > ol {
+  section.kpi-board > ol > li::marker { content: ''; }
+  section.kpi-board > ol > li > ul { display: contents; }
+  section.kpi-board > ol > li > ul > li::marker { content: ''; }
+  section.kpi-board > ol > li {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    grid-auto-rows: 1fr;
-    gap: var(--sp-xl) var(--sp-2xl);
-    align-content: stretch;
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
+    align-items: baseline;
+    column-gap: var(--sp-2xl);
+    padding: var(--sp-xs) 0 var(--sp-xs) var(--sp-md);
+    border-bottom: 1px solid var(--border);
+    position: relative;
   }
-  section.kpi-status > ol > li {
-    display: flex; flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    min-width: 0;
-    padding-top: var(--sp-md);
-    border-top: 2px solid var(--text-heading);
+  section.kpi-board > ol > li:last-child {
+    border-bottom: 1.5px solid var(--text-heading);
   }
-  section.kpi-status > ol > li > strong {
-    font-family: var(--font-display, var(--font-sans));
-    font-size: var(--fs-hero);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    margin-bottom: var(--sp-sm);
-  }
-  section.kpi-status > ol > li > ul > li:first-child {
+  section.kpi-board > ol > li > ul > li:first-child {
+    grid-column: 1;
     font-size: var(--fs-content);
-    color: var(--text-heading);
-    font-weight: 600;
-    line-height: var(--lh-snug);
-  }
-  section.kpi-status > ol > li > ul > li + li {
-    font-size: var(--fs-emphasis);
-    font-family: var(--font-mono);
-    color: var(--accent);
     font-weight: 500;
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.02em;
-  }
-  /* Demo-only status colouring. Production would expose pass/warn/fail
-   * as a per-cell modifier; here the colours show what's possible. */
-  section.kpi-status.demo > ol > li:nth-child(1) {
-    border-top-color: var(--warn);
-  }
-  section.kpi-status.demo > ol > li:nth-child(1) > ul > li + li {
-    color: var(--warn);
-  }
-  section.kpi-status.demo > ol > li:nth-child(2),
-  section.kpi-status.demo > ol > li:nth-child(3),
-  section.kpi-status.demo > ol > li:nth-child(4) {
-    border-top-color: var(--pass);
-  }
-  section.kpi-status.demo > ol > li:nth-child(2) > ul > li + li,
-  section.kpi-status.demo > ol > li:nth-child(3) > ul > li + li,
-  section.kpi-status.demo > ol > li:nth-child(4) > ul > li + li {
-    color: var(--pass);
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * 2. GAP-BAR — the gap to target IS the slide. Each row shows label
-   *    + a literal progress bar coloured by status (pass / warn / fail),
-   *    with the current number on the right.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-gap > ol {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-  }
-  section.kpi-gap > ol > li {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 2fr);
-    grid-template-rows: auto auto;
-    column-gap: var(--sp-xl);
-    row-gap: var(--sp-sm);
-    padding: var(--sp-sm) 0;
-    --pct: 100;
-    --status: var(--pass);
-  }
-  section.kpi-gap > ol > li:nth-child(1) { --pct: 95; --status: var(--warn); }
-  section.kpi-gap > ol > li:nth-child(2) { --pct: 100; --status: var(--pass); }
-  section.kpi-gap > ol > li:nth-child(3) { --pct: 100; --status: var(--pass); }
-  section.kpi-gap > ol > li:nth-child(4) { --pct: 100; --status: var(--pass); }
-
-  section.kpi-gap > ol > li > ul { display: contents; }
-  section.kpi-gap > ol > li > ul > li:first-child {
-    grid-column: 1; grid-row: 1;
-    font-size: var(--fs-content);
     color: var(--text-heading);
-    font-weight: 600;
-    align-self: end;
+    letter-spacing: -0.005em;
   }
-  section.kpi-gap > ol > li > strong {
-    grid-column: 2; grid-row: 1;
-    text-align: right;
-    font-family: var(--font-display, var(--font-sans));
+  section.kpi-board > ol > li > strong {
+    grid-column: 2;
+    font-family: var(--font-display);
     font-size: var(--fs-stat);
     font-weight: 700;
     color: var(--text-heading);
-    line-height: 1;
-    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
-    align-self: end;
-  }
-  section.kpi-gap > ol > li::after {
-    content: '';
-    grid-column: 1; grid-row: 2;
-    height: 14px;
-    background: linear-gradient(to right,
-      var(--status) 0% calc(var(--pct) * 1%),
-      var(--bg-alt) calc(var(--pct) * 1%) 100%);
-    border-radius: 999px;
-    align-self: start;
-  }
-  section.kpi-gap > ol > li > ul > li + li {
-    grid-column: 2; grid-row: 2;
+    letter-spacing: -0.02em;
+    line-height: 1;
     text-align: right;
-    font-size: var(--fs-label);
+    min-width: 5ch;
+  }
+  section.kpi-board > ol > li > ul > li + li {
+    grid-column: 3;
+    font-size: var(--fs-emphasis);
     font-family: var(--font-mono);
     color: var(--text-muted);
-    align-self: start;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
+    min-width: 18ch;
+    white-space: nowrap;
   }
+  /* Source line — last paragraph in the slide. */
+  section.kpi-board > p:last-of-type {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: var(--sp-md) 0 0 0;
+  }
+
+  /* Demo: warn-coloured leader bar on li#1, warn gap text. */
+  section.kpi-board.demo > ol > li:nth-child(1)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 4px;
+    background: var(--warn);
+  }
+  section.kpi-board.demo > ol > li:nth-child(1) > ul > li + li {
+    color: var(--warn);
+  }
+  /* Stress test: warn + fail mixed. */
+  section.kpi-board.mixed > ol > li:nth-child(1)::before,
+  section.kpi-board.mixed > ol > li:nth-child(3)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 4px;
+  }
+  section.kpi-board.mixed > ol > li:nth-child(1)::before { background: var(--warn); }
+  section.kpi-board.mixed > ol > li:nth-child(3)::before { background: var(--fail); }
+  section.kpi-board.mixed > ol > li:nth-child(1) > ul > li + li { color: var(--warn); }
+  section.kpi-board.mixed > ol > li:nth-child(3) > ul > li + li { color: var(--fail); }
 ---
 
 <!-- _class: title -->
 <!-- _paginate: false -->
-<!-- _footer: "KPI redesign · v2 candidates" -->
+<!-- _footer: "KPI redesign · round three" -->
 
-# KPI redesign — round two
+# KPI redesign — round three
 
 `Internal review · 2026-05-12`
 
-Round one failed on direction, not tuning. The five v1 layouts under-sold
-the numbers and treated status as decoration. Two new directions here.
-
----
-
-<!-- _class: divider -->
-<!-- _paginate: false -->
-<!-- _footer: "Before · the shipped layout" -->
-
-`The starting point`
-
-## What we're replacing — chunky cards, rainbow stripes, no hierarchy.
+Earlier rounds had the wrong look. This one targets boardroom-grade
+typography: earnings-report numerals, hairline rules, a single warn
+callout. No card chrome, no rainbow.
 
 ---
 
 <!-- _class: kpi target -->
-<!-- _footer: "Shipped — kpi · kpi target" -->
+<!-- _footer: "Before · shipped" -->
 
 ## Where we are against quarter targets.
 
@@ -199,18 +170,11 @@ the numbers and treated status as decoration. Two new directions here.
 
 ---
 
-<!-- _class: divider -->
-<!-- _paginate: false -->
-<!-- _footer: "After · the two new directions" -->
+<!-- _class: kpi-board demo -->
+<!-- _header: '' -->
+<!-- _footer: "After · kpi-board with single warn callout" -->
 
-`The redesign`
-
-## Make the numbers loud. Let status carry the colour.
-
----
-
-<!-- _class: kpi-status demo -->
-<!-- _footer: "Candidate A · kpi-status — fill the canvas" -->
+### Authentication · Q4 2026
 
 ## Where we are against quarter targets.
 
@@ -229,40 +193,46 @@ the numbers and treated status as decoration. Two new directions here.
 
 ---
 
-<!-- _class: kpi-gap -->
-<!-- _footer: "Candidate B · kpi-gap — the gap is the slide" -->
+<!-- _class: kpi-board -->
+<!-- _header: '' -->
+<!-- _footer: "kpi-board · neutral — everything on track" -->
 
-## Where we are against quarter targets.
+### Treasury operations · Q4 2026
 
-1. **94%**
-   - Token-issuance success
-   - target 99%
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+## Liquidity, settlement, and counter-party metrics all met plan.
+
+1. **$2.4B**
+   - Average daily settlement
+   - target $2.0B · +20%
+2. **99.97%**
+   - Cash-sweep accuracy
+   - target 99.9% · +0.07pp
+3. **3.1**
+   - Counter-party diversity index
+   - target 3.0 · +0.1
+4. **$0**
+   - Reconciliation breaks
+   - target $0 · flat
 
 ---
 
-<!-- _class: kpi-status -->
-<!-- _footer: "kpi-status · neutral (no demo modifier)" -->
+<!-- _class: kpi-board mixed -->
+<!-- _header: '' -->
+<!-- _footer: "kpi-board · mixed status (stress test)" -->
 
-## Same layout without the demo status colours — for general use.
+### Risk posture · Q4 2026
 
-1. **94%**
-   - Token-issuance success
-   - target 99% · +2pp QoQ
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms · -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0 · flat
-4. **3.2×**
-   - Detokenize headroom
-   - target 2× · +0.4× QoQ
+## Two metrics off plan; the rest on track.
+
+1. **17 days**
+   - Mean time to remediate critical findings
+   - target 14 days · +3 days
+2. **96.4%**
+   - Patch coverage on production fleet
+   - target 95% · +1.4pp
+3. **4**
+   - Open Sev-1 incidents
+   - target 0 · +4
+4. **1.8×**
+   - Insurance coverage ratio
+   - target 1.5× · +0.3×
