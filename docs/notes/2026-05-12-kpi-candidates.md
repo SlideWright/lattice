@@ -3,20 +3,41 @@ marp: true
 theme: indaco
 size: 16:9
 paginate: true
-header: "Lattice · KPI redesign · power-play cards"
+header: "Lattice · executive KPI system · v1"
 style: |
-  /* ─────────────────────────────────────────────────────────────────────
-   * Five card-based KPI power-play directions. Each shows the same four
-   * Authentication metrics; one (li#1, 94% vs 99% target) is the critical
-   * card — raised, four-point-starred, given the spotlight. Supporting
-   * cards step down in weight, size, or chrome.
-   * ───────────────────────────────────────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════
+   * EXECUTIVE KPI SYSTEM — one cohesive base, five layout modifiers.
+   *
+   *   Shared primitives (used by all five layouts below):
+   *     · Eyebrow: h3 mono small caps, "Domain · Period"
+   *     · Headline: h2 Playfair display
+   *     · Number: Playfair Display, tabular figures, status-coloured
+   *     · Pill: inline `code` on a list item (lattice universal rule)
+   *     · Star: ✦ four-point on critical/flagship card only
+   *     · Status palette: --pass / --warn / --fail (existing tokens)
+   *
+   *   Authoring (one contract across all five):
+   *     <!-- _class: kpi-sys kpi-{briefing|ops|compliance|trajectory|spotlight} -->
+   *     ### Domain · Period
+   *     ## Headline statement.
+   *
+   *     1. **$2.4B**
+   *        - Average daily settlement
+   *        - target $2.0B · +20% `On plan` `Board`
+   *     2. ...
+   *
+   *   Trailing inline `code` on any line becomes a pill. The FIRST pill
+   *   carries the status; the per-row status colour is hooked via the
+   *   list's nth-child cycle in each layout below (production would
+   *   replace that with a per-item modifier).
+   * ═══════════════════════════════════════════════════════════════════════ */
 
-  section[class*="kpi-"] {
+  /* ── shared base: every kpi-sys slide gets this scaffold ───────────── */
+  section.kpi-sys {
     display: flex; flex-direction: column;
-    padding-top: var(--sp-lg);
+    padding-top: var(--sp-md);
   }
-  section[class*="kpi-"] h3 {
+  section.kpi-sys h3 {
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     font-weight: 600;
@@ -25,48 +46,121 @@ style: |
     color: var(--text-muted);
     margin: 0 0 var(--sp-xs) 0;
   }
-  section[class*="kpi-"] h2 {
+  section.kpi-sys h2 {
     font-family: var(--font-display);
     font-size: var(--fs-2xl);
     font-weight: 700;
     color: var(--text-heading);
     line-height: var(--lh-tight);
-    margin: 0 0 var(--sp-lg) 0;
+    margin: 0 0 var(--sp-md) 0;
   }
-  section[class*="kpi-"] > ol {
+  section.kpi-sys > ol,
+  section.kpi-sys > ul {
     list-style: none; padding: 0; margin: 0;
     flex: 1;
   }
-  section[class*="kpi-"] > ol > li::marker { content: ''; }
-  section[class*="kpi-"] > ol > li > ul {
+  section.kpi-sys > :where(ol, ul) > li::marker { content: ''; }
+  section.kpi-sys > :where(ol, ul) > li > :where(ul, ol) {
     list-style: none; padding: 0; margin: 0;
   }
+  section.kpi-sys > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
 
-  /* ─────────────────────────────────────────────────────────────────────
-   * A · SPOTLIGHT — one hero card top-left, three supports stacked right.
-   *   Hero: raised, fs-hero number, four-point star, accent-soft fill.
-   *   Supports: minimal, hairline-separated.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-spotlight > ol {
+  /* ── universal pill: trailing inline `code` on any line ────────────── */
+  section.kpi-sys code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--pill-border, var(--text-muted));
+    background: var(--pill-bg, var(--bg));
+    color: var(--pill-fg, var(--text-body));
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    margin-left: 6px;
+    vertical-align: 1px;
+  }
+  /* Status pills: derived from per-li class hooks set by each layout. */
+  section.kpi-sys li.pass {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+  section.kpi-sys li.warn {
+    --pill-border: var(--warn);
+    --pill-bg: var(--warn-bg);
+    --pill-fg: var(--warn);
+  }
+  section.kpi-sys li.fail {
+    --pill-border: var(--fail);
+    --pill-bg: var(--fail-bg);
+    --pill-fg: var(--fail);
+  }
+  /* Only the FIRST pill carries the status colour; later pills stay neutral. */
+  section.kpi-sys > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
+  section.kpi-sys > :where(ol, ul) > li > code ~ code {
+    --pill-border: var(--text-muted);
+    --pill-bg: var(--bg);
+    --pill-fg: var(--text-muted);
+  }
+
+  /* ── shared number / label / target typography ──────────────────────── */
+  section.kpi-sys > :where(ol, ul) > li > strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-heading);
+    font-variant-numeric: tabular-nums;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    display: block;
+  }
+  section.kpi-sys > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
+    font-size: var(--fs-content);
+    font-weight: 500;
+    color: var(--text-heading);
+    margin-top: var(--sp-sm);
+    line-height: var(--lh-snug);
+  }
+  section.kpi-sys > :where(ol, ul) > li > :where(ul, ol) > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── flagship star: applied to a single :nth-child(1) in some layouts */
+  section.kpi-sys .flagship::after {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-md); right: var(--sp-md);
+    font-size: var(--fs-xl);
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * MODIFIER 1 · BRIEFING — board / financial. Hero + 3 supports.
+   *   Pills: status + audience (Board / Investor / Audit).
+   * ═══════════════════════════════════════════════════════════════════════ */
+  section.kpi-briefing > ol {
     display: grid;
     grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
     grid-template-rows: 1fr 1fr 1fr;
-    gap: var(--sp-md) var(--sp-2xl);
+    gap: 0 var(--sp-2xl);
   }
-  section.kpi-spotlight > ol > li:nth-child(1) {
+  section.kpi-briefing > ol > li:nth-child(1) {
     grid-column: 1; grid-row: 1 / -1;
     background: var(--accent-soft);
-    padding: var(--sp-2xl);
+    padding: var(--sp-xl) var(--sp-2xl);
     position: relative;
     display: flex; flex-direction: column;
-    justify-content: space-between;
-    border-radius: 4px;
-    box-shadow:
-      0 24px 48px -24px rgba(0, 61, 102, 0.20),
-      0 1px 0 0 rgba(0, 0, 0, 0.05);
-    transform: translateY(-8px);
+    justify-content: center;
+    border-left: 4px solid var(--accent);
   }
-  section.kpi-spotlight > ol > li:nth-child(1)::after {
+  section.kpi-briefing > ol > li:nth-child(1)::after {
     content: '✦';
     position: absolute;
     top: var(--sp-lg); right: var(--sp-lg);
@@ -74,589 +168,390 @@ style: |
     color: var(--accent);
     line-height: 1;
   }
-  section.kpi-spotlight > ol > li:nth-child(1) > strong {
-    font-family: var(--font-display);
+  section.kpi-briefing > ol > li:nth-child(1) > strong {
     font-size: var(--fs-watermark);
-    font-weight: 700;
-    color: var(--text-heading);
     line-height: 0.88;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    display: block;
   }
-  section.kpi-spotlight > ol > li:nth-child(1) > ul > li:first-child {
+  section.kpi-briefing > ol > li:nth-child(1) > ul > li:first-child {
     font-family: var(--font-display);
     font-size: var(--fs-xl);
-    font-weight: 600;
-    color: var(--text-heading);
-    margin-top: var(--sp-lg);
-    line-height: var(--lh-snug);
-  }
-  section.kpi-spotlight > ol > li:nth-child(1) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-emphasis);
-    color: var(--warn);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    margin-top: var(--sp-sm);
-    text-transform: uppercase;
-  }
-  section.kpi-spotlight > ol > li:not(:first-child) {
-    grid-column: 2;
-    display: flex; flex-direction: column;
-    justify-content: center;
-    padding: 0 0 0 var(--sp-md);
-    border-left: 1px solid var(--border);
-  }
-  section.kpi-spotlight > ol > li:nth-child(2) { grid-row: 1; }
-  section.kpi-spotlight > ol > li:nth-child(3) { grid-row: 2; }
-  section.kpi-spotlight > ol > li:nth-child(4) { grid-row: 3; }
-  section.kpi-spotlight > ol > li:not(:first-child) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-3xl);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-  section.kpi-spotlight > ol > li:not(:first-child) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 500;
-    margin-top: var(--sp-xs);
-  }
-  section.kpi-spotlight > ol > li:not(:first-child) > ul > li + li {
-    font-size: var(--fs-label);
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * B · BENTO — asymmetric tile grid (hero 2x2, side 1x2, two stragglers).
-   *   Each card has distinct chrome to reinforce information hierarchy.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-bento > ol {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1fr);
-    gap: var(--sp-md);
-  }
-  section.kpi-bento > ol > li {
-    padding: var(--sp-lg);
-    position: relative;
-    display: flex; flex-direction: column;
-    justify-content: space-between;
-    min-width: 0;
-    border-radius: 4px;
-  }
-  /* Hero — top-left 2x2 */
-  section.kpi-bento > ol > li:nth-child(1) {
-    grid-column: 1 / 3; grid-row: 1 / 3;
-    background: var(--brand-blue-deep);
-    color: #ffffff;
-    padding: var(--sp-xl);
-    box-shadow: 0 30px 60px -28px rgba(0, 61, 102, 0.35);
-  }
-  section.kpi-bento > ol > li:nth-child(1)::after {
-    content: '✦';
-    position: absolute;
-    top: var(--sp-xl); right: var(--sp-xl);
-    font-size: var(--fs-3xl);
-    color: #ffffff;
-    opacity: 0.9;
-    line-height: 1;
-  }
-  section.kpi-bento > ol > li:nth-child(1) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-hero);
-    color: #ffffff;
-    line-height: 0.9;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    display: block;
-    font-weight: 700;
-  }
-  section.kpi-bento > ol > li:nth-child(1) > ul > li:first-child {
-    font-family: var(--font-display);
-    font-size: var(--fs-lg);
-    color: #ffffff;
-    font-weight: 600;
     margin-top: var(--sp-md);
   }
-  section.kpi-bento > ol > li:nth-child(1) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-emphasis);
-    color: #ffffff;
-    opacity: 0.75;
-    margin-top: var(--sp-sm);
-    letter-spacing: 0.04em;
-  }
-  /* Side — right column tall (1x3) */
-  section.kpi-bento > ol > li:nth-child(2) {
-    grid-column: 3; grid-row: 1 / 4;
-    background: var(--accent-soft);
-  }
-  section.kpi-bento > ol > li:nth-child(2) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-stat);
-    color: var(--accent);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    display: block;
-    font-weight: 700;
-  }
-  section.kpi-bento > ol > li:nth-child(2) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 600;
-    margin-top: var(--sp-md);
-  }
-  section.kpi-bento > ol > li:nth-child(2) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
-  }
-  /* Bottom-left (3rd metric) */
-  section.kpi-bento > ol > li:nth-child(3) {
-    grid-column: 1; grid-row: 3;
-    background: var(--bg-alt);
-  }
-  /* Bottom-middle (4th metric) */
-  section.kpi-bento > ol > li:nth-child(4) {
-    grid-column: 2; grid-row: 3;
-    background: var(--bg-alt);
-  }
-  section.kpi-bento > ol > li:nth-child(3) > strong,
-  section.kpi-bento > ol > li:nth-child(4) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-3xl);
-    color: var(--text-heading);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    display: block;
-    font-weight: 700;
-  }
-  section.kpi-bento > ol > li:nth-child(3) > ul > li:first-child,
-  section.kpi-bento > ol > li:nth-child(4) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 500;
-    margin-top: var(--sp-xs);
-  }
-  section.kpi-bento > ol > li:nth-child(3) > ul > li + li,
-  section.kpi-bento > ol > li:nth-child(4) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
-  }
-  section.kpi-bento > ol > li:nth-child(3),
-  section.kpi-bento > ol > li:nth-child(4) {
-    padding: var(--sp-md) var(--sp-lg);
-  }
-
-  /* ─────────────────────────────────────────────────────────────────────
-   * C · EDITORIAL — magazine spread. Full-height hero left, supports right.
-   *   Hero gets gigantic serif typography; supports are hairline-listed.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-editorial > ol {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    grid-template-rows: 1fr 1fr 1fr;
-    gap: 0 var(--sp-2xl);
-  }
-  section.kpi-editorial > ol > li:nth-child(1) {
-    grid-column: 1; grid-row: 1 / -1;
-    background: var(--bg-alt);
-    padding: var(--sp-2xl);
-    position: relative;
-    display: flex; flex-direction: column;
-    justify-content: flex-end;
-    border-left: 4px solid var(--warn);
-  }
-  section.kpi-editorial > ol > li:nth-child(1)::before {
-    content: '✦';
-    position: absolute;
-    top: var(--sp-xl); right: var(--sp-xl);
-    font-family: var(--font-display);
-    font-size: var(--fs-2xl);
-    color: var(--warn);
-    line-height: 1;
-  }
-  section.kpi-editorial > ol > li:nth-child(1)::after {
-    content: 'CRITICAL';
-    position: absolute;
-    top: var(--sp-xl);
-    left: var(--sp-2xl);
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--warn);
-    font-weight: 700;
-    letter-spacing: 0.22em;
-  }
-  section.kpi-editorial > ol > li:nth-child(1) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-watermark);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 0.88;
-    letter-spacing: -0.05em;
-    font-variant-numeric: tabular-nums;
-    display: block;
-  }
-  section.kpi-editorial > ol > li:nth-child(1) > ul > li:first-child {
-    font-family: var(--font-display);
-    font-size: var(--fs-xl);
-    font-weight: 600;
-    color: var(--text-heading);
-    margin-top: var(--sp-md);
-    line-height: var(--lh-snug);
-  }
-  section.kpi-editorial > ol > li:nth-child(1) > ul > li + li {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--fs-md);
-    color: var(--text-muted);
-    margin-top: var(--sp-sm);
-  }
-  section.kpi-editorial > ol > li:not(:first-child) {
+  section.kpi-briefing > ol > li:not(:first-child) {
     grid-column: 2;
     display: flex; flex-direction: column;
     justify-content: center;
     padding: var(--sp-sm) 0;
-    min-height: 0;
   }
-  section.kpi-editorial > ol > li:nth-child(2) {
-    grid-row: 1;
-    border-top: 1.5px solid var(--text-heading);
-  }
-  section.kpi-editorial > ol > li:nth-child(3) {
-    grid-row: 2;
-    border-top: 1px solid var(--border);
-  }
-  section.kpi-editorial > ol > li:nth-child(4) {
+  section.kpi-briefing > ol > li:nth-child(2) { grid-row: 1; border-top: 1.5px solid var(--text-heading); }
+  section.kpi-briefing > ol > li:nth-child(3) { grid-row: 2; border-top: 1px solid var(--border); }
+  section.kpi-briefing > ol > li:nth-child(4) {
     grid-row: 3;
     border-top: 1px solid var(--border);
     border-bottom: 1.5px solid var(--text-heading);
   }
-  section.kpi-editorial > ol > li:not(:first-child) > strong {
-    font-family: var(--font-display);
+  section.kpi-briefing > ol > li:not(:first-child) > strong {
     font-size: var(--fs-3xl);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-  section.kpi-editorial > ol > li:not(:first-child) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 500;
-    margin-top: var(--sp-xs);
-  }
-  section.kpi-editorial > ol > li:not(:first-child) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
   }
 
-  /* ─────────────────────────────────────────────────────────────────────
-   * D · RAISED — 2x2 equal grid, critical card raised + starred.
-   *   Power-play through elevation, not size.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-raised > ol {
+  /* Per-row status colour, briefing — all on-plan (default pass) */
+  section.kpi-briefing > ol > li {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+  /* Subsequent pills (audience etc) stay neutral via the ~ code rule. */
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * MODIFIER 2 · OPS — SLO/SLA review. 2×2 grid, every card with status pill.
+   * ═══════════════════════════════════════════════════════════════════════ */
+  section.kpi-ops > ol {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: var(--sp-md) var(--sp-2xl);
-    padding: var(--sp-sm) 0;
+    gap: var(--sp-md);
   }
-  section.kpi-raised > ol > li {
-    padding: var(--sp-sm) var(--sp-md);
+  section.kpi-ops > ol > li {
+    background: var(--bg-alt);
+    padding: var(--sp-md) var(--sp-lg);
     display: flex; flex-direction: column;
     justify-content: center;
     position: relative;
-    border-top: 1px solid var(--border);
     min-width: 0;
-    min-height: 0;
   }
-  section.kpi-raised > ol > li:nth-child(1) {
-    background: var(--bg);
-    border: 1px solid var(--accent);
-    border-top: 4px solid var(--accent);
-    box-shadow:
-      0 24px 48px -24px rgba(0, 61, 102, 0.28),
-      0 2px 4px rgba(0, 0, 0, 0.04);
-    transform: translateY(-10px);
-    padding: var(--sp-md) var(--sp-lg);
-  }
-  section.kpi-raised > ol > li:nth-child(1)::after {
-    content: '✦';
-    position: absolute;
-    top: var(--sp-sm); right: var(--sp-md);
-    font-size: var(--fs-xl);
-    color: var(--accent);
-    line-height: 1;
-  }
-  section.kpi-raised > ol > li > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-stat);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-    display: block;
-  }
-  section.kpi-raised > ol > li:nth-child(1) > strong {
-    color: var(--accent);
+  section.kpi-ops > ol > li > strong {
     font-size: var(--fs-hero);
+    line-height: 0.92;
   }
-  section.kpi-raised > ol > li > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 600;
-    margin-top: var(--sp-xs);
+  section.kpi-ops > ol > li:nth-child(1),
+  section.kpi-ops > ol > li:nth-child(3) {
+    --pill-border: var(--warn);
+    --pill-bg: var(--warn-bg);
+    --pill-fg: var(--warn);
   }
-  section.kpi-raised > ol > li > ul > li + li {
+  section.kpi-ops > ol > li:nth-child(2),
+  section.kpi-ops > ol > li:nth-child(4) {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+  section.kpi-ops > ol > li:nth-child(1) > strong,
+  section.kpi-ops > ol > li:nth-child(3) > strong { color: var(--warn); }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * MODIFIER 3 · COMPLIANCE — legal / regulatory. Vertical list with
+   *   binary-state pills and source footnote.
+   * ═══════════════════════════════════════════════════════════════════════ */
+  section.kpi-compliance > ol {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  section.kpi-compliance > ol > li {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    grid-template-rows: auto auto;
+    column-gap: var(--sp-2xl);
+    row-gap: var(--sp-xs);
+    padding: var(--sp-md) 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  section.kpi-compliance > ol > li:last-child {
+    border-bottom: 1.5px solid var(--text-heading);
+  }
+  section.kpi-compliance > ol > li > strong {
+    grid-column: 1; grid-row: 1 / 3;
+    font-size: var(--fs-stat);
+    min-width: 4ch;
+    text-align: right;
+    align-self: center;
+  }
+  section.kpi-compliance > ol > li > ul { display: contents; }
+  section.kpi-compliance > ol > li > ul > li:first-child {
+    grid-column: 2; grid-row: 1;
+    margin-top: 0;
+  }
+  section.kpi-compliance > ol > li > ul > li + li {
+    grid-column: 2; grid-row: 2;
+    margin-top: 0;
+  }
+  section.kpi-compliance > ol > li > ul > li code:first-of-type {
+    grid-column: 3; grid-row: 1 / 3;
+    align-self: center;
+    margin-left: 0;
+  }
+  /* Row-level status hooks for compliance */
+  section.kpi-compliance > ol > li:nth-child(1),
+  section.kpi-compliance > ol > li:nth-child(2),
+  section.kpi-compliance > ol > li:nth-child(4) {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+  section.kpi-compliance > ol > li:nth-child(3) {
+    --pill-border: var(--warn);
+    --pill-bg: var(--warn-bg);
+    --pill-fg: var(--warn);
+  }
+  section.kpi-compliance > p:last-of-type {
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    font-weight: 600;
-  }
-  section.kpi-raised > ol > li:nth-child(1) > ul > li + li {
-    color: var(--warn);
+    margin: var(--sp-md) 0 0 0;
   }
 
-  /* ─────────────────────────────────────────────────────────────────────
-   * E · POWER TRIANGLE — asymmetric cascade. Hero top-left, others step
-   *   down. Each card has distinct visual chrome by rank.
-   * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-triangle > ol {
+  /* ═══════════════════════════════════════════════════════════════════════
+   * MODIFIER 4 · TRAJECTORY — investor / period-over-period. Equal cards
+   *   with direction indicators in pills.
+   * ═══════════════════════════════════════════════════════════════════════ */
+  section.kpi-trajectory > ol {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: max-content;
+    align-content: center;
     gap: var(--sp-md);
   }
-  section.kpi-triangle > ol > li {
-    padding: var(--sp-lg);
+  section.kpi-trajectory > ol > li {
+    background: var(--bg-alt);
+    padding: var(--sp-lg) var(--sp-md);
     display: flex; flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    gap: var(--sp-sm);
     position: relative;
-    min-width: 0;
-    border-radius: 2px;
+    border-top: 4px solid var(--accent);
   }
-  /* Hero — top-left 2x1 */
-  section.kpi-triangle > ol > li:nth-child(1) {
-    grid-column: 1; grid-row: 1 / -1;
-    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg-alt) 100%);
-    padding: var(--sp-2xl);
-    box-shadow: 0 24px 48px -28px rgba(0, 61, 102, 0.25);
+  section.kpi-trajectory > ol > li:nth-child(1) { border-top-color: var(--cat-blue); }
+  section.kpi-trajectory > ol > li:nth-child(2) { border-top-color: var(--cat-green); }
+  section.kpi-trajectory > ol > li:nth-child(3) { border-top-color: var(--cat-purple); }
+  section.kpi-trajectory > ol > li:nth-child(4) { border-top-color: var(--cat-orange); }
+  section.kpi-trajectory > ol > li > strong {
+    font-size: var(--fs-stat);
+    line-height: 1;
   }
-  section.kpi-triangle > ol > li:nth-child(1)::after {
+  section.kpi-trajectory > ol > li {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * MODIFIER 5 · SPOTLIGHT — single hero metric, monumentalised.
+   * ═══════════════════════════════════════════════════════════════════════ */
+  section.kpi-spotlight > ol {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: var(--sp-2xl);
+  }
+  section.kpi-spotlight > ol > li:nth-child(1) {
+    background: var(--accent-soft);
+    padding: var(--sp-lg) var(--sp-xl);
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    border-left: 4px solid var(--accent);
+  }
+  section.kpi-spotlight > ol > li:nth-child(1)::after {
     content: '✦';
     position: absolute;
-    top: var(--sp-lg); right: var(--sp-lg);
-    font-size: var(--fs-2xl);
+    top: var(--sp-xl); right: var(--sp-xl);
+    font-size: var(--fs-3xl);
     color: var(--accent);
     line-height: 1;
   }
-  section.kpi-triangle > ol > li:nth-child(1) > strong {
-    font-family: var(--font-display);
-    font-size: var(--fs-watermark);
-    font-weight: 700;
-    color: var(--text-heading);
+  section.kpi-spotlight > ol > li:nth-child(1) > strong {
+    font-size: var(--fs-hero);
     line-height: 0.88;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    display: block;
   }
-  section.kpi-triangle > ol > li:nth-child(1) > ul > li:first-child {
+  section.kpi-spotlight > ol > li:nth-child(1) > ul > li:first-child {
     font-family: var(--font-display);
     font-size: var(--fs-xl);
-    font-weight: 600;
-    color: var(--text-heading);
     margin-top: var(--sp-md);
   }
-  section.kpi-triangle > ol > li:nth-child(1) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-emphasis);
-    color: var(--warn);
-    font-weight: 600;
-    margin-top: var(--sp-sm);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  /* Card 2 — middle column, top */
-  section.kpi-triangle > ol > li:nth-child(2) {
-    grid-column: 2; grid-row: 1;
-    background: var(--bg-alt);
-  }
-  /* Card 3 — right column, top */
-  section.kpi-triangle > ol > li:nth-child(3) {
-    grid-column: 3; grid-row: 1;
-    background: var(--bg-alt);
-  }
-  /* Card 4 — spans bottom of middle + right */
-  section.kpi-triangle > ol > li:nth-child(4) {
-    grid-column: 2 / 4; grid-row: 2;
-    background: var(--bg);
-    border: 1px solid var(--border);
-  }
-  section.kpi-triangle > ol > li:not(:first-child) > strong {
+  section.kpi-spotlight > ol > li:nth-child(1) > ul > li + li {
     font-family: var(--font-display);
-    font-size: var(--fs-stat);
-    font-weight: 700;
-    color: var(--text-heading);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    display: block;
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--text-muted);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-top: var(--sp-sm);
+    line-height: var(--lh-snug);
+    text-overflow: clip;
   }
-  section.kpi-triangle > ol > li:nth-child(4) > strong {
+  section.kpi-spotlight > ol > li:not(:first-child) > strong {
+    font-size: var(--fs-lg);
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) {
+    padding: 0;
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) > ul > li:first-child {
+    margin-top: 2px;
+    font-size: var(--fs-md);
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) > ul > li + li {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) code {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+  section.kpi-spotlight > ol > li:nth-child(1) {
+    --pill-border: var(--pass);
+    --pill-bg: var(--pass-bg);
+    --pill-fg: var(--pass);
+  }
+  /* Right column: a "context" panel — list of 3 small supporting facts. */
+  section.kpi-spotlight > ol > li:not(:first-child) {
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: var(--sp-md) 0;
+  }
+  section.kpi-spotlight > ol > li:nth-child(2) { border-top: 1.5px solid var(--text-heading); }
+  section.kpi-spotlight > ol > li:nth-child(3) { border-top: 1px solid var(--border); }
+  section.kpi-spotlight > ol > li:nth-child(4) {
+    border-top: 1px solid var(--border);
+    border-bottom: 1.5px solid var(--text-heading);
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) > strong {
     font-size: var(--fs-3xl);
   }
-  section.kpi-triangle > ol > li:not(:first-child) > ul > li:first-child {
-    font-size: var(--fs-md);
-    color: var(--text-heading);
-    font-weight: 500;
-    margin-top: var(--sp-sm);
+
+  /* Spotlight has a column for the supports — make the grid put them in col 2 */
+  section.kpi-spotlight > ol > li:nth-child(2) { grid-column: 2; grid-row: 1; }
+  section.kpi-spotlight > ol > li:nth-child(3) { grid-column: 2; grid-row: 2; }
+  section.kpi-spotlight > ol > li:nth-child(4) { grid-column: 2; grid-row: 3; }
+  section.kpi-spotlight > ol {
+    grid-template-rows: 1fr 1fr 1fr;
   }
-  section.kpi-triangle > ol > li:not(:first-child) > ul > li + li {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    color: var(--text-muted);
-    margin-top: var(--sp-xs);
-    letter-spacing: 0.04em;
-  }
+  section.kpi-spotlight > ol > li:nth-child(1) { grid-column: 1; grid-row: 1 / -1; }
 ---
 
 <!-- _class: title -->
 <!-- _paginate: false -->
-<!-- _footer: "KPI redesign · power-play cards · winners" -->
+<!-- _footer: "Executive KPI system · v1" -->
 
-# KPI redesign — power-play cards
+# Executive KPI system
 
 `2026-05-12`
 
-Five card-based directions. One critical metric is the hero — raised,
-starred, monumentalised. Supporting metrics step down by chrome, size,
-or both.
+One cohesive base, five use-case modifiers. Pills carry the verdict
+and the audience; the ✦ flagship marks what the executive should
+look at first.
 
 ---
 
-<!-- _class: kpi-spotlight -->
+<!-- _class: kpi-sys kpi-briefing -->
 <!-- _header: '' -->
-<!-- _footer: "A · spotlight — hero left, supports stacked right" -->
+<!-- _footer: "kpi.briefing · board / financial summary" -->
 
-### Authentication · Q4 2026
-## Where we are against quarter targets.
+### Financial · Q4 2026
+## Revenue ahead of plan; margin and cash both expanded.
 
-1. **94%**
-   - Token-issuance success
-   - Target 99% · -5pp this quarter
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+1. **$2.4B**
+   - Total revenue
+   - target $2.2B · +9% vs plan `On plan` `Board`
+2. **42%**
+   - Gross margin
+   - +2pp QoQ `On plan` `Audit`
+3. **$1.1B**
+   - Cash & equivalents
+   - +$180M QoQ `On plan` `Investor`
+4. **+18%**
+   - YoY revenue growth
+   - vs 14% prior year `Ahead` `Board`
 
 ---
 
-<!-- _class: kpi-bento -->
+<!-- _class: kpi-sys kpi-ops -->
 <!-- _header: '' -->
-<!-- _footer: "B · bento — asymmetric tiles, dark hero" -->
+<!-- _footer: "kpi.ops · SLO / SLA review" -->
 
-### Authentication · Q4 2026
-## Where we are against quarter targets.
+### Platform · Q4 2026
+## One latency target slipping; everything else inside SLO.
 
-1. **94%**
-   - Token-issuance success
-   - target 99% · -5pp
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+1. **99.92%**
+   - API availability
+   - SLO 99.95% · -0.03pp `At risk` `SRE`
+2. **42 ms**
+   - p99 read latency
+   - SLO 50 ms · -16% headroom `On track` `SRE`
+3. **18 ms**
+   - p99 write latency
+   - SLO 15 ms · +20% `Breaching` `Platform`
+4. **0.04%**
+   - Error budget burn (28d)
+   - SLO 1% · 4% consumed `On track` `Reliability`
 
 ---
 
-<!-- _class: kpi-editorial -->
+<!-- _class: kpi-sys kpi-compliance -->
 <!-- _header: '' -->
-<!-- _footer: "C · editorial spread — magazine, full-height hero left" -->
+<!-- _footer: "kpi.compliance · legal / regulatory posture" -->
 
-### Authentication · Q4 2026
-## Where we are against quarter targets.
+### Compliance · Q4 2026
+## Three frameworks clean; one open finding under remediation.
 
-1. **94%**
-   - Token-issuance success
-   - Five percentage points below quarterly plan; remediation already underway.
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+1. **0**
+   - SOC 2 Type II open findings
+   - 2026 audit complete `Compliant` `Auditor`
+2. **0**
+   - PCI-DSS open findings
+   - QSA review Oct 2026 `Compliant` `QSA`
+3. **1**
+   - GDPR open findings
+   - remediation due Q1 2027 `Remediating` `DPO`
+4. **0**
+   - Internal audit material findings
+   - quarterly review complete `Compliant` `Audit Committee`
+
+Source · regulatory register · weekly export
 
 ---
 
-<!-- _class: kpi-raised -->
+<!-- _class: kpi-sys kpi-trajectory -->
 <!-- _header: '' -->
-<!-- _footer: "D · raised — equal grid, critical card elevated + starred" -->
+<!-- _footer: "kpi.trajectory · investor period-over-period" -->
 
-### Authentication · Q4 2026
-## Where we are against quarter targets.
+### Growth · FY26 vs FY25
+## Every growth lever moved forward this year.
 
-1. **94%**
-   - Token-issuance success
-   - target 99% · -5pp
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+1. **$420M**
+   - ARR
+   - +28% YoY `YoY +28%` `Investor`
+2. **94%**
+   - Net dollar retention
+   - +3pp YoY `YoY +3pp` `Investor`
+3. **2,840**
+   - Enterprise logos
+   - +540 net new `YoY +23%` `Board`
+4. **$148K**
+   - Average contract value
+   - +$22K vs FY25 `YoY +18%` `Board`
 
 ---
 
-<!-- _class: kpi-triangle -->
+<!-- _class: kpi-sys kpi-spotlight -->
 <!-- _header: '' -->
-<!-- _footer: "E · power triangle — asymmetric cascade, hero anchors left" -->
+<!-- _footer: "kpi.spotlight · single hero metric" -->
 
-### Authentication · Q4 2026
-## Where we are against quarter targets.
+### Headline · Q4 2026
+## The number behind the quarter.
 
-1. **94%**
-   - Token-issuance success
-   - target 99% · -5pp
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms
-3. **0**
-   - Examiner findings
-   - target 0
-4. **3.2×**
-   - Detokenize headroom
-   - target 2×
+1. **$420M**
+   - Annual recurring revenue
+   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M.
+   - `Headline` `Board` `Investor`
+2. **94%**
+   - Net dollar retention
+   - +3pp YoY `On plan`
+3. **2,840**
+   - Enterprise logos
+   - +540 net new `On plan`
+4. **$148K**
+   - Average contract value
+   - +$22K vs prior year `On plan`

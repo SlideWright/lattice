@@ -1,80 +1,102 @@
-# KPI redesign — power-play cards
+# Executive KPI system — v1
 
-The earlier table-based and minimal-hairline rounds were rejected:
-cards are required, and one critical metric needs to command attention
-through scale, elevation, or chrome — not just colour.
+Earlier rounds shipped disconnected layouts. This round is **one
+cohesive base** with **five use-case modifiers**, designed against
+what an executive audience actually needs from a KPI slide.
 
-Five card directions, each with a different power-play mechanism. All
-share the same fictional data (Authentication Q4 2026: 94% / 8 ms / 0 /
-3.2×, with the first metric below target and starred as critical).
+## What executives need
 
-## A · Spotlight
+| Domain | Audience | What the slide must do |
+| --- | --- | --- |
+| Financial | Board / investors / audit committee | Revenue, margin, cash — versus plan and prior period. |
+| Operations | SRE / service owners / ops review | SLA/SLO posture, latency, error budget — versus contract. |
+| Legal / compliance | Risk committee / regulators | Finding counts, remediation status, framework verdicts. |
+| Investor / period | Investor relations / steering | Trajectory: QoQ / YoY / TTM growth on the key levers. |
+| Headline / flagship | Any audience, "the number" | One monumentalised metric with context. |
 
-Two-column grid. Hero card (60–65% of canvas) on the left, three
-support cards stacked on the right separated by hairline rules.
-Hero is filled in `--accent-soft`, raised slightly, gets a
-`✦` four-point star, and runs the number at `--fs-watermark` (180px).
-Supports run at `--fs-3xl` (48px) — clearly one tier down. Reads as
-"this is the headline metric, here are the others for context."
+Every one of those needs four things on the slide:
 
-## B · Bento
+1. **The figure.**
+2. **The benchmark** it's compared to (target / plan / prior).
+3. **The verdict** (on plan / at risk / breach / compliant).
+4. **The audience** (who cares: board / SRE / investor / DPO).
 
-3-column × 3-row irregular tile grid:
+That last one is what **pills** do. Without a pill, the slide is just
+numbers floating; with a pill the slide *names the verdict and names
+the audience*. Pills are first-class.
 
+## The system
+
+One base class `kpi-sys` defines the shared primitives:
+
+- **Eyebrow** — h3 mono small caps: `DOMAIN · PERIOD`
+- **Headline** — h2 Playfair serif, one statement per slide
+- **Number** — Playfair Display, tabular figures, status-colourable
+- **Pill** — trailing inline `` `code` `` on a list item (lattice
+  universal convention; deny-list opt-in via per-layout override).
+  Status pill is the first trailing code; subsequent codes are
+  neutral audience/period pills
+- **Flagship ornament** — `✦` four-point star on critical / hero card
+- **Status palette** — `--pass / --warn / --fail` (existing tokens)
+- **Authoring contract** — one structure across all five layouts:
+
+  ```markdown
+  <!-- _class: kpi-sys kpi-{briefing|ops|compliance|trajectory|spotlight} -->
+
+  ### Domain · Period
+  ## Headline statement.
+
+  1. **$2.4B**
+     - Total revenue
+     - target $2.2B · +9% `On plan` `Board`
+  2. ...
+  ```
+
+## Five modifiers
+
+| Modifier | Use-case | Layout | Pill story |
+| --- | --- | --- | --- |
+| `kpi.briefing` | Board / financial | Hero left (accent-soft, ✦, watermark numerals) + 3 hairline supports right | Status + audience: `On plan` `Board`, `Audit`, `Investor` |
+| `kpi.ops` | SLO / SLA | 2×2 grid, slipping metrics rendered in `--warn`, breach in `--warn` text | Verdict + owner: `On track` `SRE`, `At risk` `Platform`, `Breaching` |
+| `kpi.compliance` | Legal / regulatory | Vertical list, binary-state pills, source footnote | Framework state + owner: `Compliant` `Auditor`, `Remediating` `DPO` |
+| `kpi.trajectory` | Investor / period | 4-up cards with categorical top stripes, content-centred, no stretch | Growth: `YoY +28%` `Investor`, `YoY +3pp` |
+| `kpi.spotlight` | Single hero metric | Hero left with watermark + body copy + ✦, three small supports right | `Headline` + audience: `Board`, `Investor` |
+
+All five share the same:
+- Type ladder
+- Pill design and color mapping
+- Eyebrow + headline format
+- `--pass / --warn / --fail` palette
+- `✦` flagship ornament
+- `accent-soft` for hero fill
+
+What differs is **composition** (grid shape, card chrome, number tier).
+
+## Authoring example
+
+```markdown
+<!-- _class: kpi-sys kpi-briefing -->
+
+### Financial · Q4 2026
+## Revenue ahead of plan; margin and cash both expanded.
+
+1. **$2.4B**
+   - Total revenue
+   - target $2.2B · +9% vs plan `On plan` `Board`
+2. **42%**
+   - Gross margin
+   - +2pp QoQ `On plan` `Audit`
+3. **$1.1B**
+   - Cash & equivalents
+   - +$180M QoQ `On plan` `Investor`
+4. **+18%**
+   - YoY revenue growth
+   - vs 14% prior year `Ahead` `Board`
 ```
-+------+------+----+
-|             |    |
-|    hero     |    |
-|     2×2     |side|
-|             | 1×3|
-+-----+-------+    |
-|  3  |   4   |    |
-+-----+-------+----+
-```
 
-Hero gets the dark `--brand-blue-deep` fill with white serif type and
-white four-point star — a true "raised dark slab." Side column gets
-`--accent-soft` tint with accent-coloured number; bottom-row tiles are
-`--bg-alt`. Each tile has a different chrome to reinforce hierarchy
-without relying on size alone.
-
-## C · Editorial
-
-50/50 magazine spread. Left: bg-alt hero filling the full slide height,
-4px `--warn` left border, a "CRITICAL" mono-uppercase label top-left and
-a `✦` star top-right, the number at `--fs-watermark` (180px) in serif,
-and a one-sentence interpretation in serif italic. Right: three
-hairline-separated support entries with the number at `--fs-3xl`.
-
-This is the most magazine-y of the five — it puts editorial prose
-next to the figure and treats the slide as a feature spread.
-
-## D · Raised
-
-Equal 2×2 grid. The critical card uses elevation as its power-play:
-1px `--accent` border, 4px `--accent` top stroke, drop shadow,
-`transform: translateY(-10px)` (literally raised off the surface),
-`✦` star top-right, the number rendered in `--accent` blue at
-`--fs-hero` (110px). The other three are unchromed, hairline-separated,
-number at `--fs-stat` (52px). Power-play through z-axis, not size.
-
-## E · Power triangle
-
-Asymmetric cascade.
-
-```
-+--------+-----+-----+
-|        |  2  |  3  |
-|  hero  |     |     |
-|  1×2   +-----+-----+
-|        |      4    |
-+--------+-----------+
-```
-
-Hero anchors the left two-thirds with a light gradient fill
-(`accent-soft → bg-alt`) and `--fs-watermark` serif numerals. Card 2
-and 3 stack to its right at equal weight; card 4 spans the bottom-right
-as a "wide footnote." Sizes cascade downward, but no card hides.
+Pills emerge from trailing inline code; the first pill on each row
+carries the status colour (driven today by `nth-child` cycle in each
+modifier; production should swap this for a per-li class hint).
 
 ## Inspection
 
@@ -84,13 +106,20 @@ node lattice-emulator.js \
   out.pdf
 ```
 
-Six slides: title, then A → E in order. Each direction's footer labels
-which one it is.
+Six slides: title → briefing → ops → compliance → trajectory →
+spotlight. All five share the system DNA; each one demonstrates a
+distinct executive use-case.
 
-## Authoring story (deferred)
+## What's still open
 
-All five layouts identify the critical card via `:nth-child(1)`,
-i.e., it's whichever metric the author lists first. For production,
-this should become a per-item modifier (likely a trailing italic word
-on the metric line, e.g. `**94%** *critical*`, read by `:has()`). The
-authoring mechanism is open until one of these layouts is approved.
+- **Per-item status hint** — production needs an author-level way to
+  mark a row as `warn` / `fail` / `pass`. Demo hardcodes via
+  `nth-child`. Most idiomatic candidate: a trailing italic word in
+  the target line (`*at risk*` / `*on track*`) read by CSS `:has()`.
+- **Kpi deny-list** — the universal pill rule in `lattice.css`
+  excludes `kpi` (single-message). The new system would need to be
+  opted back into the allow list, or `kpi-sys` added as a sibling
+  family that's allowed by default.
+- **Source line styling** — `kpi-compliance > p:last-of-type` is
+  defined but the default `<p>` cascade is winning. Needs a more
+  specific selector or a different element.
