@@ -801,6 +801,10 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 const { splitSlides }    = require('./lib/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
 const { liftSlotLabel }  = require('./lib/slot-label-lift');
+// Roadmap modifier transforms — `roadmap status` (cell state markers) and
+// `roadmap horizons` (table → three-card transpose). Shared with the
+// Marp Core engine wrapper in marp.config.js (parity contract).
+const { transformRoadmapSection } = require('./lib/roadmap');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1157,6 +1161,15 @@ function parseSlide(raw, index) {
       });
       return `<div class="stats-row">${statItems.join('')}</div>`;
     });
+  }
+
+  // roadmap status / horizons: state-marker tagging on <td> cells, or
+  // transpose the workstream × phase table into a horizons-card grid.
+  // Implementation lives in lib/roadmap.js — shared with marp.config.js
+  // and mirrored by the runtime DOM transform in lattice-runtime.js so
+  // every render path produces the same DOM.
+  if (cls.includes('roadmap')) {
+    html = transformRoadmapSection(html, cls);
   }
 
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.

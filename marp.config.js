@@ -415,6 +415,7 @@ function registerMermaidHljs(marp) {
 
 const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
 const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
+const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
@@ -452,6 +453,7 @@ module.exports = {
       if (result && typeof result.html === 'string') {
         result.html = applyChartFamilyToHtml(result.html);
         result.html = applySplitPanelsToHtml(result.html);
+        result.html = applyRoadmapToHtml(result.html);
       }
       return result;
     };
