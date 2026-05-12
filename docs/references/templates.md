@@ -399,7 +399,7 @@ A markdown table that becomes a phased rollout grid. The first column carries th
 | SDK        | Java                 |                     | Polyglot parity       |
 ```
 
-**State markers are universal.** Any cell in any roadmap variant can start with `[x]` shipped / `[-]` in flight / `[ ]` planned / `[/]` out of scope (the marker vocabulary is shared with `checklist` and `verdict-grid`). lib/roadmap.js strips the marker, tags the cell with a state class, and the CSS draws a small state-coloured glyph before the cell text — ✓ check for shipped, − dash for in flight, ○ outlined circle for planned, ╱ diagonal slash plus strike-through for out of scope. The `status` modifier upgrades this to the heavy treatment.
+**State markers are universal.** Any cell in any roadmap variant can start with `[x]` shipped / `[-]` in flight / `[ ]` planned / `[/]` out of scope (the marker vocabulary is shared with `checklist` and `verdict-grid`). lib/roadmap.js strips the marker, tags the cell with a state class, and the CSS draws a small state-coloured glyph before the cell text — ✓ check for shipped, ◐ half-filled disc for in flight, ○ outlined empty disc for planned, ╱ diagonal slash plus strike-through for out of scope. Shipped / in flight / planned share a fullness gradient (filled → half → empty); out of scope sits outside that axis. The `status` modifier upgrades this to the heavy treatment.
 
 | Modifier     | Effect                                                                                                                            |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |

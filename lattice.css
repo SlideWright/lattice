@@ -3182,11 +3182,15 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-skipped {
 /* Light treatment (default, any variant): a small state-coloured
    indicator with an inset white glyph sits before the cell text.
    Glyph vocabulary:
-     shipped  → ✓ check
-     wip      → − dash      (mirrors checklist's [-] warn glyph)
-     planned  → ○ outlined circle, no fill (the "to come" mark)
-     skipped  → ╱ diagonal slash, plus strike-through on the cell text
-   Eyebrow label is rendered for the heavy treatment but hidden here. */
+     shipped  → ✓ check                (filled / complete)
+     wip      → ◐ half-filled disc     (in progress / halfway done)
+     planned  → ○ outlined disc, empty (committed / not started)
+     skipped  → ╱ diagonal slash       (out of scope; plus strike-through
+                                        on the cell text)
+   Shipped / wip / planned share a fullness gradient (filled → half →
+   empty); skipped sits outside that axis as the "not in this phase"
+   mark. The eyebrow label is rendered for the heavy treatment but
+   hidden here. */
 section.roadmap td.cell-state .cell-state-label { display:none; }
 section.roadmap td.cell-state .cell-state-text {
   display:inline;
@@ -3213,7 +3217,12 @@ section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped .row-text::
 }
 section.roadmap td.cell-state.state-wip .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-wip .row-text::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M4 8 L12 8'/></svg>");
+  /* Half-filled disc: state colour fills the left half (the "done"
+     portion); white covers the right half (the "remaining" portion).
+     Sits on the fullness gradient between full (shipped) and empty
+     (planned), reading instantly as "in progress / halfway done". */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='8' y='0' width='8' height='16' fill='white'/></svg>");
+  background-size:100% 100%;
 }
 section.roadmap td.cell-state.state-planned .cell-state-text::before,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned .row-text::before {

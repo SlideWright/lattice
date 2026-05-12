@@ -39,7 +39,7 @@ Five table-driven roadmap layouts, all built from the same markdown source contr
 | Compliance | [x] Audit trail (HSM) | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
 
-Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line. State markers `[x]/[-]/[ ]/[/]` are universal — they render as a small state-coloured glyph (check / dash / outlined circle / diagonal slash) before the cell text.
+Header text is the phase NAME; the trailing inline-code element becomes a right-anchored meta pill on the spectrum line. State markers `[x]/[-]/[ ]/[/]` are universal — they render as a small state-coloured glyph before the cell text: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 ---
 
