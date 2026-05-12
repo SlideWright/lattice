@@ -41,9 +41,9 @@
      emoji may render larger than the text and push lines around. The
      marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
      section img.emoji handles that variant. */
-  --font-display: 'Playfair Display', Georgia, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', serif;
-  --font-body:    'Outfit', system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
+  --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
 
   /* ── Spacing scale ────────────────────────────────────────────────── */
   --sp-xs:8px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-2xl:64px;
@@ -859,26 +859,286 @@ section.list ol { list-style:none; counter-reset:list-counter; display:flex; fle
 section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
 section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
-/* ── LIST-TABULAR ──
- * ## heading  ol with items: each rendered as 4-column row
- * **num** *verb* description `meta`
- */
-section.list-tabular h2 { margin-bottom:var(--sp-md); }
-section.list-tabular ol { list-style:none; counter-reset:tabular-counter; display:flex; flex-direction:column; gap:10px; padding:0; margin:0; flex:1; justify-content:center; }
-section.list-tabular ol > li { counter-increment:tabular-counter; display:grid; grid-template-columns:44px 160px 1fr 240px; align-items:baseline; column-gap:var(--sp-sm); font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading); line-height:var(--lh-base); }
-section.list-tabular ol > li::before { content:counter(tabular-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; color:var(--accent); }
-section.list-tabular ol > li strong { font-size:inherit; font-weight:inherit; color:inherit; }
-section.list-tabular ol > li em { color:var(--text-label); font-style:normal; font-size:var(--fs-xs); font-weight:400; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-/* VS Code / CLI fallback: nested format before runtime flattening.
- * display:contents makes the inner ul transparent to the parent grid, so its
- * li children become grid items and slot into columns 3 (desc) and 4 (meta).
- * Inner li's reset weight/size so only the parent li (column 2 = the name)
- * carries the emphasis typography — author writes plain text, CSS bolds it. */
-section.list-tabular ol > li > ul { display:contents; }
-section.list-tabular ol > li > ul > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); }
-section.list-tabular ol > li > ul > li:last-child { font-size:var(--fs-xs); color:var(--text-label); text-align:right; white-space:nowrap; }
-section.list-tabular ol > li > ul > li::before { display:none !important; content:none !important; }
+/* ── LIST-TABULAR ──────────────────────────────────────────────────────────
+ * Ordered tabular list — counter | name | description | meta per row.
+ * Default look is hairline-ruled rows, display-serif name, mono uppercase
+ * meta. Counter sits at fs-md on the name baseline.
+ *
+ * Authoring contract (same across base + all variants):
+ *
+ *   N. Name `Meta string`
+ *      - Description sentence.
+ *
+ * The inline code is the meta — adjacent to the name in source because
+ * that's what it qualifies. CSS pulls it into the right column at render.
+ *
+ * Visual variants (mutually exclusive — pick one or none):
+ *
+ *   (none)    Default — hairline ledger; display-serif name; mono meta
+ *   def       Editorial — big counter spans rows, eyebrow above name
+ *   metric    Meta renders as a tile on the right
+ *   spec      Mono name as a key (technical-reference feel)
+ *   register  Meta renders as an accent-soft pill
+ *
+ * Fine-tuning modifiers (compose with the variant above):
+ *
+ *   compact   Tighter row padding (any variant)
+ *   rule      def: full-height accent rail down the ol's left edge
+ *   solid     metric: filled accent tile instead of bordered
+ *   stacked   spec: description on its own row beneath the name; counter
+ *               scales up and spans both rows
+ *   outline   register: hairline-bordered tag instead of filled pill
+ *
+ * Counter sizing rule across the family: counter size scales with item
+ * height. Single-row items → fs-md (paired with the name baseline).
+ * Multi-row items (def, spec.stacked) → fs-2xl, spans rows, centered.
+ * ───────────────────────────────────────────────────────────────────────── */
 
+/* ── Base (default = hairline ledger) ─────────────────────────────────── */
+section.list-tabular h2 { margin-bottom:var(--sp-md); }
+section.list-tabular ol {
+  list-style:none; counter-reset:tabular-counter;
+  padding:0; margin:0;
+  display:flex; flex-direction:column;
+}
+section.list-tabular ol > li {
+  counter-increment:tabular-counter;
+  display:grid;
+  grid-template-columns:44px 200px 1fr auto;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-display);
+  font-size:var(--fs-emphasis);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-snug);
+}
+section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
+section.list-tabular ol > li::before {
+  content:counter(tabular-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.06em;
+  align-self:baseline;
+}
+section.list-tabular ol > li > ul { display:contents; }
+section.list-tabular ol > li > ul > li::marker { content:''; }
+section.list-tabular ol > li > ul > li:first-child {
+  grid-column:3; grid-row:1;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  letter-spacing:0;
+}
+/* Legacy italic-meta compatibility: when a second nested li is present
+ * (the 3-line authoring contract), treat it as the meta column. The new
+ * 2-line contract uses inline <code> instead and never produces a second
+ * nested li. */
+section.list-tabular ol > li > ul > li:nth-child(2) {
+  grid-column:4; grid-row:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+section.list-tabular ol > li > ul > li:nth-child(2) em { font-style:normal; }
+section.list-tabular ol > li > code {
+  grid-column:4; grid-row:1;
+  background:none;
+  border:none;
+  padding:0;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-label);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* ── Variant: def (editorial) ─────────────────────────────────────────── */
+section.list-tabular.def ol {
+  gap:var(--sp-md);
+  flex:1; justify-content:center;
+}
+section.list-tabular.def ol > li {
+  grid-template-columns:64px 220px 1fr;
+  grid-template-rows:auto auto;
+  row-gap:4px;
+  padding:0;
+  border:none;
+  font-family:var(--font-display);
+  font-size:var(--fs-lg);
+  font-weight:700;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+  line-height:var(--lh-tight);
+}
+section.list-tabular.def ol > li:first-child { border-top:none; }
+section.list-tabular.def ol > li::before {
+  grid-column:1; grid-row:1 / span 2;
+  font-family:var(--font-display);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.02em;
+  align-self:center;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > code {
+  grid-column:2; grid-row:1;
+  display:block;
+  width:fit-content;
+  margin:0;
+  padding:0;
+  background:none;
+  border:none;
+  border-radius:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  color:var(--text-muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:left;
+  white-space:nowrap;
+  align-self:end;
+  justify-self:start;
+}
+section.list-tabular.def ol > li > ul > li {
+  grid-column:3; grid-row:1 / span 2;
+  font-family:var(--font-body);
+  font-size:var(--fs-md);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+  letter-spacing:0;
+  align-self:center;
+}
+
+/* def.rule — single continuous full-height accent rail */
+section.list-tabular.def.rule ol {
+  border-left:4px solid var(--accent);
+  padding-left:var(--sp-md);
+}
+
+/* ── Variant: metric (tile) ───────────────────────────────────────────── */
+section.list-tabular.metric ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:-0.01em;
+}
+section.list-tabular.metric ol > li > code {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:6px 14px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:-0.01em;
+  text-align:center;
+  text-transform:none;
+  align-self:center;
+  min-width:100px;
+  white-space:nowrap;
+}
+
+/* metric.solid — filled accent tile */
+section.list-tabular.metric.solid ol > li > code {
+  background:var(--accent);
+  border-color:var(--accent);
+  color:var(--on-accent, #fff);
+}
+
+/* ── Variant: spec (mono key) ─────────────────────────────────────────── */
+section.list-tabular.spec ol > li {
+  grid-template-columns:44px 260px 1fr auto;
+  font-family:var(--font-mono);
+  font-size:var(--fs-body);
+  font-weight:600;
+  color:var(--text-heading);
+  letter-spacing:0;
+}
+section.list-tabular.spec ol > li > code {
+  color:var(--accent);
+  font-weight:700;
+}
+
+/* spec.stacked — description below name; counter spans rows */
+section.list-tabular.spec.stacked ol > li {
+  grid-template-columns:44px 1fr auto;
+  grid-template-rows:auto auto;
+  row-gap:var(--sp-xs);
+  font-size:var(--fs-md);
+}
+section.list-tabular.spec.stacked ol > li::before {
+  grid-row:1 / span 2;
+  align-self:center;
+  font-size:var(--fs-2xl);
+  line-height:1;
+  letter-spacing:-0.02em;
+}
+section.list-tabular.spec.stacked ol > li > ul > li {
+  grid-column:2; grid-row:2;
+}
+section.list-tabular.spec.stacked ol > li > code {
+  grid-column:3; grid-row:2;
+  justify-self:end;
+  align-self:baseline;
+}
+
+/* ── Variant: register (pill) ─────────────────────────────────────────── */
+section.list-tabular.register ol > li {
+  align-items:center;
+  font-family:var(--font-body);
+  font-size:var(--fs-emphasis);
+  font-weight:600;
+  color:var(--text-heading);
+}
+section.list-tabular.register ol > li > code {
+  background:var(--accent-soft);
+  color:var(--accent);
+  border:none;
+  padding:4px 14px;
+  border-radius:9999px;
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  text-align:center;
+  white-space:nowrap;
+  justify-self:end;
+  align-self:center;
+}
+
+/* register.outline — hairline-bordered tag */
+section.list-tabular.register.outline ol > li > code {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text-label);
+}
+
+/* ── Universal modifier: compact ──────────────────────────────────────── */
+section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
 
 /* ── BIG-NUMBER ──
