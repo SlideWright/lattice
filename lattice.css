@@ -3016,10 +3016,23 @@ section.principles.bullet ol > li::before { content:'·'; }
  * | Platform   | …        | …        | …        |
  *
  * Multi-phase rollout grid. First column = workstream label (sticky,
- * bold). Phase columns get phase chrome: a numbered badge in the
- * header row, and a left-to-right accent gradient on the column rule.
- * Empty cells render as a thin dash so the eye does not interpret
- * blank as missing.
+ * bold, on tinted ground with a categorical lane stripe). Phase
+ * columns get phase chrome: a numbered badge inline with the phase
+ * name, the spectrum-gradient separator under the header row, and a
+ * hairline rule between columns. Empty cells render as a thin muted
+ * dash so the eye reads "not in this phase" rather than "missing".
+ *
+ * Modifiers — compose with the base by adding a second class:
+ *   .status      — cells carry state markers ([x]/[-]/[ ]/[/]) and
+ *                  render as a status board (shipped / WIP / planned /
+ *                  out-of-scope). DOM tagging lives in lib/roadmap.js.
+ *   .horizons    — table is transposed into Now/Next/Later vertical
+ *                  phase cards. DOM rewrite in lib/roadmap.js.
+ *   .swimlane    — each workstream renders as a horizontal track of
+ *                  outlined phase pills on a lane tint.
+ *   .milestones  — calendar-aware: header carries a date subtitle
+ *                  (write `Phase 01<br>Q1 2026`), and a tick scale
+ *                  runs under the phase columns.
  * ──────────────────────────────────────────────────────────────────────── */
 section.roadmap { display:flex; flex-direction:column; }
 section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
@@ -3035,16 +3048,17 @@ section.roadmap thead th {
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:var(--text-label);
-  text-align:center;
+  text-align:left;
   vertical-align:middle;
   padding:var(--sp-sm) var(--sp-md);
+  white-space:nowrap;
 }
-section.roadmap thead th:first-child { text-align:left; }
-/* Phase columns get a numbered badge stacked above the phase name. */
+/* Phase columns get a numbered badge inline with the phase name. */
 section.roadmap thead th:not(:first-child) {
   counter-increment:phase-counter;
   padding-top:var(--sp-md);
   padding-bottom:var(--sp-md);
+  border-left:1px solid var(--border);
 }
 section.roadmap thead { counter-reset:phase-counter; }
 section.roadmap thead th:not(:first-child)::before {
@@ -3054,8 +3068,8 @@ section.roadmap thead th:not(:first-child)::before {
   font-family:var(--font-mono);
   font-size:var(--fs-label);
   font-weight:700;
-  color:var(--text-body);
-  background:var(--bg);
+  color:var(--phase-accent, var(--accent));
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 14%, transparent);
   border:1px solid var(--phase-accent, var(--accent));
   border-radius:999px;
   padding:2px 9px;
@@ -3063,30 +3077,39 @@ section.roadmap thead th:not(:first-child)::before {
   line-height:1;
   vertical-align:middle;
 }
-section.roadmap thead th:not(:first-child) {
-  white-space:nowrap;
-}
-/* Categorical rotation across phase columns. */
-section.roadmap thead th:nth-child(8n+2) { --phase-accent:var(--cat-blue); }
-section.roadmap thead th:nth-child(8n+3) { --phase-accent:var(--cat-green); }
-section.roadmap thead th:nth-child(8n+4) { --phase-accent:var(--cat-purple); }
-section.roadmap thead th:nth-child(8n+5) { --phase-accent:var(--cat-orange); }
-section.roadmap thead th:nth-child(8n+6) { --phase-accent:var(--cat-teal); }
-section.roadmap thead th:nth-child(8n+7) { --phase-accent:var(--cat-rose); }
-section.roadmap thead th:nth-child(8n)   { --phase-accent:var(--cat-mauve); }
-section.roadmap thead th:nth-child(8n+1) { --phase-accent:var(--cat-slate); }
+/* Categorical rotation across phase columns and workstream rows.
+   The workstream column reads `--phase-accent` for its lane stripe
+   per row; phase columns read it for their badge chrome per column. */
+section.roadmap thead th:nth-child(8n+2),
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--cat-blue); }
+section.roadmap thead th:nth-child(8n+3),
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--cat-green); }
+section.roadmap thead th:nth-child(8n+4),
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--cat-purple); }
+section.roadmap thead th:nth-child(8n+5),
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--cat-orange); }
+section.roadmap thead th:nth-child(8n+6),
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--cat-teal); }
+section.roadmap thead th:nth-child(8n+7),
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--cat-rose); }
+section.roadmap thead th:nth-child(8n),
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--cat-mauve); }
+section.roadmap thead th:nth-child(8n+1),
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--cat-slate); }
+
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
   border-bottom:1px solid var(--border);
+  border-left:1px solid var(--border);
   color:var(--text-body);
   vertical-align:top;
   line-height:var(--lh-snug);
 }
 section.roadmap td:first-child {
-  font-weight:600;
+  font-weight:700;
   color:var(--text-heading);
-  background:var(--bg-alt);
-  border-right:1px solid var(--border);
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 6%, var(--bg-alt));
+  border-left:4px solid var(--phase-accent, var(--accent));
 }
 /* Empty cells render as a muted dash. */
 section.roadmap td:empty::before {
@@ -3099,6 +3122,243 @@ section.roadmap > p {
   font-style:italic;
   color:var(--text-muted);
   margin-top:var(--sp-md);
+}
+
+/* ── ROADMAP STATUS — workstream × phase status board ─────────────────
+ * Cells carry a state marker as the leading token:
+ *   [x] shipped   → state-shipped  (pass green)
+ *   [-] in flight → state-wip      (warn amber)
+ *   [ ] planned   → state-planned  (neutral muted)
+ *   [/] skipped   → state-skipped  (fail red — explicitly out of scope)
+ * lib/roadmap.js strips the marker, tags the <td> with a state class,
+ * and wraps the label in a state-label eyebrow + state-text span.
+ * Empty cells (no marker) keep the default muted dash from the base.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.status td.cell-state {
+  position:relative;
+  background:var(--cell-state-bg, transparent);
+  border-left:4px solid var(--cell-state-color, var(--border));
+  padding-left:calc(var(--sp-md) - 4px + 6px);
+  display:table-cell;
+}
+section.roadmap.status td.cell-state .cell-state-label {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--cell-state-color, var(--text-muted));
+  margin-bottom:2px;
+  line-height:1.2;
+}
+section.roadmap.status td.cell-state .cell-state-text {
+  display:block;
+  color:var(--text-body);
+}
+section.roadmap.status td.cell-state.state-shipped {
+  --cell-state-color:var(--pass);
+  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
+}
+section.roadmap.status td.cell-state.state-wip {
+  --cell-state-color:var(--warn);
+  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
+}
+section.roadmap.status td.cell-state.state-planned {
+  --cell-state-color:var(--text-label);
+  --cell-state-bg:var(--bg-alt);
+}
+section.roadmap.status td.cell-state.state-skipped {
+  --cell-state-color:var(--text-muted);
+  --cell-state-bg:transparent;
+}
+section.roadmap.status td.cell-state.state-skipped .cell-state-text {
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+
+/* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────
+ * lib/roadmap.js transposes the workstream × phase table into a row
+ * of phase cards. Each card has a categorical top stripe, an eyebrow
+ * (Phase 01/02/…), a phase title (the phase header text), and a list
+ * of workstream rows underneath.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.horizons .horizons {
+  display:grid;
+  grid-template-columns:repeat(var(--horizon-count, 3), 1fr);
+  gap:var(--sp-md);
+  flex:1;
+  min-height:0;
+}
+section.roadmap.horizons .horizon-card {
+  display:flex;
+  flex-direction:column;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-top:4px solid var(--phase-accent, var(--accent));
+  border-radius:var(--radius-md);
+  padding:var(--sp-md) var(--sp-md) var(--sp-sm);
+  min-width:0;
+}
+section.roadmap.horizons .horizon-head {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-bottom:var(--sp-sm);
+  padding-bottom:var(--sp-sm);
+  border-bottom:1px solid var(--border);
+}
+section.roadmap.horizons .horizon-eyebrow {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--phase-accent, var(--accent));
+}
+section.roadmap.horizons .horizon-title {
+  font-family:var(--font-serif);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .horizon-rows {
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--sp-sm);
+}
+section.roadmap.horizons .horizon-rows > li {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-left:var(--sp-sm);
+  border-left:2px solid color-mix(in srgb, var(--phase-accent, var(--accent)) 40%, var(--border));
+}
+section.roadmap.horizons .row-label {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-label);
+}
+section.roadmap.horizons .row-text {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.roadmap.horizons .row-text.row-empty {
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+
+/* ── ROADMAP SWIMLANE — per-workstream track of phase pills ──────────
+ * Same source as the default; visual shifts so each row reads as a
+ * track. Workstream cell carries a strong lane label on a tinted lane
+ * ground; phase cells render as outlined pills separated by gaps.
+ * Pure CSS — no DOM rewrite.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.swimlane table {
+  border-spacing:0 var(--sp-sm);
+  border-collapse:separate;
+}
+section.roadmap.swimlane tbody tr > td:first-child {
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 14%, var(--bg-alt));
+  border-left:6px solid var(--phase-accent, var(--accent));
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  border-right:0;
+  border-radius:var(--radius-md) 0 0 var(--radius-md);
+  font-family:var(--font-serif);
+  font-weight:700;
+  color:var(--text-heading);
+  font-size:var(--fs-md);
+  padding:var(--sp-sm) var(--sp-md);
+}
+section.roadmap.swimlane tbody td:not(:first-child) {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-left:0;
+  border-radius:0;
+  padding:var(--sp-sm) var(--sp-md);
+  position:relative;
+}
+section.roadmap.swimlane tbody td:not(:first-child)::before {
+  content:'';
+  position:absolute;
+  left:0; top:25%; bottom:25%;
+  width:3px;
+  background:color-mix(in srgb, var(--phase-accent, var(--accent)) 60%, var(--border));
+  border-radius:2px;
+}
+section.roadmap.swimlane tbody tr > td:last-child {
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+}
+section.roadmap.swimlane tbody td:empty {
+  background:transparent;
+  border:1px dashed var(--border);
+}
+section.roadmap.swimlane tbody td:empty::before {
+  display:none;
+}
+section.roadmap.swimlane tbody td:empty::after {
+  content:'—';
+  color:var(--text-muted);
+  font-family:var(--font-mono);
+}
+section.roadmap.swimlane thead th {
+  padding-left:var(--sp-md);
+  border-left:0;
+}
+
+/* ── ROADMAP MILESTONES — quarter-anchored timeline ──────────────────
+ * Author writes each phase header as `Phase 01<br>*Q1 2026*` — the
+ * post-`<br>` italic span renders as a small date subtitle (non-mono,
+ * non-uppercase, body weight). A coloured tick anchors each phase
+ * column to the spectrum line beneath the header row, and phase
+ * columns carry a soft alternating ground so the timeline reads.
+ * ──────────────────────────────────────────────────────────────────── */
+section.roadmap.milestones thead th {
+  white-space:normal;
+  line-height:1.4;
+  padding-bottom:calc(var(--sp-md) + 8px);
+  position:relative;
+}
+/* Italic span on a header line becomes the date subtitle —
+   non-mono, non-uppercase, body size, serif italic. */
+section.roadmap.milestones thead th em {
+  display:block;
+  margin-top:4px;
+  font-family:var(--font-serif);
+  font-style:italic;
+  font-size:var(--fs-body);
+  font-weight:500;
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--text-heading);
+}
+/* Tick sits ON the spectrum line inherited from the base thead tr.
+   Anchored to the left edge of the cell content (under the badge) so
+   it reads as the phase's mark on the timeline. */
+section.roadmap.milestones thead th:not(:first-child)::after {
+  content:'';
+  position:absolute;
+  left:calc(var(--sp-md) + 18px);
+  bottom:-5px;
+  width:11px; height:11px;
+  border-radius:50%;
+  background:var(--bg);
+  border:2px solid var(--phase-accent, var(--accent));
+  z-index:1;
+}
+section.roadmap.milestones tbody td:not(:first-child) {
+  /* Soft column tint so the timeline columns read distinctly. */
+  background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
 /* ── KPI ───────────────────────────────────────────────────────────────
