@@ -187,40 +187,40 @@ red paired with fixed white text. Used by Mermaid's parser-error rendering
 across all diagram types. Pin text to white (not `var(--bg)`, which would
 flip to dark in dark mode and fail AA on the saturated red).
 
-## The card-on-band rule
+## The card-on-band rule (scope: kanban only)
 
-> **Band coloring stops at one level of nesting.**
+> **A `--bg-alt` inner card on a `--diagram-band-N` parent surface.**
+> Applies only when the inner item physically sits on top of a
+> band-tinted parent surface.
 
-When a diagram has an outer categorical grouping that contains inner
-items, the band carries the category and the inner item is a neutral
-`--bg-alt` card. When a diagram has no outer grouping — items
-themselves are the categorical signal — each item gets its own band
-tint.
+Kanban is the one Mermaid diagram type that has this structure:
 
-| Pattern | Outer section | Inner item | Used by |
-|---|---|---|---|
-| **Card-on-band** | `--diagram-band-N` | `--bg-alt` card, `--text-heading` text | kanban, timeline, journey |
-| **Tile-per-element** | (none) | `--diagram-band-N` per item, `--diagram-band-text-N` text | treemap, mindmap, gitgraph, quadrant |
+- Lane = `<g class="cluster section-N"><rect/></g>` painted with
+  `--diagram-band-N`. A large tinted rectangle.
+- Ticket = `<g class="node">` inside `.items`, painted with `--bg-alt`.
+  A small near-white card on top of the lane.
 
-Why this rule:
+The contrast between `--bg-alt` (#F2F5FA in indaco) and a pale band-N
+tint (e.g. #DCE9F5) gives the reading "card lifted off the lane."
 
-- **One signal per hue.** The band always means "category." Inner cards
-  always mean "structural — I belong to the category above me, not to
-  another category." The viewer learns the grammar once.
-- **Figure/ground at projector distance.** `--bg-alt` is value-distinct
-  from every pale band tint; a card on a band remains legible from
-  across a boardroom. Hue-on-hue (band-N inside band-M) collapses at
-  distance.
-- **No new contrast pairs.** Text on `--bg-alt` uses `--text-heading`,
-  already AA-tested in `test/unit/contrast.test.js` for every palette
-  in both modes. Section header text on band-N keeps using
-  `--diagram-band-text-N`, also AA-asserted. The rule re-uses pairs
-  rather than introducing new ones.
+**Timeline and journey are NOT card-on-band**, even though their syntax
+suggests a parent-child relationship between period/section and
+event/task. The period header is a small band-N rect at the *top* of a
+column; tasks and events stack *below* it on the slide canvas
+(`--bg` white). There is no band underneath each card. `--bg-alt` on
+`--bg` is virtually invisible, so the rule collapses. These diagrams
+follow the **tile-per-element** pattern — events inherit their period's
+band-N fill via the `.section-N` rule, with `--diagram-stroke` providing
+the card outline against the white canvas.
 
-Sites in `lattice.css`'s DIAGRAM OVERRIDES section that implement the
-rule: the **CARD-ON-BAND ELEVATION** block (kanban + timeline) and the
-**JOURNEY** block (tasks flattened to `--bg-alt`). Design rationale
-captured in `docs/notes/2026-05-12-diagram-elevation.md`.
+| Diagram | Structure | Pattern |
+|---|---|---|
+| **kanban** | lane (band-N rect) → ticket on top | card-on-band ✓ |
+| **timeline** | period header (band-N) → events stack below on canvas | tile-per-element (each event = its period's band-N) |
+| **journey** | section header (band-N) → tasks stack below on canvas | tile-per-element (each task = its section's band-N) |
+| **treemap / mindmap / gitgraph / quadrant** | no outer grouping | tile-per-element (each tile = its own band-N) |
+
+Audit and design rationale: `docs/notes/2026-05-12-diagram-elevation.md`.
 
 ## The lightness contract
 

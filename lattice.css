@@ -6257,53 +6257,25 @@ section .cluster.section-11 rect, section .section-11 rect,
 section .section-11 path, section .section-11 circle { fill: var(--diagram-band-12) !important; stroke: var(--diagram-stroke) !important; }
 section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--diagram-band-text-12) !important; color: var(--diagram-band-text-12) !important; }
 
-/* ── CARD-ON-BAND ELEVATION ──
- * Diagrams with an outer categorical grouping (kanban lanes, timeline
- * periods, journey sections) carry the category on the band; inner items
- * lift to --bg-alt so they read as cards on top, not as another category.
- * "Band coloring stops at one level of nesting." See
- * docs/notes/2026-05-12-diagram-elevation.md for the design rationale
- * and docs/theming.md for the rule statement.
+/* ── KANBAN TICKETS ──
+ * Card-on-band: the ticket sits inside a band-tinted lane, so painting
+ * the inner card with --bg-alt gives a real "card on coloured ground"
+ * reading. The .items selector is unique to kanban and won't affect
+ * flowchart nodes (which sit directly under the SVG root, not under
+ * .items).
  *
- * Flat collections without an outer grouping (treemap, mindmap, gitgraph)
- * keep tile-per-element — handled separately below.
- *
- * Sibling implementations: this section paints kanban + timeline cards
- * here; journey tasks are flattened in the JOURNEY block below.
+ * This is the ONLY diagram type where the rule applies cleanly.
+ * Timeline and journey were investigated as candidates but their inner
+ * cards stack on the slide canvas, not on a band — see
+ * docs/notes/2026-05-12-diagram-elevation.md for the audit. They keep
+ * their band-N fills from the .section-N rule above.
  */
-
-/* Kanban tickets. Cards live inside the .items group of each
- * .cluster.section-N. The .items selector is unique to kanban and won't
- * affect flowchart nodes (which sit directly under the SVG root, not
- * under .items). */
 section .cluster .items .node rect.basic.label-container,
 section .cluster .items .node .label-container,
 section .items .node rect.basic.label-container,
 section .items .node .label-container {
   fill: var(--bg-alt) !important;
   stroke: var(--diagram-stroke) !important;
-}
-
-/* Timeline event + task cards. Timeline emits the period header, task
- * row, and event rows all under <g class="timeline-node section-N">,
- * so the .section-N rule above would paint everything one tint. Lift
- * the cards inside .taskWrapper / .eventWrapper to --bg-alt so the
- * period header stays band-tinted (category signal) while events and
- * tasks read as cards on top. Both wrapper classes are unique to the
- * timeline emitter. Selector specificity beats the .section-N rule. */
-section .taskWrapper .timeline-node[class*="section-"] path.node-bkg,
-section .eventWrapper .timeline-node[class*="section-"] path.node-bkg {
-  fill: var(--bg-alt) !important;
-  stroke: var(--diagram-stroke) !important;
-}
-section .taskWrapper .timeline-node[class*="section-"] text,
-section .taskWrapper .timeline-node[class*="section-"] tspan,
-section .taskWrapper .timeline-node[class*="section-"] span,
-section .eventWrapper .timeline-node[class*="section-"] text,
-section .eventWrapper .timeline-node[class*="section-"] tspan,
-section .eventWrapper .timeline-node[class*="section-"] span {
-  fill: var(--text-heading) !important;
-  color: var(--text-heading) !important;
 }
 
 /* ── FLOWCHART NODE FILL COVERAGE ──
@@ -6318,10 +6290,9 @@ section .node .outer-path {
 
 /* ── JOURNEY ──
  * Journey ignores cScale entirely; its renderer hardcodes X11 named
- * colors (#191970 midnight blue, etc.). The section bar carries the
- * categorical band; tasks flatten to --bg-alt under the card-on-band
- * rule (the face icon above each task already encodes happiness score,
- * so the per-task hue cycle was redundant hue-on-hue piling).
+ * colors (#191970 midnight blue, etc.). Override the section-N and
+ * task-N classes directly. Section bars and task tiles inherit the
+ * same color per section, so we set both plus dark text.
  */
 section .journey-section, section .journey-section rect,
 section .section0 rect, section .section1 rect, section .section2 rect {
@@ -6331,14 +6302,12 @@ section .journey-section text, section .section0 text, section .section1 text, s
   fill: var(--diagram-band-text-1) !important;
   font-weight: 600 !important;
 }
-section .task0 rect, section .task1 rect, section .task2 rect,
-section rect[class*="task-type-"] {
-  fill: var(--bg-alt) !important;
-  stroke: var(--diagram-stroke) !important;
-}
-section .task0 text, section .task1 text, section .task2 text,
-section [class*="task-type-"] text, section [class*="task-type-"] tspan {
-  fill: var(--text-heading) !important;
+section .task0 rect, section .task-type-0 rect { fill: var(--diagram-band-1) !important; }
+section .task1 rect, section .task-type-1 rect { fill: var(--diagram-band-2) !important; }
+section .task2 rect, section .task-type-2 rect { fill: var(--diagram-band-3) !important; }
+section .task-type-0 text, section .task-type-1 text, section .task-type-2 text,
+section .task0 text, section .task1 text, section .task2 text {
+  fill: var(--diagram-band-text-1) !important;
 }
 section .legend text { fill: var(--diagram-band-text-1) !important; }
 

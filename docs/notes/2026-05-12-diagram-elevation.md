@@ -189,3 +189,72 @@ Sites to bring into compliance (in priority order):
    flatten tasks to `--bg-alt`, or keep the per-task cycle?
 3. Sign-off on the wrapper-scoped override selector approach (vs e.g.
    a runtime DOM rewrite — not recommended, but worth naming).
+
+---
+
+## Post-implementation audit (2026-05-12, same day)
+
+The shipped CSS produced regressions on timeline (slide 17 of
+`mermaid-gallery.pdf`) and journey (slide 9). Page-by-page audit found:
+
+- **Timeline events + tasks** became `--bg-alt` (#F2F5FA) cards on the
+  white slide canvas (`--bg` = #FFFFFF). Virtually invisible — only
+  the `--diagram-stroke` outline remained.
+- **Journey tasks** lost their per-task band cycle (band-1/2/3) and
+  flattened to `--bg-alt` — same near-invisible effect.
+
+### What we got wrong
+
+The rule as written ("band coloring stops at one level of nesting")
+assumed every diagram with syntactic outer→inner nesting also has
+visual outer→inner nesting (inner card sits ON TOP of a band-tinted
+parent surface). That assumption holds only for kanban:
+
+| Diagram | Visual structure | Card-on-band? |
+|---|---|---|
+| **kanban** | ticket sits *inside* a band-tinted lane rect | ✓ yes |
+| **timeline** | period header is a small band-N rect at top; events stack *below* on slide canvas | ✗ no — events sit on white, not on a band |
+| **journey** | section header is a band-N bar at top; tasks stack *below* on slide canvas | ✗ no — same issue |
+
+Timeline and journey are **tile-stack** diagrams, not card-on-band. The
+cards aren't lifted off a tinted surface — they're a vertical
+sequence on the canvas.
+
+### Why the user's original "looks white" complaint wasn't structural
+
+The pre-change rendering had timeline events painted `--diagram-band-N`
+matching their period. In indaco, band-1 = `#DCE9F5` (L≈92) — pale
+enough that on the white `--bg` canvas it reads almost like white.
+The user perceived this as "uncoloured." That perception was correct;
+the diagnosis (structural) was wrong. The real issue is **band
+tonality** — band-1 is too close to canvas in light mode for the card
+to register against white at projector distance.
+
+### The revert
+
+- `lattice.css` reverted to the pre-change state for timeline + journey
+  (kept the CARD-ON-BAND ELEVATION block as the kanban-only override).
+- `docs/theming.md` scope narrowed: card-on-band documented as
+  kanban-only, with the "tile-per-element" pattern listed for every
+  other multi-band Mermaid diagram (including timeline and journey).
+- `docs/references/gotchas.md` entry rewritten as a *trap* warning
+  (don't try to apply the kanban rule to timeline/journey — it looks
+  consistent in source but produces invisible cards in the SVG).
+
+### Follow-up: band tonality
+
+The real fix for the user's "looks white" concern is a palette
+adjustment. Candidate moves, in order of surgical-ness:
+
+1. **Deepen `--diagram-band-1` only** in indaco (e.g. `#DCE9F5` →
+   ~`#C7DAE9`, L≈92 → L≈85). Lowest-risk: only band-1 changes;
+   contrast pair `--diagram-band-text-1` (#0A1628) already clears
+   AA with margin to spare even at L≈80.
+2. **Deepen the whole band cycle** uniformly by 5–7 lightness points.
+   More cohesive; touches every diagram. Re-run `contrast.test.js`.
+3. **Layered solution: pale band for kanban, deeper "strong band" for
+   timeline/journey.** New token `--diagram-band-strong-N`. Most
+   complex; only worth it if (1) and (2) compromise kanban readability.
+
+Recommendation: start with (1). If timeline still doesn't read well,
+escalate to (2).

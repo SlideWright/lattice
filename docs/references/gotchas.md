@@ -209,38 +209,37 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** Original palette commit; mindmap override now lives in
   `lattice.css`'s DIAGRAM OVERRIDES section.
 
-### Mermaid timeline event/task cards inherit the period band — hue-on-hue piling
+### Mermaid timeline + journey are tile-stack, not card-on-band
 
-- **Symptom:** A timeline diagram with multiple periods reads as flat
-  blocks of color. The period header, task row, and event rows all
-  paint with the same `--diagram-band-N` tint and the eye can't
-  separate them — events look "white" or "uncolored" relative to the
-  band, depending on the palette. Side-by-side a kanban (where tickets
-  visibly sit on the lane) the inconsistency is obvious.
-- **Cause:** Mermaid's timeline emitter wraps the period header, every
-  task, and every event in `<g class="timeline-node section-N">` —
-  the same class on all three rows. The `section-N` rule in the
-  DIAGRAM OVERRIDES block applies one band tint to every `<path>`
-  inside any matching `<g>`, so the period bar and its events collapse
-  to one color. Journey had a parallel issue with `task-type-0/1/2`
-  cycling band-1/2/3 inside an already-band-tinted section bar
-  (redundant since the face icon above each task encodes happiness
-  score).
-- **Mitigation:** Card-on-band rule (`docs/theming.md` → "The
-  card-on-band rule"). Wrapper-scoped overrides in `lattice.css`'s
-  CARD-ON-BAND ELEVATION block lift task + event `<path>` fills inside
-  `.taskWrapper` / `.eventWrapper` to `--bg-alt`, with `--text-heading`
-  text. The period header (which has no `.taskWrapper` /
-  `.eventWrapper` ancestor) keeps its band tint as the category signal.
-  Journey tasks flattened to `--bg-alt` in the JOURNEY block. Sibling
-  pattern to the long-standing kanban-ticket override.
-- **Triggered by:** Any timeline with two or more periods, or any
-  journey diagram with multiple tasks per section.
-- **Removable when:** Mermaid emits a distinguishing class on the
-  period header (so we can target it directly instead of scoping the
-  inverse via wrapper). Not on Mermaid's roadmap.
-- **Commits:** `docs/notes/2026-05-12-diagram-elevation.md` for the
-  design rationale.
+- **Symptom (the trap):** Side-by-side with kanban (which has `--bg-alt`
+  tickets visibly lifted off band-tinted lanes), a timeline or journey
+  looks "flat" or "uncoloured." Tempting to apply the same `--bg-alt`
+  inner-card rule to fix the inconsistency. **It does not work** — the
+  inner cards become indistinguishable from the white slide canvas
+  because there is no band underneath them.
+- **Cause:** Kanban tickets physically sit *inside* a `<g class="cluster
+  section-N">` whose `<rect>` is painted with `--diagram-band-N`. The
+  `--bg-alt` card-on-tinted-lane reading is real. Timeline and journey
+  do NOT have this structure: the period/section header is a single
+  small band-N rect at the *top* of a column, and the tasks/events
+  stack *below* it on the slide canvas (`--bg` white). `--bg-alt` on
+  `--bg` is virtually invisible (#F2F5FA on #FFFFFF in indaco), so the
+  cards disappear.
+- **Mitigation:** Timeline events and journey tasks keep the
+  `.section-N rect/path { fill: --diagram-band-N }` rule and inherit
+  their period/section's band tint. `--diagram-stroke` provides the
+  card outline against the canvas. If a band tint reads too pale
+  against the canvas in a given palette, the right fix is to deepen
+  the band token itself, not to introduce a structural override that
+  doesn't apply.
+- **Triggered by:** Mistaking syntactic nesting (event-in-period in
+  Mermaid source) for visual nesting (card-on-tinted-surface in the
+  rendered SVG).
+- **Removable when:** Mermaid restructures timeline/journey to render
+  a band-tinted column behind each period's task/event stack. Not on
+  the roadmap.
+- **Commits:** Initial misapplication + audit + revert; see
+  `docs/notes/2026-05-12-diagram-elevation.md`.
 
 ### ~~Mermaid's `%%{init}%%` directive is intolerant of CSS comments~~ (RESOLVED)
 
