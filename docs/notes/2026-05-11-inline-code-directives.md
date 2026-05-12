@@ -39,17 +39,27 @@ existing positional semantics that already overload inline code
 
 ### The shape
 
-Two complementary forms inside a single backtick pair:
+Three complementary forms inside a single backtick pair, dispatched
+by the leading character of the code text:
 
 | Form | Meaning | Example | Renders to |
 |---|---|---|---|
 | `` `$name` `` | Variable interpolation from front-matter `vars:` | `` `$client` `` | text "Acme Corp" |
 | `` `prefix:value` `` | Namespaced directive | `` `fa:rocket` `` | `<i class="fa-solid fa-rocket">` |
+| `` `(X)` / `[X]` / `[X>` / `((X))` … `` | Bracket-shape pill (Mermaid-inspired) — see below | `` `(LIVE)` `` | `<span class="pill" data-shape="…">LIVE</span>` |
 | `` `literal` `` (anything else) | Plain inline code, unchanged | `` `getUserId()` `` | `<code>getUserId()</code>` |
 
-Detection rule: a `<code>` token is a directive iff its text matches
-**either** `^\$[A-Za-z_][\w.]*$` (var) **or** `^[a-z]+:[^\s]+$`
-(namespaced). Everything else is literal.
+Detection rule (in order): the `<code>` token's text is a directive iff
+- starts with `$` and matches `^\$[A-Za-z_][\w.]*$` → variable
+- starts with a registered bracket opener and the brackets balance → pill
+- matches `^[a-z]+:[^\s]+$` → namespaced
+- otherwise → literal
+
+Modifiers (e.g. color, size) are appended with `:` *after* the value
+(`` `(LIVE):c3:lg` ``). Namespace-form directives don't take modifiers
+(greedy-first-colon makes the value side own all subsequent `:`).
+Bracket-form does, because the closing delimiter gives the parser a
+clean handoff point.
 
 ### Why this shape (decisions already made)
 
@@ -71,6 +81,116 @@ Detection rule: a `<code>` token is a directive iff its text matches
 - **Fenced ` ``` ` blocks are out of scope.** They stay as
   syntax-highlighted code blocks. Repurposing them would break the
   gallery.
+
+### Pill shapes — Mermaid-inspired bracket grammar
+
+Pills get their own grammar because shape is a visual axis the
+`prefix:value` form can't express terselys. The bracket grammar is
+adopted from Mermaid flowchart shape syntax, so authors who write
+flowcharts in this codebase already know it.
+
+#### Shape map
+
+Only the subset that makes visual sense as an inline pill — Mermaid's
+diagram-only shapes (cylinder, trapezoid, parallelogram) are out.
+
+| Source | Mermaid name | Lattice pill shape | data-shape |
+|---|---|---|---|
+| `` `[X]` `` | rectangle | tag (sharp) | `tag` |
+| `` `(X)` `` | rounded rect | chip | `chip` |
+| `` `([X])` `` | stadium | pill (default capsule) | `pill` |
+| `` `((X))` `` | circle | circular badge | `circle` |
+| `` `[X>` `` | asymmetric | chevron, right-pointing | `chevron-right` |
+| `` `<X]` `` | (no Mermaid match) | chevron, left-pointing | `chevron-left` |
+| `` `{X}` `` | rhombus | diamond | `diamond` |
+| `` `[[X]]` `` | subroutine | bordered tag (double stroke) | `tag-bordered` |
+
+Detection: a small explicit opener→closer table (not a "match any
+bracket" regex), so `` `[X)` `` and other mismatched pairs are
+**literal**, not a parse error. Lookup order: longest opener first
+(`((` before `(`, `[[` before `[`, `([` before `[`) so the parser
+doesn't backtrack.
+
+#### Color modifier — ordinal slot, not color name
+
+Lattice's 8 categorical tokens are stable engine identifiers — but
+the *actual rendered colors* are theme-dependent and the token names
+are not honest color claims. Survey (`themes/*.css`):
+
+- `--cat-blue` is sky blue on `indaco`, **deep red** on `burgundy`,
+  **green** on `carbone`, **olive** on `mustard`, **mauve** on
+  `magnolia`, **gray** on `onyx`.
+- Same pattern for every other `--cat-*` token across the 12 light
+  palettes (each dark variant `@import`s its light sibling).
+
+A modifier API named `:blue` would lie to authors writing portable
+decks. So the pill color modifier is **ordinal**: `:c1` through `:c8`
+map 1:1 to the categorical token order, with no color promise.
+
+| Modifier | Token |
+|---|---|
+| `:c1` | `var(--cat-blue)` |
+| `:c2` | `var(--cat-green)` |
+| `:c3` | `var(--cat-purple)` |
+| `:c4` | `var(--cat-orange)` |
+| `:c5` | `var(--cat-teal)` |
+| `:c6` | `var(--cat-rose)` |
+| `:c7` | `var(--cat-slate)` |
+| `:c8` | `var(--cat-mauve)` |
+
+(The underlying tokens stay named `--cat-blue`...`--cat-mauve` — that
+rename is out of scope. The modifier API translates.)
+
+No modifier = default pill (whatever the current `.pill` rule paints,
+typically `--accent`). Authors who want explicit categorical
+contrast pick a slot.
+
+Text-on-color contrast comes for free: the existing categorical
+contrast policy in `lattice.css:61-78` derives `--cat-<name>-deep`
+variants per theme for AA-passing text-on-color. Pill CSS consumes
+those automatically — no per-modifier contrast math.
+
+#### Size modifier (axis 2)
+
+```
+:sm  :md (default)  :lg
+```
+
+Maps to `--pill-size-*` tokens (to be defined in `lattice.css`).
+Modifier order is free — `` `[BETA]:c4:lg` `` and `` `[BETA]:lg:c4` ``
+parse identically because the parser sorts modifiers by which axis
+they belong to (color vs size).
+
+#### Worked examples
+
+```
+`(LIVE)`              → default pill, no opinion (current .pill look)
+`(LIVE):c2`           → pill, slot-2 color
+`[BETA]`              → sharp tag
+`[BETA]:c6:lg`        → tag, slot-6, large
+`[STEP 2>`            → chevron right, default
+`[STEP 2>:c1`         → chevron right, slot-1
+`((1)):c5`            → circle "1", slot-5
+`{DECIDE}:c3`         → diamond, slot-3
+`[[CRITICAL]]:c6`     → bordered tag, slot-6
+```
+
+#### HTML output shape
+
+```html
+<span class="pill" data-shape="tag" data-c="c4" data-size="lg">BETA</span>
+```
+
+CSS in `lattice.css` consumes `data-shape` for geometry and `data-c`
+for color (`.pill[data-c="c4"] { --pill-bg: var(--cat-orange); }`).
+No inline styles needed; themes can repaint by overriding `--cat-*`.
+
+#### What this lets us delete
+
+The earlier-proposed `pill:`, `tag:`, `kbd:` *as pill prefixes* go
+away — pills are bracket-form only. `kbd:` stays as a separate
+namespace directive (`<kbd>` is structurally different from a pill;
+it carries semantic meaning, not visual variant).
 
 ### Open questions to lock before coding
 
@@ -95,10 +215,13 @@ Detection rule: a `<code>` token is a directive iff its text matches
 4. **Unknown prefix behaviour.** `` `xyz:foo` `` (no registered
    handler) should warn and render literal. Don't error — additive but
    discoverable.
-5. **Initial prefix registry.** Ship with at minimum:
+5. **Initial directive registry.** Ship with at minimum:
+   - `$name` → variable interpolation.
    - `fa:` → Font Awesome (decide free vs Pro, webfont vs SVG —
      **recommend free + webfont** for print/PDF, no JS required).
-   - Stretch: `kbd:`, `pill:`, `tag:`. These can land incrementally.
+   - Bracket-shape pills with `:c1`–`:c8` color slots and `:sm`/`:md`/
+     `:lg` sizes (full grammar above).
+   - Stretch namespace prefixes: `kbd:`. Can land incrementally.
 
 ## Implementation plan
 
@@ -171,9 +294,10 @@ shape.
 - Suggested branch: `feat/inline-directives` or
   `feat/fontawesome-vars`.
 - First PR: scaffold `lib/inline-directives.js` + the markdown-it
-  ruler in `marp.config.js` + `fa:` and `$` handlers + unit tests +
-  one gallery slide. Hold `kbd:` / `pill:` / `tag:` for follow-up
-  PRs to keep the diff small.
+  ruler in `marp.config.js` + `$` (vars), `fa:` (Font Awesome), and
+  bracket-shape pills with `:c1`–`:c8` + `:sm`/`:lg`. Unit tests +
+  one gallery slide demonstrating each. Hold `kbd:` for a follow-up
+  PR to keep the diff small.
 
 ## Decisions still owed by the human before coding starts
 
@@ -181,4 +305,10 @@ shape.
 2. Font Awesome free vs Pro (and where the kit URL lives if Pro).
 3. Webfont vs SVG (recommend webfont).
 4. Missing-var loudness (recommend loud `??name??`).
-5. Initial prefix registry (recommend just `fa:` + `$` for v1).
+5. Pill default shape with no brackets at all is **not a thing** —
+   `` `LIVE` `` is literal code. Confirm that's intended (the choice
+   was: keep plain inline code as the escape hatch). To get the
+   default-look pill, author writes `` `(LIVE)` `` (chip) or
+   `` `([LIVE])` `` (full stadium). Which is the "default pill" if
+   author just wants any pill? Recommend `` `(LIVE)` `` — single
+   parens, lowest typing cost.
