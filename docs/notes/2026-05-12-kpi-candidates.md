@@ -3,32 +3,20 @@ marp: true
 theme: indaco
 size: 16:9
 paginate: true
-header: "Lattice · KPI redesign · round three"
+header: "Lattice · KPI redesign · power-play cards"
 style: |
   /* ─────────────────────────────────────────────────────────────────────
-   * kpi-board — boardroom-grade earnings-report layout.
-   *
-   *   Eyebrow (h3, mono small caps)                   ┐
-   *   Headline (h2, Playfair display)                 │ all three on a
-   *   1.5px hairline rule                             ┘ shared top stack
-   *
-   *   ┌ Token-issuance success           94%   target 99% · -5pp
-   *   │ p99 detokenize                  8 ms   target 10 ms · -2 ms
-   *   │ Examiner findings                  0   target 0 · flat
-   *   └ Detokenize headroom             3.2×   target 2× · +1.2×
-   *
-   *   1.5px closing rule, mono source line in muted small caps.
-   *
-   * Status communicated by a single warn-colour leader bar on the
-   * underperforming row (and that row's gap text in --warn). Author
-   * picks which row gets the callout via a per-row class; the `demo`
-   * modifier here hardcodes it to li#1 for inspection.
+   * Five card-based KPI power-play directions. Each shows the same four
+   * Authentication metrics; one (li#1, 94% vs 99% target) is the critical
+   * card — raised, four-point-starred, given the spotlight. Supporting
+   * cards step down in weight, size, or chrome.
    * ───────────────────────────────────────────────────────────────────── */
-  section.kpi-board {
-    display: flex;
-    flex-direction: column;
+
+  section[class*="kpi-"] {
+    display: flex; flex-direction: column;
+    padding-top: var(--sp-lg);
   }
-  section.kpi-board h3 {
+  section[class*="kpi-"] h3 {
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     font-weight: 600;
@@ -37,145 +25,561 @@ style: |
     color: var(--text-muted);
     margin: 0 0 var(--sp-xs) 0;
   }
-  section.kpi-board h2 {
+  section[class*="kpi-"] h2 {
     font-family: var(--font-display);
     font-size: var(--fs-2xl);
     font-weight: 700;
     color: var(--text-heading);
     line-height: var(--lh-tight);
-    margin: 0 0 var(--sp-sm) 0;
-    padding-bottom: var(--sp-xs);
-    border-bottom: 1.5px solid var(--text-heading);
+    margin: 0 0 var(--sp-lg) 0;
   }
-  section.kpi-board > ol {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  section[class*="kpi-"] > ol {
+    list-style: none; padding: 0; margin: 0;
+    flex: 1;
   }
-  section.kpi-board > ol > li::marker { content: ''; }
-  section.kpi-board > ol > li > ul { display: contents; }
-  section.kpi-board > ol > li > ul > li::marker { content: ''; }
-  section.kpi-board > ol > li {
+  section[class*="kpi-"] > ol > li::marker { content: ''; }
+  section[class*="kpi-"] > ol > li > ul {
+    list-style: none; padding: 0; margin: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * A · SPOTLIGHT — one hero card top-left, three supports stacked right.
+   *   Hero: raised, fs-hero number, four-point star, accent-soft fill.
+   *   Supports: minimal, hairline-separated.
+   * ───────────────────────────────────────────────────────────────────── */
+  section.kpi-spotlight > ol {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
-    align-items: baseline;
-    column-gap: var(--sp-2xl);
-    padding: var(--sp-xs) 0 var(--sp-xs) var(--sp-md);
-    border-bottom: 1px solid var(--border);
-    position: relative;
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: var(--sp-md) var(--sp-2xl);
   }
-  section.kpi-board > ol > li:last-child {
+  section.kpi-spotlight > ol > li:nth-child(1) {
+    grid-column: 1; grid-row: 1 / -1;
+    background: var(--accent-soft);
+    padding: var(--sp-2xl);
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    border-radius: 4px;
+    box-shadow:
+      0 24px 48px -24px rgba(0, 61, 102, 0.20),
+      0 1px 0 0 rgba(0, 0, 0, 0.05);
+    transform: translateY(-8px);
+  }
+  section.kpi-spotlight > ol > li:nth-child(1)::after {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-lg); right: var(--sp-lg);
+    font-size: var(--fs-2xl);
+    color: var(--accent);
+    line-height: 1;
+  }
+  section.kpi-spotlight > ol > li:nth-child(1) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-watermark);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  section.kpi-spotlight > ol > li:nth-child(1) > ul > li:first-child {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-top: var(--sp-lg);
+    line-height: var(--lh-snug);
+  }
+  section.kpi-spotlight > ol > li:nth-child(1) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-emphasis);
+    color: var(--warn);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-top: var(--sp-sm);
+    text-transform: uppercase;
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) {
+    grid-column: 2;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 0 0 0 var(--sp-md);
+    border-left: 1px solid var(--border);
+  }
+  section.kpi-spotlight > ol > li:nth-child(2) { grid-row: 1; }
+  section.kpi-spotlight > ol > li:nth-child(3) { grid-row: 2; }
+  section.kpi-spotlight > ol > li:nth-child(4) { grid-row: 3; }
+  section.kpi-spotlight > ol > li:not(:first-child) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 500;
+    margin-top: var(--sp-xs);
+  }
+  section.kpi-spotlight > ol > li:not(:first-child) > ul > li + li {
+    font-size: var(--fs-label);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * B · BENTO — asymmetric tile grid (hero 2x2, side 1x2, two stragglers).
+   *   Each card has distinct chrome to reinforce information hierarchy.
+   * ───────────────────────────────────────────────────────────────────── */
+  section.kpi-bento > ol {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: var(--sp-md);
+  }
+  section.kpi-bento > ol > li {
+    padding: var(--sp-lg);
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    border-radius: 4px;
+  }
+  /* Hero — top-left 2x2 */
+  section.kpi-bento > ol > li:nth-child(1) {
+    grid-column: 1 / 3; grid-row: 1 / 3;
+    background: var(--brand-blue-deep);
+    color: #ffffff;
+    padding: var(--sp-xl);
+    box-shadow: 0 30px 60px -28px rgba(0, 61, 102, 0.35);
+  }
+  section.kpi-bento > ol > li:nth-child(1)::after {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-xl); right: var(--sp-xl);
+    font-size: var(--fs-3xl);
+    color: #ffffff;
+    opacity: 0.9;
+    line-height: 1;
+  }
+  section.kpi-bento > ol > li:nth-child(1) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-hero);
+    color: #ffffff;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    font-weight: 700;
+  }
+  section.kpi-bento > ol > li:nth-child(1) > ul > li:first-child {
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    color: #ffffff;
+    font-weight: 600;
+    margin-top: var(--sp-md);
+  }
+  section.kpi-bento > ol > li:nth-child(1) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-emphasis);
+    color: #ffffff;
+    opacity: 0.75;
+    margin-top: var(--sp-sm);
+    letter-spacing: 0.04em;
+  }
+  /* Side — right column tall (1x3) */
+  section.kpi-bento > ol > li:nth-child(2) {
+    grid-column: 3; grid-row: 1 / 4;
+    background: var(--accent-soft);
+  }
+  section.kpi-bento > ol > li:nth-child(2) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-stat);
+    color: var(--accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    font-weight: 700;
+  }
+  section.kpi-bento > ol > li:nth-child(2) > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 600;
+    margin-top: var(--sp-md);
+  }
+  section.kpi-bento > ol > li:nth-child(2) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+  }
+  /* Bottom-left (3rd metric) */
+  section.kpi-bento > ol > li:nth-child(3) {
+    grid-column: 1; grid-row: 3;
+    background: var(--bg-alt);
+  }
+  /* Bottom-middle (4th metric) */
+  section.kpi-bento > ol > li:nth-child(4) {
+    grid-column: 2; grid-row: 3;
+    background: var(--bg-alt);
+  }
+  section.kpi-bento > ol > li:nth-child(3) > strong,
+  section.kpi-bento > ol > li:nth-child(4) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    color: var(--text-heading);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    font-weight: 700;
+  }
+  section.kpi-bento > ol > li:nth-child(3) > ul > li:first-child,
+  section.kpi-bento > ol > li:nth-child(4) > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 500;
+    margin-top: var(--sp-xs);
+  }
+  section.kpi-bento > ol > li:nth-child(3) > ul > li + li,
+  section.kpi-bento > ol > li:nth-child(4) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+  }
+  section.kpi-bento > ol > li:nth-child(3),
+  section.kpi-bento > ol > li:nth-child(4) {
+    padding: var(--sp-md) var(--sp-lg);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * C · EDITORIAL — magazine spread. Full-height hero left, supports right.
+   *   Hero gets gigantic serif typography; supports are hairline-listed.
+   * ───────────────────────────────────────────────────────────────────── */
+  section.kpi-editorial > ol {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 0 var(--sp-2xl);
+  }
+  section.kpi-editorial > ol > li:nth-child(1) {
+    grid-column: 1; grid-row: 1 / -1;
+    background: var(--bg-alt);
+    padding: var(--sp-2xl);
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    border-left: 4px solid var(--warn);
+  }
+  section.kpi-editorial > ol > li:nth-child(1)::before {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-xl); right: var(--sp-xl);
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    color: var(--warn);
+    line-height: 1;
+  }
+  section.kpi-editorial > ol > li:nth-child(1)::after {
+    content: 'CRITICAL';
+    position: absolute;
+    top: var(--sp-xl);
+    left: var(--sp-2xl);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--warn);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+  }
+  section.kpi-editorial > ol > li:nth-child(1) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-watermark);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 0.88;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  section.kpi-editorial > ol > li:nth-child(1) > ul > li:first-child {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-top: var(--sp-md);
+    line-height: var(--lh-snug);
+  }
+  section.kpi-editorial > ol > li:nth-child(1) > ul > li + li {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--text-muted);
+    margin-top: var(--sp-sm);
+  }
+  section.kpi-editorial > ol > li:not(:first-child) {
+    grid-column: 2;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: var(--sp-sm) 0;
+    min-height: 0;
+  }
+  section.kpi-editorial > ol > li:nth-child(2) {
+    grid-row: 1;
+    border-top: 1.5px solid var(--text-heading);
+  }
+  section.kpi-editorial > ol > li:nth-child(3) {
+    grid-row: 2;
+    border-top: 1px solid var(--border);
+  }
+  section.kpi-editorial > ol > li:nth-child(4) {
+    grid-row: 3;
+    border-top: 1px solid var(--border);
     border-bottom: 1.5px solid var(--text-heading);
   }
-  section.kpi-board > ol > li > ul > li:first-child {
-    grid-column: 1;
-    font-size: var(--fs-content);
-    font-weight: 500;
+  section.kpi-editorial > ol > li:not(:first-child) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    font-weight: 700;
     color: var(--text-heading);
-    letter-spacing: -0.005em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
-  section.kpi-board > ol > li > strong {
-    grid-column: 2;
+  section.kpi-editorial > ol > li:not(:first-child) > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 500;
+    margin-top: var(--sp-xs);
+  }
+  section.kpi-editorial > ol > li:not(:first-child) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * D · RAISED — 2x2 equal grid, critical card raised + starred.
+   *   Power-play through elevation, not size.
+   * ───────────────────────────────────────────────────────────────────── */
+  section.kpi-raised > ol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: var(--sp-md) var(--sp-2xl);
+    padding: var(--sp-sm) 0;
+  }
+  section.kpi-raised > ol > li {
+    padding: var(--sp-sm) var(--sp-md);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    position: relative;
+    border-top: 1px solid var(--border);
+    min-width: 0;
+    min-height: 0;
+  }
+  section.kpi-raised > ol > li:nth-child(1) {
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-top: 4px solid var(--accent);
+    box-shadow:
+      0 24px 48px -24px rgba(0, 61, 102, 0.28),
+      0 2px 4px rgba(0, 0, 0, 0.04);
+    transform: translateY(-10px);
+    padding: var(--sp-md) var(--sp-lg);
+  }
+  section.kpi-raised > ol > li:nth-child(1)::after {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-sm); right: var(--sp-md);
+    font-size: var(--fs-xl);
+    color: var(--accent);
+    line-height: 1;
+  }
+  section.kpi-raised > ol > li > strong {
     font-family: var(--font-display);
     font-size: var(--fs-stat);
     font-weight: 700;
     color: var(--text-heading);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    text-align: right;
-    min-width: 5ch;
+    display: block;
   }
-  section.kpi-board > ol > li > ul > li + li {
-    grid-column: 3;
-    font-size: var(--fs-emphasis);
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-    min-width: 18ch;
-    white-space: nowrap;
+  section.kpi-raised > ol > li:nth-child(1) > strong {
+    color: var(--accent);
+    font-size: var(--fs-hero);
   }
-  /* Source line — last paragraph in the slide. */
-  section.kpi-board > p:last-of-type {
+  section.kpi-raised > ol > li > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 600;
+    margin-top: var(--sp-xs);
+  }
+  section.kpi-raised > ol > li > ul > li + li {
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     color: var(--text-muted);
-    letter-spacing: 0.18em;
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    margin: var(--sp-md) 0 0 0;
+    font-weight: 600;
   }
-
-  /* Demo: warn-coloured leader bar on li#1, warn gap text. */
-  section.kpi-board.demo > ol > li:nth-child(1)::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 18%;
-    bottom: 18%;
-    width: 4px;
-    background: var(--warn);
-  }
-  section.kpi-board.demo > ol > li:nth-child(1) > ul > li + li {
+  section.kpi-raised > ol > li:nth-child(1) > ul > li + li {
     color: var(--warn);
   }
-  /* Stress test: warn + fail mixed. */
-  section.kpi-board.mixed > ol > li:nth-child(1)::before,
-  section.kpi-board.mixed > ol > li:nth-child(3)::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 18%;
-    bottom: 18%;
-    width: 4px;
+
+  /* ─────────────────────────────────────────────────────────────────────
+   * E · POWER TRIANGLE — asymmetric cascade. Hero top-left, others step
+   *   down. Each card has distinct visual chrome by rank.
+   * ───────────────────────────────────────────────────────────────────── */
+  section.kpi-triangle > ol {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--sp-md);
   }
-  section.kpi-board.mixed > ol > li:nth-child(1)::before { background: var(--warn); }
-  section.kpi-board.mixed > ol > li:nth-child(3)::before { background: var(--fail); }
-  section.kpi-board.mixed > ol > li:nth-child(1) > ul > li + li { color: var(--warn); }
-  section.kpi-board.mixed > ol > li:nth-child(3) > ul > li + li { color: var(--fail); }
+  section.kpi-triangle > ol > li {
+    padding: var(--sp-lg);
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    min-width: 0;
+    border-radius: 2px;
+  }
+  /* Hero — top-left 2x1 */
+  section.kpi-triangle > ol > li:nth-child(1) {
+    grid-column: 1; grid-row: 1 / -1;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg-alt) 100%);
+    padding: var(--sp-2xl);
+    box-shadow: 0 24px 48px -28px rgba(0, 61, 102, 0.25);
+  }
+  section.kpi-triangle > ol > li:nth-child(1)::after {
+    content: '✦';
+    position: absolute;
+    top: var(--sp-lg); right: var(--sp-lg);
+    font-size: var(--fs-2xl);
+    color: var(--accent);
+    line-height: 1;
+  }
+  section.kpi-triangle > ol > li:nth-child(1) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-watermark);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  section.kpi-triangle > ol > li:nth-child(1) > ul > li:first-child {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-top: var(--sp-md);
+  }
+  section.kpi-triangle > ol > li:nth-child(1) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-emphasis);
+    color: var(--warn);
+    font-weight: 600;
+    margin-top: var(--sp-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  /* Card 2 — middle column, top */
+  section.kpi-triangle > ol > li:nth-child(2) {
+    grid-column: 2; grid-row: 1;
+    background: var(--bg-alt);
+  }
+  /* Card 3 — right column, top */
+  section.kpi-triangle > ol > li:nth-child(3) {
+    grid-column: 3; grid-row: 1;
+    background: var(--bg-alt);
+  }
+  /* Card 4 — spans bottom of middle + right */
+  section.kpi-triangle > ol > li:nth-child(4) {
+    grid-column: 2 / 4; grid-row: 2;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  section.kpi-triangle > ol > li:not(:first-child) > strong {
+    font-family: var(--font-display);
+    font-size: var(--fs-stat);
+    font-weight: 700;
+    color: var(--text-heading);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  section.kpi-triangle > ol > li:nth-child(4) > strong {
+    font-size: var(--fs-3xl);
+  }
+  section.kpi-triangle > ol > li:not(:first-child) > ul > li:first-child {
+    font-size: var(--fs-md);
+    color: var(--text-heading);
+    font-weight: 500;
+    margin-top: var(--sp-sm);
+  }
+  section.kpi-triangle > ol > li:not(:first-child) > ul > li + li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--text-muted);
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+  }
 ---
 
 <!-- _class: title -->
 <!-- _paginate: false -->
-<!-- _footer: "KPI redesign · round three" -->
+<!-- _footer: "KPI redesign · power-play cards · winners" -->
 
-# KPI redesign — round three
+# KPI redesign — power-play cards
 
-`Internal review · 2026-05-12`
+`2026-05-12`
 
-Earlier rounds had the wrong look. This one targets boardroom-grade
-typography: earnings-report numerals, hairline rules, a single warn
-callout. No card chrome, no rainbow.
+Five card-based directions. One critical metric is the hero — raised,
+starred, monumentalised. Supporting metrics step down by chrome, size,
+or both.
 
 ---
 
-<!-- _class: kpi target -->
-<!-- _footer: "Before · shipped" -->
+<!-- _class: kpi-spotlight -->
+<!-- _header: '' -->
+<!-- _footer: "A · spotlight — hero left, supports stacked right" -->
 
+### Authentication · Q4 2026
 ## Where we are against quarter targets.
 
 1. **94%**
    - Token-issuance success
-   - target 99%, +2pp QoQ
+   - Target 99% · -5pp this quarter
 2. **8 ms**
    - p99 detokenize
-   - target 10 ms, -3 ms QoQ
+   - target 10 ms
 3. **0**
    - Examiner findings
-   - target 0, flat
+   - target 0
 4. **3.2×**
    - Detokenize headroom
-   - target 2×, +0.4× QoQ
+   - target 2×
 
 ---
 
-<!-- _class: kpi-board demo -->
+<!-- _class: kpi-bento -->
 <!-- _header: '' -->
-<!-- _footer: "After · kpi-board with single warn callout" -->
+<!-- _footer: "B · bento — asymmetric tiles, dark hero" -->
 
 ### Authentication · Q4 2026
-
 ## Where we are against quarter targets.
 
 1. **94%**
@@ -183,56 +587,76 @@ callout. No card chrome, no rainbow.
    - target 99% · -5pp
 2. **8 ms**
    - p99 detokenize
-   - target 10 ms · -2 ms
+   - target 10 ms
 3. **0**
    - Examiner findings
-   - target 0 · flat
+   - target 0
 4. **3.2×**
    - Detokenize headroom
-   - target 2× · +1.2×
+   - target 2×
 
 ---
 
-<!-- _class: kpi-board -->
+<!-- _class: kpi-editorial -->
 <!-- _header: '' -->
-<!-- _footer: "kpi-board · neutral — everything on track" -->
+<!-- _footer: "C · editorial spread — magazine, full-height hero left" -->
 
-### Treasury operations · Q4 2026
+### Authentication · Q4 2026
+## Where we are against quarter targets.
 
-## Liquidity, settlement, and counter-party metrics all met plan.
-
-1. **$2.4B**
-   - Average daily settlement
-   - target $2.0B · +20%
-2. **99.97%**
-   - Cash-sweep accuracy
-   - target 99.9% · +0.07pp
-3. **3.1**
-   - Counter-party diversity index
-   - target 3.0 · +0.1
-4. **$0**
-   - Reconciliation breaks
-   - target $0 · flat
+1. **94%**
+   - Token-issuance success
+   - Five percentage points below quarterly plan; remediation already underway.
+2. **8 ms**
+   - p99 detokenize
+   - target 10 ms
+3. **0**
+   - Examiner findings
+   - target 0
+4. **3.2×**
+   - Detokenize headroom
+   - target 2×
 
 ---
 
-<!-- _class: kpi-board mixed -->
+<!-- _class: kpi-raised -->
 <!-- _header: '' -->
-<!-- _footer: "kpi-board · mixed status (stress test)" -->
+<!-- _footer: "D · raised — equal grid, critical card elevated + starred" -->
 
-### Risk posture · Q4 2026
+### Authentication · Q4 2026
+## Where we are against quarter targets.
 
-## Two metrics off plan; the rest on track.
+1. **94%**
+   - Token-issuance success
+   - target 99% · -5pp
+2. **8 ms**
+   - p99 detokenize
+   - target 10 ms
+3. **0**
+   - Examiner findings
+   - target 0
+4. **3.2×**
+   - Detokenize headroom
+   - target 2×
 
-1. **17 days**
-   - Mean time to remediate critical findings
-   - target 14 days · +3 days
-2. **96.4%**
-   - Patch coverage on production fleet
-   - target 95% · +1.4pp
-3. **4**
-   - Open Sev-1 incidents
-   - target 0 · +4
-4. **1.8×**
-   - Insurance coverage ratio
-   - target 1.5× · +0.3×
+---
+
+<!-- _class: kpi-triangle -->
+<!-- _header: '' -->
+<!-- _footer: "E · power triangle — asymmetric cascade, hero anchors left" -->
+
+### Authentication · Q4 2026
+## Where we are against quarter targets.
+
+1. **94%**
+   - Token-issuance success
+   - target 99% · -5pp
+2. **8 ms**
+   - p99 detokenize
+   - target 10 ms
+3. **0**
+   - Examiner findings
+   - target 0
+4. **3.2×**
+   - Detokenize headroom
+   - target 2×

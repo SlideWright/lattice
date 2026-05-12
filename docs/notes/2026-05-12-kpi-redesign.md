@@ -1,70 +1,80 @@
-# KPI redesign — rounds one, two, and three
+# KPI redesign — power-play cards
 
-## Round one (rejected) — five "less chrome, more typography" layouts
+The earlier table-based and minimal-hairline rounds were rejected:
+cards are required, and one critical metric needs to command attention
+through scale, elevation, or chrome — not just colour.
 
-Sent five candidates: `kpi-anchor`, `kpi-ledger`, `kpi-slat`,
-`kpi-marquee`, `kpi-grid`. All five failed. The common cause:
+Five card directions, each with a different power-play mechanism. All
+share the same fictional data (Authentication Q4 2026: 94% / 8 ms / 0 /
+3.2×, with the first metric below target and starred as critical).
 
-1. Numbers capped at `--fs-display` (60px) when they should command.
-2. Content floated as a thin band, leaving dead zones.
-3. Categorical colour rotated as decoration (blue/green/purple/orange).
-4. Target / trend buried as a 13px muted footnote.
+## A · Spotlight
 
-Wrong axis. Polishing chrome on a layout that wasn't earning the canvas.
+Two-column grid. Hero card (60–65% of canvas) on the left, three
+support cards stacked on the right separated by hairline rules.
+Hero is filled in `--accent-soft`, raised slightly, gets a
+`✦` four-point star, and runs the number at `--fs-watermark` (180px).
+Supports run at `--fs-3xl` (48px) — clearly one tier down. Reads as
+"this is the headline metric, here are the others for context."
 
-## Round two (rejected) — `kpi-status` + `kpi-gap`
+## B · Bento
 
-`kpi-status`: 2×2 grid with fs-hero numerals and a status-coloured top
-rule. `kpi-gap`: literal progress bars showing current-vs-target.
+3-column × 3-row irregular tile grid:
 
-Both rejected as "competent dashboard layouts" — not boardroom. Honest
-self-critique:
+```
++------+------+----+
+|             |    |
+|    hero     |    |
+|     2×2     |side|
+|             | 1×3|
++-----+-------+    |
+|  3  |   4   |    |
++-----+-------+----+
+```
 
-- `kpi-status` was a tidier card grid. Bigger numbers but still "four
-  cells in a grid." Memorable in no particular way.
-- `kpi-gap` was decoration disguised as data viz. Three bars at 100%,
-  one at 95% — the bars carried no information the numbers didn't.
-  Progress-bar pattern reads as a 2010 admin dashboard.
+Hero gets the dark `--brand-blue-deep` fill with white serif type and
+white four-point star — a true "raised dark slab." Side column gets
+`--accent-soft` tint with accent-coloured number; bottom-row tiles are
+`--bg-alt`. Each tile has a different chrome to reinforce hierarchy
+without relying on size alone.
 
-The look was the issue, not the structure.
+## C · Editorial
 
-## Round three (shipped here) — `kpi-board`
+50/50 magazine spread. Left: bg-alt hero filling the full slide height,
+4px `--warn` left border, a "CRITICAL" mono-uppercase label top-left and
+a `✦` star top-right, the number at `--fs-watermark` (180px) in serif,
+and a one-sentence interpretation in serif italic. Right: three
+hairline-separated support entries with the number at `--fs-3xl`.
 
-Earnings-report typography. The reference is an annual report or a
-McKinsey performance summary, not a SaaS dashboard.
+This is the most magazine-y of the five — it puts editorial prose
+next to the figure and treats the slide as a feature spread.
 
-**Structural recipe:**
+## D · Raised
 
-1. **Eyebrow** — h3 in mono, small caps, 0.22em tracked, muted. Sets
-   section / period: `AUTHENTICATION · Q4 2026`.
-2. **Headline** — h2 in Playfair Display, bold, no padding-bottom rule
-   weight game. One sentence: `Where we are against quarter targets.`
-3. **1.5px hairline rule** spanning the headline's bottom. Earnings-
-   report convention.
-4. **Four metric rows**, each a 3-column grid:
-   - col 1: metric name in sans, weight 500, fs-content
-   - col 2: number in Playfair, fs-stat (52px), tabular nums,
-     right-aligned in its own column
-   - col 3: target + gap in mono, fs-emphasis (17px), tabular nums,
-     muted by default
-5. **Hairline 1px rule** between rows; **1.5px closing rule** on the
-   last row.
-6. **Single warn-colour leader bar** on the underperforming row
-   (4px left-edge), and that row's gap text in `--warn`. The reader's
-   eye lands on that one row first — no other status decoration.
+Equal 2×2 grid. The critical card uses elevation as its power-play:
+1px `--accent` border, 4px `--accent` top stroke, drop shadow,
+`transform: translateY(-10px)` (literally raised off the surface),
+`✦` star top-right, the number rendered in `--accent` blue at
+`--fs-hero` (110px). The other three are unchromed, hairline-separated,
+number at `--fs-stat` (52px). Power-play through z-axis, not size.
 
-**Variants exercised in the deck:**
+## E · Power triangle
 
-- `demo` modifier — one warn callout (typical case)
-- no modifier — all on track (neutral case)
-- `mixed` modifier — one warn + one fail (stress test)
+Asymmetric cascade.
 
-**Authoring story for production.** The demo hardcodes the callout
-row via `nth-child` for inspection. The intended authoring is a
-per-row class hint — likely a trailing italic on the metric line
-(`*behind*` / `*off-track*`) that CSS `:has()` reads, mirroring how
-the audit layouts already work. Final mechanism is left open until
-this look is approved.
+```
++--------+-----+-----+
+|        |  2  |  3  |
+|  hero  |     |     |
+|  1×2   +-----+-----+
+|        |      4    |
++--------+-----------+
+```
+
+Hero anchors the left two-thirds with a light gradient fill
+(`accent-soft → bg-alt`) and `--fs-watermark` serif numerals. Card 2
+and 3 stack to its right at equal weight; card 4 spans the bottom-right
+as a "wide footnote." Sizes cascade downward, but no card hides.
 
 ## Inspection
 
@@ -74,6 +84,13 @@ node lattice-emulator.js \
   out.pdf
 ```
 
-Five slides: title → before (shipped) → kpi-board with single warn
-callout → kpi-board neutral (all on track) → kpi-board mixed
-(warn + fail stress test).
+Six slides: title, then A → E in order. Each direction's footer labels
+which one it is.
+
+## Authoring story (deferred)
+
+All five layouts identify the critical card via `:nth-child(1)`,
+i.e., it's whichever metric the author lists first. For production,
+this should become a per-item modifier (likely a trailing italic word
+on the metric line, e.g. `**94%** *critical*`, read by `:has()`). The
+authoring mechanism is open until one of these layouts is approved.
