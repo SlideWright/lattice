@@ -44,10 +44,11 @@ The integration tier asserts cross-renderer parity on slide count.
 - `npm run test:integration` — ~30s, rebuilds both galleries through
   both renderers. CI runs this before merge.
 - `npm run test:all` — both tiers.
-- `examples/gallery.md` (~71pp) and `examples/mermaid-gallery.md` (~31pp)
-  plus their committed PDFs are the regression baseline. Page counts
-  live in `test/fixtures/expected-page-counts.json`. **When committing
-  gallery edits, keep the deck and its rebuilt PDF in the same commit.**
+- `examples/gallery.md` (89pp), `examples/mermaid-gallery.md` (31pp),
+  and `examples/kpi-gallery.md` (13pp) plus their committed PDFs are
+  the regression baseline. Page counts live in
+  `test/fixtures/expected-page-counts.json`. **When committing gallery
+  edits, keep the deck and its rebuilt PDF in the same commit.**
 
 ## House style
 
