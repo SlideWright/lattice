@@ -3787,7 +3787,7 @@ section.roadmap.milestones tbody td:not(:first-child) {
    * height (5 rows = 5 × this) and the plumb-line length calc. Smaller
    * value = more vertical room for the rest of the board (legend,
    * sections, insight callout). */
-  --journey-mood-row: 26px;
+  --journey-mood-row: 22px;
 }
 
 /* Shared base — applies to every journey variant. */
@@ -3895,7 +3895,7 @@ section.journey .journey-section {
   grid-column: span var(--span);
   background: var(--journey-section-bg);
   color: var(--journey-section-fg);
-  padding: var(--sp-sm) var(--sp-md);
+  padding: var(--sp-xs) var(--sp-md);
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: var(--fs-sm);
@@ -3905,6 +3905,14 @@ section.journey .journey-section {
   justify-content: center;
   text-align: center;
   position: relative;
+}
+section.journey .journey-section-name {
+  /* Plain-text element — clamp at 2 lines (Lattice editorial rule). */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
@@ -3944,10 +3952,21 @@ section.journey .journey-task {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 56px;
+  min-height: 48px;
   font-size: var(--fs-sm);
   text-align: center;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 8%, transparent);
+}
+section.journey .journey-task-label {
+  font-weight: 500;
+  line-height: 1.25;
+  /* Plain text inside a chip with an actor-dot pill → 2 lines max so the
+   * pill + text together stay within the editorial 3-line rule. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 section.journey .journey-task-actors {
   position: absolute;
@@ -4094,8 +4113,8 @@ section.journey.heatmap .journey-tasks {
   margin-top: var(--sp-sm);
 }
 section.journey.heatmap .journey-task {
-  min-height: 96px;
-  padding: var(--sp-md) var(--sp-sm) var(--sp-sm);
+  min-height: 64px;
+  padding: var(--sp-md) var(--sp-sm) var(--sp-xs);
   background: color-mix(in oklab, var(--mood-bg) 22%, var(--bg-alt));
   border-top: 3px solid var(--mood-bg);
   position: relative;
@@ -4292,8 +4311,8 @@ section.journey.weighted .journey-task {
   flex-basis: 0;
   flex-shrink: 1;
   min-width: 56px;
-  padding: var(--sp-md) var(--sp-sm) var(--sp-sm);
-  min-height: 88px;
+  padding: var(--sp-md) var(--sp-sm) var(--sp-xs);
+  min-height: 64px;
   background: color-mix(in oklab, var(--mood-bg) 28%, var(--bg-alt));
   border-top-width: 4px;
   border-top-style: solid;
