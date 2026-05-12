@@ -1078,25 +1078,27 @@ The first column is the sticky workstream label; phase columns carry numbered ch
 
 ---
 
-<!-- _class: kpi target -->
-<!-- _footer: "New layout — kpi · kpi target" -->
+<!-- _class: kpi attention -->
+<!-- _header: '' -->
+<!-- _footer: "New layout — kpi (bare = briefing default)" -->
 
-`Layout · kpi target`
+`Layout · kpi`
 
-## Kpi shows 3-4 metrics with target and delta lines.
+### Layout · kpi
+## One headline metric, three supports, status pills on every row.
 
-1. **3–4**
-   - Ideal cell count
-   - target 4, +1 QoQ
-2. **3-line**
-   - Cell anatomy: number, label, target/delta
-   - target 3, flat
-3. **target**
-   - Modifier — adds the target/delta footer
-   - target on, no change
-4. **target QoQ**
-   - The italic delta line is auto-styled
-   - target QoQ, +0.4× QoQ
+1. **94%**
+   - Token-issuance success
+   - target 99% · -5pp QoQ `At risk` `Board`
+2. **8 ms**
+   - p99 detokenize
+   - target 10 ms · -3 ms QoQ `On plan` `SRE`
+3. **0**
+   - Examiner findings
+   - target 0 · flat `On plan` `Audit`
+4. **3.2×**
+   - Detokenize headroom
+   - target 2× · +0.4× QoQ `On plan` `Platform`
 
 ---
 

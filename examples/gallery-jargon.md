@@ -748,23 +748,25 @@ The pilot team measured what the pilot team built.
 
 ---
 
-<!-- _class: kpi target -->
-<!-- _footer: "KPIs against targets · kpi target" -->
+<!-- _class: kpi attention -->
+<!-- _header: '' -->
+<!-- _footer: "KPIs against targets · kpi (briefing default)" -->
 
+### Decisioning · Q4 2026
 ## Where we are against quarter targets
 
 1. **94%**
    - Signal-classification success
-   - target 99%, gap is "known issue"
+   - target 99% · gap is "known issue" `At risk` `Board`
 2. **18 min**
    - p99 decision close
-   - target 20 min, beating target
+   - target 20 min · beating target `On plan` `Ops`
 3. **18**
    - Decisions logged
-   - target 340, gap is "cultural"
+   - target 340 · gap is "cultural" `Off plan` `Steering`
 4. **1**
    - Calibration cycles run
-   - target 6, gap is "structural"
+   - target 6 · gap is "structural" `Off plan` `Board`
 
 ---
 

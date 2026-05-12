@@ -1032,23 +1032,25 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ---
 
-<!-- _class: kpi target -->
-<!-- _footer: "New layout — kpi · kpi target" -->
+<!-- _class: kpi attention -->
+<!-- _header: '' -->
+<!-- _footer: "New layout — kpi (defaults to briefing)" -->
 
+### Authentication · Q4 2026
 ## Where we are against quarter targets.
 
 1. **94%**
    - Token-issuance success
-   - target 99%, +2pp QoQ
+   - target 99% · -5pp `At risk` `Board`
 2. **8 ms**
    - p99 detokenize
-   - target 10 ms, -3 ms QoQ
+   - target 10 ms `On plan` `SRE`
 3. **0**
    - Examiner findings
-   - target 0, flat
+   - target 0 `On plan` `Audit`
 4. **3.2×**
    - Detokenize headroom
-   - target 2×, +0.4× QoQ
+   - target 2× `On plan` `Platform`
 
 ---
 
