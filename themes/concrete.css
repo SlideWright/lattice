@@ -190,3 +190,33 @@
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js.
+   *
+   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
+   * the consumer-side migration completes. They will be removed in a
+   * follow-up commit. */
+  --c1-light:  #DFDDDD;  --c1-dark:  #6A4E4E;
+  --c2-light:  #DDDFDE;  --c2-dark:  #4F685C;
+  --c3-light:  #DDDEDF;  --c3-dark:  #4F5C68;
+  --c4-light:  #DFDEDD;  --c4-dark:  #685C4F;
+  --c5-light:  #DFDDDE;  --c5-dark:  #684F5C;
+  --c6-light:  #DDDFDF;  --c6-dark:  #4F6868;
+  --c7-light:  #DFDFDD;  --c7-dark:  #676751;
+  --c8-light:  #DDDFDD;  --c8-dark:  #516751;
+  --c9-light:  #DDDDDF;  --c9-dark:  #515167;
+  --c10-light: #DFDDDF;  --c10-dark: #675167;
+  --c11-light: #DEDFDD;  --c11-dark: #5C6751;
+  --c12-light: #DEDDDF;  --c12-dark: #5C5167;
+}

@@ -190,3 +190,33 @@
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js.
+   *
+   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
+   * the consumer-side migration completes. They will be removed in a
+   * follow-up commit. */
+  --c1-light:  #DEDEDE;  --c1-dark:  #605757;
+  --c2-light:  #DEDEDE;  --c2-dark:  #58605C;
+  --c3-light:  #DEDEDE;  --c3-dark:  #585C60;
+  --c4-light:  #DEDEDE;  --c4-dark:  #605C58;
+  --c5-light:  #DEDEDE;  --c5-dark:  #60585C;
+  --c6-light:  #DEDEDE;  --c6-dark:  #586060;
+  --c7-light:  #DEDEDE;  --c7-dark:  #5F5F58;
+  --c8-light:  #DEDEDE;  --c8-dark:  #585F58;
+  --c9-light:  #DEDEDE;  --c9-dark:  #58585F;
+  --c10-light: #DEDEDE;  --c10-dark: #5F585F;
+  --c11-light: #DEDEDE;  --c11-dark: #5C5F58;
+  --c12-light: #DEDEDE;  --c12-dark: #5C585F;
+}
