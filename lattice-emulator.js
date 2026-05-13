@@ -721,17 +721,19 @@ function renderMermaid(definition) {
       // newline:   <text>Wages\n750</text>
       // SVG ignores newlines inside <text> (no <tspan>, no line break), but
       // the post-mmdc pipeline runs the HTML through marp/markdown-it, which
-      // does parse `\n\n` inside the inlined SVG as a paragraph break and
-      // wraps the value in <p>…</p>. The resulting <text>Wages<p>750</text>
-      // is invalid SVG and breaks text positioning, producing the visible
-      // "750Disposable income750Savings…" run-together labels. Collapse the
-      // newlines inside every <text> element to a single space so the value
-      // sits inline (e.g. "Wages 750") and markdown-it leaves it alone.
-      // Sankey is the only diagram type that puts newlines inside <text>.
-      svg = svg.replace(/(<text\b[^>]*>)([\s\S]*?)(<\/text>)/g, (_m, open, inner, close) => {
-        const collapsed = inner.replace(/\s*\n\s*/g, ' ').trim();
-        return `${open}${collapsed}${close}`;
-      });
+      // parses `\n\n` inside the inlined SVG as a paragraph break and wraps
+      // the value in <p>…</p>. The resulting <text>Wages<p>750</text> is
+      // invalid SVG and breaks text positioning, producing the visible
+      // "750Disposable income750Savings…" run-together labels. Sankey is the
+      // only diagram type that puts newlines inside <text>; gate on the
+      // sankey-specific <g class="links"> marker so the substitution doesn't
+      // touch <text> elements in any other diagram type.
+      if (svg.includes('<g class="links"')) {
+        svg = svg.replace(/(<text\b[^>]*>)([\s\S]*?)(<\/text>)/g, (_m, open, inner, close) => {
+          const collapsed = inner.replace(/\s*\n\s*/g, ' ').trim();
+          return `${open}${collapsed}${close}`;
+        });
+      }
       fs.rmSync(tmpDir, { recursive: true, force: true });
       return `<div class="mermaid-svg">${svg}</div>`;
     } catch (e) {

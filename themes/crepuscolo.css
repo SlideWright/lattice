@@ -144,3 +144,50 @@
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
+
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+  --diagram-band-12:      var(--diagram-band-1);
+
+  --diagram-band-text-1:  var(--text-heading);
+  --diagram-band-text-2:  var(--text-heading);
+  --diagram-band-text-3:  var(--text-heading);
+  --diagram-band-text-4:  var(--text-heading);
+  --diagram-band-text-5:  var(--text-heading);
+  --diagram-band-text-6:  var(--text-heading);
+  --diagram-band-text-7:  var(--text-heading);
+  --diagram-band-text-8:  var(--text-heading);
+  --diagram-band-text-9:  var(--text-heading);
+  --diagram-band-text-10: var(--text-heading);
+  --diagram-band-text-11: var(--text-heading);
+  --diagram-band-text-12: var(--text-heading);
+
+  --diagram-line:                  var(--text-heading);
+
+  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active-stroke:   var(--text-heading);
+  --diagram-state-done:            var(--diagram-band-9);
+  --diagram-state-done-stroke:     var(--text-muted);
+  --diagram-state-critical:        #C20000;
+  --diagram-state-critical-stroke: #8B0000;
+  --diagram-state-today:           var(--diagram-band-7);
+  --diagram-state-grid:            var(--border);
+
+  --diagram-note-bg:     var(--diagram-band-7);
+  --diagram-note-stroke: var(--text-heading);
+
+  --diagram-error-bg:   #C20000;
+  --diagram-error-text: #FFFFFF;
+
+  --diagram-quadrant-1-fill: var(--diagram-band-1);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-7);
+  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-text: var(--text-heading);
+  --diagram-quadrant-2-text: var(--text-heading);
+  --diagram-quadrant-3-text: var(--text-heading);
+  --diagram-quadrant-4-text: var(--text-heading);
+}
+
