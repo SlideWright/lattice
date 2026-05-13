@@ -6869,6 +6869,47 @@ section .cluster.section-11 rect, section .section-11 rect,
 section .section-11 path, section .section-11 circle { fill: var(--diagram-band-12) !important; stroke: var(--diagram-stroke) !important; }
 section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--diagram-band-text-12) !important; color: var(--diagram-band-text-12) !important; }
 
+/* ── KANBAN BAND CYCLE (shifted) ──
+ * Mermaid's kanban renderer one-indexes its swim-lane clusters: the FIRST
+ * lane gets `<g class="cluster section-1">`, the second `section-2`, and
+ * so on (no `section-0` ever appears). The general `.section-N` rules
+ * above are zero-indexed (matching mindmap), so kanban's first lane
+ * picks up `band-2` instead of `band-1` — and every other diagram type
+ * in the deck (quadrant Q1, journey section-type-0, timeline section--1)
+ * is anchored to `band-1` for its first slot. The mismatch shows up as
+ * "first kanban lane reads the wrong colour" relative to every other
+ * first-slot in the gallery.
+ *
+ * Re-pin the cycle one band DOWN for `.cluster.section-N` (kanban's
+ * scope) so lane-1 → band-1, lane-2 → band-2, …, lane-11 → band-11.
+ * Higher specificity than the bare `.section-N` rule wins automatically.
+ * Mindmap (`.mindmap-node[…]`) and timeline (`.timeline-node.section-N`)
+ * keep their own scoped mappings; this rule only catches `<g class="cluster section-N">`
+ * which is unique to kanban among shipped diagram types.
+ */
+section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--diagram-band-1) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--diagram-band-text-1) !important; color: var(--diagram-band-text-1) !important; }
+section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--diagram-band-2) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--diagram-band-text-2) !important; color: var(--diagram-band-text-2) !important; }
+section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--diagram-band-3) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--diagram-band-text-3) !important; color: var(--diagram-band-text-3) !important; }
+section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--diagram-band-4) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--diagram-band-text-4) !important; color: var(--diagram-band-text-4) !important; }
+section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--diagram-band-5) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--diagram-band-text-5) !important; color: var(--diagram-band-text-5) !important; }
+section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--diagram-band-6) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--diagram-band-text-6) !important; color: var(--diagram-band-text-6) !important; }
+section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--diagram-band-7) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--diagram-band-text-7) !important; color: var(--diagram-band-text-7) !important; }
+section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--diagram-band-8) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--diagram-band-text-8) !important; color: var(--diagram-band-text-8) !important; }
+section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--diagram-band-9) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--diagram-band-text-9) !important; color: var(--diagram-band-text-9) !important; }
+section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--diagram-band-10) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--diagram-band-text-10) !important; color: var(--diagram-band-text-10) !important; }
+section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--diagram-band-11) !important; stroke: var(--diagram-stroke) !important; }
+section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--diagram-band-text-11) !important; color: var(--diagram-band-text-11) !important; }
+
 /* ── TIMELINE BAND CYCLE (shifted) ──
  * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
  * so the FIRST timeline section gets `section--1`, the second gets
