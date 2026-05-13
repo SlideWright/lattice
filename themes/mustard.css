@@ -81,17 +81,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Aged-mustard + oxblood (the apothecary duotone). Deep teal is the
-   * cool complement; dusty blue gives a second cool sibling for chart-4;
-   * olive reinforces the warm-archive feel; sepia ink grounds. */
-  --chart-1: light-dark(var(--brand-mustard-mid), var(--brand-mustard-bright)); /* MUSTARD */
-  --chart-2: light-dark(var(--brand-oxblood), var(--brand-oxblood-bright));     /* OXBLOOD */
-  --chart-3: light-dark(#1F6B7C, #5BB5CC);   /* DEEP-TEAL */
-  --chart-4: light-dark(#4D5E8A, #8095BC);   /* DUSTY-BLUE */
-  --chart-5: light-dark(#6B7530, #A5B560);   /* OLIVE */
-  --chart-6: light-dark(var(--brand-mustard-deep), #BDAC78); /* SEPIA-INK */
-
   --scale-500: var(--brand-mustard-mid);
 
   /* Tag uses --chart-2 (oxblood) — the apothecary alarm/label pop. */
@@ -116,50 +105,17 @@
   --dark-text-display: #F0E5C8;
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --diagram-band-1:   #E8D580;
-  --diagram-band-2: #D8E5D5;
   --diagram-stroke:          #3D2D14;
   --diagram-accent-warm:     var(--brand-oxblood);
-  --diagram-band-3:  #F0D8CC;  /* peach — promoted from band-6 for warm accent */
-  --diagram-band-4:  #F5E5A8;  /* pale mustard-amber */
-  --diagram-band-5:    #F0E5C8;  /* parchment — demoted from band-2 */
-  --diagram-band-6:    #F0E8C0;  /* parchment-gold — demoted from band-3 */
-  --diagram-band-7:  #F0E8D0;  /* pale parchment */
-  --diagram-band-8:     #EDD5C8;  /* pale terracotta */
-  --diagram-band-9:   #E0D8C5;  /* pale warm-slate */
-  --diagram-band-10:    #D8E0CC;  /* pale sage-green */
-  --diagram-band-11:  #E5E0C8;  /* pale warm-neutral */
   /* cScale / gitgraph — slot 0 anchors band-1 mustard (BRAND); slot 1 sage
    * echoes band-2; slot 2 terracotta echoes band-3 peach. Slots 3-7 carry
    * mustard's chart palette (amber, deep teal, oxblood, sepia, plum) for
    * categorical distinction. All values ≥4.5:1 on --bg #FCF8F0. */
-  --cat-blue:   #786010;  /* mustard — band-1 BRAND,    5.70:1 AA  */
-  --cat-green:  #385848;  /* sage    — band-2,          7.46:1 AAA */
-  --cat-purple: #804838;  /* terracotta — band-3 peach, 6.83:1 AA  */
-  --cat-orange: #906818;  /* amber   — band-4,          4.74:1 AA  */
-  --cat-teal:   #305848;  /* deep teal — cool break,    7.58:1 AAA */
-  --cat-rose:   #581A10;  /* oxblood — band-8,         12.63:1 AAA */
-  --cat-slate:  #685040;  /* warm sepia — band-9,       7.05:1 AAA */
-  --cat-mauve:  #6E4558;  /* dusty plum — cool accent,  7.47:1 AAA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -178,16 +134,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-3);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c3-light);
+  --diagram-quadrant-4-fill: var(--c4-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -204,11 +159,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #E8E3D4;  --c1-dark:  #8B7123;
   --c2-light:  #D5E2E7;  --c2-dark:  #29758E;
   --c3-light:  #D9D5E7;  --c3-dark:  #42298E;

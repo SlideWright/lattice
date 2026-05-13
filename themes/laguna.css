@@ -77,17 +77,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Coastal teal + complementary coral (the brand duotone). Golden sand
-   * is the warm bridge to the canvas; deep navy gives a cooler-cool sibling;
-   * sage muted; deep teal ink grounds. */
-  --chart-1: light-dark(var(--brand-teal-mid), var(--brand-teal-bright)); /* TEAL */
-  --chart-2: light-dark(var(--brand-coral), var(--brand-coral-bright));   /* CORAL */
-  --chart-3: light-dark(#C49526, #E0B855);   /* GOLDEN-SAND */
-  --chart-4: light-dark(#2D4D6B, #6087A8);   /* DEEP-NAVY */
-  --chart-5: light-dark(#7A8F7E, #A8B89C);   /* SAGE */
-  --chart-6: light-dark(var(--brand-teal-deep), #6F7C7F); /* DEEP-TEAL-INK */
-
   --scale-500: var(--brand-teal-mid);
 
   /* Tag uses --chart-2 (coral) by default — laguna's hospitality duotone. */
@@ -112,51 +101,18 @@
   --dark-text-display: #EFE8D7;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --diagram-band-1:   #D2E8EA;
-  --diagram-band-2: #F4DBD0; /* warm coral pale */
   --diagram-stroke:          #0F2D31;
   --diagram-accent-warm:     var(--brand-coral); /* the coral pop */
-  --diagram-band-3:  #ADCED2;  /* deeper teal (band-1 hue, L≈80) */
-  --diagram-band-4:  #E5C0AE;  /* deeper coral (band-2 hue, L≈80) */
-  --diagram-band-5:    #CBE0E0;  /* deeper pale teal */
-  --diagram-band-6:    #F8E8D8;  /* pale sandy peach */
-  --diagram-band-7:  #F2E5C0;  /* pale warm sand */
-  --diagram-band-8:     #F5D8CC;  /* pale salmon */
-  --diagram-band-9:   #D8E5E8;  /* pale slate-teal */
-  --diagram-band-10:    #D8E0D5;  /* pale sage-green */
-  --diagram-band-11:  #DCE6E8;  /* very pale aqua */
   /* cScale / gitgraph — slot 0 anchors band-1 teal-deep (BRAND); slot 1
    * coral echoes band-2. Slot 3 swapped from deep-navy to amber so it
    * doesn't collide with slot 0's blue family (branches 0 and 3 collided
    * as cool blues). Slots 4-7 retain laguna's curated mid-tones. All
    * values ≥3:1 graphical on --bg #F5FAFC. */
-  --cat-blue:   #286870;  /* deep teal — band-1 BRAND,    6.04:1 AA */
-  --cat-green:  #A85E40;  /* coral     — band-2,          4.60:1 AA */
-  --cat-purple: #7A8430;  /* olive     — distinct green,  3.86:1 graphical */
-  --cat-orange: #A07810;  /* amber     — warm break,      3.85:1 graphical */
-  --cat-teal:   #387860;  /* sage-teal — band-5,          4.96:1 AA */
-  --cat-rose:   #A07860;  /* warm sand-brown,             3.73:1 graphical */
-  --cat-slate:  #3A6070;  /* teal-slate — band-9,         6.47:1 AA */
-  --cat-mauve:  #807060;  /* warm gray-brown,             4.53:1 AA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -175,16 +131,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c7-light);
+  --diagram-quadrant-4-fill: var(--c3-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -201,11 +156,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #D3E6E8;  --c1-dark:  #2E7F8A;
   --c2-light:  #E8D4DC;  --c2-dark:  #863252;
   --c3-light:  #E8E0D4;  --c3-dark:  #866632;

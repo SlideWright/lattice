@@ -120,32 +120,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Hand-picked following the Wong-2011 CB-safe baseline, anchored on
-   * indaco's brand mid-blue. Each pair (1↔2, 3↔4) is a complementary
-   * opposition that survives deuteranopia / protanopia. chart-5 is a
-   * mustard-gold whose lightness anchors the palette's "warm muted"
-   * voice; chart-6 is a deep slate ink for grounding.
-   *
-   *   chart-1 BLUE         brand mid-blue (= --accent on light)
-   *   chart-2 VERMILION   warm complement, CB-safe with blue
-   *   chart-3 TEAL         analogous-cool sibling, lifted from chart-1
-   *   chart-4 MAGENTA      4th distinct hue, opposes teal across CB axis
-   *   chart-5 GOLD         mustard-gold, lightness anchor (warm muted)
-   *   chart-6 SLATE-INK    dark grounding, theme-neutral
-   *
-   * Light: foreground on warm-white #FFFFFF.
-   * Dark:  foreground on dark-bg #001D33; lifted +20-25 lightness.
-   * Tested pairwise via OKLab distance; minimum ΔE ≈ 30 between any
-   * two non-adjacent slots, sufficient for distinct-without-position
-   * reading. */
-  --chart-1: light-dark(#006FA8, #4C9EE0);   /* BLUE */
-  --chart-2: light-dark(#C45D27, #ED7D45);   /* VERMILION */
-  --chart-3: light-dark(#1FA694, #4ED2C0);   /* TEAL */
-  --chart-4: light-dark(#B8438C, #DC75B0);   /* MAGENTA */
-  --chart-5: light-dark(#C8A82E, #E8C652);   /* GOLD */
-  --chart-6: light-dark(#3F4A60, #8A95B0);   /* SLATE-INK */
-
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
   --scale-500: var(--brand-blue-mid);
@@ -285,43 +259,6 @@ section .hljs-strong { font-weight:700; }
  * structural shape — which slot is band, stroke, state, etc. — is the
  * same across every palette; this file supplies indaco's values. */
 :root {
-  /* ── Band cycle (12 slots, tinted L≈83) ──────────────────────────
-   * Categorical surfaces: timeline periods, kanban columns, mindmap
-   * levels, journey sections, c4 layers, pie slices, treemap leaves,
-   * gitgraph label pills. Slot 1 doubles as the canonical primary fill
-   * for any single-band diagram (flowchart node, sequence actor). */
-  --diagram-band-1:  #BCD5EC;  /* brand blue */
-  --diagram-band-2:  #C1E4D5;  /* brand green */
-  --diagram-band-3:  #D1C5DC;  /* purple */
-  --diagram-band-4:  #EDD1B8;  /* peach */
-  --diagram-band-5:  #BCE3E1;  /* teal */
-  --diagram-band-6:  #E6C1C8;  /* rose */
-  --diagram-band-7:  #EBE2B8;  /* yellow */
-  --diagram-band-8:  #E7BEBE;  /* salmon */
-  --diagram-band-9:  #C8CFDA;  /* slate */
-  --diagram-band-10: #C0D5C6;  /* sage */
-  --diagram-band-11: #D9C7DC;  /* violet */
-  --diagram-band-12: #DAC8D1;  /* dusty mauve */
-
-  /* Paired text for each band slot. AA (4.5:1) against the matching
-   * band, asserted by test/unit/contrast.test.js. Bands remain pale in
-   * both light and dark canvas modes (a Mermaid diagram is a "figure
-   * window" with its own ink/paper contract, not a panel that flips
-   * with the surrounding canvas), so band-text is pinned to a fixed
-   * dark hex rather than light-dark(--text-heading,…). The slots are
-   * declared separately so future palettes can vary per-band if needed. */
-  --diagram-band-text-1:  #0A1628;
-  --diagram-band-text-2:  #0A1628;
-  --diagram-band-text-3:  #0A1628;
-  --diagram-band-text-4:  #0A1628;
-  --diagram-band-text-5:  #0A1628;
-  --diagram-band-text-6:  #0A1628;
-  --diagram-band-text-7:  #0A1628;
-  --diagram-band-text-8:  #0A1628;
-  --diagram-band-text-9:  #0A1628;
-  --diagram-band-text-10: #0A1628;
-  --diagram-band-text-11: #0A1628;
-  --diagram-band-text-12: #0A1628;
 
   /* ── Structural ───────────────────────────────────────────────────
    * Universal stroke for any band fill; reads on every pale tint
@@ -335,21 +272,6 @@ section .hljs-strong { font-weight:700; }
    * pale tint. */
   --diagram-accent-warm: #BD5000;
 
-  /* ── Mid-tone categorical palette (L≈60) ──────────────────────────
-   * Brand-level source of truth for any layout that needs categorical
-   * marks at mid-tone: kpi accents, chart-family lines, gitgraph dots,
-   * Mermaid cScale (kanban lighten step brings these to L≈70). Used
-   * beyond the diagram layer — leave role-named without --diagram-
-   * prefix to keep cross-layout consumers honest. */
-  --cat-blue:    #5C9DD3;
-  --cat-green:   #6FB89A;
-  --cat-purple:  #8E7BAF;
-  --cat-orange:  #D4A271;
-  --cat-teal:    #6BBDB8;
-  --cat-rose:    #C57E8B;
-  --cat-slate:   #9AA8B8;
-  --cat-mauve:   #B8939F;
-
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
    * Earlier values sat at L≈95 — visibly washed against the band cycle
    * which was deepened to L≈83. Pin fills to the band tokens so the
@@ -358,16 +280,16 @@ section .hljs-strong { font-weight:700; }
    * convention: Q1 top-right, Q2 top-left, Q3 bottom-left, Q4 bottom-
    * right. Hue mapping picks a semantic that reads correctly under the
    * canonical labels (Strategic Bets / Quick Wins / Defer / Time Sinks):
-   *   Q1 strategic → band-1 (brand blue — long-horizon work)
-   *   Q2 quick-wins → band-2 (green — do it now)
-   *   Q3 defer     → band-7 (yellow — hold)
-   *   Q4 time-sinks → band-3 (purple — drag)
+   *   Q1 strategic → c1-light (brand blue — long-horizon work)
+   *   Q2 quick-wins → c2-light (green — do it now)
+   *   Q3 defer     → c7-light (yellow — hold)
+   *   Q4 time-sinks → c3-light (purple — drag)
    * Text stays per-quadrant saturated so each label hue reinforces its
    * quadrant's identity at AA on its band. */
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c7-light);
+  --diagram-quadrant-4-fill: var(--c3-light);
   --diagram-quadrant-1-text: #004A8A;
   --diagram-quadrant-2-text: #2D5E18;
   --diagram-quadrant-3-text: #7A5200;
@@ -407,11 +329,7 @@ section .hljs-strong { font-weight:700; }
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #D4DFE8;  --c1-dark:  #2E608A;
   --c2-light:  #E7D5D6;  --c2-dark:  #863236;
   --c3-light:  #E7E6D5;  --c3-dark:  #7B772D;

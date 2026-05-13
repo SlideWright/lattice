@@ -81,17 +81,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Dusty rose anchor + sage complement (cool-warm balance). Dusty teal
-   * and warm amber give analogous-cool/analogous-warm distinction;
-   * mauve-violet is the muted bridge; garnet ink grounds. */
-  --chart-1: light-dark(var(--brand-rose-mid), var(--brand-rose-bright)); /* ROSE */
-  --chart-2: light-dark(#758C6E, #A5BB95);   /* SAGE */
-  --chart-3: light-dark(#4A8590, #7AB5BC);   /* DUSTY-TEAL */
-  --chart-4: light-dark(#C49526, #E0B855);   /* AMBER */
-  --chart-5: light-dark(#8B6E8C, #B89AAB);   /* MAUVE-VIOLET */
-  --chart-6: light-dark(var(--brand-rose-deep), #B79A93); /* GARNET-INK */
-
   --scale-500: var(--brand-rose-mid);
 
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
@@ -114,50 +103,17 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --diagram-band-1:   #F5DDD8;
-  --diagram-band-2: #EFD5C9;
   --diagram-stroke:          #5A2530;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #D8E8DC;  /* sage — promoted from band-5 for chart-2 cool complement */
-  --diagram-band-4:  #F0DBBF;  /* pale peach-gold */
-  --diagram-band-5:    #E5BFB8;  /* deeper dusty-rose — demoted from band-3 */
-  --diagram-band-6:    #DCBAA8;  /* deeper peach (band-2 hue, L≈75) */
-  --diagram-band-7:  #F5EDCC;  /* pale cream-gold */
-  --diagram-band-8:     #F2D2D0;  /* pale faded-rose */
-  --diagram-band-9:   #E0D8E0;  /* pale dusty-mauve */
-  --diagram-band-10:    #D5E5D8;  /* pale sage */
-  --diagram-band-11:  #EAD8E5;  /* pale dusty-violet */
   /* cScale / gitgraph — slot 0 anchors band-1 dusty-rose (BRAND). Slot 1
    * coral echoes band-2 peach. Slot 2 sage echoes band-3 sage. Slot 5
    * swapped from dusty-pink (collided with slot 0 dusty-rose) to dusty-
    * violet for a cool break. All values ≥3:1 graphical on --bg #FCF8F5. */
-  --cat-blue:   #A06070;  /* dusty rose   — band-1 BRAND,    4.52:1 AA */
-  --cat-green:  #B85D5D;  /* coral        — band-2 peach,    4.18:1 graphical */
-  --cat-purple: #587848;  /* sage         — band-3,          4.74:1 AA */
-  --cat-orange: #9C6E40;  /* dusty amber  — band-4 gold,     4.21:1 graphical */
-  --cat-teal:   #487A68;  /* sage-teal    — cool green,      4.67:1 AA */
-  --cat-rose:   #805880;  /* dusty violet — cool break,      5.48:1 AA */
-  --cat-slate:  #6A7880;  /* cool slate   — band-9,          4.31:1 graphical */
-  --cat-mauve:  #886070;  /* dusty mauve  — achromatic,      5.03:1 AA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -176,16 +132,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-3);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c3-light);
+  --diagram-quadrant-4-fill: var(--c4-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -202,11 +157,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #E6D6D8;  --c1-dark:  #813743;
   --c2-light:  #D6E5DB;  --c2-dark:  #3A7E51;
   --c3-light:  #D6E0E5;  --c3-dark:  #3A677E;

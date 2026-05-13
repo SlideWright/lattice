@@ -76,19 +76,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Steel + warm-tan complement. Brina's restraint allows charts a touch
-   * more chroma than the rest of the deck — but each chart-N is still
-   * pulled toward the cool/desaturated end so the palette feels Nordic.
-   * Deep wine is the saturated outlier (CB-distinct from steel); mauve-
-   * grey is the muted bridge; graphite ink grounds. */
-  --chart-1: light-dark(var(--brand-steel-mid), var(--brand-steel-bright)); /* STEEL */
-  --chart-2: light-dark(#B5895E, #DBB590);   /* WARM-TAN */
-  --chart-3: light-dark(#4D958F, #7CC0BA);   /* TEAL-CYAN */
-  --chart-4: light-dark(#8B354C, #C56880);   /* DEEP-WINE */
-  --chart-5: light-dark(#7E7390, #B0A6BD);   /* MAUVE-GREY */
-  --chart-6: light-dark(var(--brand-steel-deep), #6F7E8F); /* GRAPHITE-INK */
-
   --scale-500: var(--brand-steel-mid);
 
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
@@ -111,51 +98,18 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --diagram-band-1:   #DAE6EE;
-  --diagram-band-2: #F2E5D5;
   --diagram-stroke:          #1E2A38;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #E8E0EE;  /* lavender-ice — promoted from band-6 for cool accent */
-  --diagram-band-4:  #E5EAF0;  /* lighter steel — was original band-2 */
-  --diagram-band-5:    #D0E5E8;  /* pale frost-teal */
-  --diagram-band-6:    #B5CDDA;  /* deeper steel-blue — demoted from band-3 */
-  --diagram-band-7:  #F0ECD5;  /* pale cream */
-  --diagram-band-8:     #F0DDE0;  /* pale arctic-rose */
-  --diagram-band-9:   #D8E0EA;  /* pale glacier-gray */
-  --diagram-band-10:    #D5E5E8;  /* pale sage-ice */
-  --diagram-band-11:  #E0D8EC;  /* pale frost-violet */
   /* cScale / gitgraph — slot 0 anchors band-1 steel-blue (BRAND); slot 1
    * brass echoes band-2 warm-tan. Slot 3 swapped from cool-gray-blue
    * (collided with slot 0 steel) to deep-wine — the brina chart-4 CB-safe
    * complement. Slot 5 retuned to mauve-grey for distinction from
    * cool-lavender at slot 2. All values ≥3:1 graphical on --bg #F2F5F7. */
-  --cat-blue:   #3E687C;  /* steel-blue       — band-1 BRAND,    5.52:1 AA */
-  --cat-green:  #8A6E48;  /* warm brass       — band-2 tan,      4.35:1 graphical */
-  --cat-purple: #5A6080;  /* cool lavender    — band-3 ice,      5.61:1 AA */
-  --cat-orange: #8B354C;  /* deep wine        — chart-4 CB pair, 7.07:1 AAA */
-  --cat-teal:   #3A7888;  /* glacier teal     — band-5 frost,    4.54:1 AA */
-  --cat-rose:   #7E7390;  /* mauve-grey       — chart-5,         4.04:1 graphical */
-  --cat-slate:  #506080;  /* cool slate-blue  — band-9,          5.77:1 AA */
-  --cat-mauve:  #707080;  /* cool mid-gray    — achromatic,      4.44:1 graphical */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -174,16 +128,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-3);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c3-light);
+  --diagram-quadrant-4-fill: var(--c4-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -200,11 +153,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #D8E0E4;  --c1-dark:  #3C697C;
   --c2-light:  #E3D8DB;  --c2-dark:  #793E4A;
   --c3-light:  #E3E1D8;  --c3-dark:  #796E3E;

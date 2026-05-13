@@ -81,18 +81,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Brutalist gray-canvas theme. Jet + oxblood is the duotone; three
-   * desaturated chromatic voices give chart distinction without breaking
-   * the architectural quiet. The neutrals (chart-5, chart-6) anchor the
-   * lightness hierarchy on the gray canvas. */
-  --chart-1: light-dark(var(--brand-jet), var(--brand-bone));      /* JET / BONE */
-  --chart-2: light-dark(var(--brand-oxblood), var(--brand-oxblood-soft)); /* OXBLOOD */
-  --chart-3: light-dark(#4D6B7C, #87A0BC);   /* DESAT-BLUE */
-  --chart-4: light-dark(#6B7530, #A8B560);   /* DESAT-OLIVE */
-  --chart-5: light-dark(#585855, #C8C8C5);   /* NEUTRAL-DARK */
-  --chart-6: light-dark(#989895, #B8B8B5);   /* NEUTRAL-MID */
-
   --scale-500: light-dark(#585855, #B8B8B5);
 
   /* Tag uses --chart-2 (oxblood) — Concrete's signature accent break. */
@@ -117,47 +105,14 @@
   --dark-text-display: #ECECE8;
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --diagram-band-1:   #D5D5D2;
-  --diagram-band-2: #E8D8D0;
   --diagram-stroke:          #2A2A28;
   --diagram-accent-warm:     var(--brand-oxblood);
-  --diagram-band-3:  #D8D5E0;  /* cool-gray-violet — promoted from band-11 for cool accent */
-  --diagram-band-4:  #ECECE8;  /* lighter concrete — was original band-2 */
-  --diagram-band-5:    #CCCCCA;  /* slightly darker concrete */
-  --diagram-band-6:    #E8D8D5;  /* pale warm-gray-rose */
-  --diagram-band-7:  #E8E5D8;  /* pale warm-bone */
-  --diagram-band-8:     #E5D0D0;  /* pale warm-red */
-  --diagram-band-9:   #D5D5CE;  /* concrete-slate */
-  --diagram-band-10:    #D8DDD5;  /* pale warm-sage */
-  --diagram-band-11:  #B5B5B0;  /* deeper concrete — demoted from band-3 */
   /* cScale / gitgraph — warm gray with one oxblood pop */
-  --cat-blue:   #585856;
-  --cat-green:  #921E1E;  /* oxblood */
-  --cat-purple: #787876;
-  --cat-orange: #404040;
-  --cat-teal:   #686866;
-  --cat-rose:   #9E9E9C;
-  --cat-slate:  #505050;
-  --cat-mauve:  #8A8A88;
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -176,16 +131,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-3);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c3-light);
+  --diagram-quadrant-4-fill: var(--c4-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -202,11 +156,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #DFDDDD;  --c1-dark:  #6A4E4E;
   --c2-light:  #DDDFDE;  --c2-dark:  #4F685C;
   --c3-light:  #DDDEDF;  --c3-dark:  #4F5C68;

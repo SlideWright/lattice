@@ -85,28 +85,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Wine + champagne + four supporting voices. Burgundy's identity is the
-   * duotone (chart-1 wine + chart-2 champagne); the remaining four
-   * provide perceptual distance for charts that need 3-6 categories.
-   *
-   *   chart-1 WINE         brand mid-wine — the headline
-   *   chart-2 CHAMPAGNE    duotone partner (= --tag-bg)
-   *   chart-3 DEEP-TEAL    cool complement, CB-safe with red-wine
-   *   chart-4 DEEP-VIOLET  4th distinct hue, opposes teal
-   *   chart-5 OLIVE-SAGE   muted bridge between warm + cool
-   *   chart-6 WALNUT-INK   theme-coherent dark grounding
-   *
-   * Pairwise OKLab distance ≥ 30 between any non-adjacent slots.
-   * The wine ↔ teal opposition is the deuteranopia anchor (red-cyan
-   * pair survives D-deficient vision). */
-  --chart-1: light-dark(#742532, var(--brand-wine-bright));   /* WINE */
-  --chart-2: light-dark(#B8995E, var(--brand-champagne-soft)); /* CHAMPAGNE */
-  --chart-3: light-dark(#1F5C50, #4DA08C);   /* DEEP-TEAL */
-  --chart-4: light-dark(#7B4F9C, #A782C7);   /* DEEP-VIOLET */
-  --chart-5: light-dark(#8FA070, #B5C49A);   /* OLIVE-SAGE */
-  --chart-6: light-dark(#3F2D14, #8B7858);   /* WALNUT-INK */
-
   /* Sequential ramp anchor — burgundy's brand mid-wine. */
   --scale-500: var(--brand-wine-mid);
 
@@ -133,51 +111,18 @@
   --dark-text-display: #F0E2CE;
 
   /* ── Mermaid extensions — champagne pop on second curve ────────────── */
-  --diagram-band-1:   #EAD4D8;
-  --diagram-band-2: #F0E2CE;
   --diagram-stroke:          #48202A;
   --diagram-accent-warm:     var(--brand-champagne);
-  --diagram-band-3:  #D2B5BD;  /* deeper wine-rose (band-1 hue, L≈80) */
-  --diagram-band-4:  #E2CAA8;  /* deeper champagne (band-2 hue, L≈80) */
-  --diagram-band-5:    #D5E0E5;  /* pale steel-teal */
-  --diagram-band-6:    #F0D4D8;  /* deeper pale rose */
-  --diagram-band-7:  #F0E8C8;  /* pale champagne-gold */
-  --diagram-band-8:     #F0CCCC;  /* pale faded-wine */
-  --diagram-band-9:   #E0D5D8;  /* pale mauve-slate */
-  --diagram-band-10:    #D8E0D5;  /* pale sage */
-  --diagram-band-11:  #E5D0E8;  /* pale violet pop */
   /* cScale / gitgraph — slot 0 anchors band-1 wine (BRAND); slot 1
    * champagne echoes band-2. Slots 5 + 7 swapped away from wine-rose
    * and dusty-wine-mauve (which collided with slot 0 wine) to forest
    * + dusty-plum, giving a green break and a cool-violet anchor. All
    * values ≥4.5:1 on --bg #FAF2F2. */
-  --cat-blue:   #7A2230;  /* wine          — band-1 BRAND,    9.07:1 AAA */
-  --cat-green:  #8A6E38;  /* champagne mid — band-2,          4.36:1 graphical */
-  --cat-purple: #582888;  /* deep violet   — cool accent,     9.18:1 AAA */
-  --cat-orange: #804838;  /* terracotta    — warm rust,       6.56:1 AA  */
-  --cat-teal:   #385878;  /* steel-blue    — band-5,          6.72:1 AA  */
-  --cat-rose:   #4A6B3A;  /* forest        — green break,     5.51:1 AA  */
-  --cat-slate:  #585070;  /* mauve-slate   — cool achromatic, 6.81:1 AA  */
-  --cat-mauve:  #6E4558;  /* dusty plum    — cool violet,     7.17:1 AAA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -196,16 +141,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-5);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c5-light);
+  --diagram-quadrant-4-fill: var(--c3-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -222,11 +166,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #E8D4D8;  --c1-dark:  #8E293E;
   --c2-light:  #D5E7DA;  --c2-dark:  #2C8647;
   --c3-light:  #D5E2E7;  --c3-dark:  #2D6E8A;

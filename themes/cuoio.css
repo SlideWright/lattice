@@ -131,18 +131,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Saddle + earth-pigment family. Cuoio's brand is the saddle gold;
-   * the duotone partner is deep teal (cool complement, CB-safe with
-   * warm gold). Terracotta and forest are the analogous siblings;
-   * dusty plum is the muted bridge. */
-  --chart-1: light-dark(var(--brand-leather), var(--brand-gold-bright)); /* SADDLE */
-  --chart-2: light-dark(#1F6B7C, #5BB8C7);   /* DEEP-TEAL */
-  --chart-3: light-dark(#B8553A, #DC8062);   /* TERRACOTTA */
-  --chart-4: light-dark(#45734A, #7AAB85);   /* FOREST */
-  --chart-5: light-dark(#8A5E73, #C29AAE);   /* DUSTY-PLUM */
-  --chart-6: light-dark(var(--brand-leather-deep), #C4B8A8); /* ESPRESSO-INK */
-
   --scale-500: var(--brand-leather);
 
   /* Tag uses --chart-2 (deep teal) by default — the saddle/teal duotone
@@ -299,45 +287,6 @@ section .hljs-strong { font-weight:700; }
  * same across every palette; this file supplies cuoio's warm-earth
  * values. */
 :root {
-  /* ── Band cycle (12 slots, cream/parchment L≈83) ─────────────────
-   * Categorical surfaces: timeline periods, kanban columns, mindmap
-   * levels, journey sections, c4 layers, pie slices, treemap leaves,
-   * gitgraph label pills. Slot 1 doubles as the canonical primary fill
-   * for any single-band diagram (flowchart node, sequence actor).
-   * Cuoio's band is a tonal ladder of warm cream variations rather
-   * than indaco's six-hue rotation — keeps the "ink-on-vellum" voice. */
-  --diagram-band-1:  #E6DAC8;  /* warm cream (canonical primary) */
-  --diagram-band-2:  #D5CCE1;  /* iris — promoted from band-3, cool pull */
-  --diagram-band-3:  #E1CCD9;  /* rose — promoted from band-6, warm pink pull */
-  --diagram-band-4:  #EBDBC1;  /* gold wash */
-  --diagram-band-5:  #D1C5B3;  /* deeper cream — was original band-2 */
-  --diagram-band-6:  #C7D9DC;  /* petrol — demoted from band-5 */
-  --diagram-band-7:  #EDD5B8;  /* wheat */
-  --diagram-band-8:  #E3C5C5;  /* sienna */
-  --diagram-band-9:  #D7D0C6;  /* taupe */
-  --diagram-band-10: #D2DCBD;  /* moss */
-  --diagram-band-11: #D2CAE1;  /* lilac */
-  --diagram-band-12: #DDD1BD;  /* parchment */
-
-  /* Paired text for each band slot. AA (4.5:1) against the matching
-   * band, asserted by test/unit/contrast.test.js. Bands remain cream
-   * in both light and dark canvas modes (a Mermaid diagram is a
-   * "figure window" with its own ink/paper contract, not a panel
-   * that flips with the surrounding canvas), so band-text is pinned
-   * to a fixed dark espresso hex rather than light-dark(--text-heading,…).
-   * Slots are separate so future palettes can vary per-band if needed. */
-  --diagram-band-text-1:  #1E1A15;
-  --diagram-band-text-2:  #1E1A15;
-  --diagram-band-text-3:  #1E1A15;
-  --diagram-band-text-4:  #1E1A15;
-  --diagram-band-text-5:  #1E1A15;
-  --diagram-band-text-6:  #1E1A15;
-  --diagram-band-text-7:  #1E1A15;
-  --diagram-band-text-8:  #1E1A15;
-  --diagram-band-text-9:  #1E1A15;
-  --diagram-band-text-10: #1E1A15;
-  --diagram-band-text-11: #1E1A15;
-  --diagram-band-text-12: #1E1A15;
 
   /* ── Structural ───────────────────────────────────────────────────
    * Universal stroke for any band fill; deep taupe reads on every
@@ -350,26 +299,6 @@ section .hljs-strong { font-weight:700; }
    * tint. */
   --diagram-accent-warm: var(--brand-leather);
 
-  /* ── Mid-tone categorical palette (L≈30–45) ───────────────────────
-   * Dark earth pigments used as foreground marks ON the cream surface
-   * (radar curves, kpi accents, status dots, gitgraph dots, mermaid
-   * cScale fed at saturation, not pastel). Slot 0 anchors on cuoio's
-   * brand saddle leather so gitgraph's first branch and the first
-   * xy-chart plot register as "the cuoio voice" — matching band-1
-   * cream-deep. Slots 1-2 echo band-2 iris + band-3 rose (the two
-   * distinct accents promoted into the band cycle by the treemap
-   * reorder). Slots 3-7 carry cuoio's curated chart palette
-   * (amber, deep-teal, forest, taupe, deeper-rose) for categorical
-   * distinction. Every value clears WCAG AA (≥4.5:1) on --bg #FAF7F2. */
-  --cat-blue:    var(--brand-leather); /* saddle — band-1 cream-deep, BRAND, 5.96:1 AA */
-  --cat-green:   #4F4770;  /* iris   — band-2,        7.96:1 AAA */
-  --cat-purple:  #76394C;  /* rose   — band-3,        7.99:1 AAA */
-  --cat-orange:  #8A6822;  /* amber  — band-4 gold,   4.81:1 AA  */
-  --cat-teal:    #1F6B7C;  /* deep teal — cool break, 5.69:1 AA  */
-  --cat-rose:    #45734A;  /* forest — green accent,  5.17:1 AA  */
-  --cat-slate:   #7A6B59;  /* taupe  — band-9,        4.82:1 AA  */
-  --cat-mauve:   #6E4558;  /* deeper rose — band-11,  7.40:1 AAA */
-
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
    * Cuoio is monochrome warm by identity, but the band cycle pulls in
    * two subtle cool accents (band-3 iris, band-5 petrol). The quadrant
@@ -377,15 +306,15 @@ section .hljs-strong { font-weight:700; }
    * so pull from both warm and the two cool accents — the warm-leather
    * voice still dominates (Q1 cream + Q3 wheat) and the two cool pulls
    * supply distinction without competing with the brand. Hue mapping:
-   *   Q1 strategic   → band-1 (cream)
-   *   Q2 quick-wins  → band-3 (iris pull, cool)
-   *   Q3 defer       → band-7 (wheat)
-   *   Q4 time-sinks  → band-5 (petrol pull, cool)
+   *   Q1 strategic   → c1-light (cream)
+   *   Q2 quick-wins  → c3-light (iris pull, cool)
+   *   Q3 defer       → c7-light (wheat)
+   *   Q4 time-sinks  → c5-light (petrol pull, cool)
    * Text stays the universal cuoio ink — all four pairs clear AA. */
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-3);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c3-light);
+  --diagram-quadrant-4-fill: var(--c4-light);
   --diagram-quadrant-1-text: #1E1A15;
   --diagram-quadrant-2-text: #1E1A15;
   --diagram-quadrant-3-text: #1E1A15;
@@ -434,11 +363,7 @@ section .hljs-strong { font-weight:700; }
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #E7E0D5;  --c1-dark:  #8A672E;
   --c2-light:  #D5E4E6;  --c2-dark:  #327C86;
   --c3-light:  #D7D5E6;  --c3-dark:  #3B3286;

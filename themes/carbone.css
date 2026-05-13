@@ -92,18 +92,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Pinned-dark theme. All chart colors are foreground-bright on the
-   * #1A1A1C graphite canvas. Lime + amber is the duotone (the cyber
-   * editorial pop); cyan and magenta complete a CMYK-style 4-hue spread;
-   * bone neutral and graphite-mid ground. */
-  --chart-1: var(--brand-lime);   /* LIME — brand */
-  --chart-2: #FFD166;             /* AMBER */
-  --chart-3: #5BCBDD;             /* CYAN */
-  --chart-4: #F277B8;             /* MAGENTA */
-  --chart-5: #DCDCD7;             /* BONE */
-  --chart-6: #757A82;             /* GRAPHITE-MID */
-
   --scale-500: var(--brand-lime);
 
   /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
@@ -131,48 +119,15 @@
   --dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --diagram-band-1:   #2A2A2E;
-  --diagram-band-2: #2C3D2F;
   --diagram-stroke:          var(--brand-lime);
   --diagram-accent-warm:     #FFD166;
   /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
-  --diagram-band-3:  #2E2A38;
-  --diagram-band-4:  #382E22;
-  --diagram-band-5:    #223328;
-  --diagram-band-6:    #342830;
-  --diagram-band-7:  #35332A;
-  --diagram-band-8:     #38282A;
-  --diagram-band-9:   #2A2E38;
-  --diagram-band-10:    #253328;
-  --diagram-band-11:  #2C2838;
   /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
-  --cat-blue:   #4A9C56;  /* darker lime */
-  --cat-green:  #9A7820;  /* darker amber */
-  --cat-purple: #3E8898;  /* darker cyan */
-  --cat-orange: #8E4870;  /* darker magenta */
-  --cat-teal:   #5DAF68;  /* lime */
-  --cat-rose:   #707878;
-  --cat-slate:  #585E6A;
-  --cat-mauve:  #808080;
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
-  --diagram-band-12:      var(--diagram-band-1);
-
-  --diagram-band-text-1:  var(--text-heading);
-  --diagram-band-text-2:  var(--text-heading);
-  --diagram-band-text-3:  var(--text-heading);
-  --diagram-band-text-4:  var(--text-heading);
-  --diagram-band-text-5:  var(--text-heading);
-  --diagram-band-text-6:  var(--text-heading);
-  --diagram-band-text-7:  var(--text-heading);
-  --diagram-band-text-8:  var(--text-heading);
-  --diagram-band-text-9:  var(--text-heading);
-  --diagram-band-text-10: var(--text-heading);
-  --diagram-band-text-11: var(--text-heading);
-  --diagram-band-text-12: var(--text-heading);
 
   --diagram-line:                  var(--text-heading);
 
@@ -191,16 +146,15 @@
   --diagram-error-bg:   #C20000;
   --diagram-error-text: #FFFFFF;
 
-  --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-fill: var(--c1-light);
+  --diagram-quadrant-2-fill: var(--c2-light);
+  --diagram-quadrant-3-fill: var(--c7-light);
+  --diagram-quadrant-4-fill: var(--c3-light);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
   --diagram-quadrant-4-text: var(--text-heading);
 }
-
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
@@ -217,11 +171,7 @@ section pre.hljs {
    *
    * Generated via the Brand-triad strategy in examples/palette-audit.md
    * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js.
-   *
-   * Legacy aliases (--diagram-band-N, --cat-*, --chart-N) coexist until
-   * the consumer-side migration completes. They will be removed in a
-   * follow-up commit. */
+   * asserted by test/unit/contrast.test.js. */
   --c1-light:  #958383;  --c1-dark:  #6E4949;
   --c2-light:  #84958C;  --c2-dark:  #4B6D5C;
   --c3-light:  #848C95;  --c3-dark:  #4B5C6D;
