@@ -7315,19 +7315,29 @@ section line.node-line-, section line[class*="node-line-"] {
 /* ── SANKEY ──
  * Mermaid sankey hardcodes the Tableau-10 categorical palette for both
  * node fills and link gradients. The .node group has no per-cycle class
- * on the rect — Mermaid's only signal is element order. Style every node
- * rect with band-1 (single hue is fine; sankey distinguishes flows by
- * width, not by color) and force link ribbons onto a band-1 stroke —
- * same hue as the nodes they originate from, so the deck reads as one
- * continuous flow rather than a rainbow. The ribbons render via stroke
- * (Mermaid sankey emits each flow as a stroked path with `stroke-width`
- * set to the flow magnitude, not as a filled region), so the stroke
- * override is the right surface to repaint.
+ * on the rect — Mermaid's only signal is element order inside
+ * `<g class="nodes">`. Earlier this rule pinned every node to band-1
+ * (reasoning: sankey distinguishes flows by width, not colour). That
+ * left sankey reading as flat compared to treemap's six-colour
+ * distribution.
+ *
+ * Cycle node fills through bands 1–8 via :nth-of-type() so each node
+ * picks up a different palette slot — same principle as treemap. Keep
+ * link strokes uniform pale band-1 so the flow widths stay the primary
+ * read (sankey's information channel is width, not hue), but the eight
+ * distinct node colours give the diagram the same hue distribution
+ * every other section-cycling diagram now gets.
  */
-section g.nodes g.node rect, section g.node > rect {
-  fill: var(--diagram-band-1) !important;
-  stroke: var(--diagram-stroke) !important;
-}
+section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--diagram-band-1)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--diagram-band-2)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(3)  > rect { fill: var(--diagram-band-3)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(4)  > rect { fill: var(--diagram-band-4)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(5)  > rect { fill: var(--diagram-band-5)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(6)  > rect { fill: var(--diagram-band-6)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(7)  > rect { fill: var(--diagram-band-7)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(8)  > rect { fill: var(--diagram-band-8)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(9)  > rect { fill: var(--diagram-band-1)  !important; stroke: var(--diagram-stroke) !important; }
+section g.nodes > g.node:nth-of-type(10) > rect { fill: var(--diagram-band-2)  !important; stroke: var(--diagram-stroke) !important; }
 section g.node-labels text, section g.nodes text {
   fill: var(--diagram-band-text-1) !important;
 }

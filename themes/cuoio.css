@@ -386,8 +386,15 @@ section .hljs-strong { font-weight:700; }
   --diagram-quadrant-4-text: #1E1A15;
 
   /* ── State (gantt task lifecycle — semantic, not a band cycle) ─── */
-  --diagram-state-active:          var(--brand-leather); /* saddle bars */
-  --diagram-state-active-stroke:   #6B5D4F;                /* warm brown */
+  --diagram-state-active:          #EBDBC1;                /* pale gold-wash —
+                                                              warm-active at band
+                                                              lightness so the
+                                                              task bar reads as
+                                                              "active" without
+                                                              going visually dark
+                                                              against pale task
+                                                              fills next to it */
+  --diagram-state-active-stroke:   var(--brand-leather);   /* saddle outline */
   --diagram-state-done:            #E0D8CC;                /* deeper cream */
   --diagram-state-done-stroke:     #A69882;                /* muted taupe */
   --diagram-state-critical:        var(--fail);
