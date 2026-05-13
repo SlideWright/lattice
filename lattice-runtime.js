@@ -105,7 +105,7 @@
 
       // Categorical scale — cScale feeds kanban columns, mindmap levels,
       // gitgraph branches, etc. lattice-diagram.css already routes pale
-      // section fills through --diagram-band-N for the diagrams we override
+      // section fills through --cN-light for the diagrams we override
       // explicitly; cScale is the fallback for diagrams that read it
       // directly (or for the saturated-mark mode kanban applies before
       // the lighten step). Fed from --cat-* (mid-tone L≈60).
@@ -362,7 +362,7 @@
     // Without force, every diagram would stay forever in data-mermaid-state=pending.
     if (globalScope.__llMermaidConfigured) return true;
     const scopeEl = document.querySelector('section') ?? document.documentElement;
-    const haveTheme = !!getComputedStyle(scopeEl).getPropertyValue('--diagram-band-1').trim();
+    const haveTheme = !!getComputedStyle(scopeEl).getPropertyValue('--c1-light').trim();
     if (!haveTheme && !force) return false;
     if (!haveTheme && force && typeof console !== 'undefined') {
       console.warn('[lattice-runtime] theme CSS vars not resolved after retry budget; proceeding with Mermaid defaults');

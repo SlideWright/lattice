@@ -480,7 +480,7 @@ const MERMAID_VAR_MAP = {
     xAxisTitleColor:  { var: 'text-heading' },
     yAxisLabelColor:  { var: 'text-heading' },
     yAxisTitleColor:  { var: 'text-heading' },
-    plotColorPalette: { joinVars: ['cat-blue', 'cat-green', 'cat-purple', 'cat-orange', 'cat-teal', 'cat-rose'] },
+    plotColorPalette: { joinVars: ['c1-dark', 'c2-dark', 'c3-dark', 'c4-dark', 'c5-dark', 'c6-dark'] },
   }},
 };
 
@@ -512,10 +512,10 @@ function parsePaletteVars(paletteCSSContent) {
     const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
     if (ld) vars[k] = isDark ? ld[2] : ld[1];
   }
-  // Resolve var() references iteratively. The new --diagram-band-text-N
-  // tokens chain `var(--text-heading)` → `var(--brand-leather-deep)` →
-  // hex (in cuoio), so a single pass leaves them mid-chain. Iterate to
-  // a fixed point (capped) so every chained var() lands on its literal.
+  // Resolve var() references iteratively. Chained references (e.g.
+  // `--text-heading: light-dark(var(--brand-blue-deep), ...)`) leave a
+  // single pass mid-chain. Iterate to a fixed point (capped) so every
+  // chained var() lands on its literal hex.
   for (let pass = 0; pass < 8; pass++) {
     let changed = false;
     for (const k of Object.keys(vars)) {
