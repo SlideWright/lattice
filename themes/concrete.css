@@ -219,4 +219,9 @@ section pre.hljs {
   --c10-light: #DFDDDF;  --c10-dark: #675167;
   --c11-light: #DEDFDD;  --c11-dark: #5C6751;
   --c12-light: #DEDDDF;  --c12-dark: #5C5167;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink: #0F0F0E;
 }

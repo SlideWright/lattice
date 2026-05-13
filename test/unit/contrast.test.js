@@ -116,10 +116,23 @@ function contrastRatio(hexA, hexB) {
 // Each entry is a [fill-token, text-token] tuple. The contrast bar is
 // 4.5:1 (AA for normal-size text); large text (≥18pt or ≥14pt bold) can
 // use 3:1 but we hold all diagram text to the stricter bar.
-const BAND_PAIRS = Array.from({ length: 12 }, (_, i) => [
-  `diagram-band-${i + 1}`,
-  `diagram-band-text-${i + 1}`,
+//
+// Two tiers per slot in the new categorical contract:
+//   --cN-light pairs with --c-ink (non-flipping dark ink, AA against fill)
+//   --cN-dark  pairs with  #FFFFFF (white text on deep fill)
+//
+// --text-heading is NOT used for cN-light pairs because it flips via
+// light-dark() — in dark-canvas mode it resolves to white, which would
+// give white-on-pale and break AA. The bands stay pale in both canvas
+// modes (bands are "figure windows" with their own ink/paper contract,
+// not panels that flip with the surrounding canvas), so their text
+// must stay dark in both modes too.
+const LIGHT_PAIRS = Array.from({ length: 12 }, (_, i) => [
+  `c${i + 1}-light`,
+  'c-ink',
 ]);
+const DEEP_KEYS = Array.from({ length: 12 }, (_, i) => `c${i + 1}-dark`);
+const DEEP_TEXT_HEX = '#FFFFFF';
 
 const QUADRANT_PAIRS = [1, 2, 3, 4].map(n => [
   `diagram-quadrant-${n}-fill`,
@@ -130,10 +143,10 @@ const AA_THRESHOLD = 4.5;
 
 for (const name of ['indaco', 'cuoio']) {
   for (const mode of ['light', 'dark']) {
-    test(`contrast: ${name} (${mode}) every band/text pair clears AA`, () => {
+    test(`contrast: ${name} (${mode}) every --cN-light / c-ink pair clears AA`, () => {
       const vars = loadPaletteWithImports(name, mode);
       const failures = [];
-      for (const [fillKey, textKey] of BAND_PAIRS) {
+      for (const [fillKey, textKey] of LIGHT_PAIRS) {
         const fill = vars[fillKey];
         const text = vars[textKey];
         if (!fill || !text) {
@@ -147,6 +160,27 @@ for (const name of ['indaco', 'cuoio']) {
           }
         } catch (e) {
           failures.push(`${fillKey}=${fill} or ${textKey}=${text}: ${e.message}`);
+        }
+      }
+      assert.deepEqual(failures, [], `WCAG AA failures in ${name} (${mode}):\n  ${failures.join('\n  ')}`);
+    });
+
+    test(`contrast: ${name} (${mode}) every --cN-dark / white pair clears AA`, () => {
+      const vars = loadPaletteWithImports(name, mode);
+      const failures = [];
+      for (const fillKey of DEEP_KEYS) {
+        const fill = vars[fillKey];
+        if (!fill) {
+          failures.push(`${fillKey} not defined`);
+          continue;
+        }
+        try {
+          const ratio = contrastRatio(fill, DEEP_TEXT_HEX);
+          if (ratio < AA_THRESHOLD) {
+            failures.push(`${fillKey} (${fill}) / white = ${ratio.toFixed(2)}:1 (< ${AA_THRESHOLD})`);
+          }
+        } catch (e) {
+          failures.push(`${fillKey}=${fill} / white: ${e.message}`);
         }
       }
       assert.deepEqual(failures, [], `WCAG AA failures in ${name} (${mode}):\n  ${failures.join('\n  ')}`);

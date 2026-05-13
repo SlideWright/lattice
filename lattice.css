@@ -66,10 +66,11 @@
 
   /* ── Categorical palette consumers ────────────────────────────────────
    * Each theme exports 12 paired slots: --c1-light/--c1-dark .. --c12-light/
-   * --c12-dark. Pale variants are AA-safe with --text-heading on top; deep
+   * --c12-dark, plus --c-ink (non-flipping dark text colour paired with
+   * every --cN-light). Pale variants are AA-safe with --c-ink on top; deep
    * variants are AA-safe with #FFFFFF on top. Replaces the prior --cat-* +
-   * --cat-*-deep + --chart-* token tiers; all 24 hex values are sourced
-   * from the Brand-triad rank-1 proposal in examples/palette-audit.md. */
+   * --cat-*-deep + --chart-* token tiers; all hex values are sourced from
+   * the Brand-triad rank-1 proposal in examples/palette-audit.md. */
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
@@ -6768,43 +6769,43 @@ section [class$="TitleText"] { display: none; }
  */
 section .cluster.section--1 rect, section .section--1 rect,
 section .section--1 path, section .section--1 circle { fill: var(--c1-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section--1 text, section .section--1 tspan, section .section--1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section--1 text, section .section--1 tspan, section .section--1 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-0 rect, section .section-0 rect,
 section .section-0 path, section .section-0 circle { fill: var(--c1-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-0 text, section .section-0 tspan, section .section-0 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-1 rect, section .section-1 rect,
 section .section-1 path, section .section-1 circle { fill: var(--c2-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-1 text, section .section-1 tspan, section .section-1 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-2 rect, section .section-2 rect,
 section .section-2 path, section .section-2 circle { fill: var(--c3-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-2 text, section .section-2 tspan, section .section-2 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-3 rect, section .section-3 rect,
 section .section-3 path, section .section-3 circle { fill: var(--c4-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-3 text, section .section-3 tspan, section .section-3 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-4 rect, section .section-4 rect,
 section .section-4 path, section .section-4 circle { fill: var(--c5-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-4 text, section .section-4 tspan, section .section-4 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-5 rect, section .section-5 rect,
 section .section-5 path, section .section-5 circle { fill: var(--c6-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-5 text, section .section-5 tspan, section .section-5 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-6 rect, section .section-6 rect,
 section .section-6 path, section .section-6 circle { fill: var(--c7-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-6 text, section .section-6 tspan, section .section-6 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-6 text, section .section-6 tspan, section .section-6 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-7 rect, section .section-7 rect,
 section .section-7 path, section .section-7 circle { fill: var(--c8-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-7 text, section .section-7 tspan, section .section-7 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-7 text, section .section-7 tspan, section .section-7 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-8 rect, section .section-8 rect,
 section .section-8 path, section .section-8 circle { fill: var(--c9-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-8 text, section .section-8 tspan, section .section-8 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-8 text, section .section-8 tspan, section .section-8 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-9 rect, section .section-9 rect,
 section .section-9 path, section .section-9 circle { fill: var(--c10-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-9 text, section .section-9 tspan, section .section-9 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-9 text, section .section-9 tspan, section .section-9 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-10 rect, section .section-10 rect,
 section .section-10 path, section .section-10 circle { fill: var(--c11-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-10 text, section .section-10 tspan, section .section-10 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-10 text, section .section-10 tspan, section .section-10 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-11 rect, section .section-11 rect,
 section .section-11 path, section .section-11 circle { fill: var(--c12-light) !important; stroke: var(--diagram-stroke) !important; }
-section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 
 /* ── KANBAN BAND CYCLE (shifted) ──
  * Mermaid's kanban renderer one-indexes its swim-lane clusters: the FIRST
@@ -6825,27 +6826,27 @@ section .section-11 text, section .section-11 tspan, section .section-11 span { 
  * which is unique to kanban among shipped diagram types.
  */
 section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--c1-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--c2-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--c3-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--c4-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--c5-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--c6-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--c7-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--c8-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--c9-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--c10-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--c11-light) !important; stroke: var(--diagram-stroke) !important; }
-section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 
 /* ── TIMELINE BAND CYCLE (shifted) ──
  * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
@@ -6867,29 +6868,29 @@ section .cluster.section-11 text, section .cluster.section-11 tspan, section .cl
  * their existing mappings.
  */
 section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--diagram-stroke) !important; }
-section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--text-heading) !important; color: var(--text-heading) !important; }
+section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink) !important; color: var(--c-ink) !important; }
 
 /* ── TIMELINE EVENT WRAPPER ──
  * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
@@ -6949,31 +6950,31 @@ section .node .outer-path {
 section .section-type-0 rect, section .section0 rect,
 section .task-type-0 rect,    section .task0 rect    { fill: var(--c1-light) !important; }
 section .section-type-0 text, section .section0 text,
-section .task-type-0 text,    section .task0 text    { fill: var(--text-heading) !important; }
+section .task-type-0 text,    section .task0 text    { fill: var(--c-ink) !important; }
 
 section .section-type-1 rect, section .section1 rect,
 section .task-type-1 rect,    section .task1 rect    { fill: var(--c2-light) !important; }
 section .section-type-1 text, section .section1 text,
-section .task-type-1 text,    section .task1 text    { fill: var(--text-heading) !important; }
+section .task-type-1 text,    section .task1 text    { fill: var(--c-ink) !important; }
 
 section .section-type-2 rect, section .section2 rect,
 section .task-type-2 rect,    section .task2 rect    { fill: var(--c3-light) !important; }
 section .section-type-2 text, section .section2 text,
-section .task-type-2 text,    section .task2 text    { fill: var(--text-heading) !important; }
+section .task-type-2 text,    section .task2 text    { fill: var(--c-ink) !important; }
 
 section .section-type-3 rect, section .task-type-3 rect { fill: var(--c4-light) !important; }
-section .section-type-3 text, section .task-type-3 text { fill: var(--text-heading) !important; }
+section .section-type-3 text, section .task-type-3 text { fill: var(--c-ink) !important; }
 section .section-type-4 rect, section .task-type-4 rect { fill: var(--c5-light) !important; }
-section .section-type-4 text, section .task-type-4 text { fill: var(--text-heading) !important; }
+section .section-type-4 text, section .task-type-4 text { fill: var(--c-ink) !important; }
 section .section-type-5 rect, section .task-type-5 rect { fill: var(--c6-light) !important; }
-section .section-type-5 text, section .task-type-5 text { fill: var(--text-heading) !important; }
+section .section-type-5 text, section .task-type-5 text { fill: var(--c-ink) !important; }
 section .section-type-6 rect, section .task-type-6 rect { fill: var(--c7-light) !important; }
-section .section-type-6 text, section .task-type-6 text { fill: var(--text-heading) !important; }
+section .section-type-6 text, section .task-type-6 text { fill: var(--c-ink) !important; }
 section .section-type-7 rect, section .task-type-7 rect { fill: var(--c8-light) !important; }
-section .section-type-7 text, section .task-type-7 text { fill: var(--text-heading) !important; }
+section .section-type-7 text, section .task-type-7 text { fill: var(--c-ink) !important; }
 
 section .journey-section text { font-weight: 600 !important; }
-section .legend text { fill: var(--text-heading) !important; }
+section .legend text { fill: var(--c-ink) !important; }
 
 /* ── MINDMAP ──
  * Mindmap reads cScale verbatim with no transformation. cScale inputs
@@ -7012,12 +7013,12 @@ section .section-root circle,
 section .section-root polygon,
 section .section-root path { fill: var(--c1-light) !important; }
 section .section-root text, section .section-root span {
-  fill: var(--text-heading) !important;
-  color: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
+  color: var(--c-ink) !important;
 }
 section .mindmap-node text, section .mindmap-node tspan, section .mindmap-node foreignObject * {
-  fill: var(--text-heading) !important;
-  color: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
+  color: var(--c-ink) !important;
 }
 
 /* ── GITGRAPH ARROW FILLS ──
@@ -7039,7 +7040,7 @@ section rect.branchLabelBkg.label4 { fill: var(--c5-light) !important; stroke: v
 section rect.branchLabelBkg.label5 { fill: var(--c6-light) !important; stroke: var(--diagram-stroke) !important; }
 section rect.branchLabelBkg.label6 { fill: var(--c7-light) !important; stroke: var(--diagram-stroke) !important; }
 section rect.branchLabelBkg.label7 { fill: var(--c8-light) !important; stroke: var(--diagram-stroke) !important; }
-section g.branchLabel text, section .branchLabel text { fill: var(--text-heading) !important; }
+section g.branchLabel text, section .branchLabel text { fill: var(--c-ink) !important; }
 
 /* ── TREEMAP ──
  * Leaf cycles use the band ladder; section containers stay near-white so
@@ -7057,7 +7058,7 @@ section g.leaf5x rect.treemapLeaf { fill: var(--c6-light) !important; stroke: va
 section g.leaf6x rect.treemapLeaf { fill: var(--c1-light) !important; stroke: var(--diagram-stroke) !important; }
 section g.leaf7x rect.treemapLeaf { fill: var(--c2-light) !important; stroke: var(--diagram-stroke) !important; }
 section rect.treemapLeaf { fill-opacity: 1 !important; }
-section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--text-heading) !important; }
+section .treemapLabel, section .treemapNode text, section .treemapLeaf text { fill: var(--c-ink) !important; }
 
 /* ── C4 ──
  * C4 has a hardcoded official palette (#08427B, #1168BD, etc.) that
@@ -7069,7 +7070,7 @@ section .container, section .container_ext { fill: var(--c3-light) !important; s
 section .component, section .component_ext { fill: var(--c4-light) !important; stroke: var(--diagram-stroke) !important; }
 section .person text, section .system text, section .container text, section .component text,
 section .person_ext text, section .system_ext text, section .container_ext text, section .component_ext text,
-section text.legendW, section text.legendT { fill: var(--text-heading) !important; }
+section text.legendW, section text.legendT { fill: var(--c-ink) !important; }
 
 /* C4 emits group classes like .person-man, .person-woman, .system-other,
  * .container-db, .component-queue, .boundary, etc. — wider than the bare
@@ -7088,7 +7089,7 @@ section svg:has(g[class*="person"]) text,
 section svg:has(g[class*="person"]) tspan,
 section svg:has(g[class*="system"]) text,
 section svg:has(g[class*="system"]) tspan {
-  fill: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
 }
 section svg:has(g[class*="person"]) line,
 section svg:has(g[class*="person"]) path:not([class]),
@@ -7097,7 +7098,7 @@ section svg:has(g[class*="system"]) path:not([class]) {
   stroke: var(--diagram-line) !important;
 }
 section text.legendW, section text.legendT, section .legend text, section .legend tspan {
-  fill: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
 }
 
 /* ── RADAR ──
@@ -7276,7 +7277,7 @@ section g.nodes > g.node:nth-of-type(8)  > rect { fill: var(--c8-light)  !import
 section g.nodes > g.node:nth-of-type(9)  > rect { fill: var(--c1-light)  !important; stroke: var(--diagram-stroke) !important; }
 section g.nodes > g.node:nth-of-type(10) > rect { fill: var(--c2-light)  !important; stroke: var(--diagram-stroke) !important; }
 section g.node-labels text, section g.nodes text {
-  fill: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
 }
 section g.link path, section g.links path {
   stroke: var(--c1-light) !important;
@@ -7293,7 +7294,7 @@ section rect.packetBlock {
   stroke: var(--diagram-stroke) !important;
 }
 section text.packetLabel, section text.packetByte, section text.packetTitle {
-  fill: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
 }
 
 /* ── ARCHITECTURE ──
@@ -7340,7 +7341,7 @@ section g.architecture-service svg line[style*="fill: none"] {
 }
 section g.architecture-groups text, section g.architecture-groups tspan,
 section g.architecture-service text, section g.architecture-service tspan {
-  fill: var(--text-heading) !important;
+  fill: var(--c-ink) !important;
 }
 
 /* ── ER ROW-RECT EVEN/ODD ──

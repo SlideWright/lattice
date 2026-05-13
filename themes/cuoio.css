@@ -451,4 +451,9 @@ section .hljs-strong { font-weight:700; }
   --c10-light: #E5D7DC;  --c10-dark: #803853;
   --c11-light: #D7E5D8;  --c11-dark: #388040;
   --c12-light: #E5D7E3;  --c12-dark: #803877;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink: #1E1A15;
 }

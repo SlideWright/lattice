@@ -61,11 +61,12 @@
     const bg      = vc('bg');
     const bgAlt   = vc('bg-alt');
     const text    = vc('text-heading');
+    const ink     = vc('c-ink');
     const border  = vc('diagram-stroke');
     const line    = vc('diagram-line');
-    const primary = vc('diagram-band-1');
-    const second  = vc('diagram-band-2');
-    const slate   = vc('cat-slate');
+    const primary = vc('c1-light');
+    const second  = vc('c2-light');
+    const slate   = vc('c8-dark');
 
     const result = {
       fontFamily: v('font-body') || "'Outfit', system-ui, sans-serif",
@@ -108,12 +109,12 @@
       // explicitly; cScale is the fallback for diagrams that read it
       // directly (or for the saturated-mark mode kanban applies before
       // the lighten step). Fed from --cat-* (mid-tone L≈60).
-      cScale0:  vc('cat-blue'),   cScale1:  vc('cat-green'),
-      cScale2:  vc('cat-purple'), cScale3:  vc('cat-orange'),
-      cScale4:  vc('cat-teal'),   cScale5:  vc('cat-rose'),
-      cScale6:  vc('cat-blue'),   cScale7:  vc('cat-green'),
-      cScale8:  vc('cat-purple'), cScale9:  vc('cat-orange'),
-      cScale10: vc('cat-teal'),   cScale11: vc('cat-rose'),
+      cScale0:  vc('c1-dark'),   cScale1:  vc('c2-dark'),
+      cScale2:  vc('c3-dark'), cScale3:  vc('c4-dark'),
+      cScale4:  vc('c5-dark'),   cScale5:  vc('c6-dark'),
+      cScale6:  vc('c1-dark'),   cScale7:  vc('c2-dark'),
+      cScale8:  vc('c3-dark'), cScale9:  vc('c4-dark'),
+      cScale10: vc('c5-dark'),   cScale11: vc('c6-dark'),
 
       // cScaleLabel — text fill emitted by Mermaid's auto-generated rule
       // `.section-${r-1} text { fill: cScaleLabel${r} }`. Mermaid derives
@@ -125,15 +126,15 @@
       // the timeline `section--1` edge case too (Mermaid generates the
       // rule, our `.section--1` CSS in lattice-diagram.css is the belt;
       // this is the braces).
-      cScaleLabel0:  text, cScaleLabel1:  text, cScaleLabel2:  text,
-      cScaleLabel3:  text, cScaleLabel4:  text, cScaleLabel5:  text,
-      cScaleLabel6:  text, cScaleLabel7:  text, cScaleLabel8:  text,
-      cScaleLabel9:  text, cScaleLabel10: text, cScaleLabel11: text,
+      cScaleLabel0:  ink, cScaleLabel1:  ink, cScaleLabel2:  ink,
+      cScaleLabel3:  ink, cScaleLabel4:  ink, cScaleLabel5:  ink,
+      cScaleLabel6:  ink, cScaleLabel7:  ink, cScaleLabel8:  ink,
+      cScaleLabel9:  ink, cScaleLabel10: ink, cScaleLabel11: ink,
 
       // fillType — subgraph and mindmap level fills (pale band)
       fillType0: primary,                 fillType1: second,
-      fillType2: vc('diagram-band-3'),    fillType3: vc('diagram-band-4'),
-      fillType4: vc('diagram-band-5'),    fillType5: vc('diagram-band-6'),
+      fillType2: vc('c3-light'),    fillType3: vc('c4-light'),
+      fillType4: vc('c5-light'),    fillType5: vc('c6-light'),
       fillType6: primary,                 fillType7: second,
 
       // Sequence diagram
@@ -160,11 +161,11 @@
 
       // Pie chart
       pie1:  primary,                  pie2:  second,
-      pie3:  vc('diagram-band-3'),     pie4:  vc('diagram-band-4'),
-      pie5:  vc('diagram-band-5'),     pie6:  vc('diagram-band-6'),
-      pie7:  vc('diagram-band-7'),     pie8:  vc('diagram-band-8'),
-      pie9:  vc('diagram-band-9'),     pie10: vc('diagram-band-10'),
-      pie11: vc('diagram-band-11'),    pie12: vc('diagram-band-12'),
+      pie3:  vc('c3-light'),     pie4:  vc('c4-light'),
+      pie5:  vc('c5-light'),     pie6:  vc('c6-light'),
+      pie7:  vc('c7-light'),     pie8:  vc('c8-light'),
+      pie9:  vc('c9-light'),     pie10: vc('c10-light'),
+      pie11: vc('c11-light'),    pie12: vc('c12-light'),
       pieTitleTextSize:    '18px',
       pieTitleTextColor:   text,
       pieSectionTextSize:  '14px',
@@ -197,10 +198,10 @@
       todayLineColor:         vc('diagram-state-today'),
 
       // Git graph
-      git0: vc('cat-blue'),   git1: vc('cat-green'),
-      git2: vc('cat-purple'), git3: vc('cat-orange'),
-      git4: vc('cat-teal'),   git5: vc('cat-rose'),
-      git6: vc('cat-slate'),  git7: vc('cat-mauve'),
+      git0: vc('c1-dark'),   git1: vc('c2-dark'),
+      git2: vc('c3-dark'), git3: vc('c4-dark'),
+      git4: vc('c5-dark'),   git5: vc('c6-dark'),
+      git6: vc('c8-dark'),  git7: vc('c7-dark'),
       gitBranchLabel0: text, gitBranchLabel1: text,
       gitBranchLabel2: text, gitBranchLabel3: text,
       gitBranchLabel4: text, gitBranchLabel5: text,
@@ -244,9 +245,9 @@
         yAxisLineColor:   border,
         yAxisTickColor:   slate,
         plotColorPalette: [
-          vc('cat-blue'),   vc('cat-green'),
-          vc('cat-purple'), vc('cat-orange'),
-          vc('cat-teal'),   vc('cat-rose'),
+          vc('c1-dark'),   vc('c2-dark'),
+          vc('c3-dark'), vc('c4-dark'),
+          vc('c5-dark'),   vc('c6-dark'),
         ].join(','),
       },
 
@@ -818,8 +819,8 @@
   // preview path that didn't run the engine plugin.
 
   const ROADMAP_HORIZON_ACCENTS = [
-    'var(--cat-blue)',   'var(--cat-green)',  'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c1-dark)',   'var(--c2-dark)',  'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',   'var(--c6-dark)',   'var(--c7-dark)',  'var(--c8-dark)',
   ];
   const ROADMAP_STATE_LABEL = {
     'state-shipped':  'Shipped',
@@ -981,8 +982,8 @@
    * modules. Three-renderer parity rule applies: edit both or neither.
    */
   const JOURNEY_ACTOR_PALETTE_RT = [
-    'var(--cat-green)',  'var(--cat-blue)',   'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c2-dark)',  'var(--c1-dark)',   'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',   'var(--c6-dark)',   'var(--c7-dark)',  'var(--c8-dark)',
   ];
   function jEscAttr(s) {
     return String(s).replace(/[&<>"']/g, c => ({
@@ -1471,8 +1472,8 @@
   // already wrapped in `chart-frame` is a no-op.
   const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
   const PIE_PALETTE = [
-    'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c1-dark)',  'var(--c2-dark)', 'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',  'var(--c6-dark)',  'var(--c7-dark)',  'var(--c8-dark)',
   ];
 
   function chartEscAttr(s) {
@@ -1734,8 +1735,8 @@
     const KB_SIZE   = ['s','m','l','xl'];
     const KB_DONE_NAMES = ['done','completed','shipped','closed'];
     const LANE_COLORS = [
-      'var(--cat-blue)','var(--cat-green)','var(--cat-purple)','var(--cat-orange)',
-      'var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)',
+      'var(--c1-dark)','var(--c2-dark)','var(--c3-dark)','var(--c4-dark)',
+      'var(--c5-dark)','var(--c6-dark)','var(--c7-dark)','var(--c8-dark)',
     ];
     const laneColorMap = {};
     let laneColorIdx = 0;

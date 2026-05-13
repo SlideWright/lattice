@@ -257,7 +257,7 @@ const css = paletteCSS + '\n' + layoutCSS;
 //      --diagram-* / --cat-* / --text-* tokens.
 //
 //   2. lattice.css "DIAGRAM OVERRIDES" section.  Per-diagram CSS
-//      (`section .section-N rect { fill: var(--diagram-band-3) }` and so
+//      (`section .section-N rect { fill: var(--c3-light) }` and so
 //      on) that target classes Mermaid emits but doesn't theme. Loaded as
 //      a normal page stylesheet via lattice.css; the mmdc-produced SVG is
 //      embedded inline in the host HTML, so the host stylesheet cascades
@@ -285,8 +285,8 @@ const MERMAID_VAR_MAP = {
   background:               { var: 'bg' },
 
   // Primary/secondary/tertiary fills (pale band)
-  primaryColor:             { var: 'diagram-band-1' },
-  secondaryColor:           { var: 'diagram-band-2' },
+  primaryColor:             { var: 'c1-light' },
+  secondaryColor:           { var: 'c2-light' },
   tertiaryColor:            { var: 'bg-alt' },
   primaryBorderColor:       { var: 'diagram-stroke' },
   secondaryBorderColor:     { var: 'diagram-stroke' },
@@ -310,25 +310,25 @@ const MERMAID_VAR_MAP = {
   labelBackground:          { var: 'bg' },
 
   // Main background paths
-  mainBkg:                  { var: 'diagram-band-1' },
+  mainBkg:                  { var: 'c1-light' },
   nodeBorder:               { var: 'diagram-stroke' },
   nodeTextColor:            { var: 'text-heading' },
   clusterBkg:               { var: 'bg-alt' },
   clusterBorder:            { var: 'diagram-stroke' },
 
   // cScale (mid-tone band) — kanban lighten brings to L≈70
-  cScale0:                  { var: 'cat-blue' },
-  cScale1:                  { var: 'cat-green' },
-  cScale2:                  { var: 'cat-purple' },
-  cScale3:                  { var: 'cat-orange' },
-  cScale4:                  { var: 'cat-teal' },
-  cScale5:                  { var: 'cat-rose' },
-  cScale6:                  { var: 'cat-blue' },
-  cScale7:                  { var: 'cat-green' },
-  cScale8:                  { var: 'cat-purple' },
-  cScale9:                  { var: 'cat-orange' },
-  cScale10:                 { var: 'cat-teal' },
-  cScale11:                 { var: 'cat-rose' },
+  cScale0:                  { var: 'c1-dark' },
+  cScale1:                  { var: 'c2-dark' },
+  cScale2:                  { var: 'c3-dark' },
+  cScale3:                  { var: 'c4-dark' },
+  cScale4:                  { var: 'c5-dark' },
+  cScale5:                  { var: 'c6-dark' },
+  cScale6:                  { var: 'c1-dark' },
+  cScale7:                  { var: 'c2-dark' },
+  cScale8:                  { var: 'c3-dark' },
+  cScale9:                  { var: 'c4-dark' },
+  cScale10:                 { var: 'c5-dark' },
+  cScale11:                 { var: 'c6-dark' },
 
   // cScaleLabel — text fill in Mermaid's auto-generated
   // `.section-${r-1} text { fill: cScaleLabel${r} }` rule. Mermaid's own
@@ -337,31 +337,31 @@ const MERMAID_VAR_MAP = {
   // paired band-text token (all map to --text-heading in shipped palettes)
   // ensures the auto rule renders dark ink, regardless of whether our
   // explicit CSS overrides match the diagram in question.
-  cScaleLabel0:  { var: 'diagram-band-text-1' },
-  cScaleLabel1:  { var: 'diagram-band-text-1' },
-  cScaleLabel2:  { var: 'diagram-band-text-2' },
-  cScaleLabel3:  { var: 'diagram-band-text-3' },
-  cScaleLabel4:  { var: 'diagram-band-text-4' },
-  cScaleLabel5:  { var: 'diagram-band-text-5' },
-  cScaleLabel6:  { var: 'diagram-band-text-6' },
-  cScaleLabel7:  { var: 'diagram-band-text-7' },
-  cScaleLabel8:  { var: 'diagram-band-text-8' },
-  cScaleLabel9:  { var: 'diagram-band-text-9' },
-  cScaleLabel10: { var: 'diagram-band-text-10' },
-  cScaleLabel11: { var: 'diagram-band-text-11' },
+  cScaleLabel0:  { var: 'c-ink' },
+  cScaleLabel1:  { var: 'c-ink' },
+  cScaleLabel2:  { var: 'c-ink' },
+  cScaleLabel3:  { var: 'c-ink' },
+  cScaleLabel4:  { var: 'c-ink' },
+  cScaleLabel5:  { var: 'c-ink' },
+  cScaleLabel6:  { var: 'c-ink' },
+  cScaleLabel7:  { var: 'c-ink' },
+  cScaleLabel8:  { var: 'c-ink' },
+  cScaleLabel9:  { var: 'c-ink' },
+  cScaleLabel10: { var: 'c-ink' },
+  cScaleLabel11: { var: 'c-ink' },
 
   // fillType (subgraph / mindmap-level fills, pale band)
-  fillType0: { var: 'diagram-band-1' },
-  fillType1: { var: 'diagram-band-2' },
-  fillType2: { var: 'diagram-band-3' },
-  fillType3: { var: 'diagram-band-4' },
-  fillType4: { var: 'diagram-band-5' },
-  fillType5: { var: 'diagram-band-6' },
-  fillType6: { var: 'diagram-band-1' },
-  fillType7: { var: 'diagram-band-2' },
+  fillType0: { var: 'c1-light' },
+  fillType1: { var: 'c2-light' },
+  fillType2: { var: 'c3-light' },
+  fillType3: { var: 'c4-light' },
+  fillType4: { var: 'c5-light' },
+  fillType5: { var: 'c6-light' },
+  fillType6: { var: 'c1-light' },
+  fillType7: { var: 'c2-light' },
 
   // Sequence diagram
-  actorBkg:                 { var: 'diagram-band-1' },
+  actorBkg:                 { var: 'c1-light' },
   actorBorder:              { var: 'diagram-stroke' },
   actorTextColor:           { var: 'text-heading' },
   actorLineColor:           { var: 'diagram-line' },
@@ -370,7 +370,7 @@ const MERMAID_VAR_MAP = {
   labelBoxBkgColor:         { var: 'bg-alt' },
   labelBoxBorderColor:      { var: 'diagram-stroke' },
   activationBorderColor:    { var: 'diagram-stroke' },
-  activationBkgColor:       { var: 'diagram-band-1' },
+  activationBkgColor:       { var: 'c1-light' },
   sequenceNumberColor:      { var: 'text-heading' },
 
   // Notes (yellow accent — category-distinct)
@@ -383,18 +383,18 @@ const MERMAID_VAR_MAP = {
   errorTextColor:           { var: 'diagram-error-text' },
 
   // Pie chart (pale band cycle — unified contract)
-  pie1:  { var: 'diagram-band-1' },
-  pie2:  { var: 'diagram-band-2' },
-  pie3:  { var: 'diagram-band-3' },
-  pie4:  { var: 'diagram-band-4' },
-  pie5:  { var: 'diagram-band-5' },
-  pie6:  { var: 'diagram-band-6' },
-  pie7:  { var: 'diagram-band-7' },
-  pie8:  { var: 'diagram-band-8' },
-  pie9:  { var: 'diagram-band-9' },
-  pie10: { var: 'diagram-band-10' },
-  pie11: { var: 'diagram-band-11' },
-  pie12: { var: 'diagram-band-12' },
+  pie1:  { var: 'c1-light' },
+  pie2:  { var: 'c2-light' },
+  pie3:  { var: 'c3-light' },
+  pie4:  { var: 'c4-light' },
+  pie5:  { var: 'c5-light' },
+  pie6:  { var: 'c6-light' },
+  pie7:  { var: 'c7-light' },
+  pie8:  { var: 'c8-light' },
+  pie9:  { var: 'c9-light' },
+  pie10: { var: 'c10-light' },
+  pie11: { var: 'c11-light' },
+  pie12: { var: 'c12-light' },
   pieTitleTextSize:    { literal: '18px' },
   pieTitleTextColor:   { var: 'text-heading' },
   pieSectionTextSize:  { literal: '14px' },
@@ -410,8 +410,8 @@ const MERMAID_VAR_MAP = {
   // Gantt (pale bars, dark text, alarm-only saturation)
   sectionBkgColor:        { var: 'bg-alt' },
   altSectionBkgColor:     { var: 'bg' },
-  sectionBkgColor2:       { var: 'diagram-band-1' },
-  taskBkgColor:           { var: 'diagram-band-1' },
+  sectionBkgColor2:       { var: 'c1-light' },
+  taskBkgColor:           { var: 'c1-light' },
   taskTextColor:          { var: 'text-heading' },
   taskTextLightColor:     { var: 'text-heading' },
   taskTextOutsideColor:   { var: 'text-heading' },
@@ -427,14 +427,14 @@ const MERMAID_VAR_MAP = {
   todayLineColor:         { var: 'diagram-state-today' },
 
   // Git graph
-  git0: { var: 'cat-blue' },
-  git1: { var: 'cat-green' },
-  git2: { var: 'cat-purple' },
-  git3: { var: 'cat-orange' },
-  git4: { var: 'cat-teal' },
-  git5: { var: 'cat-rose' },
-  git6: { var: 'cat-slate' },
-  git7: { var: 'cat-mauve' },
+  git0: { var: 'c1-dark' },
+  git1: { var: 'c2-dark' },
+  git2: { var: 'c3-dark' },
+  git3: { var: 'c4-dark' },
+  git4: { var: 'c5-dark' },
+  git5: { var: 'c6-dark' },
+  git6: { var: 'c8-dark' },
+  git7: { var: 'c7-dark' },
   gitBranchLabel0: { var: 'text-heading' },
   gitBranchLabel1: { var: 'text-heading' },
   gitBranchLabel2: { var: 'text-heading' },
@@ -462,7 +462,7 @@ const MERMAID_VAR_MAP = {
   quadrantPointTextFill:            { var: 'text-heading' },
   quadrantXAxisTextFill:            { var: 'text-heading' },
   quadrantYAxisTextFill:            { var: 'text-heading' },
-  quadrantInternalBorderStrokeFill: { var: 'cat-slate' },
+  quadrantInternalBorderStrokeFill: { var: 'c8-dark' },
   quadrantExternalBorderStrokeFill: { var: 'diagram-stroke' },
   quadrantTitleFill:                { var: 'text-heading' },
 
@@ -1804,8 +1804,8 @@ function parseSlide(raw, index) {
     // ── piechart ── flat list with magnitude pill; emit SVG donut + legend
     if (chartLayout === 'piechart') {
       const palette = [
-        'var(--cat-blue)', 'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
-        'var(--cat-teal)', 'var(--cat-rose)', 'var(--cat-mauve)', 'var(--cat-slate)'
+        'var(--c1-dark)', 'var(--c2-dark)', 'var(--c3-dark)', 'var(--c4-dark)',
+        'var(--c5-dark)', 'var(--c6-dark)', 'var(--c7-dark)', 'var(--c8-dark)'
       ];
       const isDonut = classTokens.includes('donut');
       html = html.replace(/<ul>([\s\S]*?)<\/ul>/, (_full, ulInner) => {
@@ -1960,8 +1960,8 @@ function parseSlide(raw, index) {
       const KB_SIZE   = ['s','m','l','xl'];
       const KB_DONE_NAMES = ['done','completed','shipped','closed'];
 
-      const laneColorVars = ['var(--cat-blue)','var(--cat-green)','var(--cat-purple)',
-        'var(--cat-orange)','var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)'];
+      const laneColorVars = ['var(--c1-dark)','var(--c2-dark)','var(--c3-dark)',
+        'var(--c4-dark)','var(--c5-dark)','var(--c6-dark)','var(--c7-dark)','var(--c8-dark)'];
       const laneColorMap = {};
       let laneColorIdx = 0;
       const getLaneColor = (lane) => {

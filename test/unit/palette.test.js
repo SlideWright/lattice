@@ -1,15 +1,14 @@
 /**
  * Unit: palette resolution.
  *
- * Both canonical palettes (indaco, cuoio) must define every --diagram-*
- * token the renderer bridges (lattice-emulator.js, lattice-runtime.js)
- * and the palette-blind overrides (lattice-diagram.css) consume.
+ * Every palette must define the categorical cycle (--cN-light/--cN-dark
+ * for N=1..12) and the structural diagram tokens (stroke, line, state,
+ * note, error, quadrant) consumed by the renderer bridges and the
+ * palette-blind overrides in lattice-diagram.css.
  *
- * The required-vars list mirrors what `lattice-emulator.js` consumes via
- * its MERMAID_VAR_MAP plus the band-text/band slots referenced by
- * lattice-diagram.css. test/unit/mermaid-var-map.test.js cross-checks
- * the emulator map against this list automatically; this file is the
- * source-of-truth list.
+ * test/unit/mermaid-var-map.test.js cross-checks the emulator's
+ * MERMAID_VAR_MAP against the palette tokens automatically; this file
+ * is the source-of-truth required list.
  */
 
 const test   = require('node:test');
@@ -20,21 +19,19 @@ const REQUIRED_DIAGRAM_VARS = [
   // Brand primitives consumed by the renderer
   'bg', 'bg-alt', 'text-heading',
 
-  // Band cycle (12 slots) + paired text
-  'diagram-band-1',  'diagram-band-2',  'diagram-band-3',  'diagram-band-4',
-  'diagram-band-5',  'diagram-band-6',  'diagram-band-7',  'diagram-band-8',
-  'diagram-band-9',  'diagram-band-10', 'diagram-band-11', 'diagram-band-12',
-  'diagram-band-text-1',  'diagram-band-text-2',  'diagram-band-text-3',
-  'diagram-band-text-4',  'diagram-band-text-5',  'diagram-band-text-6',
-  'diagram-band-text-7',  'diagram-band-text-8',  'diagram-band-text-9',
-  'diagram-band-text-10', 'diagram-band-text-11', 'diagram-band-text-12',
+  // Non-flipping ink paired with every --cN-light fill
+  'c-ink',
+
+  // Categorical cycle (12 paired slots)
+  'c1-light',  'c2-light',  'c3-light',  'c4-light',
+  'c5-light',  'c6-light',  'c7-light',  'c8-light',
+  'c9-light',  'c10-light', 'c11-light', 'c12-light',
+  'c1-dark',   'c2-dark',   'c3-dark',   'c4-dark',
+  'c5-dark',   'c6-dark',   'c7-dark',   'c8-dark',
+  'c9-dark',   'c10-dark',  'c11-dark',  'c12-dark',
 
   // Structural
   'diagram-stroke', 'diagram-line', 'diagram-accent-warm',
-
-  // Mid-tone categorical (consumed beyond Mermaid by chart-family / kpi)
-  'cat-blue', 'cat-green', 'cat-purple', 'cat-orange',
-  'cat-teal', 'cat-rose', 'cat-slate', 'cat-mauve',
 
   // Quadrant (4-slot, fill + text paired)
   'diagram-quadrant-1-fill', 'diagram-quadrant-2-fill',
@@ -54,7 +51,7 @@ const REQUIRED_DIAGRAM_VARS = [
 ];
 
 for (const name of ['indaco', 'cuoio']) {
-  test(`palette: ${name} defines all ${REQUIRED_DIAGRAM_VARS.length} required --diagram-* tokens`, () => {
+  test(`palette: ${name} defines all ${REQUIRED_DIAGRAM_VARS.length} required palette tokens`, () => {
     const p = loadPalette(name);
     const missing = REQUIRED_DIAGRAM_VARS.filter(v => !p.vars[v]);
     assert.deepEqual(missing, [], `missing vars in themes/${name}.css: ${missing.join(', ')}`);
