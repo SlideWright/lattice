@@ -1675,6 +1675,21 @@ _Scope and timeline estimates are not included — this table covers architectur
 
 ---
 
+## Trailing Element Registers
+
+Any card-bearing layout can carry up to four trailing elements at the bottom of the slide, composed by markdown shape. They form a single family with a fixed canonical order:
+
+1. `> blockquote` — **Key Insight** (the observation)
+2. plain `<p>` — **Below-Note** (context)
+3. `**bold**`-only `<p>` — **Call-to-Action** (the ask)
+4. `_italic_`-only `<p>` — **Annotation** (the citation)
+
+**Author trailing registers in canonical order.** Selectors are mostly shape-based and fire wherever each register sits, but the hairline rule that anchors a trailing block at the top is **position-sensitive** in the Marp-preview path (it attaches to the first `<p>` after a structural block). Out-of-canonical-order sources can silently lose the hairline in preview while still rendering correctly in CLI output. See `docs/references/gotchas.md` § "Trailing register out of order loses hairline in preview."
+
+**At most one of each register per slide.** All four may coexist but rarely should — a slide with content + insight + note + ask + citation is doing too much. The common pairings are insight-only, insight + citation, content + ask.
+
+---
+
 ## Feature: Key Insight Panel
 
 Any card-bearing layout that ends with a trailing `> blockquote` renders it as a **Key Insight panel** — an accent-tinted bar that pins below the card content.
@@ -1819,15 +1834,43 @@ _Source: pilot retrospective, six months across four product teams._
 - Text: 15px (`--fs-sm`), `--text-muted`
 - Use for: source citations, scope caveats, asterisk-style footnotes — content that frames the slide rather than extending its argument
 
-**Note:** The three trailing-paragraph registers compose by markdown shape on the same set of layouts:
+## Feature: Call-to-Action
 
-| Markdown shape                          | Renders as       | Visual                                  |
-| --------------------------------------- | ---------------- | --------------------------------------- |
-| `> blockquote`                          | **Key Insight**  | accent-tinted panel, "KEY INSIGHT" eyebrow |
-| Plain `<p>`                             | **Below-Note**   | hairline rule + body text               |
-| `<p>` containing only `_italic_` markdown | **Annotation** | `✦` glyph + muted label-size text       |
+A trailing paragraph whose only content is a `**bold**` span renders as a **call-to-action** — a `▸` (U+25B8) glyph in `--accent` followed by body-size bold text in `--text-heading`. Signals the **ask**: the decision needed, the deadline, the next step, the action that closes the slide. Distinct from a Key Insight (which observes), a Below-Note (which adds context), and an Annotation (which cites).
 
-A slide may carry one Key Insight (blockquote) plus one trailing-paragraph register (below-note OR annotation), in that order. See `examples/gallery.md` slide 21 for key-insight + below-note, slide 22 for key-insight + annotation.
+```markdown
+<!-- _class: decision -->
+
+## Build vs. buy: build.
+
+- Build
+  - Three engineers, eight weeks, owns the data path.
+- Why not buy
+  - Vendor lock-in on a hot-path primitive.
+- Why not delay
+  - Roadmap commitments slip past Q3.
+
+**Approve scoping spike by Friday.**
+```
+
+**Layouts that support call-to-action:** same set as below-note and annotation — `cards-grid`, `cards-stack`, `cards-wide`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`
+
+- Selector: `p:has(> strong:only-child)` — the paragraph must contain a single `<strong>` and nothing else (no leading/trailing text outside the bold span)
+- Glyph: `▸` (U+25B8) in `--accent`, `0.95em`
+- Text: 16px (`--fs-body`), `--text-heading`, weight 600 (inherited from `section strong`)
+- Hairline: solid 1px `--accent` above (in the wrapped CLI form, the `.below-note` wrapper carries the gradient hairline; in the Marp-preview raw form, the same line is drawn as `border-top` on the `<p>` itself)
+- Use for: decision asks, deadlines, owner-action prompts, next steps — content that prompts an action rather than summarising the argument
+
+**Note:** The four trailing registers compose by markdown shape on the same set of layouts. Canonical order, top → bottom:
+
+| Order | Markdown shape                                | Renders as          | Visual chrome                              |
+| :---: | --------------------------------------------- | ------------------- | ------------------------------------------ |
+|   1   | `> blockquote`                                | **Key Insight**     | accent-tinted panel, "KEY INSIGHT" eyebrow |
+|   2   | Plain `<p>`                                   | **Below-Note**      | gradient hairline + body text              |
+|   3   | `<p>` with only `**bold**` markdown           | **Call-to-Action**  | `▸` glyph + bold heading-color body text   |
+|   4   | `<p>` with only `_italic_` markdown           | **Annotation**      | `✦` glyph + muted label-size text          |
+
+A slide may carry one of each register, in canonical order. The common pairings are insight-only, insight + annotation, and content + call-to-action. See `examples/element-conventions.md` for the full register family and a four-register composition example.
 
 ---
 

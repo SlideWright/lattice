@@ -710,3 +710,39 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** Never — the guard is cheap and the alternative
   (cascade-order dependence) is fragile.
 - **Commits:** `d3ffaca`
+
+### Trailing register out of canonical order loses hairline in preview
+
+- **Symptom:** A slide with multiple trailing registers (e.g. a plain
+  below-note followed by a `**bold**` call-to-action) renders correctly
+  in the marp-cli PDF but the call-to-action's accent hairline silently
+  disappears in the marp-vscode preview. Same shape applies if the
+  author writes the registers out of canonical order — e.g. an
+  `_italic_` annotation before a plain below-note swaps which one gets
+  the hairline.
+- **Cause:** Trailing-register glyphs (▸ for call-to-action, ✦ for
+  annotation) are **shape-based** (`p:has(> strong:only-child)`,
+  `p:has(> em:only-child)`) and fire wherever the paragraph sits. The
+  **hairline** that anchors the top of the trailing block is
+  **position-sensitive**: the CLI render path wraps the entire trailing
+  paragraph run in a single `<div class="below-note">` whose `::before`
+  carries the gradient hairline (so it sits above the first inner `<p>`
+  regardless of which register fires first), but the marp-vscode preview
+  has no wrapper — the hairline rule fires on the first `<p>` after a
+  structural block (`> :is(ul, ol, blockquote, table) + p::before`). A
+  trailing register that isn't the immediately-following `<p>` in the
+  raw form doesn't get a hairline.
+- **Mitigation:** Author trailing registers in canonical order — Key
+  Insight (blockquote) → Below-Note (plain p) → Call-to-Action (bold
+  p) → Annotation (italic p). The CLI-wrapped form composes cleanly
+  in any order; the canonical order keeps the preview form in
+  agreement. Documented in
+  [templates.md § Trailing Element Registers](./templates.md#trailing-element-registers).
+- **Triggered by:** Any slide with two or more trailing-register
+  paragraphs whose authoring order is not the canonical one. In
+  practice rare — most slides carry one trailing register or none.
+- **Removable when:** A future build-time lint or HTML normaliser
+  reorders trailing registers into canonical order in all three render
+  paths. Until then, author discipline is the contract.
+- **Commits:** The introduction of Call-to-Action as the fourth trailing
+  register (this branch).

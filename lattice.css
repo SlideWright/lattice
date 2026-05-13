@@ -2897,6 +2897,110 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
   font-size:0.95em;
 }
 
+/* ── CALL-TO-ACTION (trailing **bold** paragraph) ─────────────────────────
+ * A trailing paragraph whose only child is a <strong> renders as the
+ * slide's ask — the decision, deadline, or next step that closes the
+ * argument. Distinct from below-note (no glyph, plain weight), annotation
+ * (no muting, body-size text), and key-insight (no panel). Visual register:
+ * ▸ glyph + body-weight bold in --text-heading (inherited from the
+ * `section strong` rule at L245).
+ *
+ * Selector covers both forms: the CLI-wrapped `.below-note > p` and the
+ * Marp-preview raw trailing <p>. Layouts enumerated comma-separated (same
+ * Marpit :is() scoper note as below-note and annotation above).
+ *
+ * Limitation: in the Marp-preview raw form, the hairline rule only fires
+ * on the FIRST trailing <p> after a structural block. If an author writes
+ * `plain p` → `**bold p**` in source, the CTA glyph still fires (shape-
+ * based), but the solid-accent border-top here only attaches when the CTA
+ * is itself the immediately-following <p>. The CLI-wrapped form composes
+ * cleanly because the .below-note wrapper carries the hairline above the
+ * entire trailing block. Author-side canonical order keeps both paths in
+ * agreement — see docs/references/gotchas.md.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Marp-preview raw form: the universal below-note rule sets a gradient
+ * hairline on this <p>::before, which we take over for the ▸ glyph below.
+ * Reproduce the hairline as a solid-accent border-top on the <p> itself
+ * so the visual register matches the wrapped form (whose .below-note
+ * wrapper carries the gradient hairline above the trailing block). */
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.featured > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.list > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.principles > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.decision > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.actors > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> strong:only-child),
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> strong:only-child) {
+  border-top:1px solid var(--accent);
+  padding-top:var(--sp-xs);
+}
+
+/* ▸ glyph prefix (U+25B8) + override the universal below-note ::before
+ * hairline (raw form) and any wrapper ::before (wrapped form). */
+section.cards-grid .below-note > p:has(> strong:only-child)::before,
+section.compare-prose .below-note > p:has(> strong:only-child)::before,
+section.verdict-grid .below-note > p:has(> strong:only-child)::before,
+section.featured .below-note > p:has(> strong:only-child)::before,
+section.list-criteria .below-note > p:has(> strong:only-child)::before,
+section.cards-wide .below-note > p:has(> strong:only-child)::before,
+section.cards-stack .below-note > p:has(> strong:only-child)::before,
+section.list .below-note > p:has(> strong:only-child)::before,
+section.list-steps .below-note > p:has(> strong:only-child)::before,
+section.list-tabular .below-note > p:has(> strong:only-child)::before,
+section.timeline .below-note > p:has(> strong:only-child)::before,
+section.principles .below-note > p:has(> strong:only-child)::before,
+section.tldr .below-note > p:has(> strong:only-child)::before,
+section.matrix-2x2 .below-note > p:has(> strong:only-child)::before,
+section.decision .below-note > p:has(> strong:only-child)::before,
+section.before-after .below-note > p:has(> strong:only-child)::before,
+section.actors .below-note > p:has(> strong:only-child)::before,
+section.kpi .below-note > p:has(> strong:only-child)::before,
+section.agenda .below-note > p:has(> strong:only-child)::before,
+section.compare-table .below-note > p:has(> strong:only-child)::before,
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.featured > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.list > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.principles > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.decision > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.actors > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before,
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> strong:only-child)::before {
+  content:'\25B8';
+  position:static;
+  background:none;
+  height:auto;
+  width:auto;
+  color:var(--accent);
+  font-style:normal;
+  margin-right:0.5em;
+  font-size:0.95em;
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * NEW LAYOUTS (Wave 7) — proposals.md §3.1–3.6
  * ────────────────────────────────────────────────────────────────────────
