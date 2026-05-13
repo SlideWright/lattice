@@ -3,6 +3,12 @@
 How to author a new palette for Lattice. Covers the CSS variable contract
 and the diagram-token taxonomy.
 
+> **First time here?** Start with `themes/README.md` — it's the
+> one-screen mental model and a five-minute scaffolded path. This file
+> is the deep reference you graduate to when the README points you here.
+> The lightness contract that governs every fill choice is at the end
+> of this file under **The lightness contract**.
+
 ## Anatomy of a palette
 
 A palette is one CSS file: `themes/<name>.css`. Every palette extends
@@ -328,17 +334,83 @@ fine; nested `:has()` inside `:not()` / `:is()` isn't. See
 
 ## Authoring a new palette
 
+The scaffolder is the fastest path. It copies `themes/indaco.css`,
+rewrites the `@theme` directive, stamps `TODO(palette):` markers on
+every value you're expected to change, and creates the matching
+`<name>-dark.css` wrapper so the dark variant works on day one.
+
+```sh
+npm run new:theme verdigris
+# → themes/verdigris.css       (starter palette, TODOs at every author-edit point)
+# → themes/verdigris-dark.css  (3-line wrapper flipping color-scheme to dark)
+```
+
+Then, in order of impact:
+
+1. **Brand axis** (`--brand-<hue>-deep`, `-mid`, `<hue>`). Pick three to
+   five shades along a single hue; everything else hangs off them.
+   `--bg-dark`, `--accent`, `--text-label`, and the spectrum gradient
+   all derive from these.
+2. **Surfaces** (`--bg`, `--bg-alt`, `--border`). Use `light-dark(…)`
+   pairs so the dark variant works automatically.
+3. **Ink ramp** (`--text-heading`, `-body`, `-label`, `-muted`,
+   `--text-display`). Every text-bearing token must clear WCAG AA
+   (4.5:1) against the surface it appears on.
+4. **Accent** (`--accent`, `--accent-soft`, `--on-accent`). Most-seen
+   colour after ink. Must clear contrast against `--bg` *and* against
+   `--accent-soft`.
+5. **Diagram band cycle** (`--diagram-band-1` … `--diagram-band-12`,
+   each paired with `--diagram-band-text-N`). Pale band, L≈83. Used by
+   every Mermaid fill — flowchart, sequence, journey, pie, c4, venn,
+   timeline, mindmap, kanban, treemap. Paired text tokens are pinned to
+   a dark hex so light-mode and dark-mode diagrams render the same ink.
+6. **Diagram structural tokens** (`--diagram-stroke`, `--diagram-line`,
+   `--diagram-accent-warm`, `--diagram-quadrant-N-{fill,text}`,
+   `--diagram-state-{active,done,critical,today,grid}`,
+   `--diagram-note-{bg,stroke}`, `--diagram-error-{bg,text}`). Borders,
+   gantt state, sticky notes, parser errors.
+7. **Categorical hues** (`--cat-blue` … `--cat-mauve`). Mid-tone band,
+   L≈60. Used by kanban, mindmap, actor pills, corner tags. Inherit
+   indaco's on a first pass if you don't have strong opinions.
+8. **Dark-variant tokens** (`--dark-bg`, `--dark-text-*`, etc).
+   Consumed by every `light-dark()` pair above and by `section.dark`.
+9. **Semantic signals** (`--pass`, `--fail`, `--warn`). Usually the same
+   green/red/amber across palettes; override if your brand specifies.
+
+You don't write per-diagram CSS overrides. They live in `lattice.css`'s
+DIAGRAM OVERRIDES section and reference tokens by `var(--diagram-*)`, so
+your new colour values flow through unchanged.
+
+When the values look right:
+
+```sh
+# Build the regression galleries with your palette and inspect each PDF.
+node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         <name>
+node lattice-emulator.js examples/mermaid-gallery.md /tmp/<name>-mermaid.pdf <name>
+node lattice-emulator.js examples/kpi-gallery.md     /tmp/<name>-kpi.pdf     <name>
+```
+
+Then register the palette in `.vscode/settings.json` under
+`markdown.marp.themes` so the Marp VS Code extension picks it up
+for live preview.
+
+### Authoring it by hand
+
+If you prefer not to run the scaffolder:
+
 1. Copy `themes/indaco.css` to `themes/<name>.css`.
 2. Update the `@theme <name>` directive at the top of the file to match
    the filename (this is the value authors will type in front matter).
 3. Edit the hex values in each `:root` block. Keep the variable names —
    the renderer's variable map references them by name.
-4. Register the palette in `.vscode/settings.json` under
-   `markdown.marp.themes` so the Marp VS Code extension picks it up.
-5. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
-6. Re-render `examples/mermaid-gallery.md` with your palette to verify
+4. Copy `themes/indaco-dark.css` to `themes/<name>-dark.css` and change
+   the `@theme` directive and `@import` target to match.
+5. Register both palettes in `.vscode/settings.json` under
+   `markdown.marp.themes` so the Marp VS Code extension picks them up.
+6. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
+7. Re-render `examples/mermaid-gallery.md` with your palette to verify
    every diagram type renders correctly.
-7. Run `node --test test/unit/*.test.js` — the contrast assertions will
+8. Run `node --test test/unit/*.test.js` — the contrast assertions will
    catch any band/text pair that slips below AA.
 
 ## Verifying a palette

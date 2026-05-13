@@ -425,6 +425,7 @@
     transformSplitStatement();
     transformRoadmapStatus();
     transformRoadmapHorizons();
+    transformJourney();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -968,6 +969,276 @@
         wrap.appendChild(card);
       });
       table.replaceWith(wrap);
+    }
+  }
+
+  /**
+   * Journey diagram — runtime mirror of lib/journey.js. Walks each
+   * `section.journey` and rewrites its innerHTML in place. The
+   * implementation below is a near-verbatim copy of the pure-string
+   * parser + emitter in lib/journey.js — that file is canonical; this
+   * mirror exists because the marp-vscode preview can't `require` Node
+   * modules. Three-renderer parity rule applies: edit both or neither.
+   */
+  const JOURNEY_ACTOR_PALETTE_RT = [
+    'var(--cat-green)',  'var(--cat-blue)',   'var(--cat-purple)', 'var(--cat-orange)',
+    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+  ];
+  function jEscAttr(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+  function jEscHtml(s) {
+    return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  }
+  function jStripTags(s) {
+    return String(s).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+  }
+  function jClampMood(n) {
+    if (!Number.isFinite(n)) return 3;
+    return Math.max(1, Math.min(5, Math.round(n)));
+  }
+  function jFindOuterUL(html) {
+    const start = html.indexOf('<ul');
+    if (start < 0) return null;
+    const tagEnd = html.indexOf('>', start);
+    if (tagEnd < 0) return null;
+    let depth = 1, pos = tagEnd + 1;
+    while (pos < html.length) {
+      if (html.startsWith('<ul', pos) &&
+          (html[pos + 3] === '>' || html[pos + 3] === ' ' || html[pos + 3] === '\t' || html[pos + 3] === '\n')) {
+        const e = html.indexOf('>', pos);
+        if (e < 0) return null;
+        depth++; pos = e + 1;
+      } else if (html.startsWith('</ul>', pos)) {
+        depth--;
+        if (depth === 0) return { start, end: pos + 5, inner: html.slice(tagEnd + 1, pos) };
+        pos += 5;
+      } else { pos++; }
+    }
+    return null;
+  }
+  function jSplitTopLevelLI(ulInner) {
+    const lis = [];
+    let pos = 0;
+    while (pos < ulInner.length) {
+      const liStart = ulInner.indexOf('<li', pos);
+      if (liStart < 0) break;
+      const liTagEnd = ulInner.indexOf('>', liStart);
+      if (liTagEnd < 0) break;
+      let ulDepth = 0, scan = liTagEnd + 1, liEnd = -1;
+      while (scan < ulInner.length) {
+        if (ulInner.startsWith('<ul', scan) &&
+            (ulInner[scan + 3] === '>' || ulInner[scan + 3] === ' ' || ulInner[scan + 3] === '\t' || ulInner[scan + 3] === '\n')) {
+          const e = ulInner.indexOf('>', scan);
+          if (e < 0) break;
+          ulDepth++; scan = e + 1;
+        } else if (ulInner.startsWith('</ul>', scan)) {
+          ulDepth--; scan += 5;
+        } else if (ulInner.startsWith('</li>', scan) && ulDepth === 0) {
+          liEnd = scan; break;
+        } else { scan++; }
+      }
+      if (liEnd < 0) break;
+      lis.push(ulInner.slice(liTagEnd + 1, liEnd));
+      pos = liEnd + 5;
+    }
+    return lis;
+  }
+  function jParseTask(liInner) {
+    const actors = []; let mood = null, volume = null;
+    const codeRe = /<code\b[^>]*>([\s\S]*?)<\/code>/g;
+    let m;
+    while ((m = codeRe.exec(liInner)) !== null) {
+      const tok = jStripTags(m[1]);
+      if (tok.startsWith('@') && tok.length > 1) actors.push(tok.slice(1));
+      else if (tok.startsWith(':')) { const n = parseInt(tok.slice(1), 10); if (Number.isFinite(n)) mood = n; }
+      else if (tok.startsWith('+')) { const n = parseFloat(tok.slice(1)); if (Number.isFinite(n)) volume = n; }
+    }
+    let label = liInner.replace(/<code\b[^>]*>[\s\S]*?<\/code>/g, '');
+    const innerUl = jFindOuterUL(label);
+    if (innerUl) label = label.slice(0, innerUl.start) + label.slice(innerUl.end);
+    label = jStripTags(label);
+    return { label, actors, mood: jClampMood(mood == null ? 3 : mood), volume };
+  }
+  function jParseSection(liInner) {
+    const nested = jFindOuterUL(liInner);
+    const name = jStripTags(nested ? liInner.slice(0, nested.start) : liInner);
+    const tasks = nested ? jSplitTopLevelLI(nested.inner).map(jParseTask).filter(t => t.label !== '') : [];
+    return { name, tasks };
+  }
+  function jParseJourney(ulInner) {
+    return {
+      sections: jSplitTopLevelLI(ulInner).map(jParseSection)
+        .filter(s => s.name !== '' && s.tasks.length > 0),
+    };
+  }
+  function jMoodFaceSvg(mood) {
+    const m = jClampMood(mood);
+    const mouth = {
+      5: 'M7.5 14 Q12 19.5 16.5 14',
+      4: 'M8.5 14.2 Q12 17 15.5 14.2',
+      3: 'M8.5 14.8 L15.5 14.8',
+      2: 'M8.5 15.2 Q12 12.5 15.5 15.2',
+      1: 'M7.5 16 Q12 10 16.5 16',
+    }[m];
+    return (
+      '<svg class="journey-face" data-mood="' + m + '" viewBox="0 0 24 24" ' +
+      'fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" ' +
+      'stroke-linejoin="round" aria-hidden="true">' +
+        '<circle cx="12" cy="12" r="10" fill="var(--journey-face-bg)" stroke="currentColor" stroke-width="1.2"/>' +
+        '<circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/>' +
+        '<circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/>' +
+        '<path d="' + mouth + '"/>' +
+      '</svg>'
+    );
+  }
+  function jAssignActorColors(model) {
+    const map = new Map();
+    for (const s of model.sections) for (const t of s.tasks) for (const a of t.actors) {
+      if (!map.has(a)) map.set(a, JOURNEY_ACTOR_PALETTE_RT[map.size % JOURNEY_ACTOR_PALETTE_RT.length]);
+    }
+    return map;
+  }
+  // Shortest uppercase prefix unique within the actor set. WCAG 1.4.1
+  // redundant encoding mirror of lib/journey.js (assignActorLabels).
+  function jAssignActorLabels(actorNames) {
+    const labels = new Map();
+    for (const name of actorNames) {
+      let chosen = null;
+      for (let len = 1; len <= name.length; len++) {
+        const prefix = name.slice(0, len).toUpperCase();
+        const collides = actorNames.some(function (other) {
+          return other !== name && other.slice(0, len).toUpperCase() === prefix;
+        });
+        if (!collides) { chosen = prefix; break; }
+      }
+      labels.set(name, chosen || name.toUpperCase());
+    }
+    return labels;
+  }
+  function jEmitBoard(model) {
+    const taskCount = model.sections.reduce((n, s) => n + s.tasks.length, 0);
+    if (taskCount === 0) return '';
+    const actorColor = jAssignActorColors(model);
+    const actors = [...actorColor.entries()];
+    const actorLabel = jAssignActorLabels(actors.map(function (e) { return e[0]; }));
+    const sectionVolumes = model.sections.map(function (s) {
+      return s.tasks.reduce(function (sum, t) { return sum + (t.volume == null ? 1 : t.volume); }, 0);
+    });
+    const legendHtml = actors.map(function (e) {
+      const n = e[0], c = e[1];
+      const lbl = actorLabel.get(n);
+      return '<li class="journey-actor" data-actor="' + jEscAttr(n) + '" style="--actor-color:' + c + '">' +
+        '<span class="journey-actor-dot" data-label-len="' + lbl.length + '" aria-hidden="true">' + jEscHtml(lbl) + '</span>' +
+        '<span class="journey-actor-name">' + jEscHtml(n) + '</span>' +
+      '</li>';
+    }).join('');
+    const moodLegendHtml = (
+      '<li class="journey-mood-key journey-mood-key-low">Pain</li>' +
+      [1, 2, 3, 4, 5].map(function (m) {
+        return '<li class="journey-mood-key" data-mood="' + m + '">' +
+                 '<span class="journey-mood-key-swatch" aria-hidden="true"></span>' +
+                 '<span class="journey-mood-key-label">' + m + '</span>' +
+               '</li>';
+      }).join('') +
+      '<li class="journey-mood-key journey-mood-key-high">Delight</li>'
+    );
+    const sectionsHtml = model.sections.map((s, i) =>
+      '<li class="journey-section" data-section="' + i + '" ' +
+      'style="--span:' + s.tasks.length + '; --section-index:' + i + '; --section-volume:' + sectionVolumes[i] + '">' +
+        '<span class="journey-section-name">' + jEscHtml(s.name) + '</span>' +
+      '</li>'
+    ).join('');
+    let col = 0, totalVolume = 0;
+    for (const s of model.sections) for (const t of s.tasks) totalVolume += (t.volume == null ? 1 : t.volume);
+    const taskParts = [], moodParts = [], polyPoints = [];
+    for (let si = 0; si < model.sections.length; si++) {
+      for (const t of model.sections[si].tasks) {
+        col++;
+        const dots = t.actors.map(function (a) {
+          const lbl = actorLabel.get(a);
+          return '<span class="journey-actor-dot" data-actor="' + jEscAttr(a) +
+            '" data-label-len="' + lbl.length + '" ' +
+            'style="--actor-color:' + actorColor.get(a) + '" aria-hidden="true">' + jEscHtml(lbl) + '</span>';
+        }).join('');
+        const vol = t.volume == null ? 1 : t.volume;
+        const volPct = totalVolume > 0 ? Math.round((vol / totalVolume) * 100) : 0;
+        taskParts.push(
+          '<li class="journey-task" data-mood="' + t.mood + '" data-section="' + si + '" ' +
+          'style="--col:' + col + '; --mood:' + t.mood + '; --volume:' + vol + '; --volume-pct:' + volPct + '">' +
+            '<span class="journey-task-actors">' + dots + '</span>' +
+            '<span class="journey-task-label">' + jEscHtml(t.label) + '</span>' +
+          '</li>'
+        );
+        moodParts.push(
+          '<li class="journey-mood" data-mood="' + t.mood + '" style="--col:' + col + '; --mood:' + t.mood + '">' +
+            '<span class="journey-mood-line" aria-hidden="true"></span>' +
+            jMoodFaceSvg(t.mood) +
+          '</li>'
+        );
+        polyPoints.push((col - 0.5).toFixed(2) + ',' + (5 - t.mood).toFixed(2));
+      }
+    }
+    const lanesHtml = actors.map(([name, color], ai) => {
+      let lcol = 0; const lDots = [];
+      for (const s of model.sections) for (const t of s.tasks) {
+        lcol++;
+        if (t.actors.includes(name)) {
+          lDots.push(
+            '<span class="journey-lane-dot" data-mood="' + t.mood + '" style="--col:' + lcol + '; --mood:' + t.mood + '" aria-hidden="true"></span>'
+          );
+        }
+      }
+      return (
+        '<li class="journey-lane" data-actor="' + jEscAttr(name) +
+        '" style="--actor-color:' + color + '; --row:' + (ai + 1) + '">' +
+          '<span class="journey-lane-label">' + jEscHtml(name) + '</span>' +
+          '<span class="journey-lane-track" aria-hidden="true"></span>' +
+          lDots.join('') +
+        '</li>'
+      );
+    }).join('');
+    const gridLines = [0, 1, 2, 3, 4].map(function (y) {
+      return '<line class="journey-curve-grid" x1="0" y1="' + y + '" x2="' + taskCount + '" y2="' + y + '" ' +
+             'stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" ' +
+             'vector-effect="non-scaling-stroke"/>';
+    }).join('');
+    const curveSvg = (
+      '<svg class="journey-curve" viewBox="0 0 ' + taskCount + ' 5" preserveAspectRatio="none" aria-hidden="true">' +
+        gridLines +
+        '<polyline points="' + polyPoints.join(' ') + '" fill="none" ' +
+        'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" ' +
+        'vector-effect="non-scaling-stroke"/>' +
+      '</svg>'
+    );
+    return (
+      '<div class="journey-board" style="--task-count:' + taskCount + '; --actor-count:' + actors.length + '">' +
+        '<ol class="journey-legend">' + legendHtml + '</ol>' +
+        '<ol class="journey-mood-legend" aria-label="Mood scale: 1 (pain) to 5 (delight)">' + moodLegendHtml + '</ol>' +
+        '<ol class="journey-sections">' + sectionsHtml + '</ol>' +
+        '<ol class="journey-tasks">' + taskParts.join('') + '</ol>' +
+        '<div class="journey-timeline" aria-hidden="true"></div>' +
+        '<ol class="journey-moods">' + moodParts.join('') + '</ol>' +
+        curveSvg +
+        '<ol class="journey-lanes">' + lanesHtml + '</ol>' +
+      '</div>'
+    );
+  }
+  function transformJourney() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.journey')) {
+      if (section.querySelector(':scope > .journey-board')) continue;
+      const ul = section.querySelector(':scope > ul');
+      if (!ul) continue;
+      const model = jParseJourney(ul.innerHTML);
+      if (model.sections.length === 0) continue;
+      const board = jEmitBoard(model);
+      const tmp = document.createElement('div');
+      tmp.innerHTML = board;
+      const boardEl = tmp.firstElementChild;
+      ul.replaceWith(boardEl);
     }
   }
 
