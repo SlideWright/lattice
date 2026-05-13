@@ -113,15 +113,15 @@
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
   --diagram-band-1:   #E8E8E7;
-  --diagram-band-2: #DCDCDB;
+  --diagram-band-2: #F0E8D0;
   --diagram-stroke:          #2A2A2A;
   /* Warm-gold pop — the deliberate "coolness break" on second curve.
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */
   --diagram-accent-warm:     #C8B89A;
-  --diagram-band-3:  #C8C8C5;  /* deeper neutral (band-1 hue, L≈78) */
-  --diagram-band-4:  #F0E8D0;  /* pale warm-gold */
-  --diagram-band-5:    #D8E0E0;  /* pale cool neutral */
+  --diagram-band-3:  #D8E0E0;  /* cool-gray — promoted from band-5 for cool accent */
+  --diagram-band-4:  #DCDCDB;  /* light-gray — was original band-2 */
+  --diagram-band-5:    #C8C8C5;  /* deeper-neutral — demoted from band-3 */
   --diagram-band-6:    #EDE5E2;  /* pale warm-neutral */
   --diagram-band-7:  #F0EDD5;  /* very pale gold */
   --diagram-band-8:     #EEE0DC;  /* pale warm-taupe */
@@ -159,7 +159,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #F0E8D0;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -175,9 +175,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-4);
-  --diagram-quadrant-3-fill: var(--diagram-band-5);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

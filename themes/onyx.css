@@ -118,11 +118,11 @@
 
   /* ── Mermaid extensions — saturated red is the only chroma ───────── */
   --diagram-band-1:   #F5F5F5;
-  --diagram-band-2: #D9D9D9;
+  --diagram-band-2: #FAEAE8;
   --diagram-stroke:          #000000;
   --diagram-accent-warm:     var(--brand-red);
-  --diagram-band-3:  #C0C0C0;  /* medium gray (band-1 lightness step) */
-  --diagram-band-4:  #FAEAE8;  /* pale red-tint */
+  --diagram-band-3:  #C0C0C0;  /* medium gray — lightness step from band-1 */
+  --diagram-band-4:  #D9D9D9;  /* mid-gray — was original band-2 */
   --diagram-band-5:    #EBEBEB;  /* light neutral */
   --diagram-band-6:    #F5EEEE;  /* pale rose-neutral */
   --diagram-band-7:  #F5F5EE;  /* pale cream */
@@ -161,7 +161,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #FAEAE8;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -177,9 +177,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-4);
-  --diagram-quadrant-3-fill: var(--diagram-band-2);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

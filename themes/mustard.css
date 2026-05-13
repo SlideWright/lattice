@@ -117,13 +117,13 @@
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
   --diagram-band-1:   #E8D580;
-  --diagram-band-2: #F0E5C8;
+  --diagram-band-2: #D8E5D5;
   --diagram-stroke:          #3D2D14;
   --diagram-accent-warm:     var(--brand-oxblood);
-  --diagram-band-3:  #F0E8C0;  /* pale parchment-gold */
+  --diagram-band-3:  #F0D8CC;  /* peach — promoted from band-6 for warm accent */
   --diagram-band-4:  #F5E5A8;  /* pale mustard-amber */
-  --diagram-band-5:    #D8E5D5;  /* pale sage */
-  --diagram-band-6:    #F0D8CC;  /* pale warm-oxblood */
+  --diagram-band-5:    #F0E5C8;  /* parchment — demoted from band-2 */
+  --diagram-band-6:    #F0E8C0;  /* parchment-gold — demoted from band-3 */
   --diagram-band-7:  #F0E8D0;  /* pale parchment */
   --diagram-band-8:     #EDD5C8;  /* pale terracotta */
   --diagram-band-9:   #E0D8C5;  /* pale warm-slate */
@@ -176,9 +176,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-5);
-  --diagram-quadrant-3-fill: var(--diagram-band-6);
-  --diagram-quadrant-4-fill: var(--diagram-band-2);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

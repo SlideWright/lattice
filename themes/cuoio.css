@@ -307,11 +307,11 @@ section .hljs-strong { font-weight:700; }
    * Cuoio's band is a tonal ladder of warm cream variations rather
    * than indaco's six-hue rotation — keeps the "ink-on-vellum" voice. */
   --diagram-band-1:  #E6DAC8;  /* warm cream (canonical primary) */
-  --diagram-band-2:  #D1C5B3;  /* deeper cream */
-  --diagram-band-3:  #D5CCE1;  /* iris */
+  --diagram-band-2:  #D5CCE1;  /* iris — promoted from band-3, cool pull */
+  --diagram-band-3:  #E1CCD9;  /* rose — promoted from band-6, warm pink pull */
   --diagram-band-4:  #EBDBC1;  /* gold wash */
-  --diagram-band-5:  #C7D9DC;  /* petrol */
-  --diagram-band-6:  #E1CCD9;  /* rose */
+  --diagram-band-5:  #D1C5B3;  /* deeper cream — was original band-2 */
+  --diagram-band-6:  #C7D9DC;  /* petrol — demoted from band-5 */
   --diagram-band-7:  #EDD5B8;  /* wheat */
   --diagram-band-8:  #E3C5C5;  /* sienna */
   --diagram-band-9:  #D7D0C6;  /* taupe */
@@ -377,9 +377,9 @@ section .hljs-strong { font-weight:700; }
    *   Q4 time-sinks  → band-5 (petrol pull, cool)
    * Text stays the universal cuoio ink — all four pairs clear AA. */
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-3);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-5);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: #1E1A15;
   --diagram-quadrant-2-text: #1E1A15;
   --diagram-quadrant-3-text: #1E1A15;

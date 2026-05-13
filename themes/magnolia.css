@@ -118,9 +118,9 @@
   --diagram-band-2: #EFD5C9;
   --diagram-stroke:          #5A2530;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #E5BFB8;  /* deeper dusty-rose (band-1 hue, L≈78) */
+  --diagram-band-3:  #D8E8DC;  /* sage — promoted from band-5 for chart-2 cool complement */
   --diagram-band-4:  #F0DBBF;  /* pale peach-gold */
-  --diagram-band-5:    #D8E8DC;  /* pale sage-green */
+  --diagram-band-5:    #E5BFB8;  /* deeper dusty-rose — demoted from band-3 */
   --diagram-band-6:    #DCBAA8;  /* deeper peach (band-2 hue, L≈75) */
   --diagram-band-7:  #F5EDCC;  /* pale cream-gold */
   --diagram-band-8:     #F2D2D0;  /* pale faded-rose */
@@ -158,7 +158,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #F0DBBF;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -174,9 +174,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-5);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

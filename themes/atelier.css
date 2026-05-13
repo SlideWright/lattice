@@ -115,12 +115,12 @@
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
   --diagram-band-1:   #E5E0D2;
-  --diagram-band-2: #DBD5C0;
+  --diagram-band-2: #E8D8B0;
   --diagram-stroke:          #38332A;
   --diagram-accent-warm:     var(--brand-amber); /* the amber pop */
-  --diagram-band-3:  #C5BFA5;  /* deeper warm-oat (band-1 hue, L≈75) */
-  --diagram-band-4:  #E8D8B0;  /* pale amber-oat */
-  --diagram-band-5:    #D5DDD5;  /* pale warm-neutral-sage */
+  --diagram-band-3:  #D5DDD5;  /* sage — promoted from band-5 for cool accent */
+  --diagram-band-4:  #DBD5C0;  /* deeper-oat — was original band-2 */
+  --diagram-band-5:    #C5BFA5;  /* deeper-warm-oat — demoted from band-3 */
   --diagram-band-6:    #EDE0D8;  /* pale warm-blush */
   --diagram-band-7:  #E8E0B8;  /* pale warm-cream */
   --diagram-band-8:     #EDD8CC;  /* pale warm-terracotta */
@@ -158,7 +158,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #E8D8B0;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -174,9 +174,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-4);
-  --diagram-quadrant-3-fill: var(--diagram-band-5);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

@@ -118,18 +118,18 @@
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
   --diagram-band-1:   #D5D5D2;
-  --diagram-band-2: #ECECE8;
+  --diagram-band-2: #E8D8D0;
   --diagram-stroke:          #2A2A28;
   --diagram-accent-warm:     var(--brand-oxblood);
-  --diagram-band-3:  #B5B5B0;  /* deeper concrete (band-1 hue, L≈72) */
-  --diagram-band-4:  #E8D8D0;  /* pale warm-oxblood tint */
+  --diagram-band-3:  #D8D5E0;  /* cool-gray-violet — promoted from band-11 for cool accent */
+  --diagram-band-4:  #ECECE8;  /* lighter concrete — was original band-2 */
   --diagram-band-5:    #CCCCCA;  /* slightly darker concrete */
   --diagram-band-6:    #E8D8D5;  /* pale warm-gray-rose */
   --diagram-band-7:  #E8E5D8;  /* pale warm-bone */
   --diagram-band-8:     #E5D0D0;  /* pale warm-red */
   --diagram-band-9:   #D5D5CE;  /* concrete-slate */
   --diagram-band-10:    #D8DDD5;  /* pale warm-sage */
-  --diagram-band-11:  #D8D5E0;  /* pale cool contrast */
+  --diagram-band-11:  #B5B5B0;  /* deeper concrete — demoted from band-3 */
   /* cScale / gitgraph — warm gray with one oxblood pop */
   --cat-blue:   #585856;
   --cat-green:  #921E1E;  /* oxblood */
@@ -161,7 +161,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #E8D8D0;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -177,9 +177,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-4);
-  --diagram-quadrant-3-fill: var(--diagram-band-11);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);

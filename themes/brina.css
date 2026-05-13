@@ -112,13 +112,13 @@
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
   --diagram-band-1:   #DAE6EE;
-  --diagram-band-2: #E5EAF0;
+  --diagram-band-2: #F2E5D5;
   --diagram-stroke:          #1E2A38;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #B5CDDA;  /* deeper steel-blue (band-1 hue, L≈80) */
-  --diagram-band-4:  #F2E5D5;  /* pale warm peach */
+  --diagram-band-3:  #E8E0EE;  /* lavender-ice — promoted from band-6 for cool accent */
+  --diagram-band-4:  #E5EAF0;  /* lighter steel — was original band-2 */
   --diagram-band-5:    #D0E5E8;  /* pale frost-teal */
-  --diagram-band-6:    #E8E0EE;  /* pale lavender-ice */
+  --diagram-band-6:    #B5CDDA;  /* deeper steel-blue — demoted from band-3 */
   --diagram-band-7:  #F0ECD5;  /* pale cream */
   --diagram-band-8:     #F0DDE0;  /* pale arctic-rose */
   --diagram-band-9:   #D8E0EA;  /* pale glacier-gray */
@@ -155,7 +155,7 @@
 
   --diagram-line:                  var(--text-heading);
 
-  --diagram-state-active:          var(--diagram-band-4);
+  --diagram-state-active:          #F2E5D5;
   --diagram-state-active-stroke:   var(--text-heading);
   --diagram-state-done:            var(--diagram-band-9);
   --diagram-state-done-stroke:     var(--text-muted);
@@ -171,9 +171,9 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-7);
-  --diagram-quadrant-3-fill: var(--diagram-band-6);
-  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-3);
+  --diagram-quadrant-4-fill: var(--diagram-band-4);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
   --diagram-quadrant-3-text: var(--text-heading);
