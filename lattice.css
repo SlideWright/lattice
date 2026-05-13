@@ -6869,6 +6869,63 @@ section .cluster.section-11 rect, section .section-11 rect,
 section .section-11 path, section .section-11 circle { fill: var(--diagram-band-12) !important; stroke: var(--diagram-stroke) !important; }
 section .section-11 text, section .section-11 tspan, section .section-11 span { fill: var(--diagram-band-text-12) !important; color: var(--diagram-band-text-12) !important; }
 
+/* ── TIMELINE BAND CYCLE (shifted) ──
+ * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
+ * so the FIRST timeline section gets `section--1`, the second gets
+ * `section-0`, and so on. The general band-cycle rules above pin BOTH
+ * `section--1` AND `section-0` to band-1 (because that's the correct map
+ * for mindmap and other diagrams where `section-0` is the first), which
+ * means every timeline renders its first two sections in the same band.
+ * Visible on the gallery's Phase 01 / Phase 02 (both blue) and on
+ * diagram-tokens' Discover / Frame (both blue) where the deck's footer
+ * literally claims "8 sections cycling --diagram-band-1..8".
+ *
+ * Timeline groups wrap each section in <g class="timeline-node section-N">.
+ * Re-pin the cycle one band up for `.timeline-node` only so timeline
+ * sections cycle band-1 (section--1), band-2 (section-0), band-3
+ * (section-1), …, band-12 (section-10). Higher specificity than the
+ * generic `.section-N` rules above wins automatically. Other diagram
+ * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
+ * their existing mappings.
+ */
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--diagram-band-1) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--diagram-band-text-1) !important; color: var(--diagram-band-text-1) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--diagram-band-2) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--diagram-band-text-2) !important; color: var(--diagram-band-text-2) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--diagram-band-3) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--diagram-band-text-3) !important; color: var(--diagram-band-text-3) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--diagram-band-4) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--diagram-band-text-4) !important; color: var(--diagram-band-text-4) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--diagram-band-5) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--diagram-band-text-5) !important; color: var(--diagram-band-text-5) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--diagram-band-6) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--diagram-band-text-6) !important; color: var(--diagram-band-text-6) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--diagram-band-7) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--diagram-band-text-7) !important; color: var(--diagram-band-text-7) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--diagram-band-8) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--diagram-band-text-8) !important; color: var(--diagram-band-text-8) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--diagram-band-9) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--diagram-band-text-9) !important; color: var(--diagram-band-text-9) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--diagram-band-10) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--diagram-band-text-10) !important; color: var(--diagram-band-text-10) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--diagram-band-11) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--diagram-band-text-11) !important; color: var(--diagram-band-text-11) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--diagram-band-12) !important; stroke: var(--diagram-stroke) !important; }
+section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--diagram-band-text-12) !important; color: var(--diagram-band-text-12) !important; }
+
+/* ── TIMELINE EVENT WRAPPER ──
+ * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
+ * `filter: brightness(120%)` on the class. Their intent is to lighten the
+ * event tile so it reads as "inside" the period header above it, but the
+ * band cycle already sits at L≈83 — pushing it +20% lightness clamps the
+ * G/B channels to 255 and collapses every band into a near-cyan wash
+ * (band-1 #BCD5EC → ~#E1FEFE, band-2 #C1E4D5 → ~#E7FEFE — indistinguishable
+ * from band-1). Drop the filter so event tiles match their section's band
+ * exactly. The size difference (event tile is narrower than the period
+ * header above it) is enough to keep the visual hierarchy.
+ */
+section .eventWrapper { filter: none !important; }
+
 /* ── KANBAN TICKETS ──
  * Card-on-band: the ticket sits inside a band-tinted lane, so painting
  * the inner card with --bg-alt gives a real "card on coloured ground"

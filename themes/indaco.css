@@ -350,13 +350,26 @@ section .hljs-strong { font-weight:700; }
   --cat-slate:   #9AA8B8;
   --cat-mauve:   #B8939F;
 
-  /* ── Quadrant (4-slot tonal ladder, fill + text paired) ──────────── */
-  --diagram-quadrant-1-fill: #EBF7E3;
-  --diagram-quadrant-2-fill: #E6F0FF;
-  --diagram-quadrant-3-fill: #FFF8E1;
-  --diagram-quadrant-4-fill: #F0EBF7;
-  --diagram-quadrant-1-text: #2D5E18;
-  --diagram-quadrant-2-text: #004A8A;
+  /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
+   * Earlier values sat at L≈95 — visibly washed against the band cycle
+   * which was deepened to L≈83. Pin fills to the band tokens so the
+   * four corners read at the same lightness as every other coloured
+   * surface in the deck. Mermaid's quadrant numbering follows the math
+   * convention: Q1 top-right, Q2 top-left, Q3 bottom-left, Q4 bottom-
+   * right. Hue mapping picks a semantic that reads correctly under the
+   * canonical labels (Strategic Bets / Quick Wins / Defer / Time Sinks):
+   *   Q1 strategic → band-1 (brand blue — long-horizon work)
+   *   Q2 quick-wins → band-2 (green — do it now)
+   *   Q3 defer     → band-7 (yellow — hold)
+   *   Q4 time-sinks → band-3 (purple — drag)
+   * Text stays per-quadrant saturated so each label hue reinforces its
+   * quadrant's identity at AA on its band. */
+  --diagram-quadrant-1-fill: var(--diagram-band-1);
+  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-3-fill: var(--diagram-band-7);
+  --diagram-quadrant-4-fill: var(--diagram-band-3);
+  --diagram-quadrant-1-text: #004A8A;
+  --diagram-quadrant-2-text: #2D5E18;
   --diagram-quadrant-3-text: #7A5200;
   --diagram-quadrant-4-text: #3D2050;
 
