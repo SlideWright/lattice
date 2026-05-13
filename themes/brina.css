@@ -115,7 +115,7 @@
   --diagram-band-2: #E5EAF0;
   --diagram-stroke:          #1E2A38;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #DAE6EE;  /* pale steel-blue */
+  --diagram-band-3:  #B5CDDA;  /* deeper steel-blue (band-1 hue, L≈80) */
   --diagram-band-4:  #F2E5D5;  /* pale warm peach */
   --diagram-band-5:    #D0E5E8;  /* pale frost-teal */
   --diagram-band-6:    #E8E0EE;  /* pale lavender-ice */
@@ -171,8 +171,8 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
+  --diagram-quadrant-2-fill: var(--diagram-band-7);
+  --diagram-quadrant-3-fill: var(--diagram-band-6);
   --diagram-quadrant-4-fill: var(--diagram-band-3);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);

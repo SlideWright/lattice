@@ -365,17 +365,21 @@ section .hljs-strong { font-weight:700; }
   --cat-mauve:   #6E4558;  /* deeper rose — 7.40:1 on bg AAA */
 
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
-   * Pinned to the band cycle so the four corners read at L≈83 — same
-   * surface lightness as every other coloured tile in the deck. Cuoio
-   * is a monochrome cream identity, so the four quadrants use four
-   * band slots that stay within the warm-leather palette rather than
-   * pulling in cool accents. Hue mapping: Q1 → band-1 (cream), Q2 →
-   * band-2 (deeper cream), Q3 → band-7 (wheat), Q4 → band-4 (gold wash).
+   * Cuoio is monochrome warm by identity, but the band cycle pulls in
+   * two subtle cool accents (band-3 iris, band-5 petrol). The quadrant
+   * needs four visually distinct fills with no adjacent pair too close,
+   * so pull from both warm and the two cool accents — the warm-leather
+   * voice still dominates (Q1 cream + Q3 wheat) and the two cool pulls
+   * supply distinction without competing with the brand. Hue mapping:
+   *   Q1 strategic   → band-1 (cream)
+   *   Q2 quick-wins  → band-3 (iris pull, cool)
+   *   Q3 defer       → band-7 (wheat)
+   *   Q4 time-sinks  → band-5 (petrol pull, cool)
    * Text stays the universal cuoio ink — all four pairs clear AA. */
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-2-fill: var(--diagram-band-3);
   --diagram-quadrant-3-fill: var(--diagram-band-7);
-  --diagram-quadrant-4-fill: var(--diagram-band-4);
+  --diagram-quadrant-4-fill: var(--diagram-band-5);
   --diagram-quadrant-1-text: #1E1A15;
   --diagram-quadrant-2-text: #1E1A15;
   --diagram-quadrant-3-text: #1E1A15;

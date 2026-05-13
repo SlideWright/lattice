@@ -119,7 +119,7 @@
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */
   --diagram-accent-warm:     #C8B89A;
-  --diagram-band-3:  #E8E8E7;  /* pale neutral */
+  --diagram-band-3:  #C8C8C5;  /* deeper neutral (band-1 hue, L≈78) */
   --diagram-band-4:  #F0E8D0;  /* pale warm-gold */
   --diagram-band-5:    #D8E0E0;  /* pale cool neutral */
   --diagram-band-6:    #EDE5E2;  /* pale warm-neutral */
@@ -175,8 +175,8 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
+  --diagram-quadrant-2-fill: var(--diagram-band-4);
+  --diagram-quadrant-3-fill: var(--diagram-band-5);
   --diagram-quadrant-4-fill: var(--diagram-band-3);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);

@@ -118,10 +118,10 @@
   --diagram-band-2: #EFD5C9;
   --diagram-stroke:          #5A2530;
   --diagram-accent-warm:     #BD5000;
-  --diagram-band-3:  #F5DDD8;  /* pale dusty-rose */
+  --diagram-band-3:  #E5BFB8;  /* deeper dusty-rose (band-1 hue, L≈78) */
   --diagram-band-4:  #F0DBBF;  /* pale peach-gold */
   --diagram-band-5:    #D8E8DC;  /* pale sage-green */
-  --diagram-band-6:    #EFD5C9;  /* pale peach */
+  --diagram-band-6:    #DCBAA8;  /* deeper peach (band-2 hue, L≈75) */
   --diagram-band-7:  #F5EDCC;  /* pale cream-gold */
   --diagram-band-8:     #F2D2D0;  /* pale faded-rose */
   --diagram-band-9:   #E0D8E0;  /* pale dusty-mauve */
@@ -174,7 +174,7 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
+  --diagram-quadrant-2-fill: var(--diagram-band-5);
   --diagram-quadrant-3-fill: var(--diagram-band-7);
   --diagram-quadrant-4-fill: var(--diagram-band-3);
   --diagram-quadrant-1-text: var(--text-heading);

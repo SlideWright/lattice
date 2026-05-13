@@ -116,8 +116,8 @@
   --diagram-band-2: #F4DBD0; /* warm coral pale */
   --diagram-stroke:          #0F2D31;
   --diagram-accent-warm:     var(--brand-coral); /* the coral pop */
-  --diagram-band-3:  #D2E8EA;  /* pale teal */
-  --diagram-band-4:  #F4DBD0;  /* pale coral */
+  --diagram-band-3:  #ADCED2;  /* deeper teal (band-1 hue, L≈80) */
+  --diagram-band-4:  #E5C0AE;  /* deeper coral (band-2 hue, L≈80) */
   --diagram-band-5:    #CBE0E0;  /* deeper pale teal */
   --diagram-band-6:    #F8E8D8;  /* pale sandy peach */
   --diagram-band-7:  #F2E5C0;  /* pale warm sand */

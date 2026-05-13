@@ -118,7 +118,7 @@
   --diagram-band-2: #DBD5C0;
   --diagram-stroke:          #38332A;
   --diagram-accent-warm:     var(--brand-amber); /* the amber pop */
-  --diagram-band-3:  #E5E0D2;  /* pale warm-oat */
+  --diagram-band-3:  #C5BFA5;  /* deeper warm-oat (band-1 hue, L≈75) */
   --diagram-band-4:  #E8D8B0;  /* pale amber-oat */
   --diagram-band-5:    #D5DDD5;  /* pale warm-neutral-sage */
   --diagram-band-6:    #EDE0D8;  /* pale warm-blush */
@@ -174,8 +174,8 @@
   --diagram-error-text: #FFFFFF;
 
   --diagram-quadrant-1-fill: var(--diagram-band-1);
-  --diagram-quadrant-2-fill: var(--diagram-band-2);
-  --diagram-quadrant-3-fill: var(--diagram-band-7);
+  --diagram-quadrant-2-fill: var(--diagram-band-4);
+  --diagram-quadrant-3-fill: var(--diagram-band-5);
   --diagram-quadrant-4-fill: var(--diagram-band-3);
   --diagram-quadrant-1-text: var(--text-heading);
   --diagram-quadrant-2-text: var(--text-heading);
