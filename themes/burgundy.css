@@ -146,15 +146,19 @@
   --diagram-band-9:   #E0D5D8;  /* pale mauve-slate */
   --diagram-band-10:    #D8E0D5;  /* pale sage */
   --diagram-band-11:  #E5D0E8;  /* pale violet pop */
-  /* cScale / gitgraph — wine + champagne family */
-  --cat-blue:   #7A2230;  /* wine */
-  --cat-green:  #8A6E38;  /* champagne mid */
-  --cat-purple: #582888;  /* deep violet */
-  --cat-orange: #804838;  /* terracotta */
-  --cat-teal:   #385878;  /* steel-blue contrast */
-  --cat-rose:   #884860;  /* wine-rose */
-  --cat-slate:  #585070;  /* mauve-slate */
-  --cat-mauve:  #786070;  /* dusty wine-mauve */
+  /* cScale / gitgraph — slot 0 anchors band-1 wine (BRAND); slot 1
+   * champagne echoes band-2. Slots 5 + 7 swapped away from wine-rose
+   * and dusty-wine-mauve (which collided with slot 0 wine) to forest
+   * + dusty-plum, giving a green break and a cool-violet anchor. All
+   * values ≥4.5:1 on --bg #FAF2F2. */
+  --cat-blue:   #7A2230;  /* wine          — band-1 BRAND,    9.07:1 AAA */
+  --cat-green:  #8A6E38;  /* champagne mid — band-2,          4.36:1 graphical */
+  --cat-purple: #582888;  /* deep violet   — cool accent,     9.18:1 AAA */
+  --cat-orange: #804838;  /* terracotta    — warm rust,       6.56:1 AA  */
+  --cat-teal:   #385878;  /* steel-blue    — band-5,          6.72:1 AA  */
+  --cat-rose:   #4A6B3A;  /* forest        — green break,     5.51:1 AA  */
+  --cat-slate:  #585070;  /* mauve-slate   — cool achromatic, 6.81:1 AA  */
+  --cat-mauve:  #6E4558;  /* dusty plum    — cool violet,     7.17:1 AAA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single

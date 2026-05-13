@@ -353,16 +353,22 @@ section .hljs-strong { font-weight:700; }
   /* ── Mid-tone categorical palette (L≈30–45) ───────────────────────
    * Dark earth pigments used as foreground marks ON the cream surface
    * (radar curves, kpi accents, status dots, gitgraph dots, mermaid
-   * cScale fed at saturation, not pastel). Every value clears WCAG AA
-   * (≥4.5:1) on --bg #FAF7F2 so direct-on-cream usage is safe. */
-  --cat-blue:    #3E5C6B;  /* petrol — 6.67:1 on bg AA */
-  --cat-green:   #5D6A2C;  /* moss   — 5.51:1 on bg AA */
-  --cat-purple:  #4F4770;  /* iris   — 7.96:1 on bg AAA */
-  --cat-orange:  var(--brand-leather); /* saddle gold — 5.96:1 on bg AA */
-  --cat-teal:    #356D5E;  /* deep teal — 5.61:1 on bg AA */
-  --cat-rose:    #76394C;  /* rose   — 7.99:1 on bg AAA */
-  --cat-slate:   #7A6B59;  /* taupe  — 4.82:1 on bg AA */
-  --cat-mauve:   #6E4558;  /* deeper rose — 7.40:1 on bg AAA */
+   * cScale fed at saturation, not pastel). Slot 0 anchors on cuoio's
+   * brand saddle leather so gitgraph's first branch and the first
+   * xy-chart plot register as "the cuoio voice" — matching band-1
+   * cream-deep. Slots 1-2 echo band-2 iris + band-3 rose (the two
+   * distinct accents promoted into the band cycle by the treemap
+   * reorder). Slots 3-7 carry cuoio's curated chart palette
+   * (amber, deep-teal, forest, taupe, deeper-rose) for categorical
+   * distinction. Every value clears WCAG AA (≥4.5:1) on --bg #FAF7F2. */
+  --cat-blue:    var(--brand-leather); /* saddle — band-1 cream-deep, BRAND, 5.96:1 AA */
+  --cat-green:   #4F4770;  /* iris   — band-2,        7.96:1 AAA */
+  --cat-purple:  #76394C;  /* rose   — band-3,        7.99:1 AAA */
+  --cat-orange:  #8A6822;  /* amber  — band-4 gold,   4.81:1 AA  */
+  --cat-teal:    #1F6B7C;  /* deep teal — cool break, 5.69:1 AA  */
+  --cat-rose:    #45734A;  /* forest — green accent,  5.17:1 AA  */
+  --cat-slate:   #7A6B59;  /* taupe  — band-9,        4.82:1 AA  */
+  --cat-mauve:   #6E4558;  /* deeper rose — band-11,  7.40:1 AAA */
 
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
    * Cuoio is monochrome warm by identity, but the band cycle pulls in

@@ -125,15 +125,19 @@
   --diagram-band-9:   #D8E5E8;  /* pale slate-teal */
   --diagram-band-10:    #D8E0D5;  /* pale sage-green */
   --diagram-band-11:  #DCE6E8;  /* very pale aqua */
-  /* cScale / gitgraph — coastal teal + warm coral family */
-  --cat-blue:   #286870;  /* deep teal */
-  --cat-green:  #A85E40;  /* coral */
-  --cat-purple: #7A8430;  /* olive */
-  --cat-orange: #1E4A62;  /* deep navy */
-  --cat-teal:   #387860;  /* sage-teal */
-  --cat-rose:   #A07860;  /* warm sand-brown */
-  --cat-slate:  #3A6070;  /* teal-slate */
-  --cat-mauve:  #807060;  /* warm gray-brown */
+  /* cScale / gitgraph — slot 0 anchors band-1 teal-deep (BRAND); slot 1
+   * coral echoes band-2. Slot 3 swapped from deep-navy to amber so it
+   * doesn't collide with slot 0's blue family (branches 0 and 3 collided
+   * as cool blues). Slots 4-7 retain laguna's curated mid-tones. All
+   * values ≥3:1 graphical on --bg #F5FAFC. */
+  --cat-blue:   #286870;  /* deep teal — band-1 BRAND,    6.04:1 AA */
+  --cat-green:  #A85E40;  /* coral     — band-2,          4.60:1 AA */
+  --cat-purple: #7A8430;  /* olive     — distinct green,  3.86:1 graphical */
+  --cat-orange: #A07810;  /* amber     — warm break,      3.85:1 graphical */
+  --cat-teal:   #387860;  /* sage-teal — band-5,          4.96:1 AA */
+  --cat-rose:   #A07860;  /* warm sand-brown,             3.73:1 graphical */
+  --cat-slate:  #3A6070;  /* teal-slate — band-9,         6.47:1 AA */
+  --cat-mauve:  #807060;  /* warm gray-brown,             4.53:1 AA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single

@@ -127,15 +127,18 @@
   --diagram-band-9:   #E0D8E0;  /* pale dusty-mauve */
   --diagram-band-10:    #D5E5D8;  /* pale sage */
   --diagram-band-11:  #EAD8E5;  /* pale dusty-violet */
-  /* cScale / gitgraph — dusty rose + sage family */
-  --cat-blue:   #A06070;  /* dusty rose */
-  --cat-green:  #587848;  /* sage */
-  --cat-purple: #805880;  /* dusty violet */
-  --cat-orange: #A87848;  /* dusty amber */
-  --cat-teal:   #487A68;  /* sage-teal */
-  --cat-rose:   #A87080;  /* dusty pink */
-  --cat-slate:  #6A7880;  /* cool slate */
-  --cat-mauve:  #886070;  /* dusty mauve */
+  /* cScale / gitgraph — slot 0 anchors band-1 dusty-rose (BRAND). Slot 1
+   * coral echoes band-2 peach. Slot 2 sage echoes band-3 sage. Slot 5
+   * swapped from dusty-pink (collided with slot 0 dusty-rose) to dusty-
+   * violet for a cool break. All values ≥3:1 graphical on --bg #FCF8F5. */
+  --cat-blue:   #A06070;  /* dusty rose   — band-1 BRAND,    4.52:1 AA */
+  --cat-green:  #B85D5D;  /* coral        — band-2 peach,    4.18:1 graphical */
+  --cat-purple: #587848;  /* sage         — band-3,          4.74:1 AA */
+  --cat-orange: #9C6E40;  /* dusty amber  — band-4 gold,     4.21:1 graphical */
+  --cat-teal:   #487A68;  /* sage-teal    — cool green,      4.67:1 AA */
+  --cat-rose:   #805880;  /* dusty violet — cool break,      5.48:1 AA */
+  --cat-slate:  #6A7880;  /* cool slate   — band-9,          4.31:1 graphical */
+  --cat-mauve:  #886070;  /* dusty mauve  — achromatic,      5.03:1 AA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single

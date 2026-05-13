@@ -128,15 +128,19 @@
   --diagram-band-9:   #D8D5E5;  /* pale violet-slate */
   --diagram-band-10:    #DDE9E6;  /* pale sage-mint */
   --diagram-band-11:  #E0D8EC;  /* pale deep-violet */
-  /* cScale / gitgraph — twilight violet + amber family */
-  --cat-blue:   #7B5B9E;  /* mid-violet */
-  --cat-green:  #A8841E;  /* mid-amber */
-  --cat-purple: #3E7A8A;  /* mid-cyan */
-  --cat-orange: #A45840;  /* mid-coral */
-  --cat-teal:   #6A5880;  /* muted violet */
-  --cat-rose:   #8E6070;  /* mauve */
-  --cat-slate:  #5A5070;  /* deep violet-slate */
-  --cat-mauve:  #8B7298;  /* light violet */
+  /* cScale / gitgraph — slot 0 anchors band-1 lavender (BRAND violet).
+   * Slot 1 reframed from amber to sage so the cycle echoes band-2's
+   * sage-mint hue. Slot 7 swapped from light-violet (collided with
+   * slot 0) to warm-taupe for an achromatic break. All values ≥3:1
+   * graphical on --bg #FAF8FC. */
+  --cat-blue:   #7B5B9E;  /* mid-violet  — band-1 BRAND,    5.19:1 AA */
+  --cat-green:  #5C7848;  /* sage        — band-2 mint,     4.70:1 AA */
+  --cat-purple: #9C7810;  /* deep amber  — band-4,          3.90:1 graphical */
+  --cat-orange: #A45840;  /* mid-coral   — band-8,          4.91:1 AA */
+  --cat-teal:   #3E7A8A;  /* mid-cyan    — band-5,          4.57:1 AA */
+  --cat-rose:   #8E6070;  /* mauve       — band-6,          4.90:1 AA */
+  --cat-slate:  #6A5880;  /* muted violet,                  5.99:1 AA */
+  --cat-mauve:  #876B5A;  /* warm taupe  — achromatic,      4.65:1 AA */
 }
 
 /* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)

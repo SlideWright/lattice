@@ -124,15 +124,19 @@
   --diagram-band-9:   #D8E0EA;  /* pale glacier-gray */
   --diagram-band-10:    #D5E5E8;  /* pale sage-ice */
   --diagram-band-11:  #E0D8EC;  /* pale frost-violet */
-  /* cScale / gitgraph — cool desaturated steel family */
-  --cat-blue:   #3E687C;  /* steel-blue */
-  --cat-green:  #8A6E48;  /* warm brass contrast */
-  --cat-purple: #5A6080;  /* cool lavender */
-  --cat-orange: #4E6070;  /* cool gray-blue */
-  --cat-teal:   #3A7888;  /* glacier teal */
-  --cat-rose:   #7A6890;  /* cool lavender-rose */
-  --cat-slate:  #506080;  /* cool slate-blue */
-  --cat-mauve:  #707080;  /* cool mid-gray */
+  /* cScale / gitgraph — slot 0 anchors band-1 steel-blue (BRAND); slot 1
+   * brass echoes band-2 warm-tan. Slot 3 swapped from cool-gray-blue
+   * (collided with slot 0 steel) to deep-wine — the brina chart-4 CB-safe
+   * complement. Slot 5 retuned to mauve-grey for distinction from
+   * cool-lavender at slot 2. All values ≥3:1 graphical on --bg #F2F5F7. */
+  --cat-blue:   #3E687C;  /* steel-blue       — band-1 BRAND,    5.52:1 AA */
+  --cat-green:  #8A6E48;  /* warm brass       — band-2 tan,      4.35:1 graphical */
+  --cat-purple: #5A6080;  /* cool lavender    — band-3 ice,      5.61:1 AA */
+  --cat-orange: #8B354C;  /* deep wine        — chart-4 CB pair, 7.07:1 AAA */
+  --cat-teal:   #3A7888;  /* glacier teal     — band-5 frost,    4.54:1 AA */
+  --cat-rose:   #7E7390;  /* mauve-grey       — chart-5,         4.04:1 graphical */
+  --cat-slate:  #506080;  /* cool slate-blue  — band-9,          5.77:1 AA */
+  --cat-mauve:  #707080;  /* cool mid-gray    — achromatic,      4.44:1 graphical */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single

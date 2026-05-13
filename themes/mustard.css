@@ -129,15 +129,18 @@
   --diagram-band-9:   #E0D8C5;  /* pale warm-slate */
   --diagram-band-10:    #D8E0CC;  /* pale sage-green */
   --diagram-band-11:  #E5E0C8;  /* pale warm-neutral */
-  /* cScale / gitgraph — mustard gold + oxblood family */
-  --cat-blue:   #786010;  /* mustard */
-  --cat-green:  #581A10;  /* oxblood */
-  --cat-purple: #385848;  /* sage contrast */
-  --cat-orange: #906818;  /* amber */
-  --cat-teal:   #305848;  /* deep teal */
-  --cat-rose:   #804838;  /* terracotta */
-  --cat-slate:  #685040;  /* warm sepia */
-  --cat-mauve:  #786050;  /* warm taupe */
+  /* cScale / gitgraph — slot 0 anchors band-1 mustard (BRAND); slot 1 sage
+   * echoes band-2; slot 2 terracotta echoes band-3 peach. Slots 3-7 carry
+   * mustard's chart palette (amber, deep teal, oxblood, sepia, plum) for
+   * categorical distinction. All values ≥4.5:1 on --bg #FCF8F0. */
+  --cat-blue:   #786010;  /* mustard — band-1 BRAND,    5.70:1 AA  */
+  --cat-green:  #385848;  /* sage    — band-2,          7.46:1 AAA */
+  --cat-purple: #804838;  /* terracotta — band-3 peach, 6.83:1 AA  */
+  --cat-orange: #906818;  /* amber   — band-4,          4.74:1 AA  */
+  --cat-teal:   #305848;  /* deep teal — cool break,    7.58:1 AAA */
+  --cat-rose:   #581A10;  /* oxblood — band-8,         12.63:1 AAA */
+  --cat-slate:  #685040;  /* warm sepia — band-9,       7.05:1 AAA */
+  --cat-mauve:  #6E4558;  /* dusty plum — cool accent,  7.47:1 AAA */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
  * quadrant. References earlier palette tokens so this block stays a single
