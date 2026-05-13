@@ -469,7 +469,10 @@ const MERMAID_VAR_MAP = {
   // State / class
   altBackground: { var: 'bg-alt' },
 
-  // XY chart — nested object, expanded below
+  // XY chart — nested object, expanded below. plotColorPalette joins
+  // multiple palette vars into a comma-separated string (Mermaid's required
+  // format for this key) so each palette's --cat-* hues drive the bars and
+  // lines, not a hardcoded indaco-flavoured literal.
   xyChart: { nested: {
     backgroundColor:  { var: 'bg' },
     titleColor:       { var: 'text-heading' },
@@ -477,7 +480,7 @@ const MERMAID_VAR_MAP = {
     xAxisTitleColor:  { var: 'text-heading' },
     yAxisLabelColor:  { var: 'text-heading' },
     yAxisTitleColor:  { var: 'text-heading' },
-    plotColorPalette: { literal: '#5C9DD3,#6FB89A,#8E7BAF,#D4A271,#6BBDB8,#C57E8B' },
+    plotColorPalette: { joinVars: ['cat-blue', 'cat-green', 'cat-purple', 'cat-orange', 'cat-teal', 'cat-rose'] },
   }},
 };
 
@@ -540,6 +543,19 @@ function resolveMermaidThemeVars(paletteVars) {
         return '#000000';
       }
       return val;
+    }
+    if (entry.joinVars !== undefined) {
+      // Mermaid keys like xyChart.plotColorPalette want a comma-separated
+      // string of hex values, not an array — pull each var, fall back to a
+      // black sentinel on miss so a palette gap is loud, then join.
+      return entry.joinVars.map(name => {
+        const val = paletteVars[name];
+        if (!val) {
+          console.warn(`  ⚠ Palette missing CSS variable: --${name}`);
+          return '#000000';
+        }
+        return val;
+      }).join(',');
     }
     return undefined;
   };
