@@ -144,7 +144,7 @@ classDiagram
 title: Approval state machine
 ---
 stateDiagram-v2
-  [*] --> Drafta
+  [*] --> Draft
   Draft --> Submitted: submit
   Submitted --> Approved: approve
   Submitted --> Rejected: reject
@@ -200,7 +200,7 @@ erDiagram
 
 ```mermaid
 journey
-  title Tokenization SDK Adoptionaa
+  title Tokenization SDK Adoption
   section Discovery
     Read architecture doc: 4: Engineer
     Talk to platform team: 5: Engineer, Platform
@@ -362,16 +362,16 @@ gitGraph
 
 ```mermaid
 C4Context
-  title Tokenization Platform · System Context
-  Person(eng, "Engineer", "Integrates SDK")
-  Person(ops, "Platform Operator", "Manages codebooks")
-  System(platform, "Tokenization Platform", "Codebook-model SDK + control plane")
+  title Tokenization Platform
+  Person(eng, "Engineer", "Builds SDK")
+  Person(ops, "Operator", "Owns codebooks")
+  System(platform, "Platform", "SDK + control plane")
   System_Ext(hsm, "AWS CloudHSM", "Holds KEKs")
-  System_Ext(app, "Consuming App", "Calls SDK")
+  System_Ext(app, "Consumer", "Calls SDK")
   Rel(eng, app, "Builds")
-  Rel(app, platform, "Tokenize / detokenize")
+  Rel(app, platform, "Tokenize")
   Rel(ops, platform, "Manages")
-  Rel(platform, hsm, "Wrap / unwrap DEKs")
+  Rel(platform, hsm, "Wrap DEKs")
 ```
 
 > Marked 🦺⚠️ in the docs — supported but the team flags it as work-in-progress. Theme support partial.

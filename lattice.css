@@ -6892,6 +6892,20 @@ section .items .node .label-container {
 
 /* ── FLOWCHART NODE FILL COVERAGE ──
  * Extends Mermaid default to label-container and outer-path shapes.
+ *
+ * `data-look="classic"` (the default look in Mermaid 11) renders stadium /
+ * pill nodes — and several other shapes in block diagrams — as a wrapping
+ * <g class="basic label-container outer-path"> containing TWO inner paths:
+ *   - path A: the fill silhouette, inline fill="#BCD5EC", stroke="none"
+ *   - path B: a rough.js stroke decomposition (≈200 disjoint subpaths),
+ *             inline fill="none", stroke="#1F4A6E"
+ * Mermaid's auto-emitted CSS (#my-svg .node path { fill: …; }) defeats path
+ * B's authorial fill="none". The 200 self-overlapping subpaths, once filled,
+ * render as an opaque hollow ring that visually wipes out path A's fill in
+ * Chrome — even though the computed fill is identical to path A's. Restore
+ * path B's intent so path A shows through. Matching by the inline fill="none"
+ * attribute keeps the rule scoped to the rough.js path; the fill silhouette
+ * (inline fill="#BCD5EC") is untouched.
  */
 section .node .label-container,
 section .node .basic.label-container,
@@ -6899,28 +6913,48 @@ section .node .outer-path {
   fill: var(--diagram-band-1) !important;
   stroke: var(--diagram-stroke) !important;
 }
+section .node g.outer-path > path[fill="none"] {
+  fill: none !important;
+}
 
 /* ── JOURNEY ──
  * Journey ignores cScale entirely; its renderer hardcodes X11 named
- * colors (#191970 midnight blue, etc.). Override the section-N and
- * task-N classes directly. Section bars and task tiles inherit the
- * same color per section, so we set both plus dark text.
+ * colors (#191970 midnight blue, etc.). Mermaid emits parallel class
+ * cycles on section bars (`.section-type-N`) and on the tasks that fall
+ * inside them (`.task-type-N`), where N is the SECTION index in source
+ * order — not the emotion score (the score drives stroke / avatar
+ * placement instead). Pair the section bar and its tasks on the same
+ * band so each phase reads as one coloured strip from header to last
+ * task. Legacy classes (.section0/.task0 from pre-11 versions) included
+ * so older renders inherit the same contract.
  */
-section .journey-section, section .journey-section rect,
-section .section0 rect, section .section1 rect, section .section2 rect {
-  fill: var(--diagram-band-1) !important;
-}
-section .journey-section text, section .section0 text, section .section1 text, section .section2 text {
-  fill: var(--diagram-band-text-1) !important;
-  font-weight: 600 !important;
-}
-section .task0 rect, section .task-type-0 rect { fill: var(--diagram-band-1) !important; }
-section .task1 rect, section .task-type-1 rect { fill: var(--diagram-band-2) !important; }
-section .task2 rect, section .task-type-2 rect { fill: var(--diagram-band-3) !important; }
-section .task-type-0 text, section .task-type-1 text, section .task-type-2 text,
-section .task0 text, section .task1 text, section .task2 text {
-  fill: var(--diagram-band-text-1) !important;
-}
+section .section-type-0 rect, section .section0 rect,
+section .task-type-0 rect,    section .task0 rect    { fill: var(--diagram-band-1) !important; }
+section .section-type-0 text, section .section0 text,
+section .task-type-0 text,    section .task0 text    { fill: var(--diagram-band-text-1) !important; }
+
+section .section-type-1 rect, section .section1 rect,
+section .task-type-1 rect,    section .task1 rect    { fill: var(--diagram-band-2) !important; }
+section .section-type-1 text, section .section1 text,
+section .task-type-1 text,    section .task1 text    { fill: var(--diagram-band-text-2) !important; }
+
+section .section-type-2 rect, section .section2 rect,
+section .task-type-2 rect,    section .task2 rect    { fill: var(--diagram-band-3) !important; }
+section .section-type-2 text, section .section2 text,
+section .task-type-2 text,    section .task2 text    { fill: var(--diagram-band-text-3) !important; }
+
+section .section-type-3 rect, section .task-type-3 rect { fill: var(--diagram-band-4) !important; }
+section .section-type-3 text, section .task-type-3 text { fill: var(--diagram-band-text-4) !important; }
+section .section-type-4 rect, section .task-type-4 rect { fill: var(--diagram-band-5) !important; }
+section .section-type-4 text, section .task-type-4 text { fill: var(--diagram-band-text-5) !important; }
+section .section-type-5 rect, section .task-type-5 rect { fill: var(--diagram-band-6) !important; }
+section .section-type-5 text, section .task-type-5 text { fill: var(--diagram-band-text-6) !important; }
+section .section-type-6 rect, section .task-type-6 rect { fill: var(--diagram-band-7) !important; }
+section .section-type-6 text, section .task-type-6 text { fill: var(--diagram-band-text-7) !important; }
+section .section-type-7 rect, section .task-type-7 rect { fill: var(--diagram-band-8) !important; }
+section .section-type-7 text, section .task-type-7 text { fill: var(--diagram-band-text-8) !important; }
+
+section .journey-section text { font-weight: 600 !important; }
 section .legend text { fill: var(--diagram-band-text-1) !important; }
 
 /* ── MINDMAP ──
@@ -7202,8 +7236,12 @@ section line.node-line-, section line[class*="node-line-"] {
  * node fills and link gradients. The .node group has no per-cycle class
  * on the rect — Mermaid's only signal is element order. Style every node
  * rect with band-1 (single hue is fine; sankey distinguishes flows by
- * width, not by color) and force link paths onto the brand line color,
- * dropping the inline gradient reference.
+ * width, not by color) and force link ribbons onto a band-1 stroke —
+ * same hue as the nodes they originate from, so the deck reads as one
+ * continuous flow rather than a rainbow. The ribbons render via stroke
+ * (Mermaid sankey emits each flow as a stroked path with `stroke-width`
+ * set to the flow magnitude, not as a filled region), so the stroke
+ * override is the right surface to repaint.
  */
 section g.nodes g.node rect, section g.node > rect {
   fill: var(--diagram-band-1) !important;
@@ -7213,8 +7251,8 @@ section g.node-labels text, section g.nodes text {
   fill: var(--diagram-band-text-1) !important;
 }
 section g.link path, section g.links path {
-  stroke: var(--diagram-line) !important;
-  stroke-opacity: 0.20 !important;
+  stroke: var(--diagram-band-1) !important;
+  stroke-opacity: 0.7 !important;
   fill: none !important;
 }
 

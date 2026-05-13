@@ -641,6 +641,15 @@ function renderMermaid(definition) {
   const initObj = {
     theme: 'base',
     themeVariables: MERMAID_THEME_VARS,
+    // C4 ships with shape widths tuned for very short Person()/System()
+    // labels and never wraps. Limit shapes-per-row to 3 (default 4) so a
+    // 5-shape diagram fans across two rows rather than cramming a single
+    // tight strip. Width/height keys exist in the schema but Mermaid 11's
+    // c4 renderer ignores them — fix authoring-side by keeping labels short.
+    c4: {
+      c4ShapeInRow: 3,
+      c4BoundaryInRow: 1,
+    },
   };
   // Mermaid requires YAML frontmatter (--- ... ---) to be the FIRST thing in
   // the source. If the diagram opens with frontmatter, inject %%{init}%%
@@ -685,7 +694,44 @@ function renderMermaid(definition) {
       if (!fs.existsSync(outSvg) || fs.statSync(outSvg).size === 0) {
         throw new Error('mmdc exited cleanly but produced no SVG');
       }
-      const svg = fs.readFileSync(outSvg, 'utf8');
+      let svg = fs.readFileSync(outSvg, 'utf8');
+      // mmdc hardcodes the SVG root id to "my-svg" and prefixes every internal
+      // id (markers, gradients, filters) and every emitted CSS rule with that
+      // same string. When a slide deck embeds many Mermaid SVGs in one HTML,
+      // their `<style>` blocks all use `#my-svg .node …` selectors that step
+      // on each other — the last diagram's theme variables (e.g. a treeview
+      // with primaryColor="#FFFFFF") silently override every prior diagram's
+      // node fills. Rewrite to a per-diagram suffix so the SVGs are isolated.
+      // The replacement is a single global substitution: it catches the root
+      // id, every internal id (e.g. my-svg-flowchart-A-0), every url(#my-svg…)
+      // reference, and every #my-svg selector inside the embedded <style>.
+      const uniqueId = `lattice-mmd-${renderMermaid.counter = (renderMermaid.counter || 0) + 1}`;
+      svg = svg.replace(/my-svg/g, uniqueId);
+      // Mermaid sankey (11.14) has a label-rendering bug: it appends the
+      // outbound-link value to the source node's <text> as raw HTML <p>…</p>,
+      // breaking SVG text positioning and concatenating labels visually.
+      // Strip any <p>…</p> from inside <text>…</text>: the link-value labels
+      // are unrecoverable here (they'd need a separate <text> with proper
+      // positioning), so the deck-friendly fallback is "keep just the node
+      // name" — same trade Mermaid's own docs recommend when sankey labels
+      // overlap. Sankey-only by virtue of <p> never appearing inside <text>
+      // in any other diagram type's emitted SVG.
+      // Mermaid sankey (11.14) emits each node's <text> with the node name on
+      // line 1 and the outbound-link value on line 2, separated by a literal
+      // newline:   <text>Wages\n750</text>
+      // SVG ignores newlines inside <text> (no <tspan>, no line break), but
+      // the post-mmdc pipeline runs the HTML through marp/markdown-it, which
+      // does parse `\n\n` inside the inlined SVG as a paragraph break and
+      // wraps the value in <p>…</p>. The resulting <text>Wages<p>750</text>
+      // is invalid SVG and breaks text positioning, producing the visible
+      // "750Disposable income750Savings…" run-together labels. Collapse the
+      // newlines inside every <text> element to a single space so the value
+      // sits inline (e.g. "Wages 750") and markdown-it leaves it alone.
+      // Sankey is the only diagram type that puts newlines inside <text>.
+      svg = svg.replace(/(<text\b[^>]*>)([\s\S]*?)(<\/text>)/g, (_m, open, inner, close) => {
+        const collapsed = inner.replace(/\s*\n\s*/g, ' ').trim();
+        return `${open}${collapsed}${close}`;
+      });
       fs.rmSync(tmpDir, { recursive: true, force: true });
       return `<div class="mermaid-svg">${svg}</div>`;
     } catch (e) {
