@@ -3,23 +3,22 @@
  *
  * Commit-G preview overlay on cuoio — NOT a shipped theme.
  *
- * Figure-window model: the categorical cycle is 12 deep saturated
- * colours, used as shape fills in BOTH canvas modes (no light-dark
- * flip). Shape-internal text is white in both modes. Only the
- * surrounding canvas (--bg) and the diagram TITLE text (--text-heading)
- * flip with canvas mode — a Mermaid diagram is a figure with its own
- * ink/paper contract, not a panel that flips with the page.
+ * Two independent categorical cycles, selected by canvas mode:
+ *   LIGHT cycle = --diagram-band-N (the audit's curated pale tints).
+ *   DARK cycle  = --chart-N's 6 hues + 6 gap-fillers, each solved deep
+ *                 (OKLCH L≈0.48 / C≤0.15, AA-text ≥4.6:1 vs white).
+ * Both cycles are reordered by greedy max-hue-dispersion: the 6 most
+ * mutually-distinct colours lead (slots 1-6), the rest follow (7-12),
+ * no two adjacent slots read alike.
  *
- * Solved by .scratch/solve-G.js: 12 evenly-spaced hues, slot 1 anchored
- * to the brand hue, step-5 ordered (adjacent slots 150° apart). Deep
- * side at OKLCH L≈0.48, C≤0.15 — AA-text-verified ≥4.6:1 against white.
+ * --cN: light-dark(band-N, deep-N). The fill flips with the canvas, so
+ * it always agrees with Mermaid's global text (--text-heading, which
+ * also flips) — light deck: pale fill + dark text; dark deck: deep
+ * fill + white text. No catch-22.
  *
- * --cN-light and --cN-dark are both the deep value so every consumer
- * resolves to the deep fill regardless of which suffix it references.
- * --c-ink-light / --c-ink-dark both = #FFFFFF (white shape text). The
- * emulator routes shape-fill text vars (nodeTextColor, actorTextColor,
- * taskTextColor, …) to --c-ink-light; canvas text vars (titleColor,
- * labelColor, …) stay on --text-heading.
+ * Known trade: the two cycles are independently ordered, so a shape's
+ * hue shifts when a deck flips light↔dark (edge case — decks are
+ * normally single-mode).
  */
 
 @import 'cuoio';
@@ -27,28 +26,40 @@
 :where(:root) { color-scheme: light; }
 
 :root {
-  --c1-light:  #7D5500;  --c1-dark:  #7D5500;  /* hue 77° */
-  --c2-light:  #006786;  --c2-dark:  #006786;  /* hue 227° */
-  --c3-light:  #A12E3E;  --c3-dark:  #A12E3E;  /* hue 17° */
-  --c4-light:  #006F52;  --c4-dark:  #006F52;  /* hue 167° */
-  --c5-light:  #7F3C94;  --c5-dark:  #7F3C94;  /* hue 317° */
-  --c6-light:  #656100;  --c6-dark:  #656100;  /* hue 107° */
-  --c7-light:  #1A5BB0;  --c7-dark:  #1A5BB0;  /* hue 257° */
-  --c8-light:  #974000;  --c8-dark:  #974000;  /* hue 47° */
-  --c9-light:  #006B6E;  --c9-dark:  #006B6E;  /* hue 197° */
-  --c10-light: #96316D;  --c10-dark: #96316D;  /* hue 347° */
-  --c11-light: #2E6F00;  --c11-dark: #2E6F00;  /* hue 137° */
-  --c12-light: #5B4AAC;  --c12-dark: #5B4AAC;  /* hue 287° */
+  --c1-light:  light-dark(#C7D9DC, #0060A5);
+  --c1-dark:   light-dark(#C7D9DC, #0060A5);
+  --c2-light:  light-dark(#E3C5C5, #805300);
+  --c2-dark:   light-dark(#E3C5C5, #805300);
+  --c3-light:  light-dark(#D2DCBD, #97306A);
+  --c3-dark:   light-dark(#D2DCBD, #97306A);
+  --c4-light:  light-dark(#D2CAE1, #007225);
+  --c4-dark:   light-dark(#D2CAE1, #007225);
+  --c5-light:  light-dark(#EDD5B8, #A03313);
+  --c5-dark:   light-dark(#EDD5B8, #A03313);
+  --c6-light:  light-dark(#E1CCD9, #006D61);
+  --c6-dark:   light-dark(#E1CCD9, #006D61);
+  --c7-light:  light-dark(#DDD1BD, #00697C);
+  --c7-dark:   light-dark(#DDD1BD, #00697C);
+  --c8-light:  light-dark(#D7D0C6, #544DAE);
+  --c8-dark:   light-dark(#D7D0C6, #544DAE);
+  --c9-light:  light-dark(#D5CCE1, #7D3C95);
+  --c9-dark:   light-dark(#D5CCE1, #7D3C95);
+  --c10-light: light-dark(#E6DAC8, #5D6400);
+  --c10-dark:  light-dark(#E6DAC8, #5D6400);
+  --c11-light: light-dark(#EBDBC1, #A02D45);
+  --c11-dark:  light-dark(#EBDBC1, #A02D45);
+  --c12-light: light-dark(#D1C5B3, #795700);
+  --c12-dark:  light-dark(#D1C5B3, #795700);
 
-  --c-ink-light: #FFFFFF;
-  --c-ink-dark:  #FFFFFF;
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
 
   --c-quadrant-1-fill: var(--c1-light);
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: #FFFFFF;
-  --c-quadrant-2-text: #FFFFFF;
-  --c-quadrant-3-text: #FFFFFF;
-  --c-quadrant-4-text: #FFFFFF;
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
