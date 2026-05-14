@@ -456,7 +456,7 @@ section.title h1 + p:has(> code:only-child) > code {
 }
 
 /* ── DIVIDER ── */
-section.divider { background:var(--bg-dark); padding-left:9.375cqi; justify-content:center; align-items:flex-start; }
+section.divider { background:var(--bg-dark); padding-left:var(--_sec-divider-pad-l,9.375cqi); justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
 section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }

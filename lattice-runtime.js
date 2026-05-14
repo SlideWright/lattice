@@ -2387,9 +2387,10 @@
     const patch = (s) => {
       const w = s.offsetWidth;
       if (!w) return;
-      s.style.setProperty('--_sec-pad-v',    (w * 6.875  / 100).toFixed(2) + 'px');
-      s.style.setProperty('--_sec-pad-h',    (w * 5      / 100).toFixed(2) + 'px');
-      s.style.setProperty('--_sec-border-w', (w * 0.3125 / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-pad-v',          (w * 6.875  / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-pad-h',          (w * 5      / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-divider-pad-l',  (w * 9.375  / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-border-w',       (w * 0.3125 / 100).toFixed(2) + 'px');
     };
     for (const s of document.querySelectorAll('section')) patch(s);
     if (typeof MutationObserver !== 'undefined') {
