@@ -4,6 +4,18 @@
 **Branch:** `claude/investigate-themecss-lattice-rkKD0`
 **Status:** design + implementation, single PR
 
+> **Historical context.** This note captures the migration from
+> `--mermaid-*` to `--diagram-*` as it landed on 2026-05-12. A follow-on
+> migration on 2026-05-14 (commits A–E on the same branch) further
+> consolidated `--diagram-band-*` + `--cat-*` + `--chart-*` into a single
+> `--c1-light/-dark` … `--c12-light/-dark` categorical cycle plus a
+> universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`,
+> `--c-mark`, `--c-note`). The rationale below — palette-blind role
+> naming, contrast assertions in `test/unit/contrast.test.js`, dropping
+> Mermaid's `themeCSS` init parameter — still applies; only the specific
+> token names have moved on. See `docs/theming.md` for the current
+> contract.
+
 ## Why
 
 Three contamination points in the previous architecture:

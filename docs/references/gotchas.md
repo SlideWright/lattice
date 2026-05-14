@@ -218,20 +218,19 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   inner cards become indistinguishable from the white slide canvas
   because there is no band underneath them.
 - **Cause:** Kanban tickets physically sit *inside* a `<g class="cluster
-  section-N">` whose `<rect>` is painted with `--diagram-band-N`. The
+  section-N">` whose `<rect>` is painted with `--cN-light`. The
   `--bg-alt` card-on-tinted-lane reading is real. Timeline and journey
   do NOT have this structure: the period/section header is a single
-  small band-N rect at the *top* of a column, and the tasks/events
+  small `--cN-light` rect at the *top* of a column, and the tasks/events
   stack *below* it on the slide canvas (`--bg` white). `--bg-alt` on
   `--bg` is virtually invisible (#F2F5FA on #FFFFFF in indaco), so the
   cards disappear.
 - **Mitigation:** Timeline events and journey tasks keep the
-  `.section-N rect/path { fill: --diagram-band-N }` rule and inherit
-  their period/section's band tint. `--diagram-stroke` provides the
-  card outline against the canvas. If a band tint reads too pale
-  against the canvas in a given palette, the right fix is to deepen
-  the band token itself, not to introduce a structural override that
-  doesn't apply.
+  `.section-N rect/path { fill: --cN-light }` rule and inherit their
+  period/section's pale tint. `--c-stroke` provides the card outline
+  against the canvas. If a pale tint reads too pale against the canvas
+  in a given palette, the right fix is to deepen the slot itself, not
+  to introduce a structural override that doesn't apply.
 - **Triggered by:** Mistaking syntactic nesting (event-in-period in
   Mermaid source) for visual nesting (card-on-tinted-surface in the
   rendered SVG).

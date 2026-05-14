@@ -1,7 +1,7 @@
 # Theming
 
 How to author a new palette for Lattice. Covers the CSS variable contract
-and the diagram-token taxonomy.
+and the categorical-token taxonomy.
 
 > **First time here?** Start with `themes/README.md` — it's the
 > one-screen mental model and a five-minute scaffolded path. This file
@@ -17,22 +17,23 @@ contains:
 
 1. A `@theme <name>` directive (Marp registration; e.g. `@theme indaco`).
 2. An `@import 'lattice'` line (pulls in layouts, structural tokens, and
-   the diagram overrides).
+   the universal semantic palette + diagram overrides).
 3. A `:root` block defining color tokens used by `lattice.css` (surfaces,
    ink, accents, semantic signals).
 4. A `:root` block defining `--dark-*` tokens used by the `section.dark`
    variant for cover/divider/closing slides on a dark canvas.
 5. A `:root` block defining `--hljs-*` tokens for code-block syntax colors.
-6. A `:root` block defining `--diagram-*` tokens — colors consumed by
-   Mermaid diagrams (band cycle with paired text, structural stroke/line,
-   quadrant fills, gantt state, note background, error fill).
+6. A `:root` block defining `--c-*` tokens — the categorical palette
+   (12-slot paired light/dark cycle, paired ink, structural stroke/line,
+   quadrant slot mappings, plus optional overrides of the universal
+   semantic palette).
 
 Palettes are token-only. The per-diagram CSS overrides (`section .section-N
-rect { fill: var(--diagram-band-3) }` and the rest) live in
-`lattice.css`'s **DIAGRAM OVERRIDES** section at the bottom of the file
-— palette-blind, loaded by every render path, applied to the inline SVG
-via the host page cascade. Authoring a new palette is purely a
-token-declaration job; no per-palette CSS rules are needed.
+rect { fill: var(--c3-light) }` and the rest) live in `lattice.css`'s
+**DIAGRAM OVERRIDES** section at the bottom of the file — palette-blind,
+loaded by every render path, applied to the inline SVG via the host page
+cascade. Authoring a new palette is purely a token-declaration job; no
+per-palette CSS rules are needed.
 
 See `docs/notes/2026-05-12-diagram-tokens.md` for the architectural
 rationale (why no `themeCSS` init parameter, why role-named tokens, why
@@ -136,127 +137,149 @@ at every use site based on the computed `color-scheme` of the element:
 | `--hljs-variable` | `.hljs-variable, .hljs-attr, .hljs-tag` |
 | `--hljs-punctuation` | `.hljs-punctuation, .hljs-operator` |
 
-### Diagram tokens (`--diagram-*`)
+### Categorical tokens (`--c-*`)
 
 Role-named, palette-blind tokens consumed by `lattice.css`'s DIAGRAM
 OVERRIDES section and by the renderer bridges (`lattice-runtime.js`,
-`lattice-emulator.js`). Slide layouts don't use them; they're scoped to
-the diagram layer.
+`lattice-emulator.js`). Slide layouts also consume them directly for
+nth-child cycles (decision list, roadmap horizons, actor pills, kpi
+trajectory).
 
-**Band cycle** (12 pale-fill slots, paired with AA-tested text). The
-canonical categorical surface: timeline periods, kanban columns, mindmap
-levels, journey sections, c4 layers, pie slices, treemap leaves, gitgraph
-label pills. Slot 1 doubles as the primary fill for any single-band
-diagram (flowchart node, sequence actor).
+**Categorical cycle** (12 paired slots, light + dark tiers).
 
-- `--diagram-band-1`..`--diagram-band-12` — tinted fills at L≈83.
-  Deep enough that each band reads as visibly coloured on the white
-  slide canvas (the original L≈90 values washed out below projector
-  distance, especially band-1); pale enough that the paired dark
-  band-text-N still clears AA with ~11:1 margin.
-- `--diagram-band-text-1`..`--diagram-band-text-12` — paired text colors.
-  Pin to a fixed dark hex (not `light-dark(--text-heading,…)`); the band
-  itself stays pale in dark mode, so the text on top must too.
-  `test/unit/contrast.test.js` asserts each pair clears 4.5:1 in light
-  and dark.
+- `--c1-light`..`--c12-light` — pale fills at L≈87. The canonical
+  categorical surface: timeline periods, kanban columns, mindmap
+  levels, journey sections, c4 layers, pie slices, treemap leaves,
+  gitgraph label pills. Slot 1 doubles as the primary fill for any
+  single-band diagram (flowchart node, sequence actor).
+- `--c1-dark`..`--c12-dark` — deep strokes / inks at L≈32. Saturated
+  marks: decision-list deep accents, piechart wedges, gitgraph branch
+  dots, sankey nodes, kpi trajectory borders, xy-chart plot palette,
+  Mermaid cScale feeds.
+
+Each pair is generated via the Brand-triad strategy in
+`examples/palette-audit.md` (rank-1 proposal per theme). The audit
+deck scores five strategies × 13 themes and shows the resolved hex
+swatches; copy the rank-1 values into your new palette for a
+known-good starting point.
+
+**Paired ink** (non-flipping):
+
+- `--c-ink-light` — dark text colour paired with every `--cN-light`
+  fill. Pin to a fixed dark hex (not `light-dark(--text-heading,…)`);
+  the fill itself stays pale in dark mode, so the text on top must
+  too. `test/unit/contrast.test.js` asserts each pair clears 4.5:1 in
+  both modes.
+- `--c-ink-dark` — light text paired with every `--cN-dark` fill.
+  Default `#FFFFFF`; warm-palette themes can override to a cream
+  off-white if pure white feels icy on warm-deep slots.
 
 **Structural**
 
-- `--diagram-stroke` — universal fill border. Saturated, reads on every
-  band tint including white.
-- `--diagram-line` — edges and arrows. Near-black on light canvas; uses
+- `--c-stroke` — universal fill border. Saturated, reads on every
+  `--cN-light` tint including white.
+- `--c-line` — edges and arrows. Near-black on light canvas; uses
   `light-dark()` so it flips on dark canvases (where edges run on the
   dark surface, not inside a band fill).
-- `--diagram-accent-warm` — radar's second curve, where a single warm
-  hue against the cool band reads better than a second pale tint.
-
-**Mid-tone categorical** (consumed beyond the diagram layer too — KPI
-cards, chart-family lines, gitgraph dots). 8 hues at L≈60 (indaco) or
-L≈30-45 (cuoio). Role name kept as `--cat-*` to signal "brand-level
-categorical, not diagram-only": `--cat-blue`, `--cat-green`, `--cat-purple`,
-`--cat-orange`, `--cat-teal`, `--cat-rose`, `--cat-slate`, `--cat-mauve`.
-Pick indaco's at L≈60 because Mermaid's kanban renderer applies a lighten
-step that brings emitted fills to L≈70 — fed L≈90 they'd clamp toward
-white and disappear.
+- `--c-accent-warm` — secondary warm brand accent (radar's second
+  curve, where a single warm hue against the cool band reads better
+  than a second pale tint).
 
 **Quadrant chart** (4-slot tonal ladder, fill + text paired):
-`--diagram-quadrant-1-fill`..`-4-fill`, `--diagram-quadrant-1-text`..`-4-text`.
+`--c-quadrant-1-fill`..`-4-fill`, `--c-quadrant-1-text`..`-4-text`.
+The fill tokens are theme-defined slot mappings onto `--cN-light`;
+e.g. indaco picks Q1→c1, Q2→c2, Q3→c7 (yellow = "hold"), Q4→c3.
 
-**State** (gantt task lifecycle — semantic, not a band cycle):
-`--diagram-state-active`, `-active-stroke`, `-done`, `-done-stroke`,
-`-critical`, `-critical-stroke`, `-today`, `-grid`. `state-critical` is
-the deck's one alarm color (saturated red); the rest are pale state hues
-paired with their darker strokes.
+### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 
-**Note (sequence diagram aside)**: `--diagram-note-bg`,
-`--diagram-note-stroke`. Distinct from the rest of the palette by design
-— notes signal "aside."
+Status-signaling colours shared across every theme. **Defined in
+`lattice.css` as universal defaults; themes override only if curated
+values differ.**
 
-**Error / alarm**: `--diagram-error-bg`, `--diagram-error-text`. Saturated
-red paired with fixed white text. Used by Mermaid's parser-error rendering
-across all diagram types. Pin text to white (not `var(--bg)`, which would
-flip to dark in dark mode and fail AA on the saturated red).
+| Token | Role | Default |
+|---|---|---|
+| `--c-warm-light` | Pale peach — in-progress, warn fills | `#F5E6D8` |
+| `--c-warm-dark` | Warm brown — paired stroke for c-warm-light | `#92400E` |
+| `--c-cool-light` | Pale slate — done, muted, grid lines | `#E0E4EA` |
+| `--c-cool-dark` | Saturated slate — paired stroke for c-cool-light | `#475569` |
+| `--c-alarm` | Saturated red — critical / blocked / error | `#C20000` |
+| `--c-alarm-dark` | Deep red — paired stroke for c-alarm | `#8B0000` |
+| `--c-mark` | Saturated yellow — today markers, highlights, note borders | `#F6C700` |
+| `--c-note` | Pale yellow — aside / footnote surface | `#FFFBE6` |
+
+Gantt task lifecycle uses warm + cool + alarm + mark. Sequence-diagram
+notes use note + mark. Mermaid's `errorBkgColor` resolves to `c-alarm`.
+The deck-wide alarm signal is one colour; pre-consolidation it was
+spelled `--diagram-state-critical` AND `--diagram-error-bg` (both
+saturated red), now `--c-alarm` covers both.
+
+cuoio is the one shipped theme that overrides the universal palette —
+its leather aesthetic wants a warm pale gold-wash + saddle leather
+pair instead of the indaco-derived peach + brown defaults.
 
 ## The card-on-band rule (scope: kanban only)
 
-> **A `--bg-alt` inner card on a `--diagram-band-N` parent surface.**
+> **A `--bg-alt` inner card on a `--cN-light` parent surface.**
 > Applies only when the inner item physically sits on top of a
 > band-tinted parent surface.
 
 Kanban is the one Mermaid diagram type that has this structure:
 
 - Lane = `<g class="cluster section-N"><rect/></g>` painted with
-  `--diagram-band-N`. A large tinted rectangle.
+  `--cN-light`. A large tinted rectangle.
 - Ticket = `<g class="node">` inside `.items`, painted with `--bg-alt`.
   A small near-white card on top of the lane.
 
-The contrast between `--bg-alt` (#F2F5FA in indaco) and a pale band-N
+The contrast between `--bg-alt` (#F2F5FA in indaco) and a pale c-light
 tint (e.g. #DCE9F5) gives the reading "card lifted off the lane."
 
 **Timeline and journey are NOT card-on-band**, even though their syntax
 suggests a parent-child relationship between period/section and
-event/task. The period header is a small band-N rect at the *top* of a
-column; tasks and events stack *below* it on the slide canvas
+event/task. The period header is a small `--cN-light` rect at the *top*
+of a column; tasks and events stack *below* it on the slide canvas
 (`--bg` white). There is no band underneath each card. `--bg-alt` on
 `--bg` is virtually invisible, so the rule collapses. These diagrams
 follow the **tile-per-element** pattern — events inherit their period's
-band-N fill via the `.section-N` rule, with `--diagram-stroke` providing
+`--cN-light` fill via the `.section-N` rule, with `--c-stroke` providing
 the card outline against the white canvas.
 
 | Diagram | Structure | Pattern |
 |---|---|---|
-| **kanban** | lane (band-N rect) → ticket on top | card-on-band ✓ |
-| **timeline** | period header (band-N) → events stack below on canvas | tile-per-element (each event = its period's band-N) |
-| **journey** | section header (band-N) → tasks stack below on canvas | tile-per-element (each task = its section's band-N) |
-| **treemap / mindmap / gitgraph / quadrant** | no outer grouping | tile-per-element (each tile = its own band-N) |
+| **kanban** | lane (cN-light rect) → ticket on top | card-on-band ✓ |
+| **timeline** | period header (cN-light) → events stack below on canvas | tile-per-element (each event = its period's cN-light) |
+| **journey** | section header (cN-light) → tasks stack below on canvas | tile-per-element (each task = its section's cN-light) |
+| **treemap / mindmap / gitgraph / quadrant** | no outer grouping | tile-per-element (each tile = its own cN-light) |
 
 Audit and design rationale: `docs/notes/2026-05-12-diagram-elevation.md`.
 
 ## The lightness contract
 
-The default `indaco` palette uses two distinct lightness bands:
+The default `indaco` palette uses two distinct lightness tiers for the
+categorical cycle, plus a small universal semantic palette for status
+signals:
 
-- **Tinted band, L≈83.** `--diagram-band-1..12`, quadrant fills, gantt task
-  bars (via `taskBkgColor`), sequence actor backgrounds, pie slices, and
-  most light surfaces. Dark text reads on these with 10:1+ contrast.
-- **Mid-tone band, L≈60.** `--cat-*` (feeds `cScale0..11` and `git0..7`).
-  Fed at L≈60 because Mermaid's kanban renderer applies an internal
-  lighten step that brings emitted fills to L≈70 (where dark text still
-  reads cleanly).
+- **Pale tier, L≈87.** `--c1-light`..`--c12-light`, quadrant fills,
+  sequence actor backgrounds, pie slices, and most light surfaces.
+  `--c-ink-light` reads on these with 10:1+ contrast.
+- **Deep tier, L≈32.** `--c1-dark`..`--c12-dark`. Saturated marks:
+  decision-list accents, piechart wedges, sankey nodes, gitgraph
+  branch dots, xy-chart plot palette, Mermaid's cScale feed.
+  `--c-ink-dark` (default `#FFFFFF`) reads on these with 5:1+ contrast.
 
-A new palette should respect the same band split. If you push cScale to
-L≈90 to match the rest, kanban will lighten further and emit fills near
-L≈100 — invisible against the white canvas.
+A new palette should respect the same tier split. Each rank-1 proposal
+in `examples/palette-audit.md` lands its pale tier at L≈87 and its
+deep tier at L≈32, anchored to AA against the paired ink — if you copy
+the proposal values, you inherit the contract for free.
 
-Colors that ignore the bands:
+Colors that ignore the tier split:
 
-- **Strokes** (`--diagram-stroke`): saturated, picked to read on every
-  band fill including white.
-- **Lines** (`--diagram-line`): near-black on light canvas, light on dark.
-- **Alarm states** (`--diagram-error-bg`, `--diagram-state-critical`):
-  saturated red, the only place the deck breaks the pale-only rule.
-- **Note background**: pale yellow (indaco) or parchment+saddle (cuoio),
-  category-distinct accent.
+- **Strokes** (`--c-stroke`): saturated, picked to read on every
+  `--cN-light` tint including white.
+- **Lines** (`--c-line`): near-black on light canvas, light on dark.
+- **Universal semantic palette** (`--c-warm-*` / `--c-cool-*` /
+  `--c-alarm*` / `--c-mark` / `--c-note`): status-signaling colours
+  outside the tier system. Alarm is saturated red, mark is saturated
+  yellow, note is pale yellow — pinned values, not theme-cycle members.
 
 Every text-bearing token must clear WCAG AA (4.5:1) against the surface
 it appears on, in both light and dark mode. `test/unit/contrast.test.js`
@@ -270,19 +293,18 @@ Mermaid exposes a `themeVariables` API for theming most diagram types,
 but several diagrams hardcode their internal palettes or expose no
 configuration at all. `lattice.css`'s DIAGRAM OVERRIDES section ships
 per-diagram CSS overrides for the gaps. The rules are palette-blind
-(they consume `var(--diagram-*)`), so a new palette gets them
-automatically by defining the token contract — no per-palette CSS rules
-are needed.
+(they consume `var(--c-*)`), so a new palette gets them automatically
+by defining the token contract — no per-palette CSS rules are needed.
 
 The current overrides cover:
 
 - **Journey** — Mermaid hardcodes X11 named colors for sections. Override
   forces section bars and task tiles to pale fills with dark text.
 - **Mindmap** — reads `cScale*` verbatim with no transformation. The
-  mid-tone inputs render too saturated. Override forces pale fills per
+  deep-tone inputs render too saturated. Override forces pale fills per
   level. The root node has both `.section-root` and `.section--1` classes
   with conflicting hardcoded fills; both are overridden.
-- **Kanban** — applies its own lighten step. With our mid-tone inputs
+- **Kanban** — applies its own lighten step. With our deep-tier inputs
   this lands on the pale band, but the column section colors need
   explicit overrides to stay distinct per column.
 - **C4** — uses hardcoded C4-Plant colors. The override repaints person,
@@ -304,9 +326,9 @@ The current overrides cover:
   cases. Override targets `.node .label-container` to ensure all shape
   types pick up the pale fill.
 - **Gitgraph** — branch label boxes (`.branchLabelBkg.label0..7`) need
-  pale fills with dark text. The branch dots and lines stay mid-tone for
-  trace visibility. Arrow paths default to black fill (drawing wedges
-  between branches); override forces `fill: none`.
+  pale fills with dark text. The branch dots and lines use `--cN-dark`
+  for trace visibility. Arrow paths default to black fill (drawing
+  wedges between branches); override forces `fill: none`.
 - **Gantt** — `taskTextOutsideLeft/Right` ignores `taskTextOutsideColor`
   in some renderer paths. Override forces dark text in the outside-bar
   margin. Documented Mermaid bug.
@@ -359,35 +381,34 @@ Then, in order of impact:
 4. **Accent** (`--accent`, `--accent-soft`, `--on-accent`). Most-seen
    colour after ink. Must clear contrast against `--bg` *and* against
    `--accent-soft`.
-5. **Diagram band cycle** (`--diagram-band-1` … `--diagram-band-12`,
-   each paired with `--diagram-band-text-N`). Pale band, L≈83. Used by
-   every Mermaid fill — flowchart, sequence, journey, pie, c4, venn,
-   timeline, mindmap, kanban, treemap. Paired text tokens are pinned to
-   a dark hex so light-mode and dark-mode diagrams render the same ink.
-6. **Diagram structural tokens** (`--diagram-stroke`, `--diagram-line`,
-   `--diagram-accent-warm`, `--diagram-quadrant-N-{fill,text}`,
-   `--diagram-state-{active,done,critical,today,grid}`,
-   `--diagram-note-{bg,stroke}`, `--diagram-error-{bg,text}`). Borders,
-   gantt state, sticky notes, parser errors.
-7. **Categorical hues** (`--cat-blue` … `--cat-mauve`). Mid-tone band,
-   L≈60. Used by kanban, mindmap, actor pills, corner tags. Inherit
-   indaco's on a first pass if you don't have strong opinions.
+5. **Categorical cycle** (`--c1-light` / `--c1-dark` through
+   `--c12-light` / `--c12-dark`, plus `--c-ink-light` / `--c-ink-dark`).
+   Copy the rank-1 Brand-triad proposal from `examples/palette-audit.md`
+   as a known-good starting point; AA against the paired ink is checked
+   by the contrast suite.
+6. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`,
+   `--c-quadrant-N-{fill,text}`). Borders, edge lines, secondary warm
+   accent, quadrant slot mapping.
+7. **Universal semantic overrides** (optional — only if your theme has
+   curated alternatives to lattice.css defaults for `--c-warm-*`,
+   `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`). cuoio is the
+   one shipped theme that overrides; most new palettes inherit.
 8. **Dark-variant tokens** (`--dark-bg`, `--dark-text-*`, etc).
    Consumed by every `light-dark()` pair above and by `section.dark`.
 9. **Semantic signals** (`--pass`, `--fail`, `--warn`). Usually the same
    green/red/amber across palettes; override if your brand specifies.
 
 You don't write per-diagram CSS overrides. They live in `lattice.css`'s
-DIAGRAM OVERRIDES section and reference tokens by `var(--diagram-*)`, so
-your new colour values flow through unchanged.
+DIAGRAM OVERRIDES section and reference tokens by `var(--c-*)`, so your
+new colour values flow through unchanged.
 
 When the values look right:
 
 ```sh
 # Build the regression galleries with your palette and inspect each PDF.
-node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         <name>
-node lattice-emulator.js examples/mermaid-gallery.md /tmp/<name>-mermaid.pdf <name>
-node lattice-emulator.js examples/kpi-gallery.md     /tmp/<name>-kpi.pdf     <name>
+node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         -p <name>
+node lattice-emulator.js examples/mermaid-gallery.md /tmp/<name>-mermaid.pdf -p <name>
+node lattice-emulator.js examples/kpi-gallery.md     /tmp/<name>-kpi.pdf     -p <name>
 ```
 
 Then register the palette in `.vscode/settings.json` under
@@ -407,30 +428,34 @@ If you prefer not to run the scaffolder:
    the `@theme` directive and `@import` target to match.
 5. Register both palettes in `.vscode/settings.json` under
    `markdown.marp.themes` so the Marp VS Code extension picks them up.
-6. Build a deck: `node lattice-emulator.js deck.md out.pdf <name>`.
+6. Build a deck: `node lattice-emulator.js deck.md out.pdf -p <name>`.
 7. Re-render `examples/mermaid-gallery.md` with your palette to verify
    every diagram type renders correctly.
 8. Run `node --test test/unit/*.test.js` — the contrast assertions will
-   catch any band/text pair that slips below AA.
+   catch any pair that slips below AA.
 
 ## Verifying a palette
 
 Two checks worth running:
 
 **Contrast**: `test/unit/contrast.test.js` parses every shipped palette
-and asserts AA on every band/text pair, quadrant pair, `--text-heading`
-on `--bg`/`--bg-alt`, and `--diagram-error-text` on `--diagram-error-bg`
-— in both light and dark. Add your new palette to the test's loop (the
-`['indaco', 'cuoio']` literal). If a pair fails, lift the text (darker
-on light, lighter on dark) or lift the surface; don't lower the bar.
+and asserts AA on every `--cN-light` / `--c-ink-light` pair, every
+`--cN-dark` / `--c-ink-dark` pair, every quadrant pair, `--text-heading`
+on `--bg`/`--bg-alt`, and `--c-ink-dark` on `--c-alarm` — in both light
+and dark. Add your new palette to the test's loop (the `['indaco',
+'cuoio']` literal). If a pair fails, lift the text (darker on light,
+lighter on dark) or lift the surface; don't lower the bar.
 
 **Mermaid render**: re-render the diagram gallery and visually inspect
 each slide. The likely failure modes are:
 
-1. cScale fed too pale → kanban renders fills at L≈100 (invisible).
-2. cScale fed too saturated → mindmap text becomes unreadable.
-3. Strokes too pale → flowchart/sequence/class boxes don't read against
+1. `--cN-dark` slot too saturated → mindmap text becomes unreadable.
+2. Strokes too pale → flowchart/sequence/class boxes don't read against
    the canvas.
-4. A `--diagram-*` token your palette didn't define — `lattice.css`'s
-   DIAGRAM OVERRIDES rules will fall through to Mermaid's defaults.
-   Run `test/unit/palette.test.js` to catch missing tokens.
+3. A `--c-*` token your palette didn't define — `lattice.css`'s DIAGRAM
+   OVERRIDES rules will fall through to Mermaid's defaults. Run
+   `test/unit/palette.test.js` to catch missing tokens.
+4. Build-time "Palette missing CSS variable" warning — the emulator's
+   `parsePaletteVars` must read `layoutCSS + paletteCSS` so universal
+   semantic defaults from lattice.css are visible. This is the
+   engine's responsibility; report as a bug if it ever surfaces.
