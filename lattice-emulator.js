@@ -448,9 +448,9 @@ const MERMAID_VAR_MAP = {
   gitBranchLabel7: { var: 'text-heading' },
   commitLabelColor:      { var: 'text-heading' },
   commitLabelBackground: { var: 'bg-alt' },
-  tagLabelColor:         { var: 'bg' },
-  tagLabelBackground:    { var: 'c-stroke' },
-  tagLabelBorder:        { var: 'text-heading' },
+  tagLabelColor:         { var: 'c-ink-light' },  // text on the mark fill
+  tagLabelBackground:    { var: 'c-mark' },        // a tag is a "marked point"
+  tagLabelBorder:        { var: 'c-stroke' },       // universal stroke
 
   // Quadrant chart
   quadrant1Fill:                    { var: 'c-quadrant-1-fill' },
