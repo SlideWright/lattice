@@ -1155,7 +1155,7 @@ section.big-number h5 { margin-bottom:var(--sp-sm); }
 section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
 section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
 section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
-section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:560px; margin:0 auto; }
+section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
 
 /* ── SPLIT-PANEL ──
  * ## left-heading  p left-intro  - bullet list right panel
@@ -2183,7 +2183,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [
   font-size:var(--fs-sm);
   line-height:var(--lh-snug);
   color:var(--text-body);
-  display:flex; flex-direction:column; gap:4px;
+  display:flex; flex-direction:column; gap:0.3125cqi;
   flex:0 0 auto;
   width:1152px; max-width:100%;
   box-sizing:border-box;
@@ -2211,7 +2211,7 @@ section.diagram > .mermaid-error-label,
   line-height:var(--lh-snug);
   color:var(--text-muted);
   white-space:pre-wrap; overflow:auto;
-  max-height:160px;
+  max-height:12.5cqi;
 }
 
 /* Diagram title suppression — the slide's `## heading` is the canonical title.
@@ -2336,7 +2336,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
   content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   font-size:var(--fs-xl); color:var(--text-muted);
-  background:var(--bg); padding:2px 8px; border-radius:4px; z-index:1;
+  background:var(--bg); padding:2px 0.625cqi; border-radius:0.3125cqi; z-index:1;
 }
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
@@ -5661,7 +5661,7 @@ section.chart-frame .chart-caption {
 section.chart-frame .chart-caption::before {
   content: '';
   display: block;
-  width: 240px;
+  width: 18.75cqi;
   height: 1px;
   margin: 0 auto var(--sp-sm);
   background: linear-gradient(
@@ -5704,9 +5704,9 @@ section.chart-frame.minimal .chart-header::after {
 section.chart-frame .chart-status {
   display: inline-flex;
   align-items: center;
-  height: 22px;
-  padding: 0 10px;
-  border-radius: 11px;
+  height: 1.71875cqi;
+  padding: 0 0.78125cqi;
+  border-radius: 0.859375cqi;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -5816,12 +5816,12 @@ section.progress.chart-frame .chart-body {
 section.progress .progress-bars {
   display: flex;
   flex-direction: column;
-  row-gap: 6px;
+  row-gap: 0.46875cqi;
   width: 100%;
 }
 section.progress .progress-row {
   display: grid;
-  grid-template-columns: 240px 1fr 60px 96px;
+  grid-template-columns: 18.75cqi 1fr 4.6875cqi 7.5cqi;
   align-items: center;
   column-gap: var(--sp-md);
 }
@@ -5833,10 +5833,10 @@ section.progress .progress-label {
 }
 section.progress .progress-track {
   position: relative;
-  height: 14px;
+  height: 1.09375cqi;
   background: var(--bg-alt);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 0.546875cqi;
   overflow: hidden;
 }
 section.progress .progress-fill {
@@ -5874,7 +5874,7 @@ section.progress .progress-row > .chart-status-empty {
 /* Optional row sub-bullet — rendered as a small footnote under the bar. */
 section.progress .progress-note {
   grid-column: 2 / 4;
-  margin-top: -4px;
+  margin-top: -0.3125cqi;
   font-size: var(--fs-xs);
   color: var(--text-muted);
   font-style: italic;
@@ -5995,8 +5995,8 @@ section.piechart .piechart-figure {
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  width: 320px;
-  height: 320px;
+  width: 25cqi;
+  height: 25cqi;
   display: block;
 }
 section.piechart .piechart-svg .wedge {
@@ -6023,7 +6023,7 @@ section.piechart .piechart-legend {
   flex: 0 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.78125cqi;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -6106,13 +6106,13 @@ section.gantt.chart-frame .chart-body {
   flex-direction: row;
   align-items: center;
   padding-bottom: var(--sp-xs);
-  margin-bottom: 4px;
+  margin-bottom: 0.3125cqi;
   border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
 }
 
 .gantt-axis-spacer {
-  flex: 0 0 180px;
-  width: 180px;
+  flex: 0 0 14.0625cqi;
+  width: 14.0625cqi;
 }
 
 .gantt-ticks {
@@ -6141,8 +6141,8 @@ section.gantt.chart-frame .chart-body {
 .gantt-lane:last-child { border-bottom: none; }
 
 .gantt-lane-label {
-  flex: 0 0 180px;
-  width: 180px;
+  flex: 0 0 14.0625cqi;
+  width: 14.0625cqi;
   padding-right: var(--sp-sm);
   font-size: var(--fs-sm);
   font-weight: 600;
@@ -6158,7 +6158,7 @@ section.gantt.chart-frame .chart-body {
 .gantt-bars {
   flex: 1;
   position: relative;
-  height: 44px;
+  height: 3.4375cqi;
 }
 
 /* Bar — absolutely positioned within its lane's bars container.
@@ -6178,7 +6178,7 @@ section.gantt.chart-frame .chart-body {
   top: 5px; bottom: 5px;
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
-  border-radius: 6px;
+  border-radius: 0.46875cqi;
   background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
   color: var(--text-heading);
   font-family: var(--font-body);
@@ -6186,7 +6186,7 @@ section.gantt.chart-frame .chart-body {
   font-weight: 600;
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 0.78125cqi;
   overflow: hidden;
   white-space: nowrap;
   box-sizing: border-box;
@@ -6307,7 +6307,7 @@ section.kanban.chart-frame .chart-body {
 .kanban-cards {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 0.546875cqi;
   overflow: hidden;
 }
 
@@ -6316,11 +6316,11 @@ section.kanban.chart-frame .chart-body {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-left: 3px solid var(--lane-color, var(--border));
-  border-radius: 6px;
-  padding: 9px var(--sp-sm);
+  border-radius: 0.46875cqi;
+  padding: 0.703125cqi var(--sp-sm);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.390625cqi;
   box-sizing: border-box;
   min-width: 0;
 }
@@ -6349,8 +6349,8 @@ section.kanban.chart-frame .chart-body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5px;
-  min-height: 20px;
+  gap: 0.390625cqi;
+  min-height: 1.5625cqi;
 }
 
 /* Size badge — compact square chip */
@@ -6358,8 +6358,8 @@ section.kanban.chart-frame .chart-body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px; height: 20px;
-  border-radius: 4px;
+  width: 1.71875cqi; height: 1.5625cqi;
+  border-radius: 0.3125cqi;
   border: 1px solid var(--border);
   background: var(--bg);
   font-family: var(--font-mono);
@@ -6373,9 +6373,9 @@ section.kanban.chart-frame .chart-body {
 .kanban-lane {
   display: inline-flex;
   align-items: center;
-  height: 20px;
-  padding: 0 7px;
-  border-radius: 10px;
+  height: 1.5625cqi;
+  padding: 0 0.546875cqi;
+  border-radius: 0.78125cqi;
   background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
   color: var(--lane-color, var(--accent));
   font-family: var(--font-mono);
@@ -6388,8 +6388,8 @@ section.kanban.chart-frame .chart-body {
 
 /* Reuse .chart-status but compact it for the tight card meta row */
 .kanban-card-meta .chart-status {
-  height: 20px;
-  padding: 0 7px;
+  height: 1.5625cqi;
+  padding: 0 0.546875cqi;
   font-size: var(--fs-xs);
   flex: 0 0 auto;
   margin-left: auto;
