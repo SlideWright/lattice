@@ -6937,11 +6937,13 @@ section .timeline-node.section-10 text, section .timeline-node.section-10 tspan,
 section .eventWrapper { filter: none !important; }
 
 /* ── KANBAN TICKETS ──
- * Card-on-band: the ticket sits inside a band-tinted lane, so painting
- * the inner card with --bg-alt gives a real "card on coloured ground"
- * reading. The .items selector is unique to kanban and won't affect
- * flowchart nodes (which sit directly under the SVG root, not under
- * .items).
+ * Card-on-band: the ticket sits inside a band-tinted lane, so the inner
+ * card is the deepest-nested surface — the containment tier's
+ * --c-subcontainer. The lane keeps its categorical band fill (it reads
+ * as a data column, not a containment surface); the ticket nests one
+ * level deeper, so it takes the subcontainer rung of the ladder. The
+ * .items selector is unique to kanban and won't affect flowchart nodes
+ * (which sit directly under the SVG root, not under .items).
  *
  * This is the ONLY diagram type where the rule applies cleanly.
  * Timeline and journey were investigated as candidates but their inner
@@ -6953,7 +6955,7 @@ section .cluster .items .node rect.basic.label-container,
 section .cluster .items .node .label-container,
 section .items .node rect.basic.label-container,
 section .items .node .label-container {
-  fill: var(--bg-alt) !important;
+  fill: var(--c-subcontainer) !important;
   stroke: var(--c-stroke) !important;
 }
 
@@ -7296,7 +7298,19 @@ section line.node-line-, section line[class*="node-line-"] {
  * --c-ink-light at low opacity (flips with the canvas, so it shows
  * softly on either) so the flow widths stay the primary read without
  * the ribbons becoming a heavy mass.
+ *
+ * Sankey has no cluster or frame of its own, so it used to float on the
+ * bare slide canvas — an outlier next to every other diagram, which
+ * reads as a contained surface. Mermaid's sankey <svg> carries an inline
+ * `background-color: transparent`; !important wins over it. Paint the
+ * SVG with the containment tier's --c-container so the diagram sits in
+ * the same kind of surface as a flowchart cluster.
  */
+section svg[aria-roledescription="sankey"] {
+  background-color: var(--c-container) !important;
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--radius-md);
+}
 section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--c1-light)  !important; stroke: var(--c-stroke) !important; }
 section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--c2-light)  !important; stroke: var(--c-stroke) !important; }
 section g.nodes > g.node:nth-of-type(3)  > rect { fill: var(--c3-light)  !important; stroke: var(--c-stroke) !important; }
