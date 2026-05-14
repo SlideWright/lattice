@@ -572,7 +572,12 @@ function resolveMermaidThemeVars(paletteVars) {
   return result;
 }
 
-const PALETTE_VARS = parsePaletteVars(paletteCSS);
+// Parse the combined cascade (layoutCSS first, then paletteCSS) so the
+// universal semantic palette defaults declared in lattice.css are visible
+// to the Mermaid var resolver. Theme declarations parsed last override
+// defaults — matches the real browser cascade where `@import 'lattice'`
+// at the top of every theme loads lattice.css first.
+const PALETTE_VARS = parsePaletteVars(layoutCSS + '\n' + paletteCSS);
 const MERMAID_THEME_VARS = resolveMermaidThemeVars(PALETTE_VARS);
 
 // ── Puppeteer config — chrome auto-detection ─────────────────────────────
