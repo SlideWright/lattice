@@ -2366,7 +2366,45 @@
     wrapFences();
     tick();
     startObserver();
+    patchSectionGeometry();
     startOverflowWatcher();
+  }
+
+  // ── Section geometry injector ─────────────────────────────────────────
+  // section { container-type:size } makes section the query container, so
+  // cqi on section's OWN properties (padding-top, border-top) cannot resolve
+  // against section — they fall back to the ICB.  In PDF print mode the ICB
+  // is the @page area (correct).  In VS Code screen mode the ICB is the editor
+  // viewport, giving ~103px at 4K instead of the intended 264px.
+  // Fix: inject concrete px values via CSS variables --_sec-pad-v and
+  // --_sec-border-w, keyed off section.offsetWidth (which returns the CSS
+  // width before any transform scale, i.e. 3840 for 4K slides in VS Code).
+  // lattice.css consumes these as var(--_sec-pad-v, 6.875cqi) — the cqi
+  // fallback still fires in the PDF emulator path where the variables are
+  // not set, and the @page ICB resolves them correctly there.
+  function patchSectionGeometry() {
+    if (typeof document === 'undefined') return;
+    const patch = (s) => {
+      const w = s.offsetWidth;
+      if (!w) return;
+      s.style.setProperty('--_sec-pad-v',    (w * 6.875  / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-border-w', (w * 0.3125 / 100).toFixed(2) + 'px');
+    };
+    for (const s of document.querySelectorAll('section')) patch(s);
+    if (typeof MutationObserver !== 'undefined') {
+      let raf = 0;
+      const schedule = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          for (const s of document.querySelectorAll('section')) patch(s);
+        });
+      };
+      new MutationObserver(schedule).observe(document.body, {
+        subtree: true, childList: true, attributes: true,
+      });
+      if (typeof window !== 'undefined') window.addEventListener('resize', schedule);
+    }
   }
 
   // ── Overflow watcher ─────────────────────────────────────────────────

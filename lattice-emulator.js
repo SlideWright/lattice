@@ -2369,6 +2369,13 @@ const puppeteer = loadPuppeteer();
   if (CHROME_EXEC) launchOpts.executablePath = CHROME_EXEC;
   const browser = await puppeteer.launch(launchOpts);
   const page = await browser.newPage();
+  // Set viewport to slide dimensions so section's own cqi properties (padding,
+  // border-top) resolve against the correct ICB in screen mode.  Without this,
+  // Puppeteer's default 800×600 viewport causes section's cqi fallback to
+  // resolve to 6.875% × 800 = 55 px instead of the intended 88 px (HD) or
+  // 264 px (4K), which makes the overflow-detection pass see a different
+  // content area than the printed PDF.
+  await page.setViewport({ width: slideW, height: slideH, deviceScaleFactor: 1 });
   await page.goto('file://' + path.resolve(outHtml), {
     waitUntil: 'networkidle0',
     timeout: 60000

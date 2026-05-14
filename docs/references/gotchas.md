@@ -745,22 +745,31 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Symptom:** In VS Code preview, a `size: 16:9-4k` slide has content
   that appears to start too high — the top padding looks narrower than
   expected, as if content is bleeding into the header zone.
-- **Cause:** `section { padding-top: 6.875cqi }` uses `cqi` on the
-  element that *is itself* the size container. Per the CSS spec, a
-  container cannot query itself, so `cqi` falls back to the nearest
-  **ancestor** container — which in VS Code preview is the editor pane
-  viewport (≈1200–2000px), not the slide width (3840px). Elements
-  *inside* section correctly query section (3840px).
-  In PDF export via marp-cli, Puppeteer's viewport is set to match the
-  `@page` size (3840×2160 for 16:9-4k), so the fallback ancestor IS
-  3840px wide → correct rendering.
-- **Mitigation:** None applied — PDF export is correct. VS Code preview
-  shows a cosmetic discrepancy that does not reflect the output.
+- **Cause:** `section { container-type:size; padding-top: 6.875cqi }` —
+  `cqi` on the element that *is itself* the size container falls back to
+  the nearest **ancestor** container per the CSS spec. In VS Code screen
+  mode that ancestor is the editor viewport (≈1200–2000 px), not the
+  slide width (3840 px). Elements *inside* section correctly query
+  section (3840 px). In PDF print mode the ICB is set by `@page { size:
+  3840px 2160px }`, so the fallback resolves correctly there.
+  A secondary impact: the lattice-emulator overflow-detection pass (which
+  runs in screen mode before `page.pdf()`) was also affected — the 800 px
+  Puppeteer default viewport gave a larger apparent content area, which
+  could mask genuine overflows on 4K slides.
+- **Fix:** `lattice.css` changed `padding-top:6.875cqi` →
+  `padding-top:var(--_sec-pad-v,6.875cqi)`. `lattice-runtime.js` adds
+  `patchSectionGeometry()` which sets `--_sec-pad-v` (and
+  `--_sec-border-w`) to the correct px value derived from
+  `section.offsetWidth` — which returns the CSS width before any
+  transform scale, i.e. 3840 for 4K slides in VS Code. The cqi fallback
+  remains for the PDF emulator path (no variables set there; @page ICB
+  resolves it). `lattice-emulator.js` also gains `page.setViewport({
+  width: slideW, height: slideH })` so the screen-mode overflow check
+  uses the correct content-area dimensions.
 - **Triggered by:** Opening a `size: 16:9-4k` slide in marp-vscode
-  preview. PDF export via `npm run build` or lattice-emulator is unaffected.
-- **Removable when:** Marp-vscode sets a container on `<html>` or on
-  the preview iframe that matches the declared slide dimensions.
-- **Commits:** `d91decc` (px→cqi refactor)
+  preview; prior to the fix, PDF overflow detection was also affected.
+- **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
+  adds patchSectionGeometry.
 
 ### Mermaid diagrams may render at HD size inside 4K slides in VS Code preview
 
