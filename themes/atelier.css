@@ -22,7 +22,7 @@
  *                           dark). High-contrast monochrome, warm-tinted.
  *
  *   3. Saturation reserved for one purpose: the deep-amber tag accent
- *      (#6B4F28 light → #C8A878 dark) used via --diagram-accent-warm.
+ *      (#6B4F28 light → #C8A878 dark) used via --c-accent-warm.
  *      The deck has no chromatic brand; amber is the deliberate pop.
  *
  *   4. Every text-bearing token clears WCAG AAA (7:1) against the surface
@@ -102,8 +102,8 @@
   --dark-text-display: #F0EDE6;
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
-  --diagram-stroke:          #38332A;
-  --diagram-accent-warm:     var(--brand-amber); /* the amber pop */
+  --c-stroke:          #38332A;
+  --c-accent-warm:     var(--brand-amber); /* the amber pop */
   /* cScale / gitgraph — warm achromatic with amber pop */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
@@ -111,31 +111,16 @@
  * source of truth per palette. */
 :root {
 
-  --diagram-line:                  var(--text-heading);
+  --c-line:                  var(--text-heading);
 
-  --diagram-state-active:          #E8D8B0;
-  --diagram-state-active-stroke:   var(--text-heading);
-  --diagram-state-done:            var(--diagram-band-9);
-  --diagram-state-done-stroke:     var(--text-muted);
-  --diagram-state-critical:        #C20000;
-  --diagram-state-critical-stroke: #8B0000;
-  --diagram-state-today:           var(--diagram-band-7);
-  --diagram-state-grid:            var(--border);
-
-  --diagram-note-bg:     var(--diagram-band-7);
-  --diagram-note-stroke: var(--text-heading);
-
-  --diagram-error-bg:   #C20000;
-  --diagram-error-text: #FFFFFF;
-
-  --diagram-quadrant-1-fill: var(--c1-light);
-  --diagram-quadrant-2-fill: var(--c2-light);
-  --diagram-quadrant-3-fill: var(--c3-light);
-  --diagram-quadrant-4-fill: var(--c4-light);
-  --diagram-quadrant-1-text: var(--text-heading);
-  --diagram-quadrant-2-text: var(--text-heading);
-  --diagram-quadrant-3-text: var(--text-heading);
-  --diagram-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
@@ -170,5 +155,7 @@ section pre.hljs {
   /* Non-flipping ink for text on --cN-light fills (bands stay pale
    * in both light and dark canvas modes, so the text on them must
    * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink: #1A1A18;
+  --c-ink-light: #1A1A18;
+
+  --c-ink-dark:  #FFFFFF;
 }

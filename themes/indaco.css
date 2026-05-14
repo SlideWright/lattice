@@ -264,13 +264,13 @@ section .hljs-strong { font-weight:700; }
    * Universal stroke for any band fill; reads on every pale tint
    * including white. Line is for edges/arrows; light-dark() picks
    * near-black on light canvas and muted light on dark. */
-  --diagram-stroke: #1F4A6E;  /* saturated brand navy */
-  --diagram-line:   light-dark(#1A1A1A, var(--dark-text-body));
+  --c-stroke: #1F4A6E;  /* saturated brand navy */
+  --c-line:   light-dark(#1A1A1A, var(--dark-text-body));
 
   /* Cross-deck contrast accent — radar's second curve, where a single
    * warm hue against the pale-blue band reads better than a second
    * pale tint. */
-  --diagram-accent-warm: #BD5000;
+  --c-accent-warm: #BD5000;
 
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
    * Earlier values sat at L≈95 — visibly washed against the band cycle
@@ -286,36 +286,15 @@ section .hljs-strong { font-weight:700; }
    *   Q4 time-sinks → c3-light (purple — drag)
    * Text stays per-quadrant saturated so each label hue reinforces its
    * quadrant's identity at AA on its band. */
-  --diagram-quadrant-1-fill: var(--c1-light);
-  --diagram-quadrant-2-fill: var(--c2-light);
-  --diagram-quadrant-3-fill: var(--c7-light);
-  --diagram-quadrant-4-fill: var(--c3-light);
-  --diagram-quadrant-1-text: #004A8A;
-  --diagram-quadrant-2-text: #2D5E18;
-  --diagram-quadrant-3-text: #7A5200;
-  --diagram-quadrant-4-text: #3D2050;
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c7-light);
+  --c-quadrant-4-fill: var(--c3-light);
+  --c-quadrant-1-text: #004A8A;
+  --c-quadrant-2-text: #2D5E18;
+  --c-quadrant-3-text: #7A5200;
+  --c-quadrant-4-text: #3D2050;
 
-  /* ── State (gantt task lifecycle — semantic, not a band cycle) ─── */
-  --diagram-state-active:          #F5E6D8;
-  --diagram-state-active-stroke:   #92400E;
-  --diagram-state-done:            #E0E4EA;
-  --diagram-state-done-stroke:     #475569;
-  --diagram-state-critical:        #C20000;
-  --diagram-state-critical-stroke: #8B0000;
-  --diagram-state-today:           #F6C700;
-  --diagram-state-grid:            #E0E4EA;
-
-  /* ── Note (sequence diagram aside) ──
-   * Yellow tint with yellow border, the one yellow accent in the deck.
-   * Not a brand color; signals "aside". */
-  --diagram-note-bg:     #FFFBE6;
-  --diagram-note-stroke: #F6C700;
-
-  /* ── Error / alarm ──
-   * Saturated red paired with white text. The deck's one alarm color,
-   * used by errorBkgColor across all diagrams. */
-  --diagram-error-bg:   #C20000;
-  --diagram-error-text: #FFFFFF;
 }
 
 :root {
@@ -346,5 +325,7 @@ section .hljs-strong { font-weight:700; }
   /* Non-flipping ink for text on --cN-light fills (bands stay pale
    * in both light and dark canvas modes, so the text on them must
    * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink: #0A1628;
+  --c-ink-light: #0A1628;
+
+  --c-ink-dark:  #FFFFFF;
 }

@@ -288,9 +288,9 @@ const MERMAID_VAR_MAP = {
   primaryColor:             { var: 'c1-light' },
   secondaryColor:           { var: 'c2-light' },
   tertiaryColor:            { var: 'bg-alt' },
-  primaryBorderColor:       { var: 'diagram-stroke' },
-  secondaryBorderColor:     { var: 'diagram-stroke' },
-  tertiaryBorderColor:      { var: 'diagram-stroke' },
+  primaryBorderColor:       { var: 'c-stroke' },
+  secondaryBorderColor:     { var: 'c-stroke' },
+  tertiaryBorderColor:      { var: 'c-stroke' },
 
   // Text — single dark slate everywhere
   primaryTextColor:         { var: 'text-heading' },
@@ -304,17 +304,17 @@ const MERMAID_VAR_MAP = {
   labelColor:               { var: 'text-heading' },
 
   // Lines (near-black on white canvas)
-  lineColor:                { var: 'diagram-line' },
-  defaultLinkColor:         { var: 'diagram-line' },
+  lineColor:                { var: 'c-line' },
+  defaultLinkColor:         { var: 'c-line' },
   edgeLabelBackground:      { var: 'bg' },
   labelBackground:          { var: 'bg' },
 
   // Main background paths
   mainBkg:                  { var: 'c1-light' },
-  nodeBorder:               { var: 'diagram-stroke' },
+  nodeBorder:               { var: 'c-stroke' },
   nodeTextColor:            { var: 'text-heading' },
   clusterBkg:               { var: 'bg-alt' },
-  clusterBorder:            { var: 'diagram-stroke' },
+  clusterBorder:            { var: 'c-stroke' },
 
   // cScale (mid-tone band) — kanban lighten brings to L≈70
   cScale0:                  { var: 'c1-dark' },
@@ -337,18 +337,18 @@ const MERMAID_VAR_MAP = {
   // paired band-text token (all map to --text-heading in shipped palettes)
   // ensures the auto rule renders dark ink, regardless of whether our
   // explicit CSS overrides match the diagram in question.
-  cScaleLabel0:  { var: 'c-ink' },
-  cScaleLabel1:  { var: 'c-ink' },
-  cScaleLabel2:  { var: 'c-ink' },
-  cScaleLabel3:  { var: 'c-ink' },
-  cScaleLabel4:  { var: 'c-ink' },
-  cScaleLabel5:  { var: 'c-ink' },
-  cScaleLabel6:  { var: 'c-ink' },
-  cScaleLabel7:  { var: 'c-ink' },
-  cScaleLabel8:  { var: 'c-ink' },
-  cScaleLabel9:  { var: 'c-ink' },
-  cScaleLabel10: { var: 'c-ink' },
-  cScaleLabel11: { var: 'c-ink' },
+  cScaleLabel0:  { var: 'c-ink-light' },
+  cScaleLabel1:  { var: 'c-ink-light' },
+  cScaleLabel2:  { var: 'c-ink-light' },
+  cScaleLabel3:  { var: 'c-ink-light' },
+  cScaleLabel4:  { var: 'c-ink-light' },
+  cScaleLabel5:  { var: 'c-ink-light' },
+  cScaleLabel6:  { var: 'c-ink-light' },
+  cScaleLabel7:  { var: 'c-ink-light' },
+  cScaleLabel8:  { var: 'c-ink-light' },
+  cScaleLabel9:  { var: 'c-ink-light' },
+  cScaleLabel10: { var: 'c-ink-light' },
+  cScaleLabel11: { var: 'c-ink-light' },
 
   // fillType (subgraph / mindmap-level fills, pale band)
   fillType0: { var: 'c1-light' },
@@ -362,25 +362,25 @@ const MERMAID_VAR_MAP = {
 
   // Sequence diagram
   actorBkg:                 { var: 'c1-light' },
-  actorBorder:              { var: 'diagram-stroke' },
+  actorBorder:              { var: 'c-stroke' },
   actorTextColor:           { var: 'text-heading' },
-  actorLineColor:           { var: 'diagram-line' },
-  signalColor:              { var: 'diagram-line' },
+  actorLineColor:           { var: 'c-line' },
+  signalColor:              { var: 'c-line' },
   signalTextColor:          { var: 'text-heading' },
   labelBoxBkgColor:         { var: 'bg-alt' },
-  labelBoxBorderColor:      { var: 'diagram-stroke' },
-  activationBorderColor:    { var: 'diagram-stroke' },
+  labelBoxBorderColor:      { var: 'c-stroke' },
+  activationBorderColor:    { var: 'c-stroke' },
   activationBkgColor:       { var: 'c1-light' },
   sequenceNumberColor:      { var: 'text-heading' },
 
   // Notes (yellow accent — category-distinct)
-  noteBkgColor:             { var: 'diagram-note-bg' },
+  noteBkgColor:             { var: 'c-note' },
   noteTextColor:            { var: 'text-heading' },
-  noteBorderColor:          { var: 'diagram-note-stroke' },
+  noteBorderColor:          { var: 'c-mark' },
 
   // Error (alarm — saturated red)
-  errorBkgColor:            { var: 'diagram-error-bg' },
-  errorTextColor:           { var: 'diagram-error-text' },
+  errorBkgColor:            { var: 'c-alarm' },
+  errorTextColor:           { var: 'c-ink-dark' },
 
   // Pie chart (pale band cycle — unified contract)
   pie1:  { var: 'c1-light' },
@@ -404,7 +404,7 @@ const MERMAID_VAR_MAP = {
   pieStrokeColor:      { var: 'bg' },
   pieStrokeWidth:      { literal: '2px' },
   pieOuterStrokeWidth: { literal: '2px' },
-  pieOuterStrokeColor: { var: 'diagram-stroke' },
+  pieOuterStrokeColor: { var: 'c-stroke' },
   pieOpacity:          { literal: '1' },
 
   // Gantt (pale bars, dark text, alarm-only saturation)
@@ -416,15 +416,15 @@ const MERMAID_VAR_MAP = {
   taskTextLightColor:     { var: 'text-heading' },
   taskTextOutsideColor:   { var: 'text-heading' },
   taskTextClickableColor: { var: 'text-heading' },
-  taskBorderColor:        { var: 'diagram-stroke' },
-  activeTaskBkgColor:     { var: 'diagram-state-active' },
-  activeTaskBorderColor:  { var: 'diagram-state-active-stroke' },
-  gridColor:              { var: 'diagram-state-grid' },
-  doneTaskBkgColor:       { var: 'diagram-state-done' },
-  doneTaskBorderColor:    { var: 'diagram-state-done-stroke' },
-  critBkgColor:           { var: 'diagram-state-critical' },
-  critBorderColor:        { var: 'diagram-state-critical-stroke' },
-  todayLineColor:         { var: 'diagram-state-today' },
+  taskBorderColor:        { var: 'c-stroke' },
+  activeTaskBkgColor:     { var: 'c-warm-light' },
+  activeTaskBorderColor:  { var: 'c-warm-dark' },
+  gridColor:              { var: 'c-cool-light' },
+  doneTaskBkgColor:       { var: 'c-cool-light' },
+  doneTaskBorderColor:    { var: 'c-cool-dark' },
+  critBkgColor:           { var: 'c-alarm' },
+  critBorderColor:        { var: 'c-alarm-dark' },
+  todayLineColor:         { var: 'c-mark' },
 
   // Git graph
   git0: { var: 'c1-dark' },
@@ -446,24 +446,24 @@ const MERMAID_VAR_MAP = {
   commitLabelColor:      { var: 'text-heading' },
   commitLabelBackground: { var: 'bg-alt' },
   tagLabelColor:         { var: 'bg' },
-  tagLabelBackground:    { var: 'diagram-stroke' },
+  tagLabelBackground:    { var: 'c-stroke' },
   tagLabelBorder:        { var: 'text-heading' },
 
   // Quadrant chart
-  quadrant1Fill:                    { var: 'diagram-quadrant-1-fill' },
-  quadrant2Fill:                    { var: 'diagram-quadrant-2-fill' },
-  quadrant3Fill:                    { var: 'diagram-quadrant-3-fill' },
-  quadrant4Fill:                    { var: 'diagram-quadrant-4-fill' },
-  quadrant1TextFill:                { var: 'diagram-quadrant-1-text' },
-  quadrant2TextFill:                { var: 'diagram-quadrant-2-text' },
-  quadrant3TextFill:                { var: 'diagram-quadrant-3-text' },
-  quadrant4TextFill:                { var: 'diagram-quadrant-4-text' },
-  quadrantPointFill:                { var: 'diagram-stroke' },
+  quadrant1Fill:                    { var: 'c-quadrant-1-fill' },
+  quadrant2Fill:                    { var: 'c-quadrant-2-fill' },
+  quadrant3Fill:                    { var: 'c-quadrant-3-fill' },
+  quadrant4Fill:                    { var: 'c-quadrant-4-fill' },
+  quadrant1TextFill:                { var: 'c-quadrant-1-text' },
+  quadrant2TextFill:                { var: 'c-quadrant-2-text' },
+  quadrant3TextFill:                { var: 'c-quadrant-3-text' },
+  quadrant4TextFill:                { var: 'c-quadrant-4-text' },
+  quadrantPointFill:                { var: 'c-stroke' },
   quadrantPointTextFill:            { var: 'text-heading' },
   quadrantXAxisTextFill:            { var: 'text-heading' },
   quadrantYAxisTextFill:            { var: 'text-heading' },
   quadrantInternalBorderStrokeFill: { var: 'c8-dark' },
-  quadrantExternalBorderStrokeFill: { var: 'diagram-stroke' },
+  quadrantExternalBorderStrokeFill: { var: 'c-stroke' },
   quadrantTitleFill:                { var: 'text-heading' },
 
   // State / class

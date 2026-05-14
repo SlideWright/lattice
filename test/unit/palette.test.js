@@ -19,8 +19,10 @@ const REQUIRED_DIAGRAM_VARS = [
   // Brand primitives consumed by the renderer
   'bg', 'bg-alt', 'text-heading',
 
-  // Non-flipping ink paired with every --cN-light fill
-  'c-ink',
+  // Non-flipping ink: paired with --cN-light fills (dark) and --cN-dark
+  // fills (white-ish). Themes can override --c-ink-dark to a cream
+  // off-white if pure #FFFFFF feels icy on warm-deep slots.
+  'c-ink-light', 'c-ink-dark',
 
   // Categorical cycle (12 paired slots)
   'c1-light',  'c2-light',  'c3-light',  'c4-light',
@@ -30,24 +32,24 @@ const REQUIRED_DIAGRAM_VARS = [
   'c5-dark',   'c6-dark',   'c7-dark',   'c8-dark',
   'c9-dark',   'c10-dark',  'c11-dark',  'c12-dark',
 
-  // Structural
-  'diagram-stroke', 'diagram-line', 'diagram-accent-warm',
+  // Structural (per-theme: saturated brand stroke, edge line, secondary
+  // warm accent)
+  'c-stroke', 'c-line', 'c-accent-warm',
 
-  // Quadrant (4-slot, fill + text paired)
-  'diagram-quadrant-1-fill', 'diagram-quadrant-2-fill',
-  'diagram-quadrant-3-fill', 'diagram-quadrant-4-fill',
-  'diagram-quadrant-1-text', 'diagram-quadrant-2-text',
-  'diagram-quadrant-3-text', 'diagram-quadrant-4-text',
+  // Quadrant (4-slot, fill + text paired — theme-defined slot mapping
+  // onto --cN-light)
+  'c-quadrant-1-fill', 'c-quadrant-2-fill',
+  'c-quadrant-3-fill', 'c-quadrant-4-fill',
+  'c-quadrant-1-text', 'c-quadrant-2-text',
+  'c-quadrant-3-text', 'c-quadrant-4-text',
 
-  // State (gantt lifecycle)
-  'diagram-state-active',   'diagram-state-active-stroke',
-  'diagram-state-done',     'diagram-state-done-stroke',
-  'diagram-state-critical', 'diagram-state-critical-stroke',
-  'diagram-state-today',    'diagram-state-grid',
-
-  // Note (sequence aside) + error (alarm)
-  'diagram-note-bg', 'diagram-note-stroke',
-  'diagram-error-bg', 'diagram-error-text',
+  // Universal semantic palette (status-signaling — defaults in lattice.css,
+  // themes override as needed)
+  'c-warm-light',  'c-warm-dark',
+  'c-cool-light',  'c-cool-dark',
+  'c-alarm',       'c-alarm-dark',
+  'c-mark',
+  'c-note',
 ];
 
 for (const name of ['indaco', 'cuoio']) {

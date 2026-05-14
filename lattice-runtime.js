@@ -61,9 +61,9 @@
     const bg      = vc('bg');
     const bgAlt   = vc('bg-alt');
     const text    = vc('text-heading');
-    const ink     = vc('c-ink');
-    const border  = vc('diagram-stroke');
-    const line    = vc('diagram-line');
+    const ink     = vc('c-ink-light');
+    const border  = vc('c-stroke');
+    const line    = vc('c-line');
     const primary = vc('c1-light');
     const second  = vc('c2-light');
     const slate   = vc('c8-dark');
@@ -151,13 +151,13 @@
       sequenceNumberColor:   text,
 
       // Notes
-      noteBkgColor:    vc('diagram-note-bg'),
+      noteBkgColor:    vc('c-note'),
       noteTextColor:   text,
-      noteBorderColor: vc('diagram-note-stroke'),
+      noteBorderColor: vc('c-mark'),
 
       // Error
-      errorBkgColor:  vc('diagram-error-bg'),
-      errorTextColor: vc('diagram-error-text'),
+      errorBkgColor:  vc('c-alarm'),
+      errorTextColor: vc('c-ink-dark'),
 
       // Pie chart
       pie1:  primary,                  pie2:  second,
@@ -188,14 +188,14 @@
       taskTextOutsideColor:   text,
       taskTextDarkColor:      text,
       taskBorderColor:        border,
-      activeTaskBkgColor:     vc('diagram-state-active'),
-      activeTaskBorderColor:  vc('diagram-state-active-stroke'),
-      gridColor:              vc('diagram-state-grid'),
-      doneTaskBkgColor:       vc('diagram-state-done'),
-      doneTaskBorderColor:    vc('diagram-state-done-stroke'),
-      critBkgColor:           vc('diagram-state-critical'),
-      critBorderColor:        vc('diagram-state-critical-stroke'),
-      todayLineColor:         vc('diagram-state-today'),
+      activeTaskBkgColor:     vc('c-warm-light'),
+      activeTaskBorderColor:  vc('c-warm-dark'),
+      gridColor:              vc('c-cool-light'),
+      doneTaskBkgColor:       vc('c-cool-light'),
+      doneTaskBorderColor:    vc('c-cool-dark'),
+      critBkgColor:           vc('c-alarm'),
+      critBorderColor:        vc('c-alarm-dark'),
+      todayLineColor:         vc('c-mark'),
 
       // Git graph
       git0: vc('c1-dark'),   git1: vc('c2-dark'),
@@ -213,14 +213,14 @@
       tagLabelBorder:        text,
 
       // Quadrant chart
-      quadrant1Fill:                    vc('diagram-quadrant-1-fill'),
-      quadrant2Fill:                    vc('diagram-quadrant-2-fill'),
-      quadrant3Fill:                    vc('diagram-quadrant-3-fill'),
-      quadrant4Fill:                    vc('diagram-quadrant-4-fill'),
-      quadrant1TextFill:                vc('diagram-quadrant-1-text'),
-      quadrant2TextFill:                vc('diagram-quadrant-2-text'),
-      quadrant3TextFill:                vc('diagram-quadrant-3-text'),
-      quadrant4TextFill:                vc('diagram-quadrant-4-text'),
+      quadrant1Fill:                    vc('c-quadrant-1-fill'),
+      quadrant2Fill:                    vc('c-quadrant-2-fill'),
+      quadrant3Fill:                    vc('c-quadrant-3-fill'),
+      quadrant4Fill:                    vc('c-quadrant-4-fill'),
+      quadrant1TextFill:                vc('c-quadrant-1-text'),
+      quadrant2TextFill:                vc('c-quadrant-2-text'),
+      quadrant3TextFill:                vc('c-quadrant-3-text'),
+      quadrant4TextFill:                vc('c-quadrant-4-text'),
       quadrantPointFill:                border,
       quadrantPointTextFill:            text,
       quadrantXAxisTextFill:            text,

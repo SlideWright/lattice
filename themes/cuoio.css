@@ -291,13 +291,13 @@ section .hljs-strong { font-weight:700; }
   /* ── Structural ───────────────────────────────────────────────────
    * Universal stroke for any band fill; deep taupe reads on every
    * cream tint. Line is for edges/arrows — warm brown ink. */
-  --diagram-stroke: #8B7E6D;  /* deep taupe */
-  --diagram-line:   #6B5D4F;  /* warm brown ink */
+  --c-stroke: #8B7E6D;  /* deep taupe */
+  --c-line:   #6B5D4F;  /* warm brown ink */
 
   /* Cross-deck contrast accent — radar's second curve, where a single
    * warm hue against the cream band reads better than a second pale
    * tint. */
-  --diagram-accent-warm: var(--brand-leather);
+  --c-accent-warm: var(--brand-leather);
 
   /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
    * Cuoio is monochrome warm by identity, but the band cycle pulls in
@@ -311,17 +311,15 @@ section .hljs-strong { font-weight:700; }
    *   Q3 defer       → c7-light (wheat)
    *   Q4 time-sinks  → c5-light (petrol pull, cool)
    * Text stays the universal cuoio ink — all four pairs clear AA. */
-  --diagram-quadrant-1-fill: var(--c1-light);
-  --diagram-quadrant-2-fill: var(--c2-light);
-  --diagram-quadrant-3-fill: var(--c3-light);
-  --diagram-quadrant-4-fill: var(--c4-light);
-  --diagram-quadrant-1-text: #1E1A15;
-  --diagram-quadrant-2-text: #1E1A15;
-  --diagram-quadrant-3-text: #1E1A15;
-  --diagram-quadrant-4-text: #1E1A15;
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: #1E1A15;
+  --c-quadrant-2-text: #1E1A15;
+  --c-quadrant-3-text: #1E1A15;
+  --c-quadrant-4-text: #1E1A15;
 
-  /* ── State (gantt task lifecycle — semantic, not a band cycle) ─── */
-  --diagram-state-active:          #EBDBC1;                /* pale gold-wash —
                                                               warm-active at band
                                                               lightness so the
                                                               task bar reads as
@@ -329,27 +327,7 @@ section .hljs-strong { font-weight:700; }
                                                               going visually dark
                                                               against pale task
                                                               fills next to it */
-  --diagram-state-active-stroke:   var(--brand-leather);   /* saddle outline */
-  --diagram-state-done:            #E0D8CC;                /* deeper cream */
-  --diagram-state-done-stroke:     #A69882;                /* muted taupe */
-  --diagram-state-critical:        var(--fail);
-  --diagram-state-critical-stroke: #7A1212;
-  --diagram-state-today:           var(--brand-leather);
-  --diagram-state-grid:            #E0D8CC;
 
-  /* ── Note (sequence diagram aside) ──
-   * Warm parchment tint with saddle border, the one accent-bordered
-   * surface in the diagram layer. Signals "aside". */
-  --diagram-note-bg:     #F5EFE0;
-  --diagram-note-stroke: var(--brand-leather);
-
-  /* ── Error / alarm ──
-   * Saturated red paired with white text. The deck's one alarm color,
-   * used by errorBkgColor across all diagrams. Text pinned to white
-   * (not var(--bg), which flips to dark in dark mode — would fail AA
-   * on the saturated red fill). */
-  --diagram-error-bg:   var(--fail);
-  --diagram-error-text: #FFFFFF;
 }
 
 :root {
@@ -380,5 +358,18 @@ section .hljs-strong { font-weight:700; }
   /* Non-flipping ink for text on --cN-light fills (bands stay pale
    * in both light and dark canvas modes, so the text on them must
    * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink: #1E1A15;
+  --c-ink-light: #1E1A15;
+  --c-ink-dark:  #FFFFFF;
+
+  /* Curated semantic palette — cuoio overrides the universal defaults
+   * from lattice.css with leather-toned values that match the warm
+   * earth brand. Other themes inherit lattice.css defaults. */
+  --c-warm-light: #EBDBC1;               /* pale gold-wash (was state-active)        */
+  --c-warm-dark:  var(--brand-leather);  /* saddle outline                            */
+  --c-cool-light: #E0D8CC;               /* deeper cream (was state-done + state-grid)*/
+  --c-cool-dark:  #A69882;               /* muted taupe                               */
+  --c-alarm:      var(--fail);           /* 7.63:1 on bg AAA (was state-critical)     */
+  --c-alarm-dark: #7A1212;
+  --c-mark:       var(--brand-leather);  /* saddle (was state-today + note-stroke)    */
+  --c-note:       #F5EFE0;               /* warm-tinted aside surface                 */
 }

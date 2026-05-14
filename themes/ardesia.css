@@ -100,11 +100,11 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --diagram-stroke:          #2A2A2A;
+  --c-stroke:          #2A2A2A;
   /* Warm-gold pop — the deliberate "coolness break" on second curve.
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */
-  --diagram-accent-warm:     #C8B89A;
+  --c-accent-warm:     #C8B89A;
   /* cScale / gitgraph — warm achromatic with one warm-gold pop */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
@@ -112,31 +112,16 @@
  * source of truth per palette. */
 :root {
 
-  --diagram-line:                  var(--text-heading);
+  --c-line:                  var(--text-heading);
 
-  --diagram-state-active:          #F0E8D0;
-  --diagram-state-active-stroke:   var(--text-heading);
-  --diagram-state-done:            var(--diagram-band-9);
-  --diagram-state-done-stroke:     var(--text-muted);
-  --diagram-state-critical:        #C20000;
-  --diagram-state-critical-stroke: #8B0000;
-  --diagram-state-today:           var(--diagram-band-7);
-  --diagram-state-grid:            var(--border);
-
-  --diagram-note-bg:     var(--diagram-band-7);
-  --diagram-note-stroke: var(--text-heading);
-
-  --diagram-error-bg:   #C20000;
-  --diagram-error-text: #FFFFFF;
-
-  --diagram-quadrant-1-fill: var(--c1-light);
-  --diagram-quadrant-2-fill: var(--c2-light);
-  --diagram-quadrant-3-fill: var(--c3-light);
-  --diagram-quadrant-4-fill: var(--c4-light);
-  --diagram-quadrant-1-text: var(--text-heading);
-  --diagram-quadrant-2-text: var(--text-heading);
-  --diagram-quadrant-3-text: var(--text-heading);
-  --diagram-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
@@ -171,5 +156,7 @@ section pre.hljs {
   /* Non-flipping ink for text on --cN-light fills (bands stay pale
    * in both light and dark canvas modes, so the text on them must
    * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink: #0A0A0A;
+  --c-ink-light: #0A0A0A;
+
+  --c-ink-dark:  #FFFFFF;
 }
