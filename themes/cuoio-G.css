@@ -11,18 +11,18 @@
 :where(:root) { color-scheme: light; }
 
 :root {
-  --c1-light:  light-dark(#BB8317, #7D5500);  /* hue 77° */
-  --c2-light:  light-dark(#009DCA, #006786);  /* hue 227° */
-  --c3-light:  light-dark(#D26B72, #A12E3E);  /* hue 17° */
-  --c4-light:  light-dark(#11A87F, #006F52);  /* hue 167° */
-  --c5-light:  light-dark(#AF74C3, #7F3C94);  /* hue 317° */
-  --c6-light:  light-dark(#98941F, #656100);  /* hue 107° */
-  --c7-light:  light-dark(#5990DD, #1A5BB0);  /* hue 257° */
-  --c8-light:  light-dark(#CE7444, #974000);  /* hue 47° */
-  --c9-light:  light-dark(#00A3A7, #006B6E);  /* hue 197° */
-  --c10-light: light-dark(#C76C9E, #96316D);  /* hue 347° */
-  --c11-light: light-dark(#67A14F, #2E6F00);  /* hue 137° */
-  --c12-light: light-dark(#8B81DA, #5B4AAC);  /* hue 287° */
+  --c1-light:  light-dark(#B07900, #7D5500);  /* hue 77° */
+  --c2-light:  light-dark(#008FB8, #006786);  /* hue 227° */
+  --c3-light:  light-dark(#CB656C, #A12E3E);  /* hue 17° */
+  --c4-light:  light-dark(#009670, #006F52);  /* hue 167° */
+  --c5-light:  light-dark(#A86EBC, #7F3C94);  /* hue 317° */
+  --c6-light:  light-dark(#8C8804, #656100);  /* hue 107° */
+  --c7-light:  light-dark(#4F85D1, #1A5BB0);  /* hue 257° */
+  --c8-light:  light-dark(#C66C3C, #974000);  /* hue 47° */
+  --c9-light:  light-dark(#009396, #006B6E);  /* hue 197° */
+  --c10-light: light-dark(#C16698, #96316D);  /* hue 347° */
+  --c11-light: light-dark(#599240, #2E6F00);  /* hue 137° */
+  --c12-light: light-dark(#8379D1, #5B4AAC);  /* hue 287° */
 
   --c-ink-light: var(--text-heading);
 
