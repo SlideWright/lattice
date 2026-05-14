@@ -130,28 +130,25 @@ section pre.hljs {
 
 :root {
   /* ── Categorical palette (12 paired slots) ────────────────────────────
-   * Universal categorical-color contract. Each slot pairs a pale L≈87
-   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
-   * white text on top). Consumed by every layout that needs a categorical
-   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
-   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
-   * cat/chart cycle, sankey nodes, quadrant fills.
-   *
-   * Generated via the Brand-triad strategy in examples/palette-audit.md
-   * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js. */
-  --c1-light:  #DCDEE0;  --c1-dark:  #4B5C6C;
-  --c2-light:  #E0DCDC;  --c2-dark:  #6B4D4D;
-  --c3-light:  #E0E0DC;  --c3-dark:  #6B6B4D;
-  --c4-light:  #DCDCE0;  --c4-dark:  #4D4D6B;
-  --c5-light:  #DCE0E0;  --c5-dark:  #4D6B6B;
-  --c6-light:  #E0DEDC;  --c6-dark:  #6B5C4D;
-  --c7-light:  #DEDCDF;  --c7-dark:  #5C4F69;
-  --c8-light:  #DFDCDE;  --c8-dark:  #694F5C;
-  --c9-light:  #DEDFDC;  --c9-dark:  #5C694F;
-  --c10-light: #DCDFDE;  --c10-dark: #4F695C;
-  --c11-light: #DFDCDF;  --c11-dark: #694F69;
-  --c12-light: #DCDFDC;  --c12-dark: #4F694F;
+   * Achromatic theme: brand hue chroma is 0°, so the Brand-triad strategy
+   * (used by every chromatic theme) collapses to 12 visually identical
+   * pale fills. Replaced here with a staggered tonal cycle — alternating
+   * "very pale" and "less pale" tiers, each monotonically descending,
+   * so adjacent slots differ by ≥10 L. Deep tier follows the same
+   * staggering with matched-extreme pairing (slot 1 = lightest pale +
+   * darkest deep). Categorical reading via lightness instead of hue. */
+  --c1-light:  #F2F2F2;  --c1-dark:  #333333;  /* L=95 pair L=20 */
+  --c2-light:  #D4D4D4;  --c2-dark:  #707070;  /* L=83 pair L=44 */
+  --c3-light:  #EDEDED;  --c3-dark:  #383838;  /* L=93 pair L=22 */
+  --c4-light:  #CFCFCF;  --c4-dark:  #6B6B6B;  /* L=81 pair L=42 */
+  --c5-light:  #E8E8E8;  --c5-dark:  #3D3D3D;  /* L=91 pair L=24 */
+  --c6-light:  #C9C9C9;  --c6-dark:  #666666;  /* L=79 pair L=40 */
+  --c7-light:  #E3E3E3;  --c7-dark:  #424242;  /* L=89 pair L=26 */
+  --c8-light:  #C4C4C4;  --c8-dark:  #616161;  /* L=77 pair L=38 */
+  --c9-light:  #DEDEDE;  --c9-dark:  #474747;  /* L=87 pair L=28 */
+  --c10-light: #BFBFBF;  --c10-dark: #5C5C5C;  /* L=75 pair L=36 */
+  --c11-light: #D9D9D9;  --c11-dark: #4D4D4D;  /* L=85 pair L=30 */
+  --c12-light: #BABABA;  --c12-dark: #575757;  /* L=73 pair L=34 */
 
   /* Non-flipping ink for text on --cN-light fills (bands stay pale
    * in both light and dark canvas modes, so the text on them must
