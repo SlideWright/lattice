@@ -292,19 +292,21 @@ const MERMAID_VAR_MAP = {
   secondaryBorderColor:     { var: 'c-stroke' },
   tertiaryBorderColor:      { var: 'c-stroke' },
 
-  // Text. Split by surface: text that sits ON a categorical shape fill
-  // routes to --c-ink-light (white-ish, AA-safe on the deep fills); text
-  // that sits on the canvas or a pale surface (titles, edge labels,
-  // bg-alt panels) stays on --text-heading, which flips with canvas mode.
-  primaryTextColor:         { var: 'c-ink-light' },   // on mainBkg (cN fill)
-  secondaryTextColor:       { var: 'c-ink-light' },   // on secondary fill
-  tertiaryTextColor:        { var: 'text-heading' },  // on bg-alt (pale surface)
-  textColor:                { var: 'text-heading' },  // generic / canvas
-  titleColor:               { var: 'text-heading' },  // diagram title, on canvas
-  labelTextColor:           { var: 'text-heading' },  // edge labels, on canvas
-  loopTextColor:            { var: 'text-heading' },  // sequence loop labels
-  classText:                { var: 'c-ink-light' },   // class node text, on fill
-  labelColor:               { var: 'text-heading' },  // edge labels, on canvas
+  // Text — ONE token, --c-ink-light, for every text element. It flips
+  // with the canvas (dark ink on a light canvas, light ink on a dark
+  // canvas). No "shape text vs canvas text" split: the fills flip with
+  // the canvas too, so ink and fill always stay matched. Text on a
+  // categorical fill, text on a pale surface, titles, edge labels —
+  // all the same token, all flip together.
+  primaryTextColor:         { var: 'c-ink-light' },
+  secondaryTextColor:       { var: 'c-ink-light' },
+  tertiaryTextColor:        { var: 'c-ink-light' },
+  textColor:                { var: 'c-ink-light' },
+  titleColor:               { var: 'c-ink-light' },
+  labelTextColor:           { var: 'c-ink-light' },
+  loopTextColor:            { var: 'c-ink-light' },
+  classText:                { var: 'c-ink-light' },
+  labelColor:               { var: 'c-ink-light' },
 
   // Lines (near-black on white canvas)
   lineColor:                { var: 'c-line' },
@@ -369,21 +371,21 @@ const MERMAID_VAR_MAP = {
   actorTextColor:           { var: 'c-ink-light' },   // sequence actor text, on fill
   actorLineColor:           { var: 'c-line' },
   signalColor:              { var: 'c-line' },
-  signalTextColor:          { var: 'text-heading' },
+  signalTextColor:          { var: 'c-ink-light' },
   labelBoxBkgColor:         { var: 'bg-alt' },
   labelBoxBorderColor:      { var: 'c-stroke' },
   activationBorderColor:    { var: 'c-stroke' },
   activationBkgColor:       { var: 'c1-light' },
-  sequenceNumberColor:      { var: 'text-heading' },
+  sequenceNumberColor:      { var: 'c-ink-light' },
 
   // Notes (yellow accent — category-distinct)
   noteBkgColor:             { var: 'c-note' },
-  noteTextColor:            { var: 'text-heading' },
+  noteTextColor:            { var: 'c-ink-light' },
   noteBorderColor:          { var: 'c-mark' },
 
   // Error (alarm — saturated red)
   errorBkgColor:            { var: 'c-alarm' },
-  errorTextColor:           { var: 'c-ink-dark' },
+  errorTextColor:           { var: 'c-ink-light' },
 
   // Pie chart (pale band cycle — unified contract)
   pie1:  { var: 'c1-light' },
@@ -399,11 +401,11 @@ const MERMAID_VAR_MAP = {
   pie11: { var: 'c11-light' },
   pie12: { var: 'c12-light' },
   pieTitleTextSize:    { literal: '18px' },
-  pieTitleTextColor:   { var: 'text-heading' },
+  pieTitleTextColor:   { var: 'c-ink-light' },
   pieSectionTextSize:  { literal: '14px' },
   pieSectionTextColor: { var: 'c-ink-light' },   // text on pie slices, on fill
   pieLegendTextSize:   { literal: '13px' },
-  pieLegendTextColor:  { var: 'text-heading' },
+  pieLegendTextColor:  { var: 'c-ink-light' },
   pieStrokeColor:      { var: 'bg' },
   pieStrokeWidth:      { literal: '2px' },
   pieOuterStrokeWidth: { literal: '2px' },
@@ -417,7 +419,7 @@ const MERMAID_VAR_MAP = {
   taskBkgColor:           { var: 'c1-light' },
   taskTextColor:          { var: 'c-ink-light' },   // text on task bar, on fill
   taskTextLightColor:     { var: 'c-ink-light' },   // ditto, Mermaid's "dark bar" variant
-  taskTextOutsideColor:   { var: 'text-heading' },  // text in the margin, on canvas
+  taskTextOutsideColor:   { var: 'c-ink-light' },  // text in the margin, on canvas
   taskTextClickableColor: { var: 'c-ink-light' },   // text on task bar, on fill
   taskBorderColor:        { var: 'c-stroke' },
   activeTaskBkgColor:     { var: 'c-warm-light' },
@@ -438,19 +440,19 @@ const MERMAID_VAR_MAP = {
   git5: { var: 'c6-dark' },
   git6: { var: 'c8-dark' },
   git7: { var: 'c7-dark' },
-  gitBranchLabel0: { var: 'text-heading' },
-  gitBranchLabel1: { var: 'text-heading' },
-  gitBranchLabel2: { var: 'text-heading' },
-  gitBranchLabel3: { var: 'text-heading' },
-  gitBranchLabel4: { var: 'text-heading' },
-  gitBranchLabel5: { var: 'text-heading' },
-  gitBranchLabel6: { var: 'text-heading' },
-  gitBranchLabel7: { var: 'text-heading' },
-  commitLabelColor:      { var: 'text-heading' },
+  gitBranchLabel0: { var: 'c-ink-light' },
+  gitBranchLabel1: { var: 'c-ink-light' },
+  gitBranchLabel2: { var: 'c-ink-light' },
+  gitBranchLabel3: { var: 'c-ink-light' },
+  gitBranchLabel4: { var: 'c-ink-light' },
+  gitBranchLabel5: { var: 'c-ink-light' },
+  gitBranchLabel6: { var: 'c-ink-light' },
+  gitBranchLabel7: { var: 'c-ink-light' },
+  commitLabelColor:      { var: 'c-ink-light' },
   commitLabelBackground: { var: 'bg-alt' },
-  tagLabelColor:         { var: 'c-ink-light' },  // text on the mark fill
-  tagLabelBackground:    { var: 'c-mark' },        // a tag is a "marked point"
-  tagLabelBorder:        { var: 'c-stroke' },       // universal stroke
+  tagLabelColor:         { var: 'c-ink-light' },  // flips with canvas
+  tagLabelBackground:    { var: 'bg-alt' },        // neutral label chip — distinct
+  tagLabelBorder:        { var: 'c-stroke' },       // from the colour-coded branch chips
 
   // Quadrant chart
   quadrant1Fill:                    { var: 'c-quadrant-1-fill' },
@@ -462,12 +464,12 @@ const MERMAID_VAR_MAP = {
   quadrant3TextFill:                { var: 'c-quadrant-3-text' },
   quadrant4TextFill:                { var: 'c-quadrant-4-text' },
   quadrantPointFill:                { var: 'c-stroke' },
-  quadrantPointTextFill:            { var: 'text-heading' },
-  quadrantXAxisTextFill:            { var: 'text-heading' },
-  quadrantYAxisTextFill:            { var: 'text-heading' },
+  quadrantPointTextFill:            { var: 'c-ink-light' },
+  quadrantXAxisTextFill:            { var: 'c-ink-light' },
+  quadrantYAxisTextFill:            { var: 'c-ink-light' },
   quadrantInternalBorderStrokeFill: { var: 'c8-dark' },
   quadrantExternalBorderStrokeFill: { var: 'c-stroke' },
-  quadrantTitleFill:                { var: 'text-heading' },
+  quadrantTitleFill:                { var: 'c-ink-light' },
 
   // State / class
   altBackground: { var: 'bg-alt' },

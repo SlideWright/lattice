@@ -7291,12 +7291,11 @@ section line.node-line-, section line[class*="node-line-"] {
  * distribution.
  *
  * Cycle node fills through bands 1–8 via :nth-of-type() so each node
- * picks up a different palette slot — same principle as treemap. Link
- * strokes are uniform --c-line (the connector colour) so the flow
- * widths stay the primary read — sankey's information channel is width,
- * not hue. --c-line flips with the canvas (near-black on light, light
- * grey on dark), so the ribbons stay visible in both modes; the earlier
- * --c1-light flipped to a deep navy that vanished on the dark canvas.
+ * picks up a different palette slot — same principle as treemap. The
+ * NODES carry the colour; the link ribbons are connective tissue —
+ * --c-ink-light at low opacity (flips with the canvas, so it shows
+ * softly on either) so the flow widths stay the primary read without
+ * the ribbons becoming a heavy mass.
  */
 section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--c1-light)  !important; stroke: var(--c-stroke) !important; }
 section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--c2-light)  !important; stroke: var(--c-stroke) !important; }
@@ -7312,8 +7311,8 @@ section g.node-labels text, section g.nodes text {
   fill: var(--c-ink-light) !important;
 }
 section g.link path, section g.links path {
-  stroke: var(--c-line) !important;
-  stroke-opacity: 0.7 !important;
+  stroke: var(--c-ink-light) !important;
+  stroke-opacity: 0.22 !important;
   fill: none !important;
 }
 
