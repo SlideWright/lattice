@@ -7294,23 +7294,12 @@ section line.node-line-, section line[class*="node-line-"] {
  *
  * Cycle node fills through bands 1–8 via :nth-of-type() so each node
  * picks up a different palette slot — same principle as treemap. The
- * NODES carry the colour; the link ribbons are connective tissue —
- * --c-ink-light at low opacity (flips with the canvas, so it shows
- * softly on either) so the flow widths stay the primary read without
- * the ribbons becoming a heavy mass.
- *
- * Sankey has no cluster or frame of its own, so it used to float on the
- * bare slide canvas — an outlier next to every other diagram, which
- * reads as a contained surface. Mermaid's sankey <svg> carries an inline
- * `background-color: transparent`; !important wins over it. Paint the
- * SVG with the containment tier's --c-container so the diagram sits in
- * the same kind of surface as a flowchart cluster.
+ * NODES carry the distinct colours; the link ribbons ("tentacles") are
+ * connective tissue tied to c1 — the brand/lead colour every other
+ * diagram opens on — at reduced opacity so overlapping flows stay
+ * legible and the node bars remain the primary read. --c1-light is a
+ * light-dark() pair, so the ribbons flip with the canvas.
  */
-section svg[aria-roledescription="sankey"] {
-  background-color: var(--c-container) !important;
-  border: 1px solid var(--c-stroke);
-  border-radius: var(--radius-md);
-}
 section g.nodes > g.node:nth-of-type(1)  > rect { fill: var(--c1-light)  !important; stroke: var(--c-stroke) !important; }
 section g.nodes > g.node:nth-of-type(2)  > rect { fill: var(--c2-light)  !important; stroke: var(--c-stroke) !important; }
 section g.nodes > g.node:nth-of-type(3)  > rect { fill: var(--c3-light)  !important; stroke: var(--c-stroke) !important; }
@@ -7325,8 +7314,8 @@ section g.node-labels text, section g.nodes text {
   fill: var(--c-ink-light) !important;
 }
 section g.link path, section g.links path {
-  stroke: var(--c-ink-light) !important;
-  stroke-opacity: 0.22 !important;
+  stroke: var(--c1-light) !important;
+  stroke-opacity: 0.4 !important;
   fill: none !important;
 }
 
