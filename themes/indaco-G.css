@@ -1,13 +1,25 @@
 /* @theme indaco-G
  * @size 16:9 1280px 720px
  *
- * Commit-G preview overlay on indaco — NOT a shipped theme. Solved by
- * .scratch/solve-G.js: 12 evenly-spaced hues, slot 1 anchored to the
- * brand hue, step-5 ordered so adjacent slots are 150° apart. Each slot
- * is a light-dark() pair — mid-tone (L≈0.65, C≤0.13) on light canvas,
- * deeper + a touch more vivid (L≈0.48, C≤0.15) on dark canvas. Every
- * side AA-text-verified (≥4.5:1) against the canvas-mode ink. Fills
- * rely on --c-stroke for edge definition (Option A).
+ * Commit-G preview overlay on indaco — NOT a shipped theme.
+ *
+ * Figure-window model: the categorical cycle is 12 deep saturated
+ * colours, used as shape fills in BOTH canvas modes (no light-dark
+ * flip). Shape-internal text is white in both modes. Only the
+ * surrounding canvas (--bg) and the diagram TITLE text (--text-heading)
+ * flip with canvas mode — a Mermaid diagram is a figure with its own
+ * ink/paper contract, not a panel that flips with the page.
+ *
+ * Solved by .scratch/solve-G.js: 12 evenly-spaced hues, slot 1 anchored
+ * to the brand hue, step-5 ordered (adjacent slots 150° apart). Deep
+ * side at OKLCH L≈0.48, C≤0.15 — AA-text-verified ≥4.6:1 against white.
+ *
+ * --cN-light and --cN-dark are both the deep value so every consumer
+ * resolves to the deep fill regardless of which suffix it references.
+ * --c-ink-light / --c-ink-dark both = #FFFFFF (white shape text). The
+ * emulator routes shape-fill text vars (nodeTextColor, actorTextColor,
+ * taskTextColor, …) to --c-ink-light; canvas text vars (titleColor,
+ * labelColor, …) stay on --text-heading.
  */
 
 @import 'indaco';
@@ -15,27 +27,28 @@
 :where(:root) { color-scheme: light; }
 
 :root {
-  --c1-light:  light-dark(#3186C9, #00629F);  /* hue 246° */
-  --c2-light:  light-dark(#C6654A, #A03412);  /* hue 36° */
-  --c3-light:  light-dark(#009187, #006D65);  /* hue 186° */
-  --c4-light:  light-dark(#B565A2, #8F347D);  /* hue 336° */
-  --c5-light:  light-dark(#6A8B29, #4C6900);  /* hue 126° */
-  --c6-light:  light-dark(#6F79CF, #4A50B0);  /* hue 276° */
-  --c7-light:  light-dark(#B67113, #854F00);  /* hue 66° */
-  --c8-light:  light-dark(#008DA6, #00697D);  /* hue 216° */
-  --c9-light:  light-dark(#C56179, #9E2D50);  /* hue 6° */
-  --c10-light: light-dark(#22935B, #007041);  /* hue 156° */
-  --c11-light: light-dark(#996EC2, #73419F);  /* hue 306° */
-  --c12-light: light-dark(#967F00, #6E5D00);  /* hue 96° */
+  --c1-light:  #00629F;  --c1-dark:  #00629F;  /* hue 246° */
+  --c2-light:  #A03412;  --c2-dark:  #A03412;  /* hue 36° */
+  --c3-light:  #006D65;  --c3-dark:  #006D65;  /* hue 186° */
+  --c4-light:  #8F347D;  --c4-dark:  #8F347D;  /* hue 336° */
+  --c5-light:  #4C6900;  --c5-dark:  #4C6900;  /* hue 126° */
+  --c6-light:  #4A50B0;  --c6-dark:  #4A50B0;  /* hue 276° */
+  --c7-light:  #854F00;  --c7-dark:  #854F00;  /* hue 66° */
+  --c8-light:  #00697D;  --c8-dark:  #00697D;  /* hue 216° */
+  --c9-light:  #9E2D50;  --c9-dark:  #9E2D50;  /* hue 6° */
+  --c10-light: #007041;  --c10-dark: #007041;  /* hue 156° */
+  --c11-light: #73419F;  --c11-dark: #73419F;  /* hue 306° */
+  --c12-light: #6E5D00;  --c12-dark: #6E5D00;  /* hue 96° */
 
-  --c-ink-light: var(--text-heading);
+  --c-ink-light: #FFFFFF;
+  --c-ink-dark:  #FFFFFF;
 
   --c-quadrant-1-fill: var(--c1-light);
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--c-ink-light);
-  --c-quadrant-2-text: var(--c-ink-light);
-  --c-quadrant-3-text: var(--c-ink-light);
-  --c-quadrant-4-text: var(--c-ink-light);
+  --c-quadrant-1-text: #FFFFFF;
+  --c-quadrant-2-text: #FFFFFF;
+  --c-quadrant-3-text: #FFFFFF;
+  --c-quadrant-4-text: #FFFFFF;
 }

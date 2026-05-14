@@ -292,16 +292,19 @@ const MERMAID_VAR_MAP = {
   secondaryBorderColor:     { var: 'c-stroke' },
   tertiaryBorderColor:      { var: 'c-stroke' },
 
-  // Text — single dark slate everywhere
-  primaryTextColor:         { var: 'text-heading' },
-  secondaryTextColor:       { var: 'text-heading' },
-  tertiaryTextColor:        { var: 'text-heading' },
-  textColor:                { var: 'text-heading' },
-  titleColor:               { var: 'text-heading' },
-  labelTextColor:           { var: 'text-heading' },
-  loopTextColor:            { var: 'text-heading' },
-  classText:                { var: 'text-heading' },
-  labelColor:               { var: 'text-heading' },
+  // Text. Split by surface: text that sits ON a categorical shape fill
+  // routes to --c-ink-light (white-ish, AA-safe on the deep fills); text
+  // that sits on the canvas or a pale surface (titles, edge labels,
+  // bg-alt panels) stays on --text-heading, which flips with canvas mode.
+  primaryTextColor:         { var: 'c-ink-light' },   // on mainBkg (cN fill)
+  secondaryTextColor:       { var: 'c-ink-light' },   // on secondary fill
+  tertiaryTextColor:        { var: 'text-heading' },  // on bg-alt (pale surface)
+  textColor:                { var: 'text-heading' },  // generic / canvas
+  titleColor:               { var: 'text-heading' },  // diagram title, on canvas
+  labelTextColor:           { var: 'text-heading' },  // edge labels, on canvas
+  loopTextColor:            { var: 'text-heading' },  // sequence loop labels
+  classText:                { var: 'c-ink-light' },   // class node text, on fill
+  labelColor:               { var: 'text-heading' },  // edge labels, on canvas
 
   // Lines (near-black on white canvas)
   lineColor:                { var: 'c-line' },
@@ -312,7 +315,7 @@ const MERMAID_VAR_MAP = {
   // Main background paths
   mainBkg:                  { var: 'c1-light' },
   nodeBorder:               { var: 'c-stroke' },
-  nodeTextColor:            { var: 'text-heading' },
+  nodeTextColor:            { var: 'c-ink-light' },   // flowchart node text, on fill
   clusterBkg:               { var: 'bg-alt' },
   clusterBorder:            { var: 'c-stroke' },
 
@@ -363,7 +366,7 @@ const MERMAID_VAR_MAP = {
   // Sequence diagram
   actorBkg:                 { var: 'c1-light' },
   actorBorder:              { var: 'c-stroke' },
-  actorTextColor:           { var: 'text-heading' },
+  actorTextColor:           { var: 'c-ink-light' },   // sequence actor text, on fill
   actorLineColor:           { var: 'c-line' },
   signalColor:              { var: 'c-line' },
   signalTextColor:          { var: 'text-heading' },
@@ -398,7 +401,7 @@ const MERMAID_VAR_MAP = {
   pieTitleTextSize:    { literal: '18px' },
   pieTitleTextColor:   { var: 'text-heading' },
   pieSectionTextSize:  { literal: '14px' },
-  pieSectionTextColor: { var: 'text-heading' },
+  pieSectionTextColor: { var: 'c-ink-light' },   // text on pie slices, on fill
   pieLegendTextSize:   { literal: '13px' },
   pieLegendTextColor:  { var: 'text-heading' },
   pieStrokeColor:      { var: 'bg' },
@@ -412,10 +415,10 @@ const MERMAID_VAR_MAP = {
   altSectionBkgColor:     { var: 'bg' },
   sectionBkgColor2:       { var: 'c1-light' },
   taskBkgColor:           { var: 'c1-light' },
-  taskTextColor:          { var: 'text-heading' },
-  taskTextLightColor:     { var: 'text-heading' },
-  taskTextOutsideColor:   { var: 'text-heading' },
-  taskTextClickableColor: { var: 'text-heading' },
+  taskTextColor:          { var: 'c-ink-light' },   // text on task bar, on fill
+  taskTextLightColor:     { var: 'c-ink-light' },   // ditto, Mermaid's "dark bar" variant
+  taskTextOutsideColor:   { var: 'text-heading' },  // text in the margin, on canvas
+  taskTextClickableColor: { var: 'c-ink-light' },   // text on task bar, on fill
   taskBorderColor:        { var: 'c-stroke' },
   activeTaskBkgColor:     { var: 'c-warm-light' },
   activeTaskBorderColor:  { var: 'c-warm-dark' },
