@@ -13,6 +13,11 @@
  *   hue within a fixed meaning band, AA-verified in both canvas modes,
  *   chroma-capped. Unique colours, not pulled from the cycle.
  *
+ * CONTAINMENT: --c-container / --c-subcontainer — two nested structural
+ *   surfaces. A monotonic luminance ladder away from the canvas (light
+ *   deck steps down, dark deck steps up), brand-hue-tinted at a
+ *   barely-there chroma. Surfaces, not accents.
+ *
  * --cN: light-dark(band-N, deep-N). Fill flips with the canvas, always
  * agreeing with Mermaid's global flipping text. Light deck: pale fill
  * + dark text. Dark deck: deep fill + white text.
@@ -63,6 +68,16 @@
   --c-alarm-dark:  var(--c-stroke);
   --c-mark:        light-dark(#D8BE1E, #796900);
   --c-note:        light-dark(#D7D2B1, #71640B);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#E8F0F7, #292F35);
+  --c-subcontainer:  light-dark(#D9E1E8, #3B4147);
 
   --c-quadrant-1-fill: var(--c1-light);
   --c-quadrant-2-fill: var(--c2-light);
