@@ -710,3 +710,47 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** Never — the guard is cheap and the alternative
   (cascade-order dependence) is fragile.
 - **Commits:** `d3ffaca`
+
+### 4K slides show slightly wrong padding in VS Code preview
+
+- **Symptom:** In VS Code preview, a `size: 16:9-4k` slide has content
+  that appears to start too high — the top padding looks narrower than
+  expected, as if content is bleeding into the header zone.
+- **Cause:** `section { padding-top: 6.875cqi }` uses `cqi` on the
+  element that *is itself* the size container. Per the CSS spec, a
+  container cannot query itself, so `cqi` falls back to the nearest
+  **ancestor** container — which in VS Code preview is the editor pane
+  viewport (≈1200–2000px), not the slide width (3840px). Elements
+  *inside* section correctly query section (3840px).
+  In PDF export via marp-cli, Puppeteer's viewport is set to match the
+  `@page` size (3840×2160 for 16:9-4k), so the fallback ancestor IS
+  3840px wide → correct rendering.
+- **Mitigation:** None applied — PDF export is correct. VS Code preview
+  shows a cosmetic discrepancy that does not reflect the output.
+- **Triggered by:** Opening a `size: 16:9-4k` slide in marp-vscode
+  preview. PDF export via `npm run build` or lattice-emulator is unaffected.
+- **Removable when:** Marp-vscode sets a container on `<html>` or on
+  the preview iframe that matches the declared slide dimensions.
+- **Commits:** `d91decc` (px→cqi refactor)
+
+### Mermaid diagrams may render at HD size inside 4K slides in VS Code preview
+
+- **Symptom:** Mermaid diagrams on 4K slides look small in VS Code
+  preview — they appear to be sized for 1280px rather than 3840px.
+- **Cause:** Mermaid calls `getBoundingClientRect()` on the container
+  during rendering. If the container's CSS size resolves to 3456px (the
+  correct 4K value: `calc(100cqi - 2*var(--sp-2xl))`) but the browser
+  has not yet committed a layout pass, Mermaid reads 0 or the
+  non-4K fallback. The non-slide fallback containers in
+  `lattice.css` (lines ~1835, 1874) are intentionally fixed at
+  `1152px` (HD - padding) so that Mermaid renders correctly outside a
+  slide context.
+- **Mitigation:** None applied — this is a preview artifact. Rendered
+  PDFs use the correct container dimensions. If a specific diagram
+  consistently renders small in preview, trigger a manual re-render
+  (save the file) or check `lattice-runtime.js` for hardcoded sizes.
+- **Triggered by:** Mermaid diagram slides with `size: 16:9-4k` in
+  marp-vscode preview.
+- **Removable when:** Mermaid supports async layout-aware rendering,
+  or marp-vscode forces a layout commit before the diagram is initialized.
+- **Commits:** `d91decc` (px→cqi refactor)
