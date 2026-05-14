@@ -771,24 +771,25 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   adds patchSectionGeometry.
 
-### Mermaid diagrams may render at HD size inside 4K slides in VS Code preview
+### Mermaid diagrams render at HD size inside 4K slides in VS Code preview
 
 - **Symptom:** Mermaid diagrams on 4K slides look small in VS Code
   preview — they appear to be sized for 1280px rather than 3840px.
-- **Cause:** Mermaid calls `getBoundingClientRect()` on the container
-  during rendering. If the container's CSS size resolves to 3456px (the
-  correct 4K value: `calc(100cqi - 2*var(--sp-2xl))`) but the browser
-  has not yet committed a layout pass, Mermaid reads 0 or the
-  non-4K fallback. The non-slide fallback containers in
-  `lattice.css` (lines ~1835, 1874) are intentionally fixed at
-  `1152px` (HD - padding) so that Mermaid renders correctly outside a
-  slide context.
-- **Mitigation:** None applied — this is a preview artifact. Rendered
-  PDFs use the correct container dimensions. If a specific diagram
-  consistently renders small in preview, trigger a manual re-render
-  (save the file) or check `lattice-runtime.js` for hardcoded sizes.
-- **Triggered by:** Mermaid diagram slides with `size: 16:9-4k` in
-  marp-vscode preview.
-- **Removable when:** Mermaid supports async layout-aware rendering,
-  or marp-vscode forces a layout commit before the diagram is initialized.
-- **Commits:** `d91decc` (px→cqi refactor)
+- **Cause:** The non-slide-host fallback rule
+  `:is(pre, marp-pre)[data-mermaid-state="rendered"] + .mermaid { width:1152px; height:480px }`
+  and the slide-context rule `section.diagram > .mermaid { width:calc(100cqi - 2*sp-2xl) }`
+  had **identical specificity** (0,2,1). Because the non-slide rule
+  appeared later in the file, it won the cascade and clamped the
+  container to 1152px regardless of slide size. At HD (where
+  calc(100cqi - …) = 1152px) this was invisible; at 4K the container
+  was stuck at 1152px instead of 3456px, making diagrams occupy ~30%
+  of the slide width and appear small.
+- **Fix:** Wrapped the non-slide fallback in `:where()` to collapse its
+  specificity to 0. Added `height:auto` to the slide-context rule so
+  the flex-1 distribution, not the fixed 480px, governs the container
+  height. The slide-context rule at (0,2,1) now always wins.
+- **Triggered by:** Any `size: 16:9-4k` (or 4:3) slide with a Mermaid
+  diagram in marp-vscode preview. HD unaffected because both values
+  agreed at 1152px.
+- **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
+  wraps the non-slide fallback in :where().
