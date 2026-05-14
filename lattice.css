@@ -182,7 +182,7 @@ section {
   container-type:size;
   box-sizing:border-box; overflow:hidden; position:relative;
   display:flex; flex-direction:column;
-  padding:var(--sp-xl) var(--sp-2xl); padding-top:var(--_sec-pad-v,6.875cqi); padding-bottom:var(--_sec-pad-v,6.875cqi);
+  padding:var(--sp-xl) var(--sp-2xl); padding-top:var(--_sec-pad-v,6.875cqi); padding-right:var(--_sec-pad-h,5cqi); padding-bottom:var(--_sec-pad-v,6.875cqi); padding-left:var(--_sec-pad-h,5cqi);
   background: var(--bg); color:var(--text-body);
   font-family:var(--font-body); font-size:var(--fs-md); line-height:var(--lh-base);
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
