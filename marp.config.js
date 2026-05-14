@@ -430,7 +430,7 @@ module.exports = {
   ],
   html: true,
   allowLocalFiles: true,
-  imageScale: 3,
+  imageScale: 1,
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
     marp.use(deckClassPropagate)

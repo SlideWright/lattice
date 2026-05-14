@@ -797,6 +797,9 @@ const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1]
 // Marp distinguishes the deck-wide form (no leading underscore) from the
 // per-slide `_class:` directive. Multiple classes are space-separated.
 const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || '16:9';
+const SLIDE_SIZES    = { '16:9': [1280, 720], '16:9-4k': [3840, 2160], '4:3': [960, 720] };
+const [slideW, slideH] = SLIDE_SIZES[deckSizeName] || [1280, 720];
 // Deck-wide `style:` directive — Marp injects this CSS verbatim into the
 // rendered output. Authors use it for ad-hoc overrides like
 // `style: ":root{color-scheme:dark}"` without needing a custom theme.
@@ -2297,15 +2300,16 @@ const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 ${googleFonts}
 <style>
-@page { size: 1280px 720px; margin: 0; }
+@page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
 ${css}
+section { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
 ${highlightedSlides.join('\n')}
 <script>
-/* Overflow watcher — tags any section whose content exceeds the 1280×720
+/* Overflow watcher — tags any section whose content exceeds the slide
    frame with class "overflow" so lattice.css can draw the red warning ring.
    Mirrors the watcher in lattice-runtime.js (used by the VS Code preview). */
 (function(){
@@ -2392,7 +2396,7 @@ const puppeteer = loadPuppeteer();
   }
   await page.pdf({
     path: outFile,
-    width: '1280px', height: '720px',
+    width: `${slideW}px`, height: `${slideH}px`,
     printBackground: true,
     preferCSSPageSize: true
   });

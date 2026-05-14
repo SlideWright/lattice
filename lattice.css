@@ -179,7 +179,7 @@
 
 /* ── BASE ── */
 section {
-  width:1280px; height:720px; container-type:size;
+  container-type:size;
   box-sizing:border-box; overflow:hidden; position:relative;
   display:flex; flex-direction:column;
   padding:var(--sp-xl) var(--sp-2xl); padding-top:6.875cqi; padding-bottom:6.875cqi;
