@@ -26,30 +26,30 @@
 :where(:root) { color-scheme: light; }
 
 :root {
-  --c1-light:  light-dark(#C0D5C6, #7142A0);
-  --c1-dark:   light-dark(#C0D5C6, #7142A0);
-  --c2-light:  light-dark(#DAC8D1, #5C6400);
-  --c2-dark:   light-dark(#DAC8D1, #5C6400);
-  --c3-light:  light-dark(#BCD5EC, #006A79);
-  --c3-dark:   light-dark(#BCD5EC, #006A79);
-  --c4-light:  light-dark(#EDD1B8, #A02E41);
-  --c4-dark:   light-dark(#EDD1B8, #A02E41);
-  --c5-light:  light-dark(#BCE3E1, #835100);
-  --c5-dark:   light-dark(#BCE3E1, #835100);
-  --c6-light:  light-dark(#D1C5DC, #3057B1);
-  --c6-dark:   light-dark(#D1C5DC, #3057B1);
-  --c7-light:  light-dark(#EBE2B8, #006D60);
-  --c7-dark:   light-dark(#EBE2B8, #006D60);
-  --c8-light:  light-dark(#E7BEBE, #953170);
-  --c8-dark:   light-dark(#E7BEBE, #953170);
-  --c9-light:  light-dark(#C8CFDA, #993D00);
-  --c9-dark:   light-dark(#C8CFDA, #993D00);
-  --c10-light: light-dark(#C1E4D5, #006398);
-  --c10-dark:  light-dark(#C1E4D5, #006398);
-  --c11-light: light-dark(#E6C1C8, #715C00);
-  --c11-dark:  light-dark(#E6C1C8, #715C00);
-  --c12-light: light-dark(#D9C7DC, #2E6F00);
-  --c12-dark:  light-dark(#D9C7DC, #2E6F00);
+  --c1-light:  light-dark(#BCD5EC, #006398);
+  --c1-dark:   light-dark(#BCD5EC, #006398);
+  --c2-light:  light-dark(#EBE2B8, #993D00);
+  --c2-dark:   light-dark(#EBE2B8, #993D00);
+  --c3-light:  light-dark(#E7BEBE, #2E6F00);
+  --c3-dark:   light-dark(#E7BEBE, #2E6F00);
+  --c4-light:  light-dark(#C1E4D5, #953170);
+  --c4-dark:   light-dark(#C1E4D5, #953170);
+  --c5-light:  light-dark(#D1C5DC, #7142A0);
+  --c5-dark:   light-dark(#D1C5DC, #7142A0);
+  --c6-light:  light-dark(#EDD1B8, #006D60);
+  --c6-dark:   light-dark(#EDD1B8, #006D60);
+  --c7-light:  light-dark(#C8CFDA, #835100);
+  --c7-dark:   light-dark(#C8CFDA, #835100);
+  --c8-light:  light-dark(#E6C1C8, #006A79);
+  --c8-dark:   light-dark(#E6C1C8, #006A79);
+  --c9-light:  light-dark(#C0D5C6, #A02E41);
+  --c9-dark:   light-dark(#C0D5C6, #A02E41);
+  --c10-light: light-dark(#D9C7DC, #715C00);
+  --c10-dark:  light-dark(#D9C7DC, #715C00);
+  --c11-light: light-dark(#BCE3E1, #3057B1);
+  --c11-dark:  light-dark(#BCE3E1, #3057B1);
+  --c12-light: light-dark(#DAC8D1, #5C6400);
+  --c12-dark:  light-dark(#DAC8D1, #5C6400);
 
   --c-ink-light: var(--text-heading);
   --c-ink-dark:  var(--text-heading);
