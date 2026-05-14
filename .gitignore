@@ -17,3 +17,6 @@ tokenization/
 .DS_Store
 
 examples/*.html
+examples/**/*.html
+!examples/*.pdf
+!examples/**/*.pdf
