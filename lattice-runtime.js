@@ -390,8 +390,31 @@
   }
 
   let renderCounter = 0;
+  // Caches already-rendered Mermaid SVGs by their exact source string so that
+  // fences whose source did not change between re-renders skip mermaid.render()
+  // entirely and inject the cached SVG instead. Key benefit: when Marp replaces
+  // a <section> wholesale on every keystroke (producing new, unmarked <pre>
+  // elements for all fences in the deck), only the fence whose source actually
+  // changed calls mermaid.render(); all others get their SVG from this cache.
+  //
+  // Cache key is the raw source string (trimmed). No size bound is needed for a
+  // single editor session; the number of distinct diagrams in a deck is small.
+  //
+  // Not used when mermaid.render() fails — errors are never cached so that a
+  // fix to a broken diagram is retried on the next edit.
+  //
+  // Theme-change caveat: themeVariables are baked into the SVG at render time.
+  // If the author switches themes without reloading the preview, stale SVGs from
+  // the cache would show the old theme colours. This is acceptable because theme
+  // switches require a manual preview reload in marp-vscode anyway.
+  const mermaidSvgCache = new Map();
 
-  function initAndRun({ force = false } = {}) {
+  // Runs every non-Mermaid DOM transform. Called from initAndRun (every
+  // scheduled re-render), from bootstrap before the Mermaid wait, and
+  // previously from the now-removed glossary/chart observers.
+  // Ordering matters: transformSlotLabels must precede transformSplitCompare;
+  // applyGlossaryListTable must precede applyGlossaryRangePills.
+  function runAllContentTransforms() {
     transformStripHeadingPeriods();
     transformAddHeadingPeriods();
     transformVerdictGridBadges();
@@ -406,6 +429,13 @@
     transformRoadmapHorizons();
     transformJourney();
     transformWordCloud();
+    applyGlossaryListTable(document);
+    applyGlossaryRangePills(document);
+    applyChartFamily(document);
+  }
+
+  function initAndRun({ force = false } = {}) {
+    runAllContentTransforms();
     const mermaid = globalScope.mermaid;
     // Guard against stub `window.mermaid` (e.g. bierner.markdown-mermaid in
     // VS Code's plain markdown preview, which exposes a render-blocks-only
@@ -432,7 +462,18 @@
         ? preEl.nextElementSibling
         : null;
       if (!codeEl || !target) continue;
-      const source = codeEl.textContent || "";
+      const source = (codeEl.textContent || "").trim();
+
+      // Cache hit: same source was rendered earlier this session — reuse the
+      // SVG directly and skip mermaid.render() entirely. This is the common
+      // case when Marp replaces sections wholesale on every keystroke: only
+      // the fence whose source actually changed gets a fresh render call.
+      const cachedSvg = mermaidSvgCache.get(source);
+      if (cachedSvg) {
+        target.innerHTML = cachedSvg;
+        preEl.dataset.mermaidState = "rendered";
+        continue;
+      }
 
       // Mark in-flight so a re-entrant scheduleRun does not double-dispatch.
       preEl.dataset.mermaidState = "rendering";
@@ -448,6 +489,7 @@
             attachError(preEl, target, new Error("Mermaid produced no SVG"));
             return;
           }
+          mermaidSvgCache.set(source, svg);
           target.innerHTML = svg;
           if (result.bindFunctions) {
             try { result.bindFunctions(target); } catch (_e) { /* non-fatal */ }
@@ -1512,39 +1554,82 @@
     }
   }
 
+  // Eagerly hides raw fence source and reinstates cached SVGs within the
+  // observer callback itself — no debounce. This eliminates the two visible
+  // artefacts that appear during the 150ms debounce window after Marp
+  // replaces a <section> wholesale:
+  //
+  //   1. Raw <pre><code class="language-mermaid"> source text becoming visible.
+  //      wrapFences() sets data-mermaid-state on every unmarked fence; CSS
+  //      collapses the <pre> as soon as that attribute exists (any value).
+  //
+  //   2. All other diagrams (whose source didn't change) going blank.
+  //      For each fence now marked "pending", if its source is in the SVG
+  //      cache we reinject synchronously — the diagram reappears in the same
+  //      microtask that processed the mutation, before any repaint.
+  //
+  // Cache misses (diagram whose source actually changed) stay pending and are
+  // handled by the debounced initAndRun() → mermaid.render() path as before.
+  // Idempotent: wrapFences() skips already-marked fences; the cache inject
+  // skips fences already in "rendered" state.
+  function injectCachedSvgsEagerly() {
+    wrapFences();
+    if (!mermaidSvgCache.size) return;
+    const PENDING_SEL = [
+      'pre[data-mermaid-state="pending"]',
+      'marp-pre[data-mermaid-state="pending"]',
+    ].join(",");
+    for (const preEl of document.querySelectorAll(PENDING_SEL)) {
+      const codeEl = preEl.querySelector(":scope > code");
+      const target = preEl.nextElementSibling &&
+        preEl.nextElementSibling.classList.contains("mermaid")
+        ? preEl.nextElementSibling : null;
+      if (!codeEl || !target) continue;
+      const svg = mermaidSvgCache.get((codeEl.textContent || "").trim());
+      if (!svg) continue;
+      target.innerHTML = svg;
+      preEl.dataset.mermaidState = "rendered";
+    }
+  }
+
+  // Single unified observer that replaces the former separate Mermaid,
+  // glossary, and chart-family observers. Consolidating here means Marp's
+  // burst of mutations on each keystroke (~5–10 within 30ms) collapses
+  // to one 150ms trailing-edge run rather than triggering three independent
+  // callback chains in the same burst.
   function startObserver() {
     if (typeof MutationObserver === "undefined") return;
-    if (globalScope.__llMermaidObserverStarted) return;
-    globalScope.__llMermaidObserverStarted = true;
+    if (globalScope.__llObserverStarted) return;
+    globalScope.__llObserverStarted = true;
 
     // We watch for two distinct events:
     //
-    //   A. New mermaid fences appearing (childList).
-    //      Source: Marp re-renders that replace a <section> wholesale, or
-    //      first-run discovery on initial DOM. Detected by a new <code> with
-    //      `language-mermaid` showing up.
+    //   A. Any element added to the DOM (childList).
+    //      Source: Marp replaces <section> elements wholesale on every
+    //      keystroke. Scheduling a full content run covers layout transforms,
+    //      glossary, chart family, and Mermaid fence discovery in one pass.
+    //      The former observer only triggered when a Mermaid fence appeared;
+    //      this broader trigger is necessary for non-Mermaid layouts (split
+    //      panels, glossary, charts) which also need re-applying after a
+    //      section replacement.
     //
-    //   B. Source edits to fences we've already claimed (characterData).
-    //      Source: VS Code's markdown preview infrastructure morphs the DOM
-    //      in place when the author edits. The <pre>/<code> survive; only
-    //      the text node inside <code> changes. Without observing
-    //      characterData we'd never re-render after edits.
+    //   B. Source edits to Mermaid fences we've already claimed (characterData).
+    //      Source: VS Code's markdown preview infrastructure morphs fences
+    //      in place — the <pre>/<code> survive, only the text node changes.
+    //      We filter strictly to text nodes inside code fences we own so
+    //      that characterData mutations from Mermaid's SVG layout engine
+    //      and from other transforms do not retrigger this path.
     //
-    // What we must NOT react to:
-    //   - .mermaid sibling additions (would self-trigger).
-    //   - characterData mutations inside the rendered SVG (Mermaid creates
-    //     text nodes during layout). We filter by checking that the changed
-    //     text node's parent is a <code> we own.
-    //   - characterData mutations outside any of our code fences.
-    const FENCE_SELECTOR = [
-      "pre > code.language-mermaid",
-      "pre > code[class*='language-mermaid']",
-      "marp-pre > code.language-mermaid",
-      "marp-pre > code[class*='language-mermaid']",
-      // Also matches our defanged class so post-defang text edits register.
-      "pre > code.language-mermaid-source",
-      "marp-pre > code.language-mermaid-source",
-    ].join(",");
+    // Why no `attributes: true`:
+    //   The former chart observer used `attributes: true` so that class
+    //   changes (e.g. the `class: dark` directive) would re-apply chart
+    //   transforms. But that also fired on every `data-mermaid-state`
+    //   attribute write ("pending" → "rendering" → "rendered"), causing a
+    //   cascade: each Mermaid render triggered 3+ full-document
+    //   applyChartFamily calls (5× querySelectorAll each). No transform
+    //   here needs attribute-change notification — idempotency guards
+    //   (`.chart-header`, `.brief-left`, etc.) already handle re-entry, and
+    //   section-class changes arrive via childList (section replacement).
 
     const isOwnedCode = (codeEl) =>
       codeEl &&
@@ -1558,9 +1643,14 @@
         if (triggered) break;
 
         if (m.type === "childList") {
+          // Any element addition: a section was replaced or content inserted.
+          // Text-only mutations (pure text-node childList) are not meaningful
+          // for our transforms; Marp's section replacements always include elements.
           for (const node of m.addedNodes) {
-            if (!(node instanceof HTMLElement)) continue;
-            if (node.matches(FENCE_SELECTOR) || node.querySelector(FENCE_SELECTOR)) {
+            if (node.nodeType === 1) {
+              // Eagerly hide raw fence source and reinstate cached SVGs before
+              // the debounce fires. See injectCachedSvgsEagerly() for details.
+              injectCachedSvgsEagerly();
               scheduleRun();
               triggered = true;
               break;
@@ -1587,7 +1677,7 @@
     observer.observe(document.body, {
       subtree: true,
       childList: true,
-      characterData: true, // see (B) above
+      characterData: true, // filtered above to owned Mermaid fences only
     });
   }
 
@@ -1670,17 +1760,6 @@
       h2.appendChild(document.createTextNode(' '));
       h2.appendChild(pill);
     });
-  }
-
-  function startGlossaryObserver() {
-    if (typeof document === 'undefined' || !document.body) return;
-    const apply = () => {
-      applyGlossaryListTable(document);
-      applyGlossaryRangePills(document);
-    };
-    apply();
-    const mo = new MutationObserver(apply);
-    mo.observe(document.body, { subtree: true, childList: true, characterData: true });
   }
 
   // ── Chart family — DOM transform ───────────────────────────────────────
@@ -2125,21 +2204,6 @@
     }
   }
 
-  function startChartFamilyObserver() {
-    if (typeof document === 'undefined' || !document.body) return;
-    if (typeof MutationObserver === 'undefined') return;
-    if (globalScope.__llChartObserverStarted) return;
-    globalScope.__llChartObserverStarted = true;
-    // Brute-force on every mutation, like startGlossaryObserver above.
-    // The transform is idempotent (early-return when chart-frame is set),
-    // so re-applying on each mutation is cheap.
-    const apply = () => applyChartFamily(document);
-    apply();
-    new MutationObserver(apply).observe(document.body, {
-      subtree: true, childList: true, attributes: true, characterData: true,
-    });
-  }
-
   /**
    * Mirror of marp.config.js's `deckClassPropagate` plugin for the preview
    * path. Marpit's spec is "spot replaces global", so a slide with a
@@ -2267,10 +2331,19 @@
       requestAnimationFrame(tick);
     };
     applyDeckClassFromFrontMatter();
+    // Run all content transforms immediately so glossary, chart family, and
+    // layout slides render without waiting for the Mermaid library to load.
+    // tick() calls initAndRun() once Mermaid is ready, which re-runs them
+    // (idempotent) alongside Mermaid fence rendering.
+    runAllContentTransforms();
+    // Mark every Mermaid fence pending immediately. Combined with the CSS rule
+    // that hides <pre> for any data-mermaid-state except "error", this prevents
+    // raw Mermaid source from being visible during the Mermaid library load and
+    // on full webview reloads (where the SVG cache is cold and tick() takes
+    // time to fire).
+    wrapFences();
     tick();
     startObserver();
-    startGlossaryObserver();
-    startChartFamilyObserver();
     startOverflowWatcher();
   }
 
