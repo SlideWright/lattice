@@ -3,22 +3,19 @@
  *
  * Commit-G preview overlay on cuoio — NOT a shipped theme.
  *
- * Two independent categorical cycles, selected by canvas mode:
- *   LIGHT cycle = --diagram-band-N (the audit's curated pale tints).
- *   DARK cycle  = --chart-N's 6 hues + 6 gap-fillers, each solved deep
- *                 (OKLCH L≈0.48 / C≤0.15, AA-text ≥4.6:1 vs white).
- * Both cycles are reordered by greedy max-hue-dispersion: the 6 most
- * mutually-distinct colours lead (slots 1-6), the rest follow (7-12),
- * no two adjacent slots read alike.
+ * CYCLE: two independent categorical cycles selected by canvas mode.
+ *   light = --diagram-band-N (curated pale tints); dark = --chart-N
+ *   expanded to 12 deep hues. Both dispersion-ordered (6 most-distinct
+ *   lead, no two neighbours alike), slot 1 = brand.
  *
- * --cN: light-dark(band-N, deep-N). The fill flips with the canvas, so
- * it always agrees with Mermaid's global text (--text-heading, which
- * also flips) — light deck: pale fill + dark text; dark deck: deep
- * fill + white text. No catch-22.
+ * SEMANTIC: 5 roles (warm/cool/alarm/mark/note), each a light-dark()
+ *   flipping fill curated for this theme — hue nudged toward the brand
+ *   hue within a fixed meaning band, AA-verified in both canvas modes,
+ *   chroma-capped. Unique colours, not pulled from the cycle.
  *
- * Known trade: the two cycles are independently ordered, so a shape's
- * hue shifts when a deck flips light↔dark (edge case — decks are
- * normally single-mode).
+ * --cN: light-dark(band-N, deep-N). Fill flips with the canvas, always
+ * agreeing with Mermaid's global flipping text. Light deck: pale fill
+ * + dark text. Dark deck: deep fill + white text.
  */
 
 @import 'cuoio';
@@ -53,6 +50,19 @@
 
   --c-ink-light: var(--text-heading);
   --c-ink-dark:  var(--text-heading);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#E4C5A0, #825200);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#AAD1E5, #006789);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#D46246, #9A2C0E);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#ECB417, #856300);
+  --c-note:        light-dark(#DDD0B0, #7B5F06);
 
   --c-quadrant-1-fill: var(--c1-light);
   --c-quadrant-2-fill: var(--c2-light);
