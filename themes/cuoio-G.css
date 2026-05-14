@@ -1,0 +1,43 @@
+/* @theme cuoio-G
+ * @size 16:9 1280px 720px
+ *
+ * Commit-G preview overlay on cuoio. See themes/indaco-G.css for the
+ * architectural rationale. This file replicates the same architecture
+ * onto cuoio's leather-warm palette: every slot is a light-dark pair
+ * with the dark side providing the saturated brand voice and the
+ * light side providing mid-tone fills with the same hue identity.
+ */
+
+@import 'cuoio';
+
+:where(:root) { color-scheme: light; }
+
+:root {
+  /* Slot 1 anchors cuoio's brand identity (saddle leather). Slots 2-6
+   * extend with the cuoio chromatic palette established in the audit.
+   * Slots 7-12 extend with secondary leather-toned hues. */
+
+  --c1-light:  light-dark(#B59560, #7A5A10);  /* saddle leather   (brand) */
+  --c2-light:  light-dark(#5BAFBA, #007077);  /* petrol teal */
+  --c3-light:  light-dark(#6B629B, #3B3286);  /* leather indigo */
+  --c4-light:  light-dark(#A0AC56, #5F6B22);  /* olive */
+  --c5-light:  light-dark(#BA6B5F, #8A2A1F);  /* terracotta */
+  --c6-light:  light-dark(#5C7ABA, #325286);  /* cobalt */
+  --c7-light:  light-dark(#77AD58, #2B7836);  /* forest green */
+  --c8-light:  light-dark(#5DAE8F, #2A7256);  /* jade */
+  --c9-light:  light-dark(#9460AC, #5A2E80);  /* deep violet */
+  --c10-light: light-dark(#AB607A, #802A4E);  /* rose-burgundy */
+  --c11-light: light-dark(#D2A45F, #946818);  /* tan-amber */
+  --c12-light: light-dark(#AB609E, #80286B);  /* magenta */
+
+  --c-ink-light: var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-text: var(--c-ink-light);
+}

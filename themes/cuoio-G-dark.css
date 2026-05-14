@@ -1,0 +1,10 @@
+/* @theme cuoio-G-dark
+ * @size 16:9 1280px 720px
+ *
+ * Commit-G preview · dark-canvas variant for cuoio. Three-line
+ * wrapper, same pattern as indaco-G-dark.
+ */
+
+@import 'cuoio-G';
+
+:root { color-scheme: dark; }
