@@ -2376,21 +2376,19 @@
   // against section — they fall back to the ICB.  In PDF print mode the ICB
   // is the @page area (correct).  In VS Code screen mode the ICB is the editor
   // viewport, giving ~103px at 4K instead of the intended 264px.
-  // Fix: inject concrete px values via CSS variables --_sec-pad-v and
-  // --_sec-border-w, keyed off section.offsetWidth (which returns the CSS
-  // width before any transform scale, i.e. 3840 for 4K slides in VS Code).
-  // lattice.css consumes these as var(--_sec-pad-v, 6.875cqi) — the cqi
-  // fallback still fires in the PDF emulator path where the variables are
-  // not set, and the @page ICB resolves them correctly there.
+  // section has container-type:size, so its own cqi properties cannot query
+  // themselves (CSS self-reference) and fall back to the ICB. In VS Code screen
+  // mode the ICB is the editor viewport, not the slide. Fix: set --_sec-1cqi to
+  // section.offsetWidth/100 px (the CSS width before any transform scale —
+  // 38.40px for a 3840px 4K slide). lattice.css uses calc(var(--_sec-1cqi,1cqi)*X)
+  // for every direct-cqi property on section; the 1cqi fallback fires only in
+  // the emulator/print path where @page sets the ICB to the slide size correctly.
   function patchSectionGeometry() {
     if (typeof document === 'undefined') return;
     const patch = (s) => {
       const w = s.offsetWidth;
       if (!w) return;
-      s.style.setProperty('--_sec-pad-v',          (w * 6.875  / 100).toFixed(2) + 'px');
-      s.style.setProperty('--_sec-pad-h',          (w * 5      / 100).toFixed(2) + 'px');
-      s.style.setProperty('--_sec-divider-pad-l',  (w * 9.375  / 100).toFixed(2) + 'px');
-      s.style.setProperty('--_sec-border-w',       (w * 0.3125 / 100).toFixed(2) + 'px');
+      s.style.setProperty('--_sec-1cqi', (w / 100).toFixed(3) + 'px');
     };
     for (const s of document.querySelectorAll('section')) patch(s);
     if (typeof MutationObserver !== 'undefined') {
