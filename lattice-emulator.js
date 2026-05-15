@@ -108,11 +108,16 @@ function extractOnePart(text) {
 
 function extractMath(text) {
   if (!katex) return text;
-  // Skip math extraction inside fenced (```…```) and inline (`…`) code so
-  // shell prompts, JS template literals, etc. aren't mangled into LaTeX.
+  // Skip math extraction inside:
+  //   - fenced code blocks (```…```) and inline code (`…`)
+  //   - inlined mermaid SVG (<div class="mermaid-svg">…</div>) — emitted
+  //     by preprocessMermaid before extractMath runs. Mermaid stylesheets
+  //     include CSS attribute selectors like `[id$="-foo"]` whose `$`
+  //     would otherwise match as a math delimiter, splicing KaTeX error
+  //     spans into the SVG <style> block and breaking the diagram render.
   // Split keeps the delimiters as odd-indexed parts; only even parts are
   // candidates for math.
-  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`)/);
+  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`|<div class="mermaid-svg">[\s\S]*?<\/div>)/);
   for (let i = 0; i < parts.length; i += 2) {
     parts[i] = extractOnePart(parts[i]);
   }
