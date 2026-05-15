@@ -9,6 +9,47 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **`quadrant` chart-family member.** Native 2×2 scatter chart joining
+  the existing chart-family (progress / timeline-list / piechart /
+  gantt / kanban / radar). Group-by-quadrant nested-list authoring;
+  top-level items label the four corners in reading order (TL → TR →
+  BL → BR), nested items carry a trailing `x, y` coord pill plotted
+  inside the chart. Per-axis scale + threshold-line targets read from
+  the eyebrow (`Effort 0–10 → Reach 0–100 · targets 6, 75`); falls
+  back to auto-fit nice-ceil when omitted.
+
+  Five modifier variants beyond the default:
+
+  - `bubble` — third comma-separated value per item √-scales the dot
+    (area-honest); numeric pill renders inside large bubbles.
+  - `trail` — two coord pills per item; faded ring + dashed connector
+    + solid dot reads "what moved" without an annotation.
+  - `cohort` — top-level groups become cohorts; convex-hull region
+    tints each cohort's footprint with a centroid label.
+  - `threshold` — midlines replaced by explicit dashed target lines;
+    four zones default to Star / On Pace / Lagging / At Risk.
+  - `magic` — Gartner Magic Quadrant tribute with the canonical
+    CHALLENGERS / LEADERS / NICHE PLAYERS / VISIONARIES vocabulary as
+    fallback corner names.
+
+  Palette flows through the existing `--c-quadrant-N-fill` /
+  `--c-quadrant-N-text` theme aliases (AA-paired per slot). `minimal`
+  and `dark` composable cross-cutting modifiers ride on top of any
+  variant. Title-area styling defaults to the chart-frame `.minimal`
+  treatment (centred accent hairline, no lucent gradient) — the dense
+  scatter benefits from less chrome above the plot.
+
+  Three-renderer kernel parity enforced as for radar: `lib/quadrant.js`
+  is canonical; `lattice-emulator.js` inlines the build-path dispatch;
+  `lattice-runtime.js` mirrors the kernel for the marp-vscode preview.
+  Feature deck at `examples/quadrant.md` (+ committed PDF) demos every
+  variant. Unit coverage in `test/unit/quadrant.test.js` (47 tests)
+  covers parsing, eyebrow grammar, geometry, every variant, and
+  chart-family integration. Reference doc:
+  `docs/references/templates.md#quadrant`.
+
 ### Changed
 
 - **Repository reorganization (pre-release).** The project layout was
