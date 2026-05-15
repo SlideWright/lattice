@@ -6776,12 +6776,40 @@ section.radar.dark {
  *   - lattice-runtime.js    DOM transform for marp-vscode preview
  */
 
+/* Palette routing — two contexts, one custom-property pair:
+ *
+ *   --cell-fill   pale L≈85 background tint (region rect, hull, bubble)
+ *   --cell-ink    deep AA-paired ink (dot, label, stroke, text)
+ *
+ * Positional variants (default/bubble/trail/threshold/magic) pull the
+ * theme's `--c-quadrant-N-fill` / `--c-quadrant-N-text` aliases — these
+ * are hue-tuned per the theme's boardroom semantics (e.g. brand blue
+ * in the top-right "strategic" zone). My kernel uses reading-order
+ * indices (cell 0=TL, 1=TR, 2=BL, 3=BR) while the theme's aliases use
+ * Mermaid math convention (Q1=TR, Q2=TL, Q3=BL, Q4=BR) — the mapping
+ * below translates.
+ *
+ * Cohort variant cycles c1…c4 instead: cohort groups have no semantic
+ * quadrant position, so a vanilla categorical sequence is correct.
+ *
+ * Themes can override either set without touching the kernel. */
 section.quadrant {
-  --quadrant-tint:    14%;   /* per-cell tint share */
   --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
   --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
 }
+
+/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
+section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
+
+/* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
@@ -6811,7 +6839,7 @@ section.quadrant .quadrant-svg {
 
 /* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
 section.quadrant .quadrant-tint {
-  fill: color-mix(in srgb, var(--cell-color) var(--quadrant-tint), transparent);
+  fill: var(--cell-fill);
   stroke: none;
 }
 
@@ -6849,7 +6877,7 @@ section.quadrant .quadrant-tick {
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
 section.quadrant .quadrant-label {
-  fill: var(--cell-color);
+  fill: var(--cell-ink);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
@@ -6869,7 +6897,7 @@ section.quadrant .quadrant-label--zone {
 
 /* ── Scatter dots + per-dot labels ────────────────────────────────────── */
 section.quadrant .quadrant-dot {
-  fill: var(--cell-color);
+  fill: var(--cell-ink);
   stroke: var(--bg);
   stroke-width: 1.5;
 }
@@ -6886,8 +6914,8 @@ section.quadrant .quadrant-dot-label {
 
 /* ── Bubble variant: √-area bubble + smart label position ─────────────── */
 section.quadrant .quadrant-bubble {
-  fill: color-mix(in srgb, var(--cell-color) 38%, transparent);
-  stroke: var(--cell-color);
+  fill: var(--cell-fill);
+  stroke: var(--cell-ink);
   stroke-width: 1.5;
 }
 section.quadrant .quadrant-bubble-value {
@@ -6895,11 +6923,12 @@ section.quadrant .quadrant-bubble-value {
   font-size: 8.5px;
   font-weight: 700;
 }
+/* Inside a pale bubble fill, dark ink is the AA pairing. */
 section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--bg);
+  fill: var(--cell-ink);
 }
 section.quadrant .quadrant-bubble-value[data-pos="above"] {
-  fill: var(--cell-color);
+  fill: var(--cell-ink);
 }
 section.quadrant .quadrant-bubble-label {
   fill: var(--text-heading);
@@ -6914,7 +6943,7 @@ section.quadrant .quadrant-bubble-label {
 
 /* ── Trail variant: faded before + dashed connector + solid after ─────── */
 section.quadrant .quadrant-trail-line {
-  stroke: var(--cell-color);
+  stroke: var(--cell-ink);
   stroke-width: 1.5;
   stroke-dasharray: 3 3;
   stroke-linecap: round;
@@ -6922,30 +6951,32 @@ section.quadrant .quadrant-trail-line {
 }
 section.quadrant .quadrant-trail-before {
   fill: none;
-  stroke: var(--cell-color);
+  stroke: var(--cell-ink);
   stroke-width: 1.5;
   opacity: 0.6;
 }
 section.quadrant .quadrant-trail-after {
-  fill: var(--cell-color);
+  fill: var(--cell-ink);
   stroke: var(--bg);
   stroke-width: 1.5;
 }
 
 /* ── Cohort variant: convex hulls + centroid labels + legend ──────────── */
 section.quadrant .quadrant-hull {
-  fill: color-mix(in srgb, var(--cell-color) 14%, transparent);
-  stroke: color-mix(in srgb, var(--cell-color) 62%, transparent);
+  fill: var(--cell-fill);
+  stroke: var(--cell-ink);
   stroke-width: 1.25;
   stroke-linejoin: round;
+  opacity: 0.65;
 }
 section.quadrant .quadrant-hull-line {
-  stroke: color-mix(in srgb, var(--cell-color) 62%, transparent);
+  stroke: var(--cell-ink);
   stroke-width: 1.5;
   stroke-linecap: round;
+  opacity: 0.65;
 }
 section.quadrant .quadrant-cohort-label {
-  fill: var(--cell-color);
+  fill: var(--cell-ink);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
@@ -6980,7 +7011,8 @@ section.quadrant .quadrant-legend .quadrant-swatch {
   width: 0.85em;
   height: 0.85em;
   border-radius: 3px;
-  background: var(--cell-color);
+  background: var(--cell-fill);
+  border: 1px solid var(--cell-ink);
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-sans));
@@ -6996,7 +7028,7 @@ section.quadrant .quadrant-target-badge {
   font-weight: 700;
 }
 
-/* ── minimal: no quadrant tints, fainter grid (composable) ────────────── */
+/* ── minimal: no fills, fainter grid (composable) ─────────────────────── */
 section.quadrant.minimal .quadrant-tint {
   fill: none;
 }
@@ -7011,9 +7043,8 @@ section.quadrant.minimal .quadrant-hull {
   fill: none;
 }
 
-/* ── dark: lift frame + tints for dark surfaces (composable) ──────────── */
+/* ── dark: lift frame + split for dark surfaces (composable) ──────────── */
 section.quadrant.dark {
-  --quadrant-tint:   22%;
   --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
   --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);

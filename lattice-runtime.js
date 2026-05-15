@@ -2010,12 +2010,8 @@
    * edit both or neither.
    */
   const Q_MODIFIERS = ['bubble', 'trail', 'cohort', 'threshold', 'magic'];
-  const Q_PALETTE = [
-    'var(--cat-blue)',
-    'var(--cat-teal)',
-    'var(--cat-purple)',
-    'var(--cat-orange)',
-  ];
+  // Palette assignment is owned by lattice.css per-cell rules (data-cell="0"…"3").
+  // The runtime mirror just emits the cell index; theme picks the colour.
   const Q_MAGIC_NAMES = ['Challengers', 'Leaders', 'Niche Players', 'Visionaries'];
   const Q_MAGIC_AXES  = { x: 'Completeness of Vision', y: 'Ability to Execute' };
   const Q_THRESHOLD_ZONES = ['On Pace', 'Star', 'At Risk', 'Lagging'];
@@ -2262,18 +2258,18 @@
     }
     return { x: cx / (6 * a), y: cy / (6 * a) };
   }
-  function qTintsSvg(splitX, splitY, palette) {
+  function qTintsSvg(splitX, splitY) {
     const { plot } = Q_GEOM;
     const cells = [
-      { x: plot.x0, y: plot.y0, w: splitX - plot.x0, h: splitY - plot.y0, color: palette[0] },
-      { x: splitX,  y: plot.y0, w: plot.x1 - splitX, h: splitY - plot.y0, color: palette[1] },
-      { x: plot.x0, y: splitY,  w: splitX - plot.x0, h: plot.y1 - splitY, color: palette[2] },
-      { x: splitX,  y: splitY,  w: plot.x1 - splitX, h: plot.y1 - splitY, color: palette[3] },
+      { x: plot.x0, y: plot.y0, w: splitX - plot.x0, h: splitY - plot.y0 },
+      { x: splitX,  y: plot.y0, w: plot.x1 - splitX, h: splitY - plot.y0 },
+      { x: plot.x0, y: splitY,  w: splitX - plot.x0, h: plot.y1 - splitY },
+      { x: splitX,  y: splitY,  w: plot.x1 - splitX, h: plot.y1 - splitY },
     ];
     let out = '<g class="quadrant-tints" aria-hidden="true">';
     cells.forEach((c, i) => {
       if (c.w <= 0 || c.h <= 0) return;
-      out += '<rect class="quadrant-tint" data-cell="' + i + '" style="--cell-color:' + c.color + '" ' +
+      out += '<rect class="quadrant-tint" data-cell="' + i + '" ' +
         'x="' + c.x.toFixed(2) + '" y="' + c.y.toFixed(2) + '" ' +
         'width="' + c.w.toFixed(2) + '" height="' + c.h.toFixed(2) + '"/>';
     });
@@ -2291,7 +2287,7 @@
         'x1="' + plot.x0 + '" y1="' + splitY.toFixed(2) + '" x2="' + plot.x1 + '" y2="' + splitY.toFixed(2) + '"/>' +
     '</g>';
   }
-  function qLabelsSvg(names, palette, extraClass) {
+  function qLabelsSvg(names, extraClass) {
     const { plot } = Q_GEOM;
     const inset = 8;
     const positions = [
@@ -2305,7 +2301,7 @@
       if (!name) return;
       const p = positions[i];
       out += '<text class="quadrant-label' + (extraClass ? ' ' + extraClass : '') + '" ' +
-        'data-cell="' + i + '" style="--cell-color:' + palette[i] + '" ' +
+        'data-cell="' + i + '" ' +
         'x="' + p.x.toFixed(2) + '" y="' + p.y.toFixed(2) + '" ' +
         'text-anchor="' + p.anchor + '" dominant-baseline="' + p.baseline + '">' + qEscHtml(name) + '</text>';
     });
@@ -2339,18 +2335,17 @@
     out += '</g>';
     return out;
   }
-  function qDotWithLabelSvg(p, label, cellIdx, palette, opts) {
-    const color = palette[cellIdx % palette.length];
+  function qDotWithLabelSvg(p, label, cellIdx, opts) {
     const r = opts && opts.r != null ? opts.r : Q_GEOM.dotR;
     const offset = r + 4;
     const above = p.y - offset > Q_GEOM.plot.y0 + 8;
     const ly = above ? p.y - offset : p.y + offset + 2;
     const baseline = above ? 'auto' : 'hanging';
     let out = '';
-    out += '<circle class="quadrant-dot" data-cell="' + cellIdx + '" style="--cell-color:' + color + '" ' +
+    out += '<circle class="quadrant-dot" data-cell="' + cellIdx + '" ' +
       'cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + r.toFixed(2) + '"/>';
     if (label) {
-      out += '<text class="quadrant-dot-label" data-cell="' + cellIdx + '" style="--cell-color:' + color + '" ' +
+      out += '<text class="quadrant-dot-label" data-cell="' + cellIdx + '" ' +
         'x="' + p.x.toFixed(2) + '" y="' + ly.toFixed(2) + '" ' +
         'text-anchor="middle" dominant-baseline="' + baseline + '">' + qEscHtml(label) + '</text>';
     }
@@ -2384,25 +2379,20 @@
     const items = qAllItems(model);
     const labelEveryDot = isMagic || items.length <= 16;
     let plot = '<g class="quadrant-plot">';
-    model.groups.slice(0, 4).forEach((g, gi) => {
+    model.groups.forEach((g, gi) => {
+      const cellIdx = gi % 4;
       for (const it of g.items) {
         const p = qPlotPoint(it.x, it.y, scale);
-        plot += qDotWithLabelSvg(p, labelEveryDot ? it.label : '', gi, Q_PALETTE);
+        plot += qDotWithLabelSvg(p, labelEveryDot ? it.label : '', cellIdx);
       }
     });
-    for (let gi = 4; gi < model.groups.length; gi++) {
-      for (const it of model.groups[gi].items) {
-        const p = qPlotPoint(it.x, it.y, scale);
-        plot += qDotWithLabelSvg(p, labelEveryDot ? it.label : '', gi % 4, Q_PALETTE);
-      }
-    }
     plot += '</g>';
     const labelClass = isMagic ? 'quadrant-label--magic' : '';
     const svg = qOpenSvg(isMagic ? 'quadrant-svg--magic' : '') +
-      qTintsSvg(splitX, splitY, Q_PALETTE) +
+      qTintsSvg(splitX, splitY) +
       qFrameSvg(splitX, splitY, 'centerline') +
       qAxisLabelsSvg(labelScale) +
-      qLabelsSvg(names, Q_PALETTE, labelClass) +
+      qLabelsSvg(names, labelClass) +
       plot +
     '</svg>';
     return qFigure(variant, model, labelScale, svg);
@@ -2416,25 +2406,25 @@
       if (Number.isFinite(it.size) && it.size > maxSize) maxSize = it.size;
     const sizeRange = maxSize > 0 ? { min: 0, max: maxSize } : null;
     let plot = '<g class="quadrant-plot">';
-    model.groups.slice(0, 4).forEach((g, gi) => {
-      const color = Q_PALETTE[gi % Q_PALETTE.length];
+    model.groups.forEach((g, gi) => {
+      const cellIdx = gi % 4;
       for (const it of g.items) {
         const p = qPlotPoint(it.x, it.y, scale);
         const r = qBubbleRadius(it.size, sizeRange);
-        plot += '<circle class="quadrant-bubble" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+        plot += '<circle class="quadrant-bubble" data-cell="' + cellIdx + '" ' +
           'cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + r.toFixed(2) + '"/>';
         const inside = r >= 11;
         const labelY = inside ? p.y + 3 : p.y - r - 3;
         const labelBaseline = inside ? 'middle' : 'auto';
         if (it.sizePill) {
           plot += '<text class="quadrant-bubble-value" data-pos="' + (inside ? 'inside' : 'above') + '" ' +
-            'data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+            'data-cell="' + cellIdx + '" ' +
             'x="' + p.x.toFixed(2) + '" y="' + labelY.toFixed(2) + '" ' +
             'text-anchor="middle" dominant-baseline="' + labelBaseline + '">' + qEscHtml(it.sizePill) + '</text>';
         }
         if (it.label) {
           const ny = inside ? p.y + r + 3 : p.y + r + 11;
-          plot += '<text class="quadrant-bubble-label" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+          plot += '<text class="quadrant-bubble-label" data-cell="' + cellIdx + '" ' +
             'x="' + p.x.toFixed(2) + '" y="' + ny.toFixed(2) + '" ' +
             'text-anchor="middle" dominant-baseline="hanging">' + qEscHtml(it.label) + '</text>';
         }
@@ -2442,10 +2432,10 @@
     });
     plot += '</g>';
     const svg = qOpenSvg('quadrant-svg--bubble') +
-      qTintsSvg(splitX, splitY, Q_PALETTE) +
+      qTintsSvg(splitX, splitY) +
       qFrameSvg(splitX, splitY, 'centerline') +
       qAxisLabelsSvg(scale) +
-      qLabelsSvg(names, Q_PALETTE) +
+      qLabelsSvg(names) +
       plot +
     '</svg>';
     return qFigure('bubble', model, scale, svg);
@@ -2455,22 +2445,22 @@
     const splitY = (Q_GEOM.plot.y0 + Q_GEOM.plot.y1) / 2;
     const names = [0, 1, 2, 3].map(i => (model.groups[i] ? model.groups[i].name : ''));
     let plot = '<g class="quadrant-plot">';
-    model.groups.slice(0, 4).forEach((g, gi) => {
-      const color = Q_PALETTE[gi % Q_PALETTE.length];
+    model.groups.forEach((g, gi) => {
+      const cellIdx = gi % 4;
       for (const it of g.items) {
         const a = qPlotPoint(it.x, it.y, scale);
         const b = it.to ? qPlotPoint(it.to.x, it.to.y, scale) : a;
-        plot += '<line class="quadrant-trail-line" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+        plot += '<line class="quadrant-trail-line" data-cell="' + cellIdx + '" ' +
           'x1="' + a.x.toFixed(2) + '" y1="' + a.y.toFixed(2) + '" x2="' + b.x.toFixed(2) + '" y2="' + b.y.toFixed(2) + '"/>';
-        plot += '<circle class="quadrant-trail-before" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+        plot += '<circle class="quadrant-trail-before" data-cell="' + cellIdx + '" ' +
           'cx="' + a.x.toFixed(2) + '" cy="' + a.y.toFixed(2) + '" r="' + (Q_GEOM.dotR - 0.5).toFixed(2) + '"/>';
-        plot += '<circle class="quadrant-trail-after" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+        plot += '<circle class="quadrant-trail-after" data-cell="' + cellIdx + '" ' +
           'cx="' + b.x.toFixed(2) + '" cy="' + b.y.toFixed(2) + '" r="' + (Q_GEOM.dotR + 0.5).toFixed(2) + '"/>';
         if (it.label) {
           const labelAbove = b.y - 10 > Q_GEOM.plot.y0 + 8;
           const ly = labelAbove ? b.y - 9 : b.y + 12;
           const baseline = labelAbove ? 'auto' : 'hanging';
-          plot += '<text class="quadrant-dot-label" data-cell="' + gi + '" style="--cell-color:' + color + '" ' +
+          plot += '<text class="quadrant-dot-label" data-cell="' + cellIdx + '" ' +
             'x="' + b.x.toFixed(2) + '" y="' + ly.toFixed(2) + '" ' +
             'text-anchor="middle" dominant-baseline="' + baseline + '">' + qEscHtml(it.label) + '</text>';
         }
@@ -2478,10 +2468,10 @@
     });
     plot += '</g>';
     const svg = qOpenSvg('quadrant-svg--trail') +
-      qTintsSvg(splitX, splitY, Q_PALETTE) +
+      qTintsSvg(splitX, splitY) +
       qFrameSvg(splitX, splitY, 'centerline') +
       qAxisLabelsSvg(scale) +
-      qLabelsSvg(names, Q_PALETTE) +
+      qLabelsSvg(names) +
       plot +
     '</svg>';
     return qFigure('trail', model, scale, svg);
@@ -2493,24 +2483,24 @@
       const pts = g.items.map(it => qPlotPoint(it.x, it.y, scale));
       const hull = qConvexHull(pts);
       const c = qCentroid(hull.length ? hull : pts);
-      return { name: g.name, color: Q_PALETTE[gi % Q_PALETTE.length], hull, points: pts, centroid: c };
+      return { name: g.name, cellIdx: gi % 4, hull, points: pts, centroid: c };
     });
     let hullsSvg = '<g class="quadrant-hulls" aria-hidden="true">';
     for (const h of hulls) {
       if (h.hull.length >= 3) {
-        hullsSvg += '<polygon class="quadrant-hull" style="--cell-color:' + h.color + '" ' +
+        hullsSvg += '<polygon class="quadrant-hull" data-cell="' + h.cellIdx + '" ' +
           'points="' + h.hull.map(qFmtPt).join(' ') + '"/>';
       } else if (h.hull.length === 2) {
         const [a, b] = h.hull;
-        hullsSvg += '<line class="quadrant-hull-line" style="--cell-color:' + h.color + '" ' +
+        hullsSvg += '<line class="quadrant-hull-line" data-cell="' + h.cellIdx + '" ' +
           'x1="' + a.x.toFixed(2) + '" y1="' + a.y.toFixed(2) + '" x2="' + b.x.toFixed(2) + '" y2="' + b.y.toFixed(2) + '"/>';
       }
     }
     hullsSvg += '</g>';
     let plot = '<g class="quadrant-plot">';
-    hulls.forEach((h, gi) => {
+    hulls.forEach(h => {
       for (const p of h.points) {
-        plot += '<circle class="quadrant-dot" data-cell="' + gi + '" style="--cell-color:' + h.color + '" ' +
+        plot += '<circle class="quadrant-dot" data-cell="' + h.cellIdx + '" ' +
           'cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + Q_GEOM.dotR.toFixed(2) + '"/>';
       }
     });
@@ -2518,13 +2508,13 @@
     let labels = '<g class="quadrant-cohort-labels">';
     for (const h of hulls) {
       if (!h.name || h.points.length === 0) continue;
-      labels += '<text class="quadrant-cohort-label" style="--cell-color:' + h.color + '" ' +
+      labels += '<text class="quadrant-cohort-label" data-cell="' + h.cellIdx + '" ' +
         'x="' + h.centroid.x.toFixed(2) + '" y="' + h.centroid.y.toFixed(2) + '" ' +
         'text-anchor="middle" dominant-baseline="middle">' + qEscHtml(h.name) + '</text>';
     }
     labels += '</g>';
     const legendItems = hulls.map(h =>
-      '<li style="--cell-color:' + h.color + '">' +
+      '<li data-cell="' + h.cellIdx + '">' +
         '<span class="quadrant-swatch" aria-hidden="true"></span>' +
         '<span class="quadrant-legend-label">' + qEscHtml(h.name) + '</span>' +
         '<span class="quadrant-legend-count">' + h.points.length + '</span>' +
@@ -2550,18 +2540,13 @@
       return fromGroup || Q_THRESHOLD_ZONES[i];
     });
     let plot = '<g class="quadrant-plot">';
-    model.groups.slice(0, 4).forEach((g, gi) => {
+    model.groups.forEach((g, gi) => {
+      const cellIdx = gi % 4;
       for (const it of g.items) {
         const pp = qPlotPoint(it.x, it.y, scale);
-        plot += qDotWithLabelSvg(pp, it.label, gi, Q_PALETTE);
+        plot += qDotWithLabelSvg(pp, it.label, cellIdx);
       }
     });
-    for (let gi = 4; gi < model.groups.length; gi++) {
-      for (const it of model.groups[gi].items) {
-        const pp = qPlotPoint(it.x, it.y, scale);
-        plot += qDotWithLabelSvg(pp, it.label, gi % 4, Q_PALETTE);
-      }
-    }
     plot += '</g>';
     let badges = '<g class="quadrant-target-badges" aria-hidden="true">';
     badges += '<text class="quadrant-target-badge quadrant-target-badge--x" ' +
@@ -2572,10 +2557,10 @@
       'text-anchor="end" dominant-baseline="middle">' + qEscHtml(qFmtNum(ty)) + '</text>';
     badges += '</g>';
     const svg = qOpenSvg('quadrant-svg--threshold') +
-      qTintsSvg(splitX, splitY, Q_PALETTE) +
+      qTintsSvg(splitX, splitY) +
       qFrameSvg(splitX, splitY, 'target') +
       qAxisLabelsSvg(scale) +
-      qLabelsSvg(names, Q_PALETTE, 'quadrant-label--zone') +
+      qLabelsSvg(names, 'quadrant-label--zone') +
       badges +
       plot +
     '</svg>';
