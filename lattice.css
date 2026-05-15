@@ -5596,39 +5596,38 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
 /* ── State glyphs ─────────────────────────────────────────────────────
  * Author writes the universal [x]/[-]/[ ] grammar in every variant; the
  * marpit/emulator/runtime transforms wrap each cell in
- * <span class="state pass|warn|fail">. Visual: filled circle / half
- * circle / empty circle, theme-coloured. Default uses neutral ink so
- * the matrix reads as data; .heat flips to semantic risk colours. */
+ * <span class="state pass|warn|fail">. The glyph preserves the bracket
+ * typography of the markdown source — `[X]`, `[–]`, `[ ]` — rendered in
+ * mono so the bracket frame stays visible. The shape is the universal
+ * grammar; colour is per-variant (default = neutral ink; .heat = the
+ * semantic risk palette where filled = applies = alert).
+ *
+ * Mirrors the authority-chain.bracket idiom (doubled-line frame, tier-
+ * coloured) at the row level under .heat so the matrix reads as one
+ * bracketed structure rather than 30 disconnected cells. */
 section.obligation-matrix td .state {
-  display:inline-block;
-  width:1.4em; height:1.4em;
-  border-radius:50%;
-  vertical-align:middle;
-  border:2px solid currentColor;
-  position:relative;
-  font-size:0; /* hide any label text the transform left behind */
-  line-height:0;
+  display:inline-flex;
+  align-items:center; justify-content:center;
+  font-size:0; line-height:1;  /* hide any inline label text from the transform */
+}
+section.obligation-matrix td .state::before {
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-0.06em;
   color:var(--text-muted);
 }
-section.obligation-matrix td .state.pass { background:currentColor; color:var(--text-heading); }
-section.obligation-matrix td .state.warn { color:var(--text-heading); background:linear-gradient(to right, currentColor 50%, transparent 50%); }
-section.obligation-matrix td .state.fail { color:var(--text-muted); background:transparent; }
+section.obligation-matrix td .state.pass::before { content:'[\00A0\25A0\00A0]'; color:var(--text-heading); }
+section.obligation-matrix td .state.warn::before { content:'[\00A0\2013\00A0]'; color:var(--text-heading); }
+section.obligation-matrix td .state.fail::before { content:'[\00A0\00A0\00A0]'; color:var(--text-muted); }
 
 /* .heat — same grammar, semantic risk palette. Filled = applies = high
- * alert; half = partial = caution; empty = exempt = safe. The colour
- * mapping is per-layout (heat-map is the only obligation view where the
- * cell answers "is this a workload?"), so the universal class names
- * keep authoring frictionless even as the palette inverts. */
+ * alert; half = partial = caution; empty = exempt = safe. */
 section.obligation-matrix.heat tbody tr td:not(:first-child) { background:none; }
-section.obligation-matrix.heat td .state.pass {
-  color:var(--fail); background:currentColor;
-}
-section.obligation-matrix.heat td .state.warn {
-  color:var(--warn); background:linear-gradient(to right, currentColor 50%, transparent 50%);
-}
-section.obligation-matrix.heat td .state.fail {
-  color:var(--pass); background:transparent;
-}
+section.obligation-matrix.heat td .state.pass::before { color:var(--fail); }
+section.obligation-matrix.heat td .state.warn::before { color:var(--warn); }
+section.obligation-matrix.heat td .state.fail::before { color:var(--pass); }
 section.obligation-matrix.heat td:has(> .state.pass) {
   background:color-mix(in srgb, var(--fail) 14%, var(--bg));
 }
@@ -5637,6 +5636,26 @@ section.obligation-matrix.heat td:has(> .state.warn) {
 }
 section.obligation-matrix.heat td:has(> .state.fail) {
   background:color-mix(in srgb, var(--pass) 10%, var(--bg));
+}
+/* Bracket-frame echo at the row level. Each row carries a doubled left
+ * border (matching the authority-chain.bracket aesthetic) so the matrix
+ * reads as one bracketed structure; the first cell carries the bracket,
+ * the rest stay flush. */
+section.obligation-matrix.heat tbody tr td:first-child {
+  border-left:6px double var(--accent);
+  padding-left:var(--sp-md);
+}
+section.obligation-matrix.heat tbody tr td:last-child {
+  border-right:6px double var(--accent);
+  padding-right:var(--sp-md);
+}
+section.obligation-matrix.heat thead tr th:first-child {
+  border-left:6px double var(--accent);
+  padding-left:var(--sp-md);
+}
+section.obligation-matrix.heat thead tr th:last-child {
+  border-right:6px double var(--accent);
+  padding-right:var(--sp-md);
 }
 
 /* .pills — each non-first cell is a status pill. */
