@@ -2018,7 +2018,8 @@
   const Q_GEOM = {
     viewBox: '0 0 420 320',
     vbW: 420, vbH: 320,
-    plot: { x0: 56, y0: 28, x1: 392, y1: 280 },
+    plot: { x0: 56, y0: 30, x1: 392, y1: 274 },
+    cornerInset: 14,
     bubble: { rMin: 5, rMax: 26 },
     dotR: 4.5,
   };
@@ -2288,13 +2289,12 @@
     '</g>';
   }
   function qLabelsSvg(names, extraClass) {
-    const { plot } = Q_GEOM;
-    const inset = 8;
+    const { plot, cornerInset } = Q_GEOM;
     const positions = [
-      { x: plot.x0 + inset, y: plot.y0 + inset, anchor: 'start', baseline: 'hanging' },
-      { x: plot.x1 - inset, y: plot.y0 + inset, anchor: 'end',   baseline: 'hanging' },
-      { x: plot.x0 + inset, y: plot.y1 - inset, anchor: 'start', baseline: 'auto'    },
-      { x: plot.x1 - inset, y: plot.y1 - inset, anchor: 'end',   baseline: 'auto'    },
+      { x: plot.x0 + cornerInset, y: plot.y0 + cornerInset, anchor: 'start', baseline: 'hanging' },
+      { x: plot.x1 - cornerInset, y: plot.y0 + cornerInset, anchor: 'end',   baseline: 'hanging' },
+      { x: plot.x0 + cornerInset, y: plot.y1 - cornerInset, anchor: 'start', baseline: 'auto'    },
+      { x: plot.x1 - cornerInset, y: plot.y1 - cornerInset, anchor: 'end',   baseline: 'auto'    },
     ];
     let out = '<g class="quadrant-labels">';
     names.forEach((name, i) => {
@@ -2338,16 +2338,33 @@
   function qDotWithLabelSvg(p, label, cellIdx, opts) {
     const r = opts && opts.r != null ? opts.r : Q_GEOM.dotR;
     const offset = r + 4;
-    const above = p.y - offset > Q_GEOM.plot.y0 + 8;
-    const ly = above ? p.y - offset : p.y + offset + 2;
-    const baseline = above ? 'auto' : 'hanging';
+    const plot = Q_GEOM.plot;
+    const cz = { h: 80, v: 35 };
+    const nearLeft  = p.x < plot.x0 + cz.h;
+    const nearRight = p.x > plot.x1 - cz.h;
+    const nearTop   = p.y < plot.y0 + cz.v;
+    const nearBot   = p.y > plot.y1 - cz.v;
+    const nearCorner = (nearLeft || nearRight) && (nearTop || nearBot);
+    let lx, ly, anchor, baseline;
+    if (nearCorner) {
+      if (nearRight) { lx = p.x - offset; anchor = 'end'; }
+      else           { lx = p.x + offset; anchor = 'start'; }
+      ly = p.y;
+      baseline = 'middle';
+    } else {
+      const above = p.y - offset > plot.y0 + 8;
+      lx = p.x;
+      ly = above ? p.y - offset : p.y + offset + 2;
+      anchor = 'middle';
+      baseline = above ? 'auto' : 'hanging';
+    }
     let out = '';
     out += '<circle class="quadrant-dot" data-cell="' + cellIdx + '" ' +
       'cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + r.toFixed(2) + '"/>';
     if (label) {
       out += '<text class="quadrant-dot-label" data-cell="' + cellIdx + '" ' +
-        'x="' + p.x.toFixed(2) + '" y="' + ly.toFixed(2) + '" ' +
-        'text-anchor="middle" dominant-baseline="' + baseline + '">' + qEscHtml(label) + '</text>';
+        'x="' + lx.toFixed(2) + '" y="' + ly.toFixed(2) + '" ' +
+        'text-anchor="' + anchor + '" dominant-baseline="' + baseline + '">' + qEscHtml(label) + '</text>';
     }
     return out;
   }
@@ -2405,6 +2422,7 @@
     for (const g of model.groups) for (const it of g.items)
       if (Number.isFinite(it.size) && it.size > maxSize) maxSize = it.size;
     const sizeRange = maxSize > 0 ? { min: 0, max: maxSize } : null;
+    const botCornerTop = Q_GEOM.plot.y1 - Q_GEOM.cornerInset - 13;
     let plot = '<g class="quadrant-plot">';
     model.groups.forEach((g, gi) => {
       const cellIdx = gi % 4;
@@ -2414,19 +2432,23 @@
         plot += '<circle class="quadrant-bubble" data-cell="' + cellIdx + '" ' +
           'cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="' + r.toFixed(2) + '"/>';
         const inside = r >= 11;
-        const labelY = inside ? p.y + 3 : p.y - r - 3;
-        const labelBaseline = inside ? 'middle' : 'auto';
+        const valY = inside ? p.y + 3 : p.y - r - 3;
+        const valBaseline = inside ? 'middle' : 'auto';
         if (it.sizePill) {
           plot += '<text class="quadrant-bubble-value" data-pos="' + (inside ? 'inside' : 'above') + '" ' +
             'data-cell="' + cellIdx + '" ' +
-            'x="' + p.x.toFixed(2) + '" y="' + labelY.toFixed(2) + '" ' +
-            'text-anchor="middle" dominant-baseline="' + labelBaseline + '">' + qEscHtml(it.sizePill) + '</text>';
+            'x="' + p.x.toFixed(2) + '" y="' + valY.toFixed(2) + '" ' +
+            'text-anchor="middle" dominant-baseline="' + valBaseline + '">' + qEscHtml(it.sizePill) + '</text>';
         }
         if (it.label) {
-          const ny = inside ? p.y + r + 3 : p.y + r + 11;
+          const belowY = inside ? p.y + r + 3 : p.y + r + 11;
+          const aboveY = p.y - r - (inside ? 3 : 11);
+          const flipUp = belowY > botCornerTop - 12;
+          const ny = flipUp ? aboveY : belowY;
+          const baseline = flipUp ? 'auto' : 'hanging';
           plot += '<text class="quadrant-bubble-label" data-cell="' + cellIdx + '" ' +
             'x="' + p.x.toFixed(2) + '" y="' + ny.toFixed(2) + '" ' +
-            'text-anchor="middle" dominant-baseline="hanging">' + qEscHtml(it.label) + '</text>';
+            'text-anchor="middle" dominant-baseline="' + baseline + '">' + qEscHtml(it.label) + '</text>';
         }
       }
     });
