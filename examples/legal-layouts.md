@@ -27,7 +27,7 @@ Six anchors. Five variants per anchor. Pick the strongest of each row.
 
 ## Each anchor opens with a section divider, then walks five visual treatments of the same idea.
 
-Mark the one that earns the room. The other four can be deleted before the layout graduates into the gallery. The six anchors cover the rhythms boardroom legal presentations actually use: jurisdictional stack, regulatory quote, regime matrix, what's new, redline, and authority chain.
+Mark the one that earns the room. Slot labels lift via the slotLabelLift transform — author writes `- Federal`, not `- **Federal**`. The obligation matrix uses the universal `[x] [-] [ ]` state grammar shared with verdict-grid and checklist.
 
 ---
 
@@ -46,20 +46,23 @@ Mark the one that earns the room. The other four can be deleted before the layou
 
 ## Children's data — three jurisdictions, three obligations.
 
-- **Federal** `15 U.S.C. §6501 · COPPA`
+- Federal
+  - `15 U.S.C. §6501 · COPPA`
   - Verifiable parental consent for under-13 personal data.
   - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
-- **State** `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State
+  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- **Local** `NYC Admin Code §22-1201`
+- Local
+  - `NYC Admin Code §22-1201`
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
 
-Pick this when the rooms wants three parallel facts at a glance.
+Pick this when the room wants three parallel facts at a glance.
 
 ---
 
@@ -68,11 +71,14 @@ Pick this when the rooms wants three parallel facts at a glance.
 
 ## Children's data — Federal floor, State stricter, Local narrowest.
 
-- **Federal** `15 U.S.C. §6501 · COPPA`
+- Federal
+  - `15 U.S.C. §6501 · COPPA`
   - Verifiable parental consent for under-13 personal data; nationwide floor.
-- **State** `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State
+  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
   - Opt-in for selling under-16 data; California raises the floor for its residents.
-- **Local** `NYC Admin Code §22-1201`
+- Local
+  - `NYC Admin Code §22-1201`
   - Annual bias-audit obligation for employment AEDTs; narrowest scope.
 
 Pick this when the room needs to see scope shrinking as the tier descends.
@@ -84,13 +90,16 @@ Pick this when the room needs to see scope shrinking as the tier descends.
 
 ## Three jurisdictions, full prose, one row each.
 
-- **Federal** `15 U.S.C. §6501 · COPPA`
+- Federal
+  - `15 U.S.C. §6501 · COPPA`
   - Verifiable parental consent for under-13 PI; deletion within reasonable period.
   - `In effect since 2000`
-- **State** `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State
+  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
   - Opt-in for selling or sharing under-16 data; 45-day DSAR response.
   - `Enforced 2023`
-- **Local** `NYC Admin Code §22-1201`
+- Local
+  - `NYC Admin Code §22-1201`
   - Annual bias-audit obligation for employment AEDTs; candidate notice required.
   - `Effective 2023`
 
@@ -103,11 +112,14 @@ Pick this when each row has more than a sentence to carry.
 
 ## Federal floor → State adds opt-in → Local adds audit duty.
 
-- **Federal** `15 U.S.C. §6501 · COPPA`
+- Federal
+  - `15 U.S.C. §6501 · COPPA`
   - Verifiable parental consent for under-13 PI; this is the floor.
-- **State** `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+- State
+  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
   - California adds opt-in for sale or sharing of under-16 data.
-- **Local** `NYC §22-1201`
+- Local
+  - `NYC §22-1201`
   - New York City adds an annual AEDT bias-audit duty on top.
 
 Pick this when the relationship between tiers is the point — not parallel facts.
@@ -222,18 +234,18 @@ Pick this when the audience wants to scan many obligations at once.
 <!-- _class: obligation-matrix -->
 <!-- _footer: "Variant 3A · obligation-matrix (grid, default)" -->
 
-## Privacy obligations across regimes — glyph grid.
+## Privacy obligations across regimes — state grid.
 
-| Regulation | Notice | Consent | Retention | Breach | DSAR |
-| ---------- | :----: | :-----: | :-------: | :----: | :--: |
-| GDPR       | ●      | ●       | ●         | ●      | ●    |
-| CCPA/CPRA  | ●      | ◐       | ●         | ●      | ●    |
-| LGPD       | ●      | ●       | ●         | ●      | ●    |
-| PIPEDA     | ●      | ●       | ◐         | ●      | ◐    |
-| HIPAA      | ●      | ●       | ●         | ●      | ◐    |
-| GLBA       | ●      | ◐       | ◐         | ●      | ○    |
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
 
-Glyphs: ● full · ◐ partial · ○ none. Quick visual scan.
+Filled · half · empty circles. Neutral ink — applies / partial / exempt as data.
 
 ---
 
@@ -242,52 +254,52 @@ Glyphs: ● full · ◐ partial · ○ none. Quick visual scan.
 
 ## Privacy obligations across regimes — heat map.
 
-| Regulation | Notice       | Consent     | Retention    | Breach       | DSAR        |
-| ---------- | ------------ | ----------- | ------------ | ------------ | ----------- |
-| GDPR       | **applies**  | **applies** | **applies**  | **applies**  | **applies** |
-| CCPA/CPRA  | **applies**  | *partial*   | **applies**  | **applies**  | **applies** |
-| LGPD       | **applies**  | **applies** | **applies**  | **applies**  | **applies** |
-| PIPEDA     | **applies**  | **applies** | *partial*    | **applies**  | *partial*   |
-| HIPAA      | **applies**  | **applies** | **applies**  | **applies**  | *partial*   |
-| GLBA       | **applies**  | *partial*   | *partial*    | **applies**  | `exempt`    |
+| Regulation | Notice | Consent | Retention | Breach | DSAR |
+| ---------- | :----: | :-----: | :-------: | :----: | :--: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]  |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]  |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]  |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]  |
 
-Red = applies · amber = partial · green = exempt.
+Same grammar, semantic palette — red = applies, amber = partial, green = exempt.
 
 ---
 
 <!-- _class: obligation-matrix pills -->
 <!-- _footer: "Variant 3C · obligation-matrix pills" -->
 
-## Privacy obligations — pilled cells.
+## Privacy obligations across regimes — same grammar, no heat.
 
-| Regulation | Notice    | Consent   | Retention | Breach    | DSAR      |
-| ---------- | --------- | --------- | --------- | --------- | --------- |
-| GDPR       | `applies` | `applies` | `applies` | `applies` | `applies` |
-| CCPA       | `applies` | `partial` | `applies` | `applies` | `applies` |
-| LGPD       | `applies` | `applies` | `applies` | `applies` | `applies` |
-| PIPEDA     | `applies` | `applies` | `partial` | `applies` | `partial` |
-| HIPAA      | `applies` | `applies` | `applies` | `applies` | `partial` |
-| GLBA       | `applies` | `partial` | `partial` | `applies` | `exempt`  |
+| Regulation | Notice | Consent | Retention | Breach | DSAR |
+| ---------- | :----: | :-----: | :-------: | :----: | :--: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| CCPA       | [x]    | [-]     | [x]       | [x]    | [x]  |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]  |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]  |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]  |
 
-Pills give every cell the same visual weight.
+Pills (no heat) — same data, neutral chrome. Less assertive than heat.
 
 ---
 
 <!-- _class: obligation-matrix lanes -->
 <!-- _footer: "Variant 3D · obligation-matrix lanes" -->
 
-## Privacy obligations — categorical lanes.
+## Privacy obligations — categorical row stripes.
 
-| Regulation | Notice  | Consent | Retention | Breach  | DSAR    |
-| ---------- | ------- | ------- | --------- | ------- | ------- |
-| GDPR       | applies | applies | applies   | applies | applies |
-| CCPA/CPRA  | applies | partial | applies   | applies | applies |
-| LGPD       | applies | applies | applies   | applies | applies |
-| PIPEDA     | applies | applies | partial   | applies | partial |
-| HIPAA      | applies | applies | applies   | applies | partial |
-| GLBA       | applies | partial | partial   | applies | exempt  |
+| Regulation | Notice | Consent | Retention | Breach | DSAR |
+| ---------- | :----: | :-----: | :-------: | :----: | :--: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]  |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]  |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]  |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]  |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]  |
 
-Lanes signal "this row is its own regime" — useful when comparing texture.
+Lane stripes signal "this row is its own regime."
 
 ---
 
@@ -323,16 +335,20 @@ Pick when each cell carries a sentence, not a glyph.
 
 `Federal · State · International`
 
-1. **EU AI Act** `Title III`
+1. EU AI Act
+   - `Title III`
    - Conformity-assessment pre-market obligation took effect.
    - `Effective Feb 2026`
-2. **Colorado AI Act** `SB 24-205`
+2. Colorado AI Act
+   - `SB 24-205`
    - Developer + deployer duties for consequential-decision systems.
    - `Effective Feb 2026`
-3. **FTC v. Avast** `§5 unfairness`
+3. FTC v. Avast
+   - `§5 unfairness`
    - $16.5M consent order; clarifies the deception standard for privacy branding.
    - `Final Mar 2026`
-4. **Texas DPSA** `§541.151`
+4. Texas DPSA
+   - `§541.151`
    - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
    - `Effective Mar 2026`
 
@@ -345,16 +361,20 @@ Pick when each cell carries a sentence, not a glyph.
 
 `Federal · State · International`
 
-1. **EU AI Act** `Title III`
+1. EU AI Act
+   - `Title III`
    - High-risk system conformity-assessment pre-market obligation took effect.
    - `Effective Feb 2026`
-2. **Colorado AI Act** `SB 24-205`
+2. Colorado AI Act
+   - `SB 24-205`
    - Developer + deployer duties for consequential-decision systems.
    - `Effective Feb 2026`
-3. **FTC Order** `In re Avast`
+3. FTC Order
+   - `In re Avast`
    - $16.5M consent order; browser-history sale despite privacy branding.
    - `Final Mar 2026`
-4. **Texas DPSA** `Bus. & Com. Code §541.151`
+4. Texas DPSA
+   - `Bus. & Com. Code §541.151`
    - DSAR opt-out portal mandatory; safe-harbor narrowed.
    - `Effective Mar 2026`
 
@@ -367,13 +387,17 @@ Pick when each cell carries a sentence, not a glyph.
 
 `January → February → March 2026`
 
-1. **PIPEDA Reform** `C-27`
-   - Senate reading in January; data-protection commissioner powers expanded.
-2. **EU AI Act** `Title III`
-   - High-risk system conformity-assessment obligation took effect 2 Feb.
-3. **Colorado AI Act** `SB 24-205`
-   - Developer + deployer duties effective 1 Feb; deployer notice template due Q2.
-4. **FTC v. Avast** `§5`
+1. PIPEDA Reform
+   - `C-27`
+   - Senate reading in January; commissioner powers expanded.
+2. EU AI Act
+   - `Title III`
+   - High-risk conformity-assessment obligation took effect 2 Feb.
+3. Colorado AI Act
+   - `SB 24-205`
+   - Developer + deployer duties effective 1 Feb.
+4. FTC v. Avast
+   - `§5`
    - Consent order final 14 Mar; $16.5M plus 20-year compliance program.
 
 ---
@@ -387,19 +411,23 @@ Pick when each cell carries a sentence, not a glyph.
 
 ### Added
 
-1. **EU AI Act** `Title III · high-risk systems`
+1. EU AI Act
+   - `Title III · high-risk systems`
    - First conformity-assessment obligation took effect across the bloc.
-2. **Colorado AI Act** `SB 24-205`
+2. Colorado AI Act
+   - `SB 24-205`
    - New developer + deployer duties for consequential-decision systems.
 
 ### Amended
 
-1. **Texas DPSA** `Bus. & Com. Code §541.151`
+1. Texas DPSA
+   - `§541.151`
    - Opt-out portal mandatory; small-business safe-harbor threshold narrowed.
 
 ### Enforced
 
-1. **FTC v. Avast** `§5 unfairness`
+1. FTC v. Avast
+   - `§5 unfairness`
    - $16.5M consent order finalised; 20-year compliance program.
 
 ---
@@ -411,12 +439,15 @@ Pick when each cell carries a sentence, not a glyph.
 
 `What to act on, what to track, what to log`
 
-1. **Act this quarter — EU AI Act** `Title III`
-   - High-risk system conformity-assessment paperwork pre-market; engineering deadline before any EU launch.
-2. **Track — Colorado AI Act** `SB 24-205`
+1. Act this quarter — EU AI Act
+   - `Title III`
+   - High-risk conformity-assessment paperwork pre-market; engineering deadline before any EU launch.
+2. Track — Colorado AI Act
+   - `SB 24-205`
    - Developer + deployer duties; published deployer-notice template due in Q2.
-3. **Log — FTC v. Avast** `§5`
-   - Consent order final; informs how the FTC frames the deception standard for privacy-branded products.
+3. Log — FTC v. Avast
+   - `§5`
+   - Consent order final; informs how the FTC frames the deception standard.
 
 ---
 
@@ -439,7 +470,7 @@ Pick when each cell carries a sentence, not a glyph.
 
 > A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
 
-- **Why this matters** SB-362 collapses "sale" and "sharing" into one duty and pins a uniform link title — the boardroom signal is that homepage chrome and DSAR workflows both need a uniform UX.
+- **Why this matters** SB-362 collapses "sale" and "sharing" into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
 
 ---
 
@@ -518,10 +549,18 @@ Pick when each cell carries a sentence, not a glyph.
 
 ## COPPA — the chain, tier by tier.
 
-1. **Statute** `15 U.S.C. §6501` Congress, 1998 — verifiable parental consent for under-13 data.
-2. **Regulation** `16 C.F.R. Part 312` FTC implementing rule — 2013 rewrite expanded covered identifiers.
-3. **Guidance** `FTC Six-Step Compliance Plan` Staff guidance — non-binding, but cited in every consent order.
-4. **Case** `In re Epic Games (2022)` $245M consent order — operationalised "actual knowledge" standard.
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — verifiable parental consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule; 2013 rewrite expanded covered identifiers.
+3. Guidance
+   - `FTC Six-Step Compliance Plan`
+   - Staff guidance — non-binding, but cited in every consent order.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order — operationalised "actual knowledge" standard.
 
 ---
 
@@ -530,10 +569,18 @@ Pick when each cell carries a sentence, not a glyph.
 
 ## COPPA — authority weight, top binds, bottom illustrates.
 
-1. **Statute** `15 U.S.C. §6501` — Congress, 1998. Binds nationwide.
-2. **Regulation** `16 C.F.R. Part 312` — FTC implementing rule, 2013 rewrite.
-3. **Guidance** `FTC Six-Step Plan` — non-binding but cited.
-4. **Case** `In re Epic Games` — $245M consent order, 2022.
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998. Binds nationwide.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule, 2013 rewrite.
+3. Guidance
+   - `FTC Six-Step Plan`
+   - Non-binding but cited.
+4. Case
+   - `In re Epic Games`
+   - $245M consent order, 2022.
 
 ---
 
@@ -542,7 +589,8 @@ Pick when each cell carries a sentence, not a glyph.
 
 ## COPPA — one statute, many branches.
 
-1. **Statute** `15 U.S.C. §6501` COPPA, 1998
+1. Statute
+   - `15 U.S.C. §6501` COPPA, 1998
    - `16 C.F.R. Part 312` — FTC implementing rule
    - `FTC Six-Step Compliance Plan` — staff guidance
    - `In re Epic Games (2022)` — $245M consent order
@@ -555,10 +603,18 @@ Pick when each cell carries a sentence, not a glyph.
 
 ## COPPA — bracketed tiers.
 
-1. **Statute** `15 U.S.C. §6501` Congress, 1998. The binding floor for under-13 data.
-2. **Regulation** `16 C.F.R. Part 312` FTC implementing rule; 2013 rewrite.
-3. **Guidance** `FTC Six-Step Plan` Staff guidance — quoted in every order.
-4. **Case** `In re Epic Games` $245M consent order, 2022 — defines "actual knowledge."
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998. The binding floor for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule; 2013 rewrite.
+3. Guidance
+   - `FTC Six-Step Plan`
+   - Staff guidance — quoted in every order.
+4. Case
+   - `In re Epic Games`
+   - $245M consent order, 2022 — defines "actual knowledge."
 
 ---
 
@@ -567,10 +623,14 @@ Pick when each cell carries a sentence, not a glyph.
 
 ## COPPA — four steps to the operative test.
 
-1. **Statute** `15 U.S.C. §6501`
-2. **Regulation** `16 C.F.R. Part 312`
-3. **Guidance** `FTC Six-Step Plan`
-4. **Case** `In re Epic Games · 2022`
+1. Statute
+   - `15 U.S.C. §6501`
+2. Regulation
+   - `16 C.F.R. Part 312`
+3. Guidance
+   - `FTC Six-Step Plan`
+4. Case
+   - `In re Epic Games · 2022`
 
 ---
 
@@ -581,8 +641,8 @@ Pick when each cell carries a sentence, not a glyph.
 
 - Six anchor layouts cover jurisdiction, quotation, regime matrix, motion, redline, and authority.
 - Five visual variants per anchor — the strongest of each becomes the shipped default.
-- Pin-cite typography in every layout; plain-English body keeps boardroom altitude.
-- No new transforms — all six layouts are pure CSS, composable with existing modifiers.
+- Lean authoring: slot labels auto-lift, `[x] [-] [ ]` for state markers, pin-cite typography throughout.
+- Three-renderer parity: marp-cli, emulator, and runtime all process the same transforms.
 - The other four variants per anchor can be deleted before graduation into the gallery.
 
 ---

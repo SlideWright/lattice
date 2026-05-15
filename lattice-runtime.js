@@ -440,6 +440,7 @@
     transformStripHeadingPeriods();
     transformAddHeadingPeriods();
     transformVerdictGridBadges();
+    transformObligationMatrixBadges();
     transformChecklistItemStates();
     transformSlotLabels();
     transformSplitBrief();
@@ -588,6 +589,29 @@
   }
 
   /**
+   * Transforms obligation-matrix table cells in VS Code preview (no Marp
+   * plugin). Finds [x]/[-]/[ ] prefixed text in <td> cells inside
+   * section.obligation-matrix, strips the prefix, and wraps the label in
+   * <span class="state pass|warn|fail">. Idempotent — skips cells that
+   * already contain a .state span.
+   */
+  function transformObligationMatrixBadges() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.obligation-matrix')) {
+      for (const td of section.querySelectorAll('td')) {
+        if (td.querySelector('.state')) continue; // already transformed
+        const text = td.textContent.trim();
+        const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
+        if (!m) continue;
+        const stateClass = m[1] === 'x' ? 'state pass'
+                         : m[1] === '-' ? 'state warn'
+                         : 'state fail';
+        td.innerHTML = `<span class="${stateClass}">${m[2]}</span>`;
+      }
+    }
+  }
+
+  /**
    * Transforms checklist items in VS Code preview (mirrors the Marp plugin).
    * For each top-level <li> in section.checklist whose text starts with
    * [x] / [-] / [ ], strips the marker and adds class="state pass|warn|fail"
@@ -633,7 +657,7 @@
    */
   function transformSlotLabels() {
     if (typeof document === 'undefined') return;
-    const SELECTOR = 'section.compare-prose, section.before-after, section.decision, section.split-brief, section.split-metric, section.split-steps, section.split-compare, section.split-statement';
+    const SELECTOR = 'section.compare-prose, section.before-after, section.decision, section.split-brief, section.split-metric, section.split-steps, section.split-compare, section.split-statement, section.statute-stack, section.regulatory-update, section.authority-chain, section.redline';
     for (const section of document.querySelectorAll(SELECTOR)) {
       // compare-prose authored with the build pipeline already has the
       // .compare-prose-inner / .card structure with the strong inside.

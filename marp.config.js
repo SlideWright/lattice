@@ -94,6 +94,39 @@ function verdictGridBadges(markdown) {
 }
 
 /**
+ * Marpit plugin: on `obligation-matrix` slides, wraps `[x]` / `[-]` / `[ ]`
+ * text inside <td> cells in `<span class="state pass|warn|fail">`. Mirrors
+ * verdictGridBadges but operates on table cells instead of nested list
+ * items — the obligation-matrix layout authors data as a markdown table.
+ * The shared `[x]`/`[-]`/`[ ]` grammar matches verdict-grid and checklist.
+ */
+function obligationMatrixBadges(markdown) {
+  markdown.core.ruler.after("marpit_slide_containers", "obligation_matrix_badges", (state) => {
+    let inMatrix = false;
+    let inTd = false;
+    for (const token of state.tokens) {
+      if (token.type === "marpit_slide_open") {
+        inMatrix = /\bobligation-matrix\b/.test(token.attrGet("class") || "");
+        inTd = false;
+        continue;
+      }
+      if (token.type === "marpit_slide_close") { inMatrix = false; continue; }
+      if (!inMatrix) continue;
+      if (token.type === "td_open") { inTd = true; continue; }
+      if (token.type === "td_close") { inTd = false; continue; }
+      if (token.type !== "inline" || !inTd || !token.children) continue;
+      const text = token.children.map(c => c.content || "").join("").trim();
+      const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
+      if (!m) continue;
+      const stateClass = m[1] === "x" ? "state pass" : m[1] === "-" ? "state warn" : "state fail";
+      const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
+      htmlToken.content = `<span class="${stateClass}">${m[2]}</span>`;
+      token.children = [htmlToken];
+    }
+  });
+}
+
+/**
  * Marpit plugin: on a `checklist` slide, transforms each top-level list item
  * whose text begins with `[x]`, `[-]`, or `[ ]` into:
  *
@@ -149,7 +182,7 @@ function checklistItemStates(markdown) {
  * Idempotent: skips items whose first inline child is already `strong_open`.
  */
 function slotLabelLift(markdown) {
-  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision|split-brief|split-metric|split-steps|split-compare|split-statement)\b/;
+  const SLOT_LAYOUTS = /\b(compare-prose|before-after|decision|split-brief|split-metric|split-steps|split-compare|split-statement|statute-stack|regulatory-update|authority-chain|redline)\b/;
   markdown.core.ruler.after("marpit_slide_containers", "slot_label_lift", (state) => {
     let active = false;
     let listDepth = 0;
@@ -436,6 +469,7 @@ module.exports = {
     marp.use(deckClassPropagate)
         .use(splitPanelCounter)
         .use(verdictGridBadges)
+        .use(obligationMatrixBadges)
         .use(checklistItemStates)
         .use(slotLabelLift)
         .use(glossaryListToTable)
@@ -473,6 +507,7 @@ module.exports.plugins = {
   deckClassPropagate,
   splitPanelCounter,
   verdictGridBadges,
+  obligationMatrixBadges,
   checklistItemStates,
   slotLabelLift,
   glossaryListToTable,

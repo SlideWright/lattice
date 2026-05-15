@@ -1160,12 +1160,16 @@ function parseSlide(raw, index) {
     }
   }
 
-  // decision / before-after: named-slot layouts where each top-level li is
-  // a card with a slot label (Build / Why-not / Before / After). The CSS
-  // keeps these as native ul/ol > li (no card div wrapper); the only post-
-  // process needed is lifting the leading text into <strong> so the
-  // labeled-corner-tag CSS triggers without authors typing `**…**`.
-  if (cls.includes('decision') || cls.includes('before-after')) {
+  // decision / before-after / statute-stack / regulatory-update /
+  // authority-chain / redline: named-slot layouts where each top-level li
+  // is a card with a slot label (Build / Before / Federal / Statute /
+  // Why this matters). The CSS keeps these as native ul/ol > li (no card
+  // div wrapper); the only post-process needed is lifting the leading
+  // text into <strong> so the labeled-corner-tag and slot-card CSS
+  // triggers without authors typing `**…**`.
+  if (cls.includes('decision') || cls.includes('before-after') ||
+      cls.includes('statute-stack') || cls.includes('regulatory-update') ||
+      cls.includes('authority-chain') || cls.includes('redline')) {
     html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (full, tag, inner) => {
       // Walk top-level <li>…</li> with depth tracking.
       const out = [];
@@ -1239,6 +1243,18 @@ function parseSlide(raw, index) {
     html = html.replace(/<li>\s*\[([x\- ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
       const bc = marker === 'x' ? 'badge pass' : marker === '-' ? 'badge warn' : 'badge fail';
       return `<li><span class="${bc}">${label.trim()}</span></li>`;
+    });
+  }
+
+  // obligation-matrix: transform [x]/[-]/[ ] prefixed td cell text into
+  // state spans. Mirrors verdictGridBadges but operates on table cells —
+  // the obligation-matrix layout authors data as a markdown table. The
+  // shared [x]/[-]/[ ] grammar matches verdict-grid and checklist; CSS
+  // draws filled/half/empty circle glyphs per state.
+  if (cls.includes('obligation-matrix')) {
+    html = html.replace(/<td>\s*\[([x\- ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
+      const sc = marker === 'x' ? 'state pass' : marker === '-' ? 'state warn' : 'state fail';
+      return `<td><span class="${sc}">${label.trim()}</span></td>`;
     });
   }
 
