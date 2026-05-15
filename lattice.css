@@ -110,6 +110,38 @@
   --c-mark:       #F6C700;
   --c-note:       #FFFBE6;
 
+  /* ── Status-signaling state tokens — universal defaults ───────────────
+   * `--pass`, `--warn`, `--fail` drive the state-token disc colours
+   * across checklist, verdict-grid, obligation-matrix, and roadmap.
+   * Each is a `light-dark()` pair so the same authoring grammar reads
+   * cleanly on light and dark canvases — themes that only flip
+   * `color-scheme: dark` (indaco-dark, cuoio-dark, …) pick up the dark
+   * variant automatically.
+   *
+   * Tuning rationale (see docs/notes/2026-05-15-state-token-palette.md):
+   *   - Warn moved from #92400E (H22, L31, burnt brown-amber) to
+   *     #B45309 (H32 amber-700) in light mode and #F97316 (orange-500)
+   *     in dark mode. Bumps hue 10° clear of red and lifts luminance
+   *     so warn ≠ fail at a glance — the burnt-amber/crimson clash
+   *     was the loudest "two colours that look the same" complaint
+   *     in the state-tokens demo deck.
+   *   - Fail stays at canonical alarm red in light mode (#991B1B) and
+   *     lifts to red-400 (#F87171) in dark for AAA contrast on dark bg.
+   *   - Pass stays at brand-friendly forest green (#2D6A3F) in light
+   *     mode and lifts to emerald-400 (#4ADE80) in dark.
+   *
+   * Themes override one or all of these with their own brand-toned
+   * variants (indaco picks --pass = brand-green-deep; magnolia picks
+   * --fail = brand-garnet-deep; cuoio and carbone re-tune the trio).
+   * Each override SHOULD use light-dark() pairs so dark canvases keep
+   * AA contrast — the universal default above is the example to follow.
+   *
+   * Background soft-tints (--pass-bg, --warn-bg, --fail-bg) live in
+   * each theme and derive from these via color-mix with 10% alpha. */
+  --pass: light-dark(#2D6A3F, #4ADE80);
+  --warn: light-dark(#B45309, #F97316);
+  --fail: light-dark(#991B1B, #F87171);
+
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
    * split-panel left rail, banner-tags, badges). Themes can override any

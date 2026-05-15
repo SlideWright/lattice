@@ -116,10 +116,13 @@
    * which would otherwise be white on sky blue (~1.7:1, fails AA). */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
 
-  /* ── Semantic signals ─────────────────────────────────────────────── */
-  --pass: var(--brand-green-deep); /* 6.50:1 on bg AA */
-  --fail: #991B1B;               /* 8.31:1 on bg AAA */
-  --warn: #92400E;               /* 7.09:1 on bg AAA */
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * --warn and --fail come from lattice.css :root (universal status
+   * palette, light-dark() pairs tuned for AA contrast on both canvas
+   * modes). --pass is overridden to indaco's brand-forest-green so the
+   * "done / shipped" tone stays in the brand family; dark mode lifts
+   * to a brighter forest variant for AA contrast on dark canvas. */
+  --pass: light-dark(var(--brand-green-deep), #6FCC4D);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);

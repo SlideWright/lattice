@@ -127,10 +127,16 @@
    * which would otherwise be white on bright gold (~2.3:1, fails AA). */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
 
-  /* ── Semantic signals ─────────────────────────────────────────────── */
-  --pass: var(--brand-green-deep); /* 6.06:1 on bg AA */
-  --fail: #9B1C1C;               /* 7.63:1 on bg AAA */
-  --warn: #925C00;               /* 5.24:1 on bg AA  */
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * Cuoio's leather-toned variants of the universal status trio. Each
+   * is a light-dark() pair: light values are AA+ on the cream canvas;
+   * dark values lift to AA+ on the espresso canvas. Warn stays in
+   * cuoio's saddle-gold family (clearly separated from fail's
+   * crimson — fixes the "warn and fail look alike" issue the original
+   * burnt-amber introduced). */
+  --pass: light-dark(var(--brand-green-deep), #6FCC4D);
+  --fail: light-dark(#9B1C1C, #F87171);
+  --warn: light-dark(#B47200, #F2A24A);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
@@ -372,7 +378,7 @@ section .hljs-strong { font-weight:700; }
   --c-warm-dark:  var(--brand-leather);  /* saddle outline                            */
   --c-cool-light: #E0D8CC;               /* deeper cream (was state-done + state-grid)*/
   --c-cool-dark:  #A69882;               /* muted taupe                               */
-  --c-alarm:      var(--fail);           /* 7.63:1 on bg AAA (was state-critical)     */
+  --c-alarm:      #9B1C1C;               /* mermaid alarm band — stays dark in both modes so white --c-ink-dark stays AA on top (decoupled from --fail, which lifts to a brighter red in dark mode for state-token contrast against dark canvas) */
   --c-alarm-dark: #7A1212;
   --c-mark:       var(--brand-leather);  /* saddle (was state-today + note-stroke)    */
   --c-note:       #F5EFE0;               /* warm-tinted aside surface                 */

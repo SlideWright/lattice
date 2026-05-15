@@ -147,6 +147,24 @@ Shipped now reads as alarm — finished workstreams that are still under load; p
 
 ---
 
+<!-- _class: obligation-matrix dark -->
+<!-- _footer: "obligation-matrix · default + dark canvas" -->
+
+## Same matrix on a dark canvas — colour AND shape both lift.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [/]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+`--pass / --warn / --fail` are `light-dark()` pairs in the universal palette. Dark canvases pick up brighter green / orange / red so the discs hold AA contrast against the dark bg. Hue separation between warn and fail is preserved at ~25° in both modes.
+
+---
+
 <!-- _class: closing -->
 <!-- _paginate: false -->
 <!-- _footer: '' -->
@@ -155,5 +173,6 @@ Shipped now reads as alarm — finished workstreams that are still under load; p
 
 `[x] [-] [ ] [/]` — universal. SHAPE carries the meaning; COLOUR carries
 reinforcement. Two SVG masks total, no font dependency. `.heat` flips the
-palette globally without touching the markdown. Every state-bearing
-layout speaks the same vocabulary.
+palette globally without touching the markdown. Light and dark canvases
+share one grammar; the universal trio is a `light-dark()` pair so
+both modes hold AA contrast.

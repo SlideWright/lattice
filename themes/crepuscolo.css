@@ -40,9 +40,12 @@
  *     author override wins the cascade — Marp `style:` directive, the
  *     `<!-- _class: dark -->` per-slide modifier, or the crepuscolo-dark
  *     variant theme.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ *   • Semantic signals (--pass/--fail/--warn) come from lattice.css as
+ *     light-dark() pairs (universal status palette). The legacy "kept
+ *     dark in both modes" rule existed when the checklist state glyph
+ *     was a white-stroke SVG inside the disc — that SVG is gone in the
+ *     universal state-token recipe (shape carries the signal). Dark
+ *     mode now gets brighter signal variants for AA contrast.
  */
 
 @import 'indaco';
@@ -78,10 +81,11 @@
    * plum on bright lavender. */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:8.43:1 / D:7.50:1 */
 
-  /* ── Semantic signals (kept dark in both modes; see contract note 3) ── */
-  --pass: #2D6A3F;
-  --fail: #991B1B;
-  --warn: #92400E;
+  /* ── Semantic signals — derived backgrounds only ───────────────────
+   * --pass/--warn/--fail are defined as light-dark() pairs in
+   * lattice.css :root (universal status palette). This theme inherits
+   * the defaults. The -bg soft tints stay theme-local so each palette
+   * can pick its own alpha. */
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
