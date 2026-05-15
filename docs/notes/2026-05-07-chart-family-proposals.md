@@ -1,8 +1,9 @@
 ---
 status: design-speculation
-version: 1
+version: 2
 supersedes: none
 companion: 2026-05-04-authoring-proposals.md
+last-status-update: 2026-05-15
 ---
 
 # Lattice — Chart-Family Layout Proposals
@@ -13,6 +14,13 @@ companion: 2026-05-04-authoring-proposals.md
 > - **`../../examples/gallery.md`** — canonical authoring examples that actually render.
 >
 > When this document and either of those disagree, the gallery and template reference win.
+>
+> **Status legend (added 2026-05-15).** Each proposal carries a tag:
+>
+> - **Shipped** — canonical reference in `templates.md`. Authoring shape may differ from the original sketch; templates.md wins.
+> - **Open** — not yet implemented; sketch below stands as the design starting point.
+>
+> The chart family has since grown beyond this catalogue: `quadrant` and `radar` shipped as chart-family members without going through these proposals. They are tracked in [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md).
 
 ---
 
@@ -27,6 +35,8 @@ The discipline test for inclusion is the same one the May 4 note named: _"only p
 ---
 
 ## 1. `timeline-list` — chronologies from pure list/sublist
+
+> **Shipped.** Canonical reference: [Template 29b — `timeline-list`](../references/templates.md#template-29-chart-family-progress-timeline-list-piechart-gantt-kanban).
 
 Lattice already ships an unstructured `timeline` layout. The proposal here is the **structured** sibling: a timeline whose markdown contract is a single ordered list, and whose visual richness is earned from the shape of the list itself — no Mermaid runtime, no DSL, no fenced block.
 
@@ -76,6 +86,8 @@ The escape hatch: when an author needs multi-track, branching, or curve-fitted d
 ---
 
 ## 2. `gantt` — schedules from list/sublist
+
+> **Shipped.** Canonical reference: [Template 29d — `gantt`](../references/templates.md#template-29-chart-family-progress-timeline-list-piechart-gantt-kanban).
 
 The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axis, time on the x-axis, bars at the intersection — and that is exactly the shape of a two-level list with date pills. No fenced block, no Mermaid `gantt` grammar, no per-renderer theming. The authoring contract is:
 
@@ -152,6 +164,8 @@ The same authoring discipline (`list/sublist + leading/trailing pill = chart`) e
 
 ### 3.1 `piechart` — share-of-whole from a flat list
 
+> **Shipped.** Canonical reference: [Template 29c — `piechart`](../references/templates.md#template-29-chart-family-progress-timeline-list-piechart-gantt-kanban).
+
 A pie / donut chart is a flat list where each item carries a numeric pill. The renderer sums the pills, sweeps wedges proportionally, and emits an SVG. Authors do not pre-compute percentages; the math is the renderer's job.
 
 ```markdown
@@ -185,6 +199,8 @@ A pie / donut chart is a flat list where each item carries a numeric pill. The r
 
 ### 3.2 `progress` — completion bars from list items
 
+> **Shipped.** Canonical reference: [Template 29a — `progress`](../references/templates.md#template-29-chart-family-progress-timeline-list-piechart-gantt-kanban).
+
 Many decks need a "where are we?" panel: three or four labelled progress bars stacked vertically. Today this gets faked with `stats` + emoji or a Mermaid timeline. The natural shape is a list with a percent pill.
 
 ```markdown
@@ -215,6 +231,8 @@ Many decks need a "where are we?" panel: three or four labelled progress bars st
 **Why this is not just `stats`.** `stats` is dimensionless KPI numbers (a number + a label). `progress` carries a 0-100 magnitude and a target that is meaningful to fill against — a different visual contract. Authors today pick `stats` because it is the closest thing; the linter would reject `92%` as a `stats` value because it is not a delta or a count.
 
 ### 3.3 `kanban` — boards from a three-level list
+
+> **Shipped.** Canonical reference: [Template 29e — `kanban`](../references/templates.md#template-29-chart-family-progress-timeline-list-piechart-gantt-kanban). Authoring contract migrated 2026-05-14 from 2-level + 3 trailing pills to a 3-level list with one pill per line (GitHub Projects nomenclature) — see the note below.
 
 A Kanban board is the natural cousin of `gantt`: top-level items are columns instead of swimlanes, sub-bullets are cards instead of bars. The time axis is replaced by status. Same primitives, transposed.
 
@@ -300,6 +318,8 @@ The discipline test for adding a layout is the one named in §1: _"only promote 
 
 ### 4.1 `funnel` — narrowing magnitude stages
 
+> **Open.** Not yet shipped. No real-deck request yet.
+
 Sales pipelines, conversion funnels, recruiting funnels, attention-to-action sequences. Same shape as `piechart` (flat list + magnitude pill) but the geometry is a stack of trapezoids whose width is proportional to the pill value, with a drop-off pill rendered between adjacent stages.
 
 ```markdown
@@ -319,6 +339,8 @@ Sales pipelines, conversion funnels, recruiting funnels, attention-to-action seq
 The trailing optional drop-off pill is sugar — if absent the renderer computes it. Modifiers: `inverted` (widening — adoption / coverage growth), `compact` / `loose` / `dark`.
 
 ### 4.2 `org` — hierarchies from nested lists
+
+> **Open.** Not yet shipped. Mermaid `flowchart TB` covers the use case for now.
 
 Nested unordered list = tree. Reporting structures, system component hierarchies, taxonomy slides. Today these get hand-built as Mermaid `flowchart TB` graphs; the authoring shape is already a list — no graph grammar required.
 
@@ -346,6 +368,8 @@ The escape hatch stays Mermaid `flowchart` for anything with cross-edges or non-
 
 ### 4.3 `heatmap` — categorical grid with intensity pills
 
+> **Open.** Not yet shipped. `obligation-matrix` (legal family) overlaps for binary status grids; full numeric-heatmap layout still pending.
+
 A two-axis grid where every cell carries a magnitude. Risk × impact, capability × team, calendar week × status. Authors fake this today with `compare-table` plus emoji or background-colour spans; the linter cannot validate it and the colour scale is inconsistent across decks.
 
 ```markdown
@@ -367,6 +391,8 @@ Each cell is a count pill with an optional status pill. Renderer reads the count
 
 ### 4.4 `q-and-a` — anticipated objections, paired
 
+> **Open.** Not yet shipped. `cards-stack` with `Q.` / `A.` prefixes covers it informally.
+
 Every meaningful deck ends with three or four expected questions and the team's prepared answer. Today these are faked with `cards-stack` and a `Q.` / `A.` prefix; the layout machinery does not know what it is, so the question and answer get the same visual weight and the slide reads as a flat list.
 
 ```markdown
@@ -385,6 +411,8 @@ Every meaningful deck ends with three or four expected questions and the team's 
 The top-level bullet is the question (renders larger, with a leading `Q.` chip); the sub-bullet is the answer (renders smaller, with a leading `A.` chip). Modifiers: `decision` (frames the answer card with an emphasis edge — for the question that determines the meeting outcome), `compact`.
 
 ### 4.5 `spectrum` — placement on a single axis
+
+> **Open.** Not yet shipped. `radar` covers multi-axis maturity placement; single-axis spectrum still pending.
 
 A horizontal axis with named endpoints and one or more markers. "Where does our team sit between centralised and federated?" "How mature is each capability?" Today this is hand-drawn in a diagram block.
 

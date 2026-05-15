@@ -1,8 +1,9 @@
 ---
 status: design-speculation
-version: 1
+version: 2
 supersedes: none
 companion: 2026-05-07-chart-family-proposals.md
+last-status-update: 2026-05-15
 ---
 
 # Lattice — Authoring Enhancement Proposals
@@ -15,6 +16,13 @@ companion: 2026-05-07-chart-family-proposals.md
 > When this document and either of those disagree, the gallery and template reference win. Examples in this file may use older shapes (e.g. `— _italic modifier_` patterns) that were superseded during implementation; treat them as historical context, not as patterns to copy.
 >
 > **Companion note.** The chart-family layouts (`timeline-list`, `gantt`, `piechart`, `progress`, `kanban`, plus adjacent candidates) drafted three days after this catalogue live in [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md). They follow the same component-model and pill discipline framed in Parts 1–2 of this note.
+>
+> **Status legend (added 2026-05-15).** Each Part 3 proposal carries a tag:
+>
+> - **Shipped** — canonical reference linked to `templates.md`. Authoring shape may differ from the original sketch below; templates.md wins.
+> - **Open** — not yet implemented; sketch below stands as the design starting point.
+>
+> Layouts that landed without going through this catalogue are tracked in [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md).
 
 ---
 
@@ -283,6 +291,8 @@ These are the layouts I would add next, in priority order. Every one is somethin
 
 ### 3.1 `matrix-2x2` — the 2×2 quadrant layout
 
+> **Shipped.** Canonical reference: the `matrix-2x2` entry under "New Layouts" in [templates.md](../references/templates.md).
+
 Used for: SWOT, Eisenhower, BCG growth-share, risk × impact, build-vs-buy quadrants, anything that splits two binary axes.
 
 ```markdown
@@ -309,6 +319,8 @@ Modifiers: `swot` (auto-labels the four quadrants S/W/O/T), `eisenhower` (Urgent
 
 ### 3.2 `decision` — the verdict slide
 
+> **Shipped.** Canonical reference: the `decision` entry under "New Layouts" in [templates.md](../references/templates.md).
+
 The "we picked X" slide. Heavier than `closing`, lighter than `featured`. Authors fake this today with `big-number` + a paragraph or with `compare-prose chosen`.
 
 ```markdown
@@ -330,6 +342,8 @@ A single decision verb in big display weight, three short justifications below. 
 
 ### 3.3 `roadmap` — multi-phase rollout
 
+> **Shipped, plus four modifiers.** Canonical reference: the `roadmap` entry in [templates.md](../references/templates.md). The default grid plus `status` / `horizons` / `swimlane` / `milestones` modifiers landed via [2026-05-12-roadmap-redesign.md](2026-05-12-roadmap-redesign.md), which is the implementation note for the modifier set.
+
 A grid: rows = workstreams, columns = phases, cells = deliverables. Authors today fake this with `compare-table`, but the visual emphasis on phase progression is missing.
 
 ```markdown
@@ -350,7 +364,7 @@ The first column is treated as a workstream label (sticky). Phase columns get ph
 
 Like `stats`, but with trend signals. For business decks where every number has a delta and a target.
 
-> **Shipped, with a different authoring shape.** During implementation the `— _italic modifier_` recipe shown below was replaced with a natural two-bullet structure (number heading + label bullet + optional target/trend bullet) — see Template 21 in `templates.md` and the `kpi` slide in `examples/gallery.md` for the canonical form. The example below is preserved as historical design context.
+> **Shipped, then redesigned wholesale.** The original `— _italic modifier_` recipe shown below was first replaced by a two-bullet structure, then the whole layout was re-conceived 2026-05-12 as one cohesive base with five layout modifiers (`briefing` / `ops` / `compliance` / `trajectory` / `spotlight`) plus `attention`. Canonical reference: the `kpi` entry in [templates.md](../references/templates.md); implementation note: [2026-05-12-kpi-redesign.md](2026-05-12-kpi-redesign.md). The example below is preserved as historical design context only.
 
 ```markdown
 <!-- _class: kpi -->
@@ -368,6 +382,8 @@ Like `stats`, but with trend signals. For business decks where every number has 
 Number, label, sub-line with target + trend. Trend arrows colour by direction. Modifiers: `target` (highlights gap), `trend` (sparkline placeholder).
 
 ### 3.5 `before-after` — explicit state-change slide
+
+> **Shipped.** Canonical reference: the `before-after` entry under "New Layouts" in [templates.md](../references/templates.md).
 
 Two halves with a big arrow between. Today authors use `compare-code before-after` for code, but there is no equivalent for prose.
 
@@ -388,6 +404,8 @@ Renders left card, large arrow, right card. Modifier `vertical` stacks them with
 
 ### 3.6 `principles` / `tenets` — declared values
 
+> **Shipped as `principles`.** Canonical reference: the `principles` entry under "New Layouts" in [templates.md](../references/templates.md). Counter modifiers (`lettered` / `roman` / `bullet`) all shipped per the original sketch. The `tenets` alias was dropped — `principles` is the only name.
+
 Several short proclamations stacked with numeric or roman prefix. Sparser than `cards-stack`, larger than `list`. Used for values pages, design tenets, codes of conduct.
 
 ```markdown
@@ -403,6 +421,8 @@ Several short proclamations stacked with numeric or roman prefix. Sparser than `
 Short body, 24-32px, line-height generous. Modifiers: `numbered` (default), `lettered`, `roman`, `bullet` (no prefix at all).
 
 ### 3.7 `actors` / `roles` — who does what
+
+> **Shipped as `actors`.** Canonical reference: the `actors` entry under "New Layouts" in [templates.md](../references/templates.md). The shipped role/actor mapping is the inverse of the original sketch (bold = responsibility, code = actor pill) — templates.md is ground truth.
 
 A list of actors with their responsibilities, formatted as role-tag chips + body. Today authors fake this with `cards-grid`, but the chip + role visual signal is specific.
 
@@ -422,6 +442,8 @@ A list of actors with their responsibilities, formatted as role-tag chips + body
 Strong = role name; inline-code = role tag (chip); body = responsibility.
 
 ### 3.8 `tldr` / `recap` — executive summary slide
+
+> **Shipped as `tldr`.** Canonical reference: the `tldr` entry under "New Layouts" in [templates.md](../references/templates.md). `numbered` modifier shipped per the sketch.
 
 A list of single-line takeaways with optional reference numbers ("→ slide 14"). Used at the top of a section or as the opening of an executive deck.
 
@@ -443,6 +465,8 @@ Modifier: `numbered` adds `01.` prefix.
 
 ### 3.9 `agenda` — auto-numbered table of contents
 
+> **Shipped.** Canonical reference: the `agenda` entry under "New Layouts" in [templates.md](../references/templates.md). The `progress N` "you are here" modifier shipped as `progress-N` (hyphenated, N ∈ 1–9).
+
 Used between sections in long decks. Author writes section titles; the layout numbers them and shows the page (when paired with paginate metadata).
 
 ```markdown
@@ -459,6 +483,8 @@ Used between sections in long decks. Author writes section titles; the layout nu
 Modifier: `progress N` highlights the Nth row as "you are here."
 
 ### 3.10 `glossary` — term/definition pairs
+
+> **Shipped.** Canonical reference: [Template 27 — `glossary`](../references/templates.md#template-27-glossary).
 
 Term left, definition right, two-column. Useful for spec / protocol / jargon-heavy slides.
 
@@ -477,6 +503,8 @@ Term left, definition right, two-column. Useful for spec / protocol / jargon-hea
 
 ### 3.11 `legend` — the explicit key
 
+> **Open.** Not yet shipped. No real-deck requests yet; deferred.
+
 Small layout, very high payoff for technical decks. A row of colour/shape markers with labels, optionally a body sentence below.
 
 ```markdown
@@ -490,7 +518,9 @@ Small layout, very high payoff for technical decks. A row of colour/shape marker
 - **Filled diamond** `policy gate`
 ```
 
-### 3.12 `checklist` — completion summary  *(implemented — see Template 28 in [templates.md](../references/templates.md#template-28-checklist))*
+### 3.12 `checklist` — completion summary
+
+> **Shipped.** Canonical reference: [Template 28 — `checklist`](../references/templates.md#template-28-checklist). The state vocabulary (`[x]` / `[-]` / `[ ]` / `[/]`) became universal across `checklist`, `roadmap`, `verdict-grid`, `obligation-matrix` — see `examples/state-tokens.md`.
 
 Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[-]`).
 
@@ -510,6 +540,8 @@ States colour-mapped: ✓ pass, – warn, ☐ pending. Reuses the `--pass`/`--wa
 
 ### 3.13 `manifesto` — formal proclamation
 
+> **Open.** Not yet shipped. `principles` covers most of the demand; `manifesto` remains its own design if a deck needs the heavier ceremonial register.
+
 Cousin of `principles`, but each line is a complete declarative sentence in display weight. Sparser, more ceremonial. Use for values pages or the literal manifesto slide.
 
 ```markdown
@@ -524,6 +556,8 @@ Cousin of `principles`, but each line is a complete declarative sentence in disp
 ```
 
 ### 3.14 `footnote` / `references`
+
+> **Open.** Not yet shipped. Low priority; `list compact` covers the use case adequately for now.
 
 The last-slide-of-section citation list. Numbered, mono, smaller font. Today authors fake this with `list compact` but the citation format is consistent enough to deserve its own layout.
 
@@ -610,18 +644,18 @@ Everything else is additive.
 
 If I had to pick the order to ship this, it is roughly:
 
-1. **`compact` / `loose` / `accent` cross-cutting modifiers.** Highest leverage; trivially defined as variable overrides.
-2. **`list-steps` family (`phase` / `stage` / `milestone` / `rank` / `tier` / `vertical`).** User-prompted; clearest authoring win; isolated CSS surface.
-3. **`compare-prose` family (`chosen` / `rejected` / `decision` / `three` / `vertical`).** High user-deck impact; the layout most authors abuse today.
-4. **`cards-stack horizontal`** + **`cards-grid three`/`four`.** The "shape" modifiers — small surface, big payoff.
-5. **`mirror` everywhere.** Renames `image left` and extends to `featured`, `cards-side`, `split-panel`.
-6. **`numbered` on bookend layouts.** CSS-counter scoped per class; trivial implementation.
-7. **The component manifest + snippets.** Tooling.
-8. **The linter.** Tooling.
-9. **First wave of new layouts: `matrix-2x2`, `decision`, `before-after`, `principles`.** The four with clearest authoring demand from real decks.
-10. **Second wave: `roadmap`, `kpi`, `agenda`, `actors`, `tldr`.** Higher complexity, narrower fit.
-11. **Third wave: `glossary`, `legend`, `checklist`, `manifesto`, `footnote`.** Niche but cheap.
-12. **The modifier gallery.** Once 1-9 land, the showroom writes itself from the manifest.
+1. **`compact` / `loose` / `accent` cross-cutting modifiers.** Highest leverage; trivially defined as variable overrides. — **Open.** The closest thing live is the universal state-token grammar (see §3.12); the density/emphasis tiers remain unshipped.
+2. **`list-steps` family (`phase` / `stage` / `milestone` / `rank` / `tier` / `vertical`).** User-prompted; clearest authoring win; isolated CSS surface. — **Partially shipped.** `phase` and `vertical` are in `examples/gallery.md`; `stage` / `milestone` / `rank` / `tier` not verified.
+3. **`compare-prose` family (`chosen` / `rejected` / `decision` / `three` / `vertical`).** High user-deck impact; the layout most authors abuse today. — **Shipped.** `chosen` and `decision` confirmed in `templates.md` + `gallery-guide.md`.
+4. **`cards-stack horizontal`** + **`cards-grid three`/`four`.** The "shape" modifiers — small surface, big payoff. — **Shipped.** All three confirmed in `templates.md` + galleries.
+5. **`mirror` everywhere.** Renames `image left` and extends to `featured`, `cards-side`, `split-panel`. — **Shipped.** `image mirror`, `split-panel mirror` confirmed in galleries; the global `mirror` cross-cutting alias was not adopted (each layout exposes `mirror` independently).
+6. **`numbered` on bookend layouts.** CSS-counter scoped per class; trivial implementation. — **Shipped.** `divider numbered` and `subtopic numbered` confirmed in galleries.
+7. **The component manifest + snippets.** Tooling. — **Open.** No `components.json`, no snippet pack.
+8. **The linter.** Tooling. — **Open.** No `lattice-lint` CLI.
+9. **First wave of new layouts: `matrix-2x2`, `decision`, `before-after`, `principles`.** The four with clearest authoring demand from real decks. — **Shipped (4/4).** All four landed; see §3.1/§3.2/§3.5/§3.6 above.
+10. **Second wave: `roadmap`, `kpi`, `agenda`, `actors`, `tldr`.** Higher complexity, narrower fit. — **Shipped (5/5).** All five landed; `roadmap` and `kpi` got dedicated redesign notes for their modifier sets.
+11. **Third wave: `glossary`, `legend`, `checklist`, `manifesto`, `footnote`.** Niche but cheap. — **Partially shipped (2/5).** `glossary` and `checklist` landed (Templates 27 + 28); `legend`, `manifesto`, `footnote` remain Open per §3.11/§3.13/§3.14.
+12. **The modifier gallery.** Once 1-9 land, the showroom writes itself from the manifest. — **Open.** Depends on the manifest (#7).
 
 ### 4.7 What I am deliberately not proposing
 
