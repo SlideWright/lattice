@@ -5079,6 +5079,1230 @@ section.checklist > ol > li em {
  * in the row body or use a below paragraph. Authoring guidance lives
  * in templates.md (system → "Universal pill").
  * ──────────────────────────────────────────────────────────────────── */
+
+/* ════════════════════════════════════════════════════════════════════════
+ * LEGAL & REGULATORY LAYOUTS — six anchors for lawyers, privacy and
+ * compliance audiences. Boardroom altitude: pin-cite + plain-English
+ * body, no paralegal density. Layouts:
+ *   statute-stack       Federal / State / Local jurisdictional comparison
+ *   citation-card       Verbatim quote + plain-English + obligation
+ *   obligation-matrix   Regimes × obligations (table-driven)
+ *   regulatory-update   Period-bounded changelog / what's new
+ *   redline             Textual diff (insertions, deletions, rationale)
+ *   authority-chain     Statute → Regulation → Guidance → Case
+ *
+ * Each anchor ships a default plus four visual modifiers. The author
+ * writes the same markdown for the variants of one anchor wherever the
+ * geometry permits; geometry-shifting variants (table vs list) are
+ * called out per-anchor below.
+ *
+ * Citation convention: a leading inline `code` element renders as a
+ * monospace citation chip ("hanging cite") — non-pill, body-foreground.
+ * A trailing inline `code` on a row remains a status pill via the
+ * universal pill rule (this section keeps these layouts off the
+ * universal deny list so the recipe fires for free).
+ * ──────────────────────────────────────────────────────────────────── */
+
+/* ── STATUTE-STACK ────────────────────────────────────────────────────
+ * <!-- _class: statute-stack -->
+ *
+ * - **Federal** `15 U.S.C. §6501`
+ *   - Headline obligation in plain English.
+ *   - `Enforced 2024`
+ * - **State**   `Cal. Civ. Code §1798.100`
+ *   - …
+ * - **Local**   `NYC §22-1201`
+ *   - …
+ *
+ * Default = three equal vertical rails (`rails`). Modifiers reshape the
+ * same DOM:  .hierarchy (visual authority pyramid), .bands (horizontal
+ * full-width rows), .preemption (arrowed cascade), .lane (markdown
+ * table — see authoring rule below the base block).
+ * ──────────────────────────────────────────────────────────────────── */
+section.statute-stack { display:flex; flex-direction:column; }
+section.statute-stack h2 { margin-bottom:var(--sp-md); }
+section.statute-stack > ul,
+section.statute-stack > ol {
+  list-style:none; padding:0; margin:0;
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:var(--sp-md); flex:1;
+}
+section.statute-stack > ul > li,
+section.statute-stack > ol > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-top:3px solid var(--jur-accent, var(--accent));
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+  color:var(--text-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-base);
+  font-weight:400;
+}
+section.statute-stack > ul > li::marker,
+section.statute-stack > ol > li::marker { content:''; }
+/* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
+ * sienna, Local = warm slate. Cycles after three. */
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--c4-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--c6-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--c1-dark); }
+/* Jurisdiction label (Federal/State/Local) — eyebrow chrome. */
+section.statute-stack > ul > li > strong,
+section.statute-stack > ol > li > strong {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--jur-accent, var(--accent));
+}
+/* Hanging citation chip — first inline code on the title line. Non-
+ * pill: lives on its own line under the jurisdiction label. */
+section.statute-stack > ul > li > code:first-of-type,
+section.statute-stack > ol > li > code:first-of-type {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  color:var(--text-heading);
+  background:none; border:none; padding:0;
+  margin-top:-0.234375cqi;
+  letter-spacing:0.02em;
+}
+/* Body — nested ul becomes the obligation copy. */
+section.statute-stack > ul > li > ul,
+section.statute-stack > ol > li > ul,
+section.statute-stack > ul > li > ol,
+section.statute-stack > ol > li > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  flex:1;
+}
+section.statute-stack > ul > li > :is(ul, ol) > li,
+section.statute-stack > ol > li > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+  color:var(--text-body);
+}
+/* Status pill — trailing inline code on the last body line. */
+section.statute-stack > ul > li > :is(ul, ol) > li > code:last-child,
+section.statute-stack > ol > li > :is(ul, ol) > li > code:last-child {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.156cqi 0.625cqi;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--jur-accent, var(--accent));
+  border:1px solid var(--jur-accent, var(--accent));
+}
+
+/* .hierarchy — vertical stack, Federal full-tall, State mid, Local short. */
+section.statute-stack.hierarchy > ul,
+section.statute-stack.hierarchy > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:1.5fr 1fr 0.7fr;
+}
+section.statute-stack.hierarchy > ul > li,
+section.statute-stack.hierarchy > ol > li {
+  border-top:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-lg);
+  align-items:start;
+}
+section.statute-stack.hierarchy > :is(ul, ol) > li > strong { grid-column:1; padding-top:0.234375cqi; }
+section.statute-stack.hierarchy > :is(ul, ol) > li > code:first-of-type { grid-column:1; font-size:var(--fs-xs); }
+section.statute-stack.hierarchy > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; grid-row:1 / span 3; }
+
+/* .bands — three horizontal full-width rows: badge | body | status. */
+section.statute-stack.bands > ul,
+section.statute-stack.bands > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:1fr;
+}
+section.statute-stack.bands > ul > li,
+section.statute-stack.bands > ol > li {
+  border-top:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  display:grid;
+  grid-template-columns:11cqi 1fr auto;
+  column-gap:var(--sp-lg);
+  align-items:center;
+}
+section.statute-stack.bands > :is(ul, ol) > li > strong {
+  grid-column:1;
+  font-size:var(--fs-md);
+  letter-spacing:0.08em;
+  align-self:center;
+}
+section.statute-stack.bands > :is(ul, ol) > li > code:first-of-type {
+  grid-column:2; grid-row:1;
+  display:inline; margin:0;
+  font-size:var(--fs-sm);
+  align-self:end;
+}
+section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
+  grid-column:2; grid-row:2;
+  align-self:start;
+}
+
+/* .preemption — vertical stack with arrows between cards. */
+section.statute-stack.preemption > ul,
+section.statute-stack.preemption > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:auto;
+  gap:0;
+  align-content:center;
+}
+section.statute-stack.preemption > ul > li,
+section.statute-stack.preemption > ol > li {
+  border:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  border-top:1px solid var(--border);
+  position:relative;
+  margin-bottom:var(--sp-lg);
+}
+section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
+  content:'↓';
+  position:absolute;
+  left:50%; bottom:calc(-1 * var(--sp-lg));
+  transform:translate(-50%, 50%);
+  font-size:var(--fs-xl);
+  font-weight:300;
+  color:var(--accent);
+  line-height:1;
+  background:var(--bg);
+  padding:0 var(--sp-xs);
+  z-index:1;
+}
+section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0; }
+
+/* .lane — markdown table; columns are aspects (cite, obligation, status).
+ * Authoring example:
+ *   | Jurisdiction | Citation              | Headline obligation       | Status      |
+ *   | ------------ | --------------------- | ------------------------- | ----------- |
+ *   | Federal      | 15 U.S.C. §6501       | Parental consent <13 data | In effect   |
+ *   | State        | Cal. Civ. Code §1798  | Notice + opt-out + DSAR   | Enforced    |
+ *   | Local        | NYC §22-1201          | Annual AEDT bias audit    | Effective   |
+ */
+section.statute-stack.lane > ul,
+section.statute-stack.lane > ol { display:none; }
+section.statute-stack.lane table {
+  width:100%; border-collapse:collapse;
+  flex:1; font-size:var(--fs-body);
+  table-layout:auto;
+}
+section.statute-stack.lane thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.statute-stack.lane thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  padding:0.625cqi var(--sp-sm);
+  text-align:left;
+}
+section.statute-stack.lane td {
+  padding:var(--sp-sm) var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.statute-stack.lane td:first-child {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--lane-jur, var(--accent));
+  white-space:nowrap;
+}
+section.statute-stack.lane td:nth-child(2) {
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  color:var(--text-heading);
+  white-space:nowrap;
+}
+section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--c4-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--c6-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--c1-dark); }
+section.statute-stack.lane tbody tr > td:first-child {
+  border-left:3px solid var(--lane-jur, var(--accent));
+  padding-left:var(--sp-md);
+}
+section.statute-stack.lane td:last-child {
+  text-align:right;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  letter-spacing:0.04em;
+  color:var(--text-muted);
+  white-space:nowrap;
+}
+
+/* ── CITATION-CARD ────────────────────────────────────────────────────
+ * Three-band rhythm: verbatim quote → plain-English translate → obligation.
+ *
+ * <!-- _class: citation-card -->
+ * ## Headline.
+ * `Cal. Civ. Code §1798.140(o) · CCPA`
+ * > "Personal information" means information that identifies, relates
+ * > to, describes, is capable of being associated with…
+ * - In plain English: any data tied to a household or device, not just
+ *   to a named person.
+ * - **What we must do** Treat household-level identifiers as PI in our
+ *   notice, retention, and DSAR workflows.
+ *
+ * Variants: .split, .pull-quote, .margin, .triptych.
+ * ──────────────────────────────────────────────────────────────────── */
+section.citation-card { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.citation-card h2 { margin-bottom:var(--sp-xs); }
+/* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
+section.citation-card > p:has(> code:only-child) {
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--accent);
+}
+section.citation-card > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0;
+  color:inherit; font-size:inherit;
+}
+/* Verbatim quote — blockquote, serif italic, accent rule. */
+section.citation-card > blockquote {
+  margin:0;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:none;
+  border-left:4px solid var(--accent);
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+  font-family:var(--font-display);
+  font-size:var(--fs-md);
+  font-style:italic;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+}
+section.citation-card > blockquote > p { margin:0; }
+section.citation-card > blockquote > p + p { margin-top:var(--sp-xs); }
+/* Translation — first list, body sans, muted heading. */
+section.citation-card > ul,
+section.citation-card > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1;
+}
+section.citation-card > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  line-height:var(--lh-relaxed);
+  color:var(--text-body);
+}
+section.citation-card > :is(ul, ol) > li::marker { content:''; }
+/* The "what we must do" item carries a strong label as the eyebrow. */
+section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--accent-soft);
+  border-radius:var(--radius-md);
+  border-left:4px solid var(--accent);
+  color:var(--text-heading);
+  font-weight:500;
+}
+section.citation-card > :is(ul, ol) > li > strong:first-child {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:0.234375cqi;
+}
+
+/* .split — verbatim left, translate+do right. */
+section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); grid-template-rows:auto 1fr; }
+section.citation-card.split h2 { grid-column:1 / -1; }
+section.citation-card.split > p:has(> code:only-child) { grid-column:1; grid-row:2; align-self:start; }
+section.citation-card.split > blockquote { grid-column:1; grid-row:2; align-self:stretch; margin-top:var(--sp-lg); }
+section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
+
+/* .pull-quote — hero quote dominant. */
+section.citation-card.pull-quote > blockquote {
+  font-size:var(--fs-xl);
+  line-height:var(--lh-snug);
+  padding:var(--sp-lg) var(--sp-xl);
+  background:none;
+  border-left:6px solid var(--accent);
+  position:relative;
+  flex:1; display:flex; align-items:center;
+}
+section.citation-card.pull-quote > blockquote::before {
+  content:'\201C';
+  position:absolute;
+  top:-0.78cqi; left:0;
+  font-family:var(--font-display);
+  font-size:var(--fs-hero);
+  line-height:1;
+  color:var(--accent-soft);
+  z-index:-1;
+}
+section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
+
+/* .margin — quote center, citation in left margin, "what" in right margin. */
+section.citation-card.margin {
+  display:grid;
+  grid-template-columns:18cqi 1fr 22cqi;
+  column-gap:var(--sp-lg);
+  grid-template-rows:auto 1fr;
+}
+section.citation-card.margin h2 { grid-column:1 / -1; }
+section.citation-card.margin > p:has(> code:only-child) {
+  grid-column:1; grid-row:2;
+  align-self:start;
+  text-align:right;
+  font-size:var(--fs-xs);
+  padding-top:var(--sp-md);
+}
+section.citation-card.margin > blockquote {
+  grid-column:2; grid-row:2;
+  background:none; padding:var(--sp-md) 0;
+  border-left:none;
+  border-top:1px solid var(--accent);
+  border-bottom:1px solid var(--accent);
+  text-align:center; align-self:center;
+  font-size:var(--fs-lg);
+}
+section.citation-card.margin > :is(ul, ol) {
+  grid-column:3; grid-row:2;
+  align-self:center;
+  gap:var(--sp-xs);
+}
+section.citation-card.margin > :is(ul, ol) > li {
+  padding:0;
+  background:none;
+  border-left:3px solid var(--accent);
+  padding-left:var(--sp-md);
+  font-size:var(--fs-sm);
+}
+section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
+  background:none; padding-left:var(--sp-md);
+  border-left:3px solid var(--accent);
+}
+
+/* .triptych — three side-by-side cards: Quote / Translate / Do.
+ * Author shape: regular author shape, but the blockquote becomes col 1,
+ * the first non-do li becomes col 2, the do li becomes col 3. */
+section.citation-card.triptych {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych h2 { grid-column:1 / -1; }
+section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
+section.citation-card.triptych > blockquote {
+  grid-column:1; grid-row:3;
+  font-size:var(--fs-body);
+  background:var(--bg-alt);
+  border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) {
+  grid-column:2 / span 2; grid-row:3;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
+  background:var(--accent-soft);
+  border-color:var(--accent);
+}
+
+/* ── OBLIGATION-MATRIX ────────────────────────────────────────────────
+ * Markdown table layout. Rows = regulations, columns = obligations.
+ *
+ * <!-- _class: obligation-matrix -->
+ * | Regulation | Notice | Consent | Retention | Breach | DSAR |
+ * | ---------- | :----: | :-----: | :-------: | :----: | :--: |
+ * | CCPA       | ●      | ◐       | ●         | ●      | ●    |
+ *
+ * The default uses cell glyphs (●/◐/○ or text). Variants: .heat (cell
+ * fills), .pills (cell pills), .lanes (row stripes), .asymmetric (cards).
+ * ──────────────────────────────────────────────────────────────────── */
+section.obligation-matrix { display:flex; flex-direction:column; }
+section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
+section.obligation-matrix table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:var(--fs-body);
+  flex:1;
+  table-layout:auto;
+}
+section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.obligation-matrix thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  padding:0.46875cqi var(--sp-sm) 0.78125cqi;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+section.obligation-matrix thead th:first-child { text-align:left; }
+section.obligation-matrix td {
+  padding:0.78125cqi var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  text-align:center;
+  vertical-align:middle;
+  color:var(--text-body);
+}
+section.obligation-matrix td:first-child {
+  text-align:left;
+  font-weight:700;
+  color:var(--text-heading);
+  white-space:nowrap;
+  padding-left:var(--sp-md);
+}
+/* Cell glyph styling for the default ●/◐/○ characters. */
+section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
+  background:color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+/* .heat — cells filled with a warm/cool intensity ramp. The author writes
+ * a word cue and HTML class hooks via the .applies / .partial / .exempt
+ * patterns below; but the no-class default is to ramp by text length —
+ * a hack we avoid. Use HTML: `<td class="applies">required</td>`. The
+ * pragmatic way: still markdown table, with author writing the right
+ * word, and the rule below paints by content via :has selectors. */
+section.obligation-matrix.heat td:not(:first-child) {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--c-ink-light);
+}
+section.obligation-matrix.heat tbody tr td:not(:first-child) { background:var(--bg-alt); color:var(--text-muted); }
+/* Heat states. Author embeds the state via an inline wrapper that the
+ * CSS picks up via :has(). The conventions for non-first-column cells:
+ *   **applies**  — full obligation in force (saturated red ramp)
+ *   *partial*    — partial / conditional (amber ramp)
+ *   `exempt`     — explicit exemption (green ramp)
+ *   plain text   — N/A or commentary (muted)
+ * Single short word per cell; the cue is the wrapper, not the prose. */
+section.obligation-matrix.heat td:has(> strong:only-child):not(:first-child) {
+  background:color-mix(in srgb, var(--fail) 22%, var(--bg));
+  color:var(--fail);
+}
+section.obligation-matrix.heat td:has(> em:only-child):not(:first-child) {
+  background:color-mix(in srgb, var(--warn) 20%, var(--bg));
+  color:var(--warn);
+}
+section.obligation-matrix.heat td:has(> code:only-child):not(:first-child) {
+  background:color-mix(in srgb, var(--pass) 18%, var(--bg));
+  color:var(--pass);
+}
+section.obligation-matrix.heat td > strong:only-child,
+section.obligation-matrix.heat td > em:only-child,
+section.obligation-matrix.heat td > code:only-child {
+  font-style:normal;
+  background:none; border:none; padding:0;
+  color:inherit;
+  font-family:var(--font-mono);
+  font-weight:700;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+
+/* .pills — each non-first cell is a status pill. */
+section.obligation-matrix.pills td:not(:first-child) > * { display:inline-block; }
+section.obligation-matrix.pills td:not(:first-child) {
+  background:none;
+  padding:0.46875cqi var(--sp-xs);
+}
+section.obligation-matrix.pills td:not(:first-child) code,
+section.obligation-matrix.pills td:not(:first-child) strong {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.234375cqi 0.78125cqi;
+  border-radius:999px;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  color:var(--text-body);
+  white-space:nowrap;
+}
+section.obligation-matrix.pills tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
+
+/* .lanes — categorical row stripes. */
+section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--c1-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--c2-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--c3-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--c4-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--c5-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--c6-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--c7-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--c8-dark); }
+section.obligation-matrix.lanes tbody tr > td:first-child {
+  border-left:4px solid var(--lane-hue, var(--accent));
+  color:var(--lane-hue, var(--text-heading));
+}
+section.obligation-matrix.lanes tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
+section.obligation-matrix.lanes td:not(:first-child) { font-family:var(--font-mono); font-size:var(--fs-sm); }
+
+/* .asymmetric — sticky reg column + cards. The markdown is still a
+ * table; we re-style the cells as card-feel boxes. */
+section.obligation-matrix.asymmetric table { border-spacing:var(--sp-xs) var(--sp-xs); border-collapse:separate; }
+section.obligation-matrix.asymmetric thead { display:none; }
+section.obligation-matrix.asymmetric tbody tr {
+  display:grid;
+  grid-template-columns:14cqi repeat(auto-fit, minmax(0, 1fr));
+  background:none;
+}
+section.obligation-matrix.asymmetric td {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-sm) var(--sp-md);
+  text-align:left;
+  font-size:var(--fs-sm);
+  line-height:var(--lh-snug);
+}
+section.obligation-matrix.asymmetric tbody tr:nth-child(odd) td { background:var(--bg-alt); }
+section.obligation-matrix.asymmetric td:first-child {
+  background:var(--accent-soft);
+  border-color:var(--accent);
+  color:var(--accent);
+  font-family:var(--font-mono);
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  align-self:stretch;
+  display:flex; align-items:center;
+}
+
+/* ── REGULATORY-UPDATE ────────────────────────────────────────────────
+ * Period-bounded changelog. "What's new" rhythm.
+ *
+ * <!-- _class: regulatory-update -->
+ * `Q1 2026 · Federal · State · International`
+ * 1. **EU AI Act** `Title III · High-risk systems`
+ *    - Conformity-assessment pre-market obligation took effect.
+ *    - `Tier 1 · Aug 2026`
+ * 2. **FTC Order** `In re BetterHelp · §5 unfairness`
+ *    - …
+ *
+ * Default = vertical changelog (numbered, citation chip, body, impact pill).
+ * Variants: .cards, .timeline, .diff-bands, .priority.
+ * ──────────────────────────────────────────────────────────────────── */
+section.regulatory-update { display:flex; flex-direction:column; }
+section.regulatory-update h2 { margin-bottom:var(--sp-xs); }
+section.regulatory-update > p:has(> code:only-child) {
+  margin:0 0 var(--sp-md);
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  letter-spacing:0.06em;
+  color:var(--accent);
+}
+section.regulatory-update > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0; color:inherit;
+}
+section.regulatory-update > ol,
+section.regulatory-update > ul {
+  list-style:none; padding:0; margin:0;
+  counter-reset:upd;
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+  flex:1;
+}
+section.regulatory-update > :is(ol, ul) > li {
+  counter-increment:upd;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  column-gap:var(--sp-md);
+  align-items:start;
+  padding:0.625cqi var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+  color:var(--text-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+}
+section.regulatory-update > :is(ol, ul) > li::marker { content:''; }
+section.regulatory-update > :is(ol, ul) > li::before {
+  content:counter(upd, decimal-leading-zero);
+  grid-column:1; grid-row:1 / span 2;
+  align-self:start;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.04em;
+  padding-top:0.156cqi;
+}
+section.regulatory-update > :is(ol, ul) > li > strong {
+  grid-column:2; grid-row:1;
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--text-heading);
+}
+section.regulatory-update > :is(ol, ul) > li > code:first-of-type {
+  grid-column:2; grid-row:1;
+  justify-self:start;
+  margin-left:var(--sp-sm);
+  font-family:var(--font-mono);
+  font-size:var(--fs-xs);
+  font-weight:600;
+  color:var(--text-muted);
+  background:none; border:none; padding:0;
+}
+section.regulatory-update > :is(ol, ul) > li > ul,
+section.regulatory-update > :is(ol, ul) > li > ol {
+  grid-column:2; grid-row:2;
+  list-style:none; padding:0; margin:var(--sp-xs) 0 0;
+  display:flex; flex-direction:column; gap:0.234375cqi;
+}
+section.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+}
+section.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li > code:last-child {
+  margin-left:auto;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.156cqi 0.625cqi;
+  border-radius:999px;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+
+/* .cards — items as 2x2 grid of cards. */
+section.regulatory-update.cards > :is(ol, ul) {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--sp-md);
+}
+section.regulatory-update.cards > :is(ol, ul) > li {
+  grid-template-columns:auto 1fr;
+  grid-template-rows:auto auto 1fr;
+  padding:var(--sp-md);
+}
+section.regulatory-update.cards > :is(ol, ul) > li::before { grid-row:1; }
+section.regulatory-update.cards > :is(ol, ul) > li > strong { grid-row:1; grid-column:2; }
+section.regulatory-update.cards > :is(ol, ul) > li > code:first-of-type {
+  grid-row:2; grid-column:2;
+  margin-left:0; padding-top:0.234375cqi;
+}
+section.regulatory-update.cards > :is(ol, ul) > li > :is(ul, ol) {
+  grid-row:3; grid-column:1 / -1;
+  margin-top:var(--sp-sm);
+}
+
+/* .timeline — horizontal row of timestamped milestones. */
+section.regulatory-update.timeline > :is(ol, ul) {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow:column;
+  gap:var(--sp-md);
+  position:relative;
+}
+section.regulatory-update.timeline > :is(ol, ul)::before {
+  content:'';
+  position:absolute;
+  top:1.4cqi; left:5cqi; right:5cqi;
+  height:2px;
+  background:var(--accent-soft);
+  z-index:0;
+}
+section.regulatory-update.timeline > :is(ol, ul) > li {
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-top:none;
+  padding-top:var(--sp-lg);
+  position:relative;
+}
+section.regulatory-update.timeline > :is(ol, ul) > li::before {
+  position:absolute; top:0; left:50%; transform:translate(-50%, -50%);
+  background:var(--accent); color:var(--on-accent);
+  border-radius:999px;
+  padding:0.234375cqi 0.78125cqi;
+  z-index:1;
+}
+section.regulatory-update.timeline > :is(ol, ul) > li > strong { font-size:var(--fs-body); }
+section.regulatory-update.timeline > :is(ol, ul) > li > code:first-of-type { margin-left:0; }
+section.regulatory-update.timeline > :is(ol, ul) > li > :is(ul, ol) { margin-top:var(--sp-xs); }
+
+/* .diff-bands — sections by change kind: ADDED / AMENDED / REPEALED / ENFORCED.
+ * Author writes h3 section headers within the slide. */
+section.regulatory-update.diff-bands > :is(ol, ul) > li { border-left-width:4px; padding:var(--sp-xs) var(--sp-md); background:none; border-color:transparent; border-bottom:1px solid var(--border); border-radius:0; }
+section.regulatory-update.diff-bands > :is(ol, ul) > li::before { display:none; }
+section.regulatory-update.diff-bands > h3 {
+  margin:var(--sp-md) 0 var(--sp-xs);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  padding-bottom:0.234375cqi;
+  border-bottom:1px solid var(--accent);
+}
+section.regulatory-update.diff-bands > h3:first-of-type { margin-top:0; }
+section.regulatory-update.diff-bands > h3:nth-of-type(8n+1) { color:var(--pass); border-color:var(--pass); }
+section.regulatory-update.diff-bands > h3:nth-of-type(8n+2) { color:var(--warn); border-color:var(--warn); }
+section.regulatory-update.diff-bands > h3:nth-of-type(8n+3) { color:var(--fail); border-color:var(--fail); }
+section.regulatory-update.diff-bands > h3:nth-of-type(8n+4) { color:var(--accent); border-color:var(--accent); }
+
+/* .priority — tiered priority badges. */
+section.regulatory-update.priority > :is(ol, ul) > li::before {
+  content:'TIER ' counter(upd);
+  background:var(--accent);
+  color:var(--on-accent);
+  border-radius:999px;
+  padding:0.234375cqi 0.625cqi;
+  font-size:var(--fs-label);
+}
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(1) { border-left-color:var(--fail); }
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(1)::before { background:var(--fail); }
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(2) { border-left-color:var(--warn); }
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(2)::before { background:var(--warn); }
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
+section.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }
+
+/* ── REDLINE ──────────────────────────────────────────────────────────
+ * Textual diff. Uses <ins> / <del> HTML (or ~~md~~ for deletions).
+ *
+ * <!-- _class: redline -->
+ * `Cal. Civ. Code §1798.130 · amendment SB-362`
+ * > A business shall <del>provide</del> <ins>publish on its homepage</ins>
+ * > a clear and conspicuous link <ins>titled "Your Privacy Choices"</ins>
+ * > that enables a consumer to opt out…
+ *
+ * Variants: .split (old | new), .annotated (numbered margin notes),
+ * .stacked (old block atop new block), .three-col (old | new | rationale).
+ * ──────────────────────────────────────────────────────────────────── */
+section.redline { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.redline h2 { margin-bottom:var(--sp-xs); }
+section.redline > p:has(> code:only-child) {
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  letter-spacing:0.04em;
+  color:var(--accent);
+}
+section.redline > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0; color:inherit;
+}
+section.redline > blockquote {
+  margin:0;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:4px solid var(--text-muted);
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+  font-family:var(--font-display);
+  font-size:var(--fs-md);
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  flex:1;
+}
+section.redline > blockquote > p { margin:0; }
+section.redline > blockquote > p + p { margin-top:var(--sp-sm); }
+/* Insertions and deletions — ins/del HTML, also ~~md~~ which renders as s. */
+section.redline ins, section.redline :is(p) ins {
+  text-decoration:underline;
+  text-decoration-thickness:2px;
+  text-decoration-color:var(--pass);
+  color:var(--pass);
+  background:var(--pass-bg);
+  padding:0 0.234375cqi;
+  border-radius:var(--radius-sm);
+  font-style:normal;
+  font-weight:600;
+}
+section.redline del, section.redline s {
+  text-decoration:line-through;
+  text-decoration-thickness:2px;
+  text-decoration-color:var(--fail);
+  color:var(--fail);
+  background:var(--fail-bg);
+  padding:0 0.234375cqi;
+  border-radius:var(--radius-sm);
+  opacity:0.85;
+}
+/* Annotation list — appears below the quote, gives reviewer plain-English
+ * rationale for each numbered delta in the text. */
+section.redline > ol,
+section.redline > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+}
+section.redline > :is(ol, ul) > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+  padding-left:var(--sp-md);
+  border-left:2px solid var(--accent);
+}
+section.redline > :is(ol, ul) > li::marker { content:''; }
+section.redline > :is(ol, ul) > li > strong {
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  color:var(--accent);
+  margin-right:var(--sp-xs);
+}
+
+/* .split — two blockquotes side-by-side: old left, new right. */
+section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
+section.redline.split h2 { grid-column:1 / -1; }
+section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
+section.redline.split > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:3;
+  border-left-color:var(--fail);
+  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+}
+section.redline.split > blockquote:nth-of-type(1)::before {
+  content:'OLD';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.split > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:3;
+  border-left-color:var(--pass);
+  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+}
+section.redline.split > blockquote:nth-of-type(2)::before {
+  content:'NEW';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
+
+/* .annotated — single passage with numbered sup markers; annotations below. */
+section.redline.annotated > blockquote sup {
+  display:inline-block;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-family:var(--font-mono);
+  font-size:0.7em;
+  font-weight:700;
+  padding:0 0.4em;
+  border-radius:999px;
+  margin-left:0.156cqi;
+  line-height:1.4;
+  vertical-align:super;
+}
+section.redline.annotated > :is(ol, ul) {
+  counter-reset:rl;
+  margin-top:var(--sp-md);
+}
+section.redline.annotated > :is(ol, ul) > li {
+  counter-increment:rl;
+  position:relative;
+  padding-left:calc(var(--sp-lg) + var(--sp-xs));
+}
+section.redline.annotated > :is(ol, ul) > li::before {
+  content:counter(rl);
+  position:absolute; left:0; top:0.156cqi;
+  background:var(--accent); color:var(--on-accent);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  padding:0 0.5em;
+  border-radius:999px;
+  line-height:1.4;
+}
+
+/* .stacked — two blockquotes vertically: old on top (struck), new below. */
+section.redline.stacked > blockquote:nth-of-type(1) {
+  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
+  border-left-color:var(--fail);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
+  opacity:0.78;
+}
+section.redline.stacked > blockquote:nth-of-type(1)::before {
+  content:'OLD — prior text';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  text-decoration:none;
+  margin-bottom:var(--sp-xs);
+}
+section.redline.stacked > blockquote:nth-of-type(2) {
+  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
+  border-left-color:var(--pass);
+}
+section.redline.stacked > blockquote:nth-of-type(2)::before {
+  content:'NEW · current';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+
+/* .three-col — old | new | rationale columns. The author writes two
+ * blockquotes plus a list for the rationale column. */
+section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
+section.redline.three-col h2 { grid-column:1 / -1; }
+section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
+section.redline.three-col > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:3;
+  border-left-color:var(--fail);
+  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  font-size:var(--fs-body);
+}
+section.redline.three-col > blockquote:nth-of-type(1)::before {
+  content:'OLD'; display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.three-col > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:3;
+  border-left-color:var(--pass);
+  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  font-size:var(--fs-body);
+}
+section.redline.three-col > blockquote:nth-of-type(2)::before {
+  content:'NEW'; display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.three-col > :is(ol, ul) {
+  grid-column:3; grid-row:3;
+  align-self:stretch;
+}
+section.redline.three-col > :is(ol, ul)::before {
+  content:'WHY';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+  margin-bottom:var(--sp-xs);
+}
+
+/* ── AUTHORITY-CHAIN ──────────────────────────────────────────────────
+ * Hierarchy of legal authority: Statute → Regulation → Guidance → Case.
+ *
+ * <!-- _class: authority-chain -->
+ * 1. **Statute**    `15 U.S.C. §6501`  COPPA — Congress, 1998
+ * 2. **Regulation** `16 C.F.R. Part 312` FTC implementing rule
+ * 3. **Guidance**   `FTC Six-Step Compliance Plan`
+ * 4. **Case**       `In re Epic Games · 2022`  $245M consent order
+ *
+ * Default = vertical chain with connectors. Variants:
+ *   .pyramid    visual hierarchy by tier weight
+ *   .branching  statute → multiple regs/cases (uses nested ul)
+ *   .bracket    bracketed cards with strong connectors
+ *   .trail      numbered horizontal trail with arrows
+ * ──────────────────────────────────────────────────────────────────── */
+section.authority-chain { display:flex; flex-direction:column; }
+section.authority-chain h2 { margin-bottom:var(--sp-md); }
+section.authority-chain > ol,
+section.authority-chain > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:0; flex:1; justify-content:center;
+  counter-reset:auth;
+}
+section.authority-chain > :is(ol, ul) > li {
+  counter-increment:auth;
+  position:relative;
+  display:grid;
+  grid-template-columns:14cqi auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:center;
+  padding:var(--sp-md) var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:4px solid var(--tier-hue, var(--accent));
+  border-radius:var(--radius-md);
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+  color:var(--text-body);
+  margin-bottom:var(--sp-md);
+}
+section.authority-chain > :is(ol, ul) > li::marker { content:''; }
+section.authority-chain > :is(ol, ul) > li:last-child { margin-bottom:0; }
+/* Connector arrow between rows. */
+section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
+  content:'';
+  position:absolute;
+  left:7cqi; bottom:calc(-1 * var(--sp-md));
+  width:2px; height:var(--sp-md);
+  background:var(--accent);
+}
+/* Tier hue rotation — Statute / Regulation / Guidance / Case. */
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--c4-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--c1-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--c6-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3-dark); }
+section.authority-chain > :is(ol, ul) > li > strong:first-child {
+  grid-column:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--tier-hue, var(--accent));
+}
+section.authority-chain > :is(ol, ul) > li > code:first-of-type {
+  grid-column:2;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  color:var(--text-heading);
+  background:none; border:none; padding:0;
+  white-space:nowrap;
+}
+
+/* .pyramid — top is widest, each tier narrower. */
+section.authority-chain.pyramid > :is(ol, ul) {
+  align-items:center;
+}
+section.authority-chain.pyramid > :is(ol, ul) > li {
+  width:100%;
+  max-width:none;
+  text-align:left;
+}
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(1) { width:100%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(2) { width:84%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(3) { width:68%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(4) { width:54%; }
+section.authority-chain.pyramid > :is(ol, ul) > li::after { display:none; }
+
+/* .branching — statute root, then nested children render as connected branches. */
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) {
+  grid-column:1 / -1;
+  list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  border-left:2px dashed var(--tier-hue, var(--accent));
+}
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li {
+  padding:var(--sp-xs) var(--sp-md);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:var(--fs-sm);
+  position:relative;
+}
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li::before {
+  content:'';
+  position:absolute;
+  left:calc(-1 * var(--sp-lg)); top:50%;
+  width:var(--sp-md); height:2px;
+  background:var(--tier-hue, var(--accent));
+}
+section.authority-chain.branching > :is(ol, ul) > li::after { display:none; }
+
+/* .bracket — visual bracket connector tying tiers. */
+section.authority-chain.bracket > :is(ol, ul) > li {
+  border-radius:0;
+  border:1px solid var(--border);
+  border-left:6px double var(--tier-hue, var(--accent));
+  margin-bottom:0;
+}
+section.authority-chain.bracket > :is(ol, ul) > li::after { display:none; }
+section.authority-chain.bracket > :is(ol, ul) > li + li { border-top:none; }
+
+/* .trail — horizontal numbered trail with arrows. */
+section.authority-chain.trail > :is(ol, ul) {
+  flex-direction:row;
+  gap:0; justify-content:space-between;
+  align-items:stretch;
+}
+section.authority-chain.trail > :is(ol, ul) > li {
+  flex:1;
+  margin-bottom:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  align-items:flex-start;
+  border-left:none;
+  border-top:4px solid var(--tier-hue, var(--accent));
+  border-radius:0;
+  padding:var(--sp-md);
+  position:relative;
+}
+section.authority-chain.trail > :is(ol, ul) > li::after {
+  content:'→';
+  display:block;
+  position:absolute;
+  right:calc(-0.5 * var(--sp-md)); top:50%;
+  transform:translateY(-50%);
+  background:none;
+  width:auto; height:auto;
+  font-size:var(--fs-xl);
+  color:var(--accent);
+  z-index:1;
+}
+section.authority-chain.trail > :is(ol, ul) > li:last-child::after { display:none; }
+section.authority-chain.trail > :is(ol, ul) > li > strong:first-child {
+  font-size:var(--fs-sm);
+  letter-spacing:0.10em;
+}
+section.authority-chain.trail > :is(ol, ul) > li > code:first-of-type {
+  font-size:var(--fs-xs);
+}
+section.authority-chain.trail > :is(ol, ul) > li::before {
+  content:counter(auth, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--tier-hue, var(--accent));
+  line-height:1;
+  margin-bottom:var(--sp-xs);
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * MODIFIERS — cross-cutting authorial intent flags
  * ────────────────────────────────────────────────────────────────────────
