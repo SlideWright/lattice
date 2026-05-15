@@ -6266,9 +6266,12 @@ section.kanban.chart-frame .chart-body {
   overflow: hidden;
 }
 
-/* Card — bg-alt panel with 3px left stripe coloured by --lane-color */
+/* Card — bg-alt panel with 3px left stripe coloured by --lane-color.
+ * --c-subcontainer is a theme hook for containment-aware themes (e.g.
+ * indaco-G) that define a dedicated card surface token. Falls back to
+ * --bg-alt so all other themes are unaffected. */
 .kanban-card {
-  background: var(--bg-alt);
+  background: var(--c-subcontainer, var(--bg-alt));
   border: 1px solid var(--border);
   border-left: 3px solid var(--lane-color, var(--border));
   border-radius: 0.46875cqi;
