@@ -776,6 +776,31 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   (extend to padding-left/right); `41ef9e1` (extend to divider
   padding-left); `1bf458c` (unify all under `--_sec-1cqi`).
 
+### Layout components inherit line-height silently from the section body default
+
+- **Symptom:** Text in a layout (cards, stats, timeline, quote, code subtitle,
+  etc.) looks optically tight or loose even though no explicit line-height is
+  set. The issue is proportionally the same at every resolution because `cqi`
+  scaling preserves the relative value.
+- **Cause:** `section` sets `font-size: var(--fs-md); line-height: var(--lh-base)`
+  as a body default. Any component that sets a custom `font-size` but omits
+  `line-height` silently inherits `--lh-base (1.6)`, which is the right value
+  for paragraph body text but wrong for heading-weight card titles (`--lh-snug`),
+  small captions (`--lh-snug`), or wrapping descriptive text (`--lh-relaxed`).
+  Because `cqi` scales everything proportionally, the wrong ratio looks equally
+  wrong at HD, 4K, and standard — it's a semantic mismatch, not a size mismatch.
+- **Mitigation:** Every element that sets an explicit `font-size` must also set
+  an explicit `line-height`. The pairing rule: heading-weight text → `--lh-snug`;
+  small labels/captions → `--lh-snug`; wrapping prose/cards → `--lh-relaxed`.
+  `--lh-base` is only for unstyled paragraph inheritance. Eight sites were fixed
+  in one pass (diagram > p, stats > p/em, cards-grid/side li and .card, quote > p,
+  timeline li, list-steps li, code > em).
+- **Triggered by:** Adding a new layout component with a custom `font-size`
+  and no `line-height`.
+- **Removable when:** Never — this is an authoring discipline rule.
+- **Commits:** `828f6fb` (bulk fix); `9327c78` (cards-stack, the original
+  discovery).
+
 ### Mermaid diagrams render at HD size inside 4K slides in VS Code preview
 
 - **Symptom:** Mermaid diagrams on 4K slides look small in VS Code
