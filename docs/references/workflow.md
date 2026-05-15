@@ -176,12 +176,15 @@ graduates from "new" to "documented". Treat them like
 
 1. `npm test` — full unit suite must be green (~4 s, 334 tests, no Chromium / no Marp pipeline). The umbrella script is the gate; scoped scripts below are only for inner-loop iteration. `npm run test:watch` re-runs on file change.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
-3. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
-4. Rebase onto current `main` if the branch has drifted:
+3. `npm run lint` — Biome runs over every JS file. CI runs this on Node 18/20/22/24. `npm run lint:fix` applies safe auto-fixes.
+4. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
+5. Rebase onto current `main` if the branch has drifted:
    ```bash
    git fetch origin
    git rebase origin/main
    ```
+
+The lefthook pre-commit hook runs `npm test` + Biome on staged files; the pre-push hook re-runs both against the full tree. `npm install` wires these automatically via the `prepare` script. Bypass with `--no-verify` only as a genuine last resort; fix the root cause instead.
 
 ### Inner-loop scoping
 
