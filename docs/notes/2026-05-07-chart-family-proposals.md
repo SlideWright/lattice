@@ -214,9 +214,14 @@ Many decks need a "where are we?" panel: three or four labelled progress bars st
 
 **Why this is not just `stats`.** `stats` is dimensionless KPI numbers (a number + a label). `progress` carries a 0-100 magnitude and a target that is meaningful to fill against — a different visual contract. Authors today pick `stats` because it is the closest thing; the linter would reject `92%` as a `stats` value because it is not a delta or a count.
 
-### 3.3 `kanban` — boards from two-level list
+### 3.3 `kanban` — boards from a three-level list
 
 A Kanban board is the natural cousin of `gantt`: top-level items are columns instead of swimlanes, sub-bullets are cards instead of bars. The time axis is replaced by status. Same primitives, transposed.
+
+> **Note — authoring convention updated 2026-05-14.** The original proposal
+> put size, label, and status as trailing inline codes on a single card line.
+> The shipped convention uses GitHub Projects nomenclature with one code per
+> line; see Template 29e in `docs/references/templates.md` for the canonical reference.
 
 ```markdown
 <!-- _class: kanban -->
@@ -224,25 +229,33 @@ A Kanban board is the natural cousin of `gantt`: top-level items are columns ins
 ## Where Phase 2 work stands today.
 
 - Backlog
-  - Per-purpose codebooks `S` `compliance`
-  - Crypto-shred runbook `M` `platform`
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
   - Dependency dashboard `S`
 - In progress
-  - Multi-tenant DEKs `M` `platform` `at-risk`
-  - Examiner pack v2 `L` `compliance`
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
 - Review
-  - Automated rotation `M` `platform`
+  - Automated rotation `M`
+    - platform
 - Done
-  - Codebook signing `L` `platform` `done`
-  - HSM audit trail `M` `compliance` `done`
+  - Codebook signing `L`
+    - platform `done`
+  - HSM audit trail `M`
+    - compliance `done`
 ```
 
 **Reading the shape.**
 
 - Top-level item = column. Column count is whatever the author writes; renderer balances column widths.
-- Sub-bullet = card. Card title is the bullet text.
-- Trailing pills on a card carry, in order: an optional **size pill** (`` `S` `` / `` `M` `` / `` `L` `` / `` `XL` ``), an optional **lane pill** (`` `platform` ``, `` `compliance` ``, etc. — these become the card's coloured stripe), and an optional **status pill** (`done`, `at-risk`, `blocked`). Pill order is structural and linter-enforced.
-- A second-level sub-bullet under a card becomes a one-line caption inside the card. Two bullets max per card; this is a slide, not Jira.
+- Second-level bullet = card. One optional trailing code is the **size badge** (`S` / `M` / `L` / `XL`), rendered as a square chip right-aligned in the title row.
+- First sub-bullet of a card = **meta line**. Prose is the **label** (drives the coloured left stripe); one optional trailing code is the **status** (`done`, `at-risk`, `blocked`, …).
+- Second sub-bullet of a card (optional) = **body text**, rendered italic and muted below the meta row.
+- One inline code per line — never two codes on the same line.
 
 **Modifiers.**
 

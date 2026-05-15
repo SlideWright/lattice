@@ -801,6 +801,28 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** `828f6fb` (bulk fix); `9327c78` (cards-stack, the original
   discovery).
 
+### Emulator line-by-line builder only supports 2-deep list nesting by default
+
+- **Symptom:** In `kanban` slides (or any layout that parses 3-level nested lists),
+  sub-sub-bullets (4-space indent, `- item`) appear as siblings of their parent
+  bullet rather than nested children. In kanban this means label text like `compliance`
+  becomes a separate card box instead of the meta row inside its parent card.
+- **Cause:** `lattice-emulator.js` builds HTML from raw markdown line-by-line
+  (`raw.split('\n')`). The original loop tracked only `inList` (level 1) and
+  `inSubList` (level 2). The 4-space sub-sub-item matched the same `/^ {2,}- /`
+  regex as 2-space items, so it was treated as another level-2 sibling.
+- **Fix:** Added `inSubSubList` (level 3) and a `/^ {4,}- /` check that runs
+  **before** the `/^ {2,}- /` check in the `else if` chain. The level-2 handler
+  was also changed to defer its `</li>` close (checking whether the next line is
+  a level-3 item), mirroring the same lookahead the level-1 handler already used.
+  All blank-line, paragraph-break, and end-of-content close-out paths updated.
+- **Affects:** `lattice-emulator.js` only. Marp-rendered HTML (marp-cli and
+  marp-vscode) nests correctly from CommonMark; `lattice-runtime.js` uses the
+  DOM so nesting is also correct there.
+- **Triggered by:** Any layout that requires 3-level list nesting in the emulator.
+  Currently only `kanban` (column → card → meta/body).
+- **Commits:** `277a2c3` (feat(kanban): structured authoring convention and card layout redesign)
+
 ### Mermaid diagrams render at HD size inside 4K slides in VS Code preview
 
 - **Symptom:** Mermaid diagrams on 4K slides look small in VS Code
