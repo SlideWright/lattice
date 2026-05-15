@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: indaco
+theme: indaco-G
 paginate: true
 ---
 
