@@ -816,6 +816,10 @@ const { transformJourneySection } = require('./lib/journey');
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
 const { transformWordCloudSection } = require('./lib/word-cloud');
+// Radar transform — nested list → native SVG radar/spider chart (default +
+// five modifier variants). Shared with marp.config.js and mirrored in
+// lattice-runtime.js.
+const { transformRadarSection } = require('./lib/radar');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1200,6 +1204,16 @@ function parseSlide(raw, index) {
   // and mirrored by the runtime DOM transform in lattice-runtime.js.
   if (cls.includes('word-cloud')) {
     html = transformWordCloudSection(html, cls);
+  }
+
+  // radar: rewrite the nested list into a native SVG radar/spider chart.
+  // One series-major source contract feeds the default and five modifier
+  // variants (target, delta, benchmark, quadrant, small-multiples); the
+  // value scale auto-fits the data unless the eyebrow pins a range.
+  // Implementation lives in lib/radar.js — shared with marp.config.js and
+  // mirrored by the runtime DOM transform in lattice-runtime.js.
+  if (cls.includes('radar')) {
+    html = transformRadarSection(html, cls);
   }
 
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.

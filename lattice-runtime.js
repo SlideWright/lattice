@@ -429,6 +429,7 @@
     transformRoadmapHorizons();
     transformJourney();
     transformWordCloud();
+    transformRadar();
     applyGlossaryListTable(document);
     applyGlossaryRangePills(document);
     applyChartFamily(document);
@@ -1501,6 +1502,494 @@
       tmp.innerHTML = board;
       const boardEl = tmp.firstElementChild;
       ul.replaceWith(boardEl);
+    }
+  }
+
+  /**
+   * Radar / spider chart — runtime mirror of lib/radar.js. Walks each
+   * `section.radar` and replaces its source <ul> with a native SVG radar
+   * figure. The implementation below is a near-verbatim copy of the pure
+   * string parser + emitter in lib/radar.js — that file is canonical; this
+   * mirror exists because the marp-vscode preview can't `require` Node
+   * modules. Three-renderer parity rule applies: edit both or neither.
+   */
+  const R_MODIFIERS = ['target', 'delta', 'benchmark', 'quadrant', 'small-multiples'];
+  const R_PALETTE = [
+    'var(--cat-blue)',  'var(--cat-orange)', 'var(--cat-teal)',  'var(--cat-rose)',
+    'var(--cat-purple)', 'var(--cat-green)', 'var(--cat-mauve)', 'var(--cat-slate)',
+  ];
+  const R_GEOM = { cx: 150, cy: 150, R: 105, rings: 4, labelGap: 22, viewBox: '0 0 300 300' };
+
+  function rEscHtml(s) {
+    return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  }
+  function rEscAttr(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+  function rStripTags(s) {
+    return String(s).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+  }
+  function rFmtNum(n) {
+    return Number(Number(n).toFixed(2)).toString();
+  }
+  function rFindOuterUL(html) {
+    const start = html.indexOf('<ul');
+    if (start < 0) return null;
+    const tagEnd = html.indexOf('>', start);
+    if (tagEnd < 0) return null;
+    let depth = 1, pos = tagEnd + 1;
+    while (pos < html.length) {
+      if (html.startsWith('<ul', pos) &&
+          (html[pos + 3] === '>' || html[pos + 3] === ' ' || html[pos + 3] === '\t' || html[pos + 3] === '\n')) {
+        const e = html.indexOf('>', pos);
+        if (e < 0) return null;
+        depth++; pos = e + 1;
+      } else if (html.startsWith('</ul>', pos)) {
+        depth--;
+        if (depth === 0) return { start, end: pos + 5, inner: html.slice(tagEnd + 1, pos) };
+        pos += 5;
+      } else { pos++; }
+    }
+    return null;
+  }
+  function rSplitTopLevelLI(ulInner) {
+    const lis = [];
+    let pos = 0;
+    while (pos < ulInner.length) {
+      const liStart = ulInner.indexOf('<li', pos);
+      if (liStart < 0) break;
+      const liTagEnd = ulInner.indexOf('>', liStart);
+      if (liTagEnd < 0) break;
+      let ulDepth = 0, scan = liTagEnd + 1, liEnd = -1;
+      while (scan < ulInner.length) {
+        if (ulInner.startsWith('<ul', scan) &&
+            (ulInner[scan + 3] === '>' || ulInner[scan + 3] === ' ' || ulInner[scan + 3] === '\t' || ulInner[scan + 3] === '\n')) {
+          const e = ulInner.indexOf('>', scan);
+          if (e < 0) break;
+          ulDepth++; scan = e + 1;
+        } else if (ulInner.startsWith('</ul>', scan)) {
+          ulDepth--; scan += 5;
+        } else if (ulInner.startsWith('</li>', scan) && ulDepth === 0) {
+          liEnd = scan; break;
+        } else { scan++; }
+      }
+      if (liEnd < 0) break;
+      lis.push(ulInner.slice(liTagEnd + 1, liEnd));
+      pos = liEnd + 5;
+    }
+    return lis;
+  }
+  function rParseAxisItem(liInner) {
+    let value = 0, text = liInner;
+    const m = /<code\b[^>]*>([^<]*)<\/code>\s*$/.exec(liInner.trim());
+    if (m) {
+      const n = parseFloat(rStripTags(m[1]));
+      value = Number.isFinite(n) ? n : 0;
+      text = liInner.trim().slice(0, m.index);
+    }
+    return { label: rStripTags(text), value };
+  }
+  function rParseSeries(liInner, isQuadrant) {
+    const nested = rFindOuterUL(liInner);
+    const name = rStripTags(nested ? liInner.slice(0, nested.start) : liInner);
+    const points = [];
+    if (nested) {
+      const childLis = rSplitTopLevelLI(nested.inner);
+      if (isQuadrant) {
+        for (const groupLi of childLis) {
+          const groupNested = rFindOuterUL(groupLi);
+          const groupName = rStripTags(groupNested ? groupLi.slice(0, groupNested.start) : groupLi);
+          if (!groupNested) continue;
+          for (const axLi of rSplitTopLevelLI(groupNested.inner)) {
+            const { label, value } = rParseAxisItem(axLi);
+            if (label) points.push({ axis: label, group: groupName, value });
+          }
+        }
+      } else {
+        for (const axLi of childLis) {
+          const { label, value } = rParseAxisItem(axLi);
+          if (label) points.push({ axis: label, group: null, value });
+        }
+      }
+    }
+    return { name, points };
+  }
+  function rParseRadar(ulInner, isQuadrant) {
+    const raw = rSplitTopLevelLI(ulInner)
+      .map(li => rParseSeries(li, isQuadrant))
+      .filter(s => s.name && s.points.length > 0);
+    if (raw.length === 0) return null;
+    const axes = raw[0].points.map(p => ({ label: p.axis, group: p.group }));
+    const series = raw.map(s => {
+      const byLabel = new Map(s.points.map(p => [p.axis.toLowerCase(), p.value]));
+      const values = axes.map((ax, i) => {
+        const key = ax.label.toLowerCase();
+        if (byLabel.has(key)) return byLabel.get(key);
+        return s.points[i] ? s.points[i].value : 0;
+      });
+      return { name: s.name, values };
+    });
+    const groups = [];
+    for (const ax of axes) {
+      if (ax.group && !groups.includes(ax.group)) groups.push(ax.group);
+    }
+    return { axes, series, groups };
+  }
+  function rNiceCeil(v) {
+    if (!(v > 0)) return 1;
+    const exp = Math.floor(Math.log10(v));
+    const base = Math.pow(10, exp);
+    const n = v / base;
+    let nice;
+    if (n <= 1) nice = 1;
+    else if (n <= 2) nice = 2;
+    else if (n <= 2.5) nice = 2.5;
+    else if (n <= 5) nice = 5;
+    else nice = 10;
+    return nice * base;
+  }
+  function rParseScale(text) {
+    const t = String(text);
+    let m = t.match(/(-?[\d.]+)\s*(?:[–—-]|to)\s*(-?[\d.]+)/);
+    if (m) {
+      const min = parseFloat(m[1]), max = parseFloat(m[2]);
+      if (Number.isFinite(min) && Number.isFinite(max) && max > min) return { min, max };
+    }
+    m = t.match(/(?:^|\s)([\d.]+)\s*$/);
+    if (m) {
+      const max = parseFloat(m[1]);
+      if (Number.isFinite(max) && max > 0) return { min: 0, max };
+    }
+    return null;
+  }
+  function rResolveScale(model, eyebrowText) {
+    const explicit = eyebrowText ? rParseScale(eyebrowText) : null;
+    if (explicit) return explicit;
+    let max = 0;
+    for (const s of model.series) for (const v of s.values) if (v > max) max = v;
+    return { min: 0, max: rNiceCeil(max) };
+  }
+  function rAxisAngle(i, n) { return i * 2 * Math.PI / n; }
+  function rPolar(radius, angle) {
+    return {
+      x: R_GEOM.cx + radius * Math.sin(angle),
+      y: R_GEOM.cy - radius * Math.cos(angle),
+    };
+  }
+  function rValueRadius(value, scale) {
+    const span = scale.max - scale.min || 1;
+    const t = (value - scale.min) / span;
+    return R_GEOM.R * Math.max(0, Math.min(1, t));
+  }
+  function rFmtPt(p) { return p.x.toFixed(2) + ',' + p.y.toFixed(2); }
+  function rSeriesPoints(values, axisCount, scale) {
+    const pts = [];
+    for (let i = 0; i < axisCount; i++) {
+      pts.push(rFmtPt(rPolar(rValueRadius(values[i], scale), rAxisAngle(i, axisCount))));
+    }
+    return pts.join(' ');
+  }
+  function rGridSvg(axisCount) {
+    let out = '<g class="radar-grid" aria-hidden="true">';
+    for (let r = 1; r <= R_GEOM.rings; r++) {
+      const frac = r / R_GEOM.rings;
+      const pts = [];
+      for (let i = 0; i < axisCount; i++) {
+        pts.push(rFmtPt(rPolar(R_GEOM.R * frac, rAxisAngle(i, axisCount))));
+      }
+      out += '<polygon class="radar-ring" data-ring="' + r + '" points="' + pts.join(' ') + '"/>';
+    }
+    for (let i = 0; i < axisCount; i++) {
+      const p = rPolar(R_GEOM.R, rAxisAngle(i, axisCount));
+      out += '<line class="radar-spoke" x1="' + R_GEOM.cx + '" y1="' + R_GEOM.cy +
+        '" x2="' + p.x.toFixed(2) + '" y2="' + p.y.toFixed(2) + '"/>';
+    }
+    out += '</g>';
+    return out;
+  }
+  function rAxisLabelsSvg(axes, gap) {
+    const n = axes.length;
+    const labelGap = gap == null ? R_GEOM.labelGap : gap;
+    let out = '<g class="radar-axes">';
+    for (let i = 0; i < n; i++) {
+      const a = rAxisAngle(i, n);
+      const p = rPolar(R_GEOM.R + labelGap, a);
+      const sin = Math.sin(a), cos = Math.cos(a);
+      const anchor = sin > 0.34 ? 'start' : sin < -0.34 ? 'end' : 'middle';
+      const baseline = cos > 0.34 ? 'auto' : cos < -0.34 ? 'hanging' : 'middle';
+      out += '<text class="radar-axis-label" x="' + p.x.toFixed(2) + '" y="' + p.y.toFixed(2) +
+        '" text-anchor="' + anchor + '" dominant-baseline="' + baseline + '">' +
+        rEscHtml(axes[i].label) + '</text>';
+    }
+    out += '</g>';
+    return out;
+  }
+  function rTickLabelsSvg(scale) {
+    let out = '<g class="radar-ticks" aria-hidden="true">';
+    for (let r = 1; r <= R_GEOM.rings; r++) {
+      const frac = r / R_GEOM.rings;
+      const val = scale.min + (scale.max - scale.min) * frac;
+      const p = rPolar(R_GEOM.R * frac, 0);
+      out += '<text class="radar-tick" x="' + (p.x + 3).toFixed(2) + '" y="' + p.y.toFixed(2) +
+        '" dominant-baseline="middle">' + rEscHtml(rFmtNum(val)) + '</text>';
+    }
+    out += '</g>';
+    return out;
+  }
+  function rDotsSvg(values, axisCount, scale, seriesIdx, color) {
+    let out = '';
+    for (let i = 0; i < axisCount; i++) {
+      const p = rPolar(rValueRadius(values[i], scale), rAxisAngle(i, axisCount));
+      out += '<circle class="radar-dot" data-series="' + seriesIdx + '" style="--series-color:' + color +
+        '" cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="2.6"/>';
+    }
+    return out;
+  }
+  function rLegendHtml(entries) {
+    const items = entries.map((e, i) =>
+      '<li data-series="' + i + '"' + (e.kind ? ' data-kind="' + rEscAttr(e.kind) + '"' : '') +
+      ' style="--series-color:' + e.color + '">' +
+        '<span class="radar-swatch" aria-hidden="true"></span>' +
+        '<span class="radar-legend-label">' + rEscHtml(e.name) + '</span>' +
+      '</li>'
+    ).join('');
+    return '<ol class="radar-legend">' + items + '</ol>';
+  }
+  function rFigure(variant, model, inner) {
+    return '<div class="radar-figure" data-variant="' + variant + '" data-axes="' +
+      model.axes.length + '" data-series="' + model.series.length + '">' + inner + '</div>';
+  }
+  function rOpenSvg(extraClass) {
+    return '<svg class="radar-svg' + (extraClass ? ' ' + extraClass : '') +
+      '" viewBox="' + R_GEOM.viewBox + '" role="img" aria-hidden="true">';
+  }
+  function rRenderStandard(model, scale, isMinimal) {
+    const { axes, series } = model;
+    const n = axes.length;
+    let plot = '<g class="radar-plot">';
+    series.forEach((s, idx) => {
+      const color = R_PALETTE[idx % R_PALETTE.length];
+      plot += '<polygon class="radar-poly" data-series="' + idx + '" style="--series-color:' + color +
+        '" points="' + rSeriesPoints(s.values, n, scale) + '"/>';
+    });
+    series.forEach((s, idx) => {
+      plot += rDotsSvg(s.values, n, scale, idx, R_PALETTE[idx % R_PALETTE.length]);
+    });
+    plot += '</g>';
+    const svg = rOpenSvg() + rGridSvg(n) + rAxisLabelsSvg(axes) + rTickLabelsSvg(scale) + plot + '</svg>';
+    const legend = rLegendHtml(series.map((s, i) => ({
+      name: s.name, color: R_PALETTE[i % R_PALETTE.length],
+    })));
+    return rFigure(isMinimal ? 'minimal' : 'default', model, svg + legend);
+  }
+  function rRenderTarget(model, scale) {
+    const { axes, series } = model;
+    const n = axes.length;
+    let targetIdx = series.findIndex(s => /^(target|goal|plan)$/i.test(s.name.trim()));
+    if (targetIdx < 0) targetIdx = series.length - 1;
+    const actualIdx = targetIdx === 0 ? Math.min(1, series.length - 1) : 0;
+    const actual = series[actualIdx], target = series[targetIdx];
+    const actualColor = R_PALETTE[0];
+    let gaps = '<g class="radar-gaps" aria-hidden="true">';
+    for (let i = 0; i < n; i++) {
+      const a = rAxisAngle(i, n);
+      const pa = rPolar(rValueRadius(actual.values[i], scale), a);
+      const pt = rPolar(rValueRadius(target.values[i], scale), a);
+      const dir = actual.values[i] < target.values[i] ? 'under' : 'over';
+      gaps += '<line class="radar-gap" data-dir="' + dir + '" x1="' + pa.x.toFixed(2) + '" y1="' +
+        pa.y.toFixed(2) + '" x2="' + pt.x.toFixed(2) + '" y2="' + pt.y.toFixed(2) + '"/>';
+    }
+    gaps += '</g>';
+    const svg = rOpenSvg() + rGridSvg(n) + rAxisLabelsSvg(axes) + rTickLabelsSvg(scale) +
+      '<polygon class="radar-poly radar-poly--target" points="' + rSeriesPoints(target.values, n, scale) + '"/>' +
+      gaps +
+      '<g class="radar-plot">' +
+        '<polygon class="radar-poly" data-series="0" style="--series-color:' + actualColor +
+          '" points="' + rSeriesPoints(actual.values, n, scale) + '"/>' +
+        rDotsSvg(actual.values, n, scale, 0, actualColor) +
+      '</g>' +
+      '</svg>';
+    const legend = rLegendHtml([
+      { name: actual.name, color: actualColor },
+      { name: target.name, color: 'var(--text-muted)', kind: 'target' },
+    ]);
+    return rFigure('target', model, svg + legend);
+  }
+  function rRenderDelta(model, scale) {
+    const { axes, series } = model;
+    const n = axes.length;
+    const before = series[0], after = series[1] || series[0];
+    const afterColor = R_PALETTE[0];
+    let segs = '<g class="radar-deltas" aria-hidden="true">';
+    for (let i = 0; i < n; i++) {
+      const a = rAxisAngle(i, n);
+      const pb = rPolar(rValueRadius(before.values[i], scale), a);
+      const pa = rPolar(rValueRadius(after.values[i], scale), a);
+      const dir = after.values[i] > before.values[i] ? 'up'
+        : after.values[i] < before.values[i] ? 'down' : 'flat';
+      segs += '<line class="radar-delta-seg" data-dir="' + dir + '" x1="' + pb.x.toFixed(2) + '" y1="' +
+        pb.y.toFixed(2) + '" x2="' + pa.x.toFixed(2) + '" y2="' + pa.y.toFixed(2) + '"/>';
+    }
+    segs += '</g>';
+    const svg = rOpenSvg() + rGridSvg(n) + rAxisLabelsSvg(axes) + rTickLabelsSvg(scale) +
+      '<polygon class="radar-poly radar-poly--before" points="' + rSeriesPoints(before.values, n, scale) + '"/>' +
+      segs +
+      '<g class="radar-plot">' +
+        '<polygon class="radar-poly" data-series="0" style="--series-color:' + afterColor +
+          '" points="' + rSeriesPoints(after.values, n, scale) + '"/>' +
+        rDotsSvg(after.values, n, scale, 0, afterColor) +
+      '</g>' +
+      '</svg>';
+    const legend = rLegendHtml([
+      { name: before.name, color: 'var(--text-muted)', kind: 'before' },
+      { name: after.name, color: afterColor },
+    ]);
+    return rFigure('delta', model, svg + legend);
+  }
+  function rRenderBenchmark(model, scale) {
+    const { axes, series } = model;
+    const n = axes.length;
+    const hero = series[0], pack = series.slice(1);
+    const heroColor = R_PALETTE[0];
+    let band = '';
+    if (pack.length > 0) {
+      const maxPts = [], minPts = [];
+      for (let i = 0; i < n; i++) {
+        const vals = pack.map(s => s.values[i]);
+        const a = rAxisAngle(i, n);
+        maxPts.push(rPolar(rValueRadius(Math.max.apply(null, vals), scale), a));
+        minPts.push(rPolar(rValueRadius(Math.min.apply(null, vals), scale), a));
+      }
+      const outer = 'M ' + maxPts.map(p => p.x.toFixed(2) + ' ' + p.y.toFixed(2)).join(' L ') + ' Z';
+      const inner = 'M ' + minPts.slice().reverse()
+        .map(p => p.x.toFixed(2) + ' ' + p.y.toFixed(2)).join(' L ') + ' Z';
+      band = '<path class="radar-band" fill-rule="evenodd" d="' + outer + ' ' + inner + '"/>';
+    }
+    const svg = rOpenSvg() + rGridSvg(n) + rAxisLabelsSvg(axes) + rTickLabelsSvg(scale) +
+      band +
+      '<g class="radar-plot">' +
+        '<polygon class="radar-poly radar-poly--hero" data-series="0" style="--series-color:' + heroColor +
+          '" points="' + rSeriesPoints(hero.values, n, scale) + '"/>' +
+        rDotsSvg(hero.values, n, scale, 0, heroColor) +
+      '</g>' +
+      '</svg>';
+    const legend = rLegendHtml([
+      { name: hero.name, color: heroColor, kind: 'hero' },
+      { name: pack.length ? 'Comparison range' : hero.name, color: 'var(--text-muted)', kind: 'band' },
+    ]);
+    return rFigure('benchmark', model, svg + legend);
+  }
+  function rRenderQuadrant(model, scale, isMinimal) {
+    const { axes, series, groups } = model;
+    const n = axes.length;
+    if (groups.length === 0) return rRenderStandard(model, scale, isMinimal);
+    const half = Math.PI / n;
+    const heroVals = series[0].values;
+    let sectors = '<g class="radar-sectors" aria-hidden="true">';
+    let arcs = '<g class="radar-sector-means" aria-hidden="true">';
+    let rim = '<g class="radar-sector-labels">';
+    groups.forEach((g, gi) => {
+      const idxs = [];
+      for (let i = 0; i < n; i++) if (axes[i].group === g) idxs.push(i);
+      if (idxs.length === 0) return;
+      const color = R_PALETTE[gi % R_PALETTE.length];
+      const startA = rAxisAngle(idxs[0], n) - half;
+      const endA = rAxisAngle(idxs[idxs.length - 1], n) + half;
+      const largeArc = (endA - startA) > Math.PI ? 1 : 0;
+      const p1 = rPolar(R_GEOM.R, startA), p2 = rPolar(R_GEOM.R, endA);
+      sectors += '<path class="radar-sector" data-group="' + gi + '" style="--series-color:' + color +
+        '" d="M ' + R_GEOM.cx + ' ' + R_GEOM.cy + ' L ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2) +
+        ' A ' + R_GEOM.R + ' ' + R_GEOM.R + ' 0 ' + largeArc + ' 1 ' +
+        p2.x.toFixed(2) + ' ' + p2.y.toFixed(2) + ' Z"/>';
+      const mean = idxs.reduce((s, i) => s + heroVals[i], 0) / idxs.length;
+      const mr = rValueRadius(mean, scale);
+      const m1 = rPolar(mr, startA), m2 = rPolar(mr, endA);
+      arcs += '<path class="radar-sector-mean" data-group="' + gi + '" style="--series-color:' + color +
+        '" d="M ' + m1.x.toFixed(2) + ' ' + m1.y.toFixed(2) + ' A ' + mr.toFixed(2) + ' ' + mr.toFixed(2) +
+        ' 0 ' + largeArc + ' 1 ' + m2.x.toFixed(2) + ' ' + m2.y.toFixed(2) + '"/>';
+      const midA = (startA + endA) / 2;
+      const lp = rPolar(R_GEOM.R + R_GEOM.labelGap + 16, midA);
+      const sin = Math.sin(midA), cos = Math.cos(midA);
+      const anchor = sin > 0.34 ? 'start' : sin < -0.34 ? 'end' : 'middle';
+      const baseline = cos > 0.34 ? 'auto' : cos < -0.34 ? 'hanging' : 'middle';
+      rim += '<text class="radar-sector-label" data-group="' + gi + '" style="--series-color:' + color +
+        '" x="' + lp.x.toFixed(2) + '" y="' + lp.y.toFixed(2) + '" text-anchor="' + anchor +
+        '" dominant-baseline="' + baseline + '">' + rEscHtml(g) + '</text>';
+    });
+    sectors += '</g>'; arcs += '</g>'; rim += '</g>';
+    let plot = '<g class="radar-plot">';
+    series.forEach((s, idx) => {
+      const color = R_PALETTE[idx % R_PALETTE.length];
+      plot += '<polygon class="radar-poly" data-series="' + idx + '" style="--series-color:' + color +
+        '" points="' + rSeriesPoints(s.values, n, scale) + '"/>';
+    });
+    series.forEach((s, idx) => {
+      plot += rDotsSvg(s.values, n, scale, idx, R_PALETTE[idx % R_PALETTE.length]);
+    });
+    plot += '</g>';
+    const svg = rOpenSvg() + sectors + rGridSvg(n) + arcs +
+      rAxisLabelsSvg(axes, R_GEOM.labelGap - 6) + rTickLabelsSvg(scale) + rim + plot + '</svg>';
+    const legend = rLegendHtml(series.map((s, i) => ({
+      name: s.name, color: R_PALETTE[i % R_PALETTE.length],
+    })));
+    return rFigure('quadrant', model, svg + legend);
+  }
+  function rRenderSmallMultiples(model, scale) {
+    const { axes, series } = model;
+    const n = axes.length;
+    const minis = series.map((s, idx) => {
+      const color = R_PALETTE[idx % R_PALETTE.length];
+      const svg = rOpenSvg('radar-svg--mini') +
+        rGridSvg(n) + rAxisLabelsSvg(axes, R_GEOM.labelGap - 8) +
+        '<g class="radar-plot">' +
+          '<polygon class="radar-poly" data-series="0" style="--series-color:' + color +
+            '" points="' + rSeriesPoints(s.values, n, scale) + '"/>' +
+          rDotsSvg(s.values, n, scale, 0, color) +
+        '</g>' +
+        '</svg>';
+      return '<figure class="radar-mini" style="--series-color:' + color + '">' +
+        svg +
+        '<figcaption class="radar-mini-label">' + rEscHtml(s.name) + '</figcaption>' +
+      '</figure>';
+    }).join('');
+    return rFigure('small-multiples', model, '<div class="radar-multiples">' + minis + '</div>');
+  }
+  function rPickVariant(tokens) {
+    for (const mod of R_MODIFIERS) {
+      if (tokens.includes(mod)) return mod;
+    }
+    return 'default';
+  }
+  function rBuildRadar(model, variant, scale, isMinimal) {
+    switch (variant) {
+      case 'target':          return rRenderTarget(model, scale);
+      case 'delta':           return rRenderDelta(model, scale);
+      case 'benchmark':       return rRenderBenchmark(model, scale);
+      case 'quadrant':        return rRenderQuadrant(model, scale, isMinimal);
+      case 'small-multiples': return rRenderSmallMultiples(model, scale);
+      default:                return rRenderStandard(model, scale, isMinimal);
+    }
+  }
+  function transformRadar() {
+    if (typeof document === 'undefined') return;
+    for (const section of document.querySelectorAll('section.radar')) {
+      if (section.querySelector(':scope > .radar-figure')) continue;
+      const ul = section.querySelector(':scope > ul');
+      if (!ul) continue;
+      const tokens = section.className.trim().split(/\s+/);
+      const variant = rPickVariant(tokens);
+      const isMinimal = tokens.includes('minimal');
+      const model = rParseRadar(ul.innerHTML, variant === 'quadrant');
+      if (!model) continue;
+      const eyebrowCode = section.querySelector(':scope > p > code');
+      const scale = rResolveScale(model, eyebrowCode ? eyebrowCode.textContent : '');
+      const figHtml = rBuildRadar(model, variant, scale, isMinimal);
+      const tmp = document.createElement('div');
+      tmp.innerHTML = figHtml;
+      const figEl = tmp.firstElementChild;
+      if (figEl) ul.replaceWith(figEl);
     }
   }
 
