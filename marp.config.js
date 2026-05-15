@@ -61,11 +61,31 @@ function splitPanelCounter(markdown) {
 }
 
 /**
- * Marpit plugin: wraps ✓/✗ nested list items inside `.verdict-grid` sections
- * in <span class="badge pass/fail"> so the existing .badge CSS colors them.
- * Only fires for list items at depth ≥ 2 (nested badge items, not the card title
- * or the body text line at the end). Body text does not start with ✓/✗ so it
- * passes through untouched.
+ * Universal state-token marker decoder — shared by verdictGridBadges,
+ * obligationMatrixBadges, and checklistItemStates. Maps a single-char
+ * marker to the semantic + shape classes that the universal CSS recipe
+ * paints. Sibling implementations in lattice-emulator.js and
+ * lattice-runtime.js must stay in sync (cross-renderer parity).
+ *
+ *   [x] → pass + state-full     (filled disc)
+ *   [-] → warn + state-half     (half-filled disc)
+ *   [ ] → fail + state-empty    (outline disc)
+ *   [/] → skip + state-slashed  (filled disc + diagonal slash)
+ */
+function stateClassesFor(marker) {
+  if (marker === "x") return { sem: "pass", shape: "state-full" };
+  if (marker === "-") return { sem: "warn", shape: "state-half" };
+  if (marker === "/") return { sem: "skip", shape: "state-slashed" };
+  return { sem: "fail", shape: "state-empty" };
+}
+
+/**
+ * Marpit plugin: wraps [x]/[-]/[ ]/[/] nested list items inside
+ * `.verdict-grid` sections in `<span class="badge {sem} {shape}">` so
+ * the universal state-token CSS paints the badge glyph. Only fires for
+ * list items at depth ≥ 2 (nested badge items, not the card title or
+ * the body text line at the end). Body text does not start with `[`
+ * so it passes through untouched.
  */
 function verdictGridBadges(markdown) {
   markdown.core.ruler.after("marpit_slide_containers", "verdict_grid_badges", (state) => {
@@ -83,25 +103,24 @@ function verdictGridBadges(markdown) {
       if (token.type === "bullet_list_close" || token.type === "ordered_list_close") { listDepth--; continue; }
       if (token.type !== "inline" || listDepth < 2 || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
-      if (!/^\[/.test(text)) continue; // body text item — skip
-      const badgeClass = text.startsWith("[x]") ? "badge pass" : text.startsWith("[-]") ? "badge warn" : "badge fail";
-      const label = text.replace(/^\[[x\-\s]\]\s*/, "");
+      const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+      if (!m) continue;
+      const { sem, shape } = stateClassesFor(m[1]);
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
-      htmlToken.content = `<span class="${badgeClass}">${label}</span>`;
+      htmlToken.content = `<span class="badge ${sem} ${shape}">${m[2]}</span>`;
       token.children = [htmlToken];
     }
   });
 }
 
 /**
- * Marpit plugin: on `obligation-matrix` slides, wraps `[x]` / `[-]` / `[ ]`
- * text inside <td> cells in `<span class="state pass|warn|fail">…</span>`.
+ * Marpit plugin: on `obligation-matrix` slides, wraps `[x]/[-]/[ ]/[/]`
+ * text inside <td> cells in `<span class="state {sem} {shape}">…</span>`.
  * Mirrors verdictGridBadges and checklistItemStates but operates on
- * table cells. The bracket marker is stripped (the visual glyph is
- * drawn by CSS — colored circle checkbox, matching the checklist
- * recipe but rendered as a circle instead of a 3px-rounded square).
- * Any trailing label after the marker is preserved as the span's
- * text content.
+ * table cells. The bracket marker is stripped — CSS draws the universal
+ * state token (coloured disc + shape class). Any trailing label after
+ * the marker is preserved as the span's text content (and hidden via
+ * font-size:0 by the layout chrome — the visual is the disc).
  */
 function obligationMatrixBadges(markdown) {
   markdown.core.ruler.after("marpit_slide_containers", "obligation_matrix_badges", (state) => {
@@ -119,11 +138,11 @@ function obligationMatrixBadges(markdown) {
       if (token.type === "td_close") { inTd = false; continue; }
       if (token.type !== "inline" || !inTd || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
-      const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
+      const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
       if (!m) continue;
-      const stateClass = m[1] === "x" ? "state pass" : m[1] === "-" ? "state warn" : "state fail";
+      const { sem, shape } = stateClassesFor(m[1]);
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
-      htmlToken.content = `<span class="${stateClass}">${m[2]}</span>`;
+      htmlToken.content = `<span class="state ${sem} ${shape}">${m[2]}</span>`;
       token.children = [htmlToken];
     }
   });
@@ -131,13 +150,14 @@ function obligationMatrixBadges(markdown) {
 
 /**
  * Marpit plugin: on a `checklist` slide, transforms each top-level list item
- * whose text begins with `[x]`, `[-]`, or `[ ]` into:
+ * whose text begins with `[x]/[-]/[ ]/[/]` into:
  *
- *   <li class="state pass|warn|pending">label</li>
+ *   <li class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}">label</li>
  *
- * The marker is stripped from the rendered text; CSS draws the state glyph
- * (✓ / – / ☐) as a `::before` pseudo. Trailing `_italic_` annotations are
- * preserved untouched. Items without a marker pass through unchanged.
+ * The marker is stripped from the rendered text; CSS draws the universal
+ * state token via `::before` (no font dependency). Trailing `_italic_`
+ * annotations are preserved untouched. Items without a marker pass
+ * through unchanged.
  */
 function checklistItemStates(markdown) {
   markdown.core.ruler.after("marpit_slide_containers", "checklist_item_states", (state) => {
@@ -160,9 +180,10 @@ function checklistItemStates(markdown) {
       // Find the first text child and inspect its leading marker.
       const textChild = token.children.find((c) => c.type === "text");
       if (!textChild) { pendingItemOpen = null; continue; }
-      const m = /^\[([x\- ])\]\s*/.exec(textChild.content);
+      const m = /^\[([x\-\/ ])\]\s*/.exec(textChild.content);
       if (!m) { pendingItemOpen = null; continue; }
-      const stateClass = m[1] === "x" ? "state pass" : m[1] === "-" ? "state warn" : "state fail";
+      const { sem, shape } = stateClassesFor(m[1]);
+      const stateClass = `state ${sem} ${shape}`;
       // Append to existing class on the <li> (Marpit/markdown-it: attrJoin).
       const cur = pendingItemOpen.attrGet("class");
       pendingItemOpen.attrSet("class", cur ? `${cur} ${stateClass}` : stateClass);

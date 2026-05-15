@@ -560,9 +560,28 @@
   }
 
   /**
+   * Universal state-token marker decoder — shared by transformVerdictGridBadges,
+   * transformObligationMatrixBadges, and transformChecklistItemStates.
+   * Maps a single-char marker to the semantic + shape classes that the
+   * universal CSS recipe paints. Sibling implementations in
+   * lattice-emulator.js and marp.config.js must stay in sync.
+   *
+   *   [x] → pass + state-full     (filled disc)
+   *   [-] → warn + state-half     (half-filled disc)
+   *   [ ] → fail + state-empty    (outline disc)
+   *   [/] → skip + state-slashed  (filled disc + diagonal slash)
+   */
+  function stateClassesFor(marker) {
+    if (marker === 'x') return { sem: 'pass', shape: 'state-full' };
+    if (marker === '-') return { sem: 'warn', shape: 'state-half' };
+    if (marker === '/') return { sem: 'skip', shape: 'state-slashed' };
+    return { sem: 'fail', shape: 'state-empty' };
+  }
+
+  /**
    * Transforms verdict-grid badge items in VS Code preview (no Marp plugin).
-   * Finds [x]/[-]/[ ] prefixed li items inside section.verdict-grid, strips
-   * the prefix, and wraps the label in <span class="badge pass|warn|fail">.
+   * Finds [x]/[-]/[ ]/[/] prefixed li items inside section.verdict-grid, strips
+   * the prefix, and wraps the label in <span class="badge {sem} {shape}">.
    * Idempotent — skips li items that already contain a .badge span.
    */
   function transformVerdictGridBadges() {
@@ -577,12 +596,10 @@
         for (const li of badgeItems) {
           if (li.querySelector('.badge')) continue; // already transformed
           const text = li.textContent.trim();
-          if (!/^\[/.test(text)) continue;
-          const badgeClass = text.startsWith('[x]') ? 'badge pass'
-                           : text.startsWith('[-]') ? 'badge warn'
-                           : 'badge fail';
-          const label = text.replace(/^\[[x\-\s]\]\s*/, '');
-          li.innerHTML = `<span class="${badgeClass}">${label}</span>`;
+          const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+          if (!m) continue;
+          const { sem, shape } = stateClassesFor(m[1]);
+          li.innerHTML = `<span class="badge ${sem} ${shape}">${m[2]}</span>`;
         }
       }
     }
@@ -590,11 +607,11 @@
 
   /**
    * Transforms obligation-matrix table cells in VS Code preview (mirrors
-   * the Marp plugin). Finds [x]/[-]/[ ] in <td> cells inside
+   * the Marp plugin). Finds [x]/[-]/[ ]/[/] in <td> cells inside
    * section.obligation-matrix, strips the marker, and wraps any trailing
-   * label in <span class="state pass|warn|fail">. CSS draws the colored
-   * circle checkbox glyph. Idempotent — skips cells already containing
-   * a .state span.
+   * label in <span class="state {sem} {shape}">. CSS draws the universal
+   * state token (coloured disc + shape mask). Idempotent — skips cells
+   * already containing a .state span.
    */
   function transformObligationMatrixBadges() {
     if (typeof document === 'undefined') return;
@@ -602,12 +619,10 @@
       for (const td of section.querySelectorAll('td')) {
         if (td.querySelector('.state')) continue; // already transformed
         const text = td.textContent.trim();
-        const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
+        const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
         if (!m) continue;
-        const stateClass = m[1] === 'x' ? 'state pass'
-                         : m[1] === '-' ? 'state warn'
-                         : 'state fail';
-        td.innerHTML = `<span class="${stateClass}">${m[2]}</span>`;
+        const { sem, shape } = stateClassesFor(m[1]);
+        td.innerHTML = `<span class="state ${sem} ${shape}">${m[2]}</span>`;
       }
     }
   }
@@ -615,7 +630,8 @@
   /**
    * Transforms checklist items in VS Code preview (mirrors the Marp plugin).
    * For each top-level <li> in section.checklist whose text starts with
-   * [x] / [-] / [ ], strips the marker and adds class="state pass|warn|fail"
+   * [x]/[-]/[ ]/[/], strips the marker and adds
+   *   class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}"
    * to the <li>. CSS handles the trailing-`code` pill (universal pill
    * convention, shared with cards-grid / cards-side / actors). Idempotent —
    * skips items already tagged.
@@ -634,11 +650,11 @@
           return null;
         })();
         if (!firstText) continue;
-        const m = /^\[([x\- ])\]\s*/.exec(firstText.nodeValue);
+        const m = /^\[([x\-\/ ])\]\s*/.exec(firstText.nodeValue);
         if (!m) continue;
-        const stateClass = m[1] === 'x' ? 'pass' : m[1] === '-' ? 'warn' : 'fail';
+        const { sem, shape } = stateClassesFor(m[1]);
         firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
-        li.classList.add('state', stateClass);
+        li.classList.add('state', sem, shape);
       }
     }
   }
