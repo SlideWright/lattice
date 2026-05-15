@@ -6829,11 +6829,18 @@ section.quadrant .quadrant-figure {
 }
 
 section.quadrant .quadrant-svg {
-  width: 100%;
-  max-width: 760px;
-  height: auto;
-  aspect-ratio: 420 / 320;
-  flex: 1 1 auto;
+  /* Fixed pixel dimensions, same approach as radar's .radar-svg (360×360).
+   * An earlier width:100% + aspect-ratio approach computed a 760×579 SVG
+   * which overflowed the parent chart-body's available height; chart-body
+   * has overflow:hidden (shared chart-frame rule), so the top + bottom of
+   * the SVG got clipped — taking the TL/TR corner labels at y=36, the
+   * x-axis name at y=312, and the corner ticks with them. Fixed
+   * dimensions sized to comfortably fit chart-body keep everything inside
+   * the visible region. Height stays under radar's 360 to give the same
+   * vertical-fit guarantee; width follows the 420:320 viewBox aspect. */
+  width: 540px;
+  height: 412px;
+  flex: 0 0 auto;
   overflow: visible;
 }
 
