@@ -58,6 +58,8 @@
     "test:integration:mermaid": "node --test 'test/integration/mermaid/*.test.js'",
     "test:integration:screenshot": "node --test 'test/integration/screenshot/*.test.js'",
     "test:all": "node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
     "clean:scratch": "find .scratch -mindepth 1 -mtime +14 -print -delete",
     "prepublishOnly": "npm test"
   },
@@ -70,5 +72,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15"
   }
 }

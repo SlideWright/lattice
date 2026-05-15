@@ -17,7 +17,7 @@ const assert = require('node:assert/strict');
 const path   = require('path');
 const fs     = require('fs');
 const os     = require('os');
-const { spawnSync, execFileSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 const ROOT       = path.join(__dirname, '..', '..', '..');
 const EMULATOR   = path.join(ROOT, 'lattice-emulator.js');

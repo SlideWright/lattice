@@ -8,7 +8,7 @@
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
-const path   = require('path');
+const _path   = require('path');
 const fs     = require('fs');
 const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');

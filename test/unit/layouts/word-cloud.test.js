@@ -26,7 +26,6 @@ const {
   clampWeight,
   parseItem,
   parseItems,
-  findFirstUl,
   VARIANT_OPTS,
   CANVAS_W,
   CANVAS_H,

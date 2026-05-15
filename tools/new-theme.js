@@ -17,7 +17,7 @@
  * See docs/theming.md for the variable contract and the --diagram-*
  * taxonomy.
  */
-'use strict';
+
 
 const fs   = require('fs');
 const path = require('path');

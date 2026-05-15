@@ -91,14 +91,14 @@ function extractOnePart(text) {
   // Inline math ($...$). Forbid newlines inside, and disallow $ adjacent to
   // a digit on the outside (e.g. "$5" prices) — KaTeX inline must be bounded
   // by non-digit context. Content can't start or end with whitespace.
-  text = text.replace(/(^|[^\\$\d])\$([^$\n][^$\n]*?[^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+  text = text.replace(/(^|[^\\$\d])\$([^$\n][^$\n]*?[^$\n\s])\$(?!\d)/g, (_m, pre, tex) => {
     const i = mathRegistry.length;
     mathRegistry.push({ tex, display: false });
     return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
   });
   // Single-char inline math: $x$ — handled separately since the [^$\n\s]
   // tail anchor above requires ≥2 chars.
-  text = text.replace(/(^|[^\\$\d])\$([^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+  text = text.replace(/(^|[^\\$\d])\$([^$\n\s])\$(?!\d)/g, (_m, pre, tex) => {
     const i = mathRegistry.length;
     mathRegistry.push({ tex, display: false });
     return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
@@ -138,7 +138,7 @@ function restoreMath(html) {
         strict: false,
         trust: false,
       });
-    } catch (e) {
+    } catch (_e) {
       // KaTeX with throwOnError:false rarely throws, but guard anyway —
       // print the source so authors can spot the broken expression.
       const safe = entry.tex.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -263,7 +263,7 @@ const { flags, positional } = parseArgs(process.argv.slice(2));
 //   [source.md] [output.pdf | custom.css] [output.pdf | palette] [palette]
 const mdFile = positional[0];
 let cssFile, outFile, paletteArg;
-if (positional[1] && positional[1].endsWith('.css')) {
+if (positional[1]?.endsWith('.css')) {
   cssFile    = positional[1];
   outFile    = positional[2];
   paletteArg = positional[3];
@@ -959,7 +959,7 @@ const radar = require('./lib/radar');
 const quadrant = require('./lib/quadrant');
 
 const rawSlides = splitSlides(content, headingDivider);
-const total     = rawSlides.length;
+const _total     = rawSlides.length;
 
 // ── Inline parser ────────────────────────────────────────────────────────────
 function parseInline(t) {
@@ -1054,7 +1054,7 @@ function parseSlide(raw, index) {
     if (hljs && lang && hljs.getLanguage(lang)) {
       try {
         highlighted = hljs.highlight(trimmed, { language: lang }).value;
-      } catch(e) {
+      } catch(_e) {
         highlighted = trimmed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       }
     } else {
@@ -1166,7 +1166,7 @@ function parseSlide(raw, index) {
       html += `<li>${parseInline(t.replace(/^\d+\. /, ''))}`;
       // Check if next line is a sub-list — if not, close immediately
       const nextOl = i + 1 < lines.length ? lines[i + 1] : '';
-      if (!/^ {2,}- /.test(nextOl) && !/^   /.test(nextOl)) html += '</li>';
+      if (!/^ {2,}- /.test(nextOl) && !/^ {3}/.test(nextOl)) html += '</li>';
     }
     else if (t.startsWith('<')) { html += t + '\n'; }
     else {
@@ -1296,7 +1296,7 @@ function parseSlide(raw, index) {
   if (cls.includes('decision') || cls.includes('before-after') ||
       cls.includes('statute-stack') || cls.includes('regulatory-update') ||
       cls.includes('authority-chain') || cls.includes('redline')) {
-    html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (full, tag, inner) => {
+    html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (_full, tag, inner) => {
       // Walk top-level <li>…</li> with depth tracking.
       const out = [];
       let liDepth = 0, liStart = -1, i = 0, lastEmitted = 0;
@@ -1383,7 +1383,7 @@ function parseSlide(raw, index) {
   // verdict-grid: transform [x]/[-]/[ ]/[/] prefixed inner li items into badge spans.
   // The ul > li card structure and last-inner-li body text are left intact for CSS.
   if (cls.includes('verdict-grid')) {
-    html = html.replace(/<li>\s*\[([x\-\/ ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
+    html = html.replace(/<li>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
       const { sem, shape } = stateClassesFor(marker);
       return `<li><span class="badge ${sem} ${shape}">${label.trim()}</span></li>`;
     });
@@ -1395,7 +1395,7 @@ function parseSlide(raw, index) {
   // the universal state token (coloured disc + shape class). Trailing
   // label preserved as the span's text content.
   if (cls.includes('obligation-matrix')) {
-    html = html.replace(/<td>\s*\[([x\-\/ ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
+    html = html.replace(/<td>\s*\[([x\-/ ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
       const { sem, shape } = stateClassesFor(marker);
       return `<td><span class="state ${sem} ${shape}">${label.trim()}</span></td>`;
     });
@@ -1409,7 +1409,7 @@ function parseSlide(raw, index) {
   // actors).
   if (cls.includes('checklist')) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
-      const m = /^\s*\[([x\-\/ ])\]\s*/.exec(inner);
+      const m = /^\s*\[([x\-/ ])\]\s*/.exec(inner);
       if (!m) return full;
       const { sem, shape } = stateClassesFor(m[1]);
       return `<li class="state ${sem} ${shape}">${inner.slice(m[0].length)}</li>`;
@@ -2350,7 +2350,7 @@ function parseSlide(raw, index) {
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block
     // (div, ul, ol, table, pre) — not if it follows another <p> (that's main content)
-    html = html.replace(/((?:<\/div>|<\/ul>|<\/ol>|<\/table>|<\/pre>|<\/blockquote>)\s*)<p>([^]*?)<\/p>\s*$/, '$1<div class="below-note"><p>$2</p></div>');
+    html = html.replace(/((?:<\/div>|<\/ul>|<\/ol>|<\/table>|<\/pre>|<\/blockquote>)\s*)<p>([\s\S]*?)<\/p>\s*$/, '$1<div class="below-note"><p>$2</p></div>');
   }
 
   // ── Assemble section — matching Marp v4 HTML output ───────────────────────

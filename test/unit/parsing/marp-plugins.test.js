@@ -390,7 +390,7 @@ test('latticeplotFences: ```latticeplot becomes a div.latticeplot with base64-en
   const cfg = '{ "data": [{ "fn": "sin(x)" }] }';
   const md = '```latticeplot\n' + cfg + '\n```';
   const { html } = m.render(md);
-  assert.match(html, /<div class="latticeplot" data-fp-config="[A-Za-z0-9+\/=]+"><\/div>/,
+  assert.match(html, /<div class="latticeplot" data-fp-config="[A-Za-z0-9+/=]+"><\/div>/,
     'should emit placeholder div with base64 config');
   // Round-trip: the base64 in the div decodes to the original config (plus \n)
   const m2 = html.match(/data-fp-config="([^"]+)"/);
