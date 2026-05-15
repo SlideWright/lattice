@@ -11,9 +11,9 @@
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
-const { runMarp }   = require('../helpers/render');
-const { pageCount } = require('../helpers/pdf');
-const expected = require('../fixtures/expected-page-counts.json');
+const { runMarp }   = require('../../helpers/render');
+const { pageCount } = require('../../helpers/pdf');
+const expected = require('../../fixtures/expected-page-counts.json');
 
 test('marp-cli: gallery.md builds and produces expected page count',
   { timeout: 180000 },

@@ -14,7 +14,7 @@
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
-const { resolvePalette, DEFAULT } = require('../../lib/resolve-palette');
+const { resolvePalette, DEFAULT } = require('../../../lib/resolve-palette');
 
 const FM_INDACO = '---\nmarp: true\ntheme: indaco\n---\n\n# Slide';
 const FM_CUOIO  = '---\nmarp: true\ntheme: cuoio\n---\n\n# Slide';

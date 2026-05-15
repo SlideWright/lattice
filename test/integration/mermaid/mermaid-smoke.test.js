@@ -24,7 +24,7 @@ const fs     = require('fs');
 const os     = require('os');
 const { spawnSync } = require('child_process');
 
-const ROOT     = path.join(__dirname, '..', '..');
+const ROOT     = path.join(__dirname, '..', '..', '..');
 const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const FIXTURE  = path.join(ROOT, 'test', 'fixtures', 'mermaid-smoke.md');
 

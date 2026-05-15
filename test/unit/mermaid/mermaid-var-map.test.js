@@ -16,10 +16,10 @@ const test   = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
 const path   = require('path');
-const { loadPalette } = require('../helpers/palette');
+const { loadPalette } = require('../../helpers/palette');
 
 const EMULATOR_SRC = fs.readFileSync(
-  path.join(__dirname, '..', '..', 'lattice-emulator.js'),
+  path.join(__dirname, '..', '..', '..', 'lattice-emulator.js'),
   'utf8',
 );
 

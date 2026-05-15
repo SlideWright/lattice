@@ -13,7 +13,7 @@ const assert = require('node:assert/strict');
 const path   = require('path');
 const { execFileSync } = require('child_process');
 
-const ROOT = path.join(__dirname, '..', '..');
+const ROOT = path.join(__dirname, '..', '..', '..');
 
 function nodeCheck(file) {
   execFileSync(process.execPath, ['--check', path.join(ROOT, file)], {

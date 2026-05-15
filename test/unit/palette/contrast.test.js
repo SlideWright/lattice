@@ -57,7 +57,7 @@ function parsePaletteVars(content, mode = 'light') {
 }
 
 function loadPaletteWithImports(name, mode) {
-  const rootDir = path.join(__dirname, '..', '..');
+  const rootDir = path.join(__dirname, '..', '..', '..');
   const themesDir = path.join(rootDir, 'themes');
   const seen = new Set();
   let combined = '';

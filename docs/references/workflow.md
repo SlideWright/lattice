@@ -174,7 +174,7 @@ graduates from "new" to "documented". Treat them like
 
 ## Before opening a PR
 
-1. `npm test` — unit suite must be green (<100 ms, no child processes).
+1. `npm test` — full unit suite must be green. The umbrella script is the gate; scoped scripts below are only for inner-loop iteration.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
 3. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
 4. Rebase onto current `main` if the branch has drifted:
@@ -182,6 +182,24 @@ graduates from "new" to "documented". Treat them like
    git fetch origin
    git rebase origin/main
    ```
+
+### Inner-loop scoping
+
+When iterating on a single area, run only that area's suite. The umbrella `npm test` / `npm run test:integration` are still the pre-commit gate — scoped runs are for the tight edit-test cycle, not the gate.
+
+| Working on              | Inner-loop command                  |
+| ----------------------- | ----------------------------------- |
+| A palette or contrast   | `npm run test:palette`              |
+| Mermaid var resolution  | `npm run test:mermaid`              |
+| Parsers / transforms    | `npm run test:parsing`              |
+| A layout (radar, …)     | `npm run test:layouts`              |
+| CLI behaviour           | `npm run test:cli`                  |
+| Gallery page counts     | `npm run test:integration:galleries`|
+| Cross-renderer parity   | `npm run test:integration:parity`   |
+| Mermaid end-to-end      | `npm run test:integration:mermaid`  |
+| screenshot-slides       | `npm run test:integration:screenshot`|
+
+Files live in `test/unit/<scope>/` and `test/integration/<scope>/`. To add a test, drop it into the matching directory — the scoped script picks it up automatically.
 
 ## Three-renderer rule
 

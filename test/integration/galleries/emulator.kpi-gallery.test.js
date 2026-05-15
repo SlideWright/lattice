@@ -9,9 +9,9 @@
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
-const { runEmulator } = require('../helpers/render');
-const { pageCount }   = require('../helpers/pdf');
-const expected = require('../fixtures/expected-page-counts.json');
+const { runEmulator } = require('../../helpers/render');
+const { pageCount }   = require('../../helpers/pdf');
+const expected = require('../../fixtures/expected-page-counts.json');
 
 test('emulator: kpi-gallery.md builds and produces expected page count', { timeout: 180000 }, () => {
   const pdf = runEmulator('kpi-gallery.md');

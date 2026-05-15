@@ -23,7 +23,7 @@ const {
   transformJourneySection,
   applyToRenderedHtml,
   JOURNEY_ACTOR_PALETTE,
-} = require('../../lib/journey');
+} = require('../../../lib/journey');
 
 // ── clampMood ─────────────────────────────────────────────────────────
 

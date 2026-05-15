@@ -13,7 +13,7 @@
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPalette } = require('../helpers/palette');
+const { loadPalette } = require('../../helpers/palette');
 
 const REQUIRED_DIAGRAM_VARS = [
   // Brand primitives consumed by the renderer

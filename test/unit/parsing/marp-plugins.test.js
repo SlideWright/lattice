@@ -17,7 +17,7 @@
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const { Marp } = require('@marp-team/marp-core');
-const { plugins } = require('../../marp.config');
+const { plugins } = require('../../../marp.config');
 
 function makeMarp(plugin) {
   const m = new Marp();

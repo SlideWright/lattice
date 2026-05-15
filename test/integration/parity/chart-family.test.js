@@ -18,7 +18,7 @@ const fs     = require('fs');
 const os     = require('os');
 const { execFileSync } = require('child_process');
 
-const ROOT     = path.join(__dirname, '..', '..');
+const ROOT     = path.join(__dirname, '..', '..', '..');
 const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const THEME    = path.join(ROOT, 'lattice.css');
 const FIXTURE  = path.join(ROOT, 'test', 'fixtures', 'chart-family.md');

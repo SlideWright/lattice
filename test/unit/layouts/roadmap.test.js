@@ -16,7 +16,7 @@ const {
   applyHorizons,
   applyToRenderedHtml,
   markerToState,
-} = require('../../lib/roadmap');
+} = require('../../../lib/roadmap');
 
 // ── markerToState ──────────────────────────────────────────────────────
 

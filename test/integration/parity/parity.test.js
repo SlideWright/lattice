@@ -15,8 +15,8 @@
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
-const { runEmulator, runMarp } = require('../helpers/render');
-const { pageCount } = require('../helpers/pdf');
+const { runEmulator, runMarp } = require('../../helpers/render');
+const { pageCount } = require('../../helpers/pdf');
 
 test('parity: emulator and marp-cli agree on gallery.md page count',
   { timeout: 240000 },

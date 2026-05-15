@@ -34,7 +34,7 @@ const {
   centroid,
   bubbleRadius,
   matchEyebrowText,
-} = require('../../lib/quadrant');
+} = require('../../../lib/quadrant');
 
 // ── Fixtures ───────────────────────────────────────────────────────────
 
@@ -426,7 +426,7 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
 // Quadrant is a chart-family member; section dispatch + chart-frame
 // wrapping are owned by lib/chart-family.js. These pin the wiring.
 
-const { transformChartSection } = require('../../lib/chart-family');
+const { transformChartSection } = require('../../../lib/chart-family');
 
 test('chart-family: quadrant section is wrapped in chart-frame', () => {
   const inner = '<h2>Where to put the next dollar.</h2>' + UL_FOUR;

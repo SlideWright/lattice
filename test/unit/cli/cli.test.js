@@ -13,7 +13,7 @@ const assert = require('node:assert/strict');
 const path   = require('path');
 const { spawnSync } = require('child_process');
 
-const ROOT = path.join(__dirname, '..', '..');
+const ROOT = path.join(__dirname, '..', '..', '..');
 const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const SCREENSHOT = path.join(ROOT, 'tools', 'screenshot-slides.js');
 

@@ -10,7 +10,7 @@
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
-const { splitSlides } = require('../../lib/split-slides');
+const { splitSlides } = require('../../../lib/split-slides');
 
 test('splitter: empty input → empty array', () => {
   assert.deepEqual(splitSlides(''), []);

@@ -8,7 +8,7 @@
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
-const { parseSelector, matchSection, resolveSelector } = require('../../lib/match-section');
+const { parseSelector, matchSection, resolveSelector } = require('../../../lib/match-section');
 
 const SECTIONS = [
   { cls: 'title',                   h2: '',                                    footer: 'Title slide · title' },
