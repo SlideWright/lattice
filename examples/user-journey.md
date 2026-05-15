@@ -246,3 +246,11 @@ authored Markdown — only the class changes.
 Same Markdown, same data, five distinct analytical reads. Picks up
 the active theme's palette through `--cat-*` tokens; mood ramp is
 `--journey-mood-1` … `--journey-mood-5`.
+
+
+<!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
+     The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
+     so these scripts are a no-op in the PDF/HTML output. -->
+<!-- markdownlint-disable MD033 -->
+<script src="../mermaid-v11.min.js"></script>
+<script src="../lattice-runtime.js"></script>

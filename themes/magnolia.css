@@ -4,6 +4,7 @@
  * @size 4K       3840px 2160px
  * @size 4k       3840px 2160px
  * @size standard 960px  720px
+ * @size 16:9     1280px 720px
  *
  * Lattice · Magnolia palette — soft coral / dusty rose
  * ────────────────────────────────────────────────────────────────────────
@@ -47,45 +48,43 @@
  *     without breaking the white-stroke contrast contract.
  */
 
-@import 'indaco';
+@import 'lattice';
 
 :where(:root) { color-scheme: light; }
 
 :root {
   /* ── Magnolia brand axis ───────────────────────────────────────────── */
-  --brand-rose-deep:    #1F0A0F;  /* dark canvas, bg-dark                */
-  --brand-rose-mid:     #A04A55;  /* accent (light), text-label          */
-  --brand-rose-bright:  #E8A8B5;  /* accent (dark), decorative spectrum  */
-  --brand-garnet-deep:  #7E2F38;  /* fail signal — converges with palette*/
+  --brand-canvas:    #1F0A0F;  /* dark canvas, bg-dark                */
+  --brand-accent:     #A04A55;  /* accent (light), text-label          */
 
   /* ── Surfaces ──────────────────────────────────────────────────────── */
   --bg:       light-dark(#FCF8F5, var(--dark-bg));
   --bg-alt:   light-dark(#F4E4E0, var(--dark-bg-alt));
-  --bg-dark:  var(--brand-rose-deep);
+  --bg-dark:  var(--brand-canvas);
   --border:   light-dark(#E8D2CD, var(--dark-border));
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #FFFFFF;
-  --text-heading: light-dark(var(--brand-rose-deep), var(--dark-text-heading));  /* L:17.94:1 / D:19.81:1 */
+  --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading));  /* L:17.94:1 / D:19.81:1 */
   --text-body:    light-dark(#3F1A22, var(--dark-text-body));                    /* L:14.39:1 / D:10.90:1 */
-  --text-label:   light-dark(var(--brand-rose-mid), var(--dark-text-label));     /* L:5.52:1 / D:10.09:1 AA+  */
+  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label));     /* L:5.52:1 / D:10.09:1 AA+  */
   --text-muted:   #B79A93;
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
-  --accent:      light-dark(var(--brand-rose-mid), var(--brand-rose-bright)); /* L:5.52:1 / D:10.09:1 on bg AA+ */
+  --accent:      light-dark(var(--brand-accent), #E8A8B5); /* L:5.52:1 / D:10.09:1 on bg AA+ */
   --accent-soft: light-dark(#F5DDD8, var(--bg-warm-mid)); /* accent reads L:4.50:1 / D:10.09:1 */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.82:1 / D:10.09:1 */
 
   /* ── Semantic signals (kept dark in both modes; --fail uses palette
    * convergent garnet so it doesn't clash with the warm accent) ──────── */
   --pass: #2D6A3F;
-  --fail: var(--brand-garnet-deep);
+  --fail: #7E2F38;
   --warn: #92400E;
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: var(--brand-rose-mid);
+  --scale-500: var(--brand-accent);
 
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
   --bg-warm-mid:   #14060A;
@@ -135,35 +134,80 @@ section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
 
+/* ── highlight.js syntax tokens ────────────────────────────────────────── */
 :root {
-  /* ── Categorical palette (12 paired slots) ────────────────────────────
-   * Universal categorical-color contract. Each slot pairs a pale L≈87
-   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
-   * white text on top). Consumed by every layout that needs a categorical
-   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
-   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
-   * cat/chart cycle, sankey nodes, quadrant fills.
-   *
-   * Generated via the Brand-triad strategy in examples/palette-audit.md
-   * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js. */
-  --c1-light:  #E6D6D8;  --c1-dark:  #813743;
-  --c2-light:  #D6E5DB;  --c2-dark:  #3A7E51;
-  --c3-light:  #D6E0E5;  --c3-dark:  #3A677E;
-  --c4-light:  #E5DBD6;  --c4-dark:  #7E513A;
-  --c5-light:  #E5D6E0;  --c5-dark:  #7E3A67;
-  --c6-light:  #D6E5E3;  --c6-dark:  #3A7E72;
-  --c7-light:  #E4E2D7;  --c7-dark:  #786F3F;
-  --c8-light:  #DAE4D7;  --c8-dark:  #49783F;
-  --c9-light:  #D7DAE4;  --c9-dark:  #3F4978;
-  --c10-light: #E2D7E4;  --c10-dark: #6F3F78;
-  --c11-light: #E0E4D7;  --c11-dark: #65783F;
-  --c12-light: #DCD7E4;  --c12-dark: #523F78;
+  --hljs-comment:    #6A3840;  /* dark rose — muted                          */
+  --hljs-keyword:    #E08898;  /* bright rose — control flow, italic         */
+  --hljs-built_in:   #78C8B0;  /* teal — functions, italic                   */
+  --hljs-number:     #E8C870;  /* warm gold — numeric literals               */
+  --hljs-literal:    #C08898;  /* muted rose — booleans/null                 */
+  --hljs-string:     #98D090;  /* sage — strings                             */
+  --hljs-title:      #E898A8;  /* bright rose-pink — function names, italic  */
+  --hljs-type:       #C0C8E8;  /* pale lavender — types/annotations          */
+  --hljs-variable:   #80C0B8;  /* teal — variables                           */
+  --hljs-params:     #C8A8B0;  /* dusty rose — parameters                    */
+  --hljs-tag:        #E0A090;  /* warm rose — HTML tags                      */
+  --hljs-punctuation:#905060;  /* dark rose — operators                      */
+}
 
-  /* Non-flipping ink for text on --cN-light fills (bands stay pale
-   * in both light and dark canvas modes, so the text on them must
-   * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink-light: #1F0A0F;
+:root {
+  --c1-light:  light-dark(#F5DDD8, #A02D43);
+  --c1-dark:   light-dark(#F5DDD8, #A02D43);
+  --c2-light:  light-dark(#DCBAA8, #287000);
+  --c2-dark:   light-dark(#DCBAA8, #287000);
+  --c3-light:  light-dark(#F5EDCC, #3A55B1);
+  --c3-dark:   light-dark(#F5EDCC, #3A55B1);
+  --c4-light:  light-dark(#D5E5D8, #006A78);
+  --c4-dark:   light-dark(#D5E5D8, #006A78);
+  --c5-light:  light-dark(#E0D8E0, #86388B);
+  --c5-dark:   light-dark(#E0D8E0, #86388B);
+  --c6-light:  light-dark(#F0DBBF, #785800);
+  --c6-dark:   light-dark(#F0DBBF, #785800);
+  --c7-light:  light-dark(#F2D2D0, #006494);
+  --c7-dark:   light-dark(#F2D2D0, #006494);
+  --c8-light:  light-dark(#E5BFB8, #954100);
+  --c8-dark:   light-dark(#E5BFB8, #954100);
+  --c9-light:  light-dark(#EFD5C9, #6846A6);
+  --c9-dark:   light-dark(#EFD5C9, #6846A6);
+  --c10-light: light-dark(#EAD8E5, #616200);
+  --c10-dark:  light-dark(#EAD8E5, #616200);
+  --c11-light: light-dark(#F5DDD8, #9E2D50);
+  --c11-dark:  light-dark(#F5DDD8, #9E2D50);
+  --c12-light: light-dark(#D8E8DC, #006E5A);
+  --c12-dark:  light-dark(#D8E8DC, #006E5A);
 
-  --c-ink-dark:  #FFFFFF;
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#ECC0A8, #91450E);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#B4CDEB, #2A5F9A);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#D15D4E, #9A2A1F);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#ECB417, #856300);
+  --c-note:        light-dark(#DDD0B0, #7B5F06);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#F1E5E3, #221A19);
+  --c-subcontainer:  light-dark(#E2D7D4, #342B29);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }

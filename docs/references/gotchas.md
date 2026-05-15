@@ -900,3 +900,26 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   agreed at 1152px.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   wraps the non-slide fallback in :where().
+
+## G-gen merge must use non-G file's G-gen block, not the G-file's block
+
+- **Symptom:** After promoting G-files to canonical (merging cuoio-G.css
+  into cuoio.css etc.), contrast tests for cuoio fail with `--cN-dark`
+  resolving to pale fills against `--c-ink-dark` white (1.38:1 instead
+  of ≥4.5:1). Alarm colours also shift from deep crimson to medium red.
+- **Cause:** cuoio.css and indaco.css already contained a correct,
+  tested G-gen `:root` block (the `/* ── G-generation: categorical … */`
+  section). The G-files (cuoio-G.css, indaco-G.css) had a *different*
+  version of the same block — `--cN-dark` identical to `--cN-light`
+  (both `light-dark(pale, deep)`) instead of the inverse
+  `light-dark(deep, pale)`. A merge script that takes the G-file's
+  block as authoritative overwrites the correct values.
+- **Mitigation:** When merging G-files into their base counterparts, for
+  themes that already have a G-gen block (cuoio, indaco), preserve the
+  non-G file's G-gen block verbatim. Only import the G-file's block for
+  themes that had no G-gen content in their non-G base (ardesia,
+  atelier, brina, …).
+- **Removable when:** The G-files are permanently deleted and no
+  automated merge is needed again.
+- **Commits:** Fixed alongside the G-gen promotion commit in the
+  `refactor(themes)` session on 2026-05-15.

@@ -179,6 +179,30 @@
   --tag-text: var(--on-accent, #fff);
 }
 
+/* ── Universal theme defaults (zero specificity — any :root override wins) ─
+ * on-dark-* : opacity ramp for text on dark panel surfaces.
+ * hljs-*    : fallback syntax palette; themes supply curated overrides. */
+:where(:root) {
+  --on-dark-primary:   color-mix(in srgb, white 92%, transparent);
+  --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
+  --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);
+  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+
+  /* hljs fallbacks — Night Owl palette, overridden by each theme */
+  --hljs-comment:    #637777;
+  --hljs-keyword:    #c792ea;
+  --hljs-built_in:   #addb67;
+  --hljs-number:     #F78C6C;
+  --hljs-literal:    #ff5874;
+  --hljs-string:     #ecc48d;
+  --hljs-title:      #DCDCAA;
+  --hljs-type:       #82aaff;
+  --hljs-variable:   #addb67;
+  --hljs-params:     #7fdbca;
+  --hljs-tag:        #7fdbca;
+  --hljs-punctuation:#d6deeb;
+}
+
 /* ── BASE ── */
 section {
   container-type:size;
@@ -2089,6 +2113,49 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
   display:block;
   white-space:pre;
 }
+/* ── Syntax highlight (highlight.js) ──────────────────────────────────────
+ * Palette-blind rule structure — tokens are theme-defined, defaults above. */
+section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
+section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
+/* Diagram source <pre> — override Marp's bundled section pre/code defaults */
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
+section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [class*="hljs-"] {
+  background: none !important; color: var(--text-muted) !important;
+}
+section .hljs-comment { color:var(--hljs-comment); font-style:italic; }
+section .hljs-quote { color:var(--hljs-comment); font-style:italic; }
+section .hljs-keyword, section .hljs-template-tag,
+section .hljs-selector-pseudo, section .hljs-selector-attr,
+section .hljs-variable.language_ { color:var(--hljs-keyword); font-style:italic; }
+section .hljs-selector-tag { color:var(--hljs-keyword); }
+section .hljs-built_in, section .hljs-builtin-name { color:var(--hljs-built_in); font-style:italic; }
+section .hljs-variable, section .hljs-template-variable,
+section .hljs-addition, section .hljs-selector-class { color:var(--hljs-variable); }
+section .hljs-number { color:var(--hljs-number); }
+section .hljs-selector-id { color:var(--hljs-number); }
+section .hljs-literal { color:var(--hljs-literal); }
+section .hljs-subst { color:var(--hljs-literal); }
+section .hljs-string, section .hljs-meta-string { color:var(--hljs-string); }
+section .hljs-regexp { color:var(--hljs-string); }
+section .hljs-link { color:var(--hljs-string); }
+section .hljs-title, section .hljs-title.function_,
+section .hljs-function, section .hljs-section { color:var(--hljs-title); font-style:italic; }
+section .hljs-title.class_, section .hljs-title.class_.inherited__,
+section .hljs-class { color:var(--hljs-title); }
+section .hljs-type, section .hljs-symbol,
+section .hljs-meta, section .hljs-meta-keyword { color:var(--hljs-type); }
+section .hljs-params { color:var(--hljs-params); }
+section .hljs-tag, section .hljs-name, section .hljs-attr,
+section .hljs-doctag, section .hljs-code { color:var(--hljs-tag); }
+section .hljs-attribute { color:var(--hljs-tag); }
+section .hljs-punctuation, section .hljs-operator { color:var(--hljs-punctuation); }
+section .hljs-deletion { color:var(--hljs-literal); font-style:italic; }
+section .hljs-bullet { color:var(--hljs-variable); }
+section .hljs-formula { color:var(--hljs-keyword); }
+section .hljs-emphasis { font-style:italic; }
+section .hljs-strong { font-weight:700; }
+
 /* Suppress per-token hljs coloring inside the source <pre>. Marp registers
  * a mermaid hljs grammar in marp.config.js so the rendered HTML wraps the
  * fence content in <span class="hljs-*"> tokens. Coloring those tokens with
@@ -6268,7 +6335,7 @@ section.kanban.chart-frame .chart-body {
 
 /* Card — bg-alt panel with 3px left stripe coloured by --lane-color.
  * --c-subcontainer is a theme hook for containment-aware themes (e.g.
- * indaco-G) that define a dedicated card surface token. Falls back to
+ * indaco) that define a dedicated card surface token. Falls back to
  * --bg-alt so all other themes are unaffected. */
 .kanban-card {
   background: var(--c-subcontainer, var(--bg-alt));

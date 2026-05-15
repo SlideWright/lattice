@@ -4,6 +4,7 @@
  * @size 4K       3840px 2160px
  * @size 4k       3840px 2160px
  * @size standard 960px  720px
+ * @size 16:9     1280px 720px
  *
  * Lattice · Burgundy palette — wine cellar elegance
  * ────────────────────────────────────────────────────────────────────────
@@ -51,33 +52,30 @@
  *     state markers, which require the colour to stay dark in both modes.
  */
 
-@import 'indaco';
+@import 'lattice';
 
 :where(:root) { color-scheme: light; }
 
 :root {
   /* ── Burgundy brand axis ─────────────────────────────────────────── */
-  --brand-wine-deep:    #180609;  /* dark canvas, bg-dark                */
-  --brand-wine-mid:     #742532;  /* accent (light), text-label          */
-  --brand-wine-bright:  #C36B78;  /* accent (dark)                       */
-  --brand-champagne:    #B8995E;  /* mermaid-accent-warm (light)         */
-  --brand-champagne-soft:#D4B98A; /* mermaid-accent-warm (dark)          */
+  --brand-accent:     #742532;  /* accent (light), text-label          */
+  --brand-alt:    #B8995E;  /* mermaid-accent-warm (light)         */
 
   /* ── Surfaces ──────────────────────────────────────────────────────── */
   --bg:       light-dark(#F8F2E5, var(--dark-bg));      /* warm cream      */
   --bg-alt:   light-dark(#F1E8D2, var(--dark-bg-alt));
-  --bg-dark:  var(--brand-wine-deep);
+  --bg-dark:  #180609;
   --border:   light-dark(#DBCEAE, var(--dark-border));
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #F0E2CE;
   --text-heading: light-dark(#2A1015, var(--dark-text-heading));     /* L:14.96:1 / D:14.43:1 */
   --text-body:    light-dark(#523A40, var(--dark-text-body));        /* L:7.13:1 / D:8.88:1   */
-  --text-label:   light-dark(var(--brand-wine-mid), var(--dark-text-label)); /* L:6.44:1 / D:6.85:1 AA+ */
+  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:6.44:1 / D:6.85:1 AA+ */
   --text-muted:   #7C6A6F;
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
-  --accent:      light-dark(var(--brand-wine-mid), var(--brand-wine-bright)); /* L:6.44:1 / D:5.40:1 on bg AA+ */
+  --accent:      light-dark(var(--brand-accent), #C36B78); /* L:6.44:1 / D:5.40:1 on bg AA+ */
   --accent-soft: light-dark(#EAD4D8, var(--bg-warm-mid));
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:6.71:1 / D:5.40:1 */
 
@@ -90,7 +88,7 @@
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
   /* Sequential ramp anchor — burgundy's brand mid-wine. */
-  --scale-500: var(--brand-wine-mid);
+  --scale-500: var(--brand-accent);
 
   /* Tag uses --chart-2 (champagne) by default — the wine cellar duotone.
    * lattice.css :root sets --tag-bg: var(--chart-2); no override needed. */
@@ -101,8 +99,8 @@
   --code-text:     #DBB8B8;
 
   /* ── Spectrum — wine deep → wine mid → champagne pop ────────────────── */
-  --spectrum: linear-gradient(90deg, #180609 0%, #742532 55%, var(--brand-champagne) 100%);
-  --spectrum-vertical: linear-gradient(180deg, #180609 0%, #742532 55%, var(--brand-champagne) 100%);
+  --spectrum: linear-gradient(90deg, #180609 0%, #742532 55%, var(--brand-alt) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #180609 0%, #742532 55%, var(--brand-alt) 100%);
 
   /* ── Dark-variant tokens ──────────────────────────────────────────── */
   --dark-bg:           #180609;
@@ -116,7 +114,7 @@
 
   /* ── Mermaid extensions — champagne pop on second curve ────────────── */
   --c-stroke:          #48202A;
-  --c-accent-warm:     var(--brand-champagne);
+  --c-accent-warm:     var(--brand-alt);
   /* cScale / gitgraph — slot 0 anchors band-1 wine (BRAND); slot 1
    * champagne echoes band-2. Slots 5 + 7 swapped away from wine-rose
    * and dusty-wine-mauve (which collided with slot 0 wine) to forest
@@ -144,35 +142,80 @@ section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
 
+/* ── highlight.js syntax tokens ────────────────────────────────────────── */
 :root {
-  /* ── Categorical palette (12 paired slots) ────────────────────────────
-   * Universal categorical-color contract. Each slot pairs a pale L≈87
-   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
-   * white text on top). Consumed by every layout that needs a categorical
-   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
-   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
-   * cat/chart cycle, sankey nodes, quadrant fills.
-   *
-   * Generated via the Brand-triad strategy in examples/palette-audit.md
-   * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js. */
-  --c1-light:  #E8D4D8;  --c1-dark:  #8E293E;
-  --c2-light:  #D5E7DA;  --c2-dark:  #2C8647;
-  --c3-light:  #D5E2E7;  --c3-dark:  #2D6E8A;
-  --c4-light:  #E7DAD5;  --c4-dark:  #8A492D;
-  --c5-light:  #E7D5E2;  --c5-dark:  #8A2D6E;
-  --c6-light:  #D5E7E3;  --c6-dark:  #2B8371;
-  --c7-light:  #E6E3D6;  --c7-dark:  #837334;
-  --c8-light:  #D9E6D6;  --c8-dark:  #448334;
-  --c9-light:  #D6D9E6;  --c9-dark:  #344483;
-  --c10-light: #E3D6E6;  --c10-dark: #733483;
-  --c11-light: #E1E6D6;  --c11-dark: #667C32;
-  --c12-light: #DBD6E6;  --c12-dark: #4C3483;
+  --hljs-comment:    #6A3840;  /* dark wine — muted warm                     */
+  --hljs-keyword:    #C87080;  /* rose — control flow, italic                */
+  --hljs-built_in:   #8CBCB0;  /* sage teal — functions, italic              */
+  --hljs-number:     #D4B870;  /* champagne gold — numeric literals          */
+  --hljs-literal:    #C09898;  /* dusty rose — booleans/null                 */
+  --hljs-string:     #B8D490;  /* sage — strings                             */
+  --hljs-title:      #E08090;  /* bright rose — function names, italic       */
+  --hljs-type:       #C8C890;  /* pale gold — types/annotations              */
+  --hljs-variable:   #90B8B0;  /* muted teal — variables                     */
+  --hljs-params:     #C8A880;  /* warm champagne — parameters                */
+  --hljs-tag:        #D08080;  /* warm rose — HTML tags                      */
+  --hljs-punctuation:#806068;  /* muted wine — operators                     */
+}
 
-  /* Non-flipping ink for text on --cN-light fills (bands stay pale
-   * in both light and dark canvas modes, so the text on them must
-   * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink-light: #2A1015;
+:root {
+  --c1-light:  light-dark(#EAD4D8, #A02D43);
+  --c1-dark:   light-dark(#EAD4D8, #A02D43);
+  --c2-light:  light-dark(#D2B5BD, #007134);
+  --c2-dark:   light-dark(#D2B5BD, #007134);
+  --c3-light:  light-dark(#F0E8C8, #4A50B0);
+  --c3-dark:   light-dark(#F0E8C8, #4A50B0);
+  --c4-light:  light-dark(#E2CAA8, #805300);
+  --c4-dark:   light-dark(#E2CAA8, #805300);
+  --c5-light:  light-dark(#D8E0D5, #006A78);
+  --c5-dark:   light-dark(#D8E0D5, #006A78);
+  --c6-light:  light-dark(#E5D0E8, #76409C);
+  --c6-dark:   light-dark(#E5D0E8, #76409C);
+  --c7-light:  light-dark(#F0CCCC, #795700);
+  --c7-dark:   light-dark(#F0CCCC, #795700);
+  --c8-light:  light-dark(#E0D5D8, #00639A);
+  --c8-dark:   light-dark(#E0D5D8, #00639A);
+  --c9-light:  light-dark(#F0D4D8, #9B3B00);
+  --c9-dark:   light-dark(#F0D4D8, #9B3B00);
+  --c10-light: light-dark(#D5E0E5, #006E5D);
+  --c10-dark:  light-dark(#D5E0E5, #006E5D);
+  --c11-light: light-dark(#EAD4D8, #923275);
+  --c11-dark:  light-dark(#EAD4D8, #923275);
+  --c12-light: light-dark(#F0E2CE, #506800);
+  --c12-dark:  light-dark(#F0E2CE, #506800);
 
-  --c-ink-dark:  #FFFFFF;
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#ECC0A8, #91450E);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#B4CDEB, #2A5F9A);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#D35C63, #9A2735);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#ECB417, #7F5F00);
+  --c-note:        light-dark(#DDD0B0, #7B5F06);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#EADFE1, #241C1D);
+  --c-subcontainer:  light-dark(#DBD0D2, #352C2E);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }

@@ -1,7 +1,6 @@
 {
     "markdown.marp.themes": [
         "lattice.css",
-        "themes/indaco-G.css",
         "themes/cuoio.css",
         "themes/cuoio-dark.css",
         "themes/indaco.css",
@@ -158,5 +157,6 @@
     "markdown.marp.diagnostics.slideContentOverflow": true,
     "claudeCode.initialPermissionMode": "bypassPermissions",
     "claudeCode.allowDangerouslySkipPermissions": true,
-    "github.copilot.chat.claudeAgent.allowDangerouslySkipPermissions": false
+    "github.copilot.chat.claudeAgent.allowDangerouslySkipPermissions": false,
+    "claudeCode.useCtrlEnterToSend": true
 }
