@@ -8488,14 +8488,18 @@ section.math.compare > p:not(:has(.katex-display)) {
 }
 
 /* ── math.canvas ──
- * Authoring:
+ * Authoring (plot via function-plot):
  *   ## Title
  *   $$ y = \frac{1}{1+e^{-x}} $$
  *   The sigmoid: $S$-shaped, asymptotes at $0$ and $1$.
- *   ![sigmoid plot](sigmoid.svg)
+ *   ```latticeplot
+ *   { "data": [{ "fn": "1 / (1 + exp(-x))" }],
+ *     "xAxis": { "domain": [-6, 6] }, "yAxis": { "domain": [-0.1, 1.1] } }
+ *   ```
  *
- * Equation + caption on the left, image/diagram on the right.
- * Works with mermaid blocks (rendered to inline SVG) and `<img>`. */
+ * Equation + caption on the left, plot on the right. The plot child is
+ * either a ```latticeplot fence (function-plot, the default) or an
+ * `<img>` for externally-rendered SVG / PNG. */
 /* Grid-template-areas keeps equation + caption stacked in the left column
  * without a wrapper div: equation in `eq` (1fr, big), caption in `cap`
  * (auto, sized to text), plot spans both rows on the right. The plot's
@@ -8529,7 +8533,7 @@ section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   margin: var(--sp-sm) 0 0 0;
 }
 section.math.canvas > p:has(img),
-section.math.canvas > :is(.mermaid, svg, figure, .latticeplot) {
+section.math.canvas > :is(svg, figure, .latticeplot) {
   grid-area: plot;
   align-self: center;
   justify-self: center;
@@ -8542,9 +8546,7 @@ section.math.canvas > p:has(img) {
   margin: 0;
   text-align: center;
 }
-section.math.canvas > p > img,
-section.math.canvas > svg.mermaid,
-section.math.canvas > .mermaid svg {
+section.math.canvas > p > img {
   max-width: 100%;
   max-height: 55cqi;
   width: auto;
@@ -8711,10 +8713,9 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
  * function-plot stamps inline `stroke="..."` attributes on its trace paths
  * (`.line-0`, `.line-1`, …) and axis chrome (`stroke="black"` on `.domain`,
  * `fill="currentColor"` on tick text). To bring it into the palette we
- * override those with !important — same trick lattice already uses for
- * mermaid SVGs. The first three traces ride the editorial accents
- * (accent → cool → warm); further traces fall back to muted so they read
- * as supporting context. */
+ * override those with !important on the inline attributes. The first
+ * three traces ride the editorial accents (accent → cool → warm);
+ * further traces fall back to muted so they read as supporting context. */
 section .latticeplot .function-plot {
   font-family: var(--font-mono);
   color: var(--text-body);

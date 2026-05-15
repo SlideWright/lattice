@@ -55,13 +55,13 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `Section 02`
 
-## The derivation chain · `math.derivation`
+## The derivation chain · `math derivation`
 
 ---
 
 <!-- _class: math derivation -->
 <!-- _header: '' -->
-<!-- _footer: "math.derivation · proof / derivation chain with justification column" -->
+<!-- _footer: "math derivation · proof / derivation chain with justification column" -->
 
 ## Derivative of $f$ from first principles.
 
@@ -80,13 +80,13 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `Section 03`
 
-## Definition · theorem · proof · `math.theorem`
+## Definition · theorem · proof · `math theorem`
 
 ---
 
 <!-- _class: math theorem -->
 <!-- _header: '' -->
-<!-- _footer: "math.theorem · stacked colour-coded formal-statement cards" -->
+<!-- _footer: "math theorem · stacked colour-coded formal-statement cards" -->
 
 ## Intermediate Value Theorem.
 
@@ -104,13 +104,13 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `Section 04`
 
-## Side-by-side · `math.compare`
+## Side-by-side · `math compare`
 
 ---
 
 <!-- _class: math compare -->
 <!-- _header: '' -->
-<!-- _footer: "math.compare · two- or three-column equation comparison" -->
+<!-- _footer: "math compare · two- or three-column equation comparison" -->
 
 ## Frequentist vs Bayesian point estimate.
 
@@ -134,13 +134,13 @@ Maximises the posterior — conditions on the prior $p(\theta)$. Uncertainty is 
 
 `Section 05`
 
-## Equation + plot · `math.canvas`
+## Equation + plot · `math canvas`
 
 ---
 
 <!-- _class: math canvas -->
 <!-- _header: '' -->
-<!-- _footer: "math.canvas · equation left, plot/diagram right" -->
+<!-- _footer: "math canvas · equation left, plot right" -->
 
 ## The sigmoid.
 
@@ -168,13 +168,13 @@ Maps $\mathbb{R} \to (0,1)$. $S$-shaped, $\sigma(0) = 0.5$, steepest slope at th
 
 `Section 06`
 
-## Matrix · `math.matrix` and `math.matrix.decompose`
+## Matrix · `math matrix` and `math matrix decompose`
 
 ---
 
 <!-- _class: math matrix -->
 <!-- _header: '' -->
-<!-- _footer: "math.matrix · matrix + properties / dimensions / interpretation" -->
+<!-- _footer: "math matrix · matrix + properties / dimensions / interpretation" -->
 
 ## The design matrix $X$.
 
@@ -197,7 +197,7 @@ $$
 
 <!-- _class: math matrix decompose -->
 <!-- _header: '' -->
-<!-- _footer: "math.matrix.decompose · multi-matrix sequence (SVD, LU, eigen, …)" -->
+<!-- _footer: "math matrix decompose · multi-matrix sequence (SVD, LU, eigen, …)" -->
 
 ## Singular value decomposition.
 
@@ -219,13 +219,13 @@ $$ V \in \mathbb{R}^{n\times n} $$
 
 `Section 07`
 
-## Statistical result · `math.stats`
+## Statistical result · `math stats`
 
 ---
 
 <!-- _class: math stats -->
 <!-- _header: '' -->
-<!-- _footer: "math.stats · estimate ± uncertainty + interpretation" -->
+<!-- _footer: "math stats · estimate ± uncertainty + interpretation" -->
 
 ## Effect of the treatment.
 
@@ -244,6 +244,6 @@ For every additional unit of exposure, the outcome rises by 0.42 SD — roughly 
 
 # Seven variants. One contract.
 
-`math · math.derivation · math.theorem · math.compare · math.canvas · math.matrix · math.stats`
+`math · math derivation · math theorem · math compare · math canvas · math matrix · math stats`
 
 KaTeX renders the equations; Lattice provides the room around them.
