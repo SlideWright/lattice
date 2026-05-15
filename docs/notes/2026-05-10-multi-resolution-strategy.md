@@ -17,7 +17,7 @@ CSS files, no theme changes, no new CLI flags.
 | Name       | Dimensions  | Status    | Use case                              |
 |------------|-------------|-----------|---------------------------------------|
 | `hd`     | 1280 × 720  | shipping  | Default — projectors, screen sharing  |
-| `4k`  | 3840 × 2160 | planned   | Hi-res display, premium print export  |
+| `4K`  | 3840 × 2160 | planned   | Hi-res display, premium print export  |
 | `standard`      | 960 × 720   | candidate | Legacy boardroom AV rigs              |
 
 `standard` is declared as a candidate — worth reserving the `@size` slot now so
@@ -32,7 +32,7 @@ was rejected because:
 
 - Marp's `@size` directive already solves multi-resolution within one file.
 - A separate file would need to shadow every theme's `@theme` import,
-  creating 25+ `-4k` theme variants for no functional gain.
+  creating 25+ `-4K` theme variants for no functional gain.
 - All 25 themes are palette-only; none touch sizing. Keeping sizing
   centralised in `lattice.css` means zero theme changes for any new size.
 
@@ -100,7 +100,7 @@ For 4K output:
 ```yaml
 ---
 theme: indaco
-size: 4k
+size: 4K
 ---
 ```
 
@@ -127,7 +127,7 @@ the container query.
    `section`; convert `:root` tokens, compact/loose overrides, chrome
    positions, and `calc(1280px - …)` patterns. No visual change at HD,
    verifiable by diffing rendered output against the committed baseline PDF.
-2. Add `@size 4k` and `@size standard` declarations to `lattice.css`.
+2. Add `@size 4K` and `@size standard` declarations to `lattice.css`.
 3. Audit and convert component-level hardcoded px sites (pill padding,
    card gaps, chart grid dimensions, etc.).
 4. Wire up a one-slide 4K smoke-test in the gallery or fixtures.
