@@ -530,6 +530,35 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## CSS
 
+### `var(--fg)` is undefined — SVG `fill`/`stroke` silently falls back to black/none
+
+- **Symptom:** An SVG element styled with `fill: var(--fg)` renders solid
+  **black**; a `stroke` derived from a `--fg`-based token (e.g.
+  `color-mix(in srgb, var(--fg) 15%, transparent)`) renders as if
+  `stroke: none` — the shape, ring, or gridline disappears.
+- **Cause:** `--fg` is **not defined anywhere in the repo** — not in
+  `lattice.css`, not in any theme. It looks like a base ink token (and
+  the journey CSS uses it heavily: `--journey-timeline`, `--journey-plumb`,
+  `--journey-axis`, `--journey-task-fg`, `.journey-actor-name` colour),
+  but nothing declares it. A `var(--fg)` with no fallback is a
+  guaranteed-invalid substitution: `fill` then takes its *initial* value
+  (`black`), and `stroke`, being inherited, takes the inherited value
+  (effectively `none`). On an HTML element with dark body text the black
+  fallback is often invisible-by-luck; on SVG it is not.
+- **Mitigation:** Use the real ink-ramp tokens that themes actually
+  define — `--text-heading`, `--text-body`, `--text-label`,
+  `--text-muted`, `--border`, `--bg`. The radar chart was caught on this
+  pre-merge and uses them ([lattice.css](../../lattice.css), the `RADAR`
+  block). **The journey `--fg` references are still live and unaudited** —
+  its low-opacity gridlines/plumb-lines likely render wrong.
+- **Triggered by:** Any CSS — especially SVG `fill`/`stroke` — that
+  references `var(--fg)`. Grep before copying colour code out of the
+  journey block.
+- **Removable when:** Either a theme defines `--fg`, or the journey CSS
+  is migrated off it. Until then, treat `--fg` as a dead token.
+- **Commits:** Radar feature commit; see
+  [docs/notes/2026-05-15-radar-chart.md](../notes/2026-05-15-radar-chart.md).
+
 ### CSS custom properties return raw token stream via `getPropertyValue`
 
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`
