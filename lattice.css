@@ -3642,6 +3642,44 @@ section.roadmap.status td.cell-state .cell-state-text::before {
   display:none;
 }
 
+/* Top-right state token — the universal disc + shape, positioned in
+ * the corner so the cell body stays clean while still carrying the
+ * colour AND shape channels of the state grammar:
+ *   shipped → filled disc
+ *   wip     → half-disc (tonal split)
+ *   planned → outline disc
+ *   skipped → filled disc with diagonal slash
+ * Same recipe as checklist / verdict-grid / obligation-matrix — shape
+ * via CSS, no font dependency. */
+section.roadmap.status td.cell-state { padding-right:calc(1.4em + var(--sp-md)); }
+section.roadmap.status td.cell-state::after {
+  content:'';
+  position:absolute;
+  top:var(--sp-sm);
+  right:var(--sp-sm);
+  width:1em;
+  height:1em;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  box-sizing:border-box;
+  pointer-events:none;
+}
+section.roadmap.status td.cell-state.state-wip::after {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+}
+section.roadmap.status td.cell-state.state-planned::after {
+  background-color:transparent;
+  border:2px solid var(--state-color, var(--text-muted));
+}
+section.roadmap.status td.cell-state.state-skipped::after {
+  background-image:var(--state-slash);
+}
+
 /* ── ROADMAP HORIZONS — Now / Next / Later vertical phase cards ──────
  * lib/roadmap.js transposes the workstream × phase table into a row
  * of phase cards. Each card has a categorical top stripe, an eyebrow
