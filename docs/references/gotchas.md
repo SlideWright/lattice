@@ -177,18 +177,19 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   surface tokens are stored as `light-dark(<light>, <dark>)`. Mermaid's
   color parser only accepts hex / rgb / hsl / named colors and throws
   on the function form.
-- **Mitigation:** `buildMermaidThemeVars` in
-  [lattice-runtime.js:25-65](../../lattice-runtime.js#L25-L65) attaches
-  a hidden probe element to the scope section, sets its `color` to
-  `var(--token)`, and reads back `getComputedStyle(probe).color`.
+- **Mitigation:** `buildMermaidThemeVars` in `lattice-runtime.js`
+  attaches a hidden probe element to the scope section, sets its `color`
+  to `var(--token)`, and reads back `getComputedStyle(probe).color`.
   Browsers DO resolve `light-dark()` (and `color-mix()`) on real color
-  properties — only the custom-property accessor returns unresolved
-  tokens.
+  properties — only the custom-property accessor returns unresolved tokens.
+  If the probe still returns `rgba(0,0,0,0)` (older Chromium that doesn't
+  support `light-dark()`), `vc()` now manually parses the raw token and
+  picks the correct arm based on the section's `colorScheme`.
 - **Triggered by:** Any palette using `light-dark()` for surface
   tokens — currently cuoio and indaco.
 - **Removable when:** Mermaid's color parser supports `light-dark()`.
   Unlikely soon.
-- **Commits:** `5e47ff3`.
+- **Commits:** `5e47ff3` (probe approach), theme-cleanup commit (fallback parser).
 
 ### Mermaid kanban applies a lighten step to cScale
 
@@ -556,6 +557,35 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## CSS
 
+### `var(--fg)` is undefined — SVG `fill`/`stroke` silently falls back to black/none
+
+- **Symptom:** An SVG element styled with `fill: var(--fg)` renders solid
+  **black**; a `stroke` derived from a `--fg`-based token (e.g.
+  `color-mix(in srgb, var(--fg) 15%, transparent)`) renders as if
+  `stroke: none` — the shape, ring, or gridline disappears.
+- **Cause:** `--fg` is **not defined anywhere in the repo** — not in
+  `lattice.css`, not in any theme. It looks like a base ink token (and
+  the journey CSS uses it heavily: `--journey-timeline`, `--journey-plumb`,
+  `--journey-axis`, `--journey-task-fg`, `.journey-actor-name` colour),
+  but nothing declares it. A `var(--fg)` with no fallback is a
+  guaranteed-invalid substitution: `fill` then takes its *initial* value
+  (`black`), and `stroke`, being inherited, takes the inherited value
+  (effectively `none`). On an HTML element with dark body text the black
+  fallback is often invisible-by-luck; on SVG it is not.
+- **Mitigation:** Use the real ink-ramp tokens that themes actually
+  define — `--text-heading`, `--text-body`, `--text-label`,
+  `--text-muted`, `--border`, `--bg`. The radar chart was caught on this
+  pre-merge and uses them ([lattice.css](../../lattice.css), the `RADAR`
+  block). **The journey `--fg` references are still live and unaudited** —
+  its low-opacity gridlines/plumb-lines likely render wrong.
+- **Triggered by:** Any CSS — especially SVG `fill`/`stroke` — that
+  references `var(--fg)`. Grep before copying colour code out of the
+  journey block.
+- **Removable when:** Either a theme defines `--fg`, or the journey CSS
+  is migrated off it. Until then, treat `--fg` as a dead token.
+- **Commits:** Radar feature commit; see
+  [docs/notes/2026-05-15-radar-chart.md](../notes/2026-05-15-radar-chart.md).
+
 ### CSS custom properties return raw token stream via `getPropertyValue`
 
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`
@@ -573,6 +603,31 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Any JS read of a custom property whose value
   contains a CSS function.
 - **Removable when:** Never — this is by design.
+
+### G-generation `--c-ink-dark: var(--text-heading)` breaks contrast in both canvas modes
+
+- **Symptom:** Contrast test suite reports `--cN-dark / --c-ink-dark` AA
+  failures in both light and dark mode for any theme whose G-generation
+  block sets `--c-ink-dark: var(--text-heading)`.
+- **Cause:** The contract is: `--c-ink-dark` must be *white-ish* on
+  light canvas (for text on the dark `--cN-dark` fills) and *dark-ish*
+  on dark canvas (for text on the pale `--cN-dark` flipped fills).
+  `var(--text-heading)` resolves to dark ink on light canvas (dark-on-dark
+  → fail) and, because the `parsePaletteVars` chain breaks at
+  `--dark-text-heading` if that token isn't resolved yet, it falls back to
+  the previously-set `#FFFFFF` — white-on-pale → also fail.
+- **Fix:** Use an explicit `light-dark()` pair:
+  `--c-ink-dark: light-dark(#FFFFFF, #0A1628)` (indaco),
+  `--c-ink-dark: light-dark(#FFFFFF, #1E1A15)` (cuoio).
+  The rule: light-canvas arm is WHITE; dark-canvas arm is the theme's
+  primary dark ink.
+- **Companion trap:** `--c-alarm` in the G-generation block must also
+  be dark enough for white ink on light canvas (L ≤ 0.18) and bright
+  enough for dark ink on dark canvas (L ≥ 0.25). The original indaco-G
+  alarm `#D15A62` is too light (L≈0.22); use `#A91C2A` (L≈0.10).
+- **Triggered by:** Merging a G-generation block into a base theme
+  file when `--c-ink-dark` was left as `var(--text-heading)`.
+- **Commits:** theme-cleanup commit.
 
 ### CSS `ul > li` matches nested sublists — chain `> ul > li` for top-level-only styling
 
@@ -868,3 +923,26 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   agreed at 1152px.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
   wraps the non-slide fallback in :where().
+
+## G-gen merge must use non-G file's G-gen block, not the G-file's block
+
+- **Symptom:** After promoting G-files to canonical (merging cuoio-G.css
+  into cuoio.css etc.), contrast tests for cuoio fail with `--cN-dark`
+  resolving to pale fills against `--c-ink-dark` white (1.38:1 instead
+  of ≥4.5:1). Alarm colours also shift from deep crimson to medium red.
+- **Cause:** cuoio.css and indaco.css already contained a correct,
+  tested G-gen `:root` block (the `/* ── G-generation: categorical … */`
+  section). The G-files (cuoio-G.css, indaco-G.css) had a *different*
+  version of the same block — `--cN-dark` identical to `--cN-light`
+  (both `light-dark(pale, deep)`) instead of the inverse
+  `light-dark(deep, pale)`. A merge script that takes the G-file's
+  block as authoritative overwrites the correct values.
+- **Mitigation:** When merging G-files into their base counterparts, for
+  themes that already have a G-gen block (cuoio, indaco), preserve the
+  non-G file's G-gen block verbatim. Only import the G-file's block for
+  themes that had no G-gen content in their non-G base (ardesia,
+  atelier, brina, …).
+- **Removable when:** The G-files are permanently deleted and no
+  automated merge is needed again.
+- **Commits:** Fixed alongside the G-gen promotion commit in the
+  `refactor(themes)` session on 2026-05-15.

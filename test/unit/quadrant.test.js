@@ -1,0 +1,455 @@
+/**
+ * Unit: lib/quadrant.js — kernel for the `quadrant` chart-family member.
+ *
+ * Section dispatch + chart-frame wrapping live in lib/chart-family.js
+ * (quadrant is one of CHART_LAYOUTS); this kernel just produces the
+ * figure HTML. Tests here cover the layers chart-family delegates to:
+ *
+ *   1. Source parsing: parseItemPills, parseCoordPill, parseItem,
+ *      parseGroup, parseQuadrant.
+ *   2. Eyebrow grammar: parseEyebrow (axes + scale + targets).
+ *   3. Scale resolution: niceCeil, resolveScale, matchEyebrowText.
+ *   4. Geometry: plotPoint, bubbleRadius, convexHull, centroid.
+ *   5. Variant emission: buildQuadrant — one default + five modifiers.
+ *   6. Chart-family integration: transformChartSection wires up correctly.
+ */
+
+const test   = require('node:test');
+const assert = require('node:assert/strict');
+const {
+  QUADRANT_MODIFIERS,
+  GEOM,
+  parseQuadrant,
+  parseGroup,
+  parseItem,
+  parseItemPills,
+  parseCoordPill,
+  parseEyebrow,
+  resolveScale,
+  niceCeil,
+  pickVariant,
+  buildQuadrant,
+  plotPoint,
+  convexHull,
+  centroid,
+  bubbleRadius,
+  matchEyebrowText,
+} = require('../../lib/quadrant');
+
+// ── Fixtures ───────────────────────────────────────────────────────────
+
+const UL_FOUR = (
+  '<ul>' +
+    '<li>Strategic Bets<ul>' +
+      '<li>Codebook caching <code>3, 70</code></li>' +
+      '<li>Multi-tenant DEKs <code>7, 85</code></li>' +
+    '</ul></li>' +
+    '<li>Quick Wins<ul>' +
+      '<li>Per-purpose codebooks <code>8, 40</code></li>' +
+    '</ul></li>' +
+    '<li>Defer<ul>' +
+      '<li>Vendor scoping <code>4, 55</code></li>' +
+    '</ul></li>' +
+    '<li>Time Sinks<ul>' +
+      '<li>Manual rotation <code>2, 20</code></li>' +
+    '</ul></li>' +
+  '</ul>'
+);
+
+const UL_TRAIL = (
+  '<ul>' +
+    '<li>Strategic Bets<ul>' +
+      '<li>Acme <code>3, 60</code> <code>4, 78</code></li>' +
+    '</ul></li>' +
+    '<li>Quick Wins<ul>' +
+      '<li>Initech <code>7, 50</code> <code>8, 78</code></li>' +
+    '</ul></li>' +
+  '</ul>'
+);
+
+const UL_BUBBLE = (
+  '<ul>' +
+    '<li>Strategic Bets<ul>' +
+      '<li>Acme <code>3, 70, 8.2</code></li>' +
+      '<li>Northwind <code>5, 85, 5.4</code></li>' +
+    '</ul></li>' +
+  '</ul>'
+);
+
+const innerOf = s => s.replace(/^<ul>|<\/ul>$/g, '');
+
+// ── parseItemPills ─────────────────────────────────────────────────────
+
+test('parseItemPills: extracts a single trailing <code> as the pill', () => {
+  const r = parseItemPills('Acme <code>3, 70</code>');
+  assert.equal(r.label, 'Acme');
+  assert.deepEqual(r.pills, ['3, 70']);
+});
+
+test('parseItemPills: extracts multiple trailing pills for trail', () => {
+  const r = parseItemPills('Acme <code>3, 60</code> <code>4, 78</code>');
+  assert.equal(r.label, 'Acme');
+  assert.deepEqual(r.pills, ['3, 60', '4, 78']);
+});
+
+test('parseItemPills: empty pills when none', () => {
+  const r = parseItemPills('Acme');
+  assert.equal(r.label, 'Acme');
+  assert.deepEqual(r.pills, []);
+});
+
+// ── parseCoordPill ─────────────────────────────────────────────────────
+
+test('parseCoordPill: two numeric tokens become x, y', () => {
+  const r = parseCoordPill('3, 70');
+  assert.equal(r.x, 3);
+  assert.equal(r.y, 70);
+  assert.equal(r.size, undefined);
+});
+
+test('parseCoordPill: three tokens fill x, y, size', () => {
+  const r = parseCoordPill('5, 85, 5.4');
+  assert.equal(r.x, 5);
+  assert.equal(r.y, 85);
+  assert.equal(r.size, 5.4);
+});
+
+test('parseCoordPill: missing tokens default to 0', () => {
+  const r = parseCoordPill('');
+  assert.equal(r.x, 0);
+  assert.equal(r.y, 0);
+});
+
+// ── parseItem ──────────────────────────────────────────────────────────
+
+test('parseItem: pulls x, y from the first pill', () => {
+  const it = parseItem('Acme <code>3, 70</code>');
+  assert.equal(it.label, 'Acme');
+  assert.equal(it.x, 3);
+  assert.equal(it.y, 70);
+  assert.equal(it.to, null);
+});
+
+test('parseItem: trail — second pill becomes "to"', () => {
+  const it = parseItem('Acme <code>3, 60</code> <code>4, 78</code>');
+  assert.deepEqual(it.to, { x: 4, y: 78 });
+});
+
+test('parseItem: bubble — preserves the raw third-token rendition', () => {
+  const it = parseItem('Acme <code>3, 70, 8.2</code>');
+  assert.equal(it.size, 8.2);
+  assert.equal(it.sizePill, '8.2');
+});
+
+// ── parseGroup / parseQuadrant ─────────────────────────────────────────
+
+test('parseGroup: pulls name + items from a top-level <li>', () => {
+  const g = parseGroup('Strategic Bets<ul><li>Acme <code>3, 70</code></li></ul>');
+  assert.equal(g.name, 'Strategic Bets');
+  assert.equal(g.items.length, 1);
+  assert.equal(g.items[0].label, 'Acme');
+});
+
+test('parseQuadrant: collects four groups in source order', () => {
+  const model = parseQuadrant(innerOf(UL_FOUR));
+  assert.equal(model.groups.length, 4);
+  assert.deepEqual(
+    model.groups.map(g => g.name),
+    ['Strategic Bets', 'Quick Wins', 'Defer', 'Time Sinks']
+  );
+  assert.equal(model.groups[0].items.length, 2);
+});
+
+test('parseQuadrant: returns null for an empty list', () => {
+  assert.equal(parseQuadrant(''), null);
+});
+
+// ── niceCeil ───────────────────────────────────────────────────────────
+
+test('niceCeil: rounds up to clean intervals', () => {
+  assert.equal(niceCeil(87), 100);
+  assert.equal(niceCeil(4.2), 5);
+  assert.equal(niceCeil(1), 1);
+  assert.equal(niceCeil(0), 1);
+});
+
+// ── parseEyebrow ───────────────────────────────────────────────────────
+
+test('parseEyebrow: names + per-axis ranges', () => {
+  const eb = parseEyebrow('Effort 0–10 → Reach 0–100');
+  assert.equal(eb.xName, 'Effort');
+  assert.equal(eb.yName, 'Reach');
+  assert.deepEqual(eb.xRange, { min: 0, max: 10 });
+  assert.deepEqual(eb.yRange, { min: 0, max: 100 });
+  assert.equal(eb.targets, null);
+});
+
+test('parseEyebrow: names only (no scale)', () => {
+  const eb = parseEyebrow('Effort → Reach');
+  assert.equal(eb.xName, 'Effort');
+  assert.equal(eb.yName, 'Reach');
+  assert.equal(eb.xRange, null);
+  assert.equal(eb.yRange, null);
+});
+
+test('parseEyebrow: trailing · targets parses to {x,y}', () => {
+  const eb = parseEyebrow('Effort 0–10 → Reach 0–100 · targets 6, 75');
+  assert.deepEqual(eb.targets, { x: 6, y: 75 });
+  assert.deepEqual(eb.xRange, { min: 0, max: 10 });
+});
+
+test('parseEyebrow: empty string yields null fields', () => {
+  const eb = parseEyebrow('');
+  assert.equal(eb.xRange, null);
+  assert.equal(eb.yRange, null);
+  assert.equal(eb.targets, null);
+});
+
+// ── resolveScale ───────────────────────────────────────────────────────
+
+test('resolveScale: eyebrow ranges win over data', () => {
+  const model = parseQuadrant(innerOf(UL_FOUR));
+  const s = resolveScale(model, 'Effort 0–10 → Reach 0–100');
+  assert.equal(s.x.min, 0); assert.equal(s.x.max, 10);
+  assert.equal(s.y.min, 0); assert.equal(s.y.max, 100);
+  assert.equal(s.x.label, 'Effort');
+  assert.equal(s.y.label, 'Reach');
+});
+
+test('resolveScale: auto-fits when eyebrow has no range', () => {
+  const model = parseQuadrant(innerOf(UL_FOUR));
+  const s = resolveScale(model, 'Effort → Reach');
+  // data max x=8 → niceCeil → 10; data max y=85 → niceCeil → 100
+  assert.equal(s.x.max, 10);
+  assert.equal(s.y.max, 100);
+});
+
+test('resolveScale: targets reach the scale object', () => {
+  const model = parseQuadrant(innerOf(UL_FOUR));
+  const s = resolveScale(model, 'Effort 0–10 → Reach 0–100 · targets 6, 75');
+  assert.deepEqual(s.targets, { x: 6, y: 75 });
+});
+
+// ── Geometry ───────────────────────────────────────────────────────────
+
+test('plotPoint: (0,0) lands at the plot bottom-left', () => {
+  const scale = { x: { min: 0, max: 10 }, y: { min: 0, max: 100 } };
+  const p = plotPoint(0, 0, scale);
+  assert.ok(Math.abs(p.x - GEOM.plot.x0) < 1e-6);
+  assert.ok(Math.abs(p.y - GEOM.plot.y1) < 1e-6);
+});
+
+test('plotPoint: (max, max) lands at the plot top-right', () => {
+  const scale = { x: { min: 0, max: 10 }, y: { min: 0, max: 100 } };
+  const p = plotPoint(10, 100, scale);
+  assert.ok(Math.abs(p.x - GEOM.plot.x1) < 1e-6);
+  assert.ok(Math.abs(p.y - GEOM.plot.y0) < 1e-6);
+});
+
+test('plotPoint: clamps out-of-range values to the plot box', () => {
+  const scale = { x: { min: 0, max: 10 }, y: { min: 0, max: 100 } };
+  const p = plotPoint(-5, 999, scale);
+  assert.ok(Math.abs(p.x - GEOM.plot.x0) < 1e-6);
+  assert.ok(Math.abs(p.y - GEOM.plot.y0) < 1e-6);
+});
+
+test('bubbleRadius: undefined size or no range → standard dot radius', () => {
+  assert.equal(bubbleRadius(undefined, null), GEOM.dotR);
+  assert.equal(bubbleRadius(undefined, { min: 0, max: 10 }), GEOM.dotR);
+});
+
+test('bubbleRadius: a zero magnitude collapses to the bubble minimum', () => {
+  assert.equal(bubbleRadius(0, { min: 0, max: 10 }), GEOM.bubble.rMin);
+});
+
+test('bubbleRadius: max size → rMax', () => {
+  assert.equal(bubbleRadius(10, { min: 0, max: 10 }), GEOM.bubble.rMax);
+});
+
+test('bubbleRadius: half-max is √(0.5) × range above rMin', () => {
+  const r = bubbleRadius(5, { min: 0, max: 10 });
+  const expected = GEOM.bubble.rMin + Math.sqrt(0.5) * (GEOM.bubble.rMax - GEOM.bubble.rMin);
+  assert.ok(Math.abs(r - expected) < 1e-9);
+});
+
+test('convexHull: 3-point triangle is its own hull', () => {
+  const pts = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 2, y: 3 }];
+  const hull = convexHull(pts);
+  assert.equal(hull.length, 3);
+});
+
+test('convexHull: ignores an interior point', () => {
+  const pts = [
+    { x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 },
+    { x: 5, y: 5 },
+  ];
+  const hull = convexHull(pts);
+  assert.equal(hull.length, 4); // the interior point is dropped
+});
+
+test('centroid: midpoint of a square is the center', () => {
+  const pts = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 4 }, { x: 0, y: 4 }];
+  const c = centroid(pts);
+  assert.ok(Math.abs(c.x - 2) < 1e-9);
+  assert.ok(Math.abs(c.y - 2) < 1e-9);
+});
+
+// ── pickVariant ────────────────────────────────────────────────────────
+
+test('pickVariant: default for a plain quadrant class', () => {
+  assert.equal(pickVariant(['quadrant']), 'default');
+});
+
+test('pickVariant: each modifier is extracted', () => {
+  for (const mod of QUADRANT_MODIFIERS) {
+    assert.equal(pickVariant(['quadrant', mod]), mod);
+  }
+});
+
+test('pickVariant: minimal is not a variant (composable modifier)', () => {
+  assert.equal(pickVariant(['quadrant', 'minimal']), 'default');
+});
+
+// ── buildQuadrant — variant emission ───────────────────────────────────
+
+function modelFour() { return parseQuadrant(innerOf(UL_FOUR)); }
+const SCALE = { x: { min: 0, max: 10, label: 'Effort' }, y: { min: 0, max: 100, label: 'Reach' }, targets: null };
+
+test('buildQuadrant: default emits figure + tints + frame + dots', () => {
+  const out = buildQuadrant(modelFour(), 'default', SCALE);
+  assert.match(out, /<div class="quadrant-figure" data-variant="default"/);
+  assert.match(out, /<svg class="quadrant-svg"/);
+  assert.equal((out.match(/class="quadrant-tint"/g) || []).length, 4);
+  assert.match(out, /class="quadrant-bounds"/);
+  // UL_FOUR carries 2+1+1+1 = 5 items across the four groups.
+  assert.equal((out.match(/class="quadrant-dot"/g) || []).length, 5);
+});
+
+test('buildQuadrant: default labels every dot when items ≤ 16', () => {
+  const out = buildQuadrant(modelFour(), 'default', SCALE);
+  assert.equal((out.match(/class="quadrant-dot-label"/g) || []).length, 5);
+});
+
+test('buildQuadrant: default labels four quadrant corners', () => {
+  const out = buildQuadrant(modelFour(), 'default', SCALE);
+  assert.equal((out.match(/class="quadrant-label"/g) || []).length, 4);
+  // Reading-order check: top-left is data-cell="0" with "Strategic Bets"
+  assert.match(out, /data-cell="0"[^>]*>[^<]*Strategic Bets/);
+});
+
+test('buildQuadrant: bubble — √-scaled bubbles + size pill', () => {
+  const model = parseQuadrant(innerOf(UL_BUBBLE));
+  const out = buildQuadrant(model, 'bubble', SCALE);
+  assert.match(out, /data-variant="bubble"/);
+  assert.match(out, /class="quadrant-bubble"/);
+  // Both items have a third token (8.2, 5.4) → both render a value chip
+  assert.equal((out.match(/class="quadrant-bubble-value"/g) || []).length, 2);
+  assert.match(out, /8\.2/);
+});
+
+test('buildQuadrant: trail — before/after dots + dashed connector', () => {
+  const model = parseQuadrant(innerOf(UL_TRAIL));
+  const out = buildQuadrant(model, 'trail', SCALE);
+  assert.match(out, /data-variant="trail"/);
+  assert.equal((out.match(/class="quadrant-trail-before"/g) || []).length, 2);
+  assert.equal((out.match(/class="quadrant-trail-after"/g) || []).length, 2);
+  assert.equal((out.match(/class="quadrant-trail-line"/g) || []).length, 2);
+});
+
+test('buildQuadrant: cohort emits convex hulls + a legend', () => {
+  const out = buildQuadrant(modelFour(), 'cohort', SCALE);
+  assert.match(out, /data-variant="cohort"/);
+  assert.match(out, /class="quadrant-hulls"/);
+  assert.match(out, /<ol class="quadrant-legend">/);
+  // Groups with 1 point each get neither a polygon nor a 2-point line; the
+  // 2-item Strategic Bets group hits the 2-point hull branch.
+  assert.match(out, /quadrant-hull-line/);
+});
+
+test('buildQuadrant: threshold emits target-line split + zone labels', () => {
+  const scale = { ...SCALE, targets: { x: 6, y: 75 } };
+  const out = buildQuadrant(modelFour(), 'threshold', scale);
+  assert.match(out, /data-variant="threshold"/);
+  assert.match(out, /data-kind="target"/);
+  assert.match(out, /class="quadrant-target-badge/);
+  assert.match(out, /data-tx="6"/);
+  assert.match(out, /data-ty="75"/);
+});
+
+test('buildQuadrant: threshold zone labels fall back to defaults', () => {
+  // Empty group names → fall back to On Pace / Star / At Risk / Lagging.
+  const minimalUl = (
+    '<li><ul><li>X <code>5, 60</code></li></ul></li>' +
+    '<li><ul><li>Y <code>7, 80</code></li></ul></li>' +
+    '<li><ul><li>Z <code>3, 30</code></li></ul></li>' +
+    '<li><ul><li>W <code>8, 40</code></li></ul></li>'
+  );
+  const model = parseQuadrant(minimalUl);
+  const out = buildQuadrant(model, 'threshold', { ...SCALE, targets: { x: 5, y: 50 } });
+  assert.match(out, /Star/);
+  assert.match(out, /On Pace/);
+  assert.match(out, /At Risk/);
+  assert.match(out, /Lagging/);
+});
+
+test('buildQuadrant: magic — falls back to canonical Gartner labels', () => {
+  const minimalUl = (
+    '<li><ul><li>X <code>3, 8</code></li></ul></li>' +
+    '<li><ul><li>Y <code>8, 9</code></li></ul></li>' +
+    '<li><ul><li>Z <code>2, 3</code></li></ul></li>' +
+    '<li><ul><li>W <code>8, 4</code></li></ul></li>'
+  );
+  const model = parseQuadrant(minimalUl);
+  const out = buildQuadrant(model, 'magic', SCALE);
+  assert.match(out, /data-variant="magic"/);
+  assert.match(out, /Challengers/);
+  assert.match(out, /Leaders/);
+  assert.match(out, /Niche Players/);
+  assert.match(out, /Visionaries/);
+});
+
+test('buildQuadrant: magic — author-supplied group names override defaults', () => {
+  const out = buildQuadrant(modelFour(), 'magic', SCALE);
+  // The author-supplied "Strategic Bets" wins over the default "Challengers".
+  assert.match(out, /Strategic Bets/);
+  assert.doesNotMatch(out, /Challengers/);
+});
+
+// ── matchEyebrowText ───────────────────────────────────────────────────
+
+test('matchEyebrowText: pulls the first <p><code> text', () => {
+  assert.equal(matchEyebrowText('<p><code>Effort → Reach</code></p><h2>X</h2>'), 'Effort → Reach');
+  assert.equal(matchEyebrowText('<h2>X</h2><ul></ul>'), '');
+});
+
+// ── chart-family dispatch (integration with lib/chart-family.js) ───────
+// Quadrant is a chart-family member; section dispatch + chart-frame
+// wrapping are owned by lib/chart-family.js. These pin the wiring.
+
+const { transformChartSection } = require('../../lib/chart-family');
+
+test('chart-family: quadrant section is wrapped in chart-frame', () => {
+  const inner = '<h2>Where to put the next dollar.</h2>' + UL_FOUR;
+  const { html, cls, transformed } = transformChartSection(inner, 'quadrant');
+  assert.equal(transformed, true);
+  assert.match(cls, /\bchart-frame\b/);
+  assert.match(html, /<div class="chart-header">/);
+  assert.match(html, /<div class="chart-body"><div class="quadrant-figure"/);
+});
+
+test('chart-family: quadrant variant rides the class list', () => {
+  const inner = '<h2>X</h2>' + UL_BUBBLE;
+  const { html } = transformChartSection(inner, 'quadrant bubble');
+  assert.match(html, /data-variant="bubble"/);
+  assert.match(html, /class="quadrant-bubble"/);
+});
+
+test('chart-family: eyebrow scale + targets reach the figure', () => {
+  const inner = '<p><code>Effort 0–10 → Reach 0–100 · targets 6, 75</code></p>' +
+    '<h2>X</h2>' + UL_FOUR;
+  const { html } = transformChartSection(inner, 'quadrant threshold');
+  assert.match(html, /data-tx="6"/);
+  assert.match(html, /data-ty="75"/);
+  // Eyebrow stays in the DOM as `.chart-eyebrow`.
+  assert.match(html, /class="chart-eyebrow"/);
+});

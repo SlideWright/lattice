@@ -14,7 +14,7 @@ Every layout falls into one of two categories. The distinction matters because i
 
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `quadrant`, `radar`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
 | Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code`         | no — CSS-only                   |
 
 Modifiers (`dark`, `mirror`, and image-specific `full` / `contain`, etc.) compose with both categories.
@@ -549,6 +549,131 @@ Unordered list of words, each ending with a trailing inline-code element that ho
 **Canvas dimensions.** The packer works in a fixed 1100×320 px frame, sized to clear section chrome (h2 above, below-note paragraph beneath, section padding) without triggering the overflow watcher. If a word can't pack at its target size, the engine shrinks it up to 4× by 10% steps; if it still can't fit, it is dropped silently (authors should reduce its weight in that case).
 
 **Determinism.** Same source → same layout. The spiral is parameterised, not random; rotation is rank-keyed; colour is rank-keyed. Rebuilds and renderer-cross-checks produce identical output.
+
+### `radar` — native radar / spider chart (chart-family member)
+
+A chart-family member alongside `progress`, `timeline-list`, `piechart`,
+`gantt`, and `kanban` — every radar slide is wrapped in the shared
+`chart-frame` skeleton (eyebrow + h2 + subtitle / chart body / caption) by
+`lib/chart-family.js`. The geometry kernel lives in `lib/radar.js`.
+
+Series-major nested list: each top-level item is a series, each nested item is an `axis` with a trailing inline-code `value`. `lib/radar.js` parses the list, resolves the value scale, and emits a positioned SVG at build time — no Mermaid, no charting library, zero client-side JS.
+
+```markdown
+<!-- _class: radar -->
+
+`Scale · 0–10`
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Security `7`
+```
+
+**Axis order comes from the first series.** Later series align to it by axis label (case-insensitive), falling back to position when a label doesn't match — so a typo misaligns one point, not the whole chart.
+
+**Scale auto-fits, or the eyebrow pins it.** With no eyebrow number the scale runs `0` to the data max rounded up to a clean interval (1 / 2 / 2.5 / 5 × 10ⁿ). The eyebrow `<code>` can override it with a range (`0–100`, `0-100`, `0 to 100`) or a lone maximum (`100`); any other eyebrow text is ignored and the eyebrow still renders normally.
+
+**Series colour rotates the categorical palette** (`--cat-blue`, `--cat-orange`, `--cat-teal`, `--cat-rose`, `--cat-purple`, `--cat-green`, …) — palette-blind, theme supplies the hues.
+
+| Modifier           | Effect                                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (default)          | Multi-series overlay — every series a translucent filled polygon with vertex dots. The workhorse; best at two or three series.                                  |
+| `target`           | A series named `Target` (or `Goal` / `Plan`) becomes a dashed reference polygon; each axis draws a gap segment along the spoke — rose where the actual falls short, quiet green where it clears the bar. |
+| `delta`            | Exactly two series, read before → after. The before polygon is muted; per-axis change segments ride the spokes — green up, rose down, faint flat.                |
+| `benchmark`        | The first series is the hero line; every other series collapses into a single min–max envelope band. One shape and your line instead of a tangle of polygons.    |
+| `quadrant`         | Three-level list — series → group → axis. Each group becomes a tinted sector with a rim label and a dashed mean arc. Falls back to the default overlay if the list isn't grouped. |
+| `small-multiples`  | One mini radar per series on a shared scale, laid out in a row. The honest read when there are more series than an overlay can carry.                            |
+
+**`minimal` and `dark` are composable cross-cutting modifiers.** `minimal` drops the polygon fills (stroke-only) and fades the grid; `dark` lifts the grid for a dark surface. Both layer on any variant — e.g. `radar benchmark minimal`.
+
+**Determinism.** The geometry is a pure function of the value model — same source, same SVG. Shared by all three render paths (`lib/radar.js`, the marp-cli render hook, the marp-vscode runtime mirror).
+
+### `quadrant` — native 2×2 quadrant chart (chart-family member)
+
+A chart-family member alongside `progress`, `timeline-list`, `piechart`,
+`gantt`, `kanban`, and `radar` — every quadrant slide is wrapped in the
+shared `chart-frame` skeleton (eyebrow + h2 + subtitle / chart body /
+caption) by `lib/chart-family.js`. The geometry kernel lives in
+`lib/quadrant.js`. Distinct from `matrix-2x2` above: that's a CSS grid
+for textual SWOT-style content; this is an SVG scatter chart that plots
+items by `x, y` coordinates.
+
+Group-by-quadrant nested list: top-level items name the four quadrants
+in reading order (TL → TR → BL → BR); each nested item is a record with
+a trailing `x, y` coord pill. `lib/quadrant.js` parses the list, resolves
+per-axis scale from the eyebrow, and emits a positioned SVG at build
+time — no Mermaid, no charting library, zero client-side JS.
+
+```markdown
+<!-- _class: quadrant -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar.
+
+Effort estimated in story-points; reach as percent of addressable users.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+
+_Illustrative · 8 candidate initiatives._
+```
+
+**Reading order: TL → TR → BL → BR.** Top-level item 1 labels the
+top-left corner, item 2 top-right, item 3 bottom-left, item 4
+bottom-right — the Z-pattern most authors reach for at a whiteboard.
+Items inside a group are plotted by their `x, y` coords regardless of
+which group they live under; the group name only labels the corner.
+
+**Scale comes from the eyebrow, or auto-fits.** The eyebrow accepts
+`<x-axis-name> <xmin>–<xmax> → <y-axis-name> <ymin>–<ymax>` (either
+range optional). With no range, each axis nice-ceils its data (1 / 2 /
+2.5 / 5 × 10ⁿ). A trailing `· targets <tx>, <ty>` pins the crossing
+lines for the `threshold` variant.
+
+**Palette routing.** The four quadrant corners pull the theme's
+`--c-quadrant-1/2/3/4-fill` aliases (pale, AA-paired with
+`--c-quadrant-N-text` inks) — indaco hue-tunes them for boardroom
+semantics (brand-blue strategic at TR, etc.). The `cohort` variant
+overrides with a vanilla `--c1-light`/`--c1-dark` cycle.
+
+| Modifier      | Effect                                                                                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (default)     | Four palette-tinted quadrants + scatter dots, each dot-labelled when the population is ≤ 16. The workhorse.                                                       |
+| `bubble`      | A third comma-separated value per item √-scales the dot — AREA, not radius, encodes magnitude. Numeric pill renders inside large bubbles, beside small ones.       |
+| `trail`       | Two coord pills per item — before, then after. Faded ring + dashed connector + solid dot reads as "what moved, and which way" without a single annotation.        |
+| `cohort`      | Top-level groups become cohorts rather than quadrant positions; a convex-hull region tints each cohort's footprint, labelled at the centroid. A legend sits right. |
+| `threshold`   | Midlines replaced by explicit dashed target lines (eyebrow `· targets x, y`). Four zones default to **Star / On Pace / Lagging / At Risk**.                       |
+| `magic`       | Gartner Magic Quadrant tribute. Corners default to **CHALLENGERS / LEADERS / NICHE PLAYERS / VISIONARIES**; axes to **Completeness of Vision** / **Ability to Execute**. Author-supplied names override. |
+
+**`minimal` and `dark` are composable cross-cutting modifiers.**
+`minimal` drops the quadrant tints + bubble/hull fills (kept-bare,
+stroke-only); `dark` lifts the frame and split contrast for a dark
+surface. Both layer on any variant — e.g. `quadrant cohort minimal`.
+
+**Title-area treatment.** Quadrant overrides the shared chart-frame
+title strip with the `.minimal`-style treatment by default — no lucent
+gradient, just a short centred accent hairline. The dense scatter
+benefits from less chrome at the top of the slide; the plot itself
+is unaffected.
+
+**Determinism.** The geometry is a pure function of the value model
+— same source, same SVG. Hulls use Andrew's monotone-chain (stable).
+Shared by all three render paths (`lib/quadrant.js`, the marp-cli
+render hook, the marp-vscode runtime mirror).
 
 ## Template 1: Title (dark bookend)
 

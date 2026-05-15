@@ -382,3 +382,35 @@ test('addHeadingPeriods: does NOT fire on slides without the with-period class',
   const { html } = m.render('## No period added');
   assert.match(html, /<h2[^>]*>No period added<\/h2>/);
 });
+
+// ── latticeplotFences ──────────────────────────────────────────────────
+
+test('latticeplotFences: ```latticeplot becomes a div.latticeplot with base64-encoded config', () => {
+  const m = makeMarp(plugins.latticeplotFences);
+  const cfg = '{ "data": [{ "fn": "sin(x)" }] }';
+  const md = '```latticeplot\n' + cfg + '\n```';
+  const { html } = m.render(md);
+  assert.match(html, /<div class="latticeplot" data-fp-config="[A-Za-z0-9+\/=]+"><\/div>/,
+    'should emit placeholder div with base64 config');
+  // Round-trip: the base64 in the div decodes to the original config (plus \n)
+  const m2 = html.match(/data-fp-config="([^"]+)"/);
+  assert.ok(m2, 'config attribute should be present');
+  const decoded = Buffer.from(m2[1], 'base64').toString('utf8');
+  assert.equal(decoded.trim(), cfg.trim());
+});
+
+test('latticeplotFences: other fenced languages are left to the default renderer', () => {
+  const m = makeMarp(plugins.latticeplotFences);
+  const { html } = m.render('```js\nconst x = 1;\n```');
+  // marp-core wraps fences as <pre is="marp-pre" …><code class="language-js">…</code></pre>
+  // and runs the contents through highlight.js (so `const` becomes a span).
+  assert.match(html, /<code[^>]*language-js[^>]*>[\s\S]*const[\s\S]*x = /);
+  assert.doesNotMatch(html, /class="latticeplot"/);
+});
+
+test('latticeplotFences: a fence with no language is also left alone', () => {
+  const m = makeMarp(plugins.latticeplotFences);
+  const { html } = m.render('```\nplain text\n```');
+  assert.match(html, /<code[^>]*>plain text/);
+  assert.doesNotMatch(html, /class="latticeplot"/);
+});

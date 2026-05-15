@@ -4,6 +4,7 @@
  * @size 4K       3840px 2160px
  * @size 4k       3840px 2160px
  * @size standard 960px  720px
+ * @size 16:9     1280px 720px
  *
  * Lattice · Carbone palette — dark editorial with electric lime accent
  * ────────────────────────────────────────────────────────────────────────
@@ -51,7 +52,7 @@
  *   set: kept dark for the white-stroke checklist icons.
  */
 
-@import 'indaco';
+@import 'lattice';
 
 /* Zero-specificity dark default — same pattern indaco uses for light, but
  * inverted. Carbone's identity is dark canvas; if an author flips
@@ -62,26 +63,23 @@
 
 :root {
   /* ── Carbone brand axis ────────────────────────────────────────────── */
-  --brand-graphite-deep:   #0E0E10;  /* deepest panel — title/divider/closing */
-  --brand-graphite-canvas: #1A1A1C;  /* canvas                                */
-  --brand-graphite-card:   #26262A;  /* lifted card surface                   */
-  --brand-lime:            #7DE38A;  /* electric accent                       */
+  --brand-accent:            #7DE38A;  /* electric accent                       */
 
   /* ── Surfaces — pinned dark (no light-dark wrapping) ──────────────── */
-  --bg:       var(--brand-graphite-canvas);
-  --bg-alt:   var(--brand-graphite-card);
-  --bg-dark:  var(--brand-graphite-deep);
+  --bg:       #1A1A1C;
+  --bg-alt:   #26262A;
+  --bg-dark:  #0E0E10;
   --border:   #3A3A3F;
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #F5F5F2;
   --text-heading: #F5F5F2;       /* L:15.91:1 on bg AAA */
   --text-body:    #DCDCD7;       /* L:12.63:1 on bg AAA */
-  --text-label:   var(--brand-lime); /* L:10.95:1 on bg AAA */
+  --text-label:   var(--brand-accent); /* L:10.95:1 on bg AAA */
   --text-muted:   #757A82;       /* decorative — WCAG-exempt */
 
   /* ── Brand accent — electric lime ──────────────────────────────────── */
-  --accent:      var(--brand-lime);          /* L:10.95:1 on bg AAA */
+  --accent:      var(--brand-accent);          /* L:10.95:1 on bg AAA */
   --accent-soft: #2C3D2F;                    /* lifted card with green tint */
   /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
   --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
@@ -101,7 +99,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
-  --scale-500: var(--brand-lime);
+  --scale-500: var(--brand-accent);
 
   /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
    * status badges a cyber-warm pop against the cold graphite. */
@@ -112,8 +110,8 @@
   --code-text:     #DCDCD7;
 
   /* ── Spectrum — black → graphite → lime ────────────────────────────── */
-  --spectrum: linear-gradient(90deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-lime) 100%);
-  --spectrum-vertical: linear-gradient(180deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-lime) 100%);
+  --spectrum: linear-gradient(90deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-accent) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-accent) 100%);
 
   /* ── Dark-variant tokens — kept for any explicit consumer (Marp chrome,
    * theming code paths). Carbone resolves to these whether color-scheme is
@@ -124,11 +122,11 @@
   --dark-text-heading: #F5F5F2;
   --dark-text-body:    #DCDCD7;
   --dark-text-muted:   #757A82;
-  --dark-text-label:   var(--brand-lime);
+  --dark-text-label:   var(--brand-accent);
   --dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --c-stroke:          var(--brand-lime);
+  --c-stroke:          var(--brand-accent);
   --c-accent-warm:     #FFD166;
   /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
   /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
@@ -155,34 +153,38 @@ section pre.hljs {
 }
 
 :root {
-  /* ── Categorical palette (12 paired slots) ────────────────────────────
-   * Universal categorical-color contract. Each slot pairs a pale L≈87
-   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
-   * white text on top). Consumed by every layout that needs a categorical
-   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
-   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
-   * cat/chart cycle, sankey nodes, quadrant fills.
-   *
-   * Generated via the Brand-triad strategy in examples/palette-audit.md
-   * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js. */
-  --c1-light:  #958383;  --c1-dark:  #6E4949;
-  --c2-light:  #84958C;  --c2-dark:  #4B6D5C;
-  --c3-light:  #848C95;  --c3-dark:  #4B5C6D;
-  --c4-light:  #958C84;  --c4-dark:  #6D5C4B;
-  --c5-light:  #95848C;  --c5-dark:  #6D4B5C;
-  --c6-light:  #849595;  --c6-dark:  #4B6D6D;
-  --c7-light:  #939385;  --c7-dark:  #6A6A4D;
-  --c8-light:  #859385;  --c8-dark:  #4D6A4D;
-  --c9-light:  #858593;  --c9-dark:  #4D4D6A;
-  --c10-light: #938593;  --c10-dark: #6A4D6A;
-  --c11-light: #8C9385;  --c11-dark: #5C6A4D;
-  --c12-light: #8C8593;  --c12-dark: #5C4D6A;
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
 
-  /* Non-flipping ink for text on --cN-light fills (bands stay pale
-   * in both light and dark canvas modes, so the text on them must
-   * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink-light: #1A1A1A;
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#91450E, #91450E);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#2A5F9A, #2A5F9A);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#9A2735, #9A2735);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#856300, #856300);
+  --c-note:        light-dark(#7B5F06, #7B5F06);
 
-  --c-ink-dark:  #FFFFFF;
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#202026, #202026);
+  --c-subcontainer:  light-dark(#313138, #313138);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }

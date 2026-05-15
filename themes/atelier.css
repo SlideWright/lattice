@@ -4,6 +4,7 @@
  * @size 4K       3840px 2160px
  * @size 4k       3840px 2160px
  * @size standard 960px  720px
+ * @size 16:9     1280px 720px
  *
  * Lattice · Atelier palette — hand-finished black & oat
  * ────────────────────────────────────────────────────────────────────────
@@ -45,16 +46,15 @@
  *     state markers, which require the colour to stay dark in both modes.
  */
 
-@import 'indaco';
+@import 'lattice';
 
 :where(:root) { color-scheme: light; }
 
 :root {
   /* ── Atelier brand axis — warm achromatic with amber pop ──────────── */
-  --brand-soft-black:  #1A1A18;  /* warm near-black, not pure black     */
-  --brand-oat:         #DBD5C0;  /* dark-mode accent, oat-tinted        */
-  --brand-amber:       #6B4F28;  /* deep amber tag (light)              */
-  --brand-amber-soft:  #C8A878;  /* lifted amber tag (dark)             */
+  --brand-canvas:  #1A1A18;  /* warm near-black, not pure black     */
+  --brand-bright:         #DBD5C0;  /* dark-mode accent, oat-tinted        */
+  --brand-alt:       #6B4F28;  /* deep amber tag (light)              */
 
   /* ── Surfaces ──────────────────────────────────────────────────────── */
   --bg:       light-dark(#F0EDE6, var(--dark-bg));
@@ -64,14 +64,14 @@
 
   /* ── Ink ramp ──────────────────────────────────────────────────────── */
   --text-display: #F0EDE6;
-  --text-heading: light-dark(var(--brand-soft-black), var(--dark-text-heading)); /* L:16.85:1 / D:16.50:1 AAA */
+  --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading)); /* L:16.85:1 / D:16.50:1 AAA */
   --text-body:    light-dark(#42403A, var(--dark-text-body));                    /* L:9.95:1 / D:10.42:1 AAA  */
   --text-label:   light-dark(#75705F, var(--dark-text-label));                   /* L:5.18:1 / D:7.04:1 AA+   */
   --text-muted:   #75705F;
 
   /* ── Brand accent — warm achromatic ────────────────────────────────── */
-  --accent:      light-dark(var(--brand-soft-black), var(--brand-oat)); /* L:16.85:1 / D:13.42:1 on bg AAA */
-  --accent-soft: light-dark(var(--brand-oat), var(--bg-warm-mid)); /* accent reads AAA on this */
+  --accent:      light-dark(var(--brand-canvas), var(--brand-bright)); /* L:16.85:1 / D:13.42:1 on bg AAA */
+  --accent-soft: light-dark(var(--brand-bright), var(--bg-warm-mid)); /* accent reads AAA on this */
   --on-accent:   light-dark(#F0EDE6, var(--bg-dark));    /* L:15.42:1 / D:13.42:1 */
 
   /* ── Semantic signals — derived backgrounds only ───────────────────
@@ -84,7 +84,7 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  --scale-500: var(--brand-soft-black);
+  --scale-500: var(--brand-canvas);
 
   /* Tag uses --chart-2 (deep amber) — atelier's hand-finished gold pop. */
 
@@ -94,8 +94,8 @@
   --code-text:     #BFB8A8;
 
   /* ── Spectrum — black → oat → amber pop ─────────────────────────────── */
-  --spectrum: linear-gradient(90deg, #0F0E0C 0%, #75705F 55%, var(--brand-amber) 100%);
-  --spectrum-vertical: linear-gradient(180deg, #0F0E0C 0%, #75705F 55%, var(--brand-amber) 100%);
+  --spectrum: linear-gradient(90deg, #0F0E0C 0%, #75705F 55%, var(--brand-alt) 100%);
+  --spectrum-vertical: linear-gradient(180deg, #0F0E0C 0%, #75705F 55%, var(--brand-alt) 100%);
 
   /* ── Dark-variant tokens ──────────────────────────────────────────── */
   --dark-bg:           #0F0E0C;
@@ -109,7 +109,7 @@
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
   --c-stroke:          #38332A;
-  --c-accent-warm:     var(--brand-amber); /* the amber pop */
+  --c-accent-warm:     var(--brand-alt); /* the amber pop */
   /* cScale / gitgraph — warm achromatic with amber pop */
 }
 /* Completion tokens — band-text pairs, line, gantt state, note, error,
@@ -133,35 +133,80 @@ section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
 }
 
+/* ── highlight.js syntax tokens ────────────────────────────────────────── */
 :root {
-  /* ── Categorical palette (12 paired slots) ────────────────────────────
-   * Universal categorical-color contract. Each slot pairs a pale L≈87
-   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
-   * white text on top). Consumed by every layout that needs a categorical
-   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
-   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
-   * cat/chart cycle, sankey nodes, quadrant fills.
-   *
-   * Generated via the Brand-triad strategy in examples/palette-audit.md
-   * (rank-1 for this theme). AA-text against the matching tier is
-   * asserted by test/unit/contrast.test.js. */
-  --c1-light:  #E2DEDA;  --c1-dark:  #775E40;
-  --c2-light:  #DAE1E2;  --c2-dark:  #427375;
-  --c3-light:  #DADAE2;  --c3-dark:  #444275;
-  --c4-light:  #E1E2DA;  --c4-dark:  #737542;
-  --c5-light:  #E2DADA;  --c5-dark:  #754442;
-  --c6-light:  #DADEE2;  --c6-dark:  #425A75;
-  --c7-light:  #DEE1DB;  --c7-dark:  #5A7146;
-  --c8-light:  #DBE1DE;  --c8-dark:  #46715D;
-  --c9-light:  #DEDBE1;  --c9-dark:  #5D4671;
-  --c10-light: #E1DBDE;  --c10-dark: #71465A;
-  --c11-light: #DBE1DB;  --c11-dark: #467148;
-  --c12-light: #E1DBE1;  --c12-dark: #714670;
+  --hljs-comment:    #5C5448;  /* dark amber — muted warm                    */
+  --hljs-keyword:    #C8963A;  /* amber gold — control flow, italic          */
+  --hljs-built_in:   #7AB8A0;  /* sage teal — functions, italic              */
+  --hljs-number:     #E8C06A;  /* bright gold — numeric literals             */
+  --hljs-literal:    #B89870;  /* muted amber — booleans/null                */
+  --hljs-string:     #9AC890;  /* sage — strings                             */
+  --hljs-title:      #D4A84A;  /* deep amber — function names, italic        */
+  --hljs-type:       #90C0B8;  /* cool teal — types/annotations              */
+  --hljs-variable:   #C0A878;  /* warm buff — variables                      */
+  --hljs-params:     #B0A080;  /* warm taupe — parameters                    */
+  --hljs-tag:        #C88870;  /* terracotta — HTML tags                     */
+  --hljs-punctuation:#786858;  /* dark warm gray — operators                 */
+}
 
-  /* Non-flipping ink for text on --cN-light fills (bands stay pale
-   * in both light and dark canvas modes, so the text on them must
-   * not flip via light-dark()). AA against every --cN-light slot. */
-  --c-ink-light: #1A1A18;
+:root {
+  --c1-light:  light-dark(#E5E0D2, #656100);
+  --c1-dark:   light-dark(#E5E0D2, #656100);
+  --c2-light:  light-dark(#C5BFA5, #6646A7);
+  --c2-dark:   light-dark(#C5BFA5, #6646A7);
+  --c3-light:  light-dark(#E8D8B0, #9B2E5E);
+  --c3-dark:   light-dark(#E8D8B0, #9B2E5E);
+  --c4-light:  light-dark(#E0D8E5, #00668D);
+  --c4-dark:   light-dark(#E0D8E5, #00668D);
+  --c5-light:  light-dark(#D5D5CC, #A03315);
+  --c5-dark:   light-dark(#D5D5CC, #A03315);
+  --c6-light:  light-dark(#EDD8CC, #00713A);
+  --c6-dark:   light-dark(#EDD8CC, #00713A);
+  --c7-light:  light-dark(#D5DDD5, #7F5300);
+  --c7-dark:   light-dark(#D5DDD5, #7F5300);
+  --c8-light:  light-dark(#EDE0D8, #006D5F);
+  --c8-dark:   light-dark(#EDE0D8, #006D5F);
+  --c9-light:  light-dark(#D8DDD0, #755900);
+  --c9-dark:   light-dark(#D8DDD0, #755900);
+  --c10-light: light-dark(#E8E0B8, #873889);
+  --c10-dark:  light-dark(#E8E0B8, #873889);
+  --c11-light: light-dark(#E5E0D2, #4C6900);
+  --c11-dark:  light-dark(#E5E0D2, #4C6900);
+  --c12-light: light-dark(#DBD5C0, #3257B1);
+  --c12-dark:  light-dark(#DBD5C0, #3257B1);
 
-  --c-ink-dark:  #FFFFFF;
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#E1C69F, #7D5500);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#AAD1E5, #006789);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#D36145, #9A2C0E);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#E4B916, #806600);
+  --c-note:        light-dark(#DBD1B0, #776107);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#E0DDD3, #232019);
+  --c-subcontainer:  light-dark(#D1CEC5, #34312A);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }

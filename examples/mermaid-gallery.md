@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: indaco
+theme: cuoio
 size: hd
 paginate: true
 header: "Mermaid · Diagram Gallery"

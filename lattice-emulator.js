@@ -47,6 +47,101 @@ let hljs;
   }
 }
 
+// ── KaTeX (math rendering) ────────────────────────────────────────────────
+// Server-side LaTeX → HTML at slide-parse time. Two-phase pipeline:
+//   1. extractMath(text)   — pull $$...$$ / $...$ out of markdown, replace
+//                            each with an opaque token the markdown parser
+//                            won't touch (no $, _, *, ^, etc.)
+//   2. restoreMath(html)   — after parseInline / table / list handling,
+//                            swap tokens back for katex.renderToString output
+// This mirrors Marp's `math: 'katex'` config (set in marp.config.js) so the
+// CLI path and emulator produce equivalent math markup. KaTeX is required
+// lazily — if it isn't installed, math passes through as plain text and a
+// one-time warning is emitted, so a missing optional dep can't break the build.
+let katex;
+try { katex = require('katex'); } catch (_e) { /* math unavailable; degrades to plaintext */ }
+let katexCssAbsPath = '';
+try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
+
+// ── function-plot (math function plotting in math.canvas) ─────────────────
+// ```latticeplot fences carry a JSON function-plot config; the build emits
+// a `<div class="latticeplot" data-fp-config="…">` placeholder that the
+// vendored function-plot UMD bundle inflates to an SVG on page load — same
+// pre-render-then-PDF flow puppeteer uses for the rest of the deck. The
+// library is purpose-built for y=f(x), parametric, polar, implicit, and
+// vector-field plots; it parses math.js expressions and skips asymptotes
+// cleanly. Marp CLI (marp.config.js) and the VS Code preview
+// (lattice-runtime.js) load the same bundle for path parity.
+let functionPlotJsAbsPath = '';
+try { functionPlotJsAbsPath = require.resolve('function-plot/dist/function-plot.js'); } catch (_e) { /* no script emitted */ }
+
+const MATH_TOKEN_PREFIX  = 'LATTICEMATH';
+const MATH_TOKEN_SUFFIX  = '';
+const mathRegistry = []; // index → { tex, display }
+
+function extractOnePart(text) {
+  // Display math first ($$...$$, multiline). The non-greedy [\s\S]+? avoids
+  // over-matching across two unrelated $$ pairs. We require non-empty content
+  // so accidental "$$" pairs in prose don't capture.
+  text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex: tex.trim(), display: true });
+    return MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  // Inline math ($...$). Forbid newlines inside, and disallow $ adjacent to
+  // a digit on the outside (e.g. "$5" prices) — KaTeX inline must be bounded
+  // by non-digit context. Content can't start or end with whitespace.
+  text = text.replace(/(^|[^\\$\d])\$([^$\n][^$\n]*?[^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex, display: false });
+    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  // Single-char inline math: $x$ — handled separately since the [^$\n\s]
+  // tail anchor above requires ≥2 chars.
+  text = text.replace(/(^|[^\\$\d])\$([^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex, display: false });
+    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  return text;
+}
+
+function extractMath(text) {
+  if (!katex) return text;
+  // Skip math extraction inside fenced (```…```) and inline (`…`) code so
+  // shell prompts, JS template literals, etc. aren't mangled into LaTeX.
+  // Split keeps the delimiters as odd-indexed parts; only even parts are
+  // candidates for math.
+  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`)/);
+  for (let i = 0; i < parts.length; i += 2) {
+    parts[i] = extractOnePart(parts[i]);
+  }
+  return parts.join('');
+}
+
+function restoreMath(html) {
+  if (!katex || !mathRegistry.length) return html;
+  const re = new RegExp(MATH_TOKEN_PREFIX + '(\\d+)' + MATH_TOKEN_SUFFIX, 'g');
+  return html.replace(re, (_, i) => {
+    const entry = mathRegistry[+i];
+    if (!entry) return '';
+    try {
+      return katex.renderToString(entry.tex, {
+        displayMode: entry.display,
+        throwOnError: false,
+        output: 'html',
+        strict: false,
+        trust: false,
+      });
+    } catch (e) {
+      // KaTeX with throwOnError:false rarely throws, but guard anyway —
+      // print the source so authors can spot the broken expression.
+      const safe = entry.tex.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      return `<span class="math-error" title="KaTeX error">${safe}</span>`;
+    }
+  });
+}
+
 // ── Help / version (handled before positional parsing) ─────────────────────
 function listAvailablePalettes() {
   try {
@@ -847,6 +942,16 @@ const { transformJourneySection } = require('./lib/journey');
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
 const { transformWordCloudSection } = require('./lib/word-cloud');
+// Radar chart kernel — parsing + SVG-geometry engine for the `radar`
+// chart-family member (one default + five modifier variants). Section
+// dispatch lives in the inline chart-family block below; this kernel is
+// shared with lib/chart-family.js (marp.config.js path) and mirrored in
+// lattice-runtime.js.
+const radar = require('./lib/radar');
+// Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
+// modifier variants: bubble, trail, cohort, threshold, magic). Same
+// kernel-as-module pattern as radar.
+const quadrant = require('./lib/quadrant');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -898,6 +1003,14 @@ function parseSlide(raw, index) {
   // Strip all directives before parsing content
   raw = raw.replace(/<!--.*?-->/gs, '').trim();
 
+  // ── Math extraction (before any markdown processing) ─────────────────────
+  // $$…$$ and $…$ become opaque tokens so the markdown parser doesn't try
+  // to italicise `_` subscripts or bold `*` multiplications inside LaTeX.
+  // Restored to KaTeX HTML by restoreMath() at the end of parseSlide. The
+  // Marp CLI path (marp.config.js) handles math natively via `math: 'katex'`;
+  // see that file for the parity contract.
+  raw = extractMath(raw);
+
   // ── Marp background image syntax ─────────────────────────────────────────
   // Handles: ![bg right](url), ![bg left](url), ![bg](url) and the same with
   // a `fit` keyword in any position (![bg right fit], ![bg fit right], etc.).
@@ -924,6 +1037,14 @@ function parseSlide(raw, index) {
   // Uses highlight.js server-side — no CDN dependency
   raw = raw.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const trimmed = code.replace(/\n$/, ''); // strip trailing newline
+    // `latticeplot` is intercepted here so the JSON config doesn't get
+    // syntax-highlighted into a <pre><code> block. Emit a placeholder div
+    // that the vendored function-plot bundle inflates to an SVG at runtime.
+    // base64 isolates the JSON from HTML-attribute escaping concerns.
+    if (lang === 'latticeplot') {
+      const cfg64 = Buffer.from(trimmed, 'utf8').toString('base64');
+      return `<div class="latticeplot" data-fp-config="${cfg64}"></div>`;
+    }
     let highlighted;
     if (hljs && lang && hljs.getLanguage(lang)) {
       try {
@@ -1719,7 +1840,7 @@ function parseSlide(raw, index) {
   // caption. Class collisions matter — we match exact tokens, not
   // substrings, because `progress-N` is already a modifier on `agenda`.
   const classTokens = cls.trim().split(/\s+/);
-  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
+  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban', 'radar', 'quadrant'];
   const chartLayout = chartLayouts.find(l => classTokens.includes(l));
   if (chartLayout) {
     // ── Helper: extract top-level <li> contents from a list inner string,
@@ -2104,13 +2225,50 @@ function parseSlide(raw, index) {
       }
     }
 
+    // ── radar ── series-major nested list → native SVG radar figure
+    // Kernel (parsing + geometry + emission) lives in lib/radar.js so the
+    // engine path (lib/chart-family.js) and this build path call exactly
+    // the same code. One default + five modifiers; `minimal` is a
+    // composable flag here, `dark` is purely CSS.
+    if (chartLayout === 'radar') {
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        const variant = radar.pickVariant(classTokens);
+        const isMinimal = classTokens.includes('minimal');
+        const model = radar.parseRadar(ulExtract.inner, variant === 'quadrant');
+        if (model) {
+          const scale = radar.resolveScale(model, radar.matchEyebrowText(html));
+          const figureHtml = radar.buildRadar(model, variant, scale, isMinimal);
+          html = html.slice(0, ulExtract.start) + figureHtml + html.slice(ulExtract.end);
+        }
+      }
+    }
+
+    // ── quadrant ── grouped nested list → native SVG 2×2 scatter figure
+    // Kernel (parsing + geometry + emission) lives in lib/quadrant.js so
+    // the engine path (lib/chart-family.js) and this build path call the
+    // same code. One default + five modifiers (bubble / trail / cohort /
+    // threshold / magic); `minimal` and `dark` ride entirely in CSS.
+    if (chartLayout === 'quadrant') {
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        const variant = quadrant.pickVariant(classTokens);
+        const model = quadrant.parseQuadrant(ulExtract.inner);
+        if (model) {
+          const scale = quadrant.resolveScale(model, quadrant.matchEyebrowText(html));
+          const figureHtml = quadrant.buildQuadrant(model, variant, scale);
+          html = html.slice(0, ulExtract.start) + figureHtml + html.slice(ulExtract.end);
+        }
+      }
+    }
+
     // ── Wrap in chart-frame skeleton ─────────────────────────────────────
     // Pull eyebrow / h2 / subtitle / chart-body / caption out of the html
     // and reassemble. The chart body anchor is the <div> emitted by the
     // layout-specific transform above.
     const h2RE = /<h2>[\s\S]*?<\/h2>/;
     const h2Match = h2RE.exec(html);
-    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board)"[^>]*>/;
+    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board|radar-figure|quadrant-figure)"[^>]*>/;
     const bodyMatch = h2Match && bodyRE.exec(html.slice(h2Match.index + h2Match[0].length));
     if (h2Match && bodyMatch) {
       const h2El = h2Match[0];
@@ -2214,7 +2372,7 @@ function parseSlide(raw, index) {
   const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
   const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
 
-  return [
+  return restoreMath([
     `<section id="${slideNum}" class="${classAttr}"`,
     ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
     headerEl,
@@ -2222,7 +2380,7 @@ function parseSlide(raw, index) {
     html,
     footerEl,
     `</section>`
-  ].join('');
+  ].join(''));
 }
 
 const slides = rawSlides.map((s, i) => parseSlide(s, i));
@@ -2330,10 +2488,56 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
+// ── KaTeX CSS link ────────────────────────────────────────────────────────
+// KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
+// so we link to the actual file in node_modules; the browser resolves the
+// font URLs against that origin. file:// works under puppeteer because
+// allowLocalFiles is the default for `page.goto('file://...')`.
+const katexCssLink = (katex && katexCssAbsPath)
+  ? `<link rel="stylesheet" href="file://${katexCssAbsPath}">`
+  : '';
+
+// ── function-plot script + bootstrap ──────────────────────────────────────
+// Only emitted if at least one slide actually contains a latticeplot block,
+// so decks that don't use it pay nothing. The bootstrap runs synchronously
+// on DOMContentLoaded; puppeteer's `waitUntil: networkidle0` covers it.
+const hasLatticePlot = highlightedSlides.some(s => s.includes('class="latticeplot"'));
+const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
+  ? `<script src="file://${functionPlotJsAbsPath}"></script>
+<script>
+(function(){
+  function inflate() {
+    if (typeof window.functionPlot !== 'function') return;
+    document.querySelectorAll('div.latticeplot[data-fp-config]').forEach(function(div){
+      if (div.dataset.fpInflated === '1') return;
+      try {
+        var cfg = JSON.parse(atob(div.getAttribute('data-fp-config')));
+        var rect = div.getBoundingClientRect();
+        cfg.target = div;
+        cfg.width  = cfg.width  || Math.round(rect.width)  || 480;
+        cfg.height = cfg.height || Math.round(rect.height) || 320;
+        // Disable hover tip in static PDF — it only adds DOM mass.
+        if (!cfg.tip) cfg.tip = { renderer: function(){} };
+        window.functionPlot(cfg);
+        div.dataset.fpInflated = '1';
+      } catch (e) {
+        div.textContent = 'latticeplot error: ' + e.message;
+        div.classList.add('latticeplot-error');
+      }
+    });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', inflate);
+  else inflate();
+})();
+</script>`
+  : '';
+
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 ${googleFonts}
+${katexCssLink}
 <style>
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
@@ -2343,6 +2547,7 @@ ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
 ${highlightedSlides.join('\n')}
+${functionPlotScript}
 <script>
 /* Overflow watcher — tags any section whose content exceeds the slide
    frame with class "overflow" so lattice.css can draw the red warning ring.

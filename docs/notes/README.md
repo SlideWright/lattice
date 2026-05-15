@@ -137,3 +137,8 @@ it is load-bearing.
   root cause analysis for every reported 4K visual defect, section-level cqi
   ambiguity (padding bleed into header/footer), Mermaid sizing investigation,
   and step-by-step implementation order for the next session.
+- [2026-05-15-radar-chart.md](2026-05-15-radar-chart.md) — decision note
+  for the native `radar` layout: series-major authoring contract,
+  auto-fit/eyebrow scale resolution, the six-variant lineup (each variant
+  framed as one boardroom question), the shared geometry kernel, and the
+  finding that `--fg` is an undefined token repo-wide.
