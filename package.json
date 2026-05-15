@@ -61,6 +61,7 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "clean:scratch": "find .scratch -mindepth 1 -mtime +14 -print -delete",
+    "prepare": "lefthook install || true",
     "prepublishOnly": "npm test"
   },
   "dependencies": {
@@ -74,6 +75,7 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.15"
+    "@biomejs/biome": "^2.4.15",
+    "lefthook": "^2.1.6"
   }
 }
