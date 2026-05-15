@@ -740,36 +740,41 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   (cascade-order dependence) is fragile.
 - **Commits:** `d3ffaca`
 
-### 4K slides show slightly wrong padding in VS Code preview
+### Section geometry (padding, border) looks wrong in VS Code preview at any size
 
-- **Symptom:** In VS Code preview, a `size: 16:9-4k` slide has content
-  that appears to start too high — the top padding looks narrower than
-  expected, as if content is bleeding into the header zone.
-- **Cause:** `section { container-type:size; padding-top: 6.875cqi }` —
-  `cqi` on the element that *is itself* the size container falls back to
-  the nearest **ancestor** container per the CSS spec. In VS Code screen
-  mode that ancestor is the editor viewport (≈1200–2000 px), not the
-  slide width (3840 px). Elements *inside* section correctly query
-  section (3840 px). In PDF print mode the ICB is set by `@page { size:
-  3840px 2160px }`, so the fallback resolves correctly there.
-  A secondary impact: the lattice-emulator overflow-detection pass (which
-  runs in screen mode before `page.pdf()`) was also affected — the 800 px
-  Puppeteer default viewport gave a larger apparent content area, which
-  could mask genuine overflows on 4K slides.
-- **Fix:** `lattice.css` changed `padding-top:6.875cqi` →
-  `padding-top:var(--_sec-pad-v,6.875cqi)`. `lattice-runtime.js` adds
-  `patchSectionGeometry()` which sets `--_sec-pad-v` (and
-  `--_sec-border-w`) to the correct px value derived from
-  `section.offsetWidth` — which returns the CSS width before any
-  transform scale, i.e. 3840 for 4K slides in VS Code. The cqi fallback
-  remains for the PDF emulator path (no variables set there; @page ICB
-  resolves it). `lattice-emulator.js` also gains `page.setViewport({
-  width: slideW, height: slideH })` so the screen-mode overflow check
-  uses the correct content-area dimensions.
-- **Triggered by:** Opening a `size: 16:9-4k` slide in marp-vscode
-  preview; prior to the fix, PDF overflow detection was also affected.
-- **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that
-  adds patchSectionGeometry.
+- **Symptom:** In VS Code preview, slide padding on all four sides and
+  the top accent border are narrower than expected — content appears to
+  bleed toward the edges. Divider slides have a noticeably tight
+  left-indent. The effect is more visible on 4K slides (where the
+  absolute delta is larger) but applies to HD slides too whenever the
+  editor viewport width differs from 1280 px.
+- **Cause:** `section { container-type:size }` makes the section element
+  its own cqi container. CSS spec forbids an element from using cqi to
+  query its own size (circular dependency), so any `Xcqi` value *on
+  section itself* (padding, border-width) falls back to the **ICB**
+  (Initial Containing Block) instead. In VS Code screen mode the ICB is
+  the editor viewport (arbitrary width), not the slide. Elements *inside*
+  section query section correctly — the self-reference issue only affects
+  properties on the container element itself. In PDF/print mode the ICB
+  is set by `@page { size: WIDTHpx HEIGHTpx }` so the fallback resolves
+  correctly; the emulator sets `page.setViewport({ width: slideW, height:
+  slideH })` for the same reason.
+- **Fix:** `lattice.css` expresses every direct-cqi property on `section`
+  as `calc(var(--_sec-1cqi, 1cqi) * X)` where `X` is the original cqi
+  coefficient (e.g. `padding: calc(var(--_sec-1cqi,1cqi)*6.875)
+  calc(var(--_sec-1cqi,1cqi)*5)`). The `1cqi` fallback fires only in the
+  emulator/print path where the ICB is already correct. In VS Code,
+  `patchSectionGeometry()` in `lattice-runtime.js` sets
+  `--_sec-1cqi = section.offsetWidth / 100` as a concrete `px` value
+  (e.g. `38.400px` for a 3840 px 4K slide) so every `calc()` resolves
+  against the real slide width. Any new direct-cqi property added to
+  `section` or `section.*` in the future must follow the same pattern —
+  write `calc(var(--_sec-1cqi,1cqi)*X)`, not a bare `Xcqi`.
+- **Triggered by:** Any slide opened in marp-vscode preview. The PDF and
+  emulator paths are unaffected because their ICB matches the slide size.
+- **Commits:** `334434f` (initial fix, top/bottom only); `fe6f894`
+  (extend to padding-left/right); `41ef9e1` (extend to divider
+  padding-left); `1bf458c` (unify all under `--_sec-1cqi`).
 
 ### Mermaid diagrams render at HD size inside 4K slides in VS Code preview
 
