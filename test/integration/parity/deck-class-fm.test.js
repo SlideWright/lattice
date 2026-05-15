@@ -16,54 +16,39 @@
  * This test pins the emulator side; the marp-cli reference is verified
  * by rendering and asserting the same merge in test/integration/marp.gallery.test.js.
  *
- * Renders the fixture through the emulator and inspects the HTML
- * sidecar (avoids parsing PDF). Slow tier because the emulator always
- * runs the Chromium PDF stage as part of its pipeline.
+ * Renders the fixture through the cached emulator helper and inspects
+ * the HTML sidecar (avoids parsing PDF). Slow tier because the
+ * emulator always runs the Chromium PDF stage as part of its pipeline.
  */
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
 const fs     = require('fs');
-const os     = require('os');
-const { spawnSync } = require('child_process');
+const { ROOT, runEmulator } = require('../../helpers/render');
 
-const ROOT     = path.join(__dirname, '..', '..', '..');
-const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
-const FIXTURE  = path.join(ROOT, 'test', 'fixtures', 'deck-class-fm.md');
+const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'deck-class-fm.md');
 
-const TIMEOUT = 60000;
+test('emulator: front-matter `class:` is applied to every slide and composes with `_class:`', { timeout: 60000 }, () => {
+  const pdf = runEmulator(FIXTURE, { timeout: 60000 });
+  const htmlPath = pdf.replace(/\.pdf$/, '.html');
+  if (!fs.existsSync(htmlPath)) throw new Error(`HTML sidecar missing: ${htmlPath}`);
+  const sidecar = fs.readFileSync(htmlPath, 'utf8');
 
-test('emulator: front-matter `class:` is applied to every slide and composes with `_class:`', { timeout: TIMEOUT }, () => {
-  const dir  = fs.mkdtempSync(path.join(os.tmpdir(), 'lattice-classfm-'));
-  const pdf  = path.join(dir, 'deck.pdf');
-  const html = path.join(dir, 'deck.html');
-  try {
-    const r = spawnSync(
-      process.execPath,
-      [EMULATOR, FIXTURE, pdf, '--quiet'],
-      { cwd: ROOT, encoding: 'utf8', timeout: TIMEOUT },
-    );
-    assert.equal(r.status, 0, `emulator failed: ${r.stderr}`);
+  const sections = [...sidecar.matchAll(/<section[^>]*\bid="(\d+)"[^>]*\bclass="([^"]*)"/g)]
+    .map(m => ({ id: m[1], cls: m[2].split(/\s+/).filter(Boolean) }));
 
-    const sidecar = fs.readFileSync(html, 'utf8');
-    const sections = [...sidecar.matchAll(/<section[^>]*\bid="(\d+)"[^>]*\bclass="([^"]*)"/g)]
-      .map(m => ({ id: m[1], cls: m[2].split(/\s+/).filter(Boolean) }));
+  assert.equal(sections.length, 3, 'expected 3 sections');
 
-    assert.equal(sections.length, 3, 'expected 3 sections');
-
-    // Every slide must carry the deck-wide `dark` token (Lattice append semantic).
-    for (const s of sections) {
-      assert.ok(s.cls.includes('dark'),
-        `slide ${s.id} missing deck-wide 'dark'; got class="${s.cls.join(' ')}"`);
-    }
-
-    // Slide 2's per-slide `_class: title` must compose with the deck-wide class,
-    // not replace it. Order: per-slide first, deck-wide appended after.
-    const slide2 = sections.find(s => s.id === '2');
-    assert.ok(slide2.cls.includes('title'),
-      `slide 2 lost per-slide 'title'; got class="${slide2.cls.join(' ')}"`);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
+  // Every slide must carry the deck-wide `dark` token (Lattice append semantic).
+  for (const s of sections) {
+    assert.ok(s.cls.includes('dark'),
+      `slide ${s.id} missing deck-wide 'dark'; got class="${s.cls.join(' ')}"`);
   }
+
+  // Slide 2's per-slide `_class: title` must compose with the deck-wide class,
+  // not replace it. Order: per-slide first, deck-wide appended after.
+  const slide2 = sections.find(s => s.id === '2');
+  assert.ok(slide2.cls.includes('title'),
+    `slide 2 lost per-slide 'title'; got class="${slide2.cls.join(' ')}"`);
 });

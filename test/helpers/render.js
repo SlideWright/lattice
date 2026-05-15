@@ -1,47 +1,171 @@
 /**
  * Render helpers: spawn the emulator and marp-cli, return paths to
  * built artifacts. Used by integration tests.
+ *
+ * # Caching
+ *
+ * Integration tests rebuild gallery PDFs that take 10s–2min each.
+ * Across a full `npm run test:integration` run the same source is
+ * rendered 2× (gallery.md by emulator.gallery and parity tests) and
+ * the chart-family fixture is rendered 6× (once per test in the
+ * file). To kill the redundancy, the helpers hash all renderer
+ * inputs and reuse a cached PDF when the hash matches.
+ *
+ * Cache key inputs (any change invalidates):
+ *   - source .md content
+ *   - lattice-emulator.js (or marp.config.js)
+ *   - lattice.css + all themes/*.css
+ *   - all lib/*.js
+ *   - mermaid-v11.min.js
+ *   - package-lock.json (catches dep upgrades)
+ *   - palette argument
+ *   - Node version
+ *
+ * Cache location: `.scratch/test-cache/{emu,marp}-<hash>.pdf` plus
+ * the emulator's `.html` sidecar at the same basename. The .scratch
+ * tree has a 14-day GC via `npm run clean:scratch`.
+ *
+ * Cache is DISABLED when:
+ *   - CI=true (integration tests in CI must verify the real build)
+ *   - LATTICE_TEST_NO_CACHE=1 (manual opt-out for debugging suspected
+ *     cache-key bugs)
+ *
+ * Returned paths are owned by the cache (or by tmpdir in no-cache
+ * mode); callers MUST NOT unlinkSync them. .scratch/ cleans itself;
+ * tmpdir cleans itself across CI runs.
  */
 
-const path = require('path');
-const fs   = require('fs');
-const os   = require('os');
+const path   = require('path');
+const fs     = require('fs');
+const os     = require('os');
+const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 
-const ROOT     = path.join(__dirname, '..', '..');
-const EXAMPLES = path.join(ROOT, 'examples');
-const THEME    = path.join(ROOT, 'lattice.css');
-const EMULATOR = path.join(ROOT, 'lattice-emulator.js'); // renamed in Phase 4
+const ROOT       = path.join(__dirname, '..', '..');
+const EXAMPLES   = path.join(ROOT, 'examples');
+const THEME      = path.join(ROOT, 'lattice.css');
+const EMULATOR   = path.join(ROOT, 'lattice-emulator.js');
+const MARP_CFG   = path.join(ROOT, 'marp.config.js');
+const MERMAID_JS = path.join(ROOT, 'mermaid-v11.min.js');
+const LOCKFILE   = path.join(ROOT, 'package-lock.json');
+const CACHE_DIR  = path.join(ROOT, '.scratch', 'test-cache');
+
+const USE_CACHE =
+  process.env.CI !== 'true' && process.env.LATTICE_TEST_NO_CACHE !== '1';
+
+function listFiles(dir, ext) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter((f) => f.endsWith(ext))
+    .map((f) => path.join(dir, f))
+    .sort();
+}
+
+function hashFiles(h, files) {
+  for (const f of files) {
+    if (!fs.existsSync(f)) continue;
+    h.update(path.relative(ROOT, f));
+    h.update('\0');
+    h.update(fs.readFileSync(f));
+    h.update('\0');
+  }
+}
+
+function emulatorCacheKey(mdPath, palette) {
+  const h = crypto.createHash('sha256');
+  hashFiles(h, [
+    mdPath,
+    EMULATOR,
+    THEME,
+    MERMAID_JS,
+    LOCKFILE,
+    ...listFiles(path.join(ROOT, 'lib'), '.js'),
+    ...listFiles(path.join(ROOT, 'themes'), '.css'),
+  ].sort());
+  h.update(palette);
+  h.update('\0');
+  h.update(process.version);
+  return h.digest('hex').slice(0, 16);
+}
+
+function marpCacheKey(mdPath) {
+  const h = crypto.createHash('sha256');
+  hashFiles(h, [
+    mdPath,
+    THEME,
+    MARP_CFG,
+    LOCKFILE,
+    ...listFiles(path.join(ROOT, 'lib'), '.js'),
+    ...listFiles(path.join(ROOT, 'themes'), '.css'),
+  ].sort());
+  h.update(process.version);
+  return h.digest('hex').slice(0, 16);
+}
 
 function tmpFile(suffix) {
-  return path.join(os.tmpdir(), `lattice-test-${process.pid}-${Date.now()}${suffix}`);
+  return path.join(
+    os.tmpdir(),
+    `lattice-test-${process.pid}-${Date.now()}${Math.random().toString(36).slice(2, 8)}${suffix}`,
+  );
+}
+
+function ensureDir(d) { fs.mkdirSync(d, { recursive: true }); }
+
+function buildEmulator(mdPath, palette, outPdf, timeout) {
+  execFileSync(
+    process.execPath,
+    [EMULATOR, mdPath, THEME, outPdf, palette, '-q'],
+    { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], timeout },
+  );
+  if (!fs.existsSync(outPdf) || fs.statSync(outPdf).size < 10000) {
+    throw new Error(`Emulator produced empty/missing PDF: ${outPdf}`);
+  }
 }
 
 function runEmulator(mdFile, { palette = 'indaco', timeout = 600000 } = {}) {
-  const out = tmpFile('.pdf');
-  execFileSync(
-    process.execPath,
-    [EMULATOR, path.join(EXAMPLES, mdFile), THEME, out, palette],
-    { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], timeout },
-  );
-  if (!fs.existsSync(out) || fs.statSync(out).size < 10000) {
-    throw new Error(`Emulator produced empty/missing PDF: ${out}`);
+  const mdPath = path.isAbsolute(mdFile) ? mdFile : path.join(EXAMPLES, mdFile);
+
+  if (USE_CACHE) {
+    ensureDir(CACHE_DIR);
+    const cached = path.join(CACHE_DIR, `emu-${emulatorCacheKey(mdPath, palette)}.pdf`);
+    if (!(fs.existsSync(cached) && fs.statSync(cached).size >= 10000)) {
+      buildEmulator(mdPath, palette, cached, timeout);
+    }
+    return cached;
   }
+
+  const out = tmpFile('.pdf');
+  buildEmulator(mdPath, palette, out, timeout);
   return out;
 }
 
-function runMarp(mdFile, { timeout = 600000 } = {}) {
-  const out = tmpFile('.pdf');
+function buildMarp(mdPath, outPdf, timeout) {
   execFileSync(
     'npx',
-    ['--no-install', 'marp', '--config', path.join(ROOT, 'marp.config.js'),
+    ['--no-install', 'marp', '--config', MARP_CFG,
      '--theme-set', THEME, '--allow-local-files',
-     '--pdf', '-o', out, path.join(EXAMPLES, mdFile)],
+     '--pdf', '-o', outPdf, mdPath],
     { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], timeout, env: { ...process.env } },
   );
-  if (!fs.existsSync(out) || fs.statSync(out).size < 10000) {
-    throw new Error(`marp-cli produced empty/missing PDF: ${out}`);
+  if (!fs.existsSync(outPdf) || fs.statSync(outPdf).size < 10000) {
+    throw new Error(`marp-cli produced empty/missing PDF: ${outPdf}`);
   }
+}
+
+function runMarp(mdFile, { timeout = 600000 } = {}) {
+  const mdPath = path.isAbsolute(mdFile) ? mdFile : path.join(EXAMPLES, mdFile);
+
+  if (USE_CACHE) {
+    ensureDir(CACHE_DIR);
+    const cached = path.join(CACHE_DIR, `marp-${marpCacheKey(mdPath)}.pdf`);
+    if (!(fs.existsSync(cached) && fs.statSync(cached).size >= 10000)) {
+      buildMarp(mdPath, cached, timeout);
+    }
+    return cached;
+  }
+
+  const out = tmpFile('.pdf');
+  buildMarp(mdPath, out, timeout);
   return out;
 }
 
