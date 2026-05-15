@@ -46,6 +46,7 @@
     "build": "npm run build:gallery && npm run build:mermaid && npm run build:backgrounds && npm run build:kpi",
     "new:theme": "node tools/new-theme.js",
     "test": "node --test 'test/unit/**/*.test.js'",
+    "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "test:palette": "node --test 'test/unit/palette/*.test.js'",
     "test:mermaid": "node --test 'test/unit/mermaid/*.test.js'",
     "test:parsing": "node --test 'test/unit/parsing/*.test.js'",

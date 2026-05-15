@@ -174,7 +174,7 @@ graduates from "new" to "documented". Treat them like
 
 ## Before opening a PR
 
-1. `npm test` — full unit suite must be green. The umbrella script is the gate; scoped scripts below are only for inner-loop iteration.
+1. `npm test` — full unit suite must be green (~4 s, 334 tests, no Chromium / no Marp pipeline). The umbrella script is the gate; scoped scripts below are only for inner-loop iteration. `npm run test:watch` re-runs on file change.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
 3. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
 4. Rebase onto current `main` if the branch has drifted:
