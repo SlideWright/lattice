@@ -1302,12 +1302,12 @@ section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
   box-sizing:border-box;
   flex:none;
 }
-/* state-half: tonal split — left full colour, right same hue at 30%
+/* state-half: tonal split — left full colour, right same hue at 55%
  * mixed with --bg. Disc stays fully coloured; the bisector is sharp. */
 .badge.state-half::before {
   background:linear-gradient(to right,
     var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
 }
 .badge.state-empty::before   { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
 /* state-slashed: filled coloured disc with a semi-transparent dark slash
@@ -5147,7 +5147,7 @@ section.checklist > ul > li.state.state-half::before,
 section.checklist > ol > li.state.state-half::before {
   background:linear-gradient(to right,
     var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
 }
 section.checklist > ul > li.state.state-empty::before,
 section.checklist > ol > li.state.state-empty::before {
@@ -5733,7 +5733,7 @@ section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
 section.obligation-matrix td .state.state-half {
   background:linear-gradient(to right,
     var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
 }
 section.obligation-matrix td .state.state-empty { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
 /* state-slashed: semi-transparent dark slash on the coloured disc. */
