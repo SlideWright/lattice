@@ -1,12 +1,12 @@
-/* @theme cuoio-G-dark
+/* @theme concrete-G-dark
  * @size 16:9 1280px 720px
  *
  * Commit-G preview · dark-canvas variant. Three-line wrapper —
- * imports cuoio-G and flips color-scheme to dark. Every --cN-light
- * pair in cuoio-G resolves to its dark side via light-dark();
+ * imports concrete-G and flips color-scheme to dark. Every --cN-light
+ * pair in concrete-G resolves to its dark side via light-dark();
  * --c-ink-light follows --text-heading which auto-flips to white-ish.
  */
 
-@import 'cuoio-G';
+@import 'concrete-G';
 
 :root { color-scheme: dark; }

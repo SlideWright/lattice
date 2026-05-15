@@ -1,7 +1,7 @@
 /* @theme cuoio-G
  * @size 16:9 1280px 720px
  *
- * Commit-G preview overlay on cuoio — NOT a shipped theme.
+ * Commit-G preview overlay on cuoio (chromatic) — NOT a shipped theme.
  *
  * CYCLE: two independent categorical cycles selected by canvas mode.
  *   light = --diagram-band-N (curated pale tints); dark = --chart-N
@@ -9,18 +9,12 @@
  *   lead, no two neighbours alike), slot 1 = brand.
  *
  * SEMANTIC: 5 roles (warm/cool/alarm/mark/note), each a light-dark()
- *   flipping fill curated for this theme — hue nudged toward the brand
- *   hue within a fixed meaning band, AA-verified in both canvas modes,
- *   chroma-capped. Unique colours, not pulled from the cycle.
+ *   flipping fill curated for this theme — hue nudged toward the
+ *   brand hue within a fixed meaning band, AA-verified, chroma-capped.
  *
  * CONTAINMENT: --c-container / --c-subcontainer — two nested structural
  *   surfaces. A monotonic luminance ladder away from the canvas (light
- *   deck steps down, dark deck steps up), brand-hue-tinted at a
- *   barely-there chroma. Surfaces, not accents.
- *
- * --cN: light-dark(band-N, deep-N). Fill flips with the canvas, always
- * agreeing with Mermaid's global flipping text. Light deck: pale fill
- * + dark text. Dark deck: deep fill + white text.
+ *   deck steps down, dark deck steps up), brand-hue-tinted.
  */
 
 @import 'cuoio';
