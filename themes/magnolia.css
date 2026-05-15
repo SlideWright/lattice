@@ -75,11 +75,13 @@
   --accent-soft: light-dark(#F5DDD8, var(--bg-warm-mid)); /* accent reads L:4.50:1 / D:10.09:1 */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.82:1 / D:10.09:1 */
 
-  /* ── Semantic signals (kept dark in both modes; --fail uses palette
-   * convergent garnet so it doesn't clash with the warm accent) ──────── */
-  --pass: #2D6A3F;
-  --fail: #7E2F38;
-  --warn: #92400E;
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * --pass and --warn come from lattice.css :root (universal status
+   * palette, light-dark() pairs). --fail is overridden with magnolia's
+   * brand-convergent garnet so the alarm tone stays in the rose family
+   * rather than clashing with the warm accent. Dark mode lifts the
+   * garnet to a brighter shade that keeps AA contrast on dark canvas. */
+  --fail: light-dark(#7E2F38, #D27087);
   --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);

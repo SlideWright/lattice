@@ -84,12 +84,17 @@
   /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
   --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
 
-  /* ── Semantic signals — mid-tone so the white-stroke checklist icons
-   * stay legible. Brighter values (e.g., #7DE38A pass) would make the
-   * icon stroke vanish. ──────────────────────────────────────────────── */
-  --pass: #357849;
-  --fail: #A02323;
-  --warn: #9E5018;
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * Carbone's industrial-grey trio. Each is a light-dark() pair: light
+   * values are AA+ on the off-white canvas; dark values lift to AA+ on
+   * the deep charcoal canvas. The white-stroke checklist icon
+   * constraint from the legacy design is gone — the universal state-
+   * token recipe relies on shape, not inner glyphs, so brighter dark-
+   * mode values are safe. Warn is bumped clear of fail in hue and
+   * luminance (fixes "warn and fail look alike"). */
+  --pass: light-dark(#357849, #5BC772);
+  --fail: light-dark(#A02323, #F87171);
+  --warn: light-dark(#C2570C, #F97316);
   --pass-bg: color-mix(in srgb, var(--pass) 18%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);

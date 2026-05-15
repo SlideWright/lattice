@@ -108,11 +108,16 @@ function extractOnePart(text) {
 
 function extractMath(text) {
   if (!katex) return text;
-  // Skip math extraction inside fenced (```…```) and inline (`…`) code so
-  // shell prompts, JS template literals, etc. aren't mangled into LaTeX.
+  // Skip math extraction inside:
+  //   - fenced code blocks (```…```) and inline code (`…`)
+  //   - inlined mermaid SVG (<div class="mermaid-svg">…</div>) — emitted
+  //     by preprocessMermaid before extractMath runs. Mermaid stylesheets
+  //     include CSS attribute selectors like `[id$="-foo"]` whose `$`
+  //     would otherwise match as a math delimiter, splicing KaTeX error
+  //     spans into the SVG <style> block and breaking the diagram render.
   // Split keeps the delimiters as odd-indexed parts; only even parts are
   // candidates for math.
-  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`)/);
+  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`|<div class="mermaid-svg">[\s\S]*?<\/div>)/);
   for (let i = 0; i < parts.length; i += 2) {
     parts[i] = extractOnePart(parts[i]);
   }
@@ -1281,12 +1286,16 @@ function parseSlide(raw, index) {
     }
   }
 
-  // decision / before-after: named-slot layouts where each top-level li is
-  // a card with a slot label (Build / Why-not / Before / After). The CSS
-  // keeps these as native ul/ol > li (no card div wrapper); the only post-
-  // process needed is lifting the leading text into <strong> so the
-  // labeled-corner-tag CSS triggers without authors typing `**…**`.
-  if (cls.includes('decision') || cls.includes('before-after')) {
+  // decision / before-after / statute-stack / regulatory-update /
+  // authority-chain / redline: named-slot layouts where each top-level li
+  // is a card with a slot label (Build / Before / Federal / Statute /
+  // Why this matters). The CSS keeps these as native ul/ol > li (no card
+  // div wrapper); the only post-process needed is lifting the leading
+  // text into <strong> so the labeled-corner-tag and slot-card CSS
+  // triggers without authors typing `**…**`.
+  if (cls.includes('decision') || cls.includes('before-after') ||
+      cls.includes('statute-stack') || cls.includes('regulatory-update') ||
+      cls.includes('authority-chain') || cls.includes('redline')) {
     html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (full, tag, inner) => {
       // Walk top-level <li>…</li> with depth tracking.
       const out = [];
@@ -1354,26 +1363,56 @@ function parseSlide(raw, index) {
     html = transformWordCloudSection(html, cls);
   }
 
-  // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.
+  // Universal state-token grammar — shared by verdict-grid, obligation-matrix,
+  // checklist (and roadmap, in lib/roadmap.js). Markdown markers map to
+  // semantic + shape classes; CSS draws the visual via SVG masks (see the
+  // UNIVERSAL STATE TOKEN block in lattice.css). Sibling implementations
+  // in marp.config.js and lattice-runtime.js must stay in sync.
+  //
+  //   [x] → pass + state-full     (filled disc)
+  //   [-] → warn + state-half     (half-filled disc)
+  //   [ ] → fail + state-empty    (outline disc)
+  //   [/] → skip + state-slashed  (filled disc + diagonal slash)
+  const stateClassesFor = (marker) => {
+    if (marker === 'x') return { sem: 'pass', shape: 'state-full' };
+    if (marker === '-') return { sem: 'warn', shape: 'state-half' };
+    if (marker === '/') return { sem: 'skip', shape: 'state-slashed' };
+    return { sem: 'fail', shape: 'state-empty' };
+  };
+
+  // verdict-grid: transform [x]/[-]/[ ]/[/] prefixed inner li items into badge spans.
   // The ul > li card structure and last-inner-li body text are left intact for CSS.
   if (cls.includes('verdict-grid')) {
-    html = html.replace(/<li>\s*\[([x\- ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
-      const bc = marker === 'x' ? 'badge pass' : marker === '-' ? 'badge warn' : 'badge fail';
-      return `<li><span class="${bc}">${label.trim()}</span></li>`;
+    html = html.replace(/<li>\s*\[([x\-\/ ])\]\s*([\s\S]*?)<\/li>/g, (_, marker, label) => {
+      const { sem, shape } = stateClassesFor(marker);
+      return `<li><span class="badge ${sem} ${shape}">${label.trim()}</span></li>`;
     });
   }
 
-  // checklist: top-level <li> whose body starts with [x] / [-] / [ ] gets
-  // class="state pass|warn|fail" and the marker stripped. CSS draws the
-  // glyph and pins a trailing <code> as the right-aligned row pill
+  // obligation-matrix: transform [x]/[-]/[ ]/[/] prefixed td cell text into
+  // state spans. Mirrors verdictGridBadges and checklistItemStates but
+  // operates on table cells. The bracket marker is stripped — CSS draws
+  // the universal state token (coloured disc + shape class). Trailing
+  // label preserved as the span's text content.
+  if (cls.includes('obligation-matrix')) {
+    html = html.replace(/<td>\s*\[([x\-\/ ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
+      const { sem, shape } = stateClassesFor(marker);
+      return `<td><span class="state ${sem} ${shape}">${label.trim()}</span></td>`;
+    });
+  }
+
+  // checklist: top-level <li> whose body starts with [x]/[-]/[ ]/[/] gets
+  // class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}"
+  // and the marker stripped. CSS draws the universal state token via
+  // ::before and pins a trailing <code> as the right-aligned row pill
   // (universal pill convention, shared with cards-grid / cards-side /
   // actors).
   if (cls.includes('checklist')) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
-      const m = /^\s*\[([x\- ])\]\s*/.exec(inner);
+      const m = /^\s*\[([x\-\/ ])\]\s*/.exec(inner);
       if (!m) return full;
-      const stateClass = m[1] === 'x' ? 'pass' : m[1] === '-' ? 'warn' : 'fail';
-      return `<li class="state ${stateClass}">${inner.slice(m[0].length)}</li>`;
+      const { sem, shape } = stateClassesFor(m[1]);
+      return `<li class="state ${sem} ${shape}">${inner.slice(m[0].length)}</li>`;
     });
   }
 

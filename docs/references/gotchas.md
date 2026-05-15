@@ -664,6 +664,63 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Any author-overridable default.
 - **Removable when:** Never — this is the correct CSS pattern.
 
+### `font-size: 0` collapses `em` width/height on the same element
+
+- **Symptom:** A state-token disc (or any size-from-em element) renders
+  with zero dimensions and disappears entirely. Most visible in
+  `obligation-matrix` cells where the `<span class="state …">` should
+  be a 1.4em coloured circle but is invisible.
+- **Cause:** `em` resolves against the element's own computed
+  `font-size`. Setting `font-size: 0` (a common trick to hide a
+  trailing inline label like `[x] Applies fully`) drops the computed
+  font-size to `0`, so `1.4em` becomes `0px` — the disc is sized to
+  nothing and renders empty.
+- **Mitigation:** Hide the label via `overflow: hidden; text-indent:
+  200%; white-space: nowrap` and keep `font-size` inherited. The disc
+  stays sized from the cell's font-size; any trailing label is pushed
+  out of the box and clipped. Used in
+  [lattice.css](../../lattice.css) (`section.obligation-matrix td
+  .state`). See the UNIVERSAL STATE TOKEN block.
+- **Triggered by:** Combining `font-size: 0` (label-hiding) with `em`
+  width/height on the same element.
+- **Removable when:** Never — `em` is the right unit for state tokens
+  (scales with the layout's body font); `font-size: 0` is the wrong
+  tool to hide inline text.
+
+### KaTeX math extractor splices error spans into inlined Mermaid SVG CSS
+
+- **Symptom:** Mermaid diagrams in the produced PDF render as raw
+  stylesheet text — `.actorPopupMenu{position:absolute;}` etc. printed
+  inline in the slide body instead of the rendered diagram. Most
+  visible on sequence / class / state diagrams; flowcharts may
+  partially render. The `<svg>` and `<style>` tags are present in the
+  HTML but contain `<span class="katex-error" title="…">` injected
+  inside CSS selectors, which makes the `<style>` block invalid and
+  Chromium's PDF renderer treats the content as text. Unit tests pass;
+  page counts unchanged.
+- **Cause:** The build pipeline runs `preprocessMermaid(md)` BEFORE
+  `extractMath(raw)` — Mermaid SVG is inlined into the markdown as
+  `<div class="mermaid-svg"><svg>…<style>…</style></svg></div>`. Then
+  `extractMath` walks the source looking for `$…$` math delimiters
+  and skips fenced code blocks — but does NOT skip the inlined SVG.
+  Mermaid stylesheets contain CSS attribute selectors like
+  `[id$="-sequencenumber"]{…}` whose `$` characters match as math
+  delimiters; KaTeX is asked to render the captured content (which is
+  CSS, not LaTeX), throws errors, and emits
+  `<span class="katex-error">…</span>` back into the SVG's `<style>`
+  block.
+- **Mitigation:** Add `<div class="mermaid-svg">…</div>` to the skip
+  pattern in `extractMath` so math extraction does not reach inside
+  inlined SVG. See
+  [lattice-emulator.js extractMath](../../lattice-emulator.js).
+- **Triggered by:** Any deck containing both a `$…$` candidate AND a
+  Mermaid diagram with a CSS attribute selector using `$`. Latent
+  since main's KaTeX-for-math feature landed; only surfaces visually
+  (page-count regression test does not catch it).
+- **Removable when:** Never — `$` is a meaningful CSS operator (ends-
+  with attribute match) and a meaningful KaTeX delimiter; extractor
+  must treat HTML blocks injected before math extraction as opaque.
+
 ---
 
 ## Lattice internals

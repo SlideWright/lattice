@@ -101,7 +101,7 @@ test('deckClassPropagate: handles space-separated multi-token deck class', () =>
 
 // ── verdictGridBadges ──────────────────────────────────────────────────
 
-test('verdictGridBadges: [x] / [-] / [ ] markers become badge spans', () => {
+test('verdictGridBadges: [x] / [-] / [ ] / [/] markers become badge spans with shape classes', () => {
   const m = makeMarp(plugins.verdictGridBadges);
   const md = [
     '<!-- _class: verdict-grid -->',
@@ -111,12 +111,14 @@ test('verdictGridBadges: [x] / [-] / [ ] markers become badge spans', () => {
     '  - [x] Pass item',
     '  - [-] Warn item',
     '  - [ ] Fail item',
+    '  - [/] Skip item',
     '  - body line passes through untouched',
   ].join('\n');
   const { html } = m.render(md);
-  assert.match(html, /<span class="badge pass">Pass item<\/span>/);
-  assert.match(html, /<span class="badge warn">Warn item<\/span>/);
-  assert.match(html, /<span class="badge fail">Fail item<\/span>/);
+  assert.match(html, /<span class="badge pass state-full">Pass item<\/span>/);
+  assert.match(html, /<span class="badge warn state-half">Warn item<\/span>/);
+  assert.match(html, /<span class="badge fail state-empty">Fail item<\/span>/);
+  assert.match(html, /<span class="badge skip state-slashed">Skip item<\/span>/);
   // The body line (no marker) should NOT be wrapped in a badge.
   assert.match(html, /body line passes through untouched/);
   assert.doesNotMatch(html, /<span class="badge[^"]*">body line/);
@@ -142,23 +144,45 @@ test('verdictGridBadges: top-level body items (depth 1) are not transformed', ()
   assert.doesNotMatch(html, /badge pass/);
 });
 
+// ── obligationMatrixBadges ─────────────────────────────────────────────
+
+test('obligationMatrixBadges: [x] / [-] / [ ] / [/] markers in <td> become state spans with shape classes', () => {
+  const m = makeMarp(plugins.obligationMatrixBadges);
+  const md = [
+    '<!-- _class: obligation-matrix -->',
+    '## Title',
+    '',
+    '| Reg | A | B | C | D |',
+    '| --- | :-: | :-: | :-: | :-: |',
+    '| X   | [x] | [-] | [ ] | [/] |',
+  ].join('\n');
+  const { html } = m.render(md);
+  assert.match(html, /<span class="state pass state-full">/);
+  assert.match(html, /<span class="state warn state-half">/);
+  assert.match(html, /<span class="state fail state-empty">/);
+  assert.match(html, /<span class="state skip state-slashed">/);
+});
+
 // ── checklistItemStates ──────────────────────────────────────────────
 
-test('checklistItemStates: top-level [x]/[-]/[ ] items get state class on <li>', () => {
+test('checklistItemStates: top-level [x]/[-]/[ ]/[/] items get state + shape classes on <li>', () => {
   const m = makeMarp(plugins.checklistItemStates);
   const md = [
     '<!-- _class: checklist -->',
     '- [x] Done',
     '- [-] Partial',
     '- [ ] Todo',
+    '- [/] Skipped',
   ].join('\n');
   const { html } = m.render(md);
-  assert.match(html, /<li class="state pass">\s*Done/);
-  assert.match(html, /<li class="state warn">\s*Partial/);
-  assert.match(html, /<li class="state fail">\s*Todo/);
+  assert.match(html, /<li class="state pass state-full">\s*Done/);
+  assert.match(html, /<li class="state warn state-half">\s*Partial/);
+  assert.match(html, /<li class="state fail state-empty">\s*Todo/);
+  assert.match(html, /<li class="state skip state-slashed">\s*Skipped/);
   // The marker (`[x]` etc.) is stripped from the rendered text.
   assert.doesNotMatch(html, /\[x\]/);
   assert.doesNotMatch(html, /\[ \]/);
+  assert.doesNotMatch(html, /\[\/\]/);
 });
 
 test('checklistItemStates: items without a marker pass through unchanged', () => {
@@ -169,7 +193,7 @@ test('checklistItemStates: items without a marker pass through unchanged', () =>
     '- Unmarked item should not get a class',
   ].join('\n');
   const { html } = m.render(md);
-  assert.match(html, /<li class="state pass">/);
+  assert.match(html, /<li class="state pass state-full">/);
   // The unmarked item should NOT carry a state class.
   assert.match(html, /<li>Unmarked item should not get a class<\/li>/);
 });

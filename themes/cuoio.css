@@ -126,10 +126,16 @@
    * which would otherwise be white on bright gold (~2.3:1, fails AA). */
   --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
 
-  /* ── Semantic signals ─────────────────────────────────────────────── */
-  --pass: #2D6A3F; /* 6.06:1 on bg AA */
-  --fail: #9B1C1C;               /* 7.63:1 on bg AAA */
-  --warn: #925C00;               /* 5.24:1 on bg AA  */
+  /* ── Semantic signals ─────────────────────────────────────────────────
+   * Cuoio's leather-toned variants of the universal status trio. Each
+   * is a light-dark() pair: light values are AA+ on the cream canvas;
+   * dark values lift to AA+ on the espresso canvas. Warn stays in
+   * cuoio's saddle-gold family (clearly separated from fail's crimson —
+   * fixes the "warn and fail look alike" issue the original burnt-
+   * amber introduced). */
+  --pass: light-dark(#2D6A3F, #6FCC4D);
+  --fail: light-dark(#9B1C1C, #F87171);
+  --warn: light-dark(#B47200, #F2A24A);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
@@ -293,7 +299,12 @@
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
    * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
+   * The -dark companions are strokes → universal --c-stroke.
+   *
+   * --c-alarm pairs with --c-ink-dark above: alarm fill lifts bright
+   * in dark mode, ink flips dark to compensate (both pass AA either
+   * way). Decoupled from the state-token --fail, which has its own
+   * light-dark() pair tuned for canvas contrast, not band-text. */
   --c-warm-light:  light-dark(#EBDBC1, #825200);
   --c-warm-dark:   var(--c-stroke);
   --c-cool-light:  light-dark(#E0D8CC, #6B5B40);
