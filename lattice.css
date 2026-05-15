@@ -8213,12 +8213,12 @@ section.math .katex-display > .katex {
   text-align: center;
 }
 section.math .math-error {
-  color: var(--warn, #c0392b);
+  color: var(--warn);
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: color-mix(in srgb, var(--warn, #c0392b) 10%, transparent);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
   padding: 0.1em 0.4em;
-  border-radius: 0.2em;
+  border-radius: var(--radius-sm);
 }
 
 /* ── math.feature (and bare .math) ──
@@ -8284,16 +8284,20 @@ section.math.feature > :is(ul, ol)::before {
  *
  * Two-column table: math left, plain-text right. */
 section.math.derivation {
-  display: block;
-  padding-block: var(--sp-lg);
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--sp-xl);
 }
 section.math.derivation > h2,
 section.math.derivation > h3 {
-  display: block;
+  flex: 0 0 auto;
   margin: 0 0 var(--sp-md) 0;
 }
 section.math.derivation > h3 + h2 { margin-top: 0; }
+/* Auto top + bottom margin on the table consumes the unused flex space,
+ * pushing the chain to the vertical centre of the body. */
 section.math.derivation table {
+  margin: auto 0;
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -8357,18 +8361,23 @@ section.math.derivation td .katex-display > .katex {
  * each `>`-prefixed block in a single `<blockquote>`; theorem-card stripes
  * are coloured by position (first/middle/last) using the deck spectrum. */
 section.math.theorem {
-  display: block;
-  padding-block: var(--sp-md);
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--sp-lg);
 }
 section.math.theorem > h2,
 section.math.theorem > h3 {
-  display: block;
+  flex: 0 0 auto;
   margin: 0 0 var(--sp-md) 0;
 }
+/* Auto top margin on the first card + auto bottom margin on the last card
+ * centres the stack vertically inside the body region. */
+section.math.theorem > blockquote:first-of-type { margin-top: auto; }
+section.math.theorem > blockquote:last-of-type  { margin-bottom: auto; }
 section.math.theorem blockquote {
   background: var(--bg-alt);
   border-left: 4px solid var(--accent);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
   padding: var(--sp-sm) var(--sp-md);
   margin: 0 0 var(--sp-sm) 0;
   font-style: normal;
@@ -8378,9 +8387,6 @@ section.math.theorem blockquote {
  * blockquote outside .quote/.featured — the bold inline label (Definition.,
  * Theorem., Proof.) carries the type, and a second label clutters the card. */
 section.math.theorem blockquote::before { content: none; }
-section.math.theorem blockquote:last-of-type {
-  margin-bottom: 0;
-}
 section.math.theorem blockquote p {
   margin: 0;
 }
@@ -8445,6 +8451,10 @@ section.math.compare {
   column-gap: var(--sp-lg);
   column-rule: 1px solid var(--border);
   column-fill: balance;
+  /* Chromium ≥122 honours `align-content` on block layout — use it to pull
+   * the columns to the vertical middle of the slide so a short comparison
+   * doesn't leave the bottom half empty. */
+  align-content: center;
   padding-block: var(--sp-lg);
 }
 section.math.compare:has(h3:nth-of-type(3)) {
@@ -8593,8 +8603,15 @@ section.math.matrix > :is(ul, ol) > li > strong {
  * equations can sit inline-block in a row. The lead equation + h3 are
  * full-width block; the remaining `<p>` siblings flow horizontally as
  * a 3-up row (text-align: center on the parent centres them as a group). */
+/* Block layout with align-content:center centres the whole group
+ * (title → lead eq → divider → subhead → component row) vertically.
+ * The 3 component equations need block display to flow inline-block in a
+ * row; flex column would stack them. Modern Chromium (≥122) supports
+ * `align-content` on block — older preview Chromium falls back to
+ * top-anchored content, which is still readable. */
 section.math.matrix.decompose {
   display: block;
+  align-content: center;
   padding-block: var(--sp-lg);
   text-align: center;
 }
@@ -8636,21 +8653,25 @@ section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) .kat
  *
  * Hero estimate ± SE, blockquote of uncertainty/test stats, interpretation
  * line at the bottom. */
+/* Flex column with justify-content:center pulls the whole stack (title →
+ * hero estimate → blockquote → interpretation) to the vertical middle so
+ * the boardroom number lands at eye-level instead of orphaning an empty
+ * lower half. */
 section.math.stats {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto 1fr;
-  align-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding-block: var(--sp-xl);
+  gap: var(--sp-sm);
 }
 section.math.stats > h2 {
-  grid-row: 1;
   text-align: center;
-  margin-bottom: var(--sp-md);
+  margin: 0 0 var(--sp-md) 0;
 }
 section.math.stats > p:has(> .katex-display):first-of-type {
-  grid-row: 2;
   text-align: center;
-  margin: 0 0 var(--sp-sm) 0;
+  margin: 0;
 }
 section.math.stats > p:has(> .katex-display):first-of-type .katex-display > .katex {
   font-size: 2.6em;
@@ -8658,7 +8679,6 @@ section.math.stats > p:has(> .katex-display):first-of-type .katex-display > .kat
   font-weight: 700;
 }
 section.math.stats > blockquote {
-  grid-row: 3;
   border-left: none;
   background: none;
   padding: 0;
@@ -8675,10 +8695,9 @@ section.math.stats > blockquote p {
 }
 section.math.stats > blockquote::before { content: none; }
 section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
-  grid-row: 4;
   text-align: center;
   max-width: 60cqi;
-  margin: 0 auto;
+  margin: 0;
   color: var(--text-body);
   font-size: var(--fs-md);
   line-height: var(--lh-base);
