@@ -3556,10 +3556,49 @@
     }
   }
 
+  // ── function-plot inflater ────────────────────────────────────────────
+  // The Marpit plugin (latticeplotFences in marp.config.js) emits
+  //   `<div class="latticeplot" data-fp-config="…base64 JSON…"></div>`
+  // The emulator path (lattice-emulator.js) injects function-plot.js + an
+  // inline inflater into the print HTML. For the VS Code marp-vscode
+  // preview, the runtime is what makes it animate: if `window.functionPlot`
+  // has been loaded by the preview's script-injection settings, we inflate
+  // the placeholder divs here. If not, the divs render as empty boxes —
+  // the rest of the slide is unaffected.
+  function inflateLatticePlots() {
+    if (typeof window === 'undefined' || typeof window.functionPlot !== 'function') return;
+    const divs = document.querySelectorAll('div.latticeplot[data-fp-config]');
+    divs.forEach((div) => {
+      if (div.dataset.fpInflated === '1') return;
+      try {
+        const cfg = JSON.parse(atob(div.getAttribute('data-fp-config')));
+        const rect = div.getBoundingClientRect();
+        cfg.target = div;
+        cfg.width  = cfg.width  || Math.round(rect.width)  || 480;
+        cfg.height = cfg.height || Math.round(rect.height) || 320;
+        if (!cfg.tip) cfg.tip = { renderer: function(){} };
+        window.functionPlot(cfg);
+        div.dataset.fpInflated = '1';
+      } catch (e) {
+        div.textContent = 'latticeplot error: ' + e.message;
+        div.classList.add('latticeplot-error');
+      }
+    });
+  }
+
   if (typeof document === "undefined") return;
+  function boot() { bootstrap(); inflateLatticePlots(); }
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootstrap, { once: true });
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
-    bootstrap();
+    boot();
+  }
+  // Re-inflate as the preview re-renders slides on edit.
+  if (typeof MutationObserver !== 'undefined') {
+    let raf = 0;
+    new MutationObserver(() => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; inflateLatticePlots(); });
+    }).observe(document.body || document.documentElement, { subtree: true, childList: true });
   }
 })();

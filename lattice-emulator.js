@@ -63,6 +63,18 @@ try { katex = require('katex'); } catch (_e) { /* math unavailable; degrades to 
 let katexCssAbsPath = '';
 try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
 
+// ── function-plot (math function plotting in math.canvas) ─────────────────
+// ```latticeplot fences carry a JSON function-plot config; the build emits
+// a `<div class="latticeplot" data-fp-config="…">` placeholder that the
+// vendored function-plot UMD bundle inflates to an SVG on page load — same
+// pre-render-then-PDF flow puppeteer uses for the rest of the deck. The
+// library is purpose-built for y=f(x), parametric, polar, implicit, and
+// vector-field plots; it parses math.js expressions and skips asymptotes
+// cleanly. Marp CLI (marp.config.js) and the VS Code preview
+// (lattice-runtime.js) load the same bundle for path parity.
+let functionPlotJsAbsPath = '';
+try { functionPlotJsAbsPath = require.resolve('function-plot/dist/function-plot.js'); } catch (_e) { /* no script emitted */ }
+
 const MATH_TOKEN_PREFIX  = 'LATTICEMATH';
 const MATH_TOKEN_SUFFIX  = '';
 const mathRegistry = []; // index → { tex, display }
@@ -1025,6 +1037,14 @@ function parseSlide(raw, index) {
   // Uses highlight.js server-side — no CDN dependency
   raw = raw.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const trimmed = code.replace(/\n$/, ''); // strip trailing newline
+    // `latticeplot` is intercepted here so the JSON config doesn't get
+    // syntax-highlighted into a <pre><code> block. Emit a placeholder div
+    // that the vendored function-plot bundle inflates to an SVG at runtime.
+    // base64 isolates the JSON from HTML-attribute escaping concerns.
+    if (lang === 'latticeplot') {
+      const cfg64 = Buffer.from(trimmed, 'utf8').toString('base64');
+      return `<div class="latticeplot" data-fp-config="${cfg64}"></div>`;
+    }
     let highlighted;
     if (hljs && lang && hljs.getLanguage(lang)) {
       try {
@@ -2443,6 +2463,42 @@ const katexCssLink = (katex && katexCssAbsPath)
   ? `<link rel="stylesheet" href="file://${katexCssAbsPath}">`
   : '';
 
+// ── function-plot script + bootstrap ──────────────────────────────────────
+// Only emitted if at least one slide actually contains a latticeplot block,
+// so decks that don't use it pay nothing. The bootstrap runs synchronously
+// on DOMContentLoaded; puppeteer's `waitUntil: networkidle0` covers it.
+const hasLatticePlot = highlightedSlides.some(s => s.includes('class="latticeplot"'));
+const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
+  ? `<script src="file://${functionPlotJsAbsPath}"></script>
+<script>
+(function(){
+  function inflate() {
+    if (typeof window.functionPlot !== 'function') return;
+    document.querySelectorAll('div.latticeplot[data-fp-config]').forEach(function(div){
+      if (div.dataset.fpInflated === '1') return;
+      try {
+        var cfg = JSON.parse(atob(div.getAttribute('data-fp-config')));
+        var rect = div.getBoundingClientRect();
+        cfg.target = div;
+        cfg.width  = cfg.width  || Math.round(rect.width)  || 480;
+        cfg.height = cfg.height || Math.round(rect.height) || 320;
+        // Disable hover tip in static PDF — it only adds DOM mass.
+        if (!cfg.tip) cfg.tip = { renderer: function(){} };
+        window.functionPlot(cfg);
+        div.dataset.fpInflated = '1';
+      } catch (e) {
+        div.textContent = 'latticeplot error: ' + e.message;
+        div.classList.add('latticeplot-error');
+      }
+    });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', inflate);
+  else inflate();
+})();
+</script>`
+  : '';
+
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
@@ -2457,6 +2513,7 @@ ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
 ${highlightedSlides.join('\n')}
+${functionPlotScript}
 <script>
 /* Overflow watcher — tags any section whose content exceeds the slide
    frame with class "overflow" so lattice.css can draw the red warning ring.

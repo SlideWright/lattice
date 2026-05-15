@@ -8529,10 +8529,14 @@ section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   margin: var(--sp-sm) 0 0 0;
 }
 section.math.canvas > p:has(img),
-section.math.canvas > :is(.mermaid, svg, figure) {
+section.math.canvas > :is(.mermaid, svg, figure, .latticeplot) {
   grid-area: plot;
   align-self: center;
   justify-self: center;
+}
+section.math.canvas > .latticeplot {
+  width: 55cqi;
+  height: 38cqi;
 }
 section.math.canvas > p:has(img) {
   margin: 0;
@@ -8701,6 +8705,68 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
   color: var(--text-body);
   font-size: var(--fs-md);
   line-height: var(--lh-base);
+}
+
+/* ── function-plot SVG styling ──
+ * function-plot stamps inline `stroke="..."` attributes on its trace paths
+ * (`.line-0`, `.line-1`, …) and axis chrome (`stroke="black"` on `.domain`,
+ * `fill="currentColor"` on tick text). To bring it into the palette we
+ * override those with !important — same trick lattice already uses for
+ * mermaid SVGs. The first three traces ride the editorial accents
+ * (accent → cool → warm); further traces fall back to muted so they read
+ * as supporting context. */
+section .latticeplot .function-plot {
+  font-family: var(--font-mono);
+  color: var(--text-body);
+  background: transparent;
+}
+section .latticeplot .function-plot .domain {
+  stroke: var(--text-muted) !important;
+  opacity: 0.6 !important;
+}
+section .latticeplot .function-plot .tick line {
+  stroke: var(--border) !important;
+}
+section .latticeplot .function-plot .tick text {
+  fill: var(--text-muted) !important;
+  font-size: var(--fs-label);
+}
+section .latticeplot .function-plot .axis-label,
+section .latticeplot .function-plot .x.axis-label,
+section .latticeplot .function-plot .y.axis-label {
+  fill: var(--text-heading) !important;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+section .latticeplot .function-plot .line-0 {
+  stroke: var(--accent) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot .line-1 {
+  stroke: var(--c4-dark, var(--text-heading)) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot .line-2 {
+  stroke: var(--c7-dark, var(--text-muted)) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot :is(.line-3, .line-4, .line-5) {
+  stroke: var(--text-muted) !important;
+  stroke-width: 2 !important;
+}
+section .latticeplot .function-plot .annotations .annotation,
+section .latticeplot .function-plot .annotations text {
+  fill: var(--text-muted) !important;
+  stroke: var(--text-muted) !important;
+}
+section .latticeplot-error {
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  padding: var(--sp-sm);
+  border: 1px dashed var(--warn);
+  border-radius: var(--radius-sm);
 }
 
 /* ── KaTeX in non-math layouts ──

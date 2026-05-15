@@ -148,12 +148,16 @@ $$ \sigma(x) = \dfrac{1}{1 + e^{-x}} $$
 
 Maps $\mathbb{R} \to (0,1)$. $S$-shaped, $\sigma(0) = 0.5$, steepest slope at the origin.
 
-```mermaid
-xychart-beta
-  title " "
-  x-axis "x" -6 --> 6
-  y-axis "σ(x)" 0 --> 1
-  line [0.0025, 0.0067, 0.0180, 0.0474, 0.1192, 0.2689, 0.5, 0.7311, 0.8808, 0.9526, 0.9820, 0.9933, 0.9975]
+```latticeplot
+{
+  "data": [
+    { "fn": "1 / (1 + exp(-x))" },
+    { "fn": "tanh(x)" }
+  ],
+  "xAxis": { "domain": [-6, 6], "label": "x" },
+  "yAxis": { "domain": [-1.1, 1.1], "label": "f(x)" },
+  "grid": true
+}
 ```
 
 ---
