@@ -178,16 +178,22 @@
   --tag-bg:   var(--c2-dark);
   --tag-text: var(--on-accent, #fff);
 
-  /* ── Universal state-token masks ──────────────────────────────────────
-   * Two tiny SVGs shared by every state token across checklist,
-   * verdict-grid, obligation-matrix, and roadmap. Painted as a white
-   * background-image over a coloured disc — the disc shape (border-radius:50%)
-   * clips the mask to a half-disc or slashed-disc. Font- and OS-independent;
-   * the four shape modifiers (state-full / state-half / state-empty /
-   * state-slashed) are the universal vocabulary. See the state-token contract
-   * block in the LAYOUTS section. */
-  --state-mask-half: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='8' y='0' width='8' height='16' fill='white'/></svg>");
-  --state-mask-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='3' y1='13' x2='13' y2='3' stroke='white' stroke-width='2.5' stroke-linecap='round'/></svg>");
+  /* ── Universal state-token slash mask ─────────────────────────────────
+   * The slash that marks [/] (out of scope / waived / N/A). Painted
+   * on top of the coloured disc as a semi-transparent dark stroke, so
+   * the disc keeps full colour AND the slash is unmistakable in pure
+   * greyscale. Stroke-width is ~22% of the disc diameter so [x] (filled)
+   * and [/] (filled + slash) are clearly distinct shapes.
+   *
+   * The half-disc state ([-]) is painted with a CSS linear-gradient
+   * inline at each consumer site (two tones of --state-color, not a
+   * transparent cut) so the disc stays fully coloured on tinted cell
+   * surfaces (e.g. obligation-matrix.heat). See the UNIVERSAL STATE
+   * TOKEN contract block in the LAYOUTS section.
+   *
+   * COLOUR + SHAPE both at full strength. Neither channel sacrificed
+   * for the other. */
+  --state-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='2' y1='14' x2='14' y2='2' stroke='black' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/></svg>");
 }
 
 /* ── BASE ── */
@@ -1296,9 +1302,17 @@ section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
   box-sizing:border-box;
   flex:none;
 }
-.badge.state-half::before    { background-image:var(--state-mask-half); }
+/* state-half: tonal split — left full colour, right same hue at 30%
+ * mixed with --bg. Disc stays fully coloured; the bisector is sharp. */
+.badge.state-half::before {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
+}
 .badge.state-empty::before   { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
-.badge.state-slashed::before { background-image:var(--state-mask-slash); }
+/* state-slashed: filled coloured disc with a semi-transparent dark slash
+ * painted on top. Colour fully present, slash crisp on any cell BG. */
+.badge.state-slashed::before { background-image:var(--state-slash); }
 
 /* ── COMPARE-TABLE ──
  * ## heading  markdown table  p note
@@ -5128,18 +5142,22 @@ section.checklist > ol > li.state::before {
   background-size:100% 100%;
   box-sizing:border-box;
 }
+/* state-half: tonal split — both halves coloured, sharp bisector. */
 section.checklist > ul > li.state.state-half::before,
 section.checklist > ol > li.state.state-half::before {
-  background-image:var(--state-mask-half);
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
 }
 section.checklist > ul > li.state.state-empty::before,
 section.checklist > ol > li.state.state-empty::before {
   background-color:transparent;
   border:2px solid var(--state-color, var(--text-muted));
 }
+/* state-slashed: semi-transparent dark slash on the coloured disc. */
 section.checklist > ul > li.state.state-slashed::before,
 section.checklist > ol > li.state.state-slashed::before {
-  background-image:var(--state-mask-slash);
+  background-image:var(--state-slash);
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */
@@ -5710,9 +5728,16 @@ section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
-section.obligation-matrix td .state.state-half    { background-image:var(--state-mask-half); }
-section.obligation-matrix td .state.state-empty   { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
-section.obligation-matrix td .state.state-slashed { background-image:var(--state-mask-slash); }
+/* state-half: tonal split — both halves coloured. Crisp bisector
+ * on any cell background (including the heat-tinted cells below). */
+section.obligation-matrix td .state.state-half {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 30%, var(--bg)) 50%);
+}
+section.obligation-matrix td .state.state-empty { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
+/* state-slashed: semi-transparent dark slash on the coloured disc. */
+section.obligation-matrix td .state.state-slashed { background-image:var(--state-slash); }
 
 /* .heat chrome — palette inversion comes from the universal
  * section.heat overlay; this block adds the cell-background tint that
