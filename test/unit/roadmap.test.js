@@ -136,8 +136,8 @@ test('horizons: empty cells render as a muted dash row', () => {
 
 test('horizons: cycles the categorical accent across cards', () => {
   const out = applyHorizons(HORIZONS_TABLE);
-  assert.match(out, /--phase-accent:var\(--cat-blue\)/);
-  assert.match(out, /--phase-accent:var\(--cat-green\)/);
+  assert.match(out, /--phase-accent:var\(--c1-dark\)/);
+  assert.match(out, /--phase-accent:var\(--c2-dark\)/);
 });
 
 test('horizons: carries state classes from source cells onto card rows', () => {

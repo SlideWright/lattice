@@ -1,0 +1,56 @@
+/* @theme carbone-G
+ * @size 16:9 1280px 720px
+ *
+ * Commit-G preview overlay on carbone (mono) — NOT a shipped theme.
+ *
+ * CYCLE: kept as-is. carbone is mono-canvas dark-native, so its
+ *   hand-tuned graphite ramp is inherited unchanged via @import —
+ *   no cycle block is emitted here.
+ *
+ * SEMANTIC: 5 roles (warm/cool/alarm/mark/note), each a light-dark()
+ *   flipping fill curated for this theme — hue nudged toward the
+ *   brand hue within a fixed meaning band, AA-verified, chroma-capped.
+ *
+ * CONTAINMENT: --c-container / --c-subcontainer — two nested structural
+ *   surfaces. A monotonic luminance ladder away from the canvas (light
+ *   deck steps down, dark deck steps up), brand-hue-tinted.
+ */
+
+@import 'carbone';
+
+:root {
+  --c-ink-light: var(--text-heading);
+  --c-ink-dark:  var(--text-heading);
+
+  /* Semantic palette — 5 roles, each a flipping fill. Curated per
+   * theme: hue nudged toward the brand within its meaning band,
+   * AA-verified both canvas modes, chroma-capped for restraint.
+   * The -dark companions are strokes → universal --c-stroke. */
+  --c-warm-light:  light-dark(#91450E, #91450E);
+  --c-warm-dark:   var(--c-stroke);
+  --c-cool-light:  light-dark(#2A5F9A, #2A5F9A);
+  --c-cool-dark:   var(--c-stroke);
+  --c-alarm:       light-dark(#9A2735, #9A2735);
+  --c-alarm-dark:  var(--c-stroke);
+  --c-mark:        light-dark(#856300, #856300);
+  --c-note:        light-dark(#7B5F06, #7B5F06);
+
+  /* Containment tier — two nested structural surfaces. A monotonic
+   * luminance ladder away from the canvas: light deck steps down,
+   * dark deck steps up, one step per nesting level. Brand-hue-tinted
+   * at a barely-there chroma — surfaces, not accents; they never
+   * compete with the --cN fills that sit on them.
+   *   --c-container     flowchart cluster, sankey area, kanban column
+   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --c-container:     light-dark(#202026, #202026);
+  --c-subcontainer:  light-dark(#313138, #313138);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
+}

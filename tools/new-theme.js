@@ -9,13 +9,13 @@
  *
  * The new files copy themes/indaco.css and themes/indaco-dark.css verbatim,
  * with the @theme directive rewritten and a single TODO(palette) checklist
- * block inserted at the top of the light file. The Mermaid CSS overrides
- * below the sentinel reference tokens by var(--token), so they inherit
- * the author's new values without selector edits.
+ * block inserted at the top of the light file. The DIAGRAM OVERRIDES
+ * section in lattice.css references --diagram-* tokens by var(--token),
+ * so it inherits the author's new values without selector edits.
  *
  * See themes/README.md for the mental model and 5-minute path.
- * See docs/theming.md for the variable contract and the per-diagram
- * Mermaid override surface.
+ * See docs/theming.md for the variable contract and the --diagram-*
+ * taxonomy.
  */
 'use strict';
 
@@ -60,20 +60,29 @@ function checklistBlock(name) {
  *                          DARK side resolves to --dark-* below.
  *   3. Accent            — most-seen colour after ink. Must clear 4.5:1
  *                          on --bg AND on --accent-soft.
- *   4. Mermaid pales     — --mermaid-primary-color, -secondary-color,
- *                          --mermaid-pie-*. Pale band L≈90.
- *   5. Categorical hues  — --cat-blue … --cat-mauve. Mid-tone band L≈60
+ *   4. Diagram band cycle — --diagram-band-1..12 paired with
+ *                          --diagram-band-text-N. Pale band L≈83;
+ *                          pin each -text-N to a fixed dark hex
+ *                          (not light-dark(…) — the band stays pale
+ *                          in dark mode, so the text must too).
+ *                          test/unit/contrast.test.js asserts each pair.
+ *   5. Diagram structural — --diagram-stroke, --diagram-line,
+ *                          --diagram-accent-warm, --diagram-quadrant-*,
+ *                          --diagram-state-*, --diagram-note-*,
+ *                          --diagram-error-*. Borders, gantt state,
+ *                          notes, alarm.
+ *   6. Categorical hues  — --cat-blue … --cat-mauve. Mid-tone band L≈60
  *                          (kanban lightens to ≈70 in flight; mindmap
  *                          consumes them directly).
- *   6. Dark-variant      — --dark-* tokens, the DARK side of every
+ *   7. Dark-variant      — --dark-* tokens, the DARK side of every
  *                          light-dark() pair above.
- *   7. Semantic signals  — --pass / --fail / --warn. Usually inherit.
- *   8. Charts            — --chart-1 … --chart-6. Verify pairwise
+ *   8. Semantic signals  — --pass / --fail / --warn. Usually inherit.
+ *   9. Charts            — --chart-1 … --chart-6. Verify pairwise
  *                          distinguishability with:
  *                            node tools/contrast-audit.js ${name}
  *
- * Mermaid CSS overrides below the sentinel reference tokens by name,
- * so they inherit your new values without selector edits.
+ * The DIAGRAM OVERRIDES section in lattice.css consumes --diagram-*
+ * by name, so per-diagram CSS picks up your values automatically.
  *
  * Delete this block when the palette ships.
  * ════════════════════════════════════════════════════════════════════════

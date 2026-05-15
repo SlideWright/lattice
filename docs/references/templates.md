@@ -1788,7 +1788,7 @@ The named-slot sibling of the numbered corner tag. The slot label sits at the to
 
 - **Authoring is plain.** Write the slot label as the first line of each list item — no bold, no syntax. The build pipeline lifts it into a `<strong>` automatically because in these named-slot layouts the leading text is structurally a slot label, not editorial emphasis. Authors don't carry presentational markup.
 - Tag chrome matches the numbered corner tag — accent fill, white mono text, flush top-left geometry. The labeled and numbered variants are visually a family.
-- `before-after` and `compare-prose` use the unified accent fill because their slots have semantic ordering (before/after, A/B). `decision` is the categorical case: each slot is an independent reason, so the tag and the bottom border cycle through the categorical palette (`--cat-blue`, `--cat-green`, `--cat-purple`, …) — same palette and cycle as `kpi.trajectory`, inverted to the bottom edge so the two layouts read as siblings (kpi.trajectory = top accent, decision = bottom accent).
+- `before-after` and `compare-prose` use the unified accent fill because their slots have semantic ordering (before/after, A/B). `decision` is the categorical case: each slot is an independent reason, so the tag and the bottom border cycle through the categorical palette (`--c1-dark`, `--c2-dark`, `--c3-dark`, …) — same palette and cycle as `kpi.trajectory`, inverted to the bottom edge so the two layouts read as siblings (kpi.trajectory = top accent, decision = bottom accent).
 - Composes with `compare-prose` modifiers: `chosen` and `decision` continue to recolour / strike the lifted label, so the corner tag inherits the modifier's editorial signal.
 - **Banner variant (`banner-tag` modifier).** Add `banner-tag` to the slide directive (e.g. `<!-- _class: decision banner-tag -->`) to flip each card from a flush-corner tag into a full-width header strip. The card becomes a vertical column-flex: tag fits its content height and spans the full card width; body stretches into the remaining height (vertically centred). Use when the slot label is the architectural signal of the card — the categorical case (`BUILD` / `WHY NOT BUY` / `WHY NOT DELAY`) — rather than a quiet marker. Default flush-corner stays for the editorial register where the body owns the card. Same lift infrastructure feeds both styles, so authoring is unchanged. Composes with all existing modifiers (`chosen`, `decision`, `mirror`, `vertical`).
 - Named-slot only — `before-after`, `compare-prose`, and `decision` exist precisely to label their cards. Other card-bearing layouts (`cards-grid`, `cards-stack`, etc.) keep the in-card title row because their card titles are editorial sentences, not categorical labels.
@@ -2618,7 +2618,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 - Flat bullet list with one trailing inline `` `code` `` per item carrying the magnitude (`46%`, `22%`, … or raw counts like `8`, `5`).
 - Wedges are drawn proportionally; the legend reads in author order with the raw values.
-- Wedge colours come from a fixed eight-colour categorical palette (`--cat-blue`, `--cat-green`, …) cycled in source order.
+- Wedge colours come from the categorical cycle (`--c1-dark` through `--c6-dark`) cycled in source order; six is the perceptual cap (Wong 2011, Cleveland-McGill, IBM Carbon). Pies that need more should consolidate "Other" or split.
 
 **Authoring contract:**
 
@@ -2782,7 +2782,7 @@ Card with body text (third sub-bullet):
 
 - One inline code per line. Size on the card title line; status on the label line. Never two codes on the same line.
 - All three sub-levels are optional. A card with no sub-bullet gets no meta row.
-- Label text (the prose on the first sub-bullet) drives the lane colour. Labels are free-form; the renderer maps them to categorical palette slots (`--cat-blue`, `--cat-green`, `--cat-purple`, …) consistently within a slide.
+- Label text (the prose on the first sub-bullet) drives the lane colour. Labels are free-form; the renderer maps them to categorical palette slots (`--c1-dark`, `--c2-dark`, `--c3-dark`, …) consistently within a slide.
 - Status tokens are a closed set — see the vocabulary table above.
 
 ---

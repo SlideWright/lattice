@@ -77,17 +77,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Coastal teal + complementary coral (the brand duotone). Golden sand
-   * is the warm bridge to the canvas; deep navy gives a cooler-cool sibling;
-   * sage muted; deep teal ink grounds. */
-  --chart-1: light-dark(var(--brand-teal-mid), var(--brand-teal-bright)); /* TEAL */
-  --chart-2: light-dark(var(--brand-coral), var(--brand-coral-bright));   /* CORAL */
-  --chart-3: light-dark(#C49526, #E0B855);   /* GOLDEN-SAND */
-  --chart-4: light-dark(#2D4D6B, #6087A8);   /* DEEP-NAVY */
-  --chart-5: light-dark(#7A8F7E, #A8B89C);   /* SAGE */
-  --chart-6: light-dark(var(--brand-teal-deep), #6F7C7F); /* DEEP-TEAL-INK */
-
   --scale-500: var(--brand-teal-mid);
 
   /* Tag uses --chart-2 (coral) by default — laguna's hospitality duotone. */
@@ -112,30 +101,64 @@
   --dark-text-display: #EFE8D7;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #D2E8EA;
-  --mermaid-secondary-color: #F4DBD0; /* warm coral pale */
-  --mermaid-border:          #0F2D31;
-  --mermaid-accent-warm:     var(--brand-coral); /* the coral pop */
-  --mermaid-pie-purple:  #D2E8EA;  /* pale teal */
-  --mermaid-pie-orange:  #F4DBD0;  /* pale coral */
-  --mermaid-pie-teal:    #CBE0E0;  /* deeper pale teal */
-  --mermaid-pie-rose:    #F8E8D8;  /* pale sandy peach */
-  --mermaid-pie-yellow:  #F2E5C0;  /* pale warm sand */
-  --mermaid-pie-red:     #F5D8CC;  /* pale salmon */
-  --mermaid-pie-slate:   #D8E5E8;  /* pale slate-teal */
-  --mermaid-pie-sage:    #D8E0D5;  /* pale sage-green */
-  --mermaid-pie-violet:  #DCE6E8;  /* very pale aqua */
-  /* cScale / gitgraph — coastal teal + warm coral family */
-  --cat-blue:   #286870;  /* deep teal */
-  --cat-green:  #A85E40;  /* coral */
-  --cat-purple: #7A8430;  /* olive */
-  --cat-orange: #1E4A62;  /* deep navy */
-  --cat-teal:   #387860;  /* sage-teal */
-  --cat-rose:   #A07860;  /* warm sand-brown */
-  --cat-slate:  #3A6070;  /* teal-slate */
-  --cat-mauve:  #807060;  /* warm gray-brown */
+  --c-stroke:          #0F2D31;
+  --c-accent-warm:     var(--brand-coral); /* the coral pop */
+  /* cScale / gitgraph — slot 0 anchors band-1 teal-deep (BRAND); slot 1
+   * coral echoes band-2. Slot 3 swapped from deep-navy to amber so it
+   * doesn't collide with slot 0's blue family (branches 0 and 3 collided
+   * as cool blues). Slots 4-7 retain laguna's curated mid-tones. All
+   * values ≥3:1 graphical on --bg #F5FAFC. */
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c7-light);
+  --c-quadrant-4-fill: var(--c3-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js. */
+  --c1-light:  #D3E6E8;  --c1-dark:  #2E7F8A;
+  --c2-light:  #E8D4DC;  --c2-dark:  #863252;
+  --c3-light:  #E8E0D4;  --c3-dark:  #866632;
+  --c4-light:  #D4DCE8;  --c4-dark:  #325286;
+  --c5-light:  #D4E8E0;  --c5-dark:  #308263;
+  --c6-light:  #E8D6D4;  --c6-dark:  #863B32;
+  --c7-light:  #D8D6E6;  --c7-dark:  #403880;
+  --c8-light:  #E6D6E4;  --c8-dark:  #803877;
+  --c9-light:  #E4E6D6;  --c9-dark:  #717935;
+  --c10-light: #D6E6D8;  --c10-dark: #388040;
+  --c11-light: #E0D6E6;  --c11-dark: #643880;
+  --c12-light: #DCE6D6;  --c12-dark: #538038;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #0E2F33;
+
+  --c-ink-dark:  #FFFFFF;
 }

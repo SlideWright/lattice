@@ -206,37 +206,63 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Kanban diagrams.
 - **Removable when:** Mermaid exposes a per-diagram cScale that
   bypasses the lighten step.
-- **Commits:** Original palette commit; mindmap override sentinel
-  comment in palette files.
+- **Commits:** Original palette commit; mindmap override now lives in
+  `lattice.css`'s DIAGRAM OVERRIDES section.
 
-### Mermaid's `%%{init}%%` directive is intolerant of CSS comments
+### Mermaid timeline + journey are tile-stack, not card-on-band
 
-- **Symptom:** All themeCSS overrides silently dropped from a rendered
-  SVG even though the input was correct.
-- **Cause:** Mermaid's `%%{init}%%` parser fails to parse the JSON
-  embedded in the directive when certain content (specifically certain
-  characters within `/* … */` blocks) is present. The result isn't an
-  error — the `themeCSS` field just gets discarded silently.
-- **Mitigation:** [lattice-emulator.js:641-643](../../lattice-emulator.js#L641-L643)
-  strips `/* … */` comments from the Mermaid themeCSS before injection.
-- **Triggered by:** Any palette whose Mermaid CSS section contains
-  comments that the init parser chokes on.
-- **Removable when:** Mermaid's init-directive parser handles comments
-  robustly.
-- **Commits:** Identified by section-bisect; see commit log on
-  `lattice-emulator.js` resolveVarsInThemeCSS / `MERMAID_THEME_CSS`
-  pre-processing.
+- **Symptom (the trap):** Side-by-side with kanban (which has `--bg-alt`
+  tickets visibly lifted off band-tinted lanes), a timeline or journey
+  looks "flat" or "uncoloured." Tempting to apply the same `--bg-alt`
+  inner-card rule to fix the inconsistency. **It does not work** — the
+  inner cards become indistinguishable from the white slide canvas
+  because there is no band underneath them.
+- **Cause:** Kanban tickets physically sit *inside* a `<g class="cluster
+  section-N">` whose `<rect>` is painted with `--cN-light`. The
+  `--bg-alt` card-on-tinted-lane reading is real. Timeline and journey
+  do NOT have this structure: the period/section header is a single
+  small `--cN-light` rect at the *top* of a column, and the tasks/events
+  stack *below* it on the slide canvas (`--bg` white). `--bg-alt` on
+  `--bg` is virtually invisible (#F2F5FA on #FFFFFF in indaco), so the
+  cards disappear.
+- **Mitigation:** Timeline events and journey tasks keep the
+  `.section-N rect/path { fill: --cN-light }` rule and inherit their
+  period/section's pale tint. `--c-stroke` provides the card outline
+  against the canvas. If a pale tint reads too pale against the canvas
+  in a given palette, the right fix is to deepen the slot itself, not
+  to introduce a structural override that doesn't apply.
+- **Triggered by:** Mistaking syntactic nesting (event-in-period in
+  Mermaid source) for visual nesting (card-on-tinted-surface in the
+  rendered SVG).
+- **Removable when:** Mermaid restructures timeline/journey to render
+  a band-tinted column behind each period's task/event stack. Not on
+  the roadmap.
+- **Commits:** Initial misapplication + audit + revert; see
+  `docs/notes/2026-05-12-diagram-elevation.md`.
+
+### ~~Mermaid's `%%{init}%%` directive is intolerant of CSS comments~~ (RESOLVED)
+
+- **Status:** No longer applicable as of 2026-05-12. Lattice no longer
+  uses Mermaid's `themeCSS` init parameter; per-diagram CSS lives in
+  `lattice.css`'s DIAGRAM OVERRIDES section and reaches the inline SVG
+  via the host page cascade. CSS comments and the `>` child combinator
+  are both safe to use again.
+- **Historical context:** Mermaid's `%%{init}%%` JSON parser silently
+  dropped `themeCSS` payloads containing `/* … */` comments, and
+  similarly rejected the `>` combinator. Both restrictions are gone
+  with the new architecture.
+- **See:** `docs/notes/2026-05-12-diagram-tokens.md`.
 
 ### Mermaid frontmatter must be FIRST; `%%{init}%%` injection comes after
 
-- **Symptom:** Mermaid renders without our themeVariables / themeCSS
-  even though we appear to be passing them.
+- **Symptom:** Mermaid renders without our themeVariables even though we
+  appear to be passing them.
 - **Cause:** Mermaid requires the frontmatter (`---\n…\n---\n`) to be
   the very first thing in the diagram source. Naive prepending of a
   `%%{init}%%` directive breaks frontmatter detection.
-- **Mitigation:** [lattice-emulator.js:650-662](../../lattice-emulator.js#L650-L662)
-  detects an opening frontmatter block and injects the `%%{init}%%`
-  AFTER the closing `---\n` rather than at the top.
+- **Mitigation:** `lattice-emulator.js:renderMermaid` detects an opening
+  frontmatter block and injects the `%%{init}%%` AFTER the closing
+  `---\n` rather than at the top.
 - **Triggered by:** Mermaid sources that include a `title:` or
   `displayMode:` frontmatter block.
 - **Removable when:** Never — this is correct per Mermaid's spec.
@@ -656,14 +682,17 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   Tableau-10 categorical fills (sankey nodes, link gradients); some
   apply internal lightening or darkening to themeVariable inputs
   (kanban cScale lighten step). The themeVariables API is partial.
-- **Mitigation:** Per-diagram-type CSS overrides in the Mermaid CSS
-  section of each palette ([themes/indaco.css](../../themes/indaco.css)
-  / [themes/cuoio.css](../../themes/cuoio.css), below the
-  `/* ===== MERMAID THEME CSS ===== */` sentinel). Coverage is
-  audited periodically — the most recent audit (commit `c57366bf`)
-  identified 35 stray colors across 5 decks / 37 diagrams and added
-  overrides for journey, c4, mindmap, timeline, sankey, packet,
-  architecture, and ER alternation.
+- **Mitigation:** Per-diagram-type CSS overrides in
+  [lattice.css](../../lattice.css)'s "DIAGRAM OVERRIDES" section (at
+  the bottom of the file). Palette-blind — every rule consumes
+  `var(--diagram-*)`, so new palettes inherit coverage by defining the
+  token contract. Coverage is audited periodically — the most recent
+  audit (commit `c57366bf`) identified 35 stray colors across 5 decks
+  / 37 diagrams and added overrides for journey, c4, mindmap, timeline,
+  sankey, packet, architecture, and ER alternation. The 2026-05-12
+  refactor moved these rules out of each palette's post-sentinel
+  section into the layout engine to make new-palette authoring purely
+  token-declaration.
 - **Triggered by:** Any new Mermaid diagram type, any Mermaid version
   bump that adds new internal styling.
 - **Removable when:** Mermaid's themeVariables surface becomes

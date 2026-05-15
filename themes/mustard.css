@@ -81,17 +81,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Aged-mustard + oxblood (the apothecary duotone). Deep teal is the
-   * cool complement; dusty blue gives a second cool sibling for chart-4;
-   * olive reinforces the warm-archive feel; sepia ink grounds. */
-  --chart-1: light-dark(var(--brand-mustard-mid), var(--brand-mustard-bright)); /* MUSTARD */
-  --chart-2: light-dark(var(--brand-oxblood), var(--brand-oxblood-bright));     /* OXBLOOD */
-  --chart-3: light-dark(#1F6B7C, #5BB5CC);   /* DEEP-TEAL */
-  --chart-4: light-dark(#4D5E8A, #8095BC);   /* DUSTY-BLUE */
-  --chart-5: light-dark(#6B7530, #A5B560);   /* OLIVE */
-  --chart-6: light-dark(var(--brand-mustard-deep), #BDAC78); /* SEPIA-INK */
-
   --scale-500: var(--brand-mustard-mid);
 
   /* Tag uses --chart-2 (oxblood) — the apothecary alarm/label pop. */
@@ -116,30 +105,63 @@
   --dark-text-display: #F0E5C8;
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --mermaid-primary-color:   #E8D580;
-  --mermaid-secondary-color: #F0E5C8;
-  --mermaid-border:          #3D2D14;
-  --mermaid-accent-warm:     var(--brand-oxblood);
-  --mermaid-pie-purple:  #F0E8C0;  /* pale parchment-gold */
-  --mermaid-pie-orange:  #F5E5A8;  /* pale mustard-amber */
-  --mermaid-pie-teal:    #D8E5D5;  /* pale sage */
-  --mermaid-pie-rose:    #F0D8CC;  /* pale warm-oxblood */
-  --mermaid-pie-yellow:  #F0E8D0;  /* pale parchment */
-  --mermaid-pie-red:     #EDD5C8;  /* pale terracotta */
-  --mermaid-pie-slate:   #E0D8C5;  /* pale warm-slate */
-  --mermaid-pie-sage:    #D8E0CC;  /* pale sage-green */
-  --mermaid-pie-violet:  #E5E0C8;  /* pale warm-neutral */
-  /* cScale / gitgraph — mustard gold + oxblood family */
-  --cat-blue:   #786010;  /* mustard */
-  --cat-green:  #581A10;  /* oxblood */
-  --cat-purple: #385848;  /* sage contrast */
-  --cat-orange: #906818;  /* amber */
-  --cat-teal:   #305848;  /* deep teal */
-  --cat-rose:   #804838;  /* terracotta */
-  --cat-slate:  #685040;  /* warm sepia */
-  --cat-mauve:  #786050;  /* warm taupe */
+  --c-stroke:          #3D2D14;
+  --c-accent-warm:     var(--brand-oxblood);
+  /* cScale / gitgraph — slot 0 anchors band-1 mustard (BRAND); slot 1 sage
+   * echoes band-2; slot 2 terracotta echoes band-3 peach. Slots 3-7 carry
+   * mustard's chart palette (amber, deep teal, oxblood, sepia, plum) for
+   * categorical distinction. All values ≥4.5:1 on --bg #FCF8F0. */
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js. */
+  --c1-light:  #E8E3D4;  --c1-dark:  #8B7123;
+  --c2-light:  #D5E2E7;  --c2-dark:  #29758E;
+  --c3-light:  #D9D5E7;  --c3-dark:  #42298E;
+  --c4-light:  #E2E7D5;  --c4-dark:  #687F25;
+  --c5-light:  #E7D9D5;  --c5-dark:  #8E4229;
+  --c6-light:  #D5D9E7;  --c6-dark:  #29428E;
+  --c7-light:  #DAE6D6;  --c7-dark:  #44832F;
+  --c8-light:  #D6E6E2;  --c8-dark:  #2F836E;
+  --c9-light:  #E2D6E6;  --c9-dark:  #713187;
+  --c10-light: #E6D6DA;  --c10-dark: #873146;
+  --c11-light: #D6E6DA;  --c11-dark: #2F8344;
+  --c12-light: #E6D6E2;  --c12-dark: #873171;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #2A1A06;
+
+  --c-ink-dark:  #FFFFFF;
 }

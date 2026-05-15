@@ -27,24 +27,21 @@ of a palette, which is what makes the rules in the deep reference
  :root {                    │
    --bg: light-dark(…); ────┤   var(--accent) ──────────→  headings, links,
    --accent: …; ────────────┤                              eyebrow rules
-   --cat-blue: …; ──────────┤   var(--cat-blue) ────────→  card stripes,
-   …                        │                              corner tags
-                            │
-   /* ===== MERMAID THEME CSS ===== */
-   .person { fill: …; } ─────── extracted at build time ─→  injected as
-   .venn-set-0 { … }                                       Mermaid themeCSS
- }
+   --c1-light: …;  ─────────┤   var(--c1-light) ────────→  pale categorical
+   --c1-dark:  …;  ─────────┤                              fills (mermaid SVG,
+   --c-stroke: …;  ─────────┤                              decision-list nth-
+   --c-ink-light: …; ───────┤                              child rotations,
+   …                        │   var(--c-stroke) ────────→  every other layout
+ }                          ╰                              the engine ships)
 ```
 
-Two channels leave a palette file:
-
-1. **CSS variables** — read by every rule in `lattice.css` via
-   `var(--token)`. Defines surfaces, ink, accents, semantic signals,
-   categorical hues.
-2. **Mermaid override CSS** — everything below the sentinel comment
-   gets extracted and handed to Mermaid as `themeCSS`. Patches the
-   ~15 diagram types whose hardcoded internal palettes ignore the
-   normal `themeVariables` API.
+One channel leaves a palette file: **CSS variables**. Layouts and the
+DIAGRAM OVERRIDES section in `lattice.css` both consume them via
+`var(--token)`. The diagram overrides reach inline Mermaid SVG through
+the host page cascade — the same mechanism the runtime preview uses —
+so palettes never write per-diagram CSS or get handed to Mermaid's
+`themeCSS` init parameter. (Earlier versions did; see
+`docs/notes/2026-05-12-diagram-tokens.md` for why we dropped it.)
 
 The engine reads the file once. Authors edit one file.
 
@@ -55,9 +52,10 @@ The engine reads the file once. Authors edit one file.
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │ /* @theme <name> */         ← Marp registration, must match file │
-│ @import 'lattice';          ← pulls in layouts + structural vars │
+│ @import 'lattice';          ← pulls in layouts + universal       │
+│                               semantic palette + structural vars │
 │                                                                  │
-│ :where(:root){ color-scheme:light; }   ← zero-spec default        │
+│ :where(:root){ color-scheme:light; }   ← zero-spec default       │
 │                                                                  │
 │ :root {                                                          │
 │   /* brand axis */          ─ 4-6 hex anchors, your single       │
@@ -69,30 +67,40 @@ The engine reads the file once. Authors edit one file.
 │     --accent, --accent-soft, --on-accent                         │
 │                                                                  │
 │   /* semantic signals */    ─ --pass / --fail / --warn (+ -bg)   │
-│   /* chart palette */       ─ --chart-1 … --chart-6 + --scale-500│
+│   /* scale */               ─ --scale-500 anchor; derives 9 stops│
 │   /* on-dark tints */       ─ derived from white via color-mix   │
 │   /* spectrum gradient */   ─ optional decorative ribbon         │
 │ }                                                                │
 │                                                                  │
 │ :root {                                                          │
-│   /* dark-variant tokens */ ─ --dark-bg, --dark-text-* …          │
+│   /* dark-variant tokens */ ─ --dark-bg, --dark-text-* …         │
 │ }                            consumed by light-dark() above      │
 │                                                                  │
 │ :root { /* hljs tokens */ } ─ code syntax colours                │
 │ section .hljs-keyword { … } ─ + the rules that apply them        │
 │                                                                  │
 │ :root {                                                          │
-│   /* mermaid extensions */  ─ --mermaid-*, --cat-* (8 mid-tone   │
-│ }                            hues), pie / quadrant / gantt slots │
+│   /* categorical palette */                                      │
+│     --c1-light..--c12-light ─ 12 pale fills, L≈87                │
+│     --c1-dark ..--c12-dark  ─ 12 deep strokes/inks, L≈32         │
+│     --c-ink-light           ─ dark text on cN-light, fixed hex   │
+│     --c-ink-dark            ─ light text on cN-dark, default #FFF│
 │                                                                  │
-│ /* ═══════════════════════════════════════ */                    │
-│ /* ===== MERMAID THEME CSS ===== */         ← sentinel, do not   │
-│                                                rename or move    │
-│ section .journey-section { … }    ┐                              │
-│ section .mindmap-node      { … }  │  per-diagram patches for     │
-│ section .venn-set-0        { … }  ├─ Mermaid renderers that      │
-│ section .architecture-…    { … }  │  ignore themeVariables       │
-│ …                                 ┘                              │
+│   /* structural */                                               │
+│     --c-stroke              ─ universal saturated stroke         │
+│     --c-line                ─ edges, arrows (light-dark)         │
+│     --c-accent-warm         ─ secondary warm accent (radar etc.) │
+│                                                                  │
+│   /* quadrant slot mapping */                                    │
+│     --c-quadrant-1..4-fill  ─ aliases onto --cN-light slots      │
+│     --c-quadrant-1..4-text  ─ paired text colour                 │
+│                                                                  │
+│   /* optional universal-semantic overrides */                    │
+│     --c-warm-{light,dark}   ─ inherit lattice.css defaults if    │
+│     --c-cool-{light,dark}     omitted (most themes do); override │
+│     --c-alarm, --c-alarm-dark only if you have curated values    │
+│     --c-mark, --c-note        (cuoio overrides for leather feel) │
+│ }                                                                │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -100,33 +108,57 @@ The engine reads the file once. Authors edit one file.
 follows this skeleton; the scaffolding command (below) stamps it for
 you with TODO markers.
 
+The DIAGRAM OVERRIDES section at the bottom of `lattice.css` consumes
+the `--c-*` tokens via selectors against rendered Mermaid SVG. It's
+palette-blind — declare the tokens and every diagram type picks them
+up.
+
 ---
 
-### Why two lightness bands?
+### The lightness contract
 
-Most colour decisions for diagrams collapse onto one rule:
+Categorical fills come in two lightness tiers. Status signals (warm /
+cool / alarm / mark / note) live in `lattice.css` as universal defaults
+that themes can override:
 
 ```
-   L ≈ 90  ┃ █ █ █ █ █ █ █ █ █ █  pale fills
-   pale    ┃                       flowchart, sequence, class, ER,
-   band    ┃                       quadrant, pie, gantt, venn, c4 …
-           ┃                       → dark text reads ≥ 13:1
+   L ≈ 87  ┃ █ █ █ █ █ █ █ █ █ █ █ █  pale fills (12 slots)
+   pale    ┃                          --c1-light..--c12-light — every
+   tier    ┃                          coloured fill Mermaid can paint
+           ┃                          (flowchart, sequence, pie, journey,
+           ┃                          mindmap, kanban, c4, treemap,
+           ┃                          gitgraph label pills, decision
+           ┃                          accents, roadmap horizons)
+           ┃                          → paired --c-ink-light is a fixed
+           ┃                            dark hex, ≥10:1 contrast
    ─────── ╋ ──────────────────────────────────────────────────────
-   L ≈ 60  ┃ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓        mid-tone categorical
-   mid     ┃                       --cat-blue … --cat-mauve,
-   band    ┃                       cScale0..11, git0..7
-           ┃                       → kanban renderer lightens these
-           ┃                         to ≈70 before emitting
+   L ≈ 32  ┃ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓ ▓  deep strokes/inks (12 slots)
+   deep    ┃                          --c1-dark..--c12-dark — saturated
+   tier    ┃                          marks: decision-list deep accents,
+           ┃                          piechart wedges, gitgraph branch
+           ┃                          dots, sankey nodes, kpi trajectory
+           ┃                          borders, xy-chart plot palette
+           ┃                          → paired --c-ink-dark is white
+           ┃                            (themes can override to a warm
+           ┃                            off-white)
    ─────── ╋ ──────────────────────────────────────────────────────
-   sat.    ┃ ▰ saturated red       alarm-only: gantt critical,
-   alarm   ┃                        errorBkgColor — nowhere else
+           ┃ universal semantic palette (lattice.css defaults)
+   status  ┃ --c-warm-light + --c-warm-dark   in-progress / warn pair
+   signals ┃ --c-cool-light + --c-cool-dark   done / muted / grid pair
+           ┃ --c-alarm + --c-alarm-dark       saturated red, alarm pair
+           ┃ --c-mark                         saturated yellow highlight
+           ┃ --c-note                         pale yellow aside surface
 ```
 
-The bands exist because Mermaid's kanban renderer applies an internal
-lighten step. Feed it L≈90 and it emits L≈100 — invisible on white.
-Feed it L≈60 and it lands on the pale band alongside everything else.
-This is the single non-obvious rule new authors trip on; the rest of
-the palette is "pick colours you like."
+Slot 1 of the categorical cycle doubles as the canonical primary fill
+for any single-band diagram (flowchart node, sequence actor). Brand
+hue anchors slot 1 by convention; subsequent slots follow whichever
+strategy the palette adopted (Brand triad is the default, generated
+from `examples/palette-audit.md`).
+
+`test/unit/contrast.test.js` asserts AA (4.5:1) on every
+`--cN-light` / `--c-ink-light` pair and every `--cN-dark` / `--c-ink-dark`
+pair, in both light and dark canvas modes.
 
 ---
 
@@ -147,6 +179,13 @@ The browser resolves the function at every use site against the active
 shims — the same mechanism works in marp-cli, the lattice emulator, and
 the VS Code Marp preview.
 
+The `--c-ink-light` and `--c-ink-dark` tokens are an exception: pinned
+to fixed hex (not `light-dark(…)`), because the categorical fills
+themselves stay in their lightness tier in both canvas modes — the text
+on top must too. Same for `--c-mark`, `--c-alarm`, `--c-alarm-dark`,
+`--c-note` (the universal semantic palette is canvas-mode-independent
+by design).
+
 ---
 
 ### The five-minute path
@@ -155,14 +194,14 @@ the VS Code Marp preview.
 # 1. stamp a starter palette from indaco
 npm run new:theme verdigris
 
-# 2. open the new file and edit the brand-axis hexes
+# 2. open the new file and edit the brand-axis hexes + cycle values
 $EDITOR themes/verdigris.css
 
-# 3. build a deck with it
-node lattice-emulator.js examples/gallery.md /tmp/verdigris.pdf verdigris
+# 3. build a deck with it (-p selects the palette override)
+node lattice-emulator.js examples/gallery.md /tmp/verdigris.pdf -p verdigris
 
 # 4. verify diagrams render correctly
-node lattice-emulator.js examples/mermaid-gallery.md /tmp/verdigris-mermaid.pdf verdigris
+node lattice-emulator.js examples/mermaid-gallery.md /tmp/verdigris-mermaid.pdf -p verdigris
 ```
 
 The scaffolder copies `themes/indaco.css`, rewrites the `@theme`
@@ -177,17 +216,32 @@ What to change, in order of impact:
    Pick four shades along a single hue; everything else hangs off them.
 2. **Accent** (`--accent`, `--on-accent`). The most-seen colour after
    ink. Must clear 4.5:1 against `--bg` and against `--accent-soft`.
-3. **`--cat-*`** (eight mid-tone hues at L≈60). Used by kanban, mindmap,
-   actor pills, corner tags. If you skip these, you inherit indaco's.
-4. **Mermaid pale slots** (`--mermaid-primary-color`,
-   `--mermaid-secondary-color`, `--mermaid-pie-*`). Pale tints used
-   by flowchart, sequence, journey, pie. Should sit at L≈90.
-5. **Dark variant tokens** (`--dark-*`). Used by `section.dark` and by
+3. **Categorical cycle** (`--c1-light` / `--c1-dark` through
+   `--c12-light` / `--c12-dark`, plus `--c-ink-light` and `--c-ink-dark`).
+   Sourced from `examples/palette-audit.md` — the rank-1 Brand-triad
+   proposal for your theme is a known-good starting point. Each pair
+   must clear AA against its paired ink — the contrast test will catch
+   slips.
+4. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`).
+   The saturated brand stroke (reads on every pale fill including
+   white), the edge/arrow line, and a secondary warm accent for
+   radar's second curve and similar.
+5. **Quadrant slot mapping** (`--c-quadrant-1..4-fill` / `-text`). Each
+   theme picks which `--cN-light` slot maps to each quadrant — indaco
+   uses Q1→c1, Q2→c2, Q3→c7 (yellow = "hold"), Q4→c3, but a theme can
+   re-map the semantics if its palette puts e.g. yellow in a different
+   slot.
+6. **Universal semantic palette** (`--c-warm-light` / `--c-warm-dark`
+   / `--c-cool-light` / `--c-cool-dark` / `--c-alarm` / `--c-alarm-dark`
+   / `--c-mark` / `--c-note`). The deck's status-signaling colours.
+   Inherit lattice.css defaults (cuoio is the one theme that overrides
+   for its leather aesthetic).
+7. **Dark variant tokens** (`--dark-*`). Used by `section.dark` and by
    the dark sides of every `light-dark(…)` pair.
 
-You can ignore everything else on a first pass. The Mermaid CSS
-overrides at the bottom of the file will work unchanged because they
-all reference tokens by `var(--token)` — your new values flow through.
+You can ignore everything else on a first pass. The DIAGRAM OVERRIDES
+section in `lattice.css` will work unchanged because every rule
+references the `--c-*` tokens by name — your new values flow through.
 
 ---
 
@@ -196,26 +250,28 @@ all reference tokens by `var(--token)` — your new values flow through.
 ```
    symptom                                    likely cause
    ────────────────────────────────────────   ───────────────────────────────
-   Mermaid diagram renders Mermaid defaults   /* */ or `>` inside themeCSS
-   (gray boxes, no brand colour)              section — both silently break
-                                              Mermaid's init parser
+   Mermaid diagram renders Mermaid defaults   --c-* token missing from
+   (gray boxes, no brand colour)              palette — DIAGRAM OVERRIDES
+                                              rule falls through. Run
+                                              test/unit/palette.test.js to
+                                              catch missing tokens.
 
-   Kanban cards render invisible / white      --cat-* fed at L≈90 instead
-                                              of L≈60 — kanban lightens to
-                                              ≈100 against white canvas
+   Build-time "Palette missing CSS variable"  parsePaletteVars in
+   warning + black gantt / sequence / error   lattice-emulator.js is reading
+   fills in the rendered PDF                  the wrong CSS slice; check that
+                                              it parses (layoutCSS + paletteCSS)
+                                              so lattice.css's universal
+                                              semantic palette is visible.
 
-   Mindmap text unreadable                    --cat-* fed too saturated —
-                                              mindmap consumes them at full
-                                              saturation, no lighten step
+   Flowchart / sequence boxes "float" with    --c-stroke too pale — must be
+   no visible border                          saturated to read on every pale
+                                              fill including white
 
-   Flowchart / sequence boxes "float" with    --mermaid-border too pale —
-   no visible border                          must be saturated to read on
-                                              every pale fill including white
-
-   Per-diagram override appears to do         override references a token
-   nothing                                    that doesn't exist in your
-                                              palette → silent fallback to
-                                              Mermaid default
+   Pale fill readable in light mode, white    --c-ink-light declared with
+   text on pale fill in dark mode             light-dark(--text-heading,…) —
+                                              the fill stays pale in dark
+                                              mode, so pin --c-ink-light
+                                              to a fixed dark hex
 
    One slide is dark but the title shows      section.title pulls --dark-*
    wrong colours                              tokens directly; your dark
@@ -231,7 +287,8 @@ For deeper triage see `docs/references/gotchas.md`.
 | You want to…                                   | Read                       |
 |------------------------------------------------|----------------------------|
 | Author a new palette, end to end               | `docs/theming.md`          |
-| Understand the Mermaid override surface        | `docs/references/mermaid.md` |
+| See the scored palette proposals per theme     | `examples/palette-audit.md` (build the PDF if not present) |
+| Understand why `themeCSS` was dropped          | `docs/notes/2026-05-12-diagram-tokens.md` |
 | See every layout the engine ships              | `docs/architecture.md`     |
-| Trace a colour from palette to rendered pixel  | `lattice.css` (search the token) |
+| Trace a colour from palette to rendered pixel  | `lattice.css` (search the token, then the DIAGRAM OVERRIDES section) |
 | Diagnose a render that "looks wrong"           | `docs/references/gotchas.md` |

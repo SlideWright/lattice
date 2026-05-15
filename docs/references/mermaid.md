@@ -49,11 +49,7 @@ Match the Mermaid theme variables to the slide CSS palette:
 
 **Convention.** The slide's `## heading` is the canonical title. Mermaid's own title (whether set via YAML frontmatter `title:` or in-body `title` directive) is suppressed by CSS so the audience sees one source of truth, not two. Authors keep the `title` directive in source for portability — the diagram still makes sense if extracted — but it does not render on the slide.
 
-**Where the suppression lives.** Three CSS injection points, all targeting the same class list:
-
-1. `lattice.css` — scoped to `section.diagram .mermaid svg` and `section.diagram .mermaid-svg svg`. Handles the runtime path (Marp VS Code preview, standalone HTML).
-2. `themes/indaco.css` — inside the Mermaid themeCSS block (after the sentinel comment). Handles the build path: the rule is injected into the SVG's own `<style>` tag via `%%{init: { themeCSS: ... } }%%`.
-3. `themes/cuoio.css` — same as indaco. Both palette files need the rule because either can be the active theme.
+**Where the suppression lives.** A single rule in `lattice.css`'s DIAGRAM OVERRIDES section (`section .titleText, section .pieTitleText, …, section [class$="TitleText"] { display: none; }`). Loaded by every render path; reaches the inline SVG via the host page cascade. No per-palette duplication.
 
 **Class list (verified from rendered output, Mermaid 11.14).**
 
@@ -87,16 +83,11 @@ Some types accept both. The rendered CSS class is determined by diagram type, no
 4. Save the post-render DOM (DevTools → Elements → copy outerHTML on the `<svg>`).
 5. Grep for the title text string. Inspect the surrounding `<text>` element's `class` attribute.
 6. If the class follows the `*TitleText` pattern, the existing safety net catches it automatically.
-7. If it uses a bespoke class (like `radarTitle` or `packetTitle`), add it explicitly to all three CSS locations.
+7. If it uses a bespoke class (like `radarTitle` or `packetTitle`), add it to the suppression rule in `lattice.css`'s DIAGRAM OVERRIDES section.
 8. If the title renders as a bare `<text>` with no class, document it under the known-gap list above; do not attempt a structural selector.
 
 **Never guess class names.** They are inconsistent across diagram types — some use camelCase suffix `TitleText`, some use bespoke names like `radarTitle`, some have no class at all. Always verify from rendered output.
 
-**Mermaid parser limits inside themeCSS.** Two structural restrictions on what `%%{init: { themeCSS: ... } }%%` accepts without silently dropping the entire field:
-
-1. **No CSS comments** (`/* ... */`) — `lattice-emulator.js` strips them from the themeCSS block before injection (see `resolveVarsInThemeCSS` and the comment-stripping pass on line ~491). Comments are fine in the source palette file; they are removed pre-injection.
-2. **No `>` child combinator** — breaks the parser the same way. The current title-suppression rule uses descendant combinators only.
-
-Attribute selectors with brackets (`[class$="TitleText"]`) are safe — they are already used by the mindmap section overrides (`[class*="section-0"]`) and parse without issue.
+**Marp-vscode preview parser quirk.** One CSS pattern is silently broken in the marp-vscode Chromium build (the preview applies via JS but the rule never matches): `:not(:has(...))` and `:is(:has(...), :has(...))`. Plain `:has()` is fine; nested inside `:not()` / `:is()` it isn't. Use descendant combinators or compound selectors instead. See `docs/references/gotchas.md`. (Historical note: when the build path injected CSS via Mermaid's `themeCSS` init parameter, two additional limits applied — no CSS comments, no `>` combinator. That path no longer exists; rules now live in `lattice.css` and reach the SVG via host-page cascade, so both restrictions are gone.)
 
 ---

@@ -1,0 +1,12 @@
+/* @theme crepuscolo-G-dark
+ * @size 16:9 1280px 720px
+ *
+ * Commit-G preview · dark-canvas variant. Three-line wrapper —
+ * imports crepuscolo-G and flips color-scheme to dark. Every --cN-light
+ * pair in crepuscolo-G resolves to its dark side via light-dark();
+ * --c-ink-light follows --text-heading which auto-flips to white-ish.
+ */
+
+@import 'crepuscolo-G';
+
+:root { color-scheme: dark; }

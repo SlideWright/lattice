@@ -81,18 +81,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Maximum-contrast achromatic with one saturated red. Onyx commits to
-   * pure B&W + red-pop as its identity; the three additional chromatic
-   * slots (chart-3 desat-blue, chart-4 desat-olive) are intentionally
-   * desaturated so the only "loud" voice in the deck is the red tag. */
-  --chart-1: light-dark(#000000, #FFFFFF);   /* JET / CHALK */
-  --chart-2: light-dark(var(--brand-red), var(--brand-red-bright)); /* SATURATED-RED */
-  --chart-3: light-dark(#4E5C8A, #87A0CC);   /* DESAT-BLUE */
-  --chart-4: light-dark(#6B7044, #A8B080);   /* DESAT-OLIVE */
-  --chart-5: light-dark(#8C8C8C, #B8B8B8);   /* NEUTRAL-MID */
-  --chart-6: light-dark(#404040, #D9D9D9);   /* NEUTRAL-DARK */
-
   --scale-500: light-dark(#666666, #B8B8B8);
 
   /* Tag uses --chart-2 (saturated red) — Onyx's signature pop. */
@@ -117,30 +105,57 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions — saturated red is the only chroma ───────── */
-  --mermaid-primary-color:   #F5F5F5;
-  --mermaid-secondary-color: #D9D9D9;
-  --mermaid-border:          #000000;
-  --mermaid-accent-warm:     var(--brand-red);
-  --mermaid-pie-purple:  #F5F5F5;  /* near-white */
-  --mermaid-pie-orange:  #FAEAE8;  /* pale red-tint */
-  --mermaid-pie-teal:    #EBEBEB;  /* light neutral */
-  --mermaid-pie-rose:    #F5EEEE;  /* pale rose-neutral */
-  --mermaid-pie-yellow:  #F5F5EE;  /* pale cream */
-  --mermaid-pie-red:     #F5E5E5;  /* pale rose */
-  --mermaid-pie-slate:   #E8E8E8;  /* medium neutral */
-  --mermaid-pie-sage:    #F0F0EB;  /* pale warm-neutral */
-  --mermaid-pie-violet:  #F0F0F5;  /* pale cool-neutral */
+  --c-stroke:          #000000;
+  --c-accent-warm:     var(--brand-red);
   /* cScale / gitgraph — achromatic with one saturated red pop */
-  --cat-blue:   #5A5A5A;
-  --cat-green:  #8A8A8A;
-  --cat-purple: #C71F2D;  /* brand red — the sole chroma */
-  --cat-orange: #424242;
-  --cat-teal:   #707070;
-  --cat-rose:   #A8A8A8;
-  --cat-slate:  #606060;
-  --cat-mauve:  #9A9A9A;
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Achromatic theme: brand hue chroma is 0°, so the Brand-triad strategy
+   * (used by every chromatic theme) collapses to 12 visually identical
+   * pale fills. Replaced here with a staggered tonal cycle — alternating
+   * "very pale" and "less pale" tiers, each monotonically descending,
+   * so adjacent slots differ by ≥10 L. Deep tier follows the same
+   * staggering with matched-extreme pairing (slot 1 = lightest pale +
+   * darkest deep). Categorical reading via lightness instead of hue. */
+  --c1-light:  #F2F2F2;  --c1-dark:  #333333;  /* L=95 pair L=20 */
+  --c2-light:  #D4D4D4;  --c2-dark:  #707070;  /* L=83 pair L=44 */
+  --c3-light:  #EDEDED;  --c3-dark:  #383838;  /* L=93 pair L=22 */
+  --c4-light:  #CFCFCF;  --c4-dark:  #6B6B6B;  /* L=81 pair L=42 */
+  --c5-light:  #E8E8E8;  --c5-dark:  #3D3D3D;  /* L=91 pair L=24 */
+  --c6-light:  #C9C9C9;  --c6-dark:  #666666;  /* L=79 pair L=40 */
+  --c7-light:  #E3E3E3;  --c7-dark:  #424242;  /* L=89 pair L=26 */
+  --c8-light:  #C4C4C4;  --c8-dark:  #616161;  /* L=77 pair L=38 */
+  --c9-light:  #DEDEDE;  --c9-dark:  #474747;  /* L=87 pair L=28 */
+  --c10-light: #BFBFBF;  --c10-dark: #5C5C5C;  /* L=75 pair L=36 */
+  --c11-light: #D9D9D9;  --c11-dark: #4D4D4D;  /* L=85 pair L=30 */
+  --c12-light: #BABABA;  --c12-dark: #575757;  /* L=73 pair L=34 */
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #000000;
+
+  --c-ink-dark:  #FFFFFF;
 }

@@ -92,18 +92,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Pinned-dark theme. All chart colors are foreground-bright on the
-   * #1A1A1C graphite canvas. Lime + amber is the duotone (the cyber
-   * editorial pop); cyan and magenta complete a CMYK-style 4-hue spread;
-   * bone neutral and graphite-mid ground. */
-  --chart-1: var(--brand-lime);   /* LIME — brand */
-  --chart-2: #FFD166;             /* AMBER */
-  --chart-3: #5BCBDD;             /* CYAN */
-  --chart-4: #F277B8;             /* MAGENTA */
-  --chart-5: #DCDCD7;             /* BONE */
-  --chart-6: #757A82;             /* GRAPHITE-MID */
-
   --scale-500: var(--brand-lime);
 
   /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
@@ -131,31 +119,61 @@
   --dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --mermaid-primary-color:   #2A2A2E;
-  --mermaid-secondary-color: #2C3D2F;
-  --mermaid-border:          var(--brand-lime);
-  --mermaid-accent-warm:     #FFD166;
+  --c-stroke:          var(--brand-lime);
+  --c-accent-warm:     #FFD166;
   /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
-  --mermaid-pie-purple:  #2E2A38;
-  --mermaid-pie-orange:  #382E22;
-  --mermaid-pie-teal:    #223328;
-  --mermaid-pie-rose:    #342830;
-  --mermaid-pie-yellow:  #35332A;
-  --mermaid-pie-red:     #38282A;
-  --mermaid-pie-slate:   #2A2E38;
-  --mermaid-pie-sage:    #253328;
-  --mermaid-pie-violet:  #2C2838;
   /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
-  --cat-blue:   #4A9C56;  /* darker lime */
-  --cat-green:  #9A7820;  /* darker amber */
-  --cat-purple: #3E8898;  /* darker cyan */
-  --cat-orange: #8E4870;  /* darker magenta */
-  --cat-teal:   #5DAF68;  /* lime */
-  --cat-rose:   #707878;
-  --cat-slate:  #585E6A;
-  --cat-mauve:  #808080;
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c7-light);
+  --c-quadrant-4-fill: var(--c3-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js. */
+  --c1-light:  #958383;  --c1-dark:  #6E4949;
+  --c2-light:  #84958C;  --c2-dark:  #4B6D5C;
+  --c3-light:  #848C95;  --c3-dark:  #4B5C6D;
+  --c4-light:  #958C84;  --c4-dark:  #6D5C4B;
+  --c5-light:  #95848C;  --c5-dark:  #6D4B5C;
+  --c6-light:  #849595;  --c6-dark:  #4B6D6D;
+  --c7-light:  #939385;  --c7-dark:  #6A6A4D;
+  --c8-light:  #859385;  --c8-dark:  #4D6A4D;
+  --c9-light:  #858593;  --c9-dark:  #4D4D6A;
+  --c10-light: #938593;  --c10-dark: #6A4D6A;
+  --c11-light: #8C9385;  --c11-dark: #5C6A4D;
+  --c12-light: #8C8593;  --c12-dark: #5C4D6A;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #1A1A1A;
+
+  --c-ink-dark:  #FFFFFF;
 }

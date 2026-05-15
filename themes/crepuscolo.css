@@ -82,17 +82,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Twilight + dusk-warm pop. Brand violet anchors; warm amber is the
-   * CB-safe complement. Deep cyan and coral are analogous siblings;
-   * desaturated mauve is the muted bridge; indigo-black grounds. */
-  --chart-1: light-dark(var(--brand-violet-mid), var(--brand-violet-bright)); /* VIOLET */
-  --chart-2: light-dark(#C49526, #E0B855);   /* AMBER */
-  --chart-3: light-dark(#1B7B92, #5BB5CC);   /* DEEP-CYAN */
-  --chart-4: light-dark(#C66045, #E89070);   /* CORAL */
-  --chart-5: light-dark(#8E7A93, #B5A2BB);   /* MUTED-MAUVE */
-  --chart-6: light-dark(#150F22, #6E5E7E);   /* INDIGO-BLACK */
-
   --scale-500: var(--brand-violet-mid);
 
   /* ── Dark-panel ramp ───────────────────────────────────────────────── */
@@ -115,32 +104,67 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #E5DEEB;
-  --mermaid-secondary-color: #DDEAE5;
-  --mermaid-border:          #3F2A5C;
-  --mermaid-accent-warm:     #BD5000;
-  --mermaid-pie-purple:  #E5DEEB;  /* pale lavender */
-  --mermaid-pie-orange:  #F5E8C8;  /* pale amber */
-  --mermaid-pie-teal:    #D8EEF3;  /* pale cyan */
-  --mermaid-pie-rose:    #EDE3E8;  /* pale mauve */
-  --mermaid-pie-yellow:  #F3EDD0;  /* pale gold */
-  --mermaid-pie-red:     #F3DDE0;  /* pale coral-rose */
-  --mermaid-pie-slate:   #D8D5E5;  /* pale violet-slate */
-  --mermaid-pie-sage:    #DDE9E6;  /* pale sage-mint */
-  --mermaid-pie-violet:  #E0D8EC;  /* pale deep-violet */
-  /* cScale / gitgraph — twilight violet + amber family */
-  --cat-blue:   #7B5B9E;  /* mid-violet */
-  --cat-green:  #A8841E;  /* mid-amber */
-  --cat-purple: #3E7A8A;  /* mid-cyan */
-  --cat-orange: #A45840;  /* mid-coral */
-  --cat-teal:   #6A5880;  /* muted violet */
-  --cat-rose:   #8E6070;  /* mauve */
-  --cat-slate:  #5A5070;  /* deep violet-slate */
-  --cat-mauve:  #8B7298;  /* light violet */
+  --c-stroke:          #3F2A5C;
+  --c-accent-warm:     #BD5000;
+  /* cScale / gitgraph — slot 0 anchors band-1 lavender (BRAND violet).
+   * Slot 1 reframed from amber to sage so the cycle echoes band-2's
+   * sage-mint hue. Slot 7 swapped from light-violet (collided with
+   * slot 0) to warm-taupe for an achromatic break. All values ≥3:1
+   * graphical on --bg #FAF8FC. */
 }
 
 /* Code panel — uses the tokenised --code-bg (defaults to var(--bg-dark)
  * in lattice.css). Spectrum hairline anchors the bottom edge. */
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c7-light);
+  --c-quadrant-4-fill: var(--c3-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js. */
+  --c1-light:  #DED5E7;  --c1-dark:  #5C3285;
+  --c2-light:  #E6E6D5;  --c2-dark:  #777731;
+  --c3-light:  #D5E6D5;  --c3-dark:  #368236;
+  --c4-light:  #E6D5E6;  --c4-dark:  #823682;
+  --c5-light:  #D5D5E6;  --c5-dark:  #363682;
+  --c6-light:  #DEE6D5;  --c6-dark:  #597E34;
+  --c7-light:  #E5D7DE;  --c7-dark:  #7C3C5C;
+  --c8-light:  #E5DED7;  --c8-dark:  #7C5C3C;
+  --c9-light:  #D7E5DE;  --c9-dark:  #3C7C5C;
+  --c10-light: #D7DEE5;  --c10-dark: #3C5C7C;
+  --c11-light: #E5D7D7;  --c11-dark: #7C3C3C;
+  --c12-light: #D7E5E5;  --c12-dark: #3C7C7C;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #150F22;
+
+  --c-ink-dark:  #FFFFFF;
 }

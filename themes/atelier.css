@@ -22,7 +22,7 @@
  *                           dark). High-contrast monochrome, warm-tinted.
  *
  *   3. Saturation reserved for one purpose: the deep-amber tag accent
- *      (#6B4F28 light → #C8A878 dark) used via --mermaid-accent-warm.
+ *      (#6B4F28 light → #C8A878 dark) used via --c-accent-warm.
  *      The deck has no chromatic brand; amber is the deliberate pop.
  *
  *   4. Every text-bearing token clears WCAG AAA (7:1) against the surface
@@ -78,18 +78,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Warm-achromatic theme. Soft-black anchors; deep amber is the
-   * chrome-break (= --tag-bg). Three desaturated chromatic voices keep
-   * charts readable as categorical without rupturing the artisan-quiet
-   * identity. Dark-oat grounds. */
-  --chart-1: light-dark(var(--brand-soft-black), var(--brand-oat)); /* SOFT-BLACK */
-  --chart-2: light-dark(var(--brand-amber), var(--brand-amber-soft)); /* DEEP-AMBER */
-  --chart-3: light-dark(#4D6B7C, #87A5B5);   /* DESAT-BLUE */
-  --chart-4: light-dark(#8B5A6B, #C295A5);   /* DESAT-WINE */
-  --chart-5: light-dark(#6E7B5C, #A8B58F);   /* DESAT-OLIVE */
-  --chart-6: light-dark(#4F4838, #B5AB95);   /* DARK-OAT */
-
   --scale-500: var(--brand-soft-black);
 
   /* Tag uses --chart-2 (deep amber) — atelier's hand-finished gold pop. */
@@ -114,30 +102,60 @@
   --dark-text-display: #F0EDE6;
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
-  --mermaid-primary-color:   #E5E0D2;
-  --mermaid-secondary-color: #DBD5C0;
-  --mermaid-border:          #38332A;
-  --mermaid-accent-warm:     var(--brand-amber); /* the amber pop */
-  --mermaid-pie-purple:  #E5E0D2;  /* pale warm-oat */
-  --mermaid-pie-orange:  #E8D8B0;  /* pale amber-oat */
-  --mermaid-pie-teal:    #D5DDD5;  /* pale warm-neutral-sage */
-  --mermaid-pie-rose:    #EDE0D8;  /* pale warm-blush */
-  --mermaid-pie-yellow:  #E8E0B8;  /* pale warm-cream */
-  --mermaid-pie-red:     #EDD8CC;  /* pale warm-terracotta */
-  --mermaid-pie-slate:   #D5D5CC;  /* pale warm-gray */
-  --mermaid-pie-sage:    #D8DDD0;  /* pale warm-sage */
-  --mermaid-pie-violet:  #E0D8E5;  /* pale warm-lavender */
+  --c-stroke:          #38332A;
+  --c-accent-warm:     var(--brand-amber); /* the amber pop */
   /* cScale / gitgraph — warm achromatic with amber pop */
-  --cat-blue:   #5A5048;
-  --cat-green:  #906838;  /* amber mid-tone */
-  --cat-purple: #706860;
-  --cat-orange: #A08860;  /* pale amber */
-  --cat-teal:   #807870;
-  --cat-rose:   #908078;
-  --cat-slate:  #585048;
-  --cat-mauve:  #908878;
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Universal categorical-color contract. Each slot pairs a pale L≈87
+   * fill (--cN-light, dark text on top) with a deep L≈32 ink (--cN-dark,
+   * white text on top). Consumed by every layout that needs a categorical
+   * cycle: timeline, kanban, mindmap, journey, c4, pie, treemap, gitgraph,
+   * decision list, roadmap horizons, actor pills, kpi trajectory, mermaid
+   * cat/chart cycle, sankey nodes, quadrant fills.
+   *
+   * Generated via the Brand-triad strategy in examples/palette-audit.md
+   * (rank-1 for this theme). AA-text against the matching tier is
+   * asserted by test/unit/contrast.test.js. */
+  --c1-light:  #E2DEDA;  --c1-dark:  #775E40;
+  --c2-light:  #DAE1E2;  --c2-dark:  #427375;
+  --c3-light:  #DADAE2;  --c3-dark:  #444275;
+  --c4-light:  #E1E2DA;  --c4-dark:  #737542;
+  --c5-light:  #E2DADA;  --c5-dark:  #754442;
+  --c6-light:  #DADEE2;  --c6-dark:  #425A75;
+  --c7-light:  #DEE1DB;  --c7-dark:  #5A7146;
+  --c8-light:  #DBE1DE;  --c8-dark:  #46715D;
+  --c9-light:  #DEDBE1;  --c9-dark:  #5D4671;
+  --c10-light: #E1DBDE;  --c10-dark: #71465A;
+  --c11-light: #DBE1DB;  --c11-dark: #467148;
+  --c12-light: #E1DBE1;  --c12-dark: #714670;
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #1A1A18;
+
+  --c-ink-dark:  #FFFFFF;
 }

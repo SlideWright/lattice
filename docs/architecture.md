@@ -45,17 +45,18 @@ themes/   │
           │              │                       │
 lattice.  │              │                       └─→  themeVariables
   css     │              └─→  paletteCSS              ─┐
-          │                          │                 │
-          │                          │                 │
-          │  splitOnSentinel() ──→ themeCSS ─────────┐ │
-          │              │                            │ │
-          ▼              │                            │ │
-Mermaid blocks ──────────┴─→ %%{init}%% injection ──→ │ │
-  in deck                                              │ │
-       │                                               │ │
-       └─→ mmdc ──→ inline SVGs ──→ markdown with SVGs┐│ │
-                                                       ││ │
-       lattice.css + paletteCSS ──→ <style> ────────│┴─┘
+  (incl.  │                          │                 │
+  DIAGRAM │                          │                 │
+  OVER-   │                          ▼                 │
+  RIDES   │                                            │
+  section)│                                            │
+          ▼                                            │
+Mermaid blocks ──→ %%{init: { themeVariables } }%% ──→ │
+  in deck                                              │
+       │                                               │
+       └─→ mmdc ──→ inline SVGs ──→ markdown with SVGs─┤
+                                                       │
+       lattice.css + paletteCSS ──→ <style> ──────────┘
                                                        │
                                                        ▼
                                               HTML emulating Marp
@@ -69,10 +70,10 @@ lines. Its job is:
 
 1. Parse argv: `lattice-emulator.js source.md theme.css output.pdf [palette]`.
 2. Read the palette file. Parse `:root { ... }` blocks into a flat
-   variable map. Split the file on the Mermaid sentinel comment;
-   everything after is the per-diagram Mermaid CSS.
+   variable map.
 3. For each ` ```mermaid ` block in the source: prepend a `%%{init}%%`
-   directive containing the resolved theme variables and Mermaid CSS.
+   directive containing the resolved theme variables (no `themeCSS` —
+   per-diagram CSS reaches the inline SVG via the host page cascade).
    Run `mmdc` on the block. Replace the fence with a `<div>` wrapping
    the rendered SVG.
 4. Parse the slides from the markdown (split on `---`). For each
@@ -96,17 +97,17 @@ resolution logic, but operates against the live DOM:
 
 1. On load, read CSS custom properties from `document.documentElement`
    (which has the palette's `:root` block applied via the loaded
-   `<link rel=stylesheet>`). The same `MERMAID_VAR_MAP` from `lattice-emulator.js`
-   resolves against these.
-2. Find the Mermaid CSS section by walking `document.styleSheets` for a
-   stylesheet whose source contains the sentinel comment. If the palette
-   is a `<link>` (external CSS), fall back to fetching the file.
-3. Watch the DOM for `<pre><code class="language-mermaid">` and
+   `<link rel=stylesheet>`). The same `MERMAID_VAR_MAP` shape from
+   `lattice-emulator.js` resolves against these — feeding only
+   themeVariables, not themeCSS.
+2. Watch the DOM for `<pre><code class="language-mermaid">` and
    `<marp-pre><code>` blocks (Marp preview emits the latter). Upgrade
    them to `<div class="mermaid">` so Mermaid's own renderer picks them
    up. Call `mermaid.run()`.
-4. A MutationObserver re-runs steps 2-3 when the live preview re-renders
-   the slide DOM after a markdown edit.
+3. A MutationObserver re-runs step 2 when the live preview re-renders
+   the slide DOM after a markdown edit. The DIAGRAM OVERRIDES section
+   of `lattice.css` is already loaded as a page stylesheet, so the
+   rules cascade onto the in-DOM SVG without any per-diagram injection.
 
 ## Why two paths
 
@@ -122,22 +123,25 @@ verified byte-equivalent in the smoke test.
 
 ## The Mermaid theming wall
 
-Mermaid's theming API has known limits we worked around:
-
-**The `%%{init}%%` parser silently drops `themeCSS` containing CSS
-comments.** Discovered during development: a `/* ... */` block anywhere
-in `themeCSS` causes the parser to silently discard the entire field.
-The renderer strips comments before injection. The palette source can
-have comments (and does); they just don't reach the rendered SVG.
-
-**The `>` child combinator breaks the parser the same way.** Use
-descendant selectors only in the Mermaid CSS section.
+Mermaid's theming API has known limits we work around:
 
 **Some diagrams ignore `themeVariables` entirely.** Journey hardcodes
 X11 named colors. C4 hardcodes a Plant-spec palette. Mindmap reads
 cScale verbatim. ZenUML doesn't render at all under `mmdc` (it emits
-HTML/Tailwind classes that need an external stylesheet). The per-diagram
-Mermaid CSS section in `themes/indaco.css` patches the gaps.
+HTML/Tailwind classes that need an external stylesheet). The DIAGRAM
+OVERRIDES section at the bottom of `lattice.css` patches the gaps with
+palette-blind CSS rules that consume `var(--diagram-*)`. The rules
+reach the inline SVG via the host page cascade — no Mermaid `themeCSS`
+init parameter is used (which historically had its own parser quirks
+around CSS comments and the `>` combinator; both now moot).
+
+**Mermaid timeline's `section--1` offset.** The timeline renderer uses
+`f = r % h - 1` for its section class index, so the first period gets
+literal class `section--1` (double-dash, minus-one). Mermaid's
+auto-generated CSS doesn't cover that selector; we cover it explicitly
+in the DIAGRAM OVERRIDES section, and we also set `cScaleLabel0..11` so
+even uncovered text elements fall back to a tested-contrast dark ink
+rather than Mermaid's auto-derived white-on-pale.
 
 ## File layout, from the renderer's point of view
 

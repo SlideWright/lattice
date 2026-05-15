@@ -1,55 +1,76 @@
 /**
  * Unit: palette resolution.
  *
- * Both palettes (indaco, cuoio) must:
- *   - Carry the Mermaid CSS sentinel.
- *   - Define every CSS custom property the emulator's Mermaid
- *     theme-variable map references.
+ * Every palette must define the categorical cycle (--cN-light/--cN-dark
+ * for N=1..12) and the structural diagram tokens (stroke, line, state,
+ * note, error, quadrant) consumed by the renderer bridges and the
+ * palette-blind overrides in lattice-diagram.css.
  *
- * The required-vars list mirrors what `lattice-emulator.js` consumes via its
- * MERMAID_VAR_MAP. Phase 6 will derive this list from the source
- * directly to remove the manual sync.
+ * test/unit/mermaid-var-map.test.js cross-checks the emulator's
+ * MERMAID_VAR_MAP against the palette tokens automatically; this file
+ * is the source-of-truth required list.
  */
 
 const test   = require('node:test');
 const assert = require('node:assert/strict');
 const { loadPalette } = require('../helpers/palette');
 
-const REQUIRED_MERMAID_VARS = [
+const REQUIRED_DIAGRAM_VARS = [
+  // Brand primitives consumed by the renderer
   'bg', 'bg-alt', 'text-heading',
-  'mermaid-primary-color', 'mermaid-secondary-color',
-  'mermaid-pie-purple', 'mermaid-pie-orange', 'mermaid-pie-teal', 'mermaid-pie-rose',
-  'mermaid-pie-yellow', 'mermaid-pie-red', 'mermaid-pie-slate', 'mermaid-pie-sage',
-  'mermaid-pie-violet',
-  'mermaid-line', 'mermaid-border',
-  'cat-blue', 'cat-green', 'cat-purple',
-  'cat-orange', 'cat-teal', 'cat-rose',
-  'cat-slate', 'cat-mauve',
-  'mermaid-quadrant-1-fill', 'mermaid-quadrant-2-fill',
-  'mermaid-quadrant-3-fill', 'mermaid-quadrant-4-fill',
-  'mermaid-quadrant-1-text', 'mermaid-quadrant-2-text',
-  'mermaid-quadrant-3-text', 'mermaid-quadrant-4-text',
-  'mermaid-gantt-active', 'mermaid-gantt-active-border',
-  'mermaid-gantt-done',   'mermaid-gantt-done-border',
-  'mermaid-gantt-critical', 'mermaid-gantt-critical-border',
-  'mermaid-gantt-today', 'mermaid-gantt-grid',
-  'mermaid-note-bg', 'mermaid-note-border',
-  'mermaid-error-bg', 'mermaid-error-text',
+
+  // Non-flipping ink: paired with --cN-light fills (dark) and --cN-dark
+  // fills (white-ish). Themes can override --c-ink-dark to a cream
+  // off-white if pure #FFFFFF feels icy on warm-deep slots.
+  'c-ink-light', 'c-ink-dark',
+
+  // Categorical cycle (12 paired slots)
+  'c1-light',  'c2-light',  'c3-light',  'c4-light',
+  'c5-light',  'c6-light',  'c7-light',  'c8-light',
+  'c9-light',  'c10-light', 'c11-light', 'c12-light',
+  'c1-dark',   'c2-dark',   'c3-dark',   'c4-dark',
+  'c5-dark',   'c6-dark',   'c7-dark',   'c8-dark',
+  'c9-dark',   'c10-dark',  'c11-dark',  'c12-dark',
+
+  // Structural (per-theme: saturated brand stroke, edge line, secondary
+  // warm accent)
+  'c-stroke', 'c-line', 'c-accent-warm',
+
+  // Quadrant (4-slot, fill + text paired — theme-defined slot mapping
+  // onto --cN-light)
+  'c-quadrant-1-fill', 'c-quadrant-2-fill',
+  'c-quadrant-3-fill', 'c-quadrant-4-fill',
+  'c-quadrant-1-text', 'c-quadrant-2-text',
+  'c-quadrant-3-text', 'c-quadrant-4-text',
+
+  // Universal semantic palette (status-signaling — defaults in lattice.css,
+  // themes override as needed)
+  'c-warm-light',  'c-warm-dark',
+  'c-cool-light',  'c-cool-dark',
+  'c-alarm',       'c-alarm-dark',
+  'c-mark',
+  'c-note',
 ];
 
 for (const name of ['indaco', 'cuoio']) {
-  test(`palette: ${name} carries Mermaid CSS sentinel`, () => {
+  test(`palette: ${name} defines all ${REQUIRED_DIAGRAM_VARS.length} required palette tokens`, () => {
     const p = loadPalette(name);
-    assert.ok(p.mermaidSentinelIndex > 0, `sentinel missing in themes/${name}.css`);
-    assert.ok(
-      p.raw.length > p.mermaidSentinelIndex + 100,
-      `Mermaid CSS section is empty in themes/${name}.css`,
+    const missing = REQUIRED_DIAGRAM_VARS.filter(v => !p.vars[v]);
+    assert.deepEqual(missing, [], `missing vars in themes/${name}.css: ${missing.join(', ')}`);
+  });
+
+  test(`palette: ${name} no longer carries the legacy MERMAID THEME CSS sentinel`, () => {
+    const p = loadPalette(name);
+    assert.equal(
+      p.raw.indexOf('===== MERMAID THEME CSS ====='),
+      -1,
+      `themes/${name}.css still contains the legacy sentinel comment; the post-sentinel CSS now lives in lattice-diagram.css`,
     );
   });
 
-  test(`palette: ${name} defines all ${REQUIRED_MERMAID_VARS.length} required Mermaid vars`, () => {
+  test(`palette: ${name} no longer declares legacy --mermaid-* tokens`, () => {
     const p = loadPalette(name);
-    const missing = REQUIRED_MERMAID_VARS.filter(v => !p.vars[v]);
-    assert.deepEqual(missing, [], `missing vars in themes/${name}.css: ${missing.join(', ')}`);
+    const legacy = Object.keys(p.vars).filter(v => v.startsWith('mermaid-'));
+    assert.deepEqual(legacy, [], `themes/${name}.css still declares legacy tokens: ${legacy.join(', ')}`);
   });
 }

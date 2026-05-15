@@ -75,18 +75,6 @@
   --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
 
-  /* ── Chart palette — curated 6 ─────────────────────────────────────────
-   * Achromatic theme with deliberate chroma admitted only for chart use.
-   * Jet anchors; warm gold is the chrome-break (= --tag-bg). The remaining
-   * three chromatic slots are intentionally desaturated so the deck stays
-   * "quiet" while charts remain readable as categorical encoding. */
-  --chart-1: light-dark(var(--brand-slate-mid), var(--brand-slate-bright)); /* JET */
-  --chart-2: light-dark(#C8B89A, #D4C5A0);   /* WARM-GOLD (chrome break) */
-  --chart-3: light-dark(#4A6B82, #82A0BC);   /* DESAT-BLUE */
-  --chart-4: light-dark(#8A5560, #C28590);   /* DESAT-WINE */
-  --chart-5: light-dark(#6B7E5E, #A8BB9A);   /* DESAT-OLIVE */
-  --chart-6: light-dark(#525250, #B5B5B3);   /* NEUTRAL-DARK */
-
   --scale-500: var(--brand-slate-mid);
 
   /* Tag uses --chart-2 (warm gold) — the only chromatic break ardesia
@@ -112,33 +100,60 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --mermaid-primary-color:   #E8E8E7;
-  --mermaid-secondary-color: #DCDCDB;
-  --mermaid-border:          #2A2A2A;
+  --c-stroke:          #2A2A2A;
   /* Warm-gold pop — the deliberate "coolness break" on second curve.
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */
-  --mermaid-accent-warm:     #C8B89A;
-  --mermaid-pie-purple:  #E8E8E7;  /* pale neutral */
-  --mermaid-pie-orange:  #F0E8D0;  /* pale warm-gold */
-  --mermaid-pie-teal:    #D8E0E0;  /* pale cool neutral */
-  --mermaid-pie-rose:    #EDE5E2;  /* pale warm-neutral */
-  --mermaid-pie-yellow:  #F0EDD5;  /* very pale gold */
-  --mermaid-pie-red:     #EEE0DC;  /* pale warm-taupe */
-  --mermaid-pie-slate:   #DCDCDB;  /* pale neutral */
-  --mermaid-pie-sage:    #D8E0D8;  /* pale warm-sage */
-  --mermaid-pie-violet:  #E5E0EC;  /* pale gray-violet */
+  --c-accent-warm:     #C8B89A;
   /* cScale / gitgraph — warm achromatic with one warm-gold pop */
-  --cat-blue:   #4E4E48;
-  --cat-green:  #A8946A;  /* warm gold */
-  --cat-purple: #787870;
-  --cat-orange: #343430;
-  --cat-teal:   #626260;
-  --cat-rose:   #9A9A92;
-  --cat-slate:  #525250;
-  --cat-mauve:  #8A8A80;
+}
+/* Completion tokens — band-text pairs, line, gantt state, note, error,
+ * quadrant. References earlier palette tokens so this block stays a single
+ * source of truth per palette. */
+:root {
+
+  --c-line:                  var(--text-heading);
+
+  --c-quadrant-1-fill: var(--c1-light);
+  --c-quadrant-2-fill: var(--c2-light);
+  --c-quadrant-3-fill: var(--c3-light);
+  --c-quadrant-4-fill: var(--c4-light);
+  --c-quadrant-1-text: var(--text-heading);
+  --c-quadrant-2-text: var(--text-heading);
+  --c-quadrant-3-text: var(--text-heading);
+  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
   background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
+}
+
+:root {
+  /* ── Categorical palette (12 paired slots) ────────────────────────────
+   * Achromatic theme: brand hue chroma is 0°, so the Brand-triad strategy
+   * (used by every chromatic theme) collapses to 12 visually identical
+   * pale fills. Replaced here with a staggered tonal cycle — alternating
+   * "very pale" and "less pale" tiers, each monotonically descending,
+   * so adjacent slots differ by ≥10 L. Deep tier follows the same
+   * staggering with matched-extreme pairing (slot 1 = lightest pale +
+   * darkest deep). Categorical reading via lightness instead of hue. */
+  --c1-light:  #F2F2F2;  --c1-dark:  #333333;  /* L=95 pair L=20 */
+  --c2-light:  #D4D4D4;  --c2-dark:  #707070;  /* L=83 pair L=44 */
+  --c3-light:  #EDEDED;  --c3-dark:  #383838;  /* L=93 pair L=22 */
+  --c4-light:  #CFCFCF;  --c4-dark:  #6B6B6B;  /* L=81 pair L=42 */
+  --c5-light:  #E8E8E8;  --c5-dark:  #3D3D3D;  /* L=91 pair L=24 */
+  --c6-light:  #C9C9C9;  --c6-dark:  #666666;  /* L=79 pair L=40 */
+  --c7-light:  #E3E3E3;  --c7-dark:  #424242;  /* L=89 pair L=26 */
+  --c8-light:  #C4C4C4;  --c8-dark:  #616161;  /* L=77 pair L=38 */
+  --c9-light:  #DEDEDE;  --c9-dark:  #474747;  /* L=87 pair L=28 */
+  --c10-light: #BFBFBF;  --c10-dark: #5C5C5C;  /* L=75 pair L=36 */
+  --c11-light: #D9D9D9;  --c11-dark: #4D4D4D;  /* L=85 pair L=30 */
+  --c12-light: #BABABA;  --c12-dark: #575757;  /* L=73 pair L=34 */
+
+  /* Non-flipping ink for text on --cN-light fills (bands stay pale
+   * in both light and dark canvas modes, so the text on them must
+   * not flip via light-dark()). AA against every --cN-light slot. */
+  --c-ink-light: #0A0A0A;
+
+  --c-ink-dark:  #FFFFFF;
 }

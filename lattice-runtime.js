@@ -17,11 +17,14 @@
   // schedules Mermaid runs when Mermaid fences/containers are added/changed.
 
   // ── Build Mermaid themeVariables from the active theme's CSS custom properties ──
-  // Reads computed values from the loaded theme CSS file (indaco.css, cuoio.css, …)
-  // so that themeVariables always match whatever theme is active in the Marp preview.
-  // The CSS variables referenced here are the same --mermaid-* tokens defined in
-  // each theme file's :root block. This replaces the old hardcoded cuoio block that
-  // caused every preview to show cuoio colors regardless of the active theme.
+  // Reads computed values from the loaded palette file (themes/indaco.css,
+  // themes/cuoio.css, …) so that themeVariables always match whatever palette
+  // is active in the Marp preview. The CSS variables referenced here are the
+  // --diagram-* tokens each palette declares; the renderer is otherwise
+  // palette-blind. Per-diagram CSS overrides live in lattice.css's DIAGRAM
+  // OVERRIDES section (loaded via the page stylesheet), not in this runtime —
+  // only Mermaid's own themeVariables API surfaces are wired up here.
+  // See docs/notes/2026-05-12-diagram-tokens.md for the architecture.
   function buildMermaidThemeVars() {
     if (typeof document === 'undefined') return {};
     // Marp scopes CSS custom properties to <section> elements, not :root.
@@ -58,11 +61,12 @@
     const bg      = vc('bg');
     const bgAlt   = vc('bg-alt');
     const text    = vc('text-heading');
-    const border  = vc('mermaid-border');
-    const line    = vc('mermaid-line');
-    const primary = vc('mermaid-primary-color');
-    const second  = vc('mermaid-secondary-color');
-    const slate   = vc('cat-slate');
+    const ink     = vc('c-ink-light');
+    const border  = vc('c-stroke');
+    const line    = vc('c-line');
+    const primary = vc('c1-light');
+    const second  = vc('c2-light');
+    const slate   = vc('c8-dark');
 
     const result = {
       fontFamily: v('font-body') || "'Outfit', system-ui, sans-serif",
@@ -99,21 +103,39 @@
       clusterBkg:               bgAlt,
       clusterBorder:            border,
 
-      // Categorical scale — cScale feeds kanban columns, mindmap levels, etc.
-      // CSS themeCSS overrides already target kanban and mindmap explicitly;
-      // cScale is the fallback for other diagrams that read it directly.
-      cScale0:  vc('cat-blue'),   cScale1:  vc('cat-green'),
-      cScale2:  vc('cat-purple'), cScale3:  vc('cat-orange'),
-      cScale4:  vc('cat-teal'),   cScale5:  vc('cat-rose'),
-      cScale6:  vc('cat-blue'),   cScale7:  vc('cat-green'),
-      cScale8:  vc('cat-purple'), cScale9:  vc('cat-orange'),
-      cScale10: vc('cat-teal'),   cScale11: vc('cat-rose'),
+      // Categorical scale — cScale feeds kanban columns, mindmap levels,
+      // gitgraph branches, etc. lattice-diagram.css already routes pale
+      // section fills through --cN-light for the diagrams we override
+      // explicitly; cScale is the fallback for diagrams that read it
+      // directly (or for the saturated-mark mode kanban applies before
+      // the lighten step). Fed from --cat-* (mid-tone L≈60).
+      cScale0:  vc('c1-dark'),   cScale1:  vc('c2-dark'),
+      cScale2:  vc('c3-dark'), cScale3:  vc('c4-dark'),
+      cScale4:  vc('c5-dark'),   cScale5:  vc('c6-dark'),
+      cScale6:  vc('c1-dark'),   cScale7:  vc('c2-dark'),
+      cScale8:  vc('c3-dark'), cScale9:  vc('c4-dark'),
+      cScale10: vc('c5-dark'),   cScale11: vc('c6-dark'),
+
+      // cScaleLabel — text fill emitted by Mermaid's auto-generated rule
+      // `.section-${r-1} text { fill: cScaleLabel${r} }`. Mermaid derives
+      // cScaleLabel* from cScale* via WCAG-aware contrast logic, but with
+      // our mid-tone cScale that derivation lands on WHITE — which fails
+      // catastrophically when our CSS overrides also paint the band fill
+      // pale. Set each slot to the paired band-text token so the auto
+      // rule lands on the same dark ink as our explicit overrides. Covers
+      // the timeline `section--1` edge case too (Mermaid generates the
+      // rule, our `.section--1` CSS in lattice-diagram.css is the belt;
+      // this is the braces).
+      cScaleLabel0:  ink, cScaleLabel1:  ink, cScaleLabel2:  ink,
+      cScaleLabel3:  ink, cScaleLabel4:  ink, cScaleLabel5:  ink,
+      cScaleLabel6:  ink, cScaleLabel7:  ink, cScaleLabel8:  ink,
+      cScaleLabel9:  ink, cScaleLabel10: ink, cScaleLabel11: ink,
 
       // fillType — subgraph and mindmap level fills (pale band)
-      fillType0: primary,              fillType1: second,
-      fillType2: vc('mermaid-pie-purple'), fillType3: vc('mermaid-pie-orange'),
-      fillType4: vc('mermaid-pie-teal'),   fillType5: vc('mermaid-pie-rose'),
-      fillType6: primary,              fillType7: second,
+      fillType0: primary,                 fillType1: second,
+      fillType2: vc('c3-light'),    fillType3: vc('c4-light'),
+      fillType4: vc('c5-light'),    fillType5: vc('c6-light'),
+      fillType6: primary,                 fillType7: second,
 
       // Sequence diagram
       actorBkg:              primary,
@@ -129,21 +151,21 @@
       sequenceNumberColor:   text,
 
       // Notes
-      noteBkgColor:    vc('mermaid-note-bg'),
+      noteBkgColor:    vc('c-note'),
       noteTextColor:   text,
-      noteBorderColor: vc('mermaid-note-border'),
+      noteBorderColor: vc('c-mark'),
 
       // Error
-      errorBkgColor:  vc('mermaid-error-bg'),
-      errorTextColor: vc('mermaid-error-text'),
+      errorBkgColor:  vc('c-alarm'),
+      errorTextColor: vc('c-ink-dark'),
 
       // Pie chart
-      pie1:  primary,               pie2:  second,
-      pie3:  vc('mermaid-pie-purple'), pie4:  vc('mermaid-pie-orange'),
-      pie5:  vc('mermaid-pie-teal'),   pie6:  vc('mermaid-pie-rose'),
-      pie7:  vc('mermaid-pie-yellow'), pie8:  vc('mermaid-pie-red'),
-      pie9:  vc('mermaid-pie-slate'),  pie10: vc('mermaid-pie-sage'),
-      pie11: vc('mermaid-pie-violet'), pie12: primary,
+      pie1:  primary,                  pie2:  second,
+      pie3:  vc('c3-light'),     pie4:  vc('c4-light'),
+      pie5:  vc('c5-light'),     pie6:  vc('c6-light'),
+      pie7:  vc('c7-light'),     pie8:  vc('c8-light'),
+      pie9:  vc('c9-light'),     pie10: vc('c10-light'),
+      pie11: vc('c11-light'),    pie12: vc('c12-light'),
       pieTitleTextSize:    '18px',
       pieTitleTextColor:   text,
       pieSectionTextSize:  '14px',
@@ -166,20 +188,20 @@
       taskTextOutsideColor:   text,
       taskTextDarkColor:      text,
       taskBorderColor:        border,
-      activeTaskBkgColor:     vc('mermaid-gantt-active'),
-      activeTaskBorderColor:  vc('mermaid-gantt-active-border'),
-      gridColor:              vc('mermaid-gantt-grid'),
-      doneTaskBkgColor:       vc('mermaid-gantt-done'),
-      doneTaskBorderColor:    vc('mermaid-gantt-done-border'),
-      critBkgColor:           vc('mermaid-gantt-critical'),
-      critBorderColor:        vc('mermaid-gantt-critical-border'),
-      todayLineColor:         vc('mermaid-gantt-today'),
+      activeTaskBkgColor:     vc('c-warm-light'),
+      activeTaskBorderColor:  vc('c-warm-dark'),
+      gridColor:              vc('c-cool-light'),
+      doneTaskBkgColor:       vc('c-cool-light'),
+      doneTaskBorderColor:    vc('c-cool-dark'),
+      critBkgColor:           vc('c-alarm'),
+      critBorderColor:        vc('c-alarm-dark'),
+      todayLineColor:         vc('c-mark'),
 
       // Git graph
-      git0: vc('cat-blue'),   git1: vc('cat-green'),
-      git2: vc('cat-purple'), git3: vc('cat-orange'),
-      git4: vc('cat-teal'),   git5: vc('cat-rose'),
-      git6: vc('cat-slate'),  git7: vc('cat-mauve'),
+      git0: vc('c1-dark'),   git1: vc('c2-dark'),
+      git2: vc('c3-dark'), git3: vc('c4-dark'),
+      git4: vc('c5-dark'),   git5: vc('c6-dark'),
+      git6: vc('c8-dark'),  git7: vc('c7-dark'),
       gitBranchLabel0: text, gitBranchLabel1: text,
       gitBranchLabel2: text, gitBranchLabel3: text,
       gitBranchLabel4: text, gitBranchLabel5: text,
@@ -191,14 +213,14 @@
       tagLabelBorder:        text,
 
       // Quadrant chart
-      quadrant1Fill:                    vc('mermaid-quadrant-1-fill'),
-      quadrant2Fill:                    vc('mermaid-quadrant-2-fill'),
-      quadrant3Fill:                    vc('mermaid-quadrant-3-fill'),
-      quadrant4Fill:                    vc('mermaid-quadrant-4-fill'),
-      quadrant1TextFill:                vc('mermaid-quadrant-1-text'),
-      quadrant2TextFill:                vc('mermaid-quadrant-2-text'),
-      quadrant3TextFill:                vc('mermaid-quadrant-3-text'),
-      quadrant4TextFill:                vc('mermaid-quadrant-4-text'),
+      quadrant1Fill:                    vc('c-quadrant-1-fill'),
+      quadrant2Fill:                    vc('c-quadrant-2-fill'),
+      quadrant3Fill:                    vc('c-quadrant-3-fill'),
+      quadrant4Fill:                    vc('c-quadrant-4-fill'),
+      quadrant1TextFill:                vc('c-quadrant-1-text'),
+      quadrant2TextFill:                vc('c-quadrant-2-text'),
+      quadrant3TextFill:                vc('c-quadrant-3-text'),
+      quadrant4TextFill:                vc('c-quadrant-4-text'),
       quadrantPointFill:                border,
       quadrantPointTextFill:            text,
       quadrantXAxisTextFill:            text,
@@ -223,9 +245,9 @@
         yAxisLineColor:   border,
         yAxisTickColor:   slate,
         plotColorPalette: [
-          vc('cat-blue'),   vc('cat-green'),
-          vc('cat-purple'), vc('cat-orange'),
-          vc('cat-teal'),   vc('cat-rose'),
+          vc('c1-dark'),   vc('c2-dark'),
+          vc('c3-dark'), vc('c4-dark'),
+          vc('c5-dark'),   vc('c6-dark'),
         ].join(','),
       },
 
@@ -326,7 +348,7 @@
   function ensureConfigured(mermaid, { force = false } = {}) {
     // Guard: don't lock the config until the theme's CSS custom properties are
     // actually resolved. On the first tick in Marp's webview, getComputedStyle
-    // may return empty strings for --mermaid-* vars if the stylesheet hasn't
+    // may return empty strings for --diagram-* vars if the stylesheet hasn't
     // been applied yet. An empty primaryColor causes Mermaid to fall back to
     // its built-in base defaults (#fff4dd yellow), which cascades into yellow
     // clusters and wrong cScale values. Check one sentinel var — if it's empty,
@@ -340,7 +362,7 @@
     // Without force, every diagram would stay forever in data-mermaid-state=pending.
     if (globalScope.__llMermaidConfigured) return true;
     const scopeEl = document.querySelector('section') ?? document.documentElement;
-    const haveTheme = !!getComputedStyle(scopeEl).getPropertyValue('--mermaid-primary-color').trim();
+    const haveTheme = !!getComputedStyle(scopeEl).getPropertyValue('--c1-light').trim();
     if (!haveTheme && !force) return false;
     if (!haveTheme && force && typeof console !== 'undefined') {
       console.warn('[lattice-runtime] theme CSS vars not resolved after retry budget; proceeding with Mermaid defaults');
@@ -840,8 +862,8 @@
   // preview path that didn't run the engine plugin.
 
   const ROADMAP_HORIZON_ACCENTS = [
-    'var(--cat-blue)',   'var(--cat-green)',  'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c1-dark)',   'var(--c2-dark)',  'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',   'var(--c6-dark)',   'var(--c7-dark)',  'var(--c8-dark)',
   ];
   const ROADMAP_STATE_LABEL = {
     'state-shipped':  'Shipped',
@@ -1243,8 +1265,8 @@
    * modules. Three-renderer parity rule applies: edit both or neither.
    */
   const JOURNEY_ACTOR_PALETTE_RT = [
-    'var(--cat-green)',  'var(--cat-blue)',   'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',   'var(--cat-rose)',   'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c2-dark)',  'var(--c1-dark)',   'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',   'var(--c6-dark)',   'var(--c7-dark)',  'var(--c8-dark)',
   ];
   function jEscAttr(s) {
     return String(s).replace(/[&<>"']/g, c => ({
@@ -1770,8 +1792,8 @@
   // already wrapped in `chart-frame` is a no-op.
   const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
   const PIE_PALETTE = [
-    'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
-    'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
+    'var(--c1-dark)',  'var(--c2-dark)', 'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)',  'var(--c6-dark)',  'var(--c7-dark)',  'var(--c8-dark)',
   ];
 
   function chartEscAttr(s) {
@@ -2033,8 +2055,8 @@
     const KB_SIZE   = ['s','m','l','xl'];
     const KB_DONE_NAMES = ['done','completed','shipped','closed'];
     const LANE_COLORS = [
-      'var(--cat-blue)','var(--cat-green)','var(--cat-purple)','var(--cat-orange)',
-      'var(--cat-teal)','var(--cat-rose)','var(--cat-mauve)','var(--cat-slate)',
+      'var(--c1-dark)','var(--c2-dark)','var(--c3-dark)','var(--c4-dark)',
+      'var(--c5-dark)','var(--c6-dark)','var(--c7-dark)','var(--c8-dark)',
     ];
     const laneColorMap = {};
     let laneColorIdx = 0;
