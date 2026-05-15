@@ -797,9 +797,10 @@ const globalFooter   = (fm.match(/^\s*footer:\s*["']?(.*?)["']?\s*$/m) || [])[1]
 // Marp distinguishes the deck-wide form (no leading underscore) from the
 // per-slide `_class:` directive. Multiple classes are space-separated.
 const globalClass    = (fm.match(/^\s*class:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
-const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || 'hd';
+const DEFAULT_SIZE   = 'hd';
 const SLIDE_SIZES    = { hd: [1280, 720], HD: [1280, 720], '4K': [3840, 2160], '4k': [3840, 2160], standard: [960, 720] };
-const [slideW, slideH] = SLIDE_SIZES[deckSizeName] || [1280, 720];
+const deckSizeName   = (fm.match(/^\s*size:\s*["']?([\w:/-]+)["']?\s*$/m) || [])[1] || DEFAULT_SIZE;
+const [slideW, slideH] = SLIDE_SIZES[deckSizeName] || SLIDE_SIZES[DEFAULT_SIZE];
 // Deck-wide `style:` directive — Marp injects this CSS verbatim into the
 // rendered output. Authors use it for ad-hoc overrides like
 // `style: ":root{color-scheme:dark}"` without needing a custom theme.
