@@ -52,12 +52,16 @@ it is load-bearing.
   model, modifier catalogue, new layout proposals (§3.1–§3.14),
   authoring DX & rollout plan. Explicitly non-canonical; ground
   truth lives in `../references/templates.md` and
-  `examples/gallery.md`.
+  `examples/gallery.md`. **Status (2026-05-15):** 11/14 Part 3
+  proposals Shipped; §3.11 / §3.13 / §3.14 Open. Each proposal
+  carries an inline status tag.
 - [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md) —
   companion to the May 4 RFC: chart-family layouts that turn
   list/sublist + inline-code pills into timelines, Gantts, pie /
   progress / kanban, plus adjacent candidates. Same component-model
-  frame; same non-canonical status.
+  frame; same non-canonical status. **Status (2026-05-15):** 5/5
+  core layouts Shipped (§1 – §3.3); 0/5 adjacent candidates Shipped
+  (§4.1 – §4.5). Each proposal carries an inline status tag.
 - [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
   canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
   ASCII layout preview in `templates.md`, plus the
@@ -142,3 +146,10 @@ it is load-bearing.
   auto-fit/eyebrow scale resolution, the six-variant lineup (each variant
   framed as one boardroom question), the shared geometry kernel, and the
   finding that `--fg` is an undefined token repo-wide.
+- [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md) —
+  register of layouts that landed in `templates.md` without going
+  through the May 4 / May 7 speculative-proposals catalogues. Covers
+  `word-cloud`, the Split family (Templates 30–34), `quadrant`,
+  `radar`, the seven `math*` layouts, and the six legal-family
+  layouts. Housekeeping, not history: when a layout ships outside
+  the catalogues, add an entry here.
