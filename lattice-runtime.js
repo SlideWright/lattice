@@ -52,10 +52,18 @@
       probe.style.color = '';
       probe.style.color = `var(--${name})`;
       const c = getComputedStyle(probe).color;
-      // Browsers return `rgba(0, 0, 0, 0)` when the var() is unresolved.
-      // Fall through to the raw value so Mermaid sees an empty string
-      // rather than a transparent black it would happily accept.
-      return c && c !== 'rgba(0, 0, 0, 0)' ? c : v(name);
+      if (c && c !== 'rgba(0, 0, 0, 0)') return c;
+      // Probe didn't resolve — either the var is undefined or the value uses
+      // a function the browser doesn't support (e.g. light-dark() on older
+      // Chromium builds). Parse light-dark() manually so Mermaid never sees
+      // the raw token string, which it rejects as "Unsupported color format".
+      const raw = v(name);
+      const ld = /^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i.exec(raw);
+      if (ld) {
+        const isDark = (getComputedStyle(scopeEl).colorScheme || '').includes('dark');
+        return isDark ? ld[2].trim() : ld[1].trim();
+      }
+      return raw;
     };
 
     const bg      = vc('bg');

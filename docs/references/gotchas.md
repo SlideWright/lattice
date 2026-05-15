@@ -177,18 +177,19 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   surface tokens are stored as `light-dark(<light>, <dark>)`. Mermaid's
   color parser only accepts hex / rgb / hsl / named colors and throws
   on the function form.
-- **Mitigation:** `buildMermaidThemeVars` in
-  [lattice-runtime.js:25-65](../../lattice-runtime.js#L25-L65) attaches
-  a hidden probe element to the scope section, sets its `color` to
-  `var(--token)`, and reads back `getComputedStyle(probe).color`.
+- **Mitigation:** `buildMermaidThemeVars` in `lattice-runtime.js`
+  attaches a hidden probe element to the scope section, sets its `color`
+  to `var(--token)`, and reads back `getComputedStyle(probe).color`.
   Browsers DO resolve `light-dark()` (and `color-mix()`) on real color
-  properties — only the custom-property accessor returns unresolved
-  tokens.
+  properties — only the custom-property accessor returns unresolved tokens.
+  If the probe still returns `rgba(0,0,0,0)` (older Chromium that doesn't
+  support `light-dark()`), `vc()` now manually parses the raw token and
+  picks the correct arm based on the section's `colorScheme`.
 - **Triggered by:** Any palette using `light-dark()` for surface
   tokens — currently cuoio and indaco.
 - **Removable when:** Mermaid's color parser supports `light-dark()`.
   Unlikely soon.
-- **Commits:** `5e47ff3`.
+- **Commits:** `5e47ff3` (probe approach), theme-cleanup commit (fallback parser).
 
 ### Mermaid kanban applies a lighten step to cScale
 
@@ -602,6 +603,31 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Any JS read of a custom property whose value
   contains a CSS function.
 - **Removable when:** Never — this is by design.
+
+### G-generation `--c-ink-dark: var(--text-heading)` breaks contrast in both canvas modes
+
+- **Symptom:** Contrast test suite reports `--cN-dark / --c-ink-dark` AA
+  failures in both light and dark mode for any theme whose G-generation
+  block sets `--c-ink-dark: var(--text-heading)`.
+- **Cause:** The contract is: `--c-ink-dark` must be *white-ish* on
+  light canvas (for text on the dark `--cN-dark` fills) and *dark-ish*
+  on dark canvas (for text on the pale `--cN-dark` flipped fills).
+  `var(--text-heading)` resolves to dark ink on light canvas (dark-on-dark
+  → fail) and, because the `parsePaletteVars` chain breaks at
+  `--dark-text-heading` if that token isn't resolved yet, it falls back to
+  the previously-set `#FFFFFF` — white-on-pale → also fail.
+- **Fix:** Use an explicit `light-dark()` pair:
+  `--c-ink-dark: light-dark(#FFFFFF, #0A1628)` (indaco),
+  `--c-ink-dark: light-dark(#FFFFFF, #1E1A15)` (cuoio).
+  The rule: light-canvas arm is WHITE; dark-canvas arm is the theme's
+  primary dark ink.
+- **Companion trap:** `--c-alarm` in the G-generation block must also
+  be dark enough for white ink on light canvas (L ≤ 0.18) and bright
+  enough for dark ink on dark canvas (L ≥ 0.25). The original indaco-G
+  alarm `#D15A62` is too light (L≈0.22); use `#A91C2A` (L≈0.10).
+- **Triggered by:** Merging a G-generation block into a base theme
+  file when `--c-ink-dark` was left as `var(--text-heading)`.
+- **Commits:** theme-cleanup commit.
 
 ### CSS `ul > li` matches nested sublists — chain `> ul > li` for top-level-only styling
 
