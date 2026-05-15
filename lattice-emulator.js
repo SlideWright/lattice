@@ -853,6 +853,10 @@ const { transformWordCloudSection } = require('./lib/word-cloud');
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
 const radar = require('./lib/radar');
+// Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
+// modifier variants: bubble, trail, cohort, threshold, magic). Same
+// kernel-as-module pattern as radar.
+const quadrant = require('./lib/quadrant');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1691,7 +1695,7 @@ function parseSlide(raw, index) {
   // caption. Class collisions matter — we match exact tokens, not
   // substrings, because `progress-N` is already a modifier on `agenda`.
   const classTokens = cls.trim().split(/\s+/);
-  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban', 'radar'];
+  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban', 'radar', 'quadrant'];
   const chartLayout = chartLayouts.find(l => classTokens.includes(l));
   if (chartLayout) {
     // ── Helper: extract top-level <li> contents from a list inner string,
@@ -2095,13 +2099,31 @@ function parseSlide(raw, index) {
       }
     }
 
+    // ── quadrant ── grouped nested list → native SVG 2×2 scatter figure
+    // Kernel (parsing + geometry + emission) lives in lib/quadrant.js so
+    // the engine path (lib/chart-family.js) and this build path call the
+    // same code. One default + five modifiers (bubble / trail / cohort /
+    // threshold / magic); `minimal` and `dark` ride entirely in CSS.
+    if (chartLayout === 'quadrant') {
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        const variant = quadrant.pickVariant(classTokens);
+        const model = quadrant.parseQuadrant(ulExtract.inner);
+        if (model) {
+          const scale = quadrant.resolveScale(model, quadrant.matchEyebrowText(html));
+          const figureHtml = quadrant.buildQuadrant(model, variant, scale);
+          html = html.slice(0, ulExtract.start) + figureHtml + html.slice(ulExtract.end);
+        }
+      }
+    }
+
     // ── Wrap in chart-frame skeleton ─────────────────────────────────────
     // Pull eyebrow / h2 / subtitle / chart-body / caption out of the html
     // and reassemble. The chart body anchor is the <div> emitted by the
     // layout-specific transform above.
     const h2RE = /<h2>[\s\S]*?<\/h2>/;
     const h2Match = h2RE.exec(html);
-    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board|radar-figure)"[^>]*>/;
+    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board|radar-figure|quadrant-figure)"[^>]*>/;
     const bodyMatch = h2Match && bodyRE.exec(html.slice(h2Match.index + h2Match[0].length));
     if (h2Match && bodyMatch) {
       const h2El = h2Match[0];

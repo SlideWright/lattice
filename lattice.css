@@ -6743,6 +6743,283 @@ section.radar.dark {
 }
 
 
+/* ── QUADRANT ───────────────────────────────────────────────────────────────
+ * Native 2×2 quadrant chart — build-time SVG, no charting library.
+ *
+ * Source contract: a group-by-quadrant nested <ul>. Each top-level <li> is
+ * a quadrant label (reading order: TL, TR, BL, BR); nested <li>s are items
+ * with a trailing `<code>x, y</code>` pill. The eyebrow declares axis names
+ * and (optionally) per-axis ranges + threshold target lines.
+ *
+ * Layout output:
+ *   <div class="quadrant-figure" data-variant="default" data-groups="4" data-items="N">
+ *     <svg class="quadrant-svg" viewBox="0 0 420 320">
+ *       <g class="quadrant-tints">…four region rects…</g>
+ *       <g class="quadrant-frame">…bounds + midlines/target lines…</g>
+ *       <g class="quadrant-axes">…axis labels + corner ticks…</g>
+ *       <g class="quadrant-labels">…four corner labels…</g>
+ *       <g class="quadrant-plot">…dots + dot labels…</g>
+ *     </svg>
+ *   </div>
+ *
+ * One default + five modifier variants — see lib/quadrant.js. `minimal`
+ * (no tints) and `dark` (lifted grid) are composable cross-cutting
+ * modifiers handled here in CSS.
+ *
+ * Per-cell colour rides --cell-color, set per-rect/dot/label from the
+ * categorical palette in lib/quadrant.js. Layouts stay palette-blind.
+ *
+ * Sibling implementations:
+ *   - lib/quadrant.js       transform module (canonical)
+ *   - lattice-emulator.js   per-slide HTML-string transform
+ *   - marp.config.js        marp-cli render hook
+ *   - lattice-runtime.js    DOM transform for marp-vscode preview
+ */
+
+section.quadrant {
+  --quadrant-tint:    14%;   /* per-cell tint share */
+  --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
+  --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
+  --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+}
+
+/* quadrant is a chart-family member — section layout, header/body/caption
+ * skeleton and h2 styling all come from section.chart-frame. The figure
+ * just slots into .chart-body as a centred flex row of svg (+ optional
+ * legend, for the cohort variant). */
+section.quadrant.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl);
+}
+
+section.quadrant .quadrant-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xl);
+  width: 100%;
+}
+
+section.quadrant .quadrant-svg {
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  aspect-ratio: 420 / 320;
+  flex: 1 1 auto;
+  overflow: visible;
+}
+
+/* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
+section.quadrant .quadrant-tint {
+  fill: color-mix(in srgb, var(--cell-color) var(--quadrant-tint), transparent);
+  stroke: none;
+}
+
+/* ── Plot frame + split lines ─────────────────────────────────────────── */
+section.quadrant .quadrant-bounds {
+  fill: none;
+  stroke: var(--quadrant-frame);
+  stroke-width: 1.25;
+}
+section.quadrant .quadrant-split {
+  stroke: var(--quadrant-split);
+  stroke-width: 1;
+}
+/* Threshold variant: target lines pop more than ordinary centerlines. */
+section.quadrant .quadrant-split[data-kind="target"] {
+  stroke: var(--quadrant-target);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 4;
+}
+
+/* ── Axis labels + corner ticks ───────────────────────────────────────── */
+section.quadrant .quadrant-axis-name {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+section.quadrant .quadrant-tick {
+  fill: var(--text-muted);
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: 8px;
+  font-weight: 500;
+}
+
+/* ── Quadrant corner labels ───────────────────────────────────────────── */
+section.quadrant .quadrant-label {
+  fill: var(--cell-color);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* Magic variant: heavier, more ceremonial labels with extra tracking. */
+section.quadrant .quadrant-label--magic {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+/* Threshold variant: zone names live ON the chart as action prompts. */
+section.quadrant .quadrant-label--zone {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+}
+
+/* ── Scatter dots + per-dot labels ────────────────────────────────────── */
+section.quadrant .quadrant-dot {
+  fill: var(--cell-color);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+section.quadrant .quadrant-dot-label {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+/* ── Bubble variant: √-area bubble + smart label position ─────────────── */
+section.quadrant .quadrant-bubble {
+  fill: color-mix(in srgb, var(--cell-color) 38%, transparent);
+  stroke: var(--cell-color);
+  stroke-width: 1.5;
+}
+section.quadrant .quadrant-bubble-value {
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 700;
+}
+section.quadrant .quadrant-bubble-value[data-pos="inside"] {
+  fill: var(--bg);
+}
+section.quadrant .quadrant-bubble-value[data-pos="above"] {
+  fill: var(--cell-color);
+}
+section.quadrant .quadrant-bubble-label {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+/* ── Trail variant: faded before + dashed connector + solid after ─────── */
+section.quadrant .quadrant-trail-line {
+  stroke: var(--cell-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+section.quadrant .quadrant-trail-before {
+  fill: none;
+  stroke: var(--cell-color);
+  stroke-width: 1.5;
+  opacity: 0.6;
+}
+section.quadrant .quadrant-trail-after {
+  fill: var(--cell-color);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+/* ── Cohort variant: convex hulls + centroid labels + legend ──────────── */
+section.quadrant .quadrant-hull {
+  fill: color-mix(in srgb, var(--cell-color) 14%, transparent);
+  stroke: color-mix(in srgb, var(--cell-color) 62%, transparent);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+section.quadrant .quadrant-hull-line {
+  stroke: color-mix(in srgb, var(--cell-color) 62%, transparent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+section.quadrant .quadrant-cohort-label {
+  fill: var(--cell-color);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+section.quadrant .quadrant-figure[data-variant="cohort"] {
+  gap: var(--sp-lg);
+}
+section.quadrant .quadrant-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2xs);
+  flex: 0 1 auto;
+}
+section.quadrant .quadrant-legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-xs);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+section.quadrant .quadrant-legend .quadrant-swatch {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 3px;
+  background: var(--cell-color);
+}
+section.quadrant .quadrant-legend .quadrant-legend-count {
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ── Threshold variant: target badges at the axis crossings ───────────── */
+section.quadrant .quadrant-target-badge {
+  fill: var(--quadrant-target);
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* ── minimal: no quadrant tints, fainter grid (composable) ────────────── */
+section.quadrant.minimal .quadrant-tint {
+  fill: none;
+}
+section.quadrant.minimal {
+  --quadrant-frame: color-mix(in srgb, var(--text-muted) 28%, transparent);
+  --quadrant-split: color-mix(in srgb, var(--text-muted) 18%, transparent);
+}
+section.quadrant.minimal .quadrant-bubble {
+  fill: none;
+}
+section.quadrant.minimal .quadrant-hull {
+  fill: none;
+}
+
+/* ── dark: lift frame + tints for dark surfaces (composable) ──────────── */
+section.quadrant.dark {
+  --quadrant-tint:   22%;
+  --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
+  --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
+  --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
+}
+
+
 /* ════════════════════════════════════════════════════════════════════════════
  * BACKGROUND LIBRARY
  * 27 utility classes (16 gradient accents + 11 SVG accent marks) for
