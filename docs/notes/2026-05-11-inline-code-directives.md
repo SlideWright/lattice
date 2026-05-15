@@ -1,6 +1,6 @@
 ---
-status: design-decided, not-yet-implemented
-version: 1
+status: decisions-locked, not-yet-implemented
+version: 2
 supersedes: none
 related:
   - ../references/templates.md (current inline-code semantics)
@@ -9,10 +9,12 @@ related:
 
 # Lattice — namespaced inline-code directives (Font Awesome, vars, …)
 
-> **Status.** Design landed in conversation on 2026-05-11. Nothing
-> implemented yet. This note is the handoff for a future session to
-> pick up and ship. When implementation lands, fold the canonical
-> rules into `docs/references/templates.md` and delete this note.
+> **Status.** Design landed in conversation on 2026-05-11; all five
+> open questions resolved on 2026-05-15 (see **Resolved decisions**
+> below). Nothing implemented yet. This note is the handoff for a
+> future session to pick up and ship. When implementation lands, fold
+> the canonical rules into `docs/references/templates.md` and delete
+> this note.
 
 ## What's already done
 
@@ -81,6 +83,56 @@ clean handoff point.
 - **Fenced ` ``` ` blocks are out of scope.** They stay as
   syntax-highlighted code blocks. Repurposing them would break the
   gallery.
+
+### Font Awesome — prefix per style
+
+The `fa:` namespace is pure pass-through to Font Awesome's own class
+names. No Lattice token layer; no rename; no wrapper. One prefix per
+FA style, mapping 1:1 onto FA's official class dialect so an author
+who Googles an icon lands on the FA page and the name they see is the
+name they type.
+
+| Directive          | Emits                                | Tier         |
+| ------------------ | ------------------------------------ | ------------ |
+| `` `fa:rocket` ``  | `<i class="fa-solid fa-rocket">`     | Free + Pro   |
+| `` `fab:github` `` | `<i class="fa-brands fa-github">`    | Free + Pro   |
+| `` `far:rocket` `` | `<i class="fa-regular fa-rocket">`   | Free subset; Pro full |
+| `` `fal:rocket` `` | `<i class="fa-light fa-rocket">`     | **Pro**      |
+| `` `fat:rocket` `` | `<i class="fa-thin fa-rocket">`      | **Pro**      |
+| `` `fad:rocket` `` | `<i class="fa-duotone fa-rocket">`   | **Pro**      |
+| `` `fass:rocket` ``| `<i class="fa-sharp fa-solid fa-rocket">` | **Pro** |
+
+Each prefix is its own `PREFIX_HANDLERS` entry; the greedy-first-colon
+rule is fine because every style is its own namespace (no
+`fa:light:rocket` two-segment form).
+
+**Free out of the box.** Vendor FA Free 6.x into
+`assets/fontawesome/free/` (gitignore the zip, commit the unpacked
+dist). `lattice.css` `@import`s `assets/fontawesome/free/css/all.min.css`.
+Webfont, not SVG — print/PDF-safe, no runtime JS, offline-capable.
+Icons inherit `font-size` and `color` from the surrounding text via
+`currentColor`; no per-icon styling needed.
+
+**Pro auto-detected.** Pro license-holders unpack their kit into
+`assets/fontawesome/pro/` (gitignored — never committed). At build,
+`lib/font-awesome.js` probes for
+`assets/fontawesome/pro/css/all.min.css`:
+
+- **Present** → emit the Pro `@import` instead of Free; expose all 7
+  style prefixes.
+- **Absent** → Free path; expose `fa:`, `fab:`, and the Free subset of
+  `far:`.
+
+No env var, no config flag, no per-deck front-matter — folder
+existence IS the signal. Override knob `LATTICE_FA_PRO=/abs/path` for
+edge cases (CI builds mounting Pro at a non-default path); documented
+but not the happy path.
+
+**Linter behaviour.** `lattice-lint` reads the active-tier descriptor
+from `lib/font-awesome.js`. Pro-only prefixes on a Free build emit a
+loud build-time warning naming the offending slides; the render still
+emits the FA class so once Pro is installed the deck works without
+edits. No silent failure, no class-name guessing.
 
 ### Pill shapes — Mermaid-inspired bracket grammar
 
@@ -192,36 +244,77 @@ away — pills are bracket-form only. `kbd:` stays as a separate
 namespace directive (`<kbd>` is structurally different from a pill;
 it carries semantic meaning, not visual variant).
 
-### Open questions to lock before coding
+### Resolved decisions
 
-1. **Bare vs braced var syntax.** `` `$client` `` (bare) or
-   `` `${client}` `` (braced)? Recommend **braced** if we ever want
-   dotted paths (`` `${client.name}` ``) or composition
-   (`` `${a} report` ``). Recommend **bare** if a var is always the
-   whole inline-code content. Decide before implementation; the
-   regex differs.
-2. **Escape for literal `prefix:value`.** Someone documenting CSS
-   might literally want `` `var:--brand` `` as code. Recommend
-   honouring CommonMark's double-backtick form: `` ``var:--brand`` ``
-   skips preprocessing because we only run the rule on single-backtick
-   `code_inline` tokens with no internal-padding marker. Validate this
-   actually distinguishes in markdown-it (it should — the AST
-   preserves the marker count).
-3. **Missing-var behaviour.** `` `$undefined` `` should render as
-   loud `??$undefined??` at build (catches typos in author review),
-   silent empty in production, or build-time warning + literal
-   passthrough? Recommend **build-time warning + loud `??name??`** —
-   loud is the right default for an authoring tool.
-4. **Unknown prefix behaviour.** `` `xyz:foo` `` (no registered
-   handler) should warn and render literal. Don't error — additive but
-   discoverable.
-5. **Initial directive registry.** Ship with at minimum:
-   - `$name` → variable interpolation.
-   - `fa:` → Font Awesome (decide free vs Pro, webfont vs SVG —
-     **recommend free + webfont** for print/PDF, no JS required).
-   - Bracket-shape pills with `:c1`–`:c8` color slots and `:sm`/`:md`/
-     `:lg` sizes (full grammar above).
-   - Stretch namespace prefixes: `kbd:`. Can land incrementally.
+Locked 2026-05-15. Each entry names the call, the rationale that won
+the argument, and the rejected alternatives.
+
+1. **Variable syntax: bare `` `$client` ``.** Not braced
+   `` `${client}` ``. Bare mirrors the `prefix:value` family
+   (sigil-then-text, no delimiter overhead); pill brackets in this
+   grammar already encode visual shape, so braces around a variable
+   name would carry no information and look like a pill that isn't
+   one. Composition (`` `${a} report` ``) is explicitly out of scope —
+   one backtick = one directive — so the only argument for braces
+   evaporates. Dotted paths still work bare: the regex
+   `/^\$([A-Za-z_][\w.]*)$/` already accepts `$client.name`.
+
+2. **Escape for literal `prefix:value`: CommonMark double-backtick.**
+   `` ``var:--brand`` `` (double backticks) skips directive
+   preprocessing because the rule runs only on single-backtick
+   `code_inline` tokens with `markup === '` '`. Validated against
+   markdown-it's AST — the marker count is preserved on the token.
+   Authors documenting CSS or shell syntax that contains a colon get
+   a clean escape per-occurrence.
+
+3. **Font Awesome: Free out of the box, Pro auto-detected, webfont.**
+   See **Font Awesome — prefix per style** above for the full
+   resolution. Free vendored at `assets/fontawesome/free/` ships by
+   default. Pro detected by probing `assets/fontawesome/pro/css/all.min.css`
+   at build (folder existence is the signal — no config flag, no env
+   var on the happy path). Pure pass-through to FA class names; no
+   Lattice token layer. Webfont delivery, not SVG — PDF-safe, no
+   runtime JS, deterministic offline builds.
+
+4. **Missing-var behaviour: loud `??name??` + stderr warning.**
+   `` `$undefined` `` renders as `??undefined??` in the slide body
+   (high-contrast, impossible to miss in author review) AND emits a
+   warning on stderr at build (so CI can gate on it). Rejected
+   alternatives: silent empty (failures vanish until a customer
+   notices); literal passthrough (looks like intentional copy at a
+   glance). Same instinct as throwing over returning `undefined` —
+   the build is the only review pass before the deck ships, so
+   failures must be impossible to miss.
+
+5. **Unknown prefix behaviour: warn + leave literal.**
+   `` `xyz:foo` `` (no registered handler) emits a build-time warning
+   on stderr and falls through to literal `<code>xyz:foo</code>`.
+   Additive but discoverable — adding a new namespace later never
+   breaks existing decks, and typos in known prefixes get caught.
+   Never throw; never silently drop.
+
+6. **Plain inline code stays literal; dispatch requires a marker.**
+   `` `LIVE` `` renders as `<code>LIVE</code>`. Interpretation only
+   fires when the token's leading character is a recognised dispatch
+   marker: `$` (variable), a registered bracket opener (pill), or a
+   `prefix:` run (namespace). This preserves the literal-code escape
+   hatch for `` `getUserId()` ``, `` `:root` ``, etc. Corollary:
+   there is no "default pill" shape — every pill requires an explicit
+   bracket. If you want a pill, you write the brackets.
+
+### Initial directive registry
+
+Ship with:
+
+- `$name` → front-matter variable interpolation (bare, dotted paths
+  allowed, missing → loud `??name??` + stderr warning).
+- `fa:` / `fab:` / `far:` / `fal:` / `fat:` / `fad:` / `fass:` → Font
+  Awesome, one prefix per style, Free vendored + Pro auto-detected.
+- Bracket-shape pills with `:c1`–`:c8` colour slots and
+  `:sm`/`:md`/`:lg` sizes (full grammar above).
+
+Stretch namespace prefixes: `kbd:` (`<kbd>` chords). Can land
+incrementally in a follow-up PR.
 
 ## Implementation plan
 
@@ -253,15 +346,21 @@ paths or they drift. For inline-code directives:
   pure functions taking `(text, ctx)` and returning HTML strings.
   No DOM, no markdown-it dependency — same shape as
   `lib/chart-family.js`. Unit-testable in isolation.
+- **`lib/font-awesome.js`** — active-tier descriptor. Probes
+  `assets/fontawesome/pro/css/all.min.css` at module load (or honours
+  `LATTICE_FA_PRO=/abs/path`); exports the `@import` target, the set
+  of available style prefixes, and the prefix→class map. Consumed by
+  `lib/inline-directives.js` (handler dispatch), the marp/emulator
+  CSS-emit step (which `@import` URL to inline), and `lattice-lint`
+  (Pro-only prefix warnings on Free builds).
 - **`marp.config.js`** plugin → calls `lib/inline-directives.js` from
   inside a markdown-it rule.
 - **`lattice-emulator.js`** → calls the same lib from its inline
   transform pass.
-- **Add Font Awesome stylesheet** to `lattice.css` (CDN `@import` or
-  vendored, decide based on offline-build constraint — vendoring
-  matches how Google Fonts is loaded today via `@import url(...)` at
-  the top of `lattice.css`, but FA's webfont CSS pulls font files
-  too, so the choice has more moving parts).
+- **Font Awesome assets** vendored under `assets/fontawesome/`
+  (`free/` committed, `pro/` gitignored). `lattice.css` `@import`s
+  whichever path `lib/font-awesome.js` resolves. Webfont, not SVG.
+  Matches how Google Fonts is loaded today.
 
 ### Reference parser (drop-in starting point)
 
@@ -403,22 +502,12 @@ shape.
   which is scoped to the emoji bugfix).
 - Suggested branch: `feat/inline-directives` or
   `feat/fontawesome-vars`.
-- First PR: scaffold `lib/inline-directives.js` + the markdown-it
-  ruler in `marp.config.js` + `$` (vars), `fa:` (Font Awesome), and
-  bracket-shape pills with `:c1`–`:c8` + `:sm`/`:lg`. Unit tests +
-  one gallery slide demonstrating each. Hold `kbd:` for a follow-up
-  PR to keep the diff small.
+- First PR: scaffold `lib/inline-directives.js` + `lib/font-awesome.js`
+  + the markdown-it ruler in `marp.config.js` + `$` (vars), the seven
+  `fa*:` prefixes (Free vendored, Pro folder-probe), and bracket-shape
+  pills with `:c1`–`:c8` + `:sm`/`:lg`. Unit tests + one gallery slide
+  demonstrating each. Hold `kbd:` for a follow-up PR to keep the diff
+  small.
 
-## Decisions still owed by the human before coding starts
-
-1. Bare `` `$client` `` vs braced `` `${client}` ``.
-2. Font Awesome free vs Pro (and where the kit URL lives if Pro).
-3. Webfont vs SVG (recommend webfont).
-4. Missing-var loudness (recommend loud `??name??`).
-5. Pill default shape with no brackets at all is **not a thing** —
-   `` `LIVE` `` is literal code. Confirm that's intended (the choice
-   was: keep plain inline code as the escape hatch). To get the
-   default-look pill, author writes `` `(LIVE)` `` (chip) or
-   `` `([LIVE])` `` (full stadium). Which is the "default pill" if
-   author just wants any pill? Recommend `` `(LIVE)` `` — single
-   parens, lowest typing cost.
+All five open questions are resolved (see **Resolved decisions**
+above). No human input required before coding starts.
