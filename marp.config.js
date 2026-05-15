@@ -434,6 +434,14 @@ module.exports = {
   html: true,
   allowLocalFiles: true,
   imageScale: 1,
+  // Math support — KaTeX is the Marp default; we set it explicitly so the
+  // contract is visible in config. KaTeX renders synchronously to HTML+CSS,
+  // which is critical under the headless-Chromium PDF path (MathJax's async
+  // reflow has caused PDF race conditions in the past). The emulator path
+  // (lattice-emulator.js) calls katex.renderToString() at slide-parse time
+  // and injects the same katex.min.css into the HTML head — see the math
+  // extractor near the top of that file for the parity contract.
+  math: 'katex',
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
     marp.use(deckClassPropagate)

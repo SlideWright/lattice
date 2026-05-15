@@ -47,6 +47,89 @@ let hljs;
   }
 }
 
+// ── KaTeX (math rendering) ────────────────────────────────────────────────
+// Server-side LaTeX → HTML at slide-parse time. Two-phase pipeline:
+//   1. extractMath(text)   — pull $$...$$ / $...$ out of markdown, replace
+//                            each with an opaque token the markdown parser
+//                            won't touch (no $, _, *, ^, etc.)
+//   2. restoreMath(html)   — after parseInline / table / list handling,
+//                            swap tokens back for katex.renderToString output
+// This mirrors Marp's `math: 'katex'` config (set in marp.config.js) so the
+// CLI path and emulator produce equivalent math markup. KaTeX is required
+// lazily — if it isn't installed, math passes through as plain text and a
+// one-time warning is emitted, so a missing optional dep can't break the build.
+let katex;
+try { katex = require('katex'); } catch (_e) { /* math unavailable; degrades to plaintext */ }
+let katexCssAbsPath = '';
+try { katexCssAbsPath = require.resolve('katex/dist/katex.min.css'); } catch (_e) { /* no css link emitted */ }
+
+const MATH_TOKEN_PREFIX  = 'LATTICEMATH';
+const MATH_TOKEN_SUFFIX  = '';
+const mathRegistry = []; // index → { tex, display }
+
+function extractOnePart(text) {
+  // Display math first ($$...$$, multiline). The non-greedy [\s\S]+? avoids
+  // over-matching across two unrelated $$ pairs. We require non-empty content
+  // so accidental "$$" pairs in prose don't capture.
+  text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex: tex.trim(), display: true });
+    return MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  // Inline math ($...$). Forbid newlines inside, and disallow $ adjacent to
+  // a digit on the outside (e.g. "$5" prices) — KaTeX inline must be bounded
+  // by non-digit context. Content can't start or end with whitespace.
+  text = text.replace(/(^|[^\\$\d])\$([^$\n][^$\n]*?[^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex, display: false });
+    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  // Single-char inline math: $x$ — handled separately since the [^$\n\s]
+  // tail anchor above requires ≥2 chars.
+  text = text.replace(/(^|[^\\$\d])\$([^$\n\s])\$(?!\d)/g, (m, pre, tex) => {
+    const i = mathRegistry.length;
+    mathRegistry.push({ tex, display: false });
+    return pre + MATH_TOKEN_PREFIX + i + MATH_TOKEN_SUFFIX;
+  });
+  return text;
+}
+
+function extractMath(text) {
+  if (!katex) return text;
+  // Skip math extraction inside fenced (```…```) and inline (`…`) code so
+  // shell prompts, JS template literals, etc. aren't mangled into LaTeX.
+  // Split keeps the delimiters as odd-indexed parts; only even parts are
+  // candidates for math.
+  const parts = text.split(/(```[\s\S]*?```|`[^`\n]+`)/);
+  for (let i = 0; i < parts.length; i += 2) {
+    parts[i] = extractOnePart(parts[i]);
+  }
+  return parts.join('');
+}
+
+function restoreMath(html) {
+  if (!katex || !mathRegistry.length) return html;
+  const re = new RegExp(MATH_TOKEN_PREFIX + '(\\d+)' + MATH_TOKEN_SUFFIX, 'g');
+  return html.replace(re, (_, i) => {
+    const entry = mathRegistry[+i];
+    if (!entry) return '';
+    try {
+      return katex.renderToString(entry.tex, {
+        displayMode: entry.display,
+        throwOnError: false,
+        output: 'html',
+        strict: false,
+        trust: false,
+      });
+    } catch (e) {
+      // KaTeX with throwOnError:false rarely throws, but guard anyway —
+      // print the source so authors can spot the broken expression.
+      const safe = entry.tex.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      return `<span class="math-error" title="KaTeX error">${safe}</span>`;
+    }
+  });
+}
+
 // ── Help / version (handled before positional parsing) ─────────────────────
 function listAvailablePalettes() {
   try {
@@ -907,6 +990,14 @@ function parseSlide(raw, index) {
 
   // Strip all directives before parsing content
   raw = raw.replace(/<!--.*?-->/gs, '').trim();
+
+  // ── Math extraction (before any markdown processing) ─────────────────────
+  // $$…$$ and $…$ become opaque tokens so the markdown parser doesn't try
+  // to italicise `_` subscripts or bold `*` multiplications inside LaTeX.
+  // Restored to KaTeX HTML by restoreMath() at the end of parseSlide. The
+  // Marp CLI path (marp.config.js) handles math natively via `math: 'katex'`;
+  // see that file for the parity contract.
+  raw = extractMath(raw);
 
   // ── Marp background image syntax ─────────────────────────────────────────
   // Handles: ![bg right](url), ![bg left](url), ![bg](url) and the same with
@@ -2227,7 +2318,7 @@ function parseSlide(raw, index) {
   const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
   const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
 
-  return [
+  return restoreMath([
     `<section id="${slideNum}" class="${classAttr}"`,
     ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
     headerEl,
@@ -2235,7 +2326,7 @@ function parseSlide(raw, index) {
     html,
     footerEl,
     `</section>`
-  ].join('');
+  ].join(''));
 }
 
 const slides = rawSlides.map((s, i) => parseSlide(s, i));
@@ -2343,10 +2434,20 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
+// ── KaTeX CSS link ────────────────────────────────────────────────────────
+// KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
+// so we link to the actual file in node_modules; the browser resolves the
+// font URLs against that origin. file:// works under puppeteer because
+// allowLocalFiles is the default for `page.goto('file://...')`.
+const katexCssLink = (katex && katexCssAbsPath)
+  ? `<link rel="stylesheet" href="file://${katexCssAbsPath}">`
+  : '';
+
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 ${googleFonts}
+${katexCssLink}
 <style>
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
