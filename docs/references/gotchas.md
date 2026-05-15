@@ -793,7 +793,7 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   specificity to 0. Added `height:auto` to the slide-context rule so
   the flex-1 distribution, not the fixed 480px, governs the container
   height. The slide-context rule at (0,2,1) now always wins.
-- **Triggered by:** Any `size: 16:9-4k` (or 4:3) slide with a Mermaid
+- **Triggered by:** Any `size: 4k` (or 4:3) slide with a Mermaid
   diagram in marp-vscode preview. HD unaffected because both values
   agreed at 1152px.
 - **Commits:** `d91decc` (px→cqi refactor); fixed in the commit that

@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: indaco
-size: 16:9-4k
+size: 4k
 paginate: true
 header: "Mermaid · Diagram Gallery"
 footer: "Mermaid 11.14 · rendered with Lattice theme"

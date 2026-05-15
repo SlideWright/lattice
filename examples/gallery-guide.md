@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: indaco
-size: 16:9-4k
+size: hd
 paginate: true
 header: "Lattice · Layout Field Guide"
 ---

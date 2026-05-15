@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: indaco
-size: 16:9
+size: hd
 paginate: true
 header: "Lattice · Image Layout Concepts"
 ---

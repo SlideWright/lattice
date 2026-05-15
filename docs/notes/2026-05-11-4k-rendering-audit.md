@@ -69,7 +69,7 @@ This might interact with Marp's internal layout so verify nothing breaks.
 **Option C — Revert section own-properties to px, add size-class override.**
 ```css
 section { padding-top: 88px; padding-bottom: 88px; border-top: 4px solid; }
-/* Authored with size: 16:9-4k AND class: scale-4k */
+/* Authored with size: 4k AND class: scale-4k */
 section.scale-4k { padding-top: 6.875cqi; padding-bottom: 6.875cqi; border-top: 0.3125cqi solid; }
 ```
 Downside: requires two front-matter keys for 4K slides.

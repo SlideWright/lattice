@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: indaco
-size: 16:9
+size: hd
 paginate: true
 header: "Lattice · Tabular Layout Studies"
 footer: "One base, four variants, five modifiers"

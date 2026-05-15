@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: cuoio
-size: 16:9
+size: hd
 header: "Lattice · Background Gallery"
 class: bg-seeds
 paginate: true

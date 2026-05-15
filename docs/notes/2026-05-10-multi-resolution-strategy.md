@@ -16,11 +16,11 @@ CSS files, no theme changes, no new CLI flags.
 
 | Name       | Dimensions  | Status    | Use case                              |
 |------------|-------------|-----------|---------------------------------------|
-| `16:9`     | 1280 × 720  | shipping  | Default — projectors, screen sharing  |
-| `16:9-4k`  | 3840 × 2160 | planned   | Hi-res display, premium print export  |
-| `4:3`      | 960 × 720   | candidate | Legacy boardroom AV rigs              |
+| `hd`     | 1280 × 720  | shipping  | Default — projectors, screen sharing  |
+| `4k`  | 3840 × 2160 | planned   | Hi-res display, premium print export  |
+| `standard`      | 960 × 720   | candidate | Legacy boardroom AV rigs              |
 
-`4:3` is declared as a candidate — worth reserving the `@size` slot now so
+`standard` is declared as a candidate — worth reserving the `@size` slot now so
 the architecture doesn't need to be revisited, even if authoring guidance
 and layout auditing come later. `16:9-2k` (2560 × 1440) is deliberately
 omitted; authors who need it can export 4K at a lower image-scale.
@@ -100,7 +100,7 @@ For 4K output:
 ```yaml
 ---
 theme: indaco
-size: 16:9-4k
+size: 4k
 ---
 ```
 
@@ -127,9 +127,9 @@ the container query.
    `section`; convert `:root` tokens, compact/loose overrides, chrome
    positions, and `calc(1280px - …)` patterns. No visual change at HD,
    verifiable by diffing rendered output against the committed baseline PDF.
-2. Add `@size 16:9-4k` and `@size 4:3` declarations to `lattice.css`.
+2. Add `@size 4k` and `@size standard` declarations to `lattice.css`.
 3. Audit and convert component-level hardcoded px sites (pill padding,
    card gaps, chart grid dimensions, etc.).
 4. Wire up a one-slide 4K smoke-test in the gallery or fixtures.
-5. If `4:3` is confirmed as shipping, run a visual check and document
+5. If `standard` is confirmed as shipping, run a visual check and document
    any layout-specific authoring guidance needed for the narrower aspect.
