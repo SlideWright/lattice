@@ -95,10 +95,11 @@ function verdictGridBadges(markdown) {
 
 /**
  * Marpit plugin: on `obligation-matrix` slides, wraps `[x]` / `[-]` / `[ ]`
- * text inside <td> cells in `<span class="state pass|warn|fail">`. Mirrors
- * verdictGridBadges but operates on table cells instead of nested list
- * items — the obligation-matrix layout authors data as a markdown table.
- * The shared `[x]`/`[-]`/`[ ]` grammar matches verdict-grid and checklist.
+ * text inside <td> cells in `<span class="state pass|warn|fail">[…]</span>`.
+ * Mirrors verdictGridBadges but operates on table cells. The bracket
+ * form of the markdown source is preserved as the span's text content
+ * (the "bracket concept") — CSS handles colour and typography only,
+ * so the rendered glyph IS the authored grammar.
  */
 function obligationMatrixBadges(markdown) {
   markdown.core.ruler.after("marpit_slide_containers", "obligation_matrix_badges", (state) => {
@@ -116,11 +117,11 @@ function obligationMatrixBadges(markdown) {
       if (token.type === "td_close") { inTd = false; continue; }
       if (token.type !== "inline" || !inTd || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
-      const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
+      const m = /^\[([x\- ])\]\s*$/.exec(text);
       if (!m) continue;
       const stateClass = m[1] === "x" ? "state pass" : m[1] === "-" ? "state warn" : "state fail";
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
-      htmlToken.content = `<span class="${stateClass}">${m[2]}</span>`;
+      htmlToken.content = `<span class="${stateClass}">[${m[1]}]</span>`;
       token.children = [htmlToken];
     }
   });

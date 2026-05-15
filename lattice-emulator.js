@@ -1247,14 +1247,14 @@ function parseSlide(raw, index) {
   }
 
   // obligation-matrix: transform [x]/[-]/[ ] prefixed td cell text into
-  // state spans. Mirrors verdictGridBadges but operates on table cells —
-  // the obligation-matrix layout authors data as a markdown table. The
-  // shared [x]/[-]/[ ] grammar matches verdict-grid and checklist; CSS
-  // draws filled/half/empty circle glyphs per state.
+  // state spans. Mirrors verdictGridBadges but operates on table cells.
+  // The bracket form of the markdown source is preserved as the span's
+  // text content — CSS handles colour and typography only, so the
+  // rendered glyph IS the authored grammar.
   if (cls.includes('obligation-matrix')) {
-    html = html.replace(/<td>\s*\[([x\- ])\]\s*([\s\S]*?)<\/td>/g, (_, marker, label) => {
+    html = html.replace(/<td>\s*\[([x\- ])\]\s*<\/td>/g, (_, marker) => {
       const sc = marker === 'x' ? 'state pass' : marker === '-' ? 'state warn' : 'state fail';
-      return `<td><span class="${sc}">${label.trim()}</span></td>`;
+      return `<td><span class="${sc}">[${marker}]</span></td>`;
     });
   }
 
