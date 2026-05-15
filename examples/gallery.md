@@ -1,7 +1,7 @@
 ---
 marp: true
-theme: indaco
-size: hd
+theme: carbone
+size: 4k
 paginate: true
 header: "Lattice · Layout Gallery"
 ---
