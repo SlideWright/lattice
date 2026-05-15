@@ -341,7 +341,7 @@ section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
  * Excluded layouts handle blockquote themselves:
  *   quote, featured (primary content)
  */
-section:not(.quote):not(.featured) > blockquote {
+section:not(.quote):not(.featured):not(.math) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -349,7 +349,7 @@ section:not(.quote):not(.featured) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured) > blockquote::before {
+section:not(.quote):not(.featured):not(.math) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
   font-size:var(--fs-label);
@@ -360,19 +360,19 @@ section:not(.quote):not(.featured) > blockquote::before {
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured) > blockquote p {
+section:not(.quote):not(.featured):not(.math) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured) > blockquote ul {
+section:not(.quote):not(.featured):not(.math) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured) > blockquote li {
+section:not(.quote):not(.featured):not(.math) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-body);
   color:var(--text-heading);
@@ -380,7 +380,7 @@ section:not(.quote):not(.featured) > blockquote li {
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured) > blockquote li::before {
+section:not(.quote):not(.featured):not(.math) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -551,7 +551,7 @@ section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-lab
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -8108,3 +8108,672 @@ section g.architecture-service text, section g.architecture-service tspan {
  */
 section g.row-rect-even > path { fill: var(--bg-alt) !important; }
 section g.row-rect-odd > path  { fill: var(--bg) !important; }
+
+/* ── MATH ──────────────────────────────────────────────────────────────────
+ * Boardroom-quality math layouts for mathematicians, quants, ML researchers,
+ * physicists, statisticians, and economists. KaTeX (server-side via the
+ * `katex` npm package in lattice-emulator.js, native via `math: 'katex'` in
+ * marp.config.js) renders `$$…$$` (display) and `$…$` (inline). Layouts
+ * surround the math with the structure each persona expects:
+ *
+ *   math (bare)         — defaults to `feature` (hero equation + legend)
+ *   math.feature        — single hero equation, "where:" legend on the right
+ *   math.derivation     — two-column proof chain: step | justification
+ *   math.theorem        — Definition / Theorem / Proof stacked cards
+ *   math.compare        — two- or three-column equation comparison
+ *   math.canvas         — equation left, plot/diagram right
+ *   math.matrix         — matrix + dimensions/properties on the right
+ *   math.matrix.decompose — three matrices in sequence (A·B = C, SVD, etc.)
+ *   math.stats          — estimate ± uncertainty + interpretation line
+ *
+ * Authoring contracts are documented per-variant below. The single rule
+ * that applies to all variants: `$$…$$` becomes a centred display block;
+ * `$…$` is inline and inherits surrounding font sizing.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* ── Shared base ── */
+/* Three-row grid: optional eyebrow (h3) at top, headline (h2), then content.
+ * Variants override only `grid-template-columns` so they all share the same
+ * vertical rhythm. align-self: center on body children centres them inside
+ * the 1fr body row. */
+section.math {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: var(--sp-md) var(--sp-lg);
+  align-content: start;
+}
+section.math h3:first-child {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+section.math > h2 {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--text-heading);
+  margin: 0;
+}
+/* Default body row — without this, a body item auto-places into row 1 when
+ * no eyebrow h3 is present, displacing the title. Variants that need a
+ * multi-row body (canvas: equation+caption stacked, stats: vertical scaffold)
+ * override grid-row on the specific items. */
+section.math > :not(h2):not(h3) {
+  grid-row: 3;
+}
+section.math h3 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-xs) 0;
+}
+section.math p { margin: 0 0 var(--sp-xs) 0; }
+section.math ul, section.math ol {
+  list-style: none; padding: 0; margin: 0;
+}
+section.math ul > li, section.math ol > li {
+  margin: 0 0 var(--sp-xs) 0;
+  line-height: var(--lh-base);
+}
+section.math ul > li::before {
+  content: '·';
+  margin-right: 0.5em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* KaTeX colour + scale — the rendered math should sit in the same colour
+ * tier as headings (more weight than body), and display math should feel
+ * monumental without overflowing 1280×720. The 1.05 multiplier on display
+ * is conservative: KaTeX's own 1.21em baseline already feels large. */
+section.math .katex {
+  color: var(--text-heading);
+  font-size: 1em;
+}
+section.math .katex-display {
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;
+}
+section.math .katex-display > .katex {
+  font-size: 1.5em;
+  line-height: 1.2;
+  display: block;
+  text-align: center;
+}
+section.math .math-error {
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+/* ── math.feature (and bare .math) ──
+ * Authoring:
+ *   ## Title
+ *   $$ \hat\beta = (X^TX)^{-1}X^Ty $$
+ *   **where**
+ *   - $\hat\beta$ — OLS estimator
+ *   - $X$ — design matrix, $n \times p$
+ *   - $y$ — response vector
+ *
+ * Hero equation occupies the left 60% with `.katex-display` blown up;
+ * the trailing `**where**` paragraph + list anchor on the right. */
+/* Authoring convention: the body is a single `<ul>` (the variable legend);
+ * the "where" label is a CSS pseudo-element on the list, so the markdown
+ * stays clean and the grid stays simple — equation in col 1, list in col 2,
+ * both in row 3 of the body. */
+section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)),
+section.math.feature {
+  grid-template-columns: 3fr 2fr;
+  padding-block: var(--sp-xl);
+}
+section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display),
+section.math.feature > p:has(> .katex-display) {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: center;
+  text-align: center;
+  padding-right: var(--sp-lg);
+  border-right: 1px solid var(--border);
+}
+section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > p:has(> .katex-display) .katex-display > .katex,
+section.math.feature > p:has(> .katex-display) .katex-display > .katex {
+  font-size: 1.9em;
+}
+section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > :is(ul, ol),
+section.math.feature > :is(ul, ol) {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: center;
+}
+section.math:where(:not(.derivation):not(.theorem):not(.compare):not(.canvas):not(.matrix):not(.stats)) > :is(ul, ol)::before,
+section.math.feature > :is(ul, ol)::before {
+  content: 'where';
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-sm);
+}
+
+/* ── math.derivation ──
+ * Authoring:
+ *   ## Title
+ *   | Step                                 | Justification          |
+ *   | ------------------------------------ | ---------------------- |
+ *   | $f(x+h) = f(x) + f'(x)h + O(h^2)$    | Taylor, 2nd order      |
+ *   | $f(x+h) - f(x) = f'(x)h + O(h^2)$    | subtract $f(x)$        |
+ *   | $\frac{f(x+h)-f(x)}{h} = f'(x)+O(h)$ | divide by $h$          |
+ *   | $\lim_{h\to 0} = f'(x)$              | take limit             |
+ *
+ * Two-column table: math left, plain-text right. */
+section.math.derivation {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--sp-xl);
+}
+section.math.derivation > h2,
+section.math.derivation > h3 {
+  flex: 0 0 auto;
+  margin: 0 0 var(--sp-md) 0;
+}
+section.math.derivation > h3 + h2 { margin-top: 0; }
+/* Auto top + bottom margin on the table consumes the unused flex space,
+ * pushing the chain to the vertical centre of the body. */
+section.math.derivation table {
+  margin: auto 0;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+section.math.derivation thead {
+  display: none; /* headers don't earn their place; column meaning is clear */
+}
+section.math.derivation tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+section.math.derivation tbody tr:last-child {
+  border-bottom: none;
+}
+section.math.derivation td {
+  padding: var(--sp-sm) var(--sp-md);
+  vertical-align: middle;
+  font-size: var(--fs-md);
+}
+section.math.derivation td:first-child {
+  width: 62%;
+  color: var(--text-heading);
+}
+section.math.derivation td:last-child {
+  color: var(--text-muted);
+  font-style: italic;
+  border-left: 2px solid var(--border);
+}
+section.math.derivation tbody tr:last-child td {
+  font-weight: 600;
+  color: var(--text-heading);
+}
+section.math.derivation tbody tr:last-child td:last-child {
+  font-style: normal;
+  color: var(--accent);
+}
+/* Display math used as a row entry stays inline-block so it doesn't break
+ * the row height. Override the default centred display behaviour. */
+section.math.derivation td .katex-display {
+  display: inline-block;
+  margin: 0;
+  text-align: left;
+}
+section.math.derivation td .katex-display > .katex {
+  font-size: 1.15em;
+  display: inline-block;
+  text-align: left;
+}
+
+/* ── math.theorem ──
+ * Authoring: blockquotes labelled by their first **Bold.** word.
+ *   ## Title
+ *   > **Definition.** A function $f:\mathbb{R}\to\mathbb{R}$ is continuous
+ *   > at $a$ if $\lim_{x\to a} f(x) = f(a)$.
+ *   >
+ *   > **Theorem (IVT).** If $f$ is continuous on $[a,b]$ and $y$ lies
+ *   > between $f(a)$ and $f(b)$, then $\exists c \in [a,b]$ with $f(c)=y$.
+ *   >
+ *   > **Proof.** By contradiction. …
+ *
+ * The blockquotes render as stacked colour-coded cards. Markdown wraps
+ * each `>`-prefixed block in a single `<blockquote>`; theorem-card stripes
+ * are coloured by position (first/middle/last) using the deck spectrum. */
+section.math.theorem {
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--sp-lg);
+}
+section.math.theorem > h2,
+section.math.theorem > h3 {
+  flex: 0 0 auto;
+  margin: 0 0 var(--sp-md) 0;
+}
+/* Auto top margin on the first card + auto bottom margin on the last card
+ * centres the stack vertically inside the body region. */
+section.math.theorem > blockquote:first-of-type { margin-top: auto; }
+section.math.theorem > blockquote:last-of-type  { margin-bottom: auto; }
+section.math.theorem blockquote {
+  background: var(--bg-alt);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--sp-sm) var(--sp-md);
+  margin: 0 0 var(--sp-sm) 0;
+  font-style: normal;
+  color: var(--text-body);
+}
+/* Suppress the default "KEY INSIGHT" eyebrow that lattice.css emits on every
+ * blockquote outside .quote/.featured — the bold inline label (Definition.,
+ * Theorem., Proof.) carries the type, and a second label clutters the card. */
+section.math.theorem blockquote::before { content: none; }
+section.math.theorem blockquote p {
+  margin: 0;
+}
+section.math.theorem blockquote p + p {
+  margin-top: var(--sp-xs);
+}
+section.math.theorem blockquote strong:first-child {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 0.5em;
+}
+/* Position-based accent stripe — Definition (start) cooler, Theorem (middle)
+ * warmer, Proof (end) neutral. Uses the palette's --cN-dark categorical
+ * tokens that every Lattice theme defines; falls back to --accent if a
+ * future palette ever drops them. */
+section.math.theorem blockquote:nth-of-type(3n+1) {
+  border-left-color: var(--c4-dark, var(--accent));
+}
+section.math.theorem blockquote:nth-of-type(3n+1) strong:first-child {
+  color: var(--c4-dark, var(--accent));
+}
+section.math.theorem blockquote:nth-of-type(3n+2) {
+  border-left-color: var(--c7-dark, var(--accent));
+}
+section.math.theorem blockquote:nth-of-type(3n+2) strong:first-child {
+  color: var(--c7-dark, var(--accent));
+}
+section.math.theorem blockquote:nth-of-type(3n) {
+  border-left-color: var(--text-muted);
+}
+section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
+  color: var(--text-muted);
+}
+section.math.theorem blockquote .katex-display {
+  margin: var(--sp-xs) 0;
+}
+section.math.theorem blockquote .katex-display > .katex {
+  font-size: 1.25em;
+}
+
+/* ── math.compare ──
+ * Authoring: alternating h3 + content groups become columns.
+ *   ## Title
+ *   ### Naïve
+ *   $$ E = mc^2 $$
+ *   Classical kinetic-energy approximation.
+ *   ### Relativistic
+ *   $$ E^2 = (mc^2)^2 + (pc)^2 $$
+ *   Full Einstein relation; reduces to the naïve form for $p \ll mc$.
+ *
+ * Renders as 2-column (or 3-column if three h3s are present) via CSS
+ * multi-columns. The markdown emits a flat sibling sequence — no wrapper
+ * divs — so we use `column-span:all` on h2 to keep the title full-width
+ * and `break-before:column` on each subsequent h3 to start a new column. */
+section.math.compare {
+  display: block;
+  column-count: 2;
+  column-gap: var(--sp-lg);
+  column-rule: 1px solid var(--border);
+  column-fill: balance;
+  /* Chromium ≥122 honours `align-content` on block layout — use it to pull
+   * the columns to the vertical middle of the slide so a short comparison
+   * doesn't leave the bottom half empty. */
+  align-content: center;
+  padding-block: var(--sp-lg);
+}
+section.math.compare:has(h3:nth-of-type(3)) {
+  column-count: 3;
+}
+section.math.compare > h2 {
+  column-span: all;
+  margin: 0 0 var(--sp-md) 0;
+}
+section.math.compare > h3 {
+  break-before: column;
+  break-after: avoid;
+  padding-bottom: var(--sp-xs);
+  border-bottom: 2px solid var(--accent);
+  margin: 0 0 var(--sp-sm) 0;
+  color: var(--text-heading);
+  font-size: var(--fs-label);
+}
+section.math.compare > h3:first-of-type { break-before: avoid; }
+section.math.compare > p:has(> .katex-display) {
+  break-inside: avoid;
+  margin: 0 0 var(--sp-sm) 0;
+  text-align: center;
+}
+section.math.compare > p:has(> .katex-display) .katex-display > .katex {
+  font-size: 1.4em;
+}
+section.math.compare > p:not(:has(.katex-display)) {
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-xs) 0;
+}
+
+/* ── math.canvas ──
+ * Authoring (plot via function-plot):
+ *   ## Title
+ *   $$ y = \frac{1}{1+e^{-x}} $$
+ *   The sigmoid: $S$-shaped, asymptotes at $0$ and $1$.
+ *   ```latticeplot
+ *   { "data": [{ "fn": "1 / (1 + exp(-x))" }],
+ *     "xAxis": { "domain": [-6, 6] }, "yAxis": { "domain": [-0.1, 1.1] } }
+ *   ```
+ *
+ * Equation + caption on the left, plot on the right. The plot child is
+ * either a ```latticeplot fence (function-plot, the default) or an
+ * `<img>` for externally-rendered SVG / PNG. */
+/* Grid-template-areas keeps equation + caption stacked in the left column
+ * without a wrapper div: equation in `eq` (1fr, big), caption in `cap`
+ * (auto, sized to text), plot spans both rows on the right. The plot's
+ * intrinsic height no longer inflates the eq row because eq is bounded
+ * by 1fr (which only takes remaining space). */
+section.math.canvas {
+  grid-template-columns: 2fr 3fr;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    "eyebrow eyebrow"
+    "title   title"
+    "eq      plot"
+    "cap     plot";
+  padding-block: var(--sp-xl);
+}
+section.math.canvas > h3:first-child { grid-area: eyebrow; }
+section.math.canvas > h2              { grid-area: title; }
+section.math.canvas > p:has(.katex-display) {
+  grid-area: eq;
+  align-self: center;
+  text-align: center;
+  margin: 0;
+}
+section.math.canvas > p:has(.katex-display) .katex-display > .katex {
+  font-size: 1.7em;
+}
+section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
+  grid-area: cap;
+  color: var(--text-muted);
+  text-align: center;
+  margin: var(--sp-sm) 0 0 0;
+}
+section.math.canvas > p:has(img),
+section.math.canvas > :is(svg, figure, .latticeplot) {
+  grid-area: plot;
+  align-self: center;
+  justify-self: center;
+}
+section.math.canvas > .latticeplot {
+  width: 55cqi;
+  height: 38cqi;
+}
+section.math.canvas > p:has(img) {
+  margin: 0;
+  text-align: center;
+}
+section.math.canvas > p > img {
+  max-width: 100%;
+  max-height: 55cqi;
+  width: auto;
+  height: auto;
+  display: inline-block;
+}
+
+/* ── math.matrix ──
+ * Authoring (default — one matrix + properties):
+ *   ## Title
+ *   $$ M = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix} $$
+ *   - **shape** — $2 \times 3$
+ *   - **rank** — $2$
+ *   - **rows** — observations
+ *   - **cols** — features
+ *
+ * Authoring (`.decompose` — three matrices in sequence):
+ *   ## Title
+ *   $$ A = U\Sigma V^\top $$
+ *   ### Singular value decomposition
+ *   $$ U \in \mathbb{R}^{m\times m} $$
+ *   $$ \Sigma \in \mathbb{R}^{m\times n} $$
+ *   $$ V \in \mathbb{R}^{n\times n} $$ */
+section.math.matrix {
+  grid-template-columns: 3fr 2fr;
+  align-content: center;
+  padding-block: var(--sp-lg);
+}
+section.math.matrix > p:has(> .katex-display) {
+  grid-column: 1;
+  align-self: center;
+  text-align: center;
+}
+section.math.matrix > p:has(> .katex-display) .katex-display > .katex {
+  font-size: 1.7em;
+}
+section.math.matrix > :is(ul, ol) {
+  grid-column: 2;
+  align-self: center;
+  padding-left: var(--sp-md);
+  border-left: 1px solid var(--border);
+}
+section.math.matrix > :is(ul, ol) > li {
+  margin-bottom: var(--sp-sm);
+  color: var(--text-body);
+}
+section.math.matrix > :is(ul, ol) > li > strong {
+  display: inline-block;
+  min-width: 4em;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 0.5em;
+}
+
+/* `.decompose` overrides the grid to a block layout so the secondary
+ * equations can sit inline-block in a row. The lead equation + h3 are
+ * full-width block; the remaining `<p>` siblings flow horizontally as
+ * a 3-up row (text-align: center on the parent centres them as a group). */
+/* Block layout with align-content:center centres the whole group
+ * (title → lead eq → divider → subhead → component row) vertically.
+ * The 3 component equations need block display to flow inline-block in a
+ * row; flex column would stack them. Modern Chromium (≥122) supports
+ * `align-content` on block — older preview Chromium falls back to
+ * top-anchored content, which is still readable. */
+section.math.matrix.decompose {
+  display: block;
+  align-content: center;
+  padding-block: var(--sp-lg);
+  text-align: center;
+}
+section.math.matrix.decompose > h2 {
+  margin: 0 0 var(--sp-md) 0;
+  text-align: left;
+}
+section.math.matrix.decompose > p:has(> .katex-display):first-of-type {
+  margin: 0 0 var(--sp-md) 0;
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--border);
+}
+section.math.matrix.decompose > p:has(> .katex-display):first-of-type .katex-display > .katex {
+  font-size: 2.1em;
+}
+section.math.matrix.decompose > h3 {
+  text-align: center;
+  margin: 0 0 var(--sp-sm) 0;
+}
+section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) {
+  display: inline-block;
+  width: calc((100% - 2 * var(--sp-lg)) / 3);
+  margin: 0 var(--sp-xs);
+  vertical-align: middle;
+}
+section.math.matrix.decompose > p:has(> .katex-display):not(:first-of-type) .katex-display > .katex {
+  font-size: 1.3em;
+}
+
+/* ── math.stats ──
+ * Authoring:
+ *   ## Title
+ *   $$ \hat\beta = 0.42 \pm 0.03 $$
+ *   > 95% CI: $[0.36,\, 0.48]$
+ *   > $p < 0.001$, $n = 1{,}204$
+ *
+ *   For every additional unit of $X$, $Y$ rises by 0.42 SD — roughly an 8 %
+ *   shift on the baseline outcome.
+ *
+ * Hero estimate ± SE, blockquote of uncertainty/test stats, interpretation
+ * line at the bottom. */
+/* Flex column with justify-content:center pulls the whole stack (title →
+ * hero estimate → blockquote → interpretation) to the vertical middle so
+ * the boardroom number lands at eye-level instead of orphaning an empty
+ * lower half. */
+section.math.stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: var(--sp-xl);
+  gap: var(--sp-sm);
+}
+section.math.stats > h2 {
+  text-align: center;
+  margin: 0 0 var(--sp-md) 0;
+}
+section.math.stats > p:has(> .katex-display):first-of-type {
+  text-align: center;
+  margin: 0;
+}
+section.math.stats > p:has(> .katex-display):first-of-type .katex-display > .katex {
+  font-size: 2.6em;
+  color: var(--accent);
+  font-weight: 700;
+}
+section.math.stats > blockquote {
+  border-left: none;
+  background: none;
+  padding: 0;
+  margin: 0 0 var(--sp-md) 0;
+  text-align: center;
+  font-style: normal;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.12em;
+}
+section.math.stats > blockquote p {
+  margin: 0 0 0.15em 0;
+}
+section.math.stats > blockquote::before { content: none; }
+section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
+  text-align: center;
+  max-width: 60cqi;
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--fs-md);
+  line-height: var(--lh-base);
+}
+
+/* ── function-plot SVG styling ──
+ * function-plot stamps inline `stroke="..."` attributes on its trace paths
+ * (`.line-0`, `.line-1`, …) and axis chrome (`stroke="black"` on `.domain`,
+ * `fill="currentColor"` on tick text). To bring it into the palette we
+ * override those with !important on the inline attributes. The first
+ * three traces ride the editorial accents (accent → cool → warm);
+ * further traces fall back to muted so they read as supporting context. */
+section .latticeplot .function-plot {
+  font-family: var(--font-mono);
+  color: var(--text-body);
+  background: transparent;
+}
+section .latticeplot .function-plot .domain {
+  stroke: var(--text-muted) !important;
+  opacity: 0.6 !important;
+}
+section .latticeplot .function-plot .tick line {
+  stroke: var(--border) !important;
+}
+section .latticeplot .function-plot .tick text {
+  fill: var(--text-muted) !important;
+  font-size: var(--fs-label);
+}
+section .latticeplot .function-plot .axis-label,
+section .latticeplot .function-plot .x.axis-label,
+section .latticeplot .function-plot .y.axis-label {
+  fill: var(--text-heading) !important;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+section .latticeplot .function-plot .line-0 {
+  stroke: var(--accent) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot .line-1 {
+  stroke: var(--c4-dark, var(--text-heading)) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot .line-2 {
+  stroke: var(--c7-dark, var(--text-muted)) !important;
+  stroke-width: 2.5 !important;
+}
+section .latticeplot .function-plot :is(.line-3, .line-4, .line-5) {
+  stroke: var(--text-muted) !important;
+  stroke-width: 2 !important;
+}
+section .latticeplot .function-plot .annotations .annotation,
+section .latticeplot .function-plot .annotations text {
+  fill: var(--text-muted) !important;
+  stroke: var(--text-muted) !important;
+}
+section .latticeplot-error {
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  padding: var(--sp-sm);
+  border: 1px dashed var(--warn);
+  border-radius: var(--radius-sm);
+}
+
+/* ── KaTeX in non-math layouts ──
+ * Allow inline math in any layout (e.g. a stats card on a kpi slide) by
+ * giving `.katex` sensible defaults so it inherits colour and doesn't
+ * blow up the line-height. Display math outside `section.math.*` falls
+ * back to centred + accent for visibility. */
+section:not(.math) .katex { color: inherit; }
+section:not(.math) .katex-display { margin: var(--sp-sm) 0; text-align: center; }

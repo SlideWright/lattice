@@ -418,6 +418,28 @@ const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-pan
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/journey');
 const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/word-cloud');
+
+/**
+ * latticeplotFences — rewrites ```latticeplot fenced code blocks into a
+ * `<div class="latticeplot" data-fp-config="…base64 JSON…"></div>` placeholder.
+ * The vendored function-plot UMD bundle (loaded via the runtime / emulator
+ * head) inflates each placeholder into an inline SVG. Mirrors the
+ * `lang === 'latticeplot'` branch in lattice-emulator.js's fence handler;
+ * keep the two in step.
+ */
+function latticeplotFences(md) {
+  const defaultFence = md.renderer.rules.fence;
+  md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    const info = (token.info || '').trim();
+    if (info === 'latticeplot') {
+      const cfg64 = Buffer.from(token.content, 'utf8').toString('base64');
+      return `<div class="latticeplot" data-fp-config="${cfg64}"></div>\n`;
+    }
+    return defaultFence ? defaultFence(tokens, idx, options, env, self)
+                        : self.renderToken(tokens, idx, options);
+  };
+}
 // Radar is a chart-family member — its dispatch rides
 // applyChartFamilyToHtml above; lib/radar.js is the parsing + geometry
 // kernel that chart-family delegates to.
@@ -434,6 +456,14 @@ module.exports = {
   html: true,
   allowLocalFiles: true,
   imageScale: 1,
+  // Math support — KaTeX is the Marp default; we set it explicitly so the
+  // contract is visible in config. KaTeX renders synchronously to HTML+CSS,
+  // which is critical under the headless-Chromium PDF path (MathJax's async
+  // reflow has caused PDF race conditions in the past). The emulator path
+  // (lattice-emulator.js) calls katex.renderToString() at slide-parse time
+  // and injects the same katex.min.css into the HTML head — see the math
+  // extractor near the top of that file for the parity contract.
+  math: 'katex',
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
     marp.use(deckClassPropagate)
@@ -444,7 +474,8 @@ module.exports = {
         .use(glossaryListToTable)
         .use(glossaryRange)
         .use(stripHeadingPeriods)
-        .use(addHeadingPeriods);
+        .use(addHeadingPeriods)
+        .use(latticeplotFences);
 
     // Wrap render() so chart-family slides are rewritten into the
     // chart-frame skeleton in the rendered HTML — same DOM the export
@@ -478,6 +509,7 @@ module.exports.plugins = {
   verdictGridBadges,
   checklistItemStates,
   slotLabelLift,
+  latticeplotFences,
   glossaryListToTable,
   glossaryRange,
   stripHeadingPeriods,
