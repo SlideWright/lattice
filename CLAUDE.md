@@ -73,6 +73,10 @@ makes the reviewer's link 404 (or shows stale content).
   paragraph of every reply that updates a PDF, plain text on its own
   line, no markdown. Never `github.com/.../blob/...` (web preview, lower
   PDF fidelity) or `github.com/.../raw/...` (302-redirects anyway).
+- **Hand the rebuilt PDF to the user via `SendUserFile` too.** The raw
+  URL is the permanent record; `SendUserFile` streams the bytes straight
+  to the user's client so they can flip through it without leaving the
+  chat. Do both, every time the PDF changes.
 - **Design before code on rethink requests.** When the user asks to
   "rethink X," write the design model first — name the axes, list
   candidate moves, recommend one. Confirm direction in one round trip
