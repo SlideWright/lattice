@@ -33,6 +33,8 @@ A 2×2 quadrant chart authored as a plain nested list — each top-level item is
 
 ## Where to put the next dollar.
 
+Effort estimated in story-points; reach as percent of addressable users.
+
 - Strategic Bets
   - Codebook caching `3, 70`
   - Multi-tenant DEKs `5, 85`
@@ -57,6 +59,8 @@ The default variant lays four palette-tinted regions over a centerlined plot box
 
 ## Where the value sits, sized by deal size.
 
+Bubble area scales with annual contract value, in millions.
+
 - Strategic Bets
   - Acme `3, 70, 8.2`
   - Northwind `5, 85, 5.4`
@@ -80,6 +84,8 @@ The `bubble` variant takes a third comma-separated value per item and √-scales
 
 ## What moved this quarter.
 
+Faded ring is last quarter's position; solid dot is now.
+
 - Strategic Bets
   - Acme `3, 60` `4, 78`
   - Northwind `4, 70` `6, 86`
@@ -100,6 +106,8 @@ The `trail` variant takes two coord pills per item — before, then after. The b
 `Pricing power → Brand strength`
 
 ## Where each segment of the market lives.
+
+Convex hulls per cohort — deterministic geometry, same data → same shape.
 
 - Enterprise
   - Acme `8, 9`
@@ -132,6 +140,8 @@ The `cohort` variant treats top-level groups as cohorts rather than quadrant lab
 
 ## Who clears both bars.
 
+Both targets pulled from last quarter's OKR review; lines redrawn each cycle.
+
 - On Pace
   - Platform `7, 82`
   - Identity `8, 90`
@@ -154,6 +164,8 @@ The `threshold` variant replaces the chart's midlines with explicit target lines
 `Completeness of Vision 0–10 → Ability to Execute 0–10`
 
 ## The market read at a glance.
+
+Canonical Gartner labels by default; author-supplied group names take over.
 
 - Challengers
   - Megacorp `3, 8`
