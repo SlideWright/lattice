@@ -590,12 +590,11 @@
 
   /**
    * Transforms obligation-matrix table cells in VS Code preview (mirrors
-   * the Marp plugin). Finds [x]/[-]/[ ] text in <td> cells inside
-   * section.obligation-matrix and wraps the bracket form in
-   * <span class="state pass|warn|fail">[x]</span>. The bracket source
-   * grammar is preserved as the span's text content — CSS styles the
-   * colour and typography. Idempotent — skips cells that already
-   * contain a .state span.
+   * the Marp plugin). Finds [x]/[-]/[ ] in <td> cells inside
+   * section.obligation-matrix, strips the marker, and wraps any trailing
+   * label in <span class="state pass|warn|fail">. CSS draws the colored
+   * circle checkbox glyph. Idempotent — skips cells already containing
+   * a .state span.
    */
   function transformObligationMatrixBadges() {
     if (typeof document === 'undefined') return;
@@ -603,12 +602,12 @@
       for (const td of section.querySelectorAll('td')) {
         if (td.querySelector('.state')) continue; // already transformed
         const text = td.textContent.trim();
-        const m = /^\[([x\- ])\]$/.exec(text);
+        const m = /^\[([x\- ])\]\s*(.*)$/.exec(text);
         if (!m) continue;
         const stateClass = m[1] === 'x' ? 'state pass'
                          : m[1] === '-' ? 'state warn'
                          : 'state fail';
-        td.innerHTML = `<span class="${stateClass}">[${m[1]}]</span>`;
+        td.innerHTML = `<span class="${stateClass}">${m[2]}</span>`;
       }
     }
   }
