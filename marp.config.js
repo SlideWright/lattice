@@ -418,6 +418,9 @@ const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-pan
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/journey');
 const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/word-cloud');
+// Radar is a chart-family member — its dispatch rides
+// applyChartFamilyToHtml above; lib/radar.js is the parsing + geometry
+// kernel that chart-family delegates to.
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {

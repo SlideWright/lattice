@@ -14,7 +14,7 @@ Every layout falls into one of two categories. The distinction matters because i
 
 | Category     | Class                                                                                                                                           | Post-processor                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
+| Structured   | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `radar`, `roadmap`, `split-panel`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
 | Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code`         | no — CSS-only                   |
 
 Modifiers (`dark`, `mirror`, and image-specific `full` / `contain`, etc.) compose with both categories.
@@ -549,6 +549,50 @@ Unordered list of words, each ending with a trailing inline-code element that ho
 **Canvas dimensions.** The packer works in a fixed 1100×320 px frame, sized to clear section chrome (h2 above, below-note paragraph beneath, section padding) without triggering the overflow watcher. If a word can't pack at its target size, the engine shrinks it up to 4× by 10% steps; if it still can't fit, it is dropped silently (authors should reduce its weight in that case).
 
 **Determinism.** Same source → same layout. The spiral is parameterised, not random; rotation is rank-keyed; colour is rank-keyed. Rebuilds and renderer-cross-checks produce identical output.
+
+### `radar` — native radar / spider chart (chart-family member)
+
+A chart-family member alongside `progress`, `timeline-list`, `piechart`,
+`gantt`, and `kanban` — every radar slide is wrapped in the shared
+`chart-frame` skeleton (eyebrow + h2 + subtitle / chart body / caption) by
+`lib/chart-family.js`. The geometry kernel lives in `lib/radar.js`.
+
+Series-major nested list: each top-level item is a series, each nested item is an `axis` with a trailing inline-code `value`. `lib/radar.js` parses the list, resolves the value scale, and emits a positioned SVG at build time — no Mermaid, no charting library, zero client-side JS.
+
+```markdown
+<!-- _class: radar -->
+
+`Scale · 0–10`
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Security `7`
+```
+
+**Axis order comes from the first series.** Later series align to it by axis label (case-insensitive), falling back to position when a label doesn't match — so a typo misaligns one point, not the whole chart.
+
+**Scale auto-fits, or the eyebrow pins it.** With no eyebrow number the scale runs `0` to the data max rounded up to a clean interval (1 / 2 / 2.5 / 5 × 10ⁿ). The eyebrow `<code>` can override it with a range (`0–100`, `0-100`, `0 to 100`) or a lone maximum (`100`); any other eyebrow text is ignored and the eyebrow still renders normally.
+
+**Series colour rotates the categorical palette** (`--cat-blue`, `--cat-orange`, `--cat-teal`, `--cat-rose`, `--cat-purple`, `--cat-green`, …) — palette-blind, theme supplies the hues.
+
+| Modifier           | Effect                                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (default)          | Multi-series overlay — every series a translucent filled polygon with vertex dots. The workhorse; best at two or three series.                                  |
+| `target`           | A series named `Target` (or `Goal` / `Plan`) becomes a dashed reference polygon; each axis draws a gap segment along the spoke — rose where the actual falls short, quiet green where it clears the bar. |
+| `delta`            | Exactly two series, read before → after. The before polygon is muted; per-axis change segments ride the spokes — green up, rose down, faint flat.                |
+| `benchmark`        | The first series is the hero line; every other series collapses into a single min–max envelope band. One shape and your line instead of a tangle of polygons.    |
+| `quadrant`         | Three-level list — series → group → axis. Each group becomes a tinted sector with a rim label and a dashed mean arc. Falls back to the default overlay if the list isn't grouped. |
+| `small-multiples`  | One mini radar per series on a shared scale, laid out in a row. The honest read when there are more series than an overlay can carry.                            |
+
+**`minimal` and `dark` are composable cross-cutting modifiers.** `minimal` drops the polygon fills (stroke-only) and fades the grid; `dark` lifts the grid for a dark surface. Both layer on any variant — e.g. `radar benchmark minimal`.
+
+**Determinism.** The geometry is a pure function of the value model — same source, same SVG. Shared by all three render paths (`lib/radar.js`, the marp-cli render hook, the marp-vscode runtime mirror).
 
 ## Template 1: Title (dark bookend)
 
