@@ -5721,7 +5721,12 @@ section.obligation-matrix td .state {
   background-size:100% 100%;
   box-sizing:border-box;
   vertical-align:middle;
-  font-size:0; /* hide any trailing label so the visual is the disc */
+  /* Hide any trailing label ([x] Applies fully…) while keeping em units
+   * resolving against the inherited cell font-size. Setting font-size:0
+   * here would collapse 1.4em to 0 and make the disc invisible. */
+  overflow:hidden;
+  text-indent:200%;
+  white-space:nowrap;
   line-height:1;
 }
 section.obligation-matrix td .state.pass { --state-color:var(--pass); }

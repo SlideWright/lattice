@@ -609,6 +609,29 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Any author-overridable default.
 - **Removable when:** Never — this is the correct CSS pattern.
 
+### `font-size: 0` collapses `em` width/height on the same element
+
+- **Symptom:** A state-token disc (or any size-from-em element) renders
+  with zero dimensions and disappears entirely. Most visible in
+  `obligation-matrix` cells where the `<span class="state …">` should
+  be a 1.4em coloured circle but is invisible.
+- **Cause:** `em` resolves against the element's own computed
+  `font-size`. Setting `font-size: 0` (a common trick to hide a
+  trailing inline label like `[x] Applies fully`) drops the computed
+  font-size to `0`, so `1.4em` becomes `0px` — the disc is sized to
+  nothing and renders empty.
+- **Mitigation:** Hide the label via `overflow: hidden; text-indent:
+  200%; white-space: nowrap` and keep `font-size` inherited. The disc
+  stays sized from the cell's font-size; any trailing label is pushed
+  out of the box and clipped. Used in
+  [lattice.css](../../lattice.css) (`section.obligation-matrix td
+  .state`). See the UNIVERSAL STATE TOKEN block.
+- **Triggered by:** Combining `font-size: 0` (label-hiding) with `em`
+  width/height on the same element.
+- **Removable when:** Never — `em` is the right unit for state tokens
+  (scales with the layout's body font); `font-size: 0` is the wrong
+  tool to hide inline text.
+
 ---
 
 ## Lattice internals
