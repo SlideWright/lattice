@@ -5597,14 +5597,13 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  * Author writes the universal [x]/[-]/[ ] grammar; the marpit/emulator/
  * runtime transforms strip the marker and wrap the cell content in
  *   <span class="state pass|warn|fail">…</span>.
- * CSS draws the colored circle checkbox — same recipe as checklist
- * (colored fill, white SVG glyph) with border-radius:50% so the box
- * reads as a circle. Filled+check for pass, filled+dash for warn,
- * empty border for fail.
+ * CSS draws the visual using SHAPE as the primary channel — fully
+ * filled circle for pass, half-filled circle for warn, empty (border
+ * only) circle for fail. Colour reinforces shape for sighted users,
+ * but the shape alone carries the state for colour-blind viewers.
  *
  * Default uses the universal pass/warn/fail palette (green / amber /
- * red) — same semantics as checklist and verdict-grid, so authors
- * working across layouts get one cross-engine grammar. .heat flips to
+ * red) — same semantics as checklist and verdict-grid. .heat flips to
  * the risk palette (applies = red alert, exempt = green safe). */
 section.obligation-matrix td .state {
   display:inline-block;
@@ -5612,9 +5611,6 @@ section.obligation-matrix td .state {
   border:2px solid currentColor;
   border-radius:50%;
   background-color:transparent;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:68% 68%;
   box-sizing:border-box;
   vertical-align:middle;
   font-size:0; /* hide any trailing label so the visual is the circle */
@@ -5623,19 +5619,17 @@ section.obligation-matrix td .state {
 section.obligation-matrix td .state.pass {
   color:var(--pass);
   background-color:var(--pass);
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round' d='M3.25 8.5 L6.75 12 L12.75 5'/></svg>");
 }
 section.obligation-matrix td .state.warn {
   color:var(--warn);
-  background-color:var(--warn);
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='white' stroke-width='2.75' stroke-linecap='round' d='M4 8 L12 8'/></svg>");
+  background:linear-gradient(to right, var(--warn) 50%, transparent 50%);
 }
 section.obligation-matrix td .state.fail {
   color:var(--fail);
   background-color:transparent;
 }
 
-/* .heat — same glyph recipe, semantic risk palette: [x] applies = red
+/* .heat — same shape grammar, semantic risk palette: [x] applies = red
  * alert; [-] partial = amber caution; [ ] exempt = green safe. */
 section.obligation-matrix.heat tbody tr td:not(:first-child) { background:none; }
 section.obligation-matrix.heat td .state.pass {
@@ -5644,7 +5638,7 @@ section.obligation-matrix.heat td .state.pass {
 }
 section.obligation-matrix.heat td .state.warn {
   color:var(--warn);
-  background-color:var(--warn);
+  background:linear-gradient(to right, var(--warn) 50%, transparent 50%);
 }
 section.obligation-matrix.heat td .state.fail {
   color:var(--pass);
