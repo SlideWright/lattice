@@ -550,7 +550,12 @@ Unordered list of words, each ending with a trailing inline-code element that ho
 
 **Determinism.** Same source → same layout. The spiral is parameterised, not random; rotation is rank-keyed; colour is rank-keyed. Rebuilds and renderer-cross-checks produce identical output.
 
-### `radar` — native radar / spider chart
+### `radar` — native radar / spider chart (chart-family member)
+
+A chart-family member alongside `progress`, `timeline-list`, `piechart`,
+`gantt`, and `kanban` — every radar slide is wrapped in the shared
+`chart-frame` skeleton (eyebrow + h2 + subtitle / chart body / caption) by
+`lib/chart-family.js`. The geometry kernel lives in `lib/radar.js`.
 
 Series-major nested list: each top-level item is a series, each nested item is an `axis` with a trailing inline-code `value`. `lib/radar.js` parses the list, resolves the value scale, and emits a positioned SVG at build time — no Mermaid, no charting library, zero client-side JS.
 

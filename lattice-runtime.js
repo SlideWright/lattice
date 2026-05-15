@@ -429,7 +429,8 @@
     transformRoadmapHorizons();
     transformJourney();
     transformWordCloud();
-    transformRadar();
+    // Radar is a chart-family member; its DOM transform fires from
+    // applyChartFamily() below, sharing the chart-frame wrap path.
     applyGlossaryListTable(document);
     applyGlossaryRangePills(document);
     applyChartFamily(document);
@@ -1972,26 +1973,10 @@
       default:                return rRenderStandard(model, scale, isMinimal);
     }
   }
-  function transformRadar() {
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.radar')) {
-      if (section.querySelector(':scope > .radar-figure')) continue;
-      const ul = section.querySelector(':scope > ul');
-      if (!ul) continue;
-      const tokens = section.className.trim().split(/\s+/);
-      const variant = rPickVariant(tokens);
-      const isMinimal = tokens.includes('minimal');
-      const model = rParseRadar(ul.innerHTML, variant === 'quadrant');
-      if (!model) continue;
-      const eyebrowCode = section.querySelector(':scope > p > code');
-      const scale = rResolveScale(model, eyebrowCode ? eyebrowCode.textContent : '');
-      const figHtml = rBuildRadar(model, variant, scale, isMinimal);
-      const tmp = document.createElement('div');
-      tmp.innerHTML = figHtml;
-      const figEl = tmp.firstElementChild;
-      if (figEl) ul.replaceWith(figEl);
-    }
-  }
+  // The radar runtime DOM transform fires via applyChartFamily() — radar is
+  // a chart-family member, dispatched alongside progress / piechart / etc.
+  // The rPickVariant / rParseRadar / rResolveScale / rBuildRadar functions
+  // above are called by the buildRadarFigure helper in that block.
 
   /**
    * Strips trailing periods from headings on `no-period` slides.
@@ -2257,7 +2242,7 @@
   // the extension. Same pattern as transformVerdictGridBadges,
   // applyGlossaryListTable, etc. The transform is idempotent: a section
   // already wrapped in `chart-frame` is a no-op.
-  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
+  const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban', 'radar'];
   const PIE_PALETTE = [
     'var(--cat-blue)',  'var(--cat-green)', 'var(--cat-purple)', 'var(--cat-orange)',
     'var(--cat-teal)',  'var(--cat-rose)',  'var(--cat-mauve)',  'var(--cat-slate)',
@@ -2604,6 +2589,23 @@
     return board;
   }
 
+  // Radar — delegates to the runtime radar kernel (rParseRadar / rBuildRadar)
+  // defined above near line 1505. The kernel emits an HTML string for the
+  // <div class="radar-figure"> wrapper; this wraps it in a host element so
+  // it can be appended to the chart-body container.
+  function buildRadarFigure(list, eyebrowText, className) {
+    const tokens = String(className || '').trim().split(/\s+/);
+    const variant = rPickVariant(tokens);
+    const isMinimal = tokens.includes('minimal');
+    const model = rParseRadar(list.innerHTML, variant === 'quadrant');
+    if (!model) return null;
+    const scale = rResolveScale(model, eyebrowText || '');
+    const figHtml = rBuildRadar(model, variant, scale, isMinimal);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = figHtml;
+    return tmp.firstElementChild;
+  }
+
   function transformChartSection(section, layout) {
     if (section.querySelector(':scope > .chart-header')) return;
     const h2 = section.querySelector(':scope > h2');
@@ -2646,7 +2648,9 @@
     else if (layout === 'piechart')      chartContainer = buildPieChart(list, isDonut);
     else if (layout === 'gantt')         chartContainer = buildGanttChart(list, eyebrowText);
     else if (layout === 'kanban')        chartContainer = buildKanbanBoard(list);
+    else if (layout === 'radar')         chartContainer = buildRadarFigure(list, eyebrowText, section.className);
     else return;
+    if (!chartContainer) return;
 
     let captionEl = null;
     let trailingP = null;

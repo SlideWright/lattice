@@ -1,14 +1,15 @@
 /**
- * Unit: lib/radar.js — native radar / spider chart engine.
+ * Unit: lib/radar.js — kernel for the `radar` chart-family member.
  *
- * Layers tested separately then end-to-end:
+ * Section dispatch + chart-frame wrapping live in lib/chart-family.js (radar
+ * is one of CHART_LAYOUTS); this kernel just produces the figure HTML. Tests
+ * here cover the layers chart-family delegates to:
+ *
  *   1. Source parsing: parseAxisItem, parseSeries, parseRadar
- *   2. Scale resolution: niceCeil, parseScale, resolveScale
+ *   2. Scale resolution: niceCeil, parseScale, resolveScale, matchEyebrowText
  *   3. Geometry: axisAngle, polar, valueRadius, seriesPoints — pure,
  *      deterministic functions of the value model.
  *   4. Variant emission: buildRadar — one default + five modifiers.
- *   5. Section dispatch: transformRadarSection, applyToRenderedHtml
- *      — idempotent HTML-string rewrite.
  */
 
 const test   = require('node:test');
@@ -16,8 +17,6 @@ const assert = require('node:assert/strict');
 const {
   RADAR_MODIFIERS,
   GEOM,
-  applyToRenderedHtml,
-  transformRadarSection,
   parseRadar,
   parseSeries,
   parseAxisItem,
@@ -292,48 +291,37 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
   assert.equal(matchEyebrowText('<h2>X</h2><ul></ul>'), '');
 });
 
-// ── transformRadarSection ───────────────────────────────────────────────
+// ── chart-family dispatch (integration with lib/chart-family.js) ────────
+// Radar is a chart-family member; section dispatch + chart-frame wrapping
+// are owned by lib/chart-family.js. These tests pin the wiring so a
+// regression in either module surfaces here, not only in the integration
+// PDF build.
 
-test('transform: rewrites the nested list into a radar figure', () => {
+const { transformChartSection, applyToRenderedHtml } = require('../../lib/chart-family');
+
+test('chart-family: radar section is wrapped in chart-frame', () => {
   const inner = '<h2>Skills</h2>' + UL_TWO;
-  const out = transformRadarSection(inner, 'radar');
-  assert.match(out, /<div class="radar-figure"/);
-  assert.ok(!out.includes('<ul>'), 'source <ul> should be removed');
-  assert.match(out, /<h2>Skills<\/h2>/);
+  const { html, cls, transformed } = transformChartSection(inner, 'radar');
+  assert.equal(transformed, true);
+  assert.match(cls, /\bchart-frame\b/);
+  assert.match(html, /<div class="chart-header">/);
+  assert.match(html, /<div class="chart-body"><div class="radar-figure"/);
 });
 
-test('transform: eyebrow scale override is honoured', () => {
+test('chart-family: radar variant rides the class list', () => {
+  const inner = '<h2>Cap</h2>' + UL_QUADRANT;
+  const { html } = transformChartSection(inner, 'radar quadrant');
+  assert.match(html, /data-variant="quadrant"/);
+  assert.match(html, /class="radar-sector"/);
+});
+
+test('chart-family: eyebrow scale override is honoured', () => {
   const inner = '<p><code>0–10</code></p><h2>Skills</h2>' + UL_TWO;
-  const out = transformRadarSection(inner, 'radar');
-  // With max=10 and a data value of 85, the polygon clamps to R — every
-  // default-variant point lands on the outer ring.
-  assert.match(out, /radar-figure/);
+  const { html } = transformChartSection(inner, 'radar');
+  // Eyebrow lifts to .chart-eyebrow but the value text survives for parsing.
+  assert.match(html, /<p class="chart-eyebrow"><code>0–10<\/code><\/p>/);
+  assert.match(html, /<div class="radar-figure"/);
 });
-
-test('transform: variant-aware via the class list', () => {
-  const inner = '<h2>Skills</h2>' + UL_TWO;
-  assert.match(transformRadarSection(inner, 'radar benchmark'), /data-variant="benchmark"/);
-  assert.match(transformRadarSection(inner, 'radar small-multiples'), /data-variant="small-multiples"/);
-});
-
-test('transform: leaves non-radar sections untouched', () => {
-  const inner = '<h2>Skills</h2>' + UL_TWO;
-  assert.equal(transformRadarSection(inner, 'roadmap'), inner);
-});
-
-test('transform: idempotent on re-application', () => {
-  const inner = '<h2>Skills</h2>' + UL_TWO;
-  const once  = transformRadarSection(inner, 'radar');
-  const twice = transformRadarSection(once, 'radar');
-  assert.equal(once, twice);
-});
-
-test('transform: no-op on a section without a list', () => {
-  const inner = '<h2>Skills</h2><p>no list.</p>';
-  assert.equal(transformRadarSection(inner, 'radar'), inner);
-});
-
-// ── applyToRenderedHtml — section dispatch ──────────────────────────────
 
 const RADAR_SECTION = (
   '<section id="1" class="radar" data-marpit-slide="1"><h2>Skills</h2>' + UL_TWO + '</section>'
@@ -341,33 +329,21 @@ const RADAR_SECTION = (
 const RADAR_QUAD_SECTION = (
   '<section id="2" class="radar quadrant" data-marpit-slide="2"><h2>Cap</h2>' + UL_QUADRANT + '</section>'
 );
-const NON_RADAR_SECTION = (
-  '<section id="3" class="roadmap" data-marpit-slide="3"><h2>Skills</h2>' + UL_TWO + '</section>'
-);
 
-test('dispatch: transforms radar sections', () => {
-  assert.match(applyToRenderedHtml(RADAR_SECTION), /<div class="radar-figure"/);
+test('chart-family: applyToRenderedHtml transforms radar sections', () => {
+  const out = applyToRenderedHtml(RADAR_SECTION);
+  assert.match(out, /<div class="radar-figure"/);
+  assert.match(out, /class="radar chart-frame"/);
 });
 
-test('dispatch: transforms modifier-variant sections', () => {
+test('chart-family: applyToRenderedHtml handles modifier variants', () => {
   const out = applyToRenderedHtml(RADAR_QUAD_SECTION);
   assert.match(out, /data-variant="quadrant"/);
-  assert.match(out, /class="radar quadrant"/);
+  assert.match(out, /class="radar quadrant chart-frame"/);
 });
 
-test('dispatch: leaves non-radar sections untouched', () => {
-  assert.equal(applyToRenderedHtml(NON_RADAR_SECTION), NON_RADAR_SECTION);
-});
-
-test('dispatch: idempotent on re-application', () => {
+test('chart-family: idempotent on re-application (already chart-frame)', () => {
   const once  = applyToRenderedHtml(RADAR_SECTION);
   const twice = applyToRenderedHtml(once);
   assert.equal(once, twice);
-});
-
-test('dispatch: handles multiple sections in one document', () => {
-  const doc = RADAR_SECTION + RADAR_QUAD_SECTION + NON_RADAR_SECTION;
-  const out = applyToRenderedHtml(doc);
-  assert.equal((out.match(/radar-figure/g) || []).length, 2);
-  assert.match(out, /<section id="3" class="roadmap"[\s\S]*<ul>/);
 });

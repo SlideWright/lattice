@@ -6564,13 +6564,14 @@ section.radar {
   --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 20%, transparent);
   --radar-spoke:      color-mix(in srgb, var(--text-muted) 34%, transparent);
   --radar-fill:       18%;   /* series-colour share in the polygon fill */
-  display: flex;
-  flex-direction: column;
 }
 
-section.radar > h2 {
-  font-size: var(--fs-lg);
-  margin-bottom: var(--sp-2xs);
+/* radar is a chart-family member — section layout, header/body/caption
+ * skeleton and h2 styling all come from section.chart-frame. The figure
+ * just slots into .chart-body as a centred flex row of svg + legend. */
+section.radar.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl);
 }
 
 section.radar .radar-figure {
@@ -6578,8 +6579,6 @@ section.radar .radar-figure {
   align-items: center;
   justify-content: center;
   gap: var(--sp-xl);
-  flex: 1 1 auto;
-  min-height: 0;
 }
 
 section.radar .radar-svg {

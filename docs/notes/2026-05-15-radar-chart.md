@@ -104,3 +104,40 @@ Radar is fixed. Journey's `--fg` references are still live and should be
 audited — its low-opacity gridlines/plumb-lines likely render wrong (or
 invisibly) too. See the gotchas entry
 "[`var(--fg)` is undefined — SVG fill/stroke falls back to black/none](../references/gotchas.md)".
+
+## Update — radar joins chart-family
+
+The first cut shipped radar as a standalone module (`lib/radar.js` owned
+its own section dispatch, mirrored in `lattice-runtime.js` and wired into
+the emulator + `marp.config.js` engine hook). On review, the right home
+was `chart-family`: radar wants the same eyebrow / h2 / subtitle / chart
+body / caption skeleton the other native charts already have, and adding
+a sixth member is a smaller-radius change than duplicating the wrap
+logic in a standalone path.
+
+Migration shape:
+
+- `lib/radar.js` is now the parsing + geometry **kernel** only —
+  `transformRadarSection` and `applyToRenderedHtml` are gone, dispatch is
+  owned by `lib/chart-family.js`.
+- `lib/chart-family.js` adds `'radar'` to `CHART_LAYOUTS`, delegates to
+  the kernel from inside `transformChartSection`, and adds `radar-figure`
+  to the chart-frame body regex.
+- `lattice-emulator.js` inlines the same dispatch in its mirror
+  chart-family block (the third copy of chart-family code that keeps the
+  build-CLI standalone).
+- `lattice-runtime.js` routes radar through the runtime chart-family
+  mirror via a `buildRadarFigure` helper; the radar-specific runtime
+  functions (`rParseRadar`, `rBuildRadar`, …) stay where they are.
+- `marp.config.js` drops the standalone `applyRadarToHtml` line —
+  `applyChartFamilyToHtml` covers radar now.
+- The demo deck eyebrow / h2 / list / caption layout maps cleanly onto
+  the chart-frame slots; the trailing descriptive paragraph becomes the
+  `.chart-caption` (small mono with a hairline rule, matching how
+  `chart-family-experiment.md` writes its captions).
+
+Net code change: ~120 lines removed (the standalone dispatch + tests),
+visual contract gained (chart-frame skeleton + dark/minimal compose with
+chart-frame's existing tokens too). The three-renderer parity rule still
+holds — radar's kernel is shared by all three paths, and the dispatch is
+co-located with the other chart-family members in each path.

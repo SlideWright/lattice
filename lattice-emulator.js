@@ -816,10 +816,12 @@ const { transformJourneySection } = require('./lib/journey');
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
 const { transformWordCloudSection } = require('./lib/word-cloud');
-// Radar transform — nested list → native SVG radar/spider chart (default +
-// five modifier variants). Shared with marp.config.js and mirrored in
+// Radar chart kernel — parsing + SVG-geometry engine for the `radar`
+// chart-family member (one default + five modifier variants). Section
+// dispatch lives in the inline chart-family block below; this kernel is
+// shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const { transformRadarSection } = require('./lib/radar');
+const radar = require('./lib/radar');
 
 const rawSlides = splitSlides(content, headingDivider);
 const total     = rawSlides.length;
@@ -1204,16 +1206,6 @@ function parseSlide(raw, index) {
   // and mirrored by the runtime DOM transform in lattice-runtime.js.
   if (cls.includes('word-cloud')) {
     html = transformWordCloudSection(html, cls);
-  }
-
-  // radar: rewrite the nested list into a native SVG radar/spider chart.
-  // One series-major source contract feeds the default and five modifier
-  // variants (target, delta, benchmark, quadrant, small-multiples); the
-  // value scale auto-fits the data unless the eyebrow pins a range.
-  // Implementation lives in lib/radar.js — shared with marp.config.js and
-  // mirrored by the runtime DOM transform in lattice-runtime.js.
-  if (cls.includes('radar')) {
-    html = transformRadarSection(html, cls);
   }
 
   // verdict-grid: transform [x]/[-]/[ ] prefixed inner li items into badge spans.
@@ -1668,7 +1660,7 @@ function parseSlide(raw, index) {
   // caption. Class collisions matter — we match exact tokens, not
   // substrings, because `progress-N` is already a modifier on `agenda`.
   const classTokens = cls.trim().split(/\s+/);
-  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban'];
+  const chartLayouts = ['progress', 'timeline-list', 'piechart', 'gantt', 'kanban', 'radar'];
   const chartLayout = chartLayouts.find(l => classTokens.includes(l));
   if (chartLayout) {
     // ── Helper: extract top-level <li> contents from a list inner string,
@@ -2053,13 +2045,32 @@ function parseSlide(raw, index) {
       }
     }
 
+    // ── radar ── series-major nested list → native SVG radar figure
+    // Kernel (parsing + geometry + emission) lives in lib/radar.js so the
+    // engine path (lib/chart-family.js) and this build path call exactly
+    // the same code. One default + five modifiers; `minimal` is a
+    // composable flag here, `dark` is purely CSS.
+    if (chartLayout === 'radar') {
+      const ulExtract = extractFirstUl(html);
+      if (ulExtract) {
+        const variant = radar.pickVariant(classTokens);
+        const isMinimal = classTokens.includes('minimal');
+        const model = radar.parseRadar(ulExtract.inner, variant === 'quadrant');
+        if (model) {
+          const scale = radar.resolveScale(model, radar.matchEyebrowText(html));
+          const figureHtml = radar.buildRadar(model, variant, scale, isMinimal);
+          html = html.slice(0, ulExtract.start) + figureHtml + html.slice(ulExtract.end);
+        }
+      }
+    }
+
     // ── Wrap in chart-frame skeleton ─────────────────────────────────────
     // Pull eyebrow / h2 / subtitle / chart-body / caption out of the html
     // and reassemble. The chart body anchor is the <div> emitted by the
     // layout-specific transform above.
     const h2RE = /<h2>[\s\S]*?<\/h2>/;
     const h2Match = h2RE.exec(html);
-    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board)"[^>]*>/;
+    const bodyRE = /<div\s+class="(?:progress-bars|timeline-spine|piechart-figure|gantt-chart|kanban-board|radar-figure)"[^>]*>/;
     const bodyMatch = h2Match && bodyRE.exec(html.slice(h2Match.index + h2Match[0].length));
     if (h2Match && bodyMatch) {
       const h2El = h2Match[0];
