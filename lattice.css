@@ -162,6 +162,51 @@ section.diagram > p { font-size:var(--fs-sm); line-height:var(--lh-snug); color:
    100cqi (slide width) − 2 × var(--sp-2xl) padding = 90cqi. */
 section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); height:auto; max-width:100%; box-sizing:border-box; }
 
+/* Source <pre> in pending/error states occupies the same slot as the rendered
+ * diagram so the slide layout does not reflow when the diagram swaps in. */
+section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
+  flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
+}
+section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+/* Key Insight panel on diagram slides must stretch full-width to match every
+   other layout. section.diagram uses align-items:center which would shrink
+   the blockquote to fit-content; align-self:stretch overrides that. */
+section.diagram > blockquote { align-self:stretch; }
+
+/* === lib/components/divider/styles.css === */
+/* divider — anchor.divider
+ *
+ * Dark canvas with a left-edge spectrum rail instead of the top border.
+ * Heading left-aligned in the lower-half of the slide.
+ *
+ * See lib/components/divider/manifest.json for the component contract.
+ */
+
+section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
+section.divider { border-top: none; }
+section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
+section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
+section.divider h1,
+section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
+
+/* === lib/components/list/styles.css === */
+/* list — inventory.stack.bullets
+ *
+ * Plain bullet list under a heading. Pill-style cards per item with
+ * an accent left border. Both ul (plain) and ol (numbered) variants.
+ *
+ * See lib/components/list/manifest.json for the component contract.
+ */
+
+section.list h2 { margin-bottom:var(--sp-md); }
+section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ul li { font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
+section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
+section.list ul li ul li { font-size:var(--fs-sm); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
+section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
+section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
+
 /* === lib/components/quote/styles.css === */
 /* quote — statement.canvas.quote
  *
@@ -187,6 +232,71 @@ section.quote blockquote::before { content:'\201C'; font-family:var(--font-displ
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
 section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
+
+/* === lib/components/stats/styles.css === */
+/* stats — evidence.stack.stats
+ *
+ * Row of 3–5 stat tiles. Each tile = big number + uppercase label.
+ * The ol list is post-processed by lib/chart-family.js (or the
+ * emulator's structure pass) into .stats-row > .stat-item.
+ *
+ * See lib/components/stats/manifest.json for the component contract.
+ */
+
+section.stats { justify-content:center; align-items:center; }
+section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
+section.stats h3 { margin-bottom:0.3125cqi; }
+section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
+section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
+section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
+section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
+
+/* === lib/components/subtopic/styles.css === */
+/* subtopic — anchor.divider.subtopic
+ *
+ * Light divider — centered, no canvas reskin. Sits between a divider
+ * slide and a sequence of content slides for finer orientation.
+ *
+ * See lib/components/subtopic/manifest.json for the component contract.
+ */
+
+section.subtopic { justify-content:center; align-items:center; }
+section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
+section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
+section.subtopic p  { font-size:var(--fs-emphasis); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+
+/* === lib/components/title/styles.css === */
+/* title — anchor.bookend.title
+ *
+ * Dark canvas, centered. Inline-code paragraph after h1 becomes the
+ * eyebrow (overrides the general subtitle rule).
+ *
+ * See lib/components/title/manifest.json for the component contract.
+ */
+
+section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.title { border-top: none; }
+section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.title h1 { font-size:var(--fs-display); color:var(--text-display) !important; margin-bottom:var(--sp-xs); text-align:center; }
+section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
+/* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
+ * Overrides the general subtitle rule (italic, body font) for section.title only. */
+section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.title h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 /* === lib/_legacy.css === */
 
@@ -647,68 +757,11 @@ section footer {
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
 
-/* ── TITLE ── */
-section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
-section.title { border-top: none; }
-section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
-section.title h1 { font-size:var(--fs-display); color:var(--text-display) !important; margin-bottom:var(--sp-xs); text-align:center; }
-section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
-section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
-/* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
- * Overrides the general subtitle rule (italic, body font) for section.title only. */
-section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
-section.title h1 + p:has(> code:only-child) > code {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-style: normal;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--on-dark-secondary);
-  background: none;
-  border: none;
-  padding: 0;
-  border-radius: 0;
-}
-
-/* ── DIVIDER ── */
-section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
-section.divider { border-top: none; }
-section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
-section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
-section.divider h1,
-section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
-
-/* ── SUBTOPIC ── */
-section.subtopic { justify-content:center; align-items:center; }
-section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
-section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
-section.subtopic p  { font-size:var(--fs-emphasis); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
 
-/* Source <pre> in pending/error states occupies the same slot as the rendered
- * diagram so the slide layout does not reflow when the diagram swaps in. */
-section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
-  flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
-}
-section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-label); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
-/* Key Insight panel on diagram slides must stretch full-width to match every
-   other layout. section.diagram uses align-items:center which would shrink
-   the blockquote to fit-content; align-self:stretch overrides that. */
-section.diagram > blockquote { align-self:stretch; }
 
-/* ── STATS ──
- * ## heading  p intro  ol with: **number** label text
- * Post-processor wraps into .stats-row > .stat-item > .stat-num + .stat-label
- */
-section.stats { justify-content:center; align-items:center; }
-section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
-section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
-section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
-section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
-section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
-section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
+
+
 
 /* ── UNIVERSAL PILL ─────────────────────────────────────────────────────────
  * Trailing inline `code` on any list row, in any layout, is metadata.
@@ -984,17 +1037,6 @@ section.timeline > :is(ol,ul) > li > ul { list-style:none; padding:0; margin:0; 
 section.timeline > :is(ol,ul) > li > ul > li { font-weight:400; }
 section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-label); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
-/* ── LIST ──
- * ## heading  - item with optional   - sub-description
- */
-section.list h2 { margin-bottom:var(--sp-md); }
-section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ul li { font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
-section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
-section.list ul li ul li { font-size:var(--fs-sm); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
-section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
-section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
 /* ── LIST-TABULAR ──────────────────────────────────────────────────────────
  * Ordered tabular list — counter | name | description | meta per row.

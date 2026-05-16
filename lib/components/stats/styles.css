@@ -1,0 +1,17 @@
+/* stats — evidence.stack.stats
+ *
+ * Row of 3–5 stat tiles. Each tile = big number + uppercase label.
+ * The ol list is post-processed by lib/chart-family.js (or the
+ * emulator's structure pass) into .stats-row > .stat-item.
+ *
+ * See lib/components/stats/manifest.json for the component contract.
+ */
+
+section.stats { justify-content:center; align-items:center; }
+section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
+section.stats h3 { margin-bottom:0.3125cqi; }
+section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
+section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
+section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
+section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
