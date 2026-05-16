@@ -29,13 +29,20 @@ scopes: `galleries`, `parity`, `mermaid`, `screenshot`. Run via
 Three numbers, one purpose each:
 
 - **`.nvmrc` = 22** — current active LTS, what `nvm use` puts devs on.
-- **`engines.node` = `>=18.0.0`** — declared supported minimum.
-- **CI matrix = `[18, 20, 22, 24]`** — verifies the engines claim on every push.
+- **`engines.node` = `>=22.0.0`** — declared supported minimum.
+- **CI matrix = `[22, 24]`** — verifies the engines claim on every push.
 
-Drop a version from the matrix iff you also bump `engines`. The original
-cause of the `node --test <dir>` breakage that started this whole
-overhaul was matrix=Node-18 while devs ran Node 22 — keep the three
-numbers aligned.
+Drop a version from the matrix iff you also bump `engines`. Bump `engines`
+iff you drop a version from the matrix. The original cause of the
+`node --test <dir>` outage that started this whole overhaul was
+matrix=Node-18 while devs ran Node 22 — keep the three numbers aligned.
+
+**Node 18 + 20 are deliberately unsupported.** Node 18 has been EOL since
+April 2025; Node 20 entered maintenance in April 2026. `node:test` moved
+fast across 18 → 22 (the glob syntax in `package.json` scripts requires
+Node 21+; describe-level `concurrency: true` requires Node 20.10+).
+Supporting them would mean freezing into a pre-Node-21 API forever. If
+a consumer needs Node 18 or 20, they pin to Lattice 1.x.
 
 ## npm scripts
 
@@ -147,7 +154,7 @@ integration tests, not unit tests.
 
 Two jobs in `.github/workflows/ci.yml`:
 
-- **`lint-and-unit`** — matrix on Node 18/20/22/24, `fail-fast: false`.
+- **`lint-and-unit`** — matrix on Node 22/24, `fail-fast: false`.
   Runs `npm run lint` + `npm test`. Each ~30s.
 - **`integration`** — `needs: lint-and-unit`, single Node version (22).
   Installs `poppler-utils` (for `pdfinfo`) and runs

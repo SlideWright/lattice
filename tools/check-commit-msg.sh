@@ -18,11 +18,13 @@ case "$first_line" in
   'Merge '*|'Revert '*|'fixup! '*|'squash! '*|'amend! '*) exit 0 ;;
 esac
 
-# Format: lowercase area, optional (scope), colon, space, then summary text.
+# Format: lowercase area, optional (scope), optional ! (breaking-change
+# marker per conventional-commits), colon, space, then summary text.
 # area     = [a-z][a-z0-9-]*
 # scope    = optional, parenthesized, lowercase letters/digits/comma/dot/space/hyphen
+# !        = optional, signals a breaking change (e.g. `ci(node)!: drop Node 18`)
 # summary  = at least one non-space character
-if echo "$first_line" | grep -qE '^[a-z][a-z0-9-]*(\([a-z0-9.,\ -]+\))?: \S'; then
+if echo "$first_line" | grep -qE '^[a-z][a-z0-9-]*(\([a-z0-9.,\ -]+\))?!?: \S'; then
   exit 0
 fi
 
