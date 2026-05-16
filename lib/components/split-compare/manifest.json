@@ -1,0 +1,37 @@
+{
+  "name": "split-compare",
+  "function": "comparison",
+  "form": "split",
+  "substance": "structure",
+  "description": "Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right.",
+  "purpose": "Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.",
+  "slots": {
+    "frame": {
+      "selector": "p:first-of-type > code",
+      "required": false,
+      "description": "Optional inline-code frame label above the heading (e.g. 'Decision Required')."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Decision framing in the dark left panel."
+    },
+    "context": {
+      "selector": "p",
+      "required": true,
+      "description": "One-sentence context paragraph under the heading."
+    },
+    "options": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Exactly two top-level items. First is the alternative; second is the preferred option."
+    },
+    "verdict": {
+      "selector": "blockquote",
+      "required": true,
+      "description": "The recommendation — one short sentence in a blockquote."
+    }
+  },
+  "skeleton": "<!-- _class: split-compare -->\n\n`Decision Required`\n\n## Headline that frames the choice.\n\nOne-sentence context paragraph explaining the stakes.\n\n- Alternative option\n  - First fact about the alternative\n  - Second fact about the alternative\n- Preferred option\n  - First fact about the preferred path\n  - Second fact about the preferred path\n\n> The recommendation in one decisive sentence.\n",
+  "docs": "docs/references/templates.md#template-33-split-compare"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "timeline-list",
+  "function": "evidence",
+  "form": "timeline",
+  "substance": "series",
+  "description": "Date-stamped event list — spine with date pills, status pills, and body.",
+  "purpose": "Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the timeline."
+    },
+    "events": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per event. Format: `Date — status — Title` then nested body bullets."
+    }
+  },
+  "skeleton": "<!-- _class: timeline-list -->\n\n`Codebook architecture`\n\n## How the codebook architecture arrived in production.\n\nFour stages over eighteen months. Date pill leads each item; status pill trails.\n\n1. `2024 Q3` Vault round-trip\n   - First production tokenization shipped on a centralised vault. p99 60 ms.\n2. `2025 Q1` Codebook proposal `decision`\n   - Architecture review accepts the in-process model. Build approved.\n3. `2025 Q3` Codebook GA `live`\n   - Phase 1 rollout complete; 12 production tenants on the new path.\n4. `2026 Q1` Multi-tenant DEKs `live`\n   - Hardening shipped; codebook caching cut p99 below 5 ms.\n",
+  "docs": "docs/references/templates.md#chart-family"
+}

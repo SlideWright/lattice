@@ -1,0 +1,31 @@
+{
+  "name": "obligation-matrix",
+  "function": "comparison",
+  "form": "matrix",
+  "substance": "structure",
+  "description": "Regulation × obligation grid — state-marker cells encode applies / partial / exempt at a glance.",
+  "purpose": "Use when many regimes need comparing across the same obligations. Cells carry the universal state-token grammar ([x] applies, [-] partial, [ ] exempt, [/] out of scope) shared with checklist / verdict-grid / roadmap.",
+  "variants": [
+    "heat",
+    "asymmetric"
+  ],
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing what the matrix compares."
+    },
+    "matrix": {
+      "selector": "table",
+      "required": true,
+      "description": "Markdown table — rows are regulations, columns are obligations. Use state markers ([x] / [-] / [ ] / [/]) in cells."
+    },
+    "legend": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional trailing paragraph explaining the state-marker meanings or what to take from the matrix."
+    }
+  },
+  "skeleton": "<!-- _class: obligation-matrix -->\n\n## Headline framing what the matrix compares.\n\n| Regulation | Obligation A | Obligation B | Obligation C |\n| ---------- | :----------: | :----------: | :----------: |\n| Regime 1   | [x]          | [x]          | [-]          |\n| Regime 2   | [x]          | [-]          | [x]          |\n| Regime 3   | [x]          | [ ]          | [x]          |\n\nFilled = applies, half = partial, empty = exempt.\n",
+  "docs": "docs/references/templates.md#obligation-matrix"
+}

@@ -1,0 +1,26 @@
+{
+  "name": "cards-stack",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "structure",
+  "description": "Parallel items stacked vertically, full-width cards.",
+  "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.",
+  "variants": [
+    "horizontal",
+    "numbered"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "cards": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Each list item becomes one stacked card. Lead each li with **Card Title.** then body text."
+    }
+  },
+  "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first stacked card, two short sentences max.\n- **Second card title.** Body text for the second stacked card.\n- **Third card title.** Body text for the third stacked card.\n",
+  "docs": "docs/references/templates.md#template-9-two-cards-stacked-vertical"
+}

@@ -1,0 +1,201 @@
+/* citation-card — evidence.canvas.prose
+ *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
+ * See lib/components/citation-card/manifest.json for the component contract.
+ *
+ * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css split
+ * moves component CSS EARLIER in the bundle than lib/_modifiers.css.
+ * For rules that tie KEY INSIGHT on specificity (0,3,3) — here, the
+ * `.pull-quote > blockquote::before` content + chrome override — the
+ * post-extraction cascade would let KEY INSIGHT win by source order
+ * and break the variant's rendering. Until KEY INSIGHT is redesigned
+ * (Phase 5b proper — likely a custom-property gate), the conflicting
+ * selector is duplicated (`.pull-quote.pull-quote`) to bump its
+ * specificity to 0,4,3 so it beats KEY INSIGHT on specificity, not
+ * source order. Pixel-check verified: 0 diff against pre-phase-5b.
+ */
+
+/* ── CITATION-CARD ────────────────────────────────────────────────────
+ * Three-band rhythm: verbatim quote → plain-English translate → obligation.
+ *
+ * <!-- _class: citation-card -->
+ * ## Headline.
+ * `Cal. Civ. Code §1798.140(o) · CCPA`
+ * > "Personal information" means information that identifies, relates
+ * > to, describes, is capable of being associated with…
+ * - In plain English: any data tied to a household or device, not just
+ *   to a named person.
+ * - **What we must do** Treat household-level identifiers as PI in our
+ *   notice, retention, and DSAR workflows.
+ *
+ * Variants: .split, .pull-quote, .margin, .triptych.
+ * ──────────────────────────────────────────────────────────────────── */
+section.citation-card { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.citation-card h2 { margin-bottom:var(--sp-xs); }
+/* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
+section.citation-card > p:has(> code:only-child) {
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--accent);
+}
+section.citation-card > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0;
+  color:inherit; font-size:inherit;
+}
+/* Verbatim quote — blockquote, serif italic, accent rule. */
+section.citation-card > blockquote {
+  margin:0;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:none;
+  border-left:4px solid var(--accent);
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+  font-family:var(--font-display);
+  font-size:var(--fs-md);
+  font-style:italic;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+}
+section.citation-card > blockquote > p { margin:0; }
+section.citation-card > blockquote > p + p { margin-top:var(--sp-xs); }
+/* Translation — first list, body sans, muted heading. */
+section.citation-card > ul,
+section.citation-card > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1;
+}
+section.citation-card > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  line-height:var(--lh-relaxed);
+  color:var(--text-body);
+}
+section.citation-card > :is(ul, ol) > li::marker { content:''; }
+/* The "what we must do" item carries a strong label as the eyebrow. */
+section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--accent-soft);
+  border-radius:var(--radius-md);
+  border-left:4px solid var(--accent);
+  color:var(--text-heading);
+  font-weight:500;
+}
+section.citation-card > :is(ul, ol) > li > strong:first-child {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:0.234375cqi;
+}
+
+/* .split — verbatim left, translate+do right. */
+section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); grid-template-rows:auto 1fr; }
+section.citation-card.split h2 { grid-column:1 / -1; }
+section.citation-card.split > p:has(> code:only-child) { grid-column:1; grid-row:2; align-self:start; }
+section.citation-card.split > blockquote { grid-column:1; grid-row:2; align-self:stretch; margin-top:var(--sp-lg); }
+section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
+
+/* .pull-quote — hero quote dominant. */
+section.citation-card.pull-quote > blockquote {
+  font-size:var(--fs-xl);
+  line-height:var(--lh-snug);
+  padding:var(--sp-lg) var(--sp-xl);
+  background:none;
+  border-left:6px solid var(--accent);
+  position:relative;
+  flex:1; display:flex; align-items:center;
+}
+section.citation-card.pull-quote.pull-quote > blockquote::before {
+  content:'\201C';
+  position:absolute;
+  top:-0.78cqi; left:0;
+  font-family:var(--font-display);
+  font-size:var(--fs-hero);
+  line-height:1;
+  color:var(--accent-soft);
+  z-index:-1;
+}
+section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
+
+/* .margin — quote center, citation in left margin, "what" in right margin. */
+section.citation-card.margin {
+  display:grid;
+  grid-template-columns:18cqi 1fr 22cqi;
+  column-gap:var(--sp-lg);
+  grid-template-rows:auto 1fr;
+}
+section.citation-card.margin h2 { grid-column:1 / -1; }
+section.citation-card.margin > p:has(> code:only-child) {
+  grid-column:1; grid-row:2;
+  align-self:start;
+  text-align:right;
+  font-size:var(--fs-xs);
+  padding-top:var(--sp-md);
+}
+section.citation-card.margin > blockquote {
+  grid-column:2; grid-row:2;
+  background:none; padding:var(--sp-md) 0;
+  border-left:none;
+  border-top:1px solid var(--accent);
+  border-bottom:1px solid var(--accent);
+  text-align:center; align-self:center;
+  font-size:var(--fs-lg);
+}
+section.citation-card.margin > :is(ul, ol) {
+  grid-column:3; grid-row:2;
+  align-self:center;
+  gap:var(--sp-xs);
+}
+section.citation-card.margin > :is(ul, ol) > li {
+  padding:0;
+  background:none;
+  border-left:3px solid var(--accent);
+  padding-left:var(--sp-md);
+  font-size:var(--fs-sm);
+}
+section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
+  background:none; padding-left:var(--sp-md);
+  border-left:3px solid var(--accent);
+}
+
+/* .triptych — three side-by-side cards: Quote / Translate / Do.
+ * Author shape: regular author shape, but the blockquote becomes col 1,
+ * the first non-do li becomes col 2, the do li becomes col 3. */
+section.citation-card.triptych {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych h2 { grid-column:1 / -1; }
+section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
+section.citation-card.triptych > blockquote {
+  grid-column:1; grid-row:3;
+  font-size:var(--fs-body);
+  background:var(--bg-alt);
+  border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) {
+  grid-column:2 / span 2; grid-row:3;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
+  background:var(--accent-soft);
+  border-color:var(--accent);
+}
+

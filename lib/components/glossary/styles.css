@@ -1,0 +1,39 @@
+/* glossary — extracted from lib/_legacy.css (batch 5).
+ * See lib/components/glossary/manifest.json for the component contract.
+ */
+
+/* ── GLOSSARY ──
+ * Modifier (used alone or alongside `compare-table`): zebra rows for
+ * scannability and a tighter row rhythm so 14–16 short entries fit per
+ * slide. Author writes a 2-level nested bullet list:
+ *
+ *   - Term
+ *     - Definition
+ *
+ * The runtime (lattice.js + marp.config.js + lattice-runtime.js) transforms
+ * that to a 2-column table, auto-bolds the term, and appends a brand pill
+ * to the h2 spanning the alphabetic range — e.g. `A – G`.
+ * Term column does not wrap — keep glossary terms short or use a hyphen
+ * for line-break safety.
+ */
+section.glossary table { width:100%; border-collapse:collapse; table-layout:auto; font-feature-settings:'tnum' 1; }
+section.glossary thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-muted); font-size:var(--fs-label); letter-spacing:0.08em; text-transform:uppercase; }
+section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
+section.glossary tbody tr:nth-child(odd) { background:var(--bg-alt); }
+section.glossary td:first-child,
+section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
+section.glossary h2 { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-md); }
+/* Auto-derived alphabet range pill, emitted into the h2 by the runtime
+ * (lattice.js) and the Marpit plugin (marp.config.js). Matches the
+ * neutral .badge pill recipe so it sits naturally alongside other
+ * categorical chips elsewhere in the deck. */
+section.glossary h2 .range-pill {
+  display:inline-flex; align-items:center;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
+  letter-spacing:0.06em;
+  border-radius:999px; padding:3px 12px; margin-left:auto;
+  background:var(--accent-soft); border:1px solid var(--accent);
+  color:var(--accent); white-space:nowrap;
+  vertical-align:middle;
+}

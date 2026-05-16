@@ -1,0 +1,22 @@
+{
+  "name": "content",
+  "function": "statement",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Generic prose slide — heading plus paragraphs or a short list.",
+  "purpose": "The catch-all for explanatory content that doesn't fit a more structured layout. Resist using it when a more specific component (cards-grid, stats, compare-prose) would shape the content better.",
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "body": {
+      "selector": "section > p, section > ul",
+      "required": true,
+      "description": "Paragraphs or a short bullet list under the heading. Keep under ~40 words."
+    }
+  },
+  "skeleton": "<!-- _class: content -->\n\n## Slide heading.\n\nThe explanatory paragraph that develops the heading goes here. Keep the slide under forty words.\n\n- Optional supporting point one.\n- Optional supporting point two.\n",
+  "docs": "docs/references/templates.md#template-4-content-text-only"
+}

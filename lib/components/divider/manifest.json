@@ -1,0 +1,25 @@
+{
+  "name": "divider",
+  "function": "anchor",
+  "form": "divider",
+  "substance": "prose",
+  "description": "Section boundary slide. Dark canvas with a single heading.",
+  "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience.",
+  "variants": [
+    "numbered"
+  ],
+  "slots": {
+    "heading": {
+      "selector": "h1",
+      "required": true,
+      "description": "Section name."
+    },
+    "eyebrow": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional section number or category label above h1."
+    }
+  },
+  "skeleton": "<!-- _class: divider -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n`Section 01`\n\n# Section name\n",
+  "docs": "docs/references/templates.md#template-2-section-divider"
+}

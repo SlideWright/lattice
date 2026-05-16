@@ -1,0 +1,28 @@
+{
+  "name": "agenda",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "structure",
+  "description": "Auto-numbered table of contents for the deck.",
+  "purpose": "Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.",
+  "variants": [
+    "progress-2",
+    "progress-3",
+    "progress-4",
+    "progress-5"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading — typically 'Agenda' or 'What we'll cover'."
+    },
+    "items": {
+      "selector": "ol > li",
+      "required": true,
+      "description": "Ordered list of section titles."
+    }
+  },
+  "skeleton": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. First section title\n2. Second section title\n3. Third section title\n4. Fourth section title\n",
+  "docs": "docs/references/templates.md#agenda-auto-numbered-table-of-contents"
+}

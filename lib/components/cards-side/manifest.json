@@ -1,0 +1,25 @@
+{
+  "name": "cards-side",
+  "function": "inventory",
+  "form": "split",
+  "substance": "structure",
+  "description": "Two cards side-by-side, co-equal.",
+  "purpose": "Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.",
+  "variants": [
+    "numbered"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "cards": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Exactly two list items, each one card. Lead each with **Card Title.** then body text."
+    }
+  },
+  "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- **Left card title.** Body text for the left card, two short sentences.\n- **Right card title.** Body text for the right card, two short sentences.\n",
+  "docs": "docs/references/templates.md#template-10-two-cards-side-by-side-horizontal"
+}

@@ -20,15 +20,14 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 // lib/<file>.js → scoped test script. Add new lib files here as they land.
+// Note: per-component transforms now live at
+// lib/components/<name>/transform.js — those are matched by the
+// `lib/components/<name>/` rule below, not this table. Only files that
+// remain at lib/ root after the component-folder migration belong here.
 const SCRIPT_FOR_LIB = {
   'palette.js':           'test:palette',
   'resolve-palette.js':   'test:palette',
-  'journey.js':           'test:layouts',
-  'roadmap.js':           'test:layouts',
-  'word-cloud.js':        'test:layouts',
-  'quadrant.js':          'test:layouts',
-  'radar.js':             'test:layouts',
-  'chart-family.js':      'test:layouts',
+  'chart-family.js':      'test:components',
   'match-section.js':     'test:parsing',
   'slot-label-lift.js':   'test:parsing',
   'split-slides.js':      'test:parsing',
@@ -74,13 +73,30 @@ for (const f of process.argv.slice(2)) {
 
   if (FULL_SUITE_TRIGGER.has(rel)) { runAll = true; break; }
 
-  // lib/<file>.js
+  // lib/components/<name>/* — component-folder migration target.
+  // Manifest / styles / transform / example / README all belong to one
+  // component; component-manifest + per-transform tests cover the lot.
+  if (rel.startsWith('lib/components/') && !rel.endsWith('index.js')) {
+    scripts.add('test:components');
+    continue;
+  }
+  // lib/components/index.js — the loader + vocabularies. Cross-cutting.
+  if (rel === 'lib/components/index.js') {
+    scripts.add('test:components');
+    continue;
+  }
+
+  // lib/<file>.js (top-level shared infrastructure)
   if (rel.startsWith('lib/') && rel.endsWith('.js')) {
     const script = SCRIPT_FOR_LIB[path.basename(rel)];
     if (script) scripts.add(script);
     else runAll = true;  // unknown lib file → safe default
     continue;
   }
+
+  // lib/<file>.css — top-level shared stylesheet. Visual change, not
+  // a unit-test concern; integration tier catches drift in CI.
+  if (rel.startsWith('lib/') && rel.endsWith('.css')) continue;
 
   // test/unit/<scope>/*.test.js → run that scope
   const m = rel.match(/^test\/unit\/([^/]+)\//);

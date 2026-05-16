@@ -19,6 +19,13 @@ pre-commit:
       # (lattice-emulator.js, lattice.css, package.json, …). The full
       # suite still runs in pre-push as a safety net.
       run: node tools/affected-tests.js {staged_files}
+    - name: pdf-freshness
+      # Catches the "edited examples/<X>.md, forgot to rebuild .pdf"
+      # failure mode. Cheap check + rebuild verification. Skippable
+      # via `git commit --no-verify` only as a last resort. See
+      # docs/references/workflow.md.
+      glob: 'examples/*.md'
+      run: tools/check-pdf-freshness.sh {staged_files}
 
 pre-push:
   jobs:

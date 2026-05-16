@@ -1,0 +1,28 @@
+{
+  "name": "statute-stack",
+  "function": "inventory",
+  "form": "ledger",
+  "substance": "structure",
+  "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status.",
+  "purpose": "Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.",
+  "variants": [
+    "hierarchy",
+    "bands",
+    "preemption",
+    "lane"
+  ],
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing what the three rows compare."
+    },
+    "rows": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per jurisdiction. Lead with the jurisdiction label as a plain text first line; nested ul items carry the citation (inline code), obligation summary, and status (inline code)."
+    }
+  },
+  "skeleton": "<!-- _class: statute-stack -->\n\n## Jurisdiction comparison framing the three obligations.\n\n- Federal\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- State\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n- Local\n  - `Citation · Statute name`\n  - Headline obligation in one sentence.\n  - `Status or effective date`\n",
+  "docs": "docs/references/templates.md#statute-stack"
+}

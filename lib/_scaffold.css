@@ -1,0 +1,48 @@
+/* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
+ *
+ * These rules use !important to override Marp's scaffold defaults that
+ * load after the theme. Lives in @layer scaffold so !important cascade
+ * (which reverses by layer) keeps these wins regardless of what else
+ * the bundle declares in later layers.
+ *
+ * See docs/design-system.md §10 for layer cascade semantics.
+ */
+
+
+
+/* Header/footer paragraph reset — the scaffold's default p margin
+   stomps our chrome alignment. */
+section header > p,
+section footer > p {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-align: left !important;
+}
+
+/* section::after — Marp's native pagination pseudo-element.
+   Marp's scaffold CSS sets `section::after { padding: inherit; }`,
+   which inherits the section's bottom padding (~88px) and pushes the
+   page number above where bottom:1.875cqi would otherwise place it.
+   The scaffold loads after our theme in the cascade, so at equal
+   specificity it wins. !important here is the deliberate override.
+   Font properties are also !important because the scaffold sets
+   defaults that don't match our footer. */
+section::after {
+  position: absolute !important;
+  bottom: 1.875cqi !important;
+  right: 2.34375cqi !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--fs-label) !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.06em !important;
+  color: var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted))) !important;
+}
+
+

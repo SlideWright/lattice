@@ -1,0 +1,153 @@
+/* obligation-matrix — comparison.matrix.structure
+ *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
+ * See lib/components/obligation-matrix/manifest.json for the component contract.
+ */
+
+/* ── OBLIGATION-MATRIX ────────────────────────────────────────────────
+ * Markdown table layout. Rows = regulations, columns = obligations.
+ *
+ * <!-- _class: obligation-matrix -->
+ * | Regulation | Notice | Consent | Retention | Breach | DSAR |
+ * | ---------- | :----: | :-----: | :-------: | :----: | :--: |
+ * | CCPA       | ●      | ◐       | ●         | ●      | ●    |
+ *
+ * The default uses cell glyphs (●/◐/○ or text). Variants: .heat (cell
+ * fills), .pills (cell pills), .lanes (row stripes), .asymmetric (cards).
+ * ──────────────────────────────────────────────────────────────────── */
+section.obligation-matrix { display:flex; flex-direction:column; }
+section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
+section.obligation-matrix table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:var(--fs-body);
+  flex:1;
+  table-layout:auto;
+}
+section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.obligation-matrix thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  padding:0.46875cqi var(--sp-sm) 0.78125cqi;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+section.obligation-matrix thead th:first-child { text-align:left; }
+section.obligation-matrix td {
+  padding:0.78125cqi var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  text-align:center;
+  vertical-align:middle;
+  color:var(--text-body);
+}
+section.obligation-matrix td:first-child {
+  text-align:left;
+  font-weight:700;
+  color:var(--text-heading);
+  white-space:nowrap;
+  padding-left:var(--sp-md);
+}
+/* Soft row zebra for grid scan. */
+section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
+  background:color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+/* ── State glyphs + .heat chrome — appended Phase 7 ──
+ * Universal state-token grammar (filled / half / empty / slashed disc)
+ * rendered for obligation-matrix cells, plus the .heat variant's
+ * cell-tint chrome that makes the table read as a heat map.
+ * Originally at lib/_legacy.css lines 1238-1449 under the
+ * LEGAL & REGULATORY LAYOUTS section.
+ */
+
+/* ── State glyphs ─────────────────────────────────────────────────────
+ * Author writes the universal [x]/[-]/[ ]/[/] grammar; the marpit/
+ * emulator/runtime transforms strip the marker and wrap the cell
+ * content in
+ *   <span class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}">…</span>.
+ * The shape class carries the visual (filled / half / empty / slashed
+ * disc); the semantic class resolves --state-color. SHAPE is the
+ * primary channel — readable in greyscale, unambiguous for colour-blind
+ * viewers. Two SVG masks (in :root) paint the half-disc and slash; no
+ * font dependency, no Unicode glyphs.
+ *
+ * Default colour mapping is the per-category coverage palette
+ * (applies = green; partial = amber; exempt = red; skipped = muted).
+ * The universal `.heat` modifier (top of LAYOUTS section) flips to the
+ * risk axis (applies = alarm red, exempt = relief green). This layout
+ * additionally adds heat-aware cell-tint chrome below. */
+section.obligation-matrix td .state {
+  display:inline-block;
+  width:1.4em; height:1.4em;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  box-sizing:border-box;
+  vertical-align:middle;
+  /* Hide any trailing label ([x] Applies fully…) while keeping em units
+   * resolving against the inherited cell font-size. Setting font-size:0
+   * here would collapse 1.4em to 0 and make the disc invisible. */
+  overflow:hidden;
+  text-indent:200%;
+  white-space:nowrap;
+  line-height:1;
+}
+section.obligation-matrix td .state.pass { --state-color:var(--pass); }
+section.obligation-matrix td .state.warn { --state-color:var(--warn); }
+section.obligation-matrix td .state.fail { --state-color:var(--fail); }
+section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
+/* state-half: tonal split — both halves coloured. Crisp bisector
+ * on any cell background (including the heat-tinted cells below). */
+section.obligation-matrix td .state.state-half {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+}
+section.obligation-matrix td .state.state-empty { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
+/* state-slashed: semi-transparent dark slash on the coloured disc. */
+section.obligation-matrix td .state.state-slashed { background-image:var(--state-slash); }
+
+/* .heat chrome — palette inversion comes from the universal
+ * section.heat overlay; this block adds the cell-background tint that
+ * makes the table read as a heat map at a glance. */
+section.obligation-matrix.heat tbody tr td:not(:first-child) { background:none; }
+section.obligation-matrix.heat td:has(> .state.pass) {
+  background:color-mix(in srgb, var(--fail) 14%, var(--bg));
+}
+section.obligation-matrix.heat td:has(> .state.warn) {
+  background:color-mix(in srgb, var(--warn) 14%, var(--bg));
+}
+section.obligation-matrix.heat td:has(> .state.fail) {
+  background:color-mix(in srgb, var(--pass) 10%, var(--bg));
+}
+section.obligation-matrix.heat td:has(> .state.skip) {
+  background:color-mix(in srgb, var(--text-muted) 6%, var(--bg));
+}
+/* Bracket-frame echo at the row level. Each row carries a doubled left
+ * border (matching the authority-chain.bracket aesthetic) so the matrix
+ * reads as one bracketed structure; the first cell carries the bracket,
+ * the rest stay flush. */
+section.obligation-matrix.heat tbody tr td:first-child {
+  border-left:6px double var(--accent);
+  padding-left:var(--sp-md);
+}
+section.obligation-matrix.heat tbody tr td:last-child {
+  border-right:6px double var(--accent);
+  padding-right:var(--sp-md);
+}
+section.obligation-matrix.heat thead tr th:first-child {
+  border-left:6px double var(--accent);
+  padding-left:var(--sp-md);
+}
+section.obligation-matrix.heat thead tr th:last-child {
+  border-right:6px double var(--accent);
+  padding-right:var(--sp-md);
+}
+

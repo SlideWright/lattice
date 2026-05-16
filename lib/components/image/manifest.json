@@ -1,0 +1,33 @@
+{
+  "name": "image",
+  "function": "imagery",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Image as the slide's anchor, with optional text alongside.",
+  "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
+  "variants": [
+    "full",
+    "contain",
+    "museum",
+    "mirror"
+  ],
+  "slots": {
+    "image": {
+      "selector": "img",
+      "required": true,
+      "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": false,
+      "description": "Optional heading in the text slot."
+    },
+    "body": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional caption or body text."
+    }
+  },
+  "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
+  "docs": "docs/references/templates.md#template-24-image"
+}

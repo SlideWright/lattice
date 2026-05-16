@@ -128,32 +128,47 @@ covers CSS + transforms + examples + docs together. The commit is
 the unit of "this design move." Smaller mechanical splits (a typo
 in templates.md after the design ships) get their own commit.
 
-### Share — every push, every time
+### Share — during dev, `SendUserFile`; at PR end, the raw URL
 
-After every push that updates a feature-deck PDF, paste the raw URL
-**on its own line, plain text, last paragraph of the reply**. No
-markdown bold, no backticks, no link text, nothing else on the line.
+The visual-iteration loop is **`npm run preview` + `SendUserFile`**
+for every change. The preview tool auto-detects scope from
+`git diff`:
+
+| Level | What changed | What's built + diffed |
+|---|---|---|
+| **L0** | tests, docs, manifest, README | nothing |
+| **L1** | one deck source, one `example.md` | that deck only |
+| **L2** | per-component CSS or transform | every deck using the component |
+| **L3** | shared CSS, engine, theme | all decks; top 5 diffs surfaced |
+
+Output is a list of file paths (PDFs + per-page diff PNGs). The
+agent reads the list and `SendUserFile`s each one. The user reviews
+the bytes directly in chat — no commit, no push, no remote round-trip.
+
+```
+edit source  →  npm run preview [-- <deck>]  →  SendUserFile <files>
+```
+
+For desktop: `npm run preview:watch -- <deck>` runs a file watcher
+that rebuilds on save and opens the PDF in the default viewer (which
+auto-reloads). For VS Code users, the marp-vscode preview pane is the
+fastest inner loop — no preview tool needed.
+
+**Pre-commit gate.** Lefthook's `pdf-freshness` job catches the
+"staged `.md` without `.pdf`" and "stale `.pdf` relative to source"
+cases. Bypassable via `git commit --no-verify` only as last resort.
+
+**At PR end, paste the raw URL** on its own line, plain text, last
+paragraph of the reply — for external reviewers who don't have the
+`SendUserFile` deliverable in their feed:
 
 ```
 https://raw.githubusercontent.com/slidewright/lattice/<branch>/examples/<slug>.pdf
 ```
 
-**Every link presented to the reviewer must use the
-`raw.githubusercontent.com` host.** That's the canonical CDN for
-downloadable file content — the file streams straight to the
-reviewer's browser at full fidelity. Never present:
-
-- `github.com/.../blob/<branch>/<path>` — this renders as the GitHub
-  web preview UI (chrome, headers, blob viewer). The reviewer has to
-  click "Raw" or "Download" to actually see the file. PDFs render in
-  GitHub's viewer at lower fidelity than the raw stream.
-- `github.com/.../raw/<branch>/<path>` — superficially works but
-  302-redirects to `raw.githubusercontent.com`. Use the canonical
-  host directly; one hop is fewer than two.
-
-This is the reviewer's only entry point to see the work. Forgetting
-it means the reviewer has to ask, which adds a round trip and erodes
-trust in the workflow.
+Use `raw.githubusercontent.com`, never `github.com/.../blob/...`
+(lower-fidelity web preview) or `github.com/.../raw/...`
+(302-redirects).
 
 ### When the deck retires
 
@@ -169,7 +184,7 @@ graduates from "new" to "documented". Treat them like
 - Small, focused units. One logical change per commit.
 - Message format: `area(scope): short summary` — follow `git log` for the established pattern.
 - If a fix is non-obvious, add a `docs/references/gotchas.md` entry **before** committing. The commit message then links to it.
-- Gallery edits: rebuild the PDF and include it in the same commit as the Markdown change.
+- Gallery edits: rebuild the PDF (`npm run preview -- <deck>` during dev; include the rebuilt PDF in the PR's final commit).
 - Feature decks: rebuild `examples/<slug>.pdf` and include it in the same commit as the `.md` change.
 
 ## Before opening a PR
@@ -184,7 +199,7 @@ graduates from "new" to "documented". Treat them like
    git rebase origin/main
    ```
 
-For inner-loop iteration, scoped test scripts (`test:palette`, `test:layouts`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
+For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
 
 ## Three-renderer rule
 

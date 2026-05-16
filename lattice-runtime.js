@@ -901,13 +901,13 @@
   }
 
   // ── Roadmap modifier transforms ─────────────────────────────────────────
-  // Mirror lib/roadmap.js / lattice-emulator.js. Idempotent: each transform
-  // checks for the marker class on the section/cell and bails early when it
-  // has already run.
+  // Mirror lib/components/roadmap/transform.js / lattice-emulator.js. Idempotent:
+  // each transform checks for the marker class on the section/cell and bails
+  // early when it has already run.
   //
   // Sibling implementations (parity contract):
-  //   lib/roadmap.js        — HTML-string transform run by marp.config.js render hook
-  //   lattice-emulator.js   — per-slide emulator path delegates to lib/roadmap.js
+  //   lib/components/roadmap/transform.js — HTML-string transform run by marp.config.js render hook
+  //   lattice-emulator.js                 — per-slide emulator path delegates to the transform
   //
   // These DOM transforms act as a fallback for web export and for any
   // preview path that didn't run the engine plugin.
@@ -1022,7 +1022,7 @@
         const eyebrow = document.createElement('span');
         eyebrow.className = 'horizon-eyebrow';
         eyebrow.textContent = 'Phase ' + String(idx + 1).padStart(2, '0');
-        // Lift a trailing <code> into a meta pill — mirrors lib/roadmap.js.
+        // Lift a trailing <code> into a meta pill — mirrors lib/components/roadmap/transform.js.
         let headerHtml = header;
         let metaText = '';
         const trailingCode = header.match(/\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*$/);
@@ -1308,10 +1308,10 @@
   }
 
   /**
-   * Journey diagram — runtime mirror of lib/journey.js. Walks each
+   * Journey diagram — runtime mirror of lib/components/journey/transform.js. Walks each
    * `section.journey` and rewrites its innerHTML in place. The
    * implementation below is a near-verbatim copy of the pure-string
-   * parser + emitter in lib/journey.js — that file is canonical; this
+   * parser + emitter in lib/components/journey/transform.js — that file is canonical; this
    * mirror exists because the marp-vscode preview can't `require` Node
    * modules. Three-renderer parity rule applies: edit both or neither.
    */
@@ -1437,7 +1437,7 @@
     return map;
   }
   // Shortest uppercase prefix unique within the actor set. WCAG 1.4.1
-  // redundant encoding mirror of lib/journey.js (assignActorLabels).
+  // redundant encoding mirror of lib/components/journey/transform.js (assignActorLabels).
   function jAssignActorLabels(actorNames) {
     const labels = new Map();
     for (const name of actorNames) {

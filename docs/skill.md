@@ -14,8 +14,10 @@ Open the relevant file before starting work. Only load what the current task nee
 
 | Task | Load |
 |------|------|
+| **Understanding the catalog** — function families, forms, substances, the component model | [design-system.md](./design-system.md) — the canonical four-layer model |
 | Writing or editing slide content | [references/design.md](./references/design.md) + [references/templates.md](./references/templates.md) |
-| Choosing a layout class or template | [references/templates.md](./references/templates.md) |
+| **Picking a component** by purpose (the *what kind of slide*) | [references/templates.md § Components by function family](./references/templates.md#components-by-function-family) |
+| Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 45 shipped components |
 | Adding a background accent (`bg-*` classes) | [references/backgrounds.md](./references/backgrounds.md) |
 | Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |
 | Running the render pipeline (PDF/HTML/PPTX) | [references/pipeline.md](./references/pipeline.md) |
@@ -23,6 +25,8 @@ Open the relevant file before starting work. Only load what the current task nee
 | Hitting an unexpected behavior, hack, or browser/Marp/Mermaid quirk | [references/gotchas.md](./references/gotchas.md) — read first when something breaks in an unfamiliar way; add an entry when you find a new one |
 
 **Do not load all files at once.** Load only what the task requires.
+
+**Vocabulary.** A **component** is what authors invoke as `<!-- _class: cards-grid -->`. The pre-design-system docs called these "layouts" or "templates" — the words are interchangeable in older prose, but design-system.md normalises on *component*.
 
 ---
 
@@ -106,15 +110,18 @@ see [theming.md § Dark mode](./theming.md#dark-mode).
 
 ## Visual testing — pick the right path
 
-Four paths can produce a slide screenshot. They have meaningfully different costs; choose by what's changing and how many slides.
+Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully different costs; choose by what's changing and how many slides.
 
 | Need                                                | Path                                              | 1 slide (cold) | 4 slides (amortized) | Resolution  |
 | --------------------------------------------------- | ------------------------------------------------- | -------------: | -------------------: | ----------- |
+| **Fast author loop on a deck or component** (default during development) | `npm run preview` (auto-scope from `git diff`) or `npm run preview:watch -- <deck>` for live rebuild | ~2s/deck | scope-detected | PDF (vector) |
 | Inspect **committed baseline** (CSS unchanged)      | `pdftoppm` on `examples/gallery.pdf`              |          0.3s  |              0.1s/slide | 4000×2250   |
-| **Single slide, fastest**                           | `lattice-emulator` → `screenshot-slides.js`       |          1.6s  |              0.5s/slide | configurable (use scale 3 → 3840×2160) |
-| **Multi-slide, simplest** (default)                 | `marp-cli --images png --image-scale 3`           |          2.4s  |              0.7s/slide | 3840×2160   |
+| **Single slide, fastest** (PNG)                     | `lattice-emulator` → `screenshot-slides.js`       |          1.6s  |              0.5s/slide | configurable (use scale 3 → 3840×2160) |
+| **Multi-slide, simplest** (default PNG)             | `marp-cli --images png --image-scale 3`           |          2.4s  |              0.7s/slide | 3840×2160   |
 | Iterative loop on prebuilt HTML                     | `screenshot-slides.js` against existing HTML      |          1.6s  |              0.5s/slide | configurable |
 | Cross-renderer regression                           | `npm run test:integration`                        |             —  |                  ~30s | full check  |
+
+**`npm run preview` is the primary visual loop during development.** It reads `git diff` and only rebuilds the decks affected by the change (L0 nothing → L3 full). PNG screenshot paths below are for spot-checks and screenshot capture, not the everyday "did this change break anything" loop. See [workflow.md § Iteration cycle](./references/workflow.md#iteration-cycle) for the L0–L3 scope taxonomy and the `SendUserFile`-based share contract.
 
 **Picking the path.**
 

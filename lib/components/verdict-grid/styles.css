@@ -1,0 +1,76 @@
+/* verdict-grid — extracted from lib/_legacy.css (batch 5).
+ * See lib/components/verdict-grid/manifest.json for the component contract.
+ */
+
+/* ── VERDICT-GRID ──
+ * ## heading  then 4× pairs: ### tool-name  p badges+body
+ *
+ * The badge is the layout's chrome (mono pill). Its leading ::before
+ * paints the universal state token — a 1em coloured disc whose shape is
+ * picked by state-full / state-half / state-empty / state-slashed.
+ * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
+ * font-independent SVG-mask recipe. */
+section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge.pass { --state-color:var(--pass); }
+.badge.warn { --state-color:var(--warn); }
+.badge.fail { --state-color:var(--fail); }
+.badge.skip { --state-color:var(--text-muted); color:var(--text-muted); text-decoration:line-through; text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent); }
+.badge::before {
+  content:'';
+  display:inline-block;
+  width:0.95em; height:0.95em;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  box-sizing:border-box;
+  flex:none;
+}
+/* state-half: tonal split — left full colour, right same hue at 55%
+ * mixed with --bg. Disc stays fully coloured; the bisector is sharp. */
+.badge.state-half::before {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+}
+.badge.state-empty::before   { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
+/* state-slashed: filled coloured disc with a semi-transparent dark slash
+ * painted on top. Colour fully present, slash crisp on any cell BG. */
+.badge.state-slashed::before { background-image:var(--state-slash); }
+
+
+/* ── VERDICT-GRID ────────────────────────────────────────────────────────────
+ * Nested-list format: ul > li(title + ul(badge items + last = body))
+ * All selectors use > from section root to prevent outer card styles from
+ * cascading into the nested badge/body items. */
+section.verdict-grid > ul {
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+  gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0;
+}
+section.verdict-grid > ul > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+}
+section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); position:relative; overflow:hidden; padding-right:3.125cqi; }
+section.verdict-grid > ul > li:last-child::after {
+  content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
+  font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
+  font-family:var(--font-body); font-weight:400; letter-spacing:0;
+  pointer-events:none;
+}
+section.verdict-grid > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
+/* Inner ul = badge row */
+section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
+/* Badge items (all but last nested li) — neutral pill */
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+/* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
+section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
+/* Body text (last nested li) — reset inherited card-title styles */
+section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
+section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
