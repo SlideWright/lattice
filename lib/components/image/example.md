@@ -2,6 +2,6 @@
 
 ## Image right is the default — text leads, evidence follows.
 
-Replace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
 
-![bg right](your-image.jpg)
+![bg right](sample-image-landscape.svg)

@@ -205,12 +205,9 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ## When to reach for cards-stack.
 
-- Vertical reading order matters
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- **Vertical reading order matters.** The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
+- **Each card has more body than a grid card.** Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
+- **Two to three items, not four-plus.** Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
 
 ---
 
@@ -234,12 +231,12 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 ## Pre-flight checklist for a new component.
 
 - [x] Pick function and form coordinates per the spec
-- [x] Write `manifest.json` with name, function, form, substance, slots
-- [x] Author CSS rules in `styles.css`, scoped to `section.<name>`
-- [-] Add transform.js if substance is structure or series
-- [-] Write a substantive example.md and README.md
-- [ ] Update templates.md catalog
-- [ ] Add unit tests under `test/unit/components/<name>.test.js`
+- [x] Write the manifest with name, function, form, substance, and slots
+- [x] Author CSS rules scoped to the section class
+- [-] Add a transform module if substance is structure or series
+- [-] Write a substantive example and README
+- [ ] Update the templates catalog reference
+- [ ] Add unit tests under the new component test path
 
 ---
 
@@ -277,15 +274,20 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: list-tabular -->
 <!-- _footer: "Hairline ledger · list-tabular" -->
 
-## Hairline ledger — name on the left, body on the right.
+## The four substance contracts a component plugs into.
 
-- **First entry.** Description of the first entry; one or two short sentences.
-- **Second entry.** Description of the second entry.
-- **Third entry.** Description of the third entry.
-- **Fourth entry.** Description of the fourth entry.
-- **Fifth entry.** Description of the fifth entry.
-
-Four variants tune the visual treatment: `def` (editorial), `metric` (filled tile), `spec` (mono key), `register` (pill).
+1. Prose
+   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
+   - _CSS-only; no post-processor required_
+2. Structure
+   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
+   - _Per-component transform.js in lib/components_
+3. Series
+   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
+   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
+4. Graph
+   - External graph language (Mermaid today; D2 or PlantUML in the future).
+   - _External CLI; palette injected at build time_
 
 ---
 
@@ -294,11 +296,11 @@ Four variants tune the visual treatment: `def` (editorial), `metric` (filled til
 
 ## How we make calls when the spec is silent.
 
-- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.
-- **Decisions over options.** Document the choice, not the menu we evaluated.
-- **Cheaper to reverse than to debate.** Reversible calls do not need a meeting.
-- **Form follows function.** The slide layout is determined by what the audience needs to know.
-- **One main idea per slide.** If you cannot summarise the slide in one sentence, split it.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write down the bet on the same slide as the choice.
+4. Form follows function — let the audience need shape the layout.
+5. One main idea per slide; split if you cannot summarise it in one sentence.
 
 ---
 
@@ -332,7 +334,7 @@ Four variants tune the visual treatment: `def` (editorial), `metric` (filled til
 ## What the manifest refactor produced.
 
 - **Before.** 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
-- **After.** 45 components self-contained at `lib/components/<name>/` with manifest + styles + example + README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+- **After.** 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
 
 ---
 
@@ -384,8 +386,10 @@ const cards = loadOne('cards-grid');
 
 ## Two options, equal weight, head-to-head.
 
-- **First option.** Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- **Second option.** Two-sentence description of the second option, including the strongest argument for it. Modifier `chosen` marks the verdict when a decision has been made.
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it. Modifier chosen marks the verdict when a decision has been made.
 
 ---
 
@@ -408,8 +412,8 @@ const cards = loadOne('cards-grid');
 
 ## What we are doing.
 
-- **Chosen path.** Self-contained per-component folders at `lib/components/<name>/`. One folder, everything the component owns.
-- **Rejected option.** Flat files at `lib/components/<name>.{json,css,js,md}` — defeats the self-contained goal and leaves transform.js scattered.
+- **Chosen path.** Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
+- **Rejected option.** Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
 
 ---
 
@@ -518,11 +522,16 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matches the `_class` directive authors type.
-2. **Function coordinate.** One of seven families per docs/design-system.md §3.
-3. **Form coordinate.** One of eleven shapes per §4.
-4. **Substance coordinate.** One of four plugin contracts per §5.
-5. **Skeleton + example.** Skeleton scaffolds blank slides; example.md demonstrates the component substantively.
+1. **Stable name**
+   - Kebab-case, matching the class directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph.
+5. **Skeleton plus example**
+   - Skeleton scaffolds blank slides for the new-slide CLI; example.md demonstrates the component substantively for the gallery.
 
 ---
 
@@ -531,11 +540,11 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## How to add a new component to Lattice.
 
-1. Create `lib/components/<name>/` with `manifest.json` (name, function, form, substance, slots, skeleton).
-2. Write `styles.css` scoped to `section.<name>`. Wrap in `@layer components` once the layer migration completes.
-3. Add `transform.js` if the substance is structure or series. Wire into all three render paths.
-4. Author `example.md` and `README.md`. Run `npm run gallery:components` to refresh the catalog deck.
-5. Add a unit test under `test/unit/components/<name>.test.js`. Run the full suite locally before pushing.
+1. Create the component folder with a manifest declaring name, function, form, substance, slots, and skeleton.
+2. Write the styles scoped to the section class. Wrap in the components layer once the cascade migration completes.
+3. Add a transform module if the substance is structure or series. Wire it into all three render paths.
+4. Author example.md and README.md. Regenerate the catalog gallery from the manifests.
+5. Add a unit test under the component test path. Run the full suite locally before pushing.
 
 ---
 
@@ -766,18 +775,18 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## What this branch named, by weight.
 
-- component — 124
-- manifest — 78
-- function — 64
-- form — 52
-- substance — 47
-- gallery — 41
-- folder — 36
-- variant — 32
-- universal — 28
-- cascade — 22
-- scaffolder — 18
-- bundler — 14
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
 
 ---
 
@@ -797,10 +806,10 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## Applying the criteria, here is where the evidence points.
 
-- **Self-contained component folders.** One `lib/components/<name>/` per component, holding manifest + styles + transform + example + README. Matches the pattern every mature design system uses.
-- **Bundler concatenates CSS at build time.** Per-component sources combine into `lattice.css` via `tools/build-css.js`; committed bundle, CI gate.
+- **Self-contained component folders.** One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses.
+- **Bundler concatenates CSS at build time.** Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
 - **Manifests are the single source of truth.** Scaffolder, snippets, this gallery, and docs all read from the same JSON.
-- **Tests stay scoped.** `test/unit/components/<name>.test.js` per component, runnable as `npm run test:layouts`.
+- **Tests stay scoped.** One test file per component under the components test path, runnable as a scoped npm script.
 
 ---
 
@@ -809,9 +818,9 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## Image right is the default — text leads, evidence follows.
 
-Replace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
 
-![bg right](your-image.jpg)
+![bg right](sample-image-landscape.svg)
 
 ---
 

@@ -2,8 +2,8 @@
 
 ## How we make calls when the spec is silent.
 
-- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.
-- **Decisions over options.** Document the choice, not the menu we evaluated.
-- **Cheaper to reverse than to debate.** Reversible calls do not need a meeting.
-- **Form follows function.** The slide layout is determined by what the audience needs to know.
-- **One main idea per slide.** If you cannot summarise the slide in one sentence, split it.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write down the bet on the same slide as the choice.
+4. Form follows function — let the audience need shape the layout.
+5. One main idea per slide; split if you cannot summarise it in one sentence.

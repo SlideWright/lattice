@@ -2,8 +2,13 @@
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matches the `_class` directive authors type.
-2. **Function coordinate.** One of seven families per docs/design-system.md §3.
-3. **Form coordinate.** One of eleven shapes per §4.
-4. **Substance coordinate.** One of four plugin contracts per §5.
-5. **Skeleton + example.** Skeleton scaffolds blank slides; example.md demonstrates the component substantively.
+1. **Stable name**
+   - Kebab-case, matching the class directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph.
+5. **Skeleton plus example**
+   - Skeleton scaffolds blank slides for the new-slide CLI; example.md demonstrates the component substantively for the gallery.
