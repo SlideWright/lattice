@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "compare-table",
   "function": "comparison",
   "form": "ledger",
@@ -19,5 +20,39 @@
   },
   "skeleton": "<!-- _class: compare-table -->\n\n## Heading framing the comparison.\n\n| Criterion | Option A | Option B | Option C |\n| --- | --- | --- | --- |\n| First criterion | Value | Value | Value |\n| Second criterion | Value | Value | Value |\n| Third criterion | Value | Value | Value |\n",
   "anatomyBlock": "T22-compare-table",
-  "docs": "docs/references/templates.md#template-22-comparison-table"
+  "sample": "<!-- _class: compare-table -->\n\n## Where the four substance contracts come from.\n\n| Substance | Author writes | Renderer | Output |\n| --- | --- | --- | --- |\n| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |\n| structure | nested lists with conventions | lib/*.js post-processor | DOM |\n| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |\n| graph | external graph language | external CLI (mmdc, future d2) | SVG |\n",
+  "whenToUse": [
+    {
+      "title": "Wider than compare-prose",
+      "body": "Three or more options, or four or more rows of criteria. compare-prose maxes out at two columns and short bodies; compare-table scales further."
+    },
+    {
+      "title": "Cells are short phrases",
+      "body": "Each cell is a value, a phrase, or a state marker — not a paragraph. If the cells need sentences, use `verdict-grid` or `cards-stack`."
+    },
+    {
+      "title": "Stable column meaning",
+      "body": "Every row reads the same way across columns. Mixing column meanings row-to-row breaks the table's scannability."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Cells full of prose",
+      "body": "Long sentences in a table cell wrap awkwardly and force the column wider. Move to `verdict-grid` for criteria with body text, or `cards-stack` for full prose rows."
+    },
+    {
+      "title": "More than 6 rows",
+      "body": "Past 6 rows the table density crowds the slide. Split into two slides or summarise the rows that don't differentiate."
+    },
+    {
+      "title": "State-marker rows",
+      "body": "When most cells are pass/fail/partial badges, the right layout is `obligation-matrix` or `verdict-grid`. compare-table is for textual values."
+    }
+  ],
+  "related": [
+    { "name": "compare-prose", "when": "exactly two options with prose bodies" },
+    { "name": "verdict-grid", "when": "options scored against criteria with pass/partial/fail badges" },
+    { "name": "obligation-matrix", "when": "many regimes compared against shared obligations" },
+    { "name": "cards-stack", "when": "each row needs full-prose breathing room rather than a tabular cell" }
+  ]
 }

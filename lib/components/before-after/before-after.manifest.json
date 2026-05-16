@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "before-after",
   "function": "comparison",
   "form": "split",
@@ -19,5 +20,39 @@
   },
   "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
   "anatomyBlock": "before-after",
-  "docs": "docs/references/templates.md#before-after-explicit-state-change"
+  "sample": "<!-- _class: before-after -->\n\n## What the manifest refactor produced.\n\n- **Before.** 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.\n- **After.** 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.\n",
+  "whenToUse": [
+    {
+      "title": "Story of a change",
+      "body": "Two states, one transformation — the audience reads left-to-right as a narrative, not a debate. Use after a decision has been made and shipped."
+    },
+    {
+      "title": "Concrete prior and new state",
+      "body": "Both sides are factual descriptions of the system. The arrow between them is the change itself; the cards substantiate it."
+    },
+    {
+      "title": "Equal-density prose",
+      "body": "Each card carries roughly the same length of body text. Lopsided density makes the After look heavier than the Before and the comparison breaks."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Two competing options",
+      "body": "Use `compare-prose` or `split-compare` when both sides are alternatives under consideration. before-after is for a change that already happened."
+    },
+    {
+      "title": "More than two states",
+      "body": "If there is a middle state or a sequence of changes, use `list-steps` to show the progression. before-after is binary by construction."
+    },
+    {
+      "title": "Editorial labels on the cards",
+      "body": "The card label is always Before or After. Renaming them to Old way / New way defeats the universal grammar and breaks reader expectations."
+    }
+  ],
+  "related": [
+    { "name": "compare-prose", "when": "two alternatives being weighed, not a transformation" },
+    { "name": "split-compare", "when": "binary decision with a verdict bar" },
+    { "name": "redline", "when": "the change is in verbatim text, not structural state" },
+    { "name": "list-steps", "when": "the change has more than two phases" }
+  ]
 }
