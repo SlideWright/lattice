@@ -60,6 +60,10 @@ const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_
 // order — see the cards-side / citation-card / redline extraction
 // notes for the cascade-collision history.
 const MODIFIERS_SOURCE = 'lib/_modifiers.css';
+// highlight.js token theme (Phase 7 extraction). Bundled BEFORE
+// _legacy.css so the cascade matches where these rules sat at line 204
+// of the original _legacy.css.
+const SYNTAX_HIGHLIGHT_SOURCE = 'lib/_syntax-highlight.css';
 const LEGACY_SOURCE = 'lib/_legacy.css';
 // Peripheral atmospheric accents (Phase 6 extraction). Bundled AFTER
 // _legacy.css so the cascade matches where these rules sat at line ~1500
@@ -143,6 +147,14 @@ function bundle() {
   if (modifiers) {
     parts.push(`/* === ${MODIFIERS_SOURCE} === */`);
     parts.push(modifiers);
+  }
+  // Syntax highlighting (Phase 7). Bundled here so the cascade matches
+  // where these rules sat at line 204 of the original _legacy.css —
+  // right after the modifier blocks, before everything else.
+  const syntax = readIfExists(SYNTAX_HIGHLIGHT_SOURCE);
+  if (syntax) {
+    parts.push(`/* === ${SYNTAX_HIGHLIGHT_SOURCE} === */`);
+    parts.push(syntax);
   }
   // Legacy monolith — residual scaffold + un-extracted component CSS.
   // Source order is the cascade order. After Phase 5a, this file no

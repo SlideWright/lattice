@@ -554,3 +554,11 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 
 
 
+
+/* ── KaTeX in non-math layouts ──
+ * Allow inline math in any layout (e.g. a stats card on a kpi slide) by
+ * giving `.katex` sensible defaults so it inherits colour and doesn't
+ * blow up the line-height. Display math outside `section.math.*` falls
+ * back to centred + accent for visibility. */
+section:not(.math) .katex { color: inherit; }
+section:not(.math) .katex-display { margin: var(--sp-sm) 0; text-align: center; }
