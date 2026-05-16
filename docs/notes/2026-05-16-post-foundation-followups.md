@@ -42,17 +42,11 @@ coherent batch without designing the order from scratch.
 - **Risk.** None — manifests + example.md remain.
 - **Depends on.** Nothing.
 
-### 1.2  Migrate `lib/journey.js` → `lib/components/journey/transform.js`
+### 1.2  ~~Migrate `lib/journey.js` → `lib/components/journey/transform.js`~~ ✓ DONE
 
-- **What.** Same move done for `roadmap` earlier in the branch.
-  `journey` is the last per-component transform still at `lib/` root.
-- **Why.** Consistency with the per-component pattern. `journey/`
-  becomes self-contained.
-- **Effort.** 30 minutes. Pattern is well-established (see roadmap
-  commit `0954ca0`): `git mv` + update three render-path imports +
-  test import + affected-tests mapping.
-- **Risk.** Low. Pixel-check confirms zero diff after the move.
-- **Depends on.** Nothing.
+Shipped in commit `f3a6df0` during PR prep. `lib/` root no longer
+holds any per-component transforms; `chart-family.js` remains as
+genuinely shared infrastructure.
 
 ### 1.3  Re-baseline `component-gallery.pdf`
 
@@ -116,10 +110,17 @@ coherent batch without designing the order from scratch.
 - **Why.** Prerequisite for `@layer` activation (2.1). Also
   independently valuable — `!important` is usually a flag for
   unresolved cascade design.
-- **Effort.** Half-session (~12 declarations, each ~10 min to
-  investigate).
+- **Effort.** **2-3 sessions** (corrected from earlier estimate).
+  Actual count after PR-prep audit: **352 declarations** —
+  150 across component styles.css files (heaviest: `image` 55,
+  `timeline` 25, `kanban` 24, `radar` 22, `math` 16), 202 across
+  shared `lib/_*.css` files. Most are likely small categories: Mermaid
+  SVG overrides (where `!important` IS the right answer because we're
+  defeating mmdc's inline styles), and component-specific `display:
+  none !important` patterns. Group by category first, then audit
+  per-group rather than per-declaration to compress the work.
 - **Risk.** Some `!important` rules may be load-bearing in ways the
-  test suite doesn't catch. Per-rule pixel-check after each rewrite.
+  test suite doesn't catch. Per-category pixel-check after each rewrite.
 - **Depends on.** Nothing.
 
 ### 2.3  State / Tone / Chrome universal-variant CSS
@@ -329,8 +330,10 @@ worth keeping open.
 
 If we tackle this list as a single branch:
 
-1. **Tier 1 cleanup** (single commit at the top — 1 hour)
-2. **`!important` audit** (Tier 2.2 — half session)
+1. **Remaining Tier 1 cleanup** (single commit at the top — 30 min;
+   items 1.1, 1.2, 1.5 already shipped during PR prep)
+2. **`!important` audit** (Tier 2.2 — 2-3 sessions; 352 declarations,
+   batch by category not per-declaration)
 3. **`@layer` activation** (Tier 2.1 — 1 session, blocked on 2.2)
 4. **Retire specificity-bump hacks** (Tier 2.1 follow-up — half
    session)
@@ -338,5 +341,7 @@ If we tackle this list as a single branch:
 6. **Pixel-check tooling** docs + optional hook (Tier 2.5 — half
    session)
 
-That's ~4 sessions for a coherent "consolidation" branch. Tier 3
-items each become their own branch as priorities clarify.
+That's **~5-6 sessions** for a coherent "consolidation" branch
+(was ~4 in the original estimate; the !important audit grew once
+the actual count came in). Tier 3 items each become their own branch
+as priorities clarify.
