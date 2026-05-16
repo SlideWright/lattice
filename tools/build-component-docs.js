@@ -1,0 +1,412 @@
+#!/usr/bin/env node
+/**
+ * Generate per-component documentation + gallery decks from manifests.
+ *
+ * For each component in lib/components/<name>/manifest.json, emits two
+ * sibling files in the same folder:
+ *
+ *   <name>.docs.md      — prose reference: when/why, slots, variants,
+ *                         anti-patterns, related components.
+ *   <name>.gallery.md   — Marp deck: title + default-appearance +
+ *                         one slide per variant + anti-patterns +
+ *                         closing. Rendered to <name>.gallery.pdf by
+ *                         the standard build path.
+ *
+ * The manifest is the single source of truth. The generator is
+ * idempotent and deterministic: re-running with no manifest change
+ * produces byte-identical output.
+ *
+ * A manifest qualifies as "enriched" for the docs/gallery pipeline
+ * when it carries at least one of: sample, whenToUse, antiPatterns,
+ * related, variantDocs. Components without any enriched fields are
+ * skipped (so the script can run cleanly during the Phase 2 migration
+ * before every component is migrated).
+ *
+ * Usage:
+ *   node tools/build-component-docs.js                    # build all
+ *   node tools/build-component-docs.js --only cards-grid  # one component
+ *   node tools/build-component-docs.js --check            # CI gate
+ *   node tools/build-component-docs.js --list             # list enriched
+ *
+ * Exit codes:
+ *   0  success
+ *   1  invalid manifest, missing required prose, or (--check) stale output
+ *   2  --only target not found
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { loadAll } = require('../lib/components');
+
+const ROOT = path.join(__dirname, '..');
+const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
+
+/**
+ * True when the manifest has any of the prose fields the generator
+ * needs. Lets the script tolerate not-yet-migrated components without
+ * failing the bulk run.
+ */
+function isEnriched(m) {
+  return Boolean(
+    m.sample ||
+      (Array.isArray(m.whenToUse) && m.whenToUse.length) ||
+      (Array.isArray(m.antiPatterns) && m.antiPatterns.length) ||
+      (Array.isArray(m.related) && m.related.length) ||
+      (m.variantDocs && Object.keys(m.variantDocs).length)
+  );
+}
+
+/**
+ * Title-case for the function/form/substance triplet in the title slide.
+ */
+function tc(s) {
+  return s ? s[0].toUpperCase() + s.slice(1) : s;
+}
+
+/**
+ * Markdown-escape a string for use inside a table cell. Newlines and
+ * pipe characters break table rendering.
+ */
+function tableCell(s) {
+  return String(s).replace(/\|/g, '\\|').replace(/\n+/g, ' ');
+}
+
+/**
+ * Build <name>.docs.md content from a manifest.
+ *
+ * Sections, in order:
+ *   1. Heading + one-line description
+ *   2. Function/Form/Substance triplet table
+ *   3. When to use (from whenToUse[])
+ *   4. When NOT to use (from antiPatterns[])
+ *   5. Authoring skeleton (from skeleton)
+ *   6. Slots (from slots{})
+ *   7. Anatomy (from anatomy, if present)
+ *   8. Variants (from variantDocs{}, layout-specific only)
+ *   9. Universal modifiers pointer (always)
+ *   10. Related components (from related[])
+ *   11. Demo pointer (always)
+ */
+function renderDocs(m) {
+  const lines = [];
+  lines.push(`# ${m.name}`);
+  lines.push('');
+  lines.push(`> ${m.description}`);
+  lines.push('');
+  lines.push(`**Function** ${m.function} · **Form** ${m.form} · **Substance** ${m.substance}`);
+  lines.push('');
+  if (m.purpose) {
+    lines.push(m.purpose);
+    lines.push('');
+  }
+
+  if (Array.isArray(m.whenToUse) && m.whenToUse.length) {
+    lines.push('## When to use');
+    lines.push('');
+    for (const item of m.whenToUse) {
+      lines.push(`- **${item.title}.** ${item.body}`);
+    }
+    lines.push('');
+  }
+
+  if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) {
+    lines.push('## When NOT to use');
+    lines.push('');
+    for (const item of m.antiPatterns) {
+      lines.push(`- **${item.title}.** ${item.body}`);
+    }
+    lines.push('');
+  }
+
+  lines.push('## Authoring');
+  lines.push('');
+  lines.push('```markdown');
+  lines.push(m.skeleton.replace(/\n$/, ''));
+  lines.push('```');
+  lines.push('');
+
+  if (m.slots && Object.keys(m.slots).length) {
+    lines.push('## Slots');
+    lines.push('');
+    lines.push('| Slot | Selector | Required | Description |');
+    lines.push('|---|---|---|---|');
+    for (const [slotName, slot] of Object.entries(m.slots)) {
+      const req = slot.required ? 'yes' : 'no';
+      lines.push(`| \`${slotName}\` | \`${slot.selector}\` | ${req} | ${tableCell(slot.description)} |`);
+    }
+    lines.push('');
+  }
+
+  if (m.anatomy) {
+    lines.push('## Anatomy');
+    lines.push('');
+    lines.push('```text');
+    lines.push(m.anatomy);
+    lines.push('```');
+    lines.push('');
+  }
+
+  const variantDocs = m.variantDocs || {};
+  const variantKeys = Array.isArray(m.variants) ? m.variants.filter((v) => variantDocs[v]) : [];
+  if (variantKeys.length) {
+    lines.push('## Variants (layout-specific)');
+    lines.push('');
+    for (const v of variantKeys) {
+      const vd = variantDocs[v];
+      const heading = vd.label ? `\`${v}\` — ${vd.label}` : `\`${v}\``;
+      lines.push(`### ${heading}`);
+      lines.push('');
+      lines.push(vd.caption);
+      lines.push('');
+      lines.push('```markdown');
+      lines.push(vd.sample.replace(/\n$/, ''));
+      lines.push('```');
+      lines.push('');
+    }
+  }
+
+  lines.push('## Universal modifiers');
+  lines.push('');
+  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, decoration backgrounds). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.');
+  lines.push('');
+
+  if (Array.isArray(m.related) && m.related.length) {
+    lines.push('## Related components');
+    lines.push('');
+    for (const r of m.related) {
+      lines.push(`- \`${r.name}\` — ${r.when}`);
+    }
+    lines.push('');
+  }
+
+  lines.push('## Demo deck');
+  lines.push('');
+  lines.push(`See [${m.name}.gallery.pdf](./${m.name}.gallery.pdf) for rendered examples of every variant.`);
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+/**
+ * Build <name>.gallery.md content from a manifest. The deck is a Marp
+ * source file rendered to PDF by lattice-emulator.
+ *
+ * Slide order:
+ *   1. Title (dark bookend, no chrome)
+ *   2. Default appearance (component's own layout with sample content)
+ *   3..N+2. One slide per variant (component's layout + variant modifier)
+ *   N+3. Anti-patterns (cards-grid meta-layout, omitted if no antiPatterns)
+ *   N+4. Closing — related components (omitted if no related)
+ *
+ * The closing/anti-patterns slides use cards-grid as a meta-layout for
+ * documenting other components. When the component being documented IS
+ * cards-grid, the dogfooding is intentional.
+ *
+ * Page count derivable as expectedGallerySlideCount(m).
+ */
+function renderGallery(m) {
+  const slides = [];
+  const variantKeys = Array.isArray(m.variants) && m.variantDocs
+    ? m.variants.filter((v) => m.variantDocs[v])
+    : [];
+
+  slides.push(`<!-- _class: title silent -->
+
+# ${m.name}
+
+\`${tc(m.function)} · ${tc(m.form)} · ${tc(m.substance)}\`
+
+${m.description}`);
+
+  if (m.sample) {
+    const sampleWithFooter = injectFooter(m.sample, `Default · ${m.name}`);
+    slides.push(sampleWithFooter);
+  }
+
+  for (const v of variantKeys) {
+    const vd = m.variantDocs[v];
+    const label = vd.label || v;
+    const sampleWithFooter = injectFooter(vd.sample, `${label} · ${m.name} ${v}`);
+    slides.push(sampleWithFooter);
+  }
+
+  if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) {
+    slides.push(renderAntiPatternsSlide(m));
+  }
+
+  if (Array.isArray(m.related) && m.related.length) {
+    slides.push(renderClosingSlide(m));
+  }
+
+  const frontMatter = `---
+marp: true
+theme: indaco
+paginate: true
+header: "Lattice · ${m.name}"
+---`;
+
+  return `${frontMatter}\n\n${slides.join('\n\n---\n\n')}\n`;
+}
+
+/**
+ * Inject a `<!-- _footer: "..." -->` directive immediately after the
+ * `<!-- _class: ... -->` line of a slide. Idempotent — if the slide
+ * already declares its own footer, leave it alone.
+ */
+function injectFooter(slide, footer) {
+  if (/<!--\s*_footer:/.test(slide)) return slide;
+  return slide.replace(
+    /^<!--\s*_class:\s*([^>]*?)\s*-->/,
+    (_match, klass) => `<!-- _class: ${klass} -->\n<!-- _footer: "${footer}" -->`
+  );
+}
+
+function renderAntiPatternsSlide(m) {
+  const cards = m.antiPatterns.map((p) => `- **${p.title}.** ${p.body}`);
+  return `<!-- _class: cards-grid -->
+<!-- _footer: "Anti-patterns · ${m.name}" -->
+
+## When NOT to reach for ${m.name}.
+
+${cards.join('\n')}`;
+}
+
+function renderClosingSlide(m) {
+  const items = m.related.map((r) => `- \`${r.name}\` — ${r.when}`).join('\n');
+  return `<!-- _class: closing silent -->
+
+# See also.
+
+\`Related components\`
+
+${items}`;
+}
+
+/**
+ * Page count the gallery is expected to produce. Used by the per-
+ * component integration test to assert the renderer matches the
+ * manifest's declared variant count.
+ */
+function expectedGallerySlideCount(m) {
+  const variantKeys = Array.isArray(m.variants) && m.variantDocs
+    ? m.variants.filter((v) => m.variantDocs[v]).length
+    : 0;
+  let n = 1; // title
+  if (m.sample) n += 1;
+  n += variantKeys;
+  if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) n += 1;
+  if (Array.isArray(m.related) && m.related.length) n += 1;
+  return n;
+}
+
+function targetPaths(m) {
+  const dir = path.join(COMPONENTS_DIR, m.name);
+  return {
+    docs: path.join(dir, `${m.name}.docs.md`),
+    gallery: path.join(dir, `${m.name}.gallery.md`),
+  };
+}
+
+function writeIfChanged(file, content) {
+  const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
+  if (current === content) return { wrote: false, file };
+  fs.writeFileSync(file, content);
+  return { wrote: true, file };
+}
+
+function buildOne(m) {
+  if (!isEnriched(m)) return { skipped: true, name: m.name };
+  const paths = targetPaths(m);
+  const docs = renderDocs(m);
+  const gallery = renderGallery(m);
+  const a = writeIfChanged(paths.docs, docs);
+  const b = writeIfChanged(paths.gallery, gallery);
+  return {
+    name: m.name,
+    docsWrote: a.wrote,
+    galleryWrote: b.wrote,
+    expectedPages: expectedGallerySlideCount(m),
+    paths,
+  };
+}
+
+function checkOne(m) {
+  if (!isEnriched(m)) return { name: m.name, skipped: true, stale: false };
+  const paths = targetPaths(m);
+  const docs = renderDocs(m);
+  const gallery = renderGallery(m);
+  const docsStale = !fs.existsSync(paths.docs) || fs.readFileSync(paths.docs, 'utf8') !== docs;
+  const galleryStale = !fs.existsSync(paths.gallery) || fs.readFileSync(paths.gallery, 'utf8') !== gallery;
+  return { name: m.name, stale: docsStale || galleryStale, docsStale, galleryStale };
+}
+
+function main(argv) {
+  const args = new Set(argv.filter((a) => a.startsWith('--')));
+  const onlyIdx = argv.indexOf('--only');
+  const only = onlyIdx >= 0 ? argv[onlyIdx + 1] : null;
+  const manifests = loadAll();
+  const filtered = only ? manifests.filter((m) => m.name === only) : manifests;
+  if (only && filtered.length === 0) {
+    process.stderr.write(`error: no component named "${only}"\n`);
+    return 2;
+  }
+
+  if (args.has('--list')) {
+    for (const m of filtered) {
+      if (isEnriched(m)) process.stdout.write(`${m.name}\n`);
+    }
+    return 0;
+  }
+
+  if (args.has('--check')) {
+    let staleCount = 0;
+    for (const m of filtered) {
+      const r = checkOne(m);
+      if (r.stale) {
+        process.stderr.write(`stale: ${m.name} (`);
+        const parts = [];
+        if (r.docsStale) parts.push('docs.md');
+        if (r.galleryStale) parts.push('gallery.md');
+        process.stderr.write(`${parts.join(', ')})\n`);
+        staleCount += 1;
+      }
+    }
+    if (staleCount) {
+      process.stderr.write(`\n${staleCount} component(s) stale. Run \`node tools/build-component-docs.js\` to regenerate.\n`);
+      return 1;
+    }
+    process.stdout.write(`${filtered.length} component(s) checked, all up to date.\n`);
+    return 0;
+  }
+
+  let wrote = 0;
+  let skipped = 0;
+  for (const m of filtered) {
+    const r = buildOne(m);
+    if (r.skipped) {
+      skipped += 1;
+      continue;
+    }
+    if (r.docsWrote || r.galleryWrote) {
+      wrote += 1;
+      const parts = [];
+      if (r.docsWrote) parts.push('docs.md');
+      if (r.galleryWrote) parts.push('gallery.md');
+      process.stdout.write(`wrote ${m.name} (${parts.join(', ')}; expected ${r.expectedPages} pages)\n`);
+    }
+  }
+  if (!wrote) process.stdout.write(`no changes (${filtered.length - skipped} enriched, ${skipped} skipped)\n`);
+  return 0;
+}
+
+if (require.main === module) process.exit(main(process.argv.slice(2)));
+
+module.exports = {
+  renderDocs,
+  renderGallery,
+  expectedGallerySlideCount,
+  isEnriched,
+  buildOne,
+  checkOne,
+  targetPaths,
+};
