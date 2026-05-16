@@ -5,11 +5,22 @@
   "substance": "prose",
   "description": "Single oversized number as the focal claim.",
   "purpose": "Use to make one metric land. The number should be the headline — supporting text is one short caption.",
-  "variants": ["dark", "accent"],
   "slots": {
-    "eyebrow": { "selector": "p > code", "required": false, "description": "Optional label above the number." },
-    "number": { "selector": "ul > li:first-child", "required": true, "description": "First list item: the giant number." },
-    "caption": { "selector": "ul > li:first-child > ul > li", "required": false, "description": "One-line caption below the number (nested bullet)." }
+    "eyebrow": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional label above the number."
+    },
+    "number": {
+      "selector": "ul > li:first-child",
+      "required": true,
+      "description": "First list item: the giant number."
+    },
+    "caption": {
+      "selector": "ul > li:first-child > ul > li",
+      "required": false,
+      "description": "One-line caption below the number (nested bullet)."
+    }
   },
   "skeleton": "<!-- _class: big-number -->\n\n`Optional eyebrow`\n\n- 92%\n  - of the audience remembers a single number from a deck.\n",
   "docs": "docs/references/templates.md#template-16-big-number-single-stat"

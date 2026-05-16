@@ -5,10 +5,17 @@
   "substance": "structure",
   "description": "Options scored against criteria as a verdict matrix.",
   "purpose": "Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.",
-  "variants": ["compact", "dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the choice." },
-    "options": { "selector": "ul > li", "required": true, "description": "Outer li per option, lead with **Option name.**. Inner li per criterion, prefixed with [x]/[-]/[ ] then the criterion text." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the choice."
+    },
+    "options": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Outer li per option, lead with **Option name.**. Inner li per criterion, prefixed with [x]/[-]/[ ] then the criterion text."
+    }
   },
   "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First criterion\n  - [-] Second criterion\n  - [ ] Third criterion\n- **Second option.**\n  - [x] First criterion\n  - [x] Second criterion\n  - [-] Third criterion\n- **Third option.**\n  - [ ] First criterion\n  - [-] Second criterion\n  - [x] Third criterion\n",
   "docs": "docs/references/templates.md#template-21-card-grid-with-verdict-badges"

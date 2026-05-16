@@ -5,10 +5,17 @@
   "substance": "structure",
   "description": "Explicit state-change comparison — what was, what is.",
   "purpose": "Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.",
-  "variants": ["dark", "compact"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the change." },
-    "states": { "selector": "ul > li", "required": true, "description": "Exactly two list items. Lead each with **Before** or **After** then a 1–2 sentence description." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the change."
+    },
+    "states": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Exactly two list items. Lead each with **Before** or **After** then a 1–2 sentence description."
+    }
   },
   "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
   "docs": "docs/references/templates.md#before-after-explicit-state-change"

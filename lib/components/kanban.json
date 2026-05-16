@@ -5,10 +5,17 @@
   "substance": "series",
   "description": "Kanban board — columns of cards by stage.",
   "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.",
-  "variants": ["dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading." },
-    "lanes": { "selector": "ul > li", "required": true, "description": "Outer li per lane (stage), lead with **Stage name.**. Inner bullets per card in that lane." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "lanes": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Outer li per lane (stage), lead with **Stage name.**. Inner bullets per card in that lane."
+    }
   },
   "skeleton": "<!-- _class: kanban -->\n\n## Current sprint status.\n\n- **To do.**\n  - First card\n  - Second card\n- **In progress.**\n  - First card\n  - Second card\n- **Done.**\n  - First card\n  - Second card\n",
   "docs": "docs/references/templates.md#chart-family"

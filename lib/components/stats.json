@@ -5,11 +5,22 @@
   "substance": "structure",
   "description": "Row of 3–5 stat tiles, each with a big number and a label.",
   "purpose": "Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.",
-  "variants": ["compact", "dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the metrics." },
-    "subtitle": { "selector": "p > code", "required": false, "description": "Optional subtitle (inline-code paragraph after h2)." },
-    "tiles": { "selector": "ul > li", "required": true, "description": "One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the metrics."
+    },
+    "subtitle": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional subtitle (inline-code paragraph after h2)."
+    },
+    "tiles": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption."
+    }
   },
   "skeleton": "<!-- _class: stats -->\n\n## Six months of results.\n\n- **92%**\n  - Caption for the first stat\n- **3.4×**\n  - Caption for the second stat\n- **$1.2M**\n  - Caption for the third stat\n- **−18d**\n  - Caption for the fourth stat\n",
   "docs": "docs/references/templates.md#template-6-stats-kpi-row"

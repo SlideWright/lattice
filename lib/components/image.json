@@ -5,11 +5,28 @@
   "substance": "prose",
   "description": "Image as the slide's anchor, with optional text alongside.",
   "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
-  "variants": ["dark", "full", "contain", "museum", "mirror"],
+  "variants": [
+    "full",
+    "contain",
+    "museum",
+    "mirror"
+  ],
   "slots": {
-    "image": { "selector": "img", "required": true, "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`." },
-    "heading": { "selector": "h2", "required": false, "description": "Optional heading in the text slot." },
-    "body": { "selector": "p", "required": false, "description": "Optional caption or body text." }
+    "image": {
+      "selector": "img",
+      "required": true,
+      "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": false,
+      "description": "Optional heading in the text slot."
+    },
+    "body": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional caption or body text."
+    }
   },
   "skeleton": "<!-- _class: image -->\n\n![bg right](path/to/image.jpg)\n\n## Optional heading.\n\nOptional caption sentence beside the image.\n",
   "docs": "docs/references/templates.md#template-24-image"

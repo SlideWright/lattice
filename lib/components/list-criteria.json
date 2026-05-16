@@ -5,10 +5,17 @@
   "substance": "structure",
   "description": "Numbered criteria list — each requirement is a row with rationale.",
   "purpose": "Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.",
-  "variants": ["compact", "dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the framework." },
-    "criteria": { "selector": "ol > li", "required": true, "description": "One li per criterion. Lead each with **Criterion name.** then the rationale." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the framework."
+    },
+    "criteria": {
+      "selector": "ol > li",
+      "required": true,
+      "description": "One li per criterion. Lead each with **Criterion name.** then the rationale."
+    }
   },
   "skeleton": "<!-- _class: list-criteria -->\n\n## What every decision must satisfy.\n\n1. **First criterion.** Short rationale for why this matters.\n2. **Second criterion.** Short rationale.\n3. **Third criterion.** Short rationale.\n4. **Fourth criterion.** Short rationale.\n",
   "docs": "docs/references/templates.md#template-20-numbered-criteria-list"

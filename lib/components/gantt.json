@@ -5,10 +5,17 @@
   "substance": "series",
   "description": "Gantt chart — task bars across a date axis.",
   "purpose": "Use for project plans with overlapping or staggered tasks. Each task is a bar on the time axis; bars can span multiple periods.",
-  "variants": ["dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the plan." },
-    "tasks": { "selector": "ul > li", "required": true, "description": "One li per task. Format: `Task name — start, end[, status]`." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the plan."
+    },
+    "tasks": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per task. Format: `Task name — start, end[, status]`."
+    }
   },
   "skeleton": "<!-- _class: gantt -->\n\n## H1 2026 plan.\n\n- Discovery — Jan, Feb\n- Design — Feb, Mar\n- Build — Mar, May\n- Launch — May, Jun\n",
   "docs": "docs/references/templates.md#chart-family"

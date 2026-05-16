@@ -5,11 +5,22 @@
   "substance": "series",
   "description": "Native 2×2 scatter chart — items plotted on two continuous axes.",
   "purpose": "Use to position items by two numeric attributes (cost × value, effort × impact). Data-driven; for static categorical 2×2 grids, use matrix-2x2.",
-  "variants": ["dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the analysis." },
-    "axes": { "selector": "p > code", "required": false, "description": "Optional axis-label eyebrow (inline-code paragraph)." },
-    "items": { "selector": "ul > li", "required": true, "description": "One li per item. Format: `Label — x, y[, size]`." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the analysis."
+    },
+    "axes": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional axis-label eyebrow (inline-code paragraph)."
+    },
+    "items": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per item. Format: `Label — x, y[, size]`."
+    }
   },
   "skeleton": "<!-- _class: quadrant -->\n\n`Cost vs. Value`\n\n## Where to put the next dollar.\n\n- Option A — 2, 8\n- Option B — 6, 7\n- Option C — 4, 3\n- Option D — 8, 2\n",
   "docs": "docs/references/templates.md#quadrant-native-2x2-quadrant-chart-chart-family-member"

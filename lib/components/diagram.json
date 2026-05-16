@@ -5,11 +5,22 @@
   "substance": "graph",
   "description": "Mermaid diagram as the slide's centerpiece.",
   "purpose": "Use for relational/topological visuals — flowcharts, sequence diagrams, state machines, ER diagrams. The diagram should occupy ≥50% of the slide.",
-  "variants": ["dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading framing what the diagram shows." },
-    "subtitle": { "selector": "p > code", "required": false, "description": "Optional eyebrow caption." },
-    "mermaid": { "selector": "div.mermaid, svg", "required": true, "description": "Fenced ```mermaid block, pre-rendered to SVG at build time." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing what the diagram shows."
+    },
+    "subtitle": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional eyebrow caption."
+    },
+    "mermaid": {
+      "selector": "div.mermaid, svg",
+      "required": true,
+      "description": "Fenced ```mermaid block, pre-rendered to SVG at build time."
+    }
   },
   "skeleton": "<!-- _class: diagram -->\n\n## How signals move from input to decision.\n\n```mermaid\nflowchart LR\n  A[Input] --> B[Process]\n  B --> C{Decision}\n  C -->|yes| D[Path A]\n  C -->|no| E[Path B]\n```\n",
   "docs": "docs/references/templates.md#template-5-diagram-single"

@@ -5,10 +5,17 @@
   "substance": "structure",
   "description": "The verdict slide — one chosen path, named explicitly.",
   "purpose": "Use after a comparison slide to land the decision. The chosen option is the focal element; the rejected ones (if shown) are subordinated.",
-  "variants": ["dark", "accent"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the decision." },
-    "options": { "selector": "ul > li", "required": true, "description": "List items. Lead each with **Option name.** then a short rationale. The chosen option carries the focal styling." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the decision."
+    },
+    "options": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "List items. Lead each with **Option name.** then a short rationale. The chosen option carries the focal styling."
+    }
   },
   "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",
   "docs": "docs/references/templates.md#decision-the-verdict-slide"

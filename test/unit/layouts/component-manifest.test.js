@@ -23,7 +23,11 @@ const {
   FUNCTIONS,
   FORMS,
   SUBSTANCES,
+  UNIVERSAL_GROUPS,
+  UNIVERSAL_VARIANTS,
+  SEMI_UNIVERSAL_VARIANTS,
   validate,
+  effectiveVariants,
   loadOne,
   loadAll,
   groupByFunction,
@@ -48,7 +52,8 @@ describe('component-manifest', () => {
       const m = {
         ...GOOD,
         purpose: 'Use for parallel options.',
-        variants: ['compact', 'dark'],
+        variants: ['mirror', 'four', 'three'],
+        excludes: ['loose'],
         slots: {
           title: { selector: 'h2', required: true, description: 'Heading.' },
         },
@@ -100,11 +105,39 @@ describe('component-manifest', () => {
     });
 
     test('rejects non-array variants', () => {
-      assert.match(validate({ ...GOOD, variants: 'compact dark' })[0], /array/);
+      assert.match(validate({ ...GOOD, variants: 'mirror' })[0], /array/);
     });
 
     test('rejects variants with non-string entries', () => {
-      assert.match(validate({ ...GOOD, variants: ['compact', 7] })[0], /non-empty/);
+      assert.match(validate({ ...GOOD, variants: ['mirror', 7] })[0], /non-empty/);
+    });
+
+    test('rejects universal variants in variants array', () => {
+      const errors = validate({ ...GOOD, variants: ['dark'] });
+      assert.match(errors[0], /variant 'dark' is universal/);
+    });
+
+    test('rejects semi-universal variants in variants array', () => {
+      const errors = validate({ ...GOOD, variants: ['compact'] });
+      assert.match(errors[0], /variant 'compact' is semi-universal/);
+      assert.match(errors[0], /excludes/);
+    });
+
+    test('accepts layout-specific variants', () => {
+      assert.deepEqual(validate({ ...GOOD, variants: ['mirror', 'four'] }), []);
+    });
+
+    test('accepts well-formed excludes array', () => {
+      assert.deepEqual(validate({ ...GOOD, excludes: ['compact', 'loose'] }), []);
+    });
+
+    test('rejects non-array excludes', () => {
+      assert.match(validate({ ...GOOD, excludes: 'compact' })[0], /array/);
+    });
+
+    test('rejects excludes containing non-semi-universal values', () => {
+      const errors = validate({ ...GOOD, excludes: ['dark'] });
+      assert.match(errors[0], /must be one of the semi-universal variants/);
     });
 
     test('rejects malformed slots', () => {
@@ -250,6 +283,83 @@ describe('component-manifest', () => {
 
     test('SUBSTANCES has exactly the 4 plugin contracts documented in design-system.md §5', () => {
       assert.deepEqual([...SUBSTANCES].sort(), ['graph', 'prose', 'series', 'structure']);
+    });
+
+    test('UNIVERSAL_GROUPS has the six documented categories', () => {
+      assert.deepEqual(Object.keys(UNIVERSAL_GROUPS).sort(), [
+        'chrome', 'decoration', 'mood', 'state', 'tone', 'typography',
+      ]);
+    });
+
+    test('UNIVERSAL_VARIANTS is the flat union of the groups, deduped', () => {
+      const allGroupValues = Object.values(UNIVERSAL_GROUPS).flatMap((g) => [...g]);
+      const expected = [...new Set(allGroupValues)];
+      assert.deepEqual([...UNIVERSAL_VARIANTS], expected);
+    });
+
+    test('UNIVERSAL_VARIANTS and SEMI_UNIVERSAL_VARIANTS are disjoint', () => {
+      const uni = new Set(UNIVERSAL_VARIANTS);
+      const overlap = SEMI_UNIVERSAL_VARIANTS.filter((v) => uni.has(v));
+      assert.deepEqual(overlap, []);
+    });
+
+    test('the state group has all 8 documented variants', () => {
+      assert.deepEqual([...UNIVERSAL_GROUPS.state].sort(), [
+        'archived', 'confidential', 'draft', 'pinned', 'redacted', 'revised', 'tbd', 'wip',
+      ]);
+    });
+
+    test('the tone group has the 4 state-token tones', () => {
+      assert.deepEqual([...UNIVERSAL_GROUPS.tone].sort(), [
+        'tone-fail', 'tone-pass', 'tone-skip', 'tone-warn',
+      ]);
+    });
+
+    test('chrome group has silent + the three surgicals', () => {
+      assert.deepEqual([...UNIVERSAL_GROUPS.chrome].sort(), [
+        'no-footer', 'no-header', 'no-paginate', 'silent',
+      ]);
+    });
+  });
+
+  describe('effectiveVariants', () => {
+    test('returns all universals + all semi-universals + layout-specific, sorted', () => {
+      const m = { ...GOOD, variants: ['four', 'mirror'] };
+      const vs = effectiveVariants(m);
+      // Sorted
+      assert.deepEqual(vs, [...vs].sort());
+      // Includes universals
+      for (const u of UNIVERSAL_VARIANTS) assert.ok(vs.includes(u), `missing universal ${u}`);
+      // Includes semi-universals
+      for (const s of SEMI_UNIVERSAL_VARIANTS) assert.ok(vs.includes(s), `missing semi ${s}`);
+      // Includes layout-specific
+      assert.ok(vs.includes('four'));
+      assert.ok(vs.includes('mirror'));
+    });
+
+    test('respects excludes for semi-universals', () => {
+      const m = { ...GOOD, excludes: ['compact', 'loose'] };
+      const vs = effectiveVariants(m);
+      assert.ok(!vs.includes('compact'));
+      assert.ok(!vs.includes('loose'));
+      // Universals still present
+      assert.ok(vs.includes('dark'));
+      // Non-excluded semi-universal still present
+      assert.ok(vs.includes('accent'));
+    });
+
+    test('handles manifest with no variants and no excludes', () => {
+      const vs = effectiveVariants(GOOD);
+      // Just universals + all semi-universals
+      const expected = [...new Set([...UNIVERSAL_VARIANTS, ...SEMI_UNIVERSAL_VARIANTS])].sort();
+      assert.deepEqual(vs, expected);
+    });
+
+    test('deduplicates if a layout-specific variant happens to match a universal/semi', () => {
+      // No-op test: validator should prevent this, but the function dedupes defensively.
+      const m = { ...GOOD, variants: ['mirror', 'mirror'] };
+      const vs = effectiveVariants(m);
+      assert.equal(vs.filter((v) => v === 'mirror').length, 1);
     });
   });
 });

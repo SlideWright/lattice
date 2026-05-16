@@ -5,11 +5,25 @@
   "substance": "structure",
   "description": "Featured left panel + supporting list on the right.",
   "purpose": "Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.",
-  "variants": ["mirror", "dark"],
+  "variants": [
+    "mirror"
+  ],
   "slots": {
-    "panel-heading": { "selector": "h2", "required": true, "description": "Heading shown in the dark left panel." },
-    "panel-eyebrow": { "selector": "h3", "required": false, "description": "Optional rubric label below the panel heading." },
-    "points": { "selector": "ul > li", "required": true, "description": "Right-side supporting points. Lead each with **Label.** then body text." }
+    "panel-heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Heading shown in the dark left panel."
+    },
+    "panel-eyebrow": {
+      "selector": "h3",
+      "required": false,
+      "description": "Optional rubric label below the panel heading."
+    },
+    "points": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Right-side supporting points. Lead each with **Label.** then body text."
+    }
   },
   "skeleton": "<!-- _class: split-panel -->\n\n## Panel headline that frames the side points.\n\n### Section rubric\n\n- **First point.** Supporting sentence explaining the first point.\n- **Second point.** Supporting sentence explaining the second point.\n- **Third point.** Supporting sentence explaining the third point.\n",
   "docs": "docs/references/templates.md#template-17-split-panel-colored-sidebar"

@@ -5,10 +5,20 @@
   "substance": "structure",
   "description": "Phased multi-workstream grid — phases across the top, workstreams down the side.",
   "purpose": "Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).",
-  "variants": ["dark", "compact", "horizons"],
+  "variants": [
+    "horizons"
+  ],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the plan." },
-    "rows": { "selector": "ul > li", "required": true, "description": "Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the plan."
+    },
+    "rows": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable."
+    }
   },
   "skeleton": "<!-- _class: roadmap -->\n\n## What ships in each phase.\n\n- **First workstream.**\n  - [x] Q1 deliverable\n  - [-] Q2 deliverable\n  - [ ] Q3 deliverable\n- **Second workstream.**\n  - [x] Q1 deliverable\n  - [x] Q2 deliverable\n  - [-] Q3 deliverable\n- **Third workstream.**\n  - [ ] Q1 deliverable\n  - [-] Q2 deliverable\n  - [x] Q3 deliverable\n",
   "docs": "docs/references/templates.md#roadmap-phased-multi-workstream-grid"

@@ -5,10 +5,17 @@
   "substance": "structure",
   "description": "Horizontal ordered steps along a single axis, each a labeled dot.",
   "purpose": "Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.",
-  "variants": ["dark", "compact"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the process." },
-    "steps": { "selector": "ol > li, ul > li", "required": true, "description": "One li per step. Lead each with **Step label** then a nested bullet for the description." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the process."
+    },
+    "steps": {
+      "selector": "ol > li, ul > li",
+      "required": true,
+      "description": "One li per step. Lead each with **Step label** then a nested bullet for the description."
+    }
   },
   "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
   "docs": "docs/references/templates.md#template-13-timeline-process"

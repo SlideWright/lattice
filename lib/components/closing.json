@@ -5,11 +5,25 @@
   "substance": "prose",
   "description": "Final slide. Dark canvas mirror of title.",
   "purpose": "Last slide of every deck. Restates the takeaway or call-to-action. Suppresses header, footer, and pagination.",
-  "variants": ["dark", "accent", "numbered"],
+  "variants": [
+    "numbered"
+  ],
   "slots": {
-    "heading": { "selector": "h1", "required": true, "description": "Closing line — takeaway, thank-you, or call to action." },
-    "eyebrow": { "selector": "p > code", "required": false, "description": "Optional category label." },
-    "subtitle": { "selector": "p", "required": false, "description": "Optional supporting line." }
+    "heading": {
+      "selector": "h1",
+      "required": true,
+      "description": "Closing line — takeaway, thank-you, or call to action."
+    },
+    "eyebrow": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional category label."
+    },
+    "subtitle": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional supporting line."
+    }
   },
   "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
   "docs": "docs/references/templates.md#template-18-closing-dark-bookend"

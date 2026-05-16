@@ -5,10 +5,17 @@
   "substance": "prose",
   "description": "A pulled quotation, centered, with attribution.",
   "purpose": "Use to land a phrase verbatim — customer voice, expert claim, mission statement. Keep under ~25 words.",
-  "variants": ["dark"],
   "slots": {
-    "quotation": { "selector": "blockquote > p", "required": true, "description": "The quoted text." },
-    "attribution": { "selector": "section > p:last-child", "required": false, "description": "Attribution line below the quote." }
+    "quotation": {
+      "selector": "blockquote > p",
+      "required": true,
+      "description": "The quoted text."
+    },
+    "attribution": {
+      "selector": "section > p:last-child",
+      "required": false,
+      "description": "Attribution line below the quote."
+    }
   },
   "skeleton": "<!-- _class: quote -->\n\n> The quoted sentence sits here, kept short enough to read in one breath.\n\nAttribution — Person, Role\n",
   "docs": "docs/references/templates.md#template-12-quote-testimonial"

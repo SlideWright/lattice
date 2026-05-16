@@ -5,10 +5,17 @@
   "substance": "series",
   "description": "Date-stamped event list — spine with date pills, status pills, and body.",
   "purpose": "Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.",
-  "variants": ["dark"],
   "slots": {
-    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the timeline." },
-    "events": { "selector": "ul > li", "required": true, "description": "One li per event. Format: `Date — status — Title` then nested body bullets." }
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the timeline."
+    },
+    "events": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per event. Format: `Date — status — Title` then nested body bullets."
+    }
   },
   "skeleton": "<!-- _class: timeline-list -->\n\n## Major milestones to date.\n\n- 2024 Q3 — decision — Kicked off the program\n  - Approval secured, team assembled.\n- 2025 Q2 — live — Public beta launched\n  - 1,200 early users in the first month.\n- 2026 Q1 — live — V1 GA\n  - Full feature set shipped to all customers.\n- 2026 Q3 — decision — Roadmap re-set\n  - Next-phase priorities chosen.\n",
   "docs": "docs/references/templates.md#chart-family"
