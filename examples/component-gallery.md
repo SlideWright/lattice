@@ -177,10 +177,14 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ## When to reach for cards-grid.
 
-- **Parallel items.** Four cards or fewer, each item gets equal weight.
-- **Scannable at a glance.** Audience absorbs the whole set in one look.
-- **Equal information density.** Each card carries roughly the same text length.
-- **Order is decorative.** Use list-steps or list-criteria when sequence carries meaning.
+- Parallel items
+  - Four cards or fewer, each item gets equal weight in the layout. Audience compares them at a glance.
+- Scannable at a glance
+  - The audience absorbs the whole set in one look — no scrolling, no eye-leaping between rows.
+- Equal information density
+  - Each card carries roughly the same text length. Uneven density makes the grid feel unbalanced.
+- Order is decorative
+  - When sequence carries meaning, use list-steps or list-criteria instead. cards-grid is for parallel options.
 
 ---
 
@@ -189,8 +193,10 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ## Two cards, equal weight, side-by-side.
 
-- **Use for an explicit pair.** Two options, two phases, two artifacts presented with equal weight.
-- **Different from compare-prose.** Compare-prose adds connector chrome and a chosen modifier; cards-side stays neutral.
+- Use for an explicit pair
+  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides.
+- Different from compare-prose
+  - compare-prose adds connector chrome and a chosen modifier; cards-side stays neutral. Pick cards-side when neither option is the winner.
 
 ---
 
@@ -199,10 +205,12 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ## When to reach for cards-stack.
 
-- **Vertical reading order matters.** The audience scans top to bottom, not grid-style.
-- **Each card has more body than a grid card.** Two sentences instead of one.
-- **Two to three items, not four-plus.** Beyond three, the slide overflows.
-- **Modifier horizontal flips to a row.** Useful for paired before/after when neither side is featured.
+- Vertical reading order matters
+  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
+- Each card has more body than a grid card
+  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
+- Two to three items, not four-plus
+  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
 
 ---
 
@@ -211,9 +219,12 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ## When the items want full-width rows.
 
-- **First wide row.** Each item has enough body text to want its own row (one to two sentences).
-- **Second wide row.** The slide scans top-to-bottom rather than as a grid.
-- **Third wide row.** Beyond three or four rows, prefer `list-tabular` for density.
+1. Each item has substantial body text
+   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
+2. The slide scans top-to-bottom
+   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
+3. Three or four rows feels right
+   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
 
 ---
 
