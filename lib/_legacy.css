@@ -42,18 +42,30 @@
  *   1147–1778    lib/components/user-journey/...      JOURNEY per-component
  *   1779–1815    lib/_modifiers.css                   ROW PILL
  *
- * ── DEAD-CANDIDATE blocks (no matching component manifest; verify before delete)
+ * ── LEGAL FAMILY — promotion pending (NOT dead; manifests + folders missing)
  *
- *   line range   class name              status
+ * Originally flagged DEAD-CANDIDATE; verification (Session 1) found all
+ * six are live: used by examples/legal-layouts.md + legal-layouts-finalists.md
+ * with transform code in lattice-emulator.js + marp.config.js + lattice-runtime.js.
+ * Documented as the "Legal family — 6 layouts × 5 variants each" entry
+ * in docs/notes/2026-05-15-shipped-without-proposal.md. They shipped
+ * without going through the May 4 / May 7 proposal catalogues, so they
+ * never got per-component manifests + folders. The split work treats them
+ * as first-class components: author manifest, extract CSS to its folder,
+ * migrate the transform (statute-stack, regulatory-update, redline,
+ * authority-chain — the other two are CSS-only).
+ *
+ *   line range   class name              destination
  *   ─────────────────────────────────────────────────────────────────────────
- *   1816–2069    statute-stack           DEAD-CANDIDATE — vertical-removed
- *   2070–2253    citation-card           DEAD-CANDIDATE — vertical-removed
- *   2254–2305    obligation-matrix       DEAD-CANDIDATE — vertical-removed
- *   2306–2450    state glyphs            DEAD-CANDIDATE — verify modifier usage
+ *   1816–2069    statute-stack           lib/components/statute-stack/
+ *   2070–2253    citation-card           lib/components/citation-card/
+ *   2254–2305    obligation-matrix       lib/components/obligation-matrix/
+ *   2306–2450    state glyphs            lib/_modifiers.css (universal state grammar,
+ *                                        also used by roadmap/checklist/verdict-grid)
  *   2451–2519    (divider banner — gap)
- *   2520–2728    regulatory-update       DEAD-CANDIDATE — vertical-removed
- *   2729–2969    redline                 DEAD-CANDIDATE — vertical-removed
- *   2970–3172    authority-chain         DEAD-CANDIDATE — vertical-removed
+ *   2520–2728    regulatory-update       lib/components/regulatory-update/
+ *   2729–2969    redline                 lib/components/redline/
+ *   2970–3172    authority-chain         lib/components/authority-chain/
  *
  * ── Destinations continued (3173+)
  *
@@ -80,19 +92,24 @@
  *   5271–5931    lib/components/math/styles.css       MATH per-component
  *   5932–end     lib/_modifiers.css                   KaTeX-in-non-math fallback
  *
- * ── Migration order (suggested for the next session) ──────────────────────
+ * ── Migration order (revised after Session 1 verification) ────────────────
  *
- *   1. DEAD-CANDIDATE verification first. Search examples/ + tests for each
- *      class. If unused, delete the block — this removes ~1,400 lines (~24%
- *      of the file) with zero visual risk.
- *   2. Token + base extraction (lines 1–259) to _root.css + _base.css. Pure
- *      reorganization, no specificity changes.
- *   3. Per-component blocks to their folders, alphabetically. Each move is
- *      a same-sandbox before/after PDF byte-compare (see the cards-side
- *      extraction commit for the validation pattern).
+ *   1. Token + base extraction (lines 1–259) to _root.css + _base.css.
+ *      Pure reorganization, no specificity changes. Lowest risk; do first
+ *      to establish the cascade-architecture endpoint files.
+ *   2. New component manifests (5 SPLIT-* + 6 legal-family). Metadata only;
+ *      enables the per-component CSS extraction in step 3.
+ *   3. Per-component CSS to its folder, alphabetically. Each move uses
+ *      `pixel-check snapshot/diff` against all 23 decks — byte-identical
+ *      is mandatory. See cards-side extraction commit for the pattern.
+ *      Legal family also needs transform migration (statute-stack et al.).
  *   4. Modifiers (_modifiers.css) and backgrounds (_backgrounds.css) last —
  *      these have the highest cascade-interaction risk; isolate by leaving
  *      them in source-order position and only physically moving the file.
+ *   5. Universal state grammar (state glyphs, lines 2306–2450) to
+ *      _modifiers.css; shared by roadmap/checklist/verdict-grid +
+ *      obligation-matrix.
+ *   6. Mermaid + syntax + math last, then delete this file.
  *
  * Per-block destinations may shift as the split proceeds; treat this map
  * as a starting hypothesis, not a contract.

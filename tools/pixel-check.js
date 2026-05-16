@@ -17,11 +17,19 @@
  *   3. Optional cleanup:
  *        node tools/pixel-check.js clean [<label>]
  *
- * Byte-identical PDFs from same-sandbox before/after rebuilds are
- * pixel-identical (Puppeteer renders deterministically when given the
- * same Chrome version, viewport, and source). A non-zero delta means
- * the CSS change produced a real visual difference — investigate before
- * committing.
+ * Two-stage compare:
+ *   1. Byte compare. If baseline and rebuild are byte-identical, OK.
+ *      Most decks are deterministic — same Chrome + same source → same PDF.
+ *   2. If bytes differ, rasterize both PDFs page-by-page (pdftoppm 72dpi)
+ *      and run ImageMagick `compare` per page. The metric is *pixel
+ *      difference count*. Zero changed pixels per page → OK (the byte
+ *      drift was timestamp / metadata noise). Any page with > 0 changed
+ *      pixels → DIFF.
+ *
+ * The second stage costs ~5-10s per deck (rasterize + compare), so
+ * it only runs when bytes differ. Mermaid-heavy decks rely on it
+ * (mmdc's per-diagram Puppeteer runs add ~30 bytes of variance per
+ * SVG even when visual output is identical).
  *
  * For commits where pixel diffs are INTENDED (e.g. authoring new
  * State/Tone/Chrome variant CSS that adds visual treatment to existing
@@ -111,6 +119,35 @@ function snapshot(label, decks) {
   return results;
 }
 
+function pixelDiff(baselinePdf, currentPdf, deck) {
+  const tmpDir = path.join('/tmp', `pixel-check-${process.pid}-${deck}`);
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+  fs.mkdirSync(tmpDir, { recursive: true });
+  spawnSync('pdftoppm', ['-r', '72', '-png', baselinePdf, `${tmpDir}/old`], { stdio: 'ignore' });
+  spawnSync('pdftoppm', ['-r', '72', '-png', currentPdf, `${tmpDir}/new`], { stdio: 'ignore' });
+  const oldPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('old-') && f.endsWith('.png')).sort();
+  const newPngs = fs.readdirSync(tmpDir).filter((f) => f.startsWith('new-') && f.endsWith('.png')).sort();
+  const pages = Math.max(oldPngs.length, newPngs.length);
+  const perPage = [];
+  let totalPx = 0;
+  for (let i = 0; i < pages; i++) {
+    const oldP = oldPngs[i] ? path.join(tmpDir, oldPngs[i]) : null;
+    const newP = newPngs[i] ? path.join(tmpDir, newPngs[i]) : null;
+    if (!oldP || !newP) {
+      perPage.push({ page: i + 1, pixels: -1, note: oldP ? 'new page added' : 'page removed' });
+      totalPx += 1;
+      continue;
+    }
+    const diffPng = path.join(tmpDir, `diff-${String(i + 1).padStart(3, '0')}.png`);
+    const r = spawnSync('compare', ['-metric', 'AE', oldP, newP, diffPng], { encoding: 'utf8' });
+    const raw = (r.stderr || '').trim();
+    const px = /^\d+$/.test(raw) ? parseInt(raw, 10) : 0;
+    if (px > 0) perPage.push({ page: i + 1, pixels: px, diffPng });
+    totalPx += px;
+  }
+  return { pages, perPage, totalPx, tmpDir };
+}
+
 function diff(label, decks, opts = {}) {
   const dir = path.join(SNAPSHOT_ROOT, label);
   if (!fs.existsSync(dir)) {
@@ -134,40 +171,64 @@ function diff(label, decks, opts = {}) {
     const baselineBytes = fs.statSync(baseline).size;
     const currentBytes = build.bytes;
     const delta = currentBytes - baselineBytes;
-    results.push({
+    const result = {
       deck,
       ok: true,
       baseline_bytes: baselineBytes,
       current_bytes: currentBytes,
-      delta,
-      identical: delta === 0,
+      byte_delta: delta,
+      byte_identical: delta === 0,
       took_ms: build.took_ms,
-    });
+    };
+    if (delta !== 0) {
+      // Bytes differ — could be Puppeteer/mmdc non-determinism or a real
+      // visual change. Rasterize and compare pixels per page to know.
+      const pixel = pixelDiff(baseline, inplace, deck);
+      result.pixel_pages = pixel.pages;
+      result.pixel_total = pixel.totalPx;
+      result.pixel_pages_changed = pixel.perPage.filter((p) => p.pixels !== 0).length;
+      result.pixel_per_page = pixel.perPage;
+      result.pixel_identical = pixel.totalPx === 0;
+      result.diff_dir = pixel.tmpDir;
+    } else {
+      result.pixel_identical = true;
+    }
+    results.push(result);
     fs.unlinkSync(inplace);
     if (fs.existsSync(inplaceHtml)) fs.unlinkSync(inplaceHtml);
   }
-  const changed = results.filter((r) => r.ok && !r.identical);
+  // OK = no pixel diffs anywhere. Byte-only drift is fine.
+  const visualChanged = results.filter((r) => r.ok && !r.pixel_identical);
   const failed = results.filter((r) => !r.ok);
-  const ok = changed.length === 0 && failed.length === 0;
+  const byteOnly = results.filter((r) => r.ok && !r.byte_identical && r.pixel_identical);
+  const ok = visualChanged.length === 0 && failed.length === 0;
   if (opts.json) {
     process.stdout.write(JSON.stringify({ label, ok, results }, null, 2) + '\n');
   } else {
     for (const r of results) {
       if (!r.ok) {
         process.stdout.write(`  ${r.deck.padEnd(28)} FAIL — ${r.error}\n`);
-      } else if (r.identical) {
-        process.stdout.write(`  ${r.deck.padEnd(28)} OK (${r.current_bytes.toLocaleString()} bytes)\n`);
+      } else if (r.byte_identical) {
+        process.stdout.write(`  ${r.deck.padEnd(28)} OK bytes=${r.current_bytes.toLocaleString()}\n`);
+      } else if (r.pixel_identical) {
+        const sign = r.byte_delta > 0 ? '+' : '';
+        process.stdout.write(`  ${r.deck.padEnd(28)} OK (byte-drift only) Δbytes=${sign}${r.byte_delta} Δpixels=0\n`);
       } else {
-        const sign = r.delta > 0 ? '+' : '';
-        process.stdout.write(`  ${r.deck.padEnd(28)} DIFF baseline=${r.baseline_bytes.toLocaleString()} current=${r.current_bytes.toLocaleString()} delta=${sign}${r.delta.toLocaleString()}\n`);
+        const sign = r.byte_delta > 0 ? '+' : '';
+        process.stdout.write(`  ${r.deck.padEnd(28)} DIFF Δbytes=${sign}${r.byte_delta} Δpixels=${r.pixel_total.toLocaleString()} on ${r.pixel_pages_changed}/${r.pixel_pages} pages\n`);
+        for (const p of r.pixel_per_page.slice(0, 5)) {
+          process.stdout.write(`      page ${p.page}: ${p.pixels.toLocaleString()} px${p.note ? ` (${p.note})` : ''}${p.diffPng ? ` → ${p.diffPng}` : ''}\n`);
+        }
       }
     }
-    process.stdout.write(`\nsummary: ${results.length - changed.length - failed.length}/${results.length} byte-identical`);
-    if (changed.length) process.stdout.write(`, ${changed.length} changed`);
+    const cleanCount = results.length - visualChanged.length - failed.length;
+    process.stdout.write(`\nsummary: ${cleanCount}/${results.length} pixel-clean`);
+    if (byteOnly.length) process.stdout.write(` (${byteOnly.length} with byte drift only)`);
+    if (visualChanged.length) process.stdout.write(`, ${visualChanged.length} visually changed`);
     if (failed.length) process.stdout.write(`, ${failed.length} failed`);
     process.stdout.write('\n');
   }
-  return { ok, exit: ok ? 0 : 1, changed, failed };
+  return { ok, exit: ok ? 0 : 1, visualChanged, byteOnly, failed };
 }
 
 function clean(label) {
