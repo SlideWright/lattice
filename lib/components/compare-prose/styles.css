@@ -1,0 +1,59 @@
+/* compare-prose — extracted from lib/_legacy.css (batch 5).
+ * See lib/components/compare-prose/manifest.json for the component contract.
+ */
+
+/* ── COMPARISON ──
+ * Nested list format: 2 li, each with **Title** + sublist body.
+ * Optional trailing p for below-note.
+ */
+section.compare-prose { }
+section.compare-prose h2 { margin-bottom:var(--sp-md); }
+section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; flex:1; }
+section.compare-prose .compare-prose-inner .card {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  font-weight:700; color:var(--text-heading);
+}
+section.compare-prose .compare-prose-inner .card > strong { display:block; }
+section.compare-prose .compare-prose-inner .card > ul,
+section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.compare-prose .compare-prose-inner .card > ul > li,
+section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-xl); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+.below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
+.below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
+.below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
+section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+
+/* ── COMPARISON ──────────────────────────────────────────────────────────────
+ * ul/ol > li (nested list format) → side-by-side cards with → connector         */
+section.compare-prose:not(:has(.compare-prose-inner)) > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol {
+  display:flex; align-items:stretch; flex:1; gap:var(--sp-xl);
+  list-style:none; padding:0; margin:0; position:relative;
+}
+section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
+  content:'❯';
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  font-size:var(--fs-xl); color:var(--text-muted);
+  background:var(--bg); padding:2px 0.625cqi; border-radius:0.3125cqi; z-index:1;
+}
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
+  flex:1; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; align-content:start; justify-items:start;
+  font-weight:700; color:var(--text-heading);
+}
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > strong,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > strong { display:block; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; width:100%; }
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > ol > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ul > li,
+section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
