@@ -1,10 +1,11 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "big-number",
   "function": "statement",
   "form": "canvas",
   "substance": "prose",
   "description": "Single oversized number as the focal claim.",
-  "purpose": "Use to make one metric land. The number should be the headline — supporting text is one short caption.",
+  "purpose": "Use to make one metric land. The number should be the headline — supporting text is one short caption. The whole slide is the chart.",
   "slots": {
     "eyebrow": {
       "selector": "p > code",
@@ -24,5 +25,40 @@
   },
   "skeleton": "<!-- _class: big-number -->\n\n`Optional eyebrow`\n\n- 92%\n  - of the audience remembers a single number from a deck.\n",
   "anatomyBlock": "big-number-canvas",
+  "sample": "<!-- _class: big-number -->\n\n`Audience recall`\n\n- 92%\n  - of the audience remembers a single number from a deck. Make it count.\n",
+  "whenToUse": [
+    {
+      "title": "One metric carries the slide",
+      "body": "When the audience needs to remember exactly one number from this part of the deck. The whole slide is the chart — no surrounding context, no comparisons, no axes."
+    },
+    {
+      "title": "Headline that earns the canvas",
+      "body": "Reach for big-number when the metric is the argument: cost reduced by 4×, audience reach grew 92%, time-to-decision dropped from 14 days to 4. One claim, one canvas."
+    },
+    {
+      "title": "Eyebrow names the metric class",
+      "body": "The inline-code eyebrow contextualizes the number (\"Audience recall\", \"Q3 revenue\", \"Latency p99\"). The number is the value; the eyebrow is the label."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Multiple metrics on one slide",
+      "body": "Two big numbers on one canvas dilute both. Use `stats` for a row of three metrics or `kpi` for a grid of four; reserve big-number for genuinely solo claims."
+    },
+    {
+      "title": "Caption longer than one line",
+      "body": "If the caption needs a sentence to explain, the number isn't carrying the slide. Either trim the number's claim or move to `content` where prose has room."
+    },
+    {
+      "title": "Decorative numbers without an argument",
+      "body": "\"99.99% uptime\" by itself is a boast, not a claim. Big-number works when the number is the answer to a question the audience came in with."
+    }
+  ],
+  "related": [
+    { "name": "stats", "when": "row of 2-3 metrics, comparable visual weight" },
+    { "name": "kpi", "when": "grid of 4-6 metrics with status indicators" },
+    { "name": "split-metric", "when": "the metric needs a paragraph of context alongside it" },
+    { "name": "content", "when": "the argument is mostly prose with a number embedded" }
+  ],
   "docs": "docs/references/templates.md#template-16-big-number-single-stat"
 }
