@@ -1,10 +1,11 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "title",
   "function": "anchor",
   "form": "bookend",
   "substance": "prose",
   "description": "Opening slide. Dark canvas, centered, no chrome.",
-  "purpose": "First slide of every deck. Sets the topic and the visual tone. Suppresses header, footer, and pagination.",
+  "purpose": "First slide of every deck. Sets the topic and the visual tone. Suppresses header, footer, and pagination (or use the universal `silent` modifier for the same effect in one token).",
   "slots": {
     "heading": {
       "selector": "h1",
@@ -23,5 +24,38 @@
     }
   },
   "skeleton": "<!-- _class: title -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Deck title goes here\n\n`Category · Date or audience`\n\nOne-line subtitle that frames the deck.\n",
-  "docs": "docs/references/templates.md#template-1-title-dark-bookend"
+  "sample": "<!-- _class: title silent -->\n\n# From Signal to Strategy\n\n`Product Strategy · Q3 2025`\n\nA decision framework for product leaders navigating market uncertainty.\n",
+  "whenToUse": [
+    {
+      "title": "First slide of every deck",
+      "body": "Sets topic, audience, and visual tone in one glance. The dark canvas anchors the deck visually so subsequent slides feel like a continuous document."
+    },
+    {
+      "title": "Brand or section bookends",
+      "body": "Pair with `divider` (mid-deck section breaks) and `closing` (the final slide) for the full anchor trio. All three share the dark-bookend treatment."
+    },
+    {
+      "title": "Pitch and proposal openings",
+      "body": "When the audience needs the headline and the framing line before any data. The subtitle paragraph is where the framing line goes."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Mid-deck statements",
+      "body": "Use `big-number` or `content` for emphatic statements inside a deck. Reaching for the title chrome mid-deck breaks the bookend signal."
+    },
+    {
+      "title": "Multi-line h1",
+      "body": "Keep the h1 to one editorial line. The layout is centered and large — two-line titles get cramped and lose impact."
+    },
+    {
+      "title": "Header or footer overrides",
+      "body": "Don't add back `_header:` or `_footer:` on a title slide. The dark canvas is meant to be uninterrupted; chrome belongs on body slides."
+    }
+  ],
+  "related": [
+    { "name": "divider", "when": "mid-deck section breaks — same dark-bookend chrome" },
+    { "name": "closing", "when": "the final slide — closes the bookend pair" },
+    { "name": "subtopic", "when": "lighter mid-deck orientation slide on the bright canvas" }
+  ]
 }

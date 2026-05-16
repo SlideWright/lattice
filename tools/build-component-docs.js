@@ -214,7 +214,7 @@ function renderDocs(m) {
     lines.push('## Related components');
     lines.push('');
     for (const r of m.related) {
-      lines.push(`- \`${r.name}\` — ${r.when}`);
+      lines.push(`- [\`${r.name}\`](../${r.name}/${r.name}.docs.md) — ${r.when}`);
     }
     lines.push('');
   }

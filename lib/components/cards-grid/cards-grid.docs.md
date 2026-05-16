@@ -130,11 +130,11 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- `list-steps` — items carry an explicit sequence
-- `cards-stack` — items stack vertically as full-width rows
-- `cards-side` — two-card horizontal comparison
-- `cards-wide` — three full-width rows for longer prose per item
-- `verdict-grid` — comparing options against shared criteria
+- [`list-steps`](../list-steps/list-steps.docs.md) — items carry an explicit sequence
+- [`cards-stack`](../cards-stack/cards-stack.docs.md) — items stack vertically as full-width rows
+- [`cards-side`](../cards-side/cards-side.docs.md) — two-card horizontal comparison
+- [`cards-wide`](../cards-wide/cards-wide.docs.md) — three full-width rows for longer prose per item
+- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — comparing options against shared criteria
 
 ## Demo deck
 
