@@ -4,8 +4,15 @@
  * lib/_legacy.css under the REGULATORY-UPDATE banner. Extraction into
  * this file is deferred pending investigation of a subtle layout
  * difference on the .timeline variant when rules move from _legacy.css
- * to the component folder (same byte-identical rules, but rendering
- * shifts slightly — root cause TBD).
+ * to the component folder. The CSS rule bytes are identical, no
+ * conflicting rule appears in the bundle, counter-reset scope is
+ * unchanged — but the rendered counter format on .timeline badges
+ * shifts from "01"–"04" (decimal-leading-zero) to "1"–"4" (plain
+ * decimal) when regulatory-update CSS moves earlier in the bundle.
+ * 27,048 pixels per affected page, exactly the same on both legal-
+ * layouts and legal-layouts-finalists timeline slides. Root cause
+ * not yet isolated — possibly a Chrome cascade subtlety with
+ * counter() format specifiers under certain rule orderings.
  *
  * See lib/components/regulatory-update/manifest.json for the component contract.
  */
