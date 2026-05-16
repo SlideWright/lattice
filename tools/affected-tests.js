@@ -83,7 +83,7 @@ for (const f of process.argv.slice(2)) {
   }
 
   // test/unit/<scope>/*.test.js → run that scope
-  let m = rel.match(/^test\/unit\/([^/]+)\//);
+  const m = rel.match(/^test\/unit\/([^/]+)\//);
   if (m) { scripts.add(`test:${m[1]}`); continue; }
 
   // test/integration/* — pre-commit doesn't run integration; defer to CI

@@ -174,9 +174,9 @@ graduates from "new" to "documented". Treat them like
 
 ## Before opening a PR
 
-1. `npm test` — full unit suite must be green (~4 s, 334 tests, no Chromium / no Marp pipeline). The umbrella script is the gate; scoped scripts below are only for inner-loop iteration. `npm run test:watch` re-runs on file change.
+1. `npm test` — full unit suite must be green.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
-3. `npm run lint` — Biome runs over every JS file. CI runs this on Node 18/20/22/24. `npm run lint:fix` applies safe auto-fixes.
+3. `npm run lint` — Biome over every JS file. CI runs this on Node 18/20/22/24.
 4. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
 5. Rebase onto current `main` if the branch has drifted:
    ```bash
@@ -184,27 +184,7 @@ graduates from "new" to "documented". Treat them like
    git rebase origin/main
    ```
 
-The lefthook pre-commit hook runs Biome on staged files plus the scoped test suites those files affect (via `tools/affected-tests.js` — `lib/palette.js` triggers `test:palette`, etc.; renderers and unknown files fall back to the full unit suite). Pre-push runs the full lint + full unit suite as a safety net. A commit-msg hook validates `area(scope): summary` formatting. `npm install` wires all three automatically via the `prepare` script. Bypass with `--no-verify` only as a genuine last resort.
-
-For coverage visibility on a feature, run `npm run test:coverage` (unit only) or `npm run test:coverage:all` (unit + integration). c8 writes an HTML report to `.scratch/coverage/index.html` and a text summary to the console. Coverage is not a CI gate — it's a diagnostic for "what's untested in the area I'm changing?"
-
-### Inner-loop scoping
-
-When iterating on a single area, run only that area's suite. The umbrella `npm test` / `npm run test:integration` are still the pre-commit gate — scoped runs are for the tight edit-test cycle, not the gate.
-
-| Working on              | Inner-loop command                  |
-| ----------------------- | ----------------------------------- |
-| A palette or contrast   | `npm run test:palette`              |
-| Mermaid var resolution  | `npm run test:mermaid`              |
-| Parsers / transforms    | `npm run test:parsing`              |
-| A layout (radar, …)     | `npm run test:layouts`              |
-| CLI behaviour           | `npm run test:cli`                  |
-| Gallery page counts     | `npm run test:integration:galleries`|
-| Cross-renderer parity   | `npm run test:integration:parity`   |
-| Mermaid end-to-end      | `npm run test:integration:mermaid`  |
-| screenshot-slides       | `npm run test:integration:screenshot`|
-
-Files live in `test/unit/<scope>/` and `test/integration/<scope>/`. To add a test, drop it into the matching directory — the scoped script picks it up automatically.
+For inner-loop iteration, scoped test scripts (`test:palette`, `test:layouts`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
 
 ## Three-renderer rule
 

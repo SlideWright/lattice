@@ -13,6 +13,11 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`docs/references/workflow.md`** — branching, feature decks, commit
   discipline, the share-the-PDF rule, three-renderer gate. Canonical
   for all workflow conventions; this file is a thin pointer.
+- **`docs/references/development.md`** — Node versions, npm scripts,
+  test layout, lint, hooks, coverage, CI, integration cache, editor
+  setup. Read before changing any tooling, lint config, hook, CI
+  workflow, or test infrastructure. Includes the "when you do X, also
+  do Y" rules for adding lib files, themes, and scripts.
 - **`docs/references/gotchas.md`** — when something behaves strangely,
   check here FIRST. Symptoms in headings are searchable. Add an entry
   BEFORE committing any non-obvious fix; the commit can then link to it.
@@ -38,10 +43,16 @@ tier asserts cross-renderer parity on slide count.
 
 ## Tests and the regression baseline
 
-- `npm test` — unit, <100ms, no child processes. Inner loop.
-- `npm run test:integration` — ~30s, rebuilds the page-counted decks
-  through both renderers. CI runs this before merge.
+- `npm test` — full unit suite (~4s, 334 tests). Inner loop.
+- `npm run test:<scope>` — one slice (palette/mermaid/parsing/layouts/cli).
+- `npm run test:watch` — re-run on file change.
+- `npm run test:integration` — ~30s cold, ~0.2s warm (hash-keyed cache).
+  Rebuilds the page-counted decks through both renderers. CI runs this
+  before merge; cache is disabled when `CI=true`.
 - `npm run test:all` — both tiers.
+
+Full tooling details (scopes, hooks, CI structure, cache behaviour)
+live in `docs/references/development.md`.
 
 **Two gallery sets, distinct purposes:**
 
