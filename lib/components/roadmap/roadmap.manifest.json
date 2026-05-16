@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "roadmap",
   "function": "progression",
   "form": "matrix",
@@ -22,5 +23,48 @@
   },
   "skeleton": "<!-- _class: roadmap -->\n\n`Layout · roadmap`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | --------------------- | ---------------------- | ------------------------- |\n| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |\n| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
   "anatomyBlock": "roadmap",
+  "sample": "<!-- _class: roadmap -->\n\n`Layout · roadmap`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | --------------------- | ---------------------- | ------------------------- |\n| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |\n| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
+  "whenToUse": [
+    {
+      "title": "Phased delivery across workstreams",
+      "body": "When the question is what each team ships in each phase. Workstreams down the side, phases across the top, deliverables in the cells — the whole plan reads in one glance."
+    },
+    {
+      "title": "State markers are the second channel",
+      "body": "Every cell can lead with `[x]` shipped, `[-]` in flight, `[ ]` planned, or `[/]` out of scope. The audience sees both 'what' and 'how it's going' without a separate status slide."
+    },
+    {
+      "title": "Phase headers carry meta pills",
+      "body": "Append `` `Q2 2026` `` to a phase header and the renderer anchors a meta pill on the right of the column. Use it for date, owner, or status tags that frame the phase."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "One workstream",
+      "body": "A single row of phases is a `timeline` or `list-steps`, not a roadmap. Roadmap earns its grid only when at least two workstreams move in parallel."
+    },
+    {
+      "title": "No state markers",
+      "body": "A grid of bare deliverables loses half its value. Add `[x]`/`[-]`/`[ ]`/`[/]` so the audience reads progress alongside scope."
+    },
+    {
+      "title": "Past five workstreams",
+      "body": "More than five rows compresses cell text and the lane stripes lose their categorical read. Group adjacent workstreams or split by phase."
+    }
+  ],
+  "related": [
+    { "name": "gantt", "when": "continuous task bars across a date axis rather than discrete phase cells" },
+    { "name": "kanban", "when": "current state by stage rather than phased schedule" },
+    { "name": "list-steps", "when": "single workstream sequence without parallel lanes" },
+    { "name": "verdict-grid", "when": "options scored against shared criteria, not phased delivery" },
+    { "name": "checklist", "when": "single list with state markers, no workstream dimension" }
+  ],
+  "variantDocs": {
+    "horizons": {
+      "label": "Horizons — three-horizon planning framing",
+      "caption": "Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.",
+      "sample": "<!-- _class: roadmap horizons -->\n\n`Three-horizon planning`\n\n## Where the platform invests across horizons.\n\n| Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |\n| ---------- | ------------------------ | ------------------------ | ------------------------- |\n| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |\n| SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |\n\nHorizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.\n"
+    }
+  },
   "docs": "docs/references/templates.md#roadmap-phased-multi-workstream-grid"
 }

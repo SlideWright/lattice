@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "list-steps",
   "function": "progression",
   "form": "timeline",
@@ -25,5 +26,63 @@
   },
   "skeleton": "<!-- _class: list-steps -->\n\n## How to roll this out.\n\n1. First step — a sentence describing what you do here.\n2. Second step — a sentence describing what you do here.\n3. Third step — a sentence describing what you do here.\n4. Fourth step — a sentence describing what you do here.\n",
   "anatomyBlock": "list-steps",
+  "sample": "<!-- _class: list-steps -->\n\n## How to add a new component to Lattice.\n\n1. Scaffold the folder\n   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.\n2. Author the styles\n   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.\n3. Add a transform if needed\n   - Substance `structure` or `series` ships a transform module wired into all three render paths.\n4. Demo and document\n   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.\n",
+  "whenToUse": [
+    {
+      "title": "Steps need a sentence each",
+      "body": "When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels live in `timeline`; richer descriptions belong here."
+    },
+    {
+      "title": "Three to five steps",
+      "body": "Two steps wastes the layout's ledger feel; six begins to crowd. Group adjacent steps or split the process at a natural phase break."
+    },
+    {
+      "title": "Prefix word names the unit",
+      "body": "The default `STEP` prefix can swap to `PHASE`, `STAGE`, `MILESTONE`, `RANK`, or `TIER`. Pick the noun that matches how the audience already thinks about the process."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Light labels, no body",
+      "body": "If each step is a single label with no description, use `timeline`. list-steps earns its chrome only when the body adds substance."
+    },
+    {
+      "title": "Parallel options",
+      "body": "If the rows are alternatives the audience compares, use `cards-grid` or `verdict-grid`. The numbered prefix here reads as sequence — using it for parallel items mis-cues the audience."
+    },
+    {
+      "title": "Author-typed step numbers",
+      "body": "Don't write `**STEP 01**` into the markdown. The badge is CSS-generated from the `ol` counter; manual numbering double-stamps and breaks on reordering."
+    }
+  ],
+  "related": [
+    { "name": "timeline", "when": "shorter labels per step, horizontal axis instead of vertical cards" },
+    { "name": "list-criteria", "when": "gating requirements rather than a sequence of actions" },
+    { "name": "split-steps", "when": "phase label + heading on the left, steps on the right" },
+    { "name": "roadmap", "when": "phased grid across multiple workstreams" },
+    { "name": "principles", "when": "tenets or values rather than a procedural sequence" }
+  ],
+  "variantDocs": {
+    "vertical": {
+      "label": "Vertical — strip flips column to row",
+      "caption": "Flips the step strip from a vertical stack into a horizontal row; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.",
+      "sample": "<!-- _class: list-steps vertical compact -->\n\n## Three phases, vertically arranged.\n\n1. Discover\n   - Interview eight stakeholders. Open questions only — listening for friction, not confirming assumptions.\n2. Frame\n   - Half-day workshop to align on root cause. Output is a ranked problem statement.\n3. Decide\n   - Written sign-off on what is in scope, what is out, and what requires a separate decision.\n"
+    },
+    "phase": {
+      "label": "Phase — badge prefix becomes PHASE",
+      "caption": "Swaps the default `STEP` prefix for `PHASE`. Use when the process is a sequence of phases rather than individual actions — common for rollout plans, release trains, and engagement models.",
+      "sample": "<!-- _class: list-steps phase -->\n\n## A four-phase engagement model.\n\n1. Discovery\n   - Eight weeks. Stakeholder interviews, current-state audit, and a problem-framing workshop produce a signed scope.\n2. Design\n   - Six weeks. Two design partners co-build the operating model and the change-management plan.\n3. Pilot\n   - Twelve weeks. One business unit runs the model end-to-end with weekly retrospectives.\n4. Rollout\n   - Phased by region. Pilot learnings shape the rollout cadence; central team owns the playbook.\n"
+    },
+    "milestone": {
+      "label": "Milestone — badge prefix becomes MILESTONE",
+      "caption": "Swaps the prefix to `MILESTONE`. Use when each row is a discrete delivery checkpoint rather than an ongoing activity. Pairs with `lettered` for milestones tracked by letter rather than number.",
+      "sample": "<!-- _class: list-steps milestone lettered -->\n\n## Three milestones to GA.\n\n1. Closed beta\n   - Five design-partner accounts live on the platform. Daily standups; weekly retros.\n2. Open beta\n   - Self-serve signup at the marketing site. Pricing visible but not enforced.\n3. GA\n   - Billing enforcement on. SLA enters effect. Support escalation paths published.\n"
+    },
+    "lettered": {
+      "label": "Lettered — counter format becomes A, B, C",
+      "caption": "Replaces the leading-zero decimal counter with letters. Composes with any prefix; useful when the rows are options or tracks rather than ordered work.",
+      "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
+    }
+  },
   "docs": "docs/references/templates.md#variant-t13-step-cards"
 }

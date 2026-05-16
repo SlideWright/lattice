@@ -51,7 +51,7 @@
       "   - `Citation reference`",
       "   - One-line gloss naming the precedent."
     ],
-    "description": "Provenance chain — statute → regulation → guidance → case, walked in order."
+    "description": "Provenance chain — statute to regulation to guidance to case, walked in order."
   },
   "lattice: before-after": {
     "prefix": "lattice-before-after",
@@ -384,7 +384,7 @@
       "  - Standup `@team` `:3`",
       "  - Deep work `@me` `:5`"
     ],
-    "description": "Native user-journey chart — sections of tasks, each task tagged with actor(s) and a 1–5 mood. Renders as section bars + task chips + plumb lines + mood faces."
+    "description": "Native user-journey chart — sections of tasks, each tagged with actor(s) and a 1-5 mood. Renders as section bars, task chips, plumb lines, and mood faces."
   },
   "lattice: kanban": {
     "prefix": "lattice-kanban",

@@ -1,9 +1,10 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "authority-chain",
   "function": "progression",
   "form": "timeline",
   "substance": "structure",
-  "description": "Provenance chain — statute → regulation → guidance → case, walked in order.",
+  "description": "Provenance chain — statute to regulation to guidance to case, walked in order.",
   "purpose": "Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.",
   "variants": [
     "branching",
@@ -23,5 +24,52 @@
   },
   "skeleton": "<!-- _class: authority-chain -->\n\n## Rule name — the chain, tier by tier.\n\n1. Statute\n   - `Citation reference`\n   - One-line gloss naming the body that issued it and what it does.\n2. Regulation\n   - `Citation reference`\n   - One-line gloss naming the agency rule.\n3. Guidance\n   - `Citation reference`\n   - One-line gloss naming the staff guidance.\n4. Case\n   - `Citation reference`\n   - One-line gloss naming the precedent.\n",
   "anatomyBlock": "authority-chain",
+  "sample": "<!-- _class: authority-chain -->\n\n## COPPA — the chain, tier by tier.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Congress, 1998 — verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule; 2013 rewrite expanded covered identifiers.\n3. Guidance\n   - `FTC Six-Step Compliance Plan`\n   - Staff guidance — non-binding, but cited in every consent order.\n4. Case\n   - `In re Epic Games · 2022`\n   - $245M consent order — operationalised \"actual knowledge\" standard.\n",
+  "whenToUse": [
+    {
+      "title": "Provenance is the argument",
+      "body": "Use when the audience needs to see exactly where a rule comes from and how it has been interpreted. The chain itself is the evidence that the obligation is grounded, not invented."
+    },
+    {
+      "title": "Tier labels carry the read",
+      "body": "Statute, regulation, guidance, case — each tier has a different legal weight. The left-rail label tells the audience what kind of source they are looking at before they read the citation."
+    },
+    {
+      "title": "Three to five tiers, no more",
+      "body": "The chain reads top-to-bottom on a single canvas. Past five rows the connectors compress and the tier labels lose room. Group sub-cases into the parent row's gloss or split into two slides."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Flat list of citations",
+      "body": "If the rows have no tier hierarchy, use `list-criteria` or `regulatory-update`. authority-chain earns its chrome only when the descent from statute to case is the point."
+    },
+    {
+      "title": "Missing citation chip",
+      "body": "The inline-code citation is the row's anchor; without it the gloss reads as opinion. Always cite, even for guidance and case rows."
+    },
+    {
+      "title": "Out-of-order tiers",
+      "body": "The chain reads as a descent: statute first, case last. Reversing it or skipping a tier breaks the metaphor the audience is using to follow you."
+    }
+  ],
+  "related": [
+    { "name": "regulatory-update", "when": "period-bounded changelog rather than a single rule's lineage" },
+    { "name": "list-criteria", "when": "flat enumeration of requirements without tier hierarchy" },
+    { "name": "timeline", "when": "the sequence is chronological events, not legal tiers" },
+    { "name": "list-steps", "when": "the rows are procedural steps rather than authority tiers" }
+  ],
+  "variantDocs": {
+    "branching": {
+      "label": "Branching — statute root with child branches",
+      "caption": "Renders nested children as connected branches off the parent tier. Use when one statute spawns multiple regulations, guidance docs, or cases worth surfacing in the same view.",
+      "sample": "<!-- _class: authority-chain branching -->\n\n## COPPA — one statute, many branches.\n\n1. Statute\n   - `15 U.S.C. §6501` COPPA, 1998\n   - `16 C.F.R. Part 312` FTC implementing rule\n   - `FTC Six-Step Compliance Plan` staff guidance\n   - `In re Epic Games · 2022` $245M consent order\n   - `In re YouTube/Google · 2019` $170M consent order\n"
+    },
+    "trail": {
+      "label": "Trail — horizontal numbered trail with arrows",
+      "caption": "Transposes the vertical chain into a left-to-right trail of numbered cards joined by arrows. Use when the slide canvas favours a wide read and the tiers fit in four short steps.",
+      "sample": "<!-- _class: authority-chain trail -->\n\n## COPPA — statute through case, left to right.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule.\n3. Guidance\n   - `FTC Six-Step Plan`\n   - Cited in every consent order.\n4. Case\n   - `Epic Games · 2022`\n   - $245M consent order.\n"
+    }
+  },
   "docs": "docs/references/templates.md#authority-chain"
 }
