@@ -526,19 +526,20 @@ discovery story that markdown alone can't provide.
 
 - This document — the canonical four-layer model + component contract.
 - The 7-family taxonomy + 11 forms + 4 substances vocabulary.
-- `lib/components/` — 56 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family promoted in Phase 3 of the _legacy.css split.)
+- `lib/components/` — 57 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey, all promoted to first-class components during the `_legacy.css` split.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
 - `cards-side` CSS extraction — split out of `cards-grid/styles.css` into its own `lib/components/cards-side/styles.css`. Validated by same-sandbox before/after PDF byte-compare on all five decks using either component (0–1 byte drift = pixel-identical).
-- `_legacy.css` destination map — top-of-file comment block directing the future full split (per-block destinations, DEAD-CANDIDATE list for ~1,400 lines of removed-vertical CSS). The split itself is deferred; the map unblocks the next focused session.
 - Per-component transform location — every component whose transform exists is now at `lib/components/<name>/transform.js` (word-cloud, quadrant, radar, roadmap). Top-level `lib/journey.js` and `lib/chart-family.js` are genuinely shared infrastructure and stay at `lib/` root.
+- **`lib/_legacy.css` fully retired.** The 5,938-line monolith was split across 7 phases into 8 new source files (`_root.css`, `_base.css`, `_modifiers.css`, `_syntax-highlight.css`, `_chart-family.css`, `_backgrounds.css`, `_semi-universal.css`, `_diagram-overrides.css`) + 17 component folders. Bundle position of every block preserved to maintain cascade outcomes. See `docs/notes/2026-05-16-post-foundation-followups.md` for the open follow-ups (specificity-bump hacks introduced during extraction, @layer activation as the principled retirement path).
+- **`tools/pixel-check.js`** — same-sandbox before/after PDF byte-compare with pdftoppm + ImageMagick pixel-diff fallback for mmdc non-determinism. Built mid-branch; got us through the 30+ extraction commits without a single false-positive regression slipping through.
 
-**In progress on this branch:**
+**Deferred to a follow-up branch (see `docs/notes/2026-05-16-post-foundation-followups.md`):**
 
-- Full `_legacy.css` split — the destination map ships in the file header; the actual moves (5,938 lines into `_root.css` + `_base.css` + `_modifiers.css` + `_backgrounds.css` + `_syntax-highlight.css` + per-component) wait for a focused next session. Start with DEAD-CANDIDATE verification (~1,400 line reclaim at zero visual risk).
-- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the actual CSS rules for these tiers haven't landed. Bundled with the `_legacy.css` split work above.
+- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the actual CSS rules for these tiers haven't landed. (Tier 2.3 in the follow-ups note.)
+- `@layer` activation + retirement of the duplicate-class specificity-bump hacks in `citation-card` / `redline` / `regulatory-update` / `split-*`. Blocked on a `!important` audit. (Tier 2.1 + 2.2.)
 
 **Ratified on this branch:**
 
