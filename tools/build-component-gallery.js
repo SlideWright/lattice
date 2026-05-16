@@ -86,6 +86,7 @@ const SHORT = Object.freeze({
   'regulatory-update': 'Change log',
   redline: 'Clause diff',
   'authority-chain': 'Statute → case',
+  journey: 'User-journey chart',
 });
 
 function buildDeck() {

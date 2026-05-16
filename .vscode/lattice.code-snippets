@@ -367,6 +367,25 @@
     ],
     "description": "Image as the slide's anchor, with optional text alongside."
   },
+  "lattice: journey": {
+    "prefix": "lattice-journey",
+    "body": [
+      "<!-- _class: journey -->",
+      "",
+      "## Walking through my Tuesday morning.",
+      "",
+      "- Wake up",
+      "  - Hit snooze `@me` `:2`",
+      "  - Make coffee `@me` `:4`",
+      "- Commute",
+      "  - Subway `@me` `:1`",
+      "  - Walk `@me` `:5`",
+      "- Work",
+      "  - Standup `@team` `:3`",
+      "  - Deep work `@me` `:5`"
+    ],
+    "description": "Native user-journey chart — sections of tasks, each task tagged with actor(s) and a 1–5 mood. Renders as section bars + task chips + plumb lines + mood faces."
+  },
   "lattice: kanban": {
     "prefix": "lattice-kanban",
     "body": [

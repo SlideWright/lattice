@@ -14,7 +14,7 @@ header: "Lattice · Component Gallery"
 
 # Lattice Component Gallery
 
-`56 components · 7 function families`
+`57 components · 7 function families`
 
 Every `example.md` in lib/components/, rendered.
 
@@ -572,7 +572,7 @@ Both paths are viable. The difference is where we spend the next 18 months.
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 05 · 9 components`
+`Section 05 · 10 components`
 
 # Progression
 
@@ -619,6 +619,26 @@ Three workstreams across four quarters. Status pills tint each bar.
   - Audit trail `Q1 → Q2` `done`
   - Centralised log `Q2 → Q3`
   - Examiner pack `Q3 → Q4`
+
+---
+
+<!-- _class: journey -->
+<!-- _footer: "User-journey chart · journey" -->
+
+## Customer onboarding · trial → activation
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
+
+> **Setup is the chokepoint.** Mood drops three points between trial signup and first report — the only stretch we own end-to-end and the only place we can move conversion this quarter.
 
 ---
 
