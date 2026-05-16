@@ -72,9 +72,47 @@ live in `docs/references/development.md`.
 
 The isolation rule applies to **all six** — see workflow.md.
 
-**When committing a gallery edit, rebuild the PDF and include it in
-the same commit as the `.md` change.** A push without the rebuilt PDF
-makes the reviewer's link 404 (or shows stale content).
+## The visual-iteration loop
+
+**During development: `npm run preview` + `SendUserFile`.** Don't
+commit per iteration. The preview tool auto-detects scope from
+`git diff` (L0 nothing, L1 single deck, L2 component-scoped, L3
+full), rebuilds only what's affected, pixel-diffs against the
+last commit, and outputs the file paths to stream via
+`SendUserFile`. Per-iteration cost drops from ~30s (build + commit
++ push + reviewer-fetch) to ~10s (build + send).
+
+```text
+edit source  →  npm run preview [-- <deck>]  →  SendUserFile <files>
+```
+
+Scope detection — what `npm run preview` does for each kind of change:
+
+- L0 (no visual impact) — tests, docs, manifest, README. No build.
+- L1 (single deck or example.md) — rebuild + diff that deck only.
+- L2 (component CSS / transform) — rebuild every deck using the
+  component class; diff per-page across them.
+- L3 (shared CSS / engine / theme) — full rebuild of all 23 decks;
+  send the top 5 diffs by pixel count.
+
+`--full` overrides to L3 explicitly. `npm run preview:watch <deck>`
+runs a file watcher and auto-rebuilds on the desktop (opens the PDF
+in your default viewer; viewer reloads when the file changes).
+
+**For desktop authors using VS Code**: the marp-vscode preview pane
+is the fastest inner loop — no preview tool needed; the preview
+updates live as you edit. `lattice-runtime.js` handles all the
+runtime transforms (chart-family, structure post-processing).
+
+**Final commit per PR includes all rebuilt PDFs** — external
+reviewers still need raw-URL access to flip through the deliverable.
+A pre-commit hook (lefthook) catches the "staged .md without .pdf"
+case and the "stale .pdf relative to source" case. Bypassable via
+`--no-verify` only as last resort.
+
+The old per-iteration "build + commit + push + share raw URL" loop
+is removed. PDFs being out-of-sync with source within a PR is now
+caught by the hook instead of by reviewer eyeballs.
 
 ## High-friction reminders (the rules you forget)
 
@@ -86,14 +124,14 @@ makes the reviewer's link 404 (or shows stale content).
   `examples/<slug>.md` (+ committed `.pdf`) so the reviewer can see the
   work in one click. Six to ten slides, title → demo → closing. Full
   authoring + build + share contract in workflow.md.
-- **Every reviewer link is `raw.githubusercontent.com`.** Last
-  paragraph of every reply that updates a PDF, plain text on its own
-  line, no markdown. Never `github.com/.../blob/...` (web preview, lower
-  PDF fidelity) or `github.com/.../raw/...` (302-redirects anyway).
-- **Hand the rebuilt PDF to the user via `SendUserFile` too.** The raw
-  URL is the permanent record; `SendUserFile` streams the bytes straight
-  to the user's client so they can flip through it without leaving the
-  chat. Do both, every time the PDF changes.
+- **Use `npm run preview` for visual iteration.** Edit → preview →
+  `SendUserFile`. No commits per iteration. The preview tool
+  auto-detects scope (L0-L3) and surfaces only the affected files.
+  See "The visual-iteration loop" above.
+- **`SendUserFile` is the primary delivery during dev.** Raw
+  `raw.githubusercontent.com` URLs go only in the FINAL PR-summary
+  reply (so external reviewers have a permanent link). During
+  iteration the user reads the PDF from `SendUserFile` directly.
 - **Design before code on rethink requests.** When the user asks to
   "rethink X," write the design model first — name the axes, list
   candidate moves, recommend one. Confirm direction in one round trip

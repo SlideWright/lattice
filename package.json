@@ -52,6 +52,8 @@
     "css:check": "node tools/build-css.js --check",
     "gallery:components": "node tools/build-component-gallery.js",
     "gallery:check": "node tools/build-component-gallery.js --check",
+    "preview": "node tools/preview.js",
+    "preview:watch": "node tools/preview.js --watch",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
