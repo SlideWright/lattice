@@ -32,7 +32,7 @@ describe('chart-family', () => {
     return _html;
   }
 
-  test('chart-family: every chart-layout slide gets the chart-frame class', { timeout: 180000 }, () => {
+  test('every chart-layout slide gets the chart-frame class', { timeout: 180000 }, () => {
     const html = getHtml();
     const sections = html.match(/<section[^>]*class="[^"]*"/g) || [];
     const charty = sections.filter(s =>
@@ -44,7 +44,7 @@ describe('chart-family', () => {
     }
   });
 
-  test('chart-family: progress slide emits progress-bars with one row per item', { timeout: 180000 }, () => {
+  test('progress slide emits progress-bars with one row per item', { timeout: 180000 }, () => {
     const html = getHtml();
     assert.match(html, /<div class="progress-bars">/);
     // Five rows in the first progress slide
@@ -59,13 +59,13 @@ describe('chart-family', () => {
     assert.match(firstProgress[0], /<div class="progress-pct">92%<\/div>/);
   });
 
-  test('chart-family: progress dark + minimal modifiers compose with chart-frame', { timeout: 180000 }, () => {
+  test('progress dark + minimal modifiers compose with chart-frame', { timeout: 180000 }, () => {
     const html = getHtml();
     // The combo slide: progress + dark + minimal + chart-frame all present
     assert.match(html, /class="progress dark minimal chart-frame"/);
   });
 
-  test('chart-family: timeline-list emits a spine with date pills + status pills + body', { timeout: 180000 }, () => {
+  test('timeline-list emits a spine with date pills + status pills + body', { timeout: 180000 }, () => {
     const html = getHtml();
     assert.match(html, /<div class="timeline-spine">/);
     const tl = html.match(/<section[^>]*class="timeline-list chart-frame"[^>]*>[\s\S]*?<\/section>/);
@@ -82,7 +82,7 @@ describe('chart-family', () => {
     assert.match(tl[0], /<div class="timeline-body">/);
   });
 
-  test('chart-family: piechart donut emits an SVG donut with proportional wedges and a legend', { timeout: 180000 }, () => {
+  test('piechart donut emits an SVG donut with proportional wedges and a legend', { timeout: 180000 }, () => {
     const html = getHtml();
     const pc = html.match(/<section[^>]*class="piechart donut chart-frame"[^>]*>[\s\S]*?<\/section>/);
     assert.ok(pc, 'piechart donut section not found');
@@ -97,7 +97,7 @@ describe('chart-family', () => {
     assert.equal(legend, 5, `expected 5 legend rows, got ${legend}`);
   });
 
-  test('chart-family: header/body/caption skeleton extracts eyebrow, subtitle, italic caption', { timeout: 180000 }, () => {
+  test('header/body/caption skeleton extracts eyebrow, subtitle, italic caption', { timeout: 180000 }, () => {
     const html = getHtml();
     const firstProgress = html.match(/<section[^>]*class="progress chart-frame"[^>]*>[\s\S]*?<\/section>/);
     assert.ok(firstProgress);

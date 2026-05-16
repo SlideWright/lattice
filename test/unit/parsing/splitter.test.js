@@ -13,40 +13,40 @@ const assert = require('node:assert/strict');
 const { splitSlides } = require('../../../lib/split-slides');
 
 describe('splitter', () => {
-  test('splitter: empty input → empty array', () => {
+  test('empty input → empty array', () => {
     assert.deepEqual(splitSlides(''), []);
   });
 
-  test('splitter: whitespace-only input → empty array', () => {
+  test('whitespace-only input → empty array', () => {
     assert.deepEqual(splitSlides('   \n\n   \n'), []);
   });
 
-  test('splitter: single slide, no separators', () => {
+  test('single slide, no separators', () => {
     const slides = splitSlides('# Hello\n\nbody text');
     assert.equal(slides.length, 1);
     assert.match(slides[0], /^# Hello/);
   });
 
-  test('splitter: two slides separated by ---', () => {
+  test('two slides separated by ---', () => {
     const slides = splitSlides('# A\n\nbody\n\n---\n\n# B\n\nmore');
     assert.equal(slides.length, 2);
     assert.match(slides[0], /^# A/);
     assert.match(slides[1], /^# B/);
   });
 
-  test('splitter: trailing --- does not produce empty slide', () => {
+  test('trailing --- does not produce empty slide', () => {
     const slides = splitSlides('# A\n\n---\n');
     assert.equal(slides.length, 1);
   });
 
-  test('splitter: leading --- (after stripped front matter) is ignored', () => {
+  test('leading --- (after stripped front matter) is ignored', () => {
     // Caller strips front matter before invoking. A leading `---` on a
     // body that starts blank should not produce a phantom slide.
     const slides = splitSlides('\n---\n\n# A\n');
     assert.equal(slides.length, 1);
   });
 
-  test('splitter: --- inside ``` fence is NOT a slide boundary', () => {
+  test('--- inside ``` fence is NOT a slide boundary', () => {
     const md = [
       '# A',
       '',
@@ -68,7 +68,7 @@ describe('splitter', () => {
     assert.match(slides[1], /^# B/);
   });
 
-  test('splitter: --- inside ~~~ fence is NOT a slide boundary', () => {
+  test('--- inside ~~~ fence is NOT a slide boundary', () => {
     const md = [
       '# A',
       '',
@@ -84,7 +84,7 @@ describe('splitter', () => {
     assert.equal(slides.length, 2);
   });
 
-  test('splitter: nested fence with longer closer (4 backticks) is respected', () => {
+  test('nested fence with longer closer (4 backticks) is respected', () => {
     // markdown-it allows nested fences when outer uses 4+ backticks and
     // inner uses 3. Our simple tracker treats any fence opener of N≥3 as
     // open; close requires same char length≥N. So the outer 4-backtick
@@ -106,7 +106,7 @@ describe('splitter', () => {
     assert.equal(slides.length, 2);
   });
 
-  test('splitter: headingDivider:2 splits on h2 outside fences', () => {
+  test('headingDivider:2 splits on h2 outside fences', () => {
     const md = [
       '## First',
       'body',
@@ -124,7 +124,7 @@ describe('splitter', () => {
     assert.match(slides[2], /Third/);
   });
 
-  test('splitter: headingDivider:2 does NOT split on h2 inside a fence', () => {
+  test('headingDivider:2 does NOT split on h2 inside a fence', () => {
     const md = [
       '## First',
       '',
@@ -139,7 +139,7 @@ describe('splitter', () => {
     assert.match(slides[0], /not a slide break/);
   });
 
-  test('splitter: headingDivider:1 splits on h1 only, not h2', () => {
+  test('headingDivider:1 splits on h1 only, not h2', () => {
     const md = [
       '# First',
       '## subheading',
@@ -151,7 +151,7 @@ describe('splitter', () => {
     assert.match(slides[0], /subheading/, 'h2 should stay with its h1');
   });
 
-  test('splitter: headingDivider:3 splits on h1, h2, AND h3', () => {
+  test('headingDivider:3 splits on h1, h2, AND h3', () => {
     const md = [
       '# H1',
       '',
@@ -166,7 +166,7 @@ describe('splitter', () => {
     assert.match(slides[2], /H3[\s\S]*H4 stays here/);
   });
 
-  test('splitter: headingDivider with no leading content does not produce empty slide', () => {
+  test('headingDivider with no leading content does not produce empty slide', () => {
     const md = [
       '## First',
       'body',
@@ -178,12 +178,12 @@ describe('splitter', () => {
     assert.match(slides[0], /^## First/);
   });
 
-  test('splitter: --- with trailing whitespace still splits', () => {
+  test('--- with trailing whitespace still splits', () => {
     const slides = splitSlides('# A\n---   \n# B');
     assert.equal(slides.length, 2);
   });
 
-  test('splitter: --- with leading whitespace does NOT split (Marp requires column 0)', () => {
+  test('--- with leading whitespace does NOT split (Marp requires column 0)', () => {
     const slides = splitSlides('# A\n  ---\n# B');
     assert.equal(slides.length, 1, 'indented --- is not a slide boundary');
   });

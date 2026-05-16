@@ -18,7 +18,7 @@ const { runEmulator, runMarp } = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
 
 describe('parity', () => {
-  test('parity: emulator and marp-cli agree on gallery.md page count',
+  test('emulator and marp-cli agree on gallery.md page count',
     { timeout: 240000 },
     () => {
       const emPdf = runEmulator('gallery.md');

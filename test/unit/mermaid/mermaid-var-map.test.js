@@ -43,7 +43,7 @@ describe('mermaid-var-map', () => {
 
   const required = extractRequiredVars(EMULATOR_SRC);
 
-  test('mermaid-var-map: extracts a non-trivial set of required vars', () => {
+  test('extracts a non-trivial set of required vars', () => {
     assert.ok(required.length >= 20,
       `expected MERMAID_VAR_MAP to reference at least 20 distinct CSS vars, got ${required.length}`);
   });
