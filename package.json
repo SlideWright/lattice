@@ -45,6 +45,7 @@
     "build:kpi": "node lattice-emulator.js examples/kpi-gallery.md examples/kpi-gallery.pdf",
     "build": "npm run build:gallery && npm run build:mermaid && npm run build:backgrounds && npm run build:kpi",
     "new:theme": "node tools/new-theme.js",
+    "new:slide": "node tools/new-slide.js",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
