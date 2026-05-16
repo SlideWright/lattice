@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Validate commit message format: `area(scope): summary` or `area: summary`.
+# Matches the convention in docs/references/workflow.md.
+#
+# Allows merges, reverts, fixups, squashes (git's machine-generated forms),
+# and empty messages (git's own validation handles those).
+#
+# Usage: tools/check-commit-msg.sh <path-to-commit-msg-file>
+
+set -euo pipefail
+
+msg_file="${1:?usage: $0 <commit-msg-file>}"
+first_line=$(head -n1 "$msg_file")
+
+# Pass-through: git's own machine-generated messages and empty lines.
+case "$first_line" in
+  '') exit 0 ;;
+  'Merge '*|'Revert '*|'fixup! '*|'squash! '*|'amend! '*) exit 0 ;;
+esac
+
+# Format: lowercase area, optional (scope), colon, space, then summary text.
+# area     = [a-z][a-z0-9-]*
+# scope    = optional, parenthesized, lowercase letters/digits/comma/dot/space/hyphen
+# summary  = at least one non-space character
+if echo "$first_line" | grep -qE '^[a-z][a-z0-9-]*(\([a-z0-9.,\ -]+\))?: \S'; then
+  exit 0
+fi
+
+cat >&2 <<EOF
+Commit message format: area(scope): short summary
+
+Examples (from this repo's history):
+  fix(test): use glob for node --test on Node 22
+  feat(quadrant): native 2×2 chart-family member
+  docs(workflow): note lint script and lefthook in PR checklist
+  chore(lint): adopt Biome for linting
+
+Got:
+  ${first_line}
+EOF
+exit 1

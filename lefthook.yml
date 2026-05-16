@@ -24,3 +24,8 @@ pre-push:
       run: npm run lint
     - name: unit-tests
       run: npm test
+
+commit-msg:
+  jobs:
+    - name: format
+      run: tools/check-commit-msg.sh {1}
