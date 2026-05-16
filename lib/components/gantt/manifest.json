@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: gantt -->\n\n`2026 Q1 → 2026 Q4`\n\n## What ships in each phase, by workstream.\n\nThree workstreams across four quarters. Status pills tint each bar.\n\n- Platform\n  - Codebook signing `Q1 → Q2` `done`\n  - Multi-tenant DEKs `Q2 → Q3` `live`\n  - Per-purpose codebooks `Q3 → Q4` `at-risk`\n- Operations\n  - Manual rotation `Q1 → Q2` `done`\n  - Automated rotation `Q2 → Q3` `live`\n  - Crypto-shred `Q3 → Q4`\n- Compliance\n  - Audit trail `Q1 → Q2` `done`\n  - Centralised log `Q2 → Q3`\n  - Examiner pack `Q3 → Q4`\n",
+  "anatomyBlock": "gantt",
   "docs": "docs/references/templates.md#chart-family"
 }

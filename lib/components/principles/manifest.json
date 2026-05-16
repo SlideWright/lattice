@@ -21,5 +21,6 @@
     }
   },
   "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
+  "anatomyBlock": "principles",
   "docs": "docs/references/templates.md#principles-declared-statements"
 }

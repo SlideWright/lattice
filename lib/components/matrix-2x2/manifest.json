@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: matrix-2x2 -->\n\n## Where each option lives.\n\n- **High value · Low cost.**\n  - First item in this quadrant\n  - Second item\n- **High value · High cost.**\n  - First item in this quadrant\n- **Low value · Low cost.**\n  - First item in this quadrant\n- **Low value · High cost.**\n  - First item in this quadrant\n",
+  "anatomyBlock": "matrix-2x2",
   "docs": "docs/references/templates.md#matrix-2x2-quadrant-grid"
 }

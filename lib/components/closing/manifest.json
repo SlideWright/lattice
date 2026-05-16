@@ -26,5 +26,6 @@
     }
   },
   "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
+  "anatomyBlock": "closing-bookend",
   "docs": "docs/references/templates.md#template-18-closing-dark-bookend"
 }

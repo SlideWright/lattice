@@ -31,5 +31,6 @@
     }
   },
   "skeleton": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot taken at 14:00 UTC. Status pills tint the bar fill.\n\n- Codebook platform `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n",
+  "anatomyBlock": "progress-canvas",
   "docs": "docs/references/templates.md#chart-family"
 }

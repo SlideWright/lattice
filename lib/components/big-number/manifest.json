@@ -23,5 +23,6 @@
     }
   },
   "skeleton": "<!-- _class: big-number -->\n\n`Optional eyebrow`\n\n- 92%\n  - of the audience remembers a single number from a deck.\n",
+  "anatomyBlock": "big-number-canvas",
   "docs": "docs/references/templates.md#template-16-big-number-single-stat"
 }

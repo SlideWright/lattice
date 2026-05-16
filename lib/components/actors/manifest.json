@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- **First actor.** Owns the first part of the lifecycle.\n- **Second actor.** Owns the second part.\n- **Third actor.** Owns the third part.\n- **Fourth actor.** Owns the fourth part.\n",
+  "anatomyBlock": "actors",
   "docs": "docs/references/templates.md#actors-roster-of-responsibilities-owned-by-named-actors"
 }

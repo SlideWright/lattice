@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: code -->\n\n## What the new endpoint looks like.\n\n```js\napp.post('/api/v2/auth', async (req, res) => {\n  const session = await issueSession(req.body);\n  res.json({ session });\n});\n```\n",
+  "anatomyBlock": "code-canvas",
   "docs": "docs/references/templates.md#code"
 }

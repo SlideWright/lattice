@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
+  "anatomyBlock": "timeline",
   "docs": "docs/references/templates.md#template-13-timeline-process"
 }

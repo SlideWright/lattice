@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",
+  "anatomyBlock": "decision",
   "docs": "docs/references/templates.md#decision-the-verdict-slide"
 }

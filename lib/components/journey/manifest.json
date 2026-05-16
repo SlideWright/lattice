@@ -24,5 +24,6 @@
     }
   },
   "skeleton": "<!-- _class: journey -->\n\n## Walking through my Tuesday morning.\n\n- Wake up\n  - Hit snooze `@me` `:2`\n  - Make coffee `@me` `:4`\n- Commute\n  - Subway `@me` `:1`\n  - Walk `@me` `:5`\n- Work\n  - Standup `@team` `:3`\n  - Deep work `@me` `:5`\n",
+  "anatomyBlock": "journey",
   "docs": "docs/references/templates.md#journey"
 }

@@ -28,5 +28,6 @@
     }
   },
   "skeleton": "<!-- _class: split-brief -->\n\n`Eyebrow context`\n\n## Headline that anchors the brief.\n\nOne-sentence framing paragraph explaining what the findings cover.\n\n- **First finding.** Supporting detail explaining the first finding.\n- **Second finding.** Supporting detail explaining the second finding.\n- **Third finding.** Supporting detail explaining the third finding.\n",
+  "anatomyBlock": "split-brief",
   "docs": "docs/references/templates.md#template-30-split-brief"
 }

@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: quote -->\n\n> The quoted sentence sits here, kept short enough to read in one breath.\n\nAttribution — Person, Role\n",
+  "anatomyBlock": "quote-canvas",
   "docs": "docs/references/templates.md#template-12-quote-testimonial"
 }

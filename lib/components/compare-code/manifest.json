@@ -26,5 +26,6 @@
     }
   },
   "skeleton": "<!-- _class: compare-code -->\n\n## Heading framing the comparison.\n\n### Before\n\n```js\nfunction before() {\n  return 'old';\n}\n```\n\n### After\n\n```js\nfunction after() {\n  return 'new';\n}\n```\n",
+  "anatomyBlock": "compare-code",
   "docs": "docs/references/templates.md#code"
 }

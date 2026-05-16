@@ -28,5 +28,6 @@
     }
   },
   "skeleton": "<!-- _class: split-steps -->\n\n`02`\n\n## Phase name\n\nOne-sentence summary describing what this phase produces.\n\n1. **First step.** What happens and what gets produced.\n2. **Second step.** What follows and how it's validated.\n3. **Third step.** What closes the phase out.\n",
+  "anatomyBlock": "split-steps",
   "docs": "docs/references/templates.md#template-32-split-steps"
 }

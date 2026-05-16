@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
+  "anatomyBlock": "glossary",
   "docs": "docs/references/templates.md#glossary"
 }

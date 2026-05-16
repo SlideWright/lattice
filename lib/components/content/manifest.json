@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: content -->\n\n## Slide heading.\n\nThe explanatory paragraph that develops the heading goes here. Keep the slide under forty words.\n\n- Optional supporting point one.\n- Optional supporting point two.\n",
+  "anatomyBlock": "content-canvas",
   "docs": "docs/references/templates.md#template-4-content-text-only"
 }

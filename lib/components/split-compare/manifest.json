@@ -33,5 +33,6 @@
     }
   },
   "skeleton": "<!-- _class: split-compare -->\n\n`Decision Required`\n\n## Headline that frames the choice.\n\nOne-sentence context paragraph explaining the stakes.\n\n- Alternative option\n  - First fact about the alternative\n  - Second fact about the alternative\n- Preferred option\n  - First fact about the preferred path\n  - Second fact about the preferred path\n\n> The recommendation in one decisive sentence.\n",
+  "anatomyBlock": "split-compare",
   "docs": "docs/references/templates.md#template-33-split-compare"
 }

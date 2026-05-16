@@ -27,5 +27,6 @@
     }
   },
   "skeleton": "<!-- _class: obligation-matrix -->\n\n## Headline framing what the matrix compares.\n\n| Regulation | Obligation A | Obligation B | Obligation C |\n| ---------- | :----------: | :----------: | :----------: |\n| Regime 1   | [x]          | [x]          | [-]          |\n| Regime 2   | [x]          | [-]          | [x]          |\n| Regime 3   | [x]          | [ ]          | [x]          |\n\nFilled = applies, half = partial, empty = exempt.\n",
+  "anatomyBlock": "obligation-matrix",
   "docs": "docs/references/templates.md#obligation-matrix"
 }

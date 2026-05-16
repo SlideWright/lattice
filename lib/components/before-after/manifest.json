@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
+  "anatomyBlock": "before-after",
   "docs": "docs/references/templates.md#before-after-explicit-state-change"
 }

@@ -37,5 +37,6 @@
     }
   },
   "skeleton": "<!-- _class: math -->\n\n### Eyebrow · context\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
+  "anatomyBlock": "math-canvas",
   "docs": "docs/references/templates.md#math"
 }

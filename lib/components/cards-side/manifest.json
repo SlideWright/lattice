@@ -21,5 +21,6 @@
     }
   },
   "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- **Left card title.** Body text for the left card, two short sentences.\n- **Right card title.** Body text for the right card, two short sentences.\n",
+  "anatomyBlock": "cards-side",
   "docs": "docs/references/templates.md#template-10-two-cards-side-by-side-horizontal"
 }

@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- **First row title.** Body text for the first wide row, one or two sentences.\n- **Second row title.** Body text for the second wide row.\n- **Third row title.** Body text for the third wide row.\n",
+  "anatomyBlock": "cards-wide",
   "docs": "docs/references/templates.md#template-19-three-row-wide-cards"
 }

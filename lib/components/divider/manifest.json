@@ -21,5 +21,6 @@
     }
   },
   "skeleton": "<!-- _class: divider -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n`Section 01`\n\n# Section name\n",
+  "anatomyBlock": "divider-bookend",
   "docs": "docs/references/templates.md#template-2-section-divider"
 }

@@ -24,5 +24,6 @@
     }
   },
   "skeleton": "<!-- _class: compare-prose -->\n\n## Heading framing the comparison.\n\n- **First option.** Two-sentence description of the first option, including the strongest argument for it.\n- **Second option.** Two-sentence description of the second option, including the strongest argument for it.\n",
+  "anatomyBlock": "T11-comparison",
   "docs": "docs/references/templates.md#template-11-comparison-side-by-side-with-connector"
 }

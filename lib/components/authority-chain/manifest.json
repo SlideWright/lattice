@@ -22,5 +22,6 @@
     }
   },
   "skeleton": "<!-- _class: authority-chain -->\n\n## Rule name — the chain, tier by tier.\n\n1. Statute\n   - `Citation reference`\n   - One-line gloss naming the body that issued it and what it does.\n2. Regulation\n   - `Citation reference`\n   - One-line gloss naming the agency rule.\n3. Guidance\n   - `Citation reference`\n   - One-line gloss naming the staff guidance.\n4. Case\n   - `Citation reference`\n   - One-line gloss naming the precedent.\n",
+  "anatomyBlock": "authority-chain",
   "docs": "docs/references/templates.md#authority-chain"
 }

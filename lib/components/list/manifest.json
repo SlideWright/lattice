@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: list -->\n\n## Slide heading.\n\n- First short bullet point.\n- Second short bullet point.\n- Third short bullet point.\n- Fourth short bullet point.\n- Fifth short bullet point.\n",
+  "anatomyBlock": "list",
   "docs": "docs/references/templates.md#template-14-list-bullet-points"
 }

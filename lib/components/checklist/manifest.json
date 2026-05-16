@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: checklist -->\n\n## Pre-launch readiness.\n\n- [x] First item that is fully done.\n- [x] Second item that is fully done.\n- [-] Third item that is partially complete with a caveat.\n- [ ] Fourth item that is not yet started.\n",
+  "anatomyBlock": "checklist",
   "docs": "docs/references/templates.md#state-convention"
 }

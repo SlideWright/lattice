@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: kanban -->\n\n`Phase 2 · Sprint 14`\n\n## Where Phase 2 work stands today.\n\nFour columns, mixed card density. Size badge sits in the title row.\n\n- Backlog\n  - Per-purpose codebooks `S`\n  - Crypto-shred runbook `M`\n  - Dependency dashboard `S`\n- In progress\n  - Multi-tenant DEKs `M`\n    - platform `at-risk`\n  - Examiner pack v2 `L`\n    - compliance\n- Review\n  - Centralised log `S`\n    - compliance\n- Done\n  - Codebook signing `M`\n  - Manual rotation `S`\n",
+  "anatomyBlock": "kanban",
   "docs": "docs/references/templates.md#chart-family"
 }

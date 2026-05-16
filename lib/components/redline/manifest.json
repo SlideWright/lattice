@@ -32,5 +32,6 @@
     }
   },
   "skeleton": "<!-- _class: redline -->\n\n## Headline naming the amendment.\n\n`Citation reference · amendment name (year)`\n\n> Verbatim language with <del>old wording</del> <ins>new wording</ins> inline so the diff reads cleanly.\n\n- **Why this matters.** What the amendment changes in operational terms, in one sentence.\n",
+  "anatomyBlock": "redline",
   "docs": "docs/references/templates.md#redline"
 }

@@ -28,5 +28,6 @@
     }
   },
   "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
+  "anatomyBlock": "list-tabular",
   "docs": "docs/references/templates.md#variant-t14-tabular"
 }

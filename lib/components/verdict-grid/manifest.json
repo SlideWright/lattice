@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First criterion\n  - [-] Second criterion\n  - [ ] Third criterion\n- **Second option.**\n  - [x] First criterion\n  - [x] Second criterion\n  - [-] Third criterion\n- **Third option.**\n  - [ ] First criterion\n  - [-] Second criterion\n  - [x] Third criterion\n",
+  "anatomyBlock": "verdict-grid",
   "docs": "docs/references/templates.md#template-21-card-grid-with-verdict-badges"
 }

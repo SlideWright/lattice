@@ -29,5 +29,6 @@
     }
   },
   "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
+  "anatomyBlock": "image-canvas",
   "docs": "docs/references/templates.md#template-24-image"
 }

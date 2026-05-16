@@ -21,5 +21,6 @@
     }
   },
   "skeleton": "<!-- _class: tldr -->\n\n## What this section showed.\n\n- The first takeaway as a complete one-line claim.\n- The second takeaway as a complete one-line claim.\n- The third takeaway as a complete one-line claim.\n- The fourth takeaway as a complete one-line claim.\n",
+  "anatomyBlock": "tldr",
   "docs": "docs/references/templates.md#tldr-single-line-takeaways-recap"
 }

@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: compare-table -->\n\n## Heading framing the comparison.\n\n| Criterion | Option A | Option B | Option C |\n| --- | --- | --- | --- |\n| First criterion | Value | Value | Value |\n| Second criterion | Value | Value | Value |\n| Third criterion | Value | Value | Value |\n",
+  "anatomyBlock": "T22-compare-table",
   "docs": "docs/references/templates.md#template-22-comparison-table"
 }

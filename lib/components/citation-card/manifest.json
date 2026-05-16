@@ -31,5 +31,6 @@
     }
   },
   "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- **What we must do.** The concrete action this citation argues for.\n",
+  "anatomyBlock": "citation-card",
   "docs": "docs/references/templates.md#citation-card"
 }

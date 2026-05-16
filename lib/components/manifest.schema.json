@@ -134,8 +134,8 @@
     },
     "anatomyBlock": {
       "type": "string",
-      "pattern": "^T[0-9]+-[a-z][a-z0-9-]*$",
-      "description": "ID into the canonical ASCII catalog at tools/ascii-preview.py (e.g. \"T7-card-grid-2x2\"). The generator resolves this against `python3 tools/ascii-preview.py build` so geometry stays uniform across all components and the canonical block can never drift."
+      "pattern": "^[a-zA-Z][a-zA-Z0-9-]*$",
+      "description": "ID into the canonical ASCII catalog at tools/ascii-preview.py (e.g. \"T7-card-grid-2x2\" or \"divider-bookend\"). The generator resolves this against `python3 tools/ascii-preview.py build` so geometry stays uniform across all components and the canonical block can never drift."
     }
   }
 }

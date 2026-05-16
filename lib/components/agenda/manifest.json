@@ -24,5 +24,6 @@
     }
   },
   "skeleton": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. First section title\n2. Second section title\n3. Third section title\n4. Fourth section title\n",
+  "anatomyBlock": "agenda",
   "docs": "docs/references/templates.md#agenda-auto-numbered-table-of-contents"
 }

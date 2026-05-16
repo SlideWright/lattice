@@ -27,5 +27,6 @@
     }
   },
   "skeleton": "<!-- _class: regulatory-update -->\n\n## Headline naming the period or theme.\n\n`Scope label · jurisdiction tier`\n\n1. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n2. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n3. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n",
+  "anatomyBlock": "regulatory-update",
   "docs": "docs/references/templates.md#regulatory-update"
 }

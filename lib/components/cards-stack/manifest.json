@@ -22,5 +22,6 @@
     }
   },
   "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first stacked card, two short sentences max.\n- **Second card title.** Body text for the second stacked card.\n- **Third card title.** Body text for the third stacked card.\n",
+  "anatomyBlock": "cards-stack",
   "docs": "docs/references/templates.md#template-9-two-cards-stacked-vertical"
 }

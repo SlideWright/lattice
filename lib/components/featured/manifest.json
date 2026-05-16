@@ -21,5 +21,6 @@
     }
   },
   "skeleton": "<!-- _class: featured -->\n\n## Applying the criteria, here is where the evidence points.\n\n- **Featured recommendation.** One to two sentences making the case.\n- **Supporting card.** Short context on a related option.\n- **Supporting card.** Short context on another option.\n- **Supporting card.** Short context on another option.\n",
+  "anatomyBlock": "featured",
   "docs": "docs/references/templates.md#template-23-featured-card-sub-grid"
 }

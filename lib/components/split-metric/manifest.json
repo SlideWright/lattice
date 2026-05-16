@@ -28,5 +28,6 @@
     }
   },
   "skeleton": "<!-- _class: split-metric -->\n\n`Metric name`\n\n## 114*%*\n\nMeasurement window and qualifying detail in one short sentence.\n\n- **First supporting point.** Why this metric matters and what's driving it.\n- **Second supporting point.** What concentration or trend explains it.\n- **Third supporting point.** What this number unlocks or threatens.\n",
+  "anatomyBlock": "split-metric",
   "docs": "docs/references/templates.md#template-31-split-metric"
 }

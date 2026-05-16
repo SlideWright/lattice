@@ -18,5 +18,6 @@
     }
   },
   "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity — 12\n- ownership — 9\n- handoffs — 7\n- review — 6\n- testing — 5\n- onboarding — 4\n- spec — 3\n- triage — 3\n",
+  "anatomyBlock": "word-cloud-canvas",
   "docs": "docs/references/templates.md#word-cloud-spiral-packed-weighted-word-cloud"
 }

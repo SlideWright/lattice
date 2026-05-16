@@ -31,5 +31,6 @@
     }
   },
   "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. **$2.4B**\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. **42%**\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. **$1.1B**\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
+  "anatomyBlock": "kpi",
   "docs": "docs/references/templates.md#kpi-executive-kpi-system-one-base-five-layout-modifiers"
 }
