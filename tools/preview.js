@@ -450,14 +450,19 @@ function watchMode(deck) {
 
   for (const target of watchTargets) {
     if (!fs.existsSync(target)) continue;
+    // When the watch target is a single file (not a dir), Linux inotify
+    // omits the filename from the change event — `filename` is null.
+    // Fall back to the target's basename so the event still routes.
+    const targetIsFile = fs.statSync(target).isFile();
     try {
       fs.watch(target, { recursive: true }, (_event, filename) => {
-        if (!filename) return;
+        const name = filename || (targetIsFile ? path.basename(target) : null);
+        if (!name) return;
         // Ignore build outputs and editor noise
-        if (/\.(pdf|html)$/.test(filename)) return;
-        if (filename.includes('node_modules')) return;
-        if (filename.startsWith('.')) return;
-        schedule(filename);
+        if (/\.(pdf|html)$/.test(name)) return;
+        if (name.includes('node_modules')) return;
+        if (name.startsWith('.')) return;
+        schedule(name);
       });
     } catch (e) {
       process.stderr.write(`preview --watch: cannot watch ${target} — ${e.message}\n`);
@@ -465,18 +470,19 @@ function watchMode(deck) {
   }
 
   process.stdout.write('preview: watching for changes (Ctrl-C to stop)\n');
-  // Keep the process alive
-  setInterval(() => {}, 1 << 30);
-  return 0;
+  // Keep the process alive forever. Returning here would let main()'s
+  // process.exit() tear the watch down before any event fires. The
+  // never-resolving promise pins the event loop until SIGINT/SIGTERM.
+  return new Promise(() => {});
 }
 
-function main(argv) {
+async function main(argv) {
   const json = argv.includes('--json');
   const full = argv.includes('--full');
   const watch = argv.includes('--watch');
   const deckArg = argv.find((a) => !a.startsWith('--') && /^[a-z][a-z0-9-]*$/.test(a));
 
-  if (watch) return watchMode(deckArg);
+  if (watch) return await watchMode(deckArg);
 
   let override;
   if (full) override = 'full';
@@ -493,7 +499,12 @@ function main(argv) {
   return 0;
 }
 
-if (require.main === module) process.exit(main(process.argv.slice(2)));
+if (require.main === module) {
+  main(process.argv.slice(2)).then(
+    (code) => process.exit(code ?? 0),
+    (err) => { process.stderr.write(`preview: ${err.stack || err}\n`); process.exit(1); }
+  );
+}
 
 module.exports = {
   ALL_DECKS,
