@@ -1,0 +1,30 @@
+
+/*
+ * @theme lattice
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ *
+ * Lattice — Marp slide layout engine.
+ * Layouts are palette-blind: every color token is consumed via var()
+ * and resolved by the active palette.
+ *
+ * Architecture
+ * ────────────
+ *   lattice.css       layouts + structural tokens (this file, the engine)
+ *   themes/indaco.css cool indigo palette
+ *   themes/cuoio.css  warm leather palette
+ *
+ * Usage
+ * ─────
+ * Authors set `theme: indaco` or `theme: cuoio` in front matter. Each
+ * palette imports lattice (`@import 'lattice'`) and supplies color
+ * tokens. `theme: lattice` alone renders unstyled (no palette loaded) —
+ * a useful diagnostic for verifying var() fallback behaviour.
+ *
+ * To author a new palette, copy themes/indaco.css to themes/<name>.css,
+ * change the @theme directive, and edit the tokens. This file does not
+ * need to change.
+ */
