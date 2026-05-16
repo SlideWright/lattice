@@ -1,8 +1,9 @@
 <!-- _class: content -->
 
-## Slide heading.
+## The catch-all prose slide.
 
-The explanatory paragraph that develops the heading goes here. Keep the slide under forty words.
+Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
 
-- Optional supporting point one.
-- Optional supporting point two.
+- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
+- For comparisons, prefer `compare-prose` or `compare-table`.
+- For single metrics, prefer `big-number` or `stats`.

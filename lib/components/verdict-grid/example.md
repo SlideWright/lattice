@@ -2,15 +2,15 @@
 
 ## Which option meets the criteria.
 
-- **First option.**
-  - [x] First criterion
-  - [-] Second criterion
-  - [ ] Third criterion
-- **Second option.**
-  - [x] First criterion
-  - [x] Second criterion
-  - [-] Third criterion
-- **Third option.**
-  - [ ] First criterion
-  - [-] Second criterion
-  - [x] Third criterion
+- **Folder shape.**
+  - [x] Self-contained per component
+  - [x] Familiar pattern from other libraries
+  - [x] Tests can live with their component
+- **Flat files.**
+  - [x] Less restructuring upfront
+  - [-] Per-component grouping by filename only
+  - [ ] No room for transform.js or example.md
+- **Hybrid.**
+  - [-] Manifest stays flat, other files in subfolder
+  - [ ] Splits the component across two locations
+  - [ ] Defeats the self-contained goal

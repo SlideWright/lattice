@@ -1,5 +1,5 @@
 <!-- _class: quote -->
 
-> The quoted sentence sits here, kept short enough to read in one breath.
+> Discovery happens outside the code. Storybook, IDE autocomplete, slash commands, visual pickers, manifests. Not in the invocation.
 
-Attribution — Person, Role
+docs/design-system.md §6 — the component model

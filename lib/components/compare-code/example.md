@@ -1,19 +1,21 @@
 <!-- _class: compare-code -->
 
-## Heading framing the comparison.
+`Before & after · Component manifest loading`
 
-### Before
+## Bare `<name>.json` versus folder `<name>/manifest.json`.
+
+`Before · flat file`
 
 ```js
-function before() {
-  return 'old';
-}
+const m = loadOne(
+  path.join(__dirname, "lib", "components", "cards-grid.json")
+);
 ```
 
-### After
+`After · folder shape`
 
 ```js
-function after() {
-  return 'new';
-}
+const m = loadOne(
+  path.join(__dirname, "lib", "components", "cards-grid", "manifest.json")
+);
 ```

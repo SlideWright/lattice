@@ -34,44 +34,47 @@ Every `example.md` in lib/components/, rendered.
 <!-- _class: closing -->
 <!-- _footer: "Closing slide · closing" -->
 <!-- _paginate: false -->
-<!-- _header: '' -->
-<!-- _footer: '' -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-# Closing takeaway or call to action
+# Function · Form · Substance · Finish.
 
-`Optional eyebrow`
+`docs/design-system.md`
 
 ---
 
-<!-- _class: divider silent -->
+<!-- _class: divider -->
 <!-- _footer: "Section break · divider" -->
+<!-- _paginate: false -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-`Section 01`
+`Section 03`
 
-# Section name
+# Inventory
 
 ---
 
 <!-- _class: subtopic -->
 <!-- _footer: "Sub-topic intro · subtopic" -->
 
-`Topic family`
+`Anchor family · light divider`
 
-## Sub-topic name.
+## Subtopic introduces a specific topic within a section.
 
 ---
 
 <!-- _class: title -->
 <!-- _footer: "Title slide · title" -->
 <!-- _paginate: false -->
-<!-- _header: '' -->
-<!-- _footer: '' -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-# Deck title goes here
+# The component model in one deck
 
-`Category · Date or audience`
+`Lattice · Component Gallery`
 
-One-line subtitle that frames the deck.
+Forty-five components, one page each, by function family.
 
 ---
 
@@ -89,44 +92,46 @@ One-line subtitle that frames the deck.
 <!-- _class: big-number -->
 <!-- _footer: "Single hero metric · big-number" -->
 
-`Optional eyebrow`
+`Audience recall`
 
 - 92%
-  - of the audience remembers a single number from a deck.
+  - of the audience remembers a single number from a deck. Make it count.
 
 ---
 
 <!-- _class: content -->
 <!-- _footer: "Single-idea prose · content" -->
 
-## Slide heading.
+## The catch-all prose slide.
 
-The explanatory paragraph that develops the heading goes here. Keep the slide under forty words.
+Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
 
-- Optional supporting point one.
-- Optional supporting point two.
+- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
+- For comparisons, prefer `compare-prose` or `compare-table`.
+- For single metrics, prefer `big-number` or `stats`.
 
 ---
 
 <!-- _class: quote -->
 <!-- _footer: "Pulled quotation · quote" -->
 
-> The quoted sentence sits here, kept short enough to read in one breath.
+> Discovery happens outside the code. Storybook, IDE autocomplete, slash commands, visual pickers, manifests. Not in the invocation.
 
-Attribution — Person, Role
+docs/design-system.md §6 — the component model
 
 ---
 
 <!-- _class: split-panel -->
 <!-- _footer: "Featured panel + list · split-panel" -->
 
-## Panel headline that frames the side points.
+## A featured statement on the left lands the argument.
 
-### Section rubric
+### Use when
 
-- **First point.** Supporting sentence explaining the first point.
-- **Second point.** Supporting sentence explaining the second point.
-- **Third point.** Supporting sentence explaining the third point.
+- **One claim deserves emphasis.** The panel headline carries the weight; the right side substantiates.
+- **You need both a thesis and proof.** Statement on the left, evidence list on the right.
+- **The right side is short.** Three to four supporting points; longer lists belong in `cards-stack`.
+- **Modifier mirror flips it.** Image-style decks often want the panel on the right.
 
 ---
 
@@ -144,12 +149,13 @@ Attribution — Person, Role
 <!-- _class: actors -->
 <!-- _footer: "Roster of actors · actors" -->
 
-## Who owns each part of the process.
+## Who owns each part of the lifecycle.
 
-- **First actor.** Owns the first part of the lifecycle.
-- **Second actor.** Owns the second part.
-- **Third actor.** Owns the third part.
-- **Fourth actor.** Owns the fourth part.
+- **Author.** Drafts the deck; owns content and framing.
+- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
+- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
+- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
+- **Operator.** Schedules the briefing; controls the room and the projector.
 
 ---
 
@@ -158,66 +164,71 @@ Attribution — Person, Role
 
 ## What this deck covers.
 
-1. First section title
-2. Second section title
-3. Third section title
-4. Fourth section title
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The forty-five shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups
 
 ---
 
 <!-- _class: cards-grid -->
 <!-- _footer: "2-4 parallel cards · cards-grid" -->
 
-## Slide heading.
+## When to reach for cards-grid.
 
-- **First card title.** Body text for the first card, one sentence.
-- **Second card title.** Body text for the second card, one sentence.
-- **Third card title.** Body text for the third card, one sentence.
-- **Fourth card title.** Body text for the fourth card, one sentence.
+- **Parallel items.** Four cards or fewer, each item gets equal weight.
+- **Scannable at a glance.** Audience absorbs the whole set in one look.
+- **Equal information density.** Each card carries roughly the same text length.
+- **Order is decorative.** Use list-steps or list-criteria when sequence carries meaning.
 
 ---
 
 <!-- _class: cards-side -->
 <!-- _footer: "Two cards side-by-side · cards-side" -->
 
-## Slide heading.
+## Two cards, equal weight, side-by-side.
 
-- **Left card title.** Body text for the left card, two short sentences.
-- **Right card title.** Body text for the right card, two short sentences.
+- **Use for an explicit pair.** Two options, two phases, two artifacts presented with equal weight.
+- **Different from compare-prose.** Compare-prose adds connector chrome and a chosen modifier; cards-side stays neutral.
 
 ---
 
 <!-- _class: cards-stack -->
 <!-- _footer: "Vertical card stack · cards-stack" -->
 
-## Slide heading.
+## When to reach for cards-stack.
 
-- **First card title.** Body text for the first stacked card, two short sentences max.
-- **Second card title.** Body text for the second stacked card.
-- **Third card title.** Body text for the third stacked card.
+- **Vertical reading order matters.** The audience scans top to bottom, not grid-style.
+- **Each card has more body than a grid card.** Two sentences instead of one.
+- **Two to three items, not four-plus.** Beyond three, the slide overflows.
+- **Modifier horizontal flips to a row.** Useful for paired before/after when neither side is featured.
 
 ---
 
 <!-- _class: cards-wide -->
 <!-- _footer: "Three wide rows · cards-wide" -->
 
-## Slide heading.
+## When the items want full-width rows.
 
-- **First row title.** Body text for the first wide row, one or two sentences.
-- **Second row title.** Body text for the second wide row.
-- **Third row title.** Body text for the third wide row.
+- **First wide row.** Each item has enough body text to want its own row (one to two sentences).
+- **Second wide row.** The slide scans top-to-bottom rather than as a grid.
+- **Third wide row.** Beyond three or four rows, prefer `list-tabular` for density.
 
 ---
 
 <!-- _class: checklist -->
 <!-- _footer: "State-marker items · checklist" -->
 
-## Pre-launch readiness.
+## Pre-flight checklist for a new component.
 
-- [x] First item that is fully done.
-- [x] Second item that is fully done.
-- [-] Third item that is partially complete with a caveat.
-- [ ] Fourth item that is not yet started.
+- [x] Pick function and form coordinates per the spec
+- [x] Write `manifest.json` with name, function, form, substance, slots
+- [x] Author CSS rules in `styles.css`, scoped to `section.<name>`
+- [-] Add transform.js if substance is structure or series
+- [-] Write a substantive example.md and README.md
+- [ ] Update templates.md catalog
+- [ ] Add unit tests under `test/unit/components/<name>.test.js`
 
 ---
 
@@ -226,37 +237,44 @@ Attribution — Person, Role
 
 ## Glossary
 
-- Adjacency
-  - The relationship between two slides that share an audience or context.
-- Anchor
-  - A title, divider, subtopic, or closing slide that orients the audience.
-- Cadence
-  - The deck's pacing — how much new information per slide.
+- Component
+  - A self-contained unit at lib/components, one folder per component, with manifest plus styles plus example plus optional transform plus README.
+- Function
+  - The communication purpose a slide serves; one of seven families (Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery).
+- Form
+  - The spatial composition of a slide; one of eleven shapes (bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split).
+- Manifest
+  - The JSON description of a component, consumed by the scaffolder, snippets, docs catalog, and autocomplete.
+- Substance
+  - The kind of data that fills the form; one of four (prose, structure, series, graph).
 
 ---
 
 <!-- _class: list -->
 <!-- _footer: "Bullet list · list" -->
 
-## Slide heading.
+## When the items truly are a list.
 
-- First short bullet point.
-- Second short bullet point.
-- Third short bullet point.
-- Fourth short bullet point.
-- Fifth short bullet point.
+- Five to six short points, each under twelve words.
+- No internal structure per item — if items have title + body, use cards-stack instead.
+- Numbered (ol) when order matters; bulleted (ul) when it does not.
+- Inline-code metadata at the end of a row becomes a pill via the universal-pill recipe.
+- For richer items with descriptions, prefer list-tabular.
 
 ---
 
 <!-- _class: list-tabular -->
 <!-- _footer: "Hairline ledger · list-tabular" -->
 
-## Slide heading.
+## Hairline ledger — name on the left, body on the right.
 
-- **First entry.** Description or value for the first entry.
-- **Second entry.** Description or value for the second entry.
-- **Third entry.** Description or value for the third entry.
-- **Fourth entry.** Description or value for the fourth entry.
+- **First entry.** Description of the first entry; one or two short sentences.
+- **Second entry.** Description of the second entry.
+- **Third entry.** Description of the third entry.
+- **Fourth entry.** Description of the fourth entry.
+- **Fifth entry.** Description of the fifth entry.
+
+Four variants tune the visual treatment: `def` (editorial), `metric` (filled tile), `spec` (mono key), `register` (pill).
 
 ---
 
@@ -267,19 +285,22 @@ Attribution — Person, Role
 
 - **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.
 - **Decisions over options.** Document the choice, not the menu we evaluated.
-- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.
+- **Cheaper to reverse than to debate.** Reversible calls do not need a meeting.
+- **Form follows function.** The slide layout is determined by what the audience needs to know.
+- **One main idea per slide.** If you cannot summarise the slide in one sentence, split it.
 
 ---
 
 <!-- _class: tldr -->
 <!-- _footer: "Single-line takeaways · tldr" -->
 
-## What this section showed.
+## What this section will tell you, in five lines.
 
-- The first takeaway as a complete one-line claim.
-- The second takeaway as a complete one-line claim.
-- The third takeaway as a complete one-line claim.
-- The fourth takeaway as a complete one-line claim.
+- Components stay short — `cards-grid` not `inventory.grid.cards`.
+- The four layers organise the catalog; they do not name components.
+- Manifests are the single source of truth for every component.
+- Discovery happens via the scaffolder and IDE snippets, not the directive.
+- Forty-five components ship — one folder each.
 
 ---
 
@@ -297,32 +318,34 @@ Attribution — Person, Role
 <!-- _class: before-after -->
 <!-- _footer: "State change · before-after" -->
 
-## What the change did.
+## What the manifest refactor produced.
 
-- **Before.** How the system or process worked before the change, in one or two sentences.
-- **After.** How the system or process works now, in one or two sentences.
+- **Before.** 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+- **After.** 45 components self-contained at `lib/components/<name>/` with manifest + styles + example + README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
 
 ---
 
 <!-- _class: compare-code -->
 <!-- _footer: "Two-code comparison · compare-code" -->
 
-## Heading framing the comparison.
+`Before & after · Component manifest loading`
 
-### Before
+## Bare `<name>.json` versus folder `<name>/manifest.json`.
+
+`Before · flat file`
 
 ```js
-function before() {
-  return 'old';
-}
+const m = loadOne(
+  path.join(__dirname, "lib", "components", "cards-grid.json")
+);
 ```
 
-### After
+`After · folder shape`
 
 ```js
-function after() {
-  return 'new';
-}
+const m = loadOne(
+  path.join(__dirname, "lib", "components", "cards-grid", "manifest.json")
+);
 ```
 
 ---
@@ -330,23 +353,24 @@ function after() {
 <!-- _class: compare-prose -->
 <!-- _footer: "Two-prose comparison · compare-prose" -->
 
-## Heading framing the comparison.
+## Two options, equal weight, head-to-head.
 
-- **First option.** Two-sentence description of the first option, including the strongest argument for it.
-- **Second option.** Two-sentence description of the second option, including the strongest argument for it.
+- **First option.** Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
+- **Second option.** Two-sentence description of the second option, including the strongest argument for it. Modifier `chosen` marks the verdict when a decision has been made.
 
 ---
 
 <!-- _class: compare-table -->
 <!-- _footer: "Comparison table · compare-table" -->
 
-## Heading framing the comparison.
+## Where the four substance contracts come from.
 
-| Criterion | Option A | Option B | Option C |
+| Substance | Author writes | Renderer | Output |
 | --- | --- | --- | --- |
-| First criterion | Value | Value | Value |
-| Second criterion | Value | Value | Value |
-| Third criterion | Value | Value | Value |
+| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
+| structure | nested lists with conventions | lib/*.js post-processor | DOM |
+| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
+| graph | external graph language | external CLI (mmdc, future d2) | SVG |
 
 ---
 
@@ -355,25 +379,26 @@ function after() {
 
 ## What we are doing.
 
-- **Chosen path.** One-line rationale for the decision.
-- **Rejected option.** One-line rationale for why this didn't fit.
+- **Chosen path.** Self-contained per-component folders at `lib/components/<name>/`. One folder, everything the component owns.
+- **Rejected option.** Flat files at `lib/components/<name>.{json,css,js,md}` — defeats the self-contained goal and leaves transform.js scattered.
 
 ---
 
 <!-- _class: matrix-2x2 -->
 <!-- _footer: "Static 2×2 quadrants · matrix-2x2" -->
 
-## Where each option lives.
+## Where each component substance lives.
 
-- **High value · Low cost.**
-  - First item in this quadrant
-  - Second item
-- **High value · High cost.**
-  - First item in this quadrant
-- **Low value · Low cost.**
-  - First item in this quadrant
-- **Low value · High cost.**
-  - First item in this quadrant
+- **Author-driven · DOM output.**
+  - prose — headings + paragraphs
+  - structure — nested lists
+- **Author-driven · SVG output.**
+  - series — tabular DSL
+  - graph — external language
+- **Data-driven · DOM output.**
+  - (Lattice does not target this cell)
+- **Data-driven · SVG output.**
+  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
 
 ---
 
@@ -382,18 +407,18 @@ function after() {
 
 ## Which option meets the criteria.
 
-- **First option.**
-  - [x] First criterion
-  - [-] Second criterion
-  - [ ] Third criterion
-- **Second option.**
-  - [x] First criterion
-  - [x] Second criterion
-  - [-] Third criterion
-- **Third option.**
-  - [ ] First criterion
-  - [-] Second criterion
-  - [x] Third criterion
+- **Folder shape.**
+  - [x] Self-contained per component
+  - [x] Familiar pattern from other libraries
+  - [x] Tests can live with their component
+- **Flat files.**
+  - [x] Less restructuring upfront
+  - [-] Per-component grouping by filename only
+  - [ ] No room for transform.js or example.md
+- **Hybrid.**
+  - [-] Manifest stays flat, other files in subfolder
+  - [ ] Splits the component across two locations
+  - [ ] Defeats the self-contained goal
 
 ---
 
@@ -462,24 +487,26 @@ Four columns, mixed card density. Size badge sits in the title row.
 <!-- _class: list-criteria -->
 <!-- _footer: "Numbered criteria · list-criteria" -->
 
-## What every decision must satisfy.
+## What every component manifest must satisfy.
 
-1. **First criterion.** Short rationale for why this matters.
-2. **Second criterion.** Short rationale.
-3. **Third criterion.** Short rationale.
-4. **Fourth criterion.** Short rationale.
+1. **Stable name.** Kebab-case, matches the `_class` directive authors type.
+2. **Function coordinate.** One of seven families per docs/design-system.md §3.
+3. **Form coordinate.** One of eleven shapes per §4.
+4. **Substance coordinate.** One of four plugin contracts per §5.
+5. **Skeleton + example.** Skeleton scaffolds blank slides; example.md demonstrates the component substantively.
 
 ---
 
 <!-- _class: list-steps -->
 <!-- _footer: "Step-by-step list · list-steps" -->
 
-## How to roll this out.
+## How to add a new component to Lattice.
 
-1. First step — a sentence describing what you do here.
-2. Second step — a sentence describing what you do here.
-3. Third step — a sentence describing what you do here.
-4. Fourth step — a sentence describing what you do here.
+1. Create `lib/components/<name>/` with `manifest.json` (name, function, form, substance, slots, skeleton).
+2. Write `styles.css` scoped to `section.<name>`. Wrap in `@layer components` once the layer migration completes.
+3. Add `transform.js` if the substance is structure or series. Wire into all three render paths.
+4. Author `example.md` and `README.md`. Run `npm run gallery:components` to refresh the catalog deck.
+5. Add a unit test under `test/unit/components/<name>.test.js`. Run the full suite locally before pushing.
 
 ---
 
@@ -504,16 +531,16 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _class: timeline -->
 <!-- _footer: "Ordered timeline · timeline" -->
 
-## How the process flows.
+## How a deck moves from draft to share.
 
-1. **First stage**
-   - *Short description of what happens here.*
-2. **Second stage**
-   - *Short description.*
-3. **Third stage**
-   - *Short description.*
-4. **Fourth stage**
-   - *Short description.*
+1. **Draft**
+   - *Author writes markdown with appropriate `_class` directives.*
+2. **Build**
+   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
+3. **Review**
+   - *Reviewer opens the raw PDF link; per-feature deck shows the change in context.*
+4. **Ship**
+   - *Merge the PR; CI rebuilds against main and updates the gallery.*
 
 ---
 
@@ -531,13 +558,17 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-## What the new endpoint looks like.
+## What loading a manifest looks like.
 
 ```js
-app.post('/api/v2/auth', async (req, res) => {
-  const session = await issueSession(req.body);
-  res.json({ session });
-});
+const { loadAll, groupByFunction } = require("./lib/components");
+
+const manifests = loadAll();           // 45 components, validated
+const byFunction = groupByFunction(manifests);
+
+for (const m of byFunction.evidence) {
+  console.log(m.name, m.form, m.substance);
+}
 ```
 
 ---
@@ -545,14 +576,18 @@ app.post('/api/v2/auth', async (req, res) => {
 <!-- _class: diagram -->
 <!-- _footer: "Mermaid diagram · diagram" -->
 
-## How signals move from input to decision.
+## How a Lattice slide goes from markdown to PDF.
 
 ```mermaid
 flowchart LR
-  A[Input] --> B[Process]
-  B --> C{Decision}
-  C -->|yes| D[Path A]
-  C -->|no| E[Path B]
+  A[deck.md] --> B[lattice-emulator.js]
+  B --> C{has mermaid?}
+  C -->|yes| D[mmdc → inline SVG]
+  C -->|no| E[parse + process]
+  D --> E
+  E --> F[HTML]
+  F --> G[Puppeteer print]
+  G --> H[deck.pdf]
 ```
 
 ---
@@ -700,16 +735,20 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 <!-- _class: word-cloud -->
 <!-- _footer: "Weighted word cloud · word-cloud" -->
 
-## What the team called out this quarter.
+## What this branch named, by weight.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3
+- component — 124
+- manifest — 78
+- function — 64
+- form — 52
+- substance — 47
+- gallery — 41
+- folder — 36
+- variant — 32
+- universal — 28
+- cascade — 22
+- scaffolder — 18
+- bundler — 14
 
 ---
 
@@ -729,10 +768,10 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## Applying the criteria, here is where the evidence points.
 
-- **Featured recommendation.** One to two sentences making the case.
-- **Supporting card.** Short context on a related option.
-- **Supporting card.** Short context on another option.
-- **Supporting card.** Short context on another option.
+- **Self-contained component folders.** One `lib/components/<name>/` per component, holding manifest + styles + transform + example + README. Matches the pattern every mature design system uses.
+- **Bundler concatenates CSS at build time.** Per-component sources combine into `lattice.css` via `tools/build-css.js`; committed bundle, CI gate.
+- **Manifests are the single source of truth.** Scaffolder, snippets, this gallery, and docs all read from the same JSON.
+- **Tests stay scoped.** `test/unit/components/<name>.test.js` per component, runnable as `npm run test:layouts`.
 
 ---
 

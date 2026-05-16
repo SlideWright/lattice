@@ -1,7 +1,8 @@
 <!-- _class: cards-stack -->
 
-## Slide heading.
+## When to reach for cards-stack.
 
-- **First card title.** Body text for the first stacked card, two short sentences max.
-- **Second card title.** Body text for the second stacked card.
-- **Third card title.** Body text for the third stacked card.
+- **Vertical reading order matters.** The audience scans top to bottom, not grid-style.
+- **Each card has more body than a grid card.** Two sentences instead of one.
+- **Two to three items, not four-plus.** Beyond three, the slide overflows.
+- **Modifier horizontal flips to a row.** Useful for paired before/after when neither side is featured.

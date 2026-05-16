@@ -2,5 +2,5 @@
 
 ## What we are doing.
 
-- **Chosen path.** One-line rationale for the decision.
-- **Rejected option.** One-line rationale for why this didn't fit.
+- **Chosen path.** Self-contained per-component folders at `lib/components/<name>/`. One folder, everything the component owns.
+- **Rejected option.** Flat files at `lib/components/<name>.{json,css,js,md}` — defeats the self-contained goal and leaves transform.js scattered.

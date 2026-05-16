@@ -1,8 +1,8 @@
 <!-- _class: cards-grid -->
 
-## Slide heading.
+## When to reach for cards-grid.
 
-- **First card title.** Body text for the first card, one sentence.
-- **Second card title.** Body text for the second card, one sentence.
-- **Third card title.** Body text for the third card, one sentence.
-- **Fourth card title.** Body text for the fourth card, one sentence.
+- **Parallel items.** Four cards or fewer, each item gets equal weight.
+- **Scannable at a glance.** Audience absorbs the whole set in one look.
+- **Equal information density.** Each card carries roughly the same text length.
+- **Order is decorative.** Use list-steps or list-criteria when sequence carries meaning.

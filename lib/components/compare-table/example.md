@@ -1,9 +1,10 @@
 <!-- _class: compare-table -->
 
-## Heading framing the comparison.
+## Where the four substance contracts come from.
 
-| Criterion | Option A | Option B | Option C |
+| Substance | Author writes | Renderer | Output |
 | --- | --- | --- | --- |
-| First criterion | Value | Value | Value |
-| Second criterion | Value | Value | Value |
-| Third criterion | Value | Value | Value |
+| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
+| structure | nested lists with conventions | lib/*.js post-processor | DOM |
+| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
+| graph | external graph language | external CLI (mmdc, future d2) | SVG |

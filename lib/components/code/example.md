@@ -1,10 +1,14 @@
 <!-- _class: code -->
 
-## What the new endpoint looks like.
+## What loading a manifest looks like.
 
 ```js
-app.post('/api/v2/auth', async (req, res) => {
-  const session = await issueSession(req.body);
-  res.json({ session });
-});
+const { loadAll, groupByFunction } = require("./lib/components");
+
+const manifests = loadAll();           // 45 components, validated
+const byFunction = groupByFunction(manifests);
+
+for (const m of byFunction.evidence) {
+  console.log(m.name, m.form, m.substance);
+}
 ```

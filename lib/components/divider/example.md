@@ -1,5 +1,8 @@
-<!-- _class: divider silent -->
+<!-- _class: divider -->
+<!-- _paginate: false -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-`Section 01`
+`Section 03`
 
-# Section name
+# Inventory

@@ -1,9 +1,10 @@
 <!-- _class: split-panel -->
 
-## Panel headline that frames the side points.
+## A featured statement on the left lands the argument.
 
-### Section rubric
+### Use when
 
-- **First point.** Supporting sentence explaining the first point.
-- **Second point.** Supporting sentence explaining the second point.
-- **Third point.** Supporting sentence explaining the third point.
+- **One claim deserves emphasis.** The panel headline carries the weight; the right side substantiates.
+- **You need both a thesis and proof.** Statement on the left, evidence list on the right.
+- **The right side is short.** Three to four supporting points; longer lists belong in `cards-stack`.
+- **Modifier mirror flips it.** Image-style decks often want the panel on the right.

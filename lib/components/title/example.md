@@ -1,10 +1,10 @@
 <!-- _class: title -->
 <!-- _paginate: false -->
-<!-- _header: '' -->
-<!-- _footer: '' -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-# Deck title goes here
+# The component model in one deck
 
-`Category · Date or audience`
+`Lattice · Component Gallery`
 
-One-line subtitle that frames the deck.
+Forty-five components, one page each, by function family.

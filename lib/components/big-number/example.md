@@ -1,6 +1,6 @@
 <!-- _class: big-number -->
 
-`Optional eyebrow`
+`Audience recall`
 
 - 92%
-  - of the audience remembers a single number from a deck.
+  - of the audience remembers a single number from a deck. Make it count.

@@ -1,5 +1,5 @@
 <!-- _class: subtopic -->
 
-`Topic family`
+`Anchor family · light divider`
 
-## Sub-topic name.
+## Subtopic introduces a specific topic within a section.

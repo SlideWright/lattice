@@ -1,12 +1,16 @@
 <!-- _class: word-cloud -->
 
-## What the team called out this quarter.
+## What this branch named, by weight.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3
+- component — 124
+- manifest — 78
+- function — 64
+- form — 52
+- substance — 47
+- gallery — 41
+- folder — 36
+- variant — 32
+- universal — 28
+- cascade — 22
+- scaffolder — 18
+- bundler — 14

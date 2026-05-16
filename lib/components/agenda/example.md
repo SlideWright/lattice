@@ -2,7 +2,8 @@
 
 ## What this deck covers.
 
-1. First section title
-2. Second section title
-3. Third section title
-4. Fourth section title
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The forty-five shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups

@@ -1,8 +1,9 @@
 <!-- _class: actors -->
 
-## Who owns each part of the process.
+## Who owns each part of the lifecycle.
 
-- **First actor.** Owns the first part of the lifecycle.
-- **Second actor.** Owns the second part.
-- **Third actor.** Owns the third part.
-- **Fourth actor.** Owns the fourth part.
+- **Author.** Drafts the deck; owns content and framing.
+- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
+- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
+- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
+- **Operator.** Schedules the briefing; controls the room and the projector.

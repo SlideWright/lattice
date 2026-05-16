@@ -1,11 +1,15 @@
 <!-- _class: diagram -->
 
-## How signals move from input to decision.
+## How a Lattice slide goes from markdown to PDF.
 
 ```mermaid
 flowchart LR
-  A[Input] --> B[Process]
-  B --> C{Decision}
-  C -->|yes| D[Path A]
-  C -->|no| E[Path B]
+  A[deck.md] --> B[lattice-emulator.js]
+  B --> C{has mermaid?}
+  C -->|yes| D[mmdc → inline SVG]
+  C -->|no| E[parse + process]
+  D --> E
+  E --> F[HTML]
+  F --> G[Puppeteer print]
+  G --> H[deck.pdf]
 ```

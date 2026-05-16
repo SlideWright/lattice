@@ -1,9 +1,9 @@
 <!-- _class: list -->
 
-## Slide heading.
+## When the items truly are a list.
 
-- First short bullet point.
-- Second short bullet point.
-- Third short bullet point.
-- Fourth short bullet point.
-- Fifth short bullet point.
+- Five to six short points, each under twelve words.
+- No internal structure per item — if items have title + body, use cards-stack instead.
+- Numbered (ol) when order matters; bulleted (ul) when it does not.
+- Inline-code metadata at the end of a row becomes a pill via the universal-pill recipe.
+- For richer items with descriptions, prefer list-tabular.

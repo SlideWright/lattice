@@ -1,8 +1,8 @@
 <!-- _class: closing -->
 <!-- _paginate: false -->
-<!-- _header: '' -->
-<!-- _footer: '' -->
+<!-- _header: "" -->
+<!-- _footer: "" -->
 
-# Closing takeaway or call to action
+# Function · Form · Substance · Finish.
 
-`Optional eyebrow`
+`docs/design-system.md`
