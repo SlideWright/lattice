@@ -46,6 +46,29 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import unicodedata
+
+# ----- display-width helpers ------------------------------------------------
+#
+# `len()` counts Unicode code points, but the visual alignment that matters
+# for ASCII previews is cell count in a monospace font. Wide East Asian
+# characters (W/F) and emoji render as 2 cells while reporting len()==1.
+# The audit must use display_width() everywhere, otherwise blocks like the
+# original `journey` (which had 😊/😐) pass code-point checks but render
+# misaligned. Combining marks contribute 0 cells.
+
+def char_cells(ch: str) -> int:
+    """Display-cell width of a single character. 0 for combining marks,
+    2 for East Asian Wide / Full-width, 1 otherwise."""
+    if unicodedata.combining(ch):
+        return 0
+    ea = unicodedata.east_asian_width(ch)
+    return 2 if ea in ('W', 'F') else 1
+
+
+def display_width(s: str) -> int:
+    """Total display width of a string in monospace cells."""
+    return sum(char_cells(c) for c in s)
 
 # ----- canonical geometry --------------------------------------------------
 
@@ -69,29 +92,44 @@ def frame(rows: list[tuple]) -> str:
       ('left',   text)              — left-anchored in the content area
       ('split',  left, right)       — left at start, right at end of content
       ('blank',)                    — fully blank inner row
-      ('raw',    text37)            — text already exactly 37 chars wide
+      ('raw',    text37)            — text already exactly 37 cells wide
+
+    Widths are measured in DISPLAY CELLS (display_width), not code points,
+    so wide-cell chars (emoji, CJK) raise at build time instead of silently
+    misaligning at render time.
     """
     out = ['┌' + '─' * INNER + '┐']
     for r in rows:
         kind = r[0]
         if kind == 'center':
             s = r[1]
-            pad = CONTENT - len(s)
+            pad = CONTENT - display_width(s)
+            if pad < 0:
+                raise ValueError(f"center row exceeds {CONTENT} cells: {s!r}")
             l, rr = pad // 2, pad - pad // 2
             out.append('│' + ' ' * PAD + ' ' * l + s + ' ' * rr + ' ' * PAD + '│')
         elif kind == 'left':
             s = r[1]
-            out.append('│' + ' ' * PAD + s + ' ' * (CONTENT - len(s)) + ' ' * PAD + '│')
+            pad = CONTENT - display_width(s)
+            if pad < 0:
+                raise ValueError(f"left row exceeds {CONTENT} cells: {s!r}")
+            out.append('│' + ' ' * PAD + s + ' ' * pad + ' ' * PAD + '│')
         elif kind == 'split':
             l, rr = r[1], r[2]
-            mid = CONTENT - len(l) - len(rr)
+            mid = CONTENT - display_width(l) - display_width(rr)
+            if mid < 0:
+                raise ValueError(f"split row exceeds {CONTENT} cells: {l!r} + {rr!r}")
             out.append('│' + ' ' * PAD + l + ' ' * mid + rr + ' ' * PAD + '│')
         elif kind == 'blank':
             out.append('│' + ' ' * INNER + '│')
         elif kind == 'raw':
             s = r[1]
-            if len(s) != CONTENT:
-                raise ValueError(f"raw row must be {CONTENT} chars, got {len(s)}: {s!r}")
+            dw = display_width(s)
+            if dw != CONTENT:
+                raise ValueError(
+                    f"raw row must be {CONTENT} cells, got {dw} "
+                    f"(codepoints={len(s)}): {s!r}"
+                )
             out.append('│' + ' ' * PAD + s + ' ' * PAD + '│')
         else:
             raise ValueError(f"unknown row kind: {kind!r}")
@@ -299,13 +337,18 @@ def audit(path: str) -> int:
             if in_block and line.startswith('```'):
                 in_block = False
                 blocks += 1
-                widths = {len(l) for _, l in buf if l.strip()}
+                widths = {display_width(l) for _, l in buf if l.strip()}
                 if widths and widths != {OUTER}:
                     issues.append(
-                        f"L{start}: widths {sorted(widths)} (expected {{{OUTER}}})"
+                        f"L{start}: widths {sorted(widths)} (expected {{{OUTER}}}) — check for wide-cell chars (emoji, CJK)"
                     )
+                    # Per-row breakdown helps locate the offender.
+                    for li, l in buf:
+                        dw = display_width(l)
+                        if l.strip() and dw != OUTER:
+                            issues.append(f"  L{li}: width={dw} (codepoints={len(l)}): {l}")
                 for li, l in buf:
-                    if len(l) != OUTER or not (l.startswith('│') and l.endswith('│')):
+                    if display_width(l) != OUTER or not (l.startswith('│') and l.endswith('│')):
                         continue
                     inner = l[1:-1]
                     if not inner.strip():
@@ -828,7 +871,7 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
         nodes_arrow_row(['Awar', 'Sign', 'Use'], w=6),
         ('blank',),
-        ('center', '😊        😐        😊'),
+        ('center', '  :)        :|        :)  '),
         ('center', '(satisfaction track)'),
         ('split', 'footer', '1/19'),
     ])
