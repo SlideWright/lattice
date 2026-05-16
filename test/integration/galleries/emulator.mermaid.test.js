@@ -11,14 +11,15 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');
-const expected = require('../../fixtures/expected-page-counts.json');
+
+const EXPECTED_PAGES = 31;
 
 describe('emulator.mermaid', () => {
   test('emulator: mermaid-gallery.md builds and produces expected page count',
     { timeout: 600000 },
     () => {
       const pdf = runEmulator('mermaid-gallery.md');
-      assert.equal(pageCount(pdf), expected['mermaid-gallery'],
+      assert.equal(pageCount(pdf), EXPECTED_PAGES,
         'mermaid-gallery.md page count drifted');
     });
 });

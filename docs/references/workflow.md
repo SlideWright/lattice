@@ -44,8 +44,9 @@ Each worktree is fully independent — you can run `npm test` in both simultaneo
 The repo distinguishes **two kinds of long-running decks**, and the
 isolation rule below applies to both:
 
-**Regression baseline** — page counts asserted in CI via
-`test/fixtures/expected-page-counts.json`:
+**Regression baseline** — page counts asserted in CI (each test file
+inlines its expected count; the 58 per-component galleries derive
+theirs from `expectedGallerySlideCount(manifest)`):
 
 | Deck | npm script | Slides |
 | --- | --- | --- |

@@ -10,11 +10,12 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');
-const expected = require('../../fixtures/expected-page-counts.json');
+
+const EXPECTED_PAGES = 13;
 
 describe('emulator.kpi-gallery', () => {
   test('emulator: kpi-gallery.md builds and produces expected page count', { timeout: 180000 }, () => {
     const pdf = runEmulator('kpi-gallery.md');
-    assert.equal(pageCount(pdf), expected['kpi-gallery'], 'kpi-gallery.md page count drifted');
+    assert.equal(pageCount(pdf), EXPECTED_PAGES, 'kpi-gallery.md page count drifted');
   });
 });

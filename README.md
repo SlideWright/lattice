@@ -167,7 +167,7 @@ lattice/
 │   ├── unit/                  # fast (<100 ms); no child processes
 │   ├── integration/           # spawns emulator + marp-cli; rebuilds galleries
 │   ├── helpers/               # shared palette / pdf / render plumbing
-│   └── fixtures/              # expected-page-counts.json
+│   └── fixtures/              # markdown fixtures for parsing tests
 │
 └── tools/
     └── screenshot-slides.js   # dev-only audit utility
@@ -186,10 +186,12 @@ npm run test:all          # both tiers
 
 The unit tier finishes in under 100 ms and is the inner loop. The
 integration tier takes ~30 s (mostly the mermaid-gallery rebuild) and
-is what CI runs before merge. Both galleries (`examples/gallery.md`
-and `examples/mermaid-gallery.md`) are the authoritative test
-fixtures; their committed PDFs are the regression baseline. Page
-counts live in [test/fixtures/expected-page-counts.json](test/fixtures/expected-page-counts.json).
+is what CI runs before merge. Both top-level galleries
+(`examples/gallery.md` and `examples/mermaid-gallery.md`) are the
+authoritative test fixtures; their committed PDFs are the regression
+baseline. Expected page counts are inlined in each test file; the 58
+per-component galleries derive their counts from the manifest itself
+via `expectedGallerySlideCount()`.
 
 `marp-cli` is a runtime dependency, not a dev dependency — the
 integration suite asserts cross-renderer parity, and the browser

@@ -60,17 +60,22 @@ tier asserts cross-renderer parity on slide count.
 Full tooling details (scopes, hooks, CI structure, cache behaviour)
 live in `docs/references/development.md`.
 
-**Two gallery sets, distinct purposes:**
+**Three regression tiers:**
 
-- **Regression baseline** (CI-asserted page counts in
-  `test/fixtures/expected-page-counts.json`): `gallery.md` (89pp),
-  `mermaid-gallery.md` (31pp), `kpi-gallery.md` (13pp). A page-count
-  drift on any of these fails the integration tier.
+- **Per-component galleries** (58 total, one per `lib/components/<name>/`)
+  — every enriched manifest's `expectedGallerySlideCount()` is asserted
+  against the rendered PDF page count. Adding a variant updates the
+  formula; a transform that drops a slide fails its component's test.
+  See `test/integration/components/component-galleries.test.js`.
+- **Top-level baseline decks** (CI-asserted, page count inlined in each
+  test file): `gallery.md` (89pp), `kpi-gallery.md` (13pp),
+  `mermaid-gallery.md` (31pp). A drift on any of these fails the
+  integration tier.
 - **Long-running editorial decks** (stable and shared, but not
   page-count-asserted): `backgrounds-gallery.md`, `gallery-guide.md`,
   `gallery-jargon.md`. Hand-curated showcases.
 
-The isolation rule applies to **all six** — see workflow.md.
+The isolation rule applies to **all** baseline + editorial decks — see workflow.md.
 
 ## The visual-iteration loop
 

@@ -3,16 +3,15 @@
  * manifest implies via `expectedGallerySlideCount()`.
  *
  * This is the decentralized replacement for the central
- * `test/fixtures/expected-page-counts.json` snapshot. The expected
- * count is DERIVED from the manifest (title + sample + variant count
- * + anti-patterns + closing), not hand-maintained. Adding a variant
- * to the manifest automatically updates the expected count; a
- * transform that silently drops a slide fails the assertion.
+ * test/fixtures/expected-page-counts.json snapshot (deleted in Phase 3
+ * of the docs refactor). The expected count is DERIVED from the
+ * manifest (title + sample + variant count + anti-patterns + closing),
+ * not hand-maintained. Adding a variant to the manifest automatically
+ * updates the expected count; a transform that silently drops a slide
+ * fails the assertion.
  *
- * Coverage grows with the Phase 2 migration: a manifest qualifies for
- * this tier once `isEnriched()` returns true (it carries at least
- * one of sample/whenToUse/antiPatterns/related/variantDocs).
- * Components not yet migrated are skipped via `t.skip()`.
+ * The three surviving top-level decks (gallery, kpi-gallery,
+ * mermaid-gallery) own their counts inline in their own test files.
  *
  * Cold runs are slow (one PDF per enriched component). The render
  * helper's cache hashes the manifest + styles.css + bundle so warm
