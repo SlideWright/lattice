@@ -1,0 +1,61 @@
+/* _semi-universal.css — density and accent modifiers that compose with most layouts.
+ *
+ * Extracted from lib/_legacy.css in Phase 7 cleanup. Bundled in
+ * TAIL_SOURCES (already declared in build-css.js, file just didn't
+ * exist until now).
+ *
+ * Three modifiers:
+ *   compact  — shrinks the --sp-* scale ~25%
+ *   loose    — inverse of compact, more breathing room
+ *   accent   — replaces the spectrum top-border with a single-colour
+ *              accent stripe and tints the slide heading
+ *
+ * Per the three-tier modifier model in design-system.md §6.5: components
+ * either accept these by default or opt out via the `excludes` field
+ * in their manifest.
+ */
+
+/* ── compact ────────────────────────────────────────────────────────────
+ * Tighter spacing for dense slides. Shrinks the spacing scale ~25 %; the
+ * section's own LR padding follows because it is declared with var(--sp-2xl).
+ * Chrome reservation (top/bottom 88px) is intentionally preserved so header
+ * and footer never collide with content. */
+section.compact {
+  --sp-xs: 0.46875cqi;
+  --sp-sm: 0.9375cqi;
+  --sp-md: 1.40625cqi;
+  --sp-lg: 1.875cqi;
+  --sp-xl: 2.8125cqi;
+  --sp-2xl: 3.75cqi;
+}
+
+/* ── loose ──────────────────────────────────────────────────────────────
+ * More breathing room. Inverse of compact. */
+section.loose {
+  --sp-xs: 0.78125cqi;
+  --sp-sm: 1.5625cqi;
+  --sp-md: 2.34375cqi;
+  --sp-lg: 3.125cqi;
+  --sp-xl: 4.6875cqi;
+  --sp-2xl: 6.25cqi;
+}
+
+/* ── accent ─────────────────────────────────────────────────────────────
+ * Replaces the rainbow spectrum top-border with a solid accent stripe and
+ * tints the slide heading. Used when a slide carries a single editorial
+ * argument — the accent stripe signals "this is the point". */
+section.accent {
+  border-top: 0.3125cqi solid var(--accent);
+  border-image: none;
+}
+section.accent h2 { color: var(--accent); }
+/* On the dark canvas the rainbow border is suppressed entirely; the accent
+ * modifier restores a single-colour stripe so the visual signal still reads. */
+section.accent.dark {
+  background:
+    linear-gradient(to right, var(--accent), var(--accent)) top / 100% 0.3125cqi no-repeat,
+    var(--bg);
+  border-top: none;
+}
+section.accent.dark h2 { color: var(--accent); }
+

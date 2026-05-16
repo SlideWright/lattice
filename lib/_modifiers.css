@@ -562,3 +562,132 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
  * back to centred + accent for visibility. */
 section:not(.math) .katex { color: inherit; }
 section:not(.math) .katex-display { margin: var(--sp-sm) 0; text-align: center; }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * UNIVERSAL HEAT OVERLAY — palette inversion for any state-bearing layout
+ *
+ * `.heat` is a section modifier the author can add alongside any of the
+ * state-bearing layout classes (checklist, verdict-grid, obligation-matrix,
+ * roadmap). It flips the semantic-to-colour mapping from a performance/
+ * lifecycle axis to a load/risk axis:
+ *   full   (was good)  → alarm  (var(--fail))
+ *   half   (was caution) → caution (var(--warn) — unchanged)
+ *   empty  (was bad)   → relief (var(--pass))
+ *   skip   (was muted) → muted  (var(--text-muted) — unchanged)
+ *
+ * Selectors match the per-layout default --state-color assignments above
+ * exactly, so specificity ties; this block is placed AFTER the layout
+ * defaults so source-order wins the tie and heat takes effect.
+ *
+ * Heat is meaningful where "more present = more load/risk":
+ *   obligation-matrix  yes (regulatory burden density — primary use case)
+ *   roadmap            yes (workload concentration per phase)
+ *   checklist          marginal (inverts "done is good")
+ *   verdict-grid       not recommended (performance axis already has alarm)
+ *
+ * Per-layout chrome may add surface tinting under heat (obligation-matrix
+ * tints cells; others may opt in). Tint chrome stays in each layout's
+ * own block. */
+
+/* full → alarm */
+section.heat > ul > li.state.pass,
+section.heat > ol > li.state.pass,
+section.heat .badge.pass,
+section.heat td .state.pass,
+section.heat td.cell-state.state-shipped,
+section.heat .horizon-rows > li.cell-state.state-shipped { --state-color:var(--fail); }
+
+/* half → caution (unchanged, but redeclared for symmetry and so per-layout
+ * source-order overrides under .heat resolve to the universal palette) */
+section.heat > ul > li.state.warn,
+section.heat > ol > li.state.warn,
+section.heat .badge.warn,
+section.heat td .state.warn,
+section.heat td.cell-state.state-wip,
+section.heat .horizon-rows > li.cell-state.state-wip { --state-color:var(--warn); }
+
+/* empty → relief */
+section.heat > ul > li.state.fail,
+section.heat > ol > li.state.fail,
+section.heat .badge.fail,
+section.heat td .state.fail,
+section.heat td.cell-state.state-planned,
+section.heat .horizon-rows > li.cell-state.state-planned { --state-color:var(--pass); }
+
+/* skip → muted (unchanged, redeclared for symmetry) */
+section.heat > ul > li.state.skip,
+section.heat > ol > li.state.skip,
+section.heat .badge.skip,
+section.heat td .state.skip,
+section.heat td.cell-state.state-skipped,
+section.heat .horizon-rows > li.cell-state.state-skipped { --state-color:var(--text-muted); }
+
+/* ──────────────────────────────────────────────────────────────────── */
+
+/* .pills — each non-first cell is a status pill. */
+section.obligation-matrix.pills td:not(:first-child) > * { display:inline-block; }
+section.obligation-matrix.pills td:not(:first-child) {
+  background:none;
+  padding:0.46875cqi var(--sp-xs);
+}
+section.obligation-matrix.pills td:not(:first-child) code,
+section.obligation-matrix.pills td:not(:first-child) strong {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.234375cqi 0.78125cqi;
+  border-radius:999px;
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  color:var(--text-body);
+  white-space:nowrap;
+}
+section.obligation-matrix.pills tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
+
+/* .lanes — categorical row stripes. */
+section.obligation-matrix.lanes tbody tr:nth-child(8n+1) > td:first-child { --lane-hue:var(--c1-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+2) > td:first-child { --lane-hue:var(--c2-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+3) > td:first-child { --lane-hue:var(--c3-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+4) > td:first-child { --lane-hue:var(--c4-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+5) > td:first-child { --lane-hue:var(--c5-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+6) > td:first-child { --lane-hue:var(--c6-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n+7) > td:first-child { --lane-hue:var(--c7-dark); }
+section.obligation-matrix.lanes tbody tr:nth-child(8n)   > td:first-child { --lane-hue:var(--c8-dark); }
+section.obligation-matrix.lanes tbody tr > td:first-child {
+  border-left:4px solid var(--lane-hue, var(--accent));
+  color:var(--lane-hue, var(--text-heading));
+}
+section.obligation-matrix.lanes tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
+section.obligation-matrix.lanes td:not(:first-child) { font-family:var(--font-mono); font-size:var(--fs-sm); }
+
+/* .asymmetric — sticky reg column + cards. The markdown is still a
+ * table; we re-style the cells as card-feel boxes. */
+section.obligation-matrix.asymmetric table { border-spacing:var(--sp-xs) var(--sp-xs); border-collapse:separate; }
+section.obligation-matrix.asymmetric thead { display:none; }
+section.obligation-matrix.asymmetric tbody tr {
+  display:grid;
+  grid-template-columns:14cqi repeat(auto-fit, minmax(0, 1fr));
+  background:none;
+}
+section.obligation-matrix.asymmetric td {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-sm) var(--sp-md);
+  text-align:left;
+  font-size:var(--fs-sm);
+  line-height:var(--lh-snug);
+}
+section.obligation-matrix.asymmetric tbody tr:nth-child(odd) td { background:var(--bg-alt); }
+section.obligation-matrix.asymmetric td:first-child {
+  background:var(--accent-soft);
+  border-color:var(--accent);
+  color:var(--accent);
+  font-family:var(--font-mono);
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  align-self:stretch;
+  display:flex; align-items:center;
+}
+

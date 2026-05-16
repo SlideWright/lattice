@@ -40,3 +40,34 @@ section.compare-code:not(:has(.code-cols)) {
   grid-template-columns:1fr 1fr;
   gap:0 var(--sp-md);
 }
+
+/* ── Eyebrow-aware grid rows — appended Phase 7 ──
+ * The :not(:has(.code-cols)) path is the marp-vscode preview fallback
+ * (the post-processor adds .code-cols in the build path). These two
+ * rules handle the WITH-eyebrow (p>code precedes h2) and WITHOUT-
+ * eyebrow grid-row layouts. Originally lived in lib/_legacy.css
+ * under the MARP VS CODE PREVIEW FALLBACKS section.
+ */
+
+/* ── WITHOUT eyebrow (no p precedes h2 among siblings) ── */
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
+  grid-template-rows:auto auto 1fr auto;
+}
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+
+/* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
+  grid-template-rows:auto auto auto 1fr auto;
+}
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
