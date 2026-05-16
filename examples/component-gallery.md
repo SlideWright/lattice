@@ -115,9 +115,9 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: quote -->
 <!-- _footer: "Pulled quotation · quote" -->
 
-> Discovery happens outside the code. Storybook, IDE autocomplete, slash commands, visual pickers, manifests. Not in the invocation.
+> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided. The framework's value isn't the data — it's the moment in the calendar when the question gets asked.
 
-docs/design-system.md §6 — the component model
+— Head of Product, Pilot Team 3
 
 ---
 
@@ -330,22 +330,40 @@ Four variants tune the visual treatment: `def` (editorial), `metric` (filled til
 
 `Before & after · Component manifest loading`
 
-## Bare `<name>.json` versus folder `<name>/manifest.json`.
+## Flat-file lookup versus folder-shape lookup.
 
 `Before · flat file`
 
 ```js
-const m = loadOne(
-  path.join(__dirname, "lib", "components", "cards-grid.json")
-);
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    `${name}.json`
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
 ```
 
 `After · folder shape`
 
 ```js
-const m = loadOne(
-  path.join(__dirname, "lib", "components", "cards-grid", "manifest.json")
-);
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    name, 'manifest.json'
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
 ```
 
 ---
