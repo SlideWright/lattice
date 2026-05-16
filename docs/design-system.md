@@ -148,6 +148,17 @@ a new chart library (Vega-Lite, Observable Plot) plugs into the
 **series** contract; a new declarative layout plugs into **structure**;
 a pure-CSS layout plugs into **prose**.
 
+### The `mixed` escape hatch
+
+Some boardroom-pitch components combine prose and structure in one
+slot — e.g. `featured` (one prominent recommendation + supporting
+cards). For these, the manifest declares `substance: "mixed"`. The
+loader allows this **only when `form === 'panel'`**: the panel form
+is what makes combining substances coherent (one prominent item
+beside supporting structure). `mixed` is not a fifth plugin contract;
+it's a declaration that the component composes two existing
+contracts. The four-substance plugin point is unchanged.
+
 ---
 
 ## 6. The component model
@@ -527,19 +538,27 @@ discovery story that markdown alone can't provide.
 - State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the CSS rules are landing alongside the folder migration.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`.
 
+**Ratified on this branch:**
+
+- **Variant proliferation guardrail — doc rule, not a field.**
+  When a variant changes the *shape* of the data (not just the
+  visual treatment), it's a separate component. Today
+  `inventory.ledger.bullets` has four sibling variants
+  (`def`, `metric`, `spec`, `register`) — all the same flat-list
+  shape, only the row layout differs, so they stay as variants.
+  Kept as a review rule, not encoded in the manifest, to avoid
+  inventing a `dataShape` field before we know we need one. Revisit
+  if review judgement starts drifting.
+- **Multi-substance components — `substance: "mixed"` on panel
+  forms.** The four-substance plugin contract stays at four. Panel-
+  form components that legitimately combine prose + structure
+  (`featured` today) declare `substance: "mixed"` in their manifest.
+  The loader allows this only when `form === 'panel'`. `mixed` is
+  not a fifth plugin; it's a declaration that the component composes
+  two existing contracts. See §5.
+
 **Deferred (open questions):**
 
-- Variant proliferation guardrail. Today `inventory.ledger.bullets`
-  has four sibling variants (`def`, `metric`, `spec`, `register`).
-  When does a variant graduate to its own component? Suggested rule:
-  when a variant changes the *shape* of the data (not just the visual
-  treatment), it's a separate component.
-- Multi-substance components. `featured` mixes prose + structure in
-  one panel. The four-substance model says each component has one
-  substance source. Either (a) `panel` components can mark their
-  substance as `mixed`, or (b) we name a fifth substance `composite`.
-  Recommend (a) for now; revisit if a second multi-substance form
-  emerges.
 - Third-party library boundary tightening. The four-substance
   contracts are abstract; the first real integration (D2? Vega-Lite?)
   should be code-reviewed for boundary shape and the contract

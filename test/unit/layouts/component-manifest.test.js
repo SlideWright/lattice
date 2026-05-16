@@ -23,6 +23,7 @@ const {
   FUNCTIONS,
   FORMS,
   SUBSTANCES,
+  MIXED_SUBSTANCE,
   UNIVERSAL_GROUPS,
   UNIVERSAL_VARIANTS,
   SEMI_UNIVERSAL_VARIANTS,
@@ -93,6 +94,16 @@ describe('component-manifest', () => {
     test('rejects unknown substance', () => {
       const errors = validate({ ...GOOD, substance: 'magic' });
       assert.match(errors[0], /substance must be one of/);
+    });
+
+    test('accepts substance "mixed" on panel-form components', () => {
+      const errors = validate({ ...GOOD, form: 'panel', substance: 'mixed' });
+      assert.deepEqual(errors, []);
+    });
+
+    test('rejects substance "mixed" on non-panel forms', () => {
+      const errors = validate({ ...GOOD, form: 'grid', substance: 'mixed' });
+      assert.match(errors[0], /substance "mixed" is only allowed when form is "panel"/);
     });
 
     test('rejects missing description and skeleton', () => {
@@ -348,6 +359,11 @@ describe('component-manifest', () => {
 
     test('SUBSTANCES has exactly the 4 plugin contracts documented in design-system.md §5', () => {
       assert.deepEqual([...SUBSTANCES].sort(), ['graph', 'prose', 'series', 'structure']);
+    });
+
+    test('MIXED_SUBSTANCE is "mixed" and is NOT a member of SUBSTANCES (it is a composition declaration, not a 5th plugin)', () => {
+      assert.equal(MIXED_SUBSTANCE, 'mixed');
+      assert.ok(!SUBSTANCES.includes(MIXED_SUBSTANCE));
     });
 
     test('UNIVERSAL_GROUPS has the six documented categories', () => {
