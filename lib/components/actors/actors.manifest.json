@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "actors",
   "function": "inventory",
   "form": "ledger",
@@ -19,5 +20,40 @@
   },
   "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- **First actor.** Owns the first part of the lifecycle.\n- **Second actor.** Owns the second part.\n- **Third actor.** Owns the third part.\n- **Fourth actor.** Owns the fourth part.\n",
   "anatomyBlock": "actors",
-  "docs": "docs/references/templates.md#actors-roster-of-responsibilities-owned-by-named-actors"
+  "docs": "docs/references/templates.md#actors-roster-of-responsibilities-owned-by-named-actors",
+  "sample": "<!-- _class: actors -->\n\n## Who owns each part of the lifecycle.\n\n- **Author.** Drafts the deck; owns content and framing.\n- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.\n- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.\n- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.\n- **Operator.** Schedules the briefing; controls the room and the projector.\n",
+  "whenToUse": [
+    {
+      "title": "Who owns what",
+      "body": "Each row pairs a named actor with the slice of work they own. Use when the audience needs to know accountability, not process flow."
+    },
+    {
+      "title": "Three to six actors",
+      "body": "The ledger reads cleanly up to about six rows. Past that, split the roster across two slides or roll up adjacent roles."
+    },
+    {
+      "title": "One-line responsibilities",
+      "body": "Each actor's body is a short responsibility summary, not a job description. Detail belongs on a follow-up slide or in an appendix."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Process sequence",
+      "body": "If the rows describe stages in order, use list-steps or process-flow. actors is for parallel ownership, not handoff sequence."
+    },
+    {
+      "title": "Long per-actor prose",
+      "body": "More than one sentence per row crowds the ledger. Move the detail to a dedicated slide and keep actors as the index."
+    },
+    {
+      "title": "Roles without names",
+      "body": "If the labels are job titles in the abstract (\"the engineer\"), reach for cards-stack or list. The actors layout earns its weight when the names are named."
+    }
+  ],
+  "related": [
+    { "name": "list-tabular", "when": "rows are reference entries, not owners" },
+    { "name": "cards-stack", "when": "each item needs two sentences of body text" },
+    { "name": "principles", "when": "stating shared rules rather than per-actor responsibilities" },
+    { "name": "glossary", "when": "the left column is a term, not an actor" }
+  ]
 }

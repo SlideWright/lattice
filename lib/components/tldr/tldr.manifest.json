@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "tldr",
   "function": "inventory",
   "form": "stack",
@@ -22,5 +23,47 @@
   },
   "skeleton": "<!-- _class: tldr -->\n\n## What this section showed.\n\n- The first takeaway as a complete one-line claim.\n- The second takeaway as a complete one-line claim.\n- The third takeaway as a complete one-line claim.\n- The fourth takeaway as a complete one-line claim.\n",
   "anatomyBlock": "tldr",
-  "docs": "docs/references/templates.md#tldr-single-line-takeaways-recap"
+  "docs": "docs/references/templates.md#tldr-single-line-takeaways-recap",
+  "sample": "<!-- _class: tldr -->\n\n## What this section will tell you, in five lines.\n\n- Components stay short — `cards-grid` not `inventory.grid.cards`.\n- The four layers organise the catalog; they do not name components.\n- Manifests are the single source of truth for every component.\n- Discovery happens via the scaffolder and IDE snippets, not the directive.\n- Forty-five components ship — one folder each.\n",
+  "whenToUse": [
+    {
+      "title": "Section or deck recap",
+      "body": "Use at the close of a section or the end of the deck to restate what the room should walk out remembering. The audience reads it as 'if you forget everything else, remember this.'"
+    },
+    {
+      "title": "Complete one-line claims",
+      "body": "Each line is a full claim the audience could quote back — not a category label or a bullet of jargon. If a line needs context, split it into two slides or pick a richer layout."
+    },
+    {
+      "title": "Four to six lines",
+      "body": "Sweet spot is five. Past six the recap stops feeling like a tldr and starts feeling like a list. Trim or split across two tldr slides."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Category labels, not claims",
+      "body": "\"Pricing\" or \"Architecture\" wastes the slot — the audience can't act on a label. Each line is the claim itself: \"Pricing simplifies to three tiers,\" not \"Pricing.\""
+    },
+    {
+      "title": "Wall of long lines",
+      "body": "Past about fifteen words the line stops scanning and the recap reads as paragraph soup. Trim ruthlessly or move the longer item to its own subtopic slide."
+    },
+    {
+      "title": "Mid-deck use",
+      "body": "tldr earns its weight at the end. In the middle of a deck it pre-empts the section it's recapping. Use subtopic to open a section and tldr to close it."
+    }
+  ],
+  "related": [
+    { "name": "list", "when": "lines are general bullets, not section takeaways" },
+    { "name": "principles", "when": "each line is a stated rule with a justification body" },
+    { "name": "closing", "when": "the slide is the deck's final word, not a section recap" },
+    { "name": "agenda", "when": "previewing what's coming at the top of the deck" }
+  ],
+  "variantDocs": {
+    "numbered": {
+      "label": "Numbered takeaways",
+      "caption": "Authored as `ol` (`1.` source). Adds a `01.`, `02.` counter prefix to each line — useful when the recap doubles as a numbered set the audience can reference back to.",
+      "sample": "<!-- _class: tldr numbered -->\n\n## Five takeaways from this section.\n\n1. Components stay short — `cards-grid` not `inventory.grid.cards`.\n2. The four layers organise the catalog; they do not name components.\n3. Manifests are the single source of truth for every component.\n4. Discovery happens via the scaffolder and IDE snippets, not the directive.\n5. Forty-five components ship — one folder each.\n"
+    }
+  }
 }

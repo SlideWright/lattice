@@ -1,4 +1,5 @@
 {
+  "$schema": "../manifest.schema.json",
   "name": "cards-stack",
   "function": "inventory",
   "form": "stack",
@@ -23,5 +24,52 @@
   },
   "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first stacked card, two short sentences max.\n- **Second card title.** Body text for the second stacked card.\n- **Third card title.** Body text for the third stacked card.\n",
   "anatomyBlock": "cards-stack",
-  "docs": "docs/references/templates.md#template-9-two-cards-stacked-vertical"
+  "docs": "docs/references/templates.md#template-9-two-cards-stacked-vertical",
+  "sample": "<!-- _class: cards-stack -->\n\n## When to reach for cards-stack.\n\n- **Vertical reading order matters.** The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.\n- **Each card has more body than a grid card.** Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.\n- **Two to three items, not four-plus.** Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.\n",
+  "whenToUse": [
+    {
+      "title": "Vertical reading order",
+      "body": "The audience scans top-to-bottom, not grid-style. Use when each card builds on the previous one as the eye moves down the slide."
+    },
+    {
+      "title": "Two sentences per card",
+      "body": "More body than cards-grid can hold without crowding. cards-stack lets each card carry one or two short sentences without losing the layout balance."
+    },
+    {
+      "title": "Two or three items",
+      "body": "Sweet spot is three. Past that the slide overflows — split across multiple slides or switch to cards-grid with shorter body text per card."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Four or more items",
+      "body": "The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows."
+    },
+    {
+      "title": "One-line cards",
+      "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space."
+    },
+    {
+      "title": "Forced sequence",
+      "body": "Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria."
+    }
+  ],
+  "related": [
+    { "name": "cards-grid", "when": "three or four parallel items in a scannable grid" },
+    { "name": "cards-wide", "when": "three or four rows with more substantial per-card body" },
+    { "name": "cards-side", "when": "exactly two items in left-right balance" },
+    { "name": "list-steps", "when": "items carry an explicit, ordered sequence" }
+  ],
+  "variantDocs": {
+    "horizontal": {
+      "label": "Horizontal cards",
+      "caption": "Stacked rows pivot to a left-aligned title column with the body to its right — useful when the card titles are short labels and the body carries the weight.",
+      "sample": "<!-- _class: cards-stack horizontal -->\n\n## Three patterns, each with its own pull.\n\n- **Inventory.** Equal-weight items the audience scans without ordering. The cards-grid family lives here — grid, stack, wide, side.\n- **Comparison.** Two or more items weighed against shared criteria. The verdict and compare families live here — they take sides.\n- **Progression.** Items that carry an explicit sequence. The list-steps and timeline families live here — order is load-bearing.\n"
+    },
+    "numbered": {
+      "label": "Numbered stack",
+      "caption": "Authored as `ol` (`1.` source). Each row carries a flush corner number — use when the stack carries an implicit count (\"three options\", \"four phases\") even if the order is interchangeable.",
+      "sample": "<!-- _class: cards-stack -->\n\n## Three reasons to keep cards-stack at three items.\n\n1. Cognitive load\n   - Three is the threshold the audience can hold without effort. Past three, the slide demands working memory the room shouldn't have to spend.\n2. Vertical real estate\n   - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.\n3. Build path symmetry\n   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.\n"
+    }
+  }
 }
