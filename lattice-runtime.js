@@ -1308,10 +1308,10 @@
   }
 
   /**
-   * Journey diagram — runtime mirror of lib/journey.js. Walks each
+   * Journey diagram — runtime mirror of lib/components/journey/transform.js. Walks each
    * `section.journey` and rewrites its innerHTML in place. The
    * implementation below is a near-verbatim copy of the pure-string
-   * parser + emitter in lib/journey.js — that file is canonical; this
+   * parser + emitter in lib/components/journey/transform.js — that file is canonical; this
    * mirror exists because the marp-vscode preview can't `require` Node
    * modules. Three-renderer parity rule applies: edit both or neither.
    */
@@ -1437,7 +1437,7 @@
     return map;
   }
   // Shortest uppercase prefix unique within the actor set. WCAG 1.4.1
-  // redundant encoding mirror of lib/journey.js (assignActorLabels).
+  // redundant encoding mirror of lib/components/journey/transform.js (assignActorLabels).
   function jAssignActorLabels(actorNames) {
     const labels = new Map();
     for (const name of actorNames) {

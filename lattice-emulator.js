@@ -942,7 +942,7 @@ const { liftSlotLabel }  = require('./lib/slot-label-lift');
 const { transformRoadmapSection } = require('./lib/components/roadmap/transform');
 // Journey transform — nested list → .journey-board DOM. Shared with
 // marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
-const { transformJourneySection } = require('./lib/journey');
+const { transformJourneySection } = require('./lib/components/journey/transform');
 // Word-cloud layout transform — list-to-canvas rewrite for the
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
