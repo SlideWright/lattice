@@ -148,6 +148,34 @@ def table_row(a: str, b: str, c: str) -> tuple:
     return ('raw', '│' + _cell(a) + '│' + _cell(b) + '│' + _cell(c) + '│')
 
 
+# ----- panel primitives (T17 split-panel etc.) ------------------------------
+
+PANEL_W = 14           # left accent panel width including walls
+PANEL_GAP = 2          # space between panel and right column
+RIGHT_W = CONTENT - PANEL_W - PANEL_GAP  # 37 - 14 - 2 = 21
+
+
+def panel_top() -> str:
+    return '┌' + '─' * (PANEL_W - 2) + '┐'
+
+
+def panel_bot() -> str:
+    return '└' + '─' * (PANEL_W - 2) + '┘'
+
+
+def panel_row(text: str) -> str:
+    body = PANEL_W - 2
+    return '│ ' + text + ' ' * (body - 1 - len(text)) + '│'
+
+
+def panel_right(panel_text: str, right_text: str) -> tuple:
+    """Combine a PANEL_W-wide panel string with right-column text (≤RIGHT_W)."""
+    if len(right_text) > RIGHT_W:
+        raise ValueError(f"right text exceeds {RIGHT_W} chars: {right_text!r}")
+    right = right_text + ' ' * (RIGHT_W - len(right_text))
+    return ('raw', panel_text + ' ' * PANEL_GAP + right)
+
+
 # ----- audit ----------------------------------------------------------------
 
 def audit(path: str) -> int:
@@ -205,6 +233,29 @@ def audit(path: str) -> int:
 def demo_blocks() -> dict[str, str]:
     """Return a dict of canonical templates.md ASCII blocks, keyed by id."""
     blocks: dict[str, str] = {}
+
+    blocks['T1-title-bookend'] = frame([
+        ('center', '[dark background]'),
+        ('blank',),
+        ('center', 'EYEBROW LABEL'),
+        ('blank',),
+        ('center', 'Display Title Here'),
+        ('center', '── accent ──'),
+        ('center', 'Subtitle or tagline'),
+        ('blank',),
+    ])
+
+    blocks['T17-split-panel'] = frame([
+        ('left', 'header'),
+        panel_right(panel_top(), ''),
+        panel_right(panel_row('EYEBROW'), 'Section heading'),
+        panel_right(panel_row(''), ''),
+        panel_right(panel_row('Panel'), '- Point one'),
+        panel_right(panel_row('title'), '- Point two'),
+        panel_right(panel_row(''), '- Point three'),
+        panel_right(panel_bot(), ''),
+        ('split', 'footer', '1/19'),
+    ])
 
     blocks['T7-card-grid-2x2'] = frame([
         ('left', 'header'),

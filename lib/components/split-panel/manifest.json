@@ -27,6 +27,7 @@
     }
   },
   "skeleton": "<!-- _class: split-panel -->\n\n## Panel headline that frames the side points.\n\n### Section rubric\n\n- **First point.** Supporting sentence explaining the first point.\n- **Second point.** Supporting sentence explaining the second point.\n- **Third point.** Supporting sentence explaining the third point.\n",
+  "anatomyBlock": "T17-split-panel",
   "sample": "<!-- _class: split-panel -->\n\n## A featured statement on the left lands the argument.\n\n### Use when\n\n- **One claim deserves emphasis.** The panel headline carries the weight; the right side substantiates.\n- **You need both a thesis and proof.** Statement on the left, evidence list on the right.\n- **The right side is short.** Three to four supporting points; longer lists belong in `cards-stack`.\n- **The mirror modifier flips it.** Image-style decks often want the panel on the right.\n",
   "whenToUse": [
     {

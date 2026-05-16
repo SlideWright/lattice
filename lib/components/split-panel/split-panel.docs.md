@@ -40,6 +40,22 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 | `panel-eyebrow` | `h3` | no | Optional rubric label below the panel heading. |
 | `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
 
+## Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  ┌────────────┐                         │
+│  │ EYEBROW    │  Section heading        │
+│  │            │                         │
+│  │ Panel      │  - Point one            │
+│  │ title      │  - Point two            │
+│  │            │  - Point three          │
+│  └────────────┘                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
 ## Variants (layout-specific)
 
 ### `mirror` — Mirror — panel on the right

@@ -41,6 +41,21 @@ One-line subtitle that frames the deck.
 | `eyebrow` | `p > code` | no | Optional category label below the h1 (inline-code paragraph). |
 | `subtitle` | `p` | no | Optional plain-paragraph subtitle below the eyebrow. |
 
+## Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│            [dark background]            │
+│                                         │
+│              EYEBROW LABEL              │
+│                                         │
+│           Display Title Here            │
+│              ── accent ──               │
+│           Subtitle or tagline           │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, decoration backgrounds). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.

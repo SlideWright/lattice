@@ -24,6 +24,7 @@
     }
   },
   "skeleton": "<!-- _class: title -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Deck title goes here\n\n`Category · Date or audience`\n\nOne-line subtitle that frames the deck.\n",
+  "anatomyBlock": "T1-title-bookend",
   "sample": "<!-- _class: title silent -->\n\n# From Signal to Strategy\n\n`Product Strategy · Q3 2025`\n\nA decision framework for product leaders navigating market uncertainty.\n",
   "whenToUse": [
     {
