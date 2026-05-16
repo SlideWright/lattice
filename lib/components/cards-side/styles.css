@@ -1,0 +1,11 @@
+/* cards-side — inventory.split.cards
+ *
+ * The CSS rules for section.cards-side currently live in
+ * lib/components/cards-grid/styles.css — cards-side and cards-grid
+ * share the .cards-grid-inner post-processed DOM, so their rules are
+ * authored together. Splitting the shared rules into a dedicated
+ * shared file is tracked as a follow-up.
+ *
+ * See lib/components/cards-side/manifest.json for the component contract
+ * and lib/components/cards-grid/styles.css for the actual rules.
+ */

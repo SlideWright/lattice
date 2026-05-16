@@ -1,0 +1,30 @@
+/* gantt — extracted from lib/_legacy.css (batch 7).
+ * See lib/components/gantt/manifest.json for the component contract.
+ */
+
+/* ── GANTT ──────────────────────────────────────────────────────────────────
+ * Categorical Gantt chart rendered from a two-level list.
+ * Swimlane = top-level bullet; bar = sub-bullet with a range pill and optional
+ * status pill. The axis tick labels (.gantt-ticks) and the bar container
+ * (.gantt-bars) are both flex:1 children inside their respective flex rows,
+ * so they resolve to the same width. Bars are absolutely positioned inside
+ * .gantt-bars using percentage math anchored on --gantt-cols, --gantt-col-start,
+ * and --gantt-col-span — no subgrid needed. */
+
+section.gantt.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-sm);
+  align-items: stretch;
+}
+
+.gantt-chart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── GANTT ──
+ * Mermaid bug: taskTextOutsideLeft/Right ignore taskTextOutsideColor for
+ * some bar widths. Force dark text in the outside-the-bar margin.
+ */
+section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
