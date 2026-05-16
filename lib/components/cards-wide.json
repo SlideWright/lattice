@@ -1,0 +1,15 @@
+{
+  "name": "cards-wide",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "structure",
+  "description": "Three or four wide rows, each a full-width card.",
+  "purpose": "Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.",
+  "variants": ["compact", "dark", "accent"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading." },
+    "cards": { "selector": "ul > li", "required": true, "description": "Three or four list items, each one wide row. Lead each with **Card Title.** then 1–2 sentences." }
+  },
+  "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- **First row title.** Body text for the first wide row, one or two sentences.\n- **Second row title.** Body text for the second wide row.\n- **Third row title.** Body text for the third wide row.\n",
+  "docs": "docs/references/templates.md#template-19-three-row-wide-cards"
+}

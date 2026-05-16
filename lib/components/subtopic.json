@@ -1,0 +1,15 @@
+{
+  "name": "subtopic",
+  "function": "anchor",
+  "form": "divider",
+  "substance": "prose",
+  "description": "Sub-section boundary — lighter than divider, no canvas reskin.",
+  "purpose": "Introduces a specific topic within a section. Use between divider and content slides for finer orientation.",
+  "variants": ["numbered"],
+  "slots": {
+    "heading": { "selector": "h2", "required": true, "description": "Sub-topic name." },
+    "eyebrow": { "selector": "p > code", "required": false, "description": "Optional eyebrow label above h2." }
+  },
+  "skeleton": "<!-- _class: subtopic -->\n\n`Topic family`\n\n## Sub-topic name.\n",
+  "docs": "docs/references/templates.md#template-3-sub-topic"
+}

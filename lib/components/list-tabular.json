@@ -1,0 +1,15 @@
+{
+  "name": "list-tabular",
+  "function": "inventory",
+  "form": "ledger",
+  "substance": "structure",
+  "description": "Hairline-ruled ledger of items — name on the left, body on the right.",
+  "purpose": "Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four variants tune the visual treatment (see variants).",
+  "variants": ["compact", "dark", "def", "metric", "spec", "register", "rule", "solid", "stacked", "outline"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading." },
+    "rows": { "selector": "ul > li", "required": true, "description": "Each list item is one row. Lead each with **Name.** then the description/value." }
+  },
+  "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
+  "docs": "docs/references/templates.md#variant-t14-tabular"
+}

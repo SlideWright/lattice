@@ -1,0 +1,15 @@
+{
+  "name": "list",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "prose",
+  "description": "Plain bullet list under a heading.",
+  "purpose": "Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.",
+  "variants": ["dark", "compact", "loose"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading." },
+    "items": { "selector": "ul > li, ol > li", "required": true, "description": "List items. Keep each under ~12 words." }
+  },
+  "skeleton": "<!-- _class: list -->\n\n## Slide heading.\n\n- First short bullet point.\n- Second short bullet point.\n- Third short bullet point.\n- Fourth short bullet point.\n- Fifth short bullet point.\n",
+  "docs": "docs/references/templates.md#template-14-list-bullet-points"
+}

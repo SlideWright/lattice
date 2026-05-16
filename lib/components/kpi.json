@@ -1,0 +1,16 @@
+{
+  "name": "kpi",
+  "function": "evidence",
+  "form": "ledger",
+  "substance": "structure",
+  "description": "Executive KPI system — one base, five layout modifiers.",
+  "purpose": "Use for KPI dashboards with status framing — current value, target, trend, attention-needed. The variants tune the visual emphasis.",
+  "variants": ["compact", "dark", "target", "attention", "ops", "compliance", "trajectory", "spotlight"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading naming the KPI group." },
+    "subtitle": { "selector": "h3", "required": false, "description": "Optional subtitle below the heading." },
+    "kpis": { "selector": "ul > li", "required": true, "description": "One li per KPI. Lead with **Metric name** then nested bullets for value, target, trend, status." }
+  },
+  "skeleton": "<!-- _class: kpi -->\n\n## Authentication · Q4 2026\n\n### Where we are against quarter targets.\n\n- **Sign-in success rate**\n  - 99.4%\n  - target: 99.7%\n- **MFA adoption**\n  - 68%\n  - target: 80%\n- **Account-takeover incidents**\n  - 3\n  - target: 0\n",
+  "docs": "docs/references/templates.md#kpi-executive-kpi-system-one-base-five-layout-modifiers"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "radar",
+  "function": "evidence",
+  "form": "scatter",
+  "substance": "series",
+  "description": "Native radar / spider chart — items rated across multiple axes.",
+  "purpose": "Use to compare 2–4 options across the same 4–8 criteria. Each option becomes a polygon; overlap shows where strengths align.",
+  "variants": ["dark"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the comparison." },
+    "axes": { "selector": "p > code", "required": false, "description": "Optional eyebrow listing the axes." },
+    "series": { "selector": "ul > li", "required": true, "description": "One li per series (option). Format: `Label — v1, v2, v3, v4, …` one number per axis." }
+  },
+  "skeleton": "<!-- _class: radar -->\n\n`Performance · Cost · UX · Security · Maturity`\n\n## How we stack up across the buying criteria.\n\n- Option A — 8, 6, 7, 9, 5\n- Option B — 6, 9, 8, 7, 8\n- Option C — 7, 7, 9, 6, 7\n",
+  "docs": "docs/references/templates.md#radar-native-radar-spider-chart-chart-family-member"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "piechart",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "series",
+  "description": "Pie or donut chart with legend — proportional wedges.",
+  "purpose": "Use for part-to-whole breakdowns with 3–6 slices. Add `donut` modifier for a hole in the middle (cleaner for executive decks).",
+  "variants": ["dark", "donut"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the breakdown." },
+    "slices": { "selector": "ul > li", "required": true, "description": "One li per slice. Format: `Label — value` (values are proportional)." }
+  },
+  "skeleton": "<!-- _class: piechart donut -->\n\n## Where the budget goes.\n\n- Engineering — 42\n- Design — 18\n- Product — 14\n- Operations — 12\n- Marketing — 14\n",
+  "docs": "docs/references/templates.md#chart-family"
+}

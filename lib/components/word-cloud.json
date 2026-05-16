@@ -1,0 +1,15 @@
+{
+  "name": "word-cloud",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "series",
+  "description": "Spiral-packed word cloud — items sized by weight.",
+  "purpose": "Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.",
+  "variants": ["dark"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the cloud." },
+    "words": { "selector": "ul > li", "required": true, "description": "One li per word. Format: `word — weight` (weight is a number)." }
+  },
+  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity — 12\n- ownership — 9\n- handoffs — 7\n- review — 6\n- testing — 5\n- onboarding — 4\n- spec — 3\n- triage — 3\n",
+  "docs": "docs/references/templates.md#word-cloud-spiral-packed-weighted-word-cloud"
+}

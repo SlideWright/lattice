@@ -1,0 +1,17 @@
+{
+  "name": "progress",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "series",
+  "description": "Horizontal progress bars — one row per item, percentage filled.",
+  "purpose": "Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.",
+  "variants": ["dark", "minimal"],
+  "slots": {
+    "title": { "selector": "h2", "required": true, "description": "Slide heading framing the progress view." },
+    "eyebrow": { "selector": "p > code", "required": false, "description": "Optional eyebrow caption above the heading." },
+    "subtitle": { "selector": "p", "required": false, "description": "Optional plain subtitle after the heading." },
+    "rows": { "selector": "ul > li", "required": true, "description": "One li per item. Format: `Label — N% — status` where status is on-track / at-risk / blocked / done." }
+  },
+  "skeleton": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## How each workstream is tracking.\n\n- Discovery — 92% — on-track\n- Design — 78% — on-track\n- Build — 54% — at-risk\n- Compliance — 30% — blocked\n- Launch — 12% — on-track\n",
+  "docs": "docs/references/templates.md#chart-family"
+}
