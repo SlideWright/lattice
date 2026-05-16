@@ -1,16 +1,14 @@
 <!-- _class: roadmap -->
 
-## What ships in each phase.
+`Layout · roadmap`
 
-- **First workstream.**
-  - [x] Q1 deliverable
-  - [-] Q2 deliverable
-  - [ ] Q3 deliverable
-- **Second workstream.**
-  - [x] Q1 deliverable
-  - [x] Q2 deliverable
-  - [-] Q3 deliverable
-- **Third workstream.**
-  - [ ] Q1 deliverable
-  - [-] Q2 deliverable
-  - [x] Q3 deliverable
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.

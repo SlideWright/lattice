@@ -1,12 +1,16 @@
 <!-- _class: timeline-list -->
 
-## Major milestones to date.
+`Codebook architecture`
 
-- 2024 Q3 — decision — Kicked off the program
-  - Approval secured, team assembled.
-- 2025 Q2 — live — Public beta launched
-  - 1,200 early users in the first month.
-- 2026 Q1 — live — V1 GA
-  - Full feature set shipped to all customers.
-- 2026 Q3 — decision — Roadmap re-set
-  - Next-phase priorities chosen.
+## How the codebook architecture arrived in production.
+
+Four stages over eighteen months. Date pill leads each item; status pill trails.
+
+1. `2024 Q3` Vault round-trip
+   - First production tokenization shipped on a centralised vault. p99 60 ms.
+2. `2025 Q1` Codebook proposal `decision`
+   - Architecture review accepts the in-process model. Build approved.
+3. `2025 Q3` Codebook GA `live`
+   - Phase 1 rollout complete; 12 production tenants on the new path.
+4. `2026 Q1` Multi-tenant DEKs `live`
+   - Hardening shipped; codebook caching cut p99 below 5 ms.

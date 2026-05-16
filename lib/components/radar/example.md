@@ -1,9 +1,24 @@
 <!-- _class: radar -->
 
-`Performance · Cost · UX · Security · Maturity`
+`Scale · 0–10`
 
 ## How we stack up across the buying criteria.
 
-- Option A — 8, 6, 7, 9, 5
-- Option B — 6, 9, 8, 7, 8
-- Option C — 7, 7, 9, 6, 7
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`

@@ -2,10 +2,12 @@
 
 `H1 2026 · Phase 1 readiness`
 
-## How each workstream is tracking.
+## Phase 1 readiness, by workstream.
 
-- Discovery — 92% — on-track
-- Design — 78% — on-track
-- Build — 54% — at-risk
-- Compliance — 30% — blocked
-- Launch — 12% — on-track
+Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`

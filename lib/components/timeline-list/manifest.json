@@ -17,6 +17,6 @@
       "description": "One li per event. Format: `Date — status — Title` then nested body bullets."
     }
   },
-  "skeleton": "<!-- _class: timeline-list -->\n\n## Major milestones to date.\n\n- 2024 Q3 — decision — Kicked off the program\n  - Approval secured, team assembled.\n- 2025 Q2 — live — Public beta launched\n  - 1,200 early users in the first month.\n- 2026 Q1 — live — V1 GA\n  - Full feature set shipped to all customers.\n- 2026 Q3 — decision — Roadmap re-set\n  - Next-phase priorities chosen.\n",
+  "skeleton": "<!-- _class: timeline-list -->\n\n`Codebook architecture`\n\n## How the codebook architecture arrived in production.\n\nFour stages over eighteen months. Date pill leads each item; status pill trails.\n\n1. `2024 Q3` Vault round-trip\n   - First production tokenization shipped on a centralised vault. p99 60 ms.\n2. `2025 Q1` Codebook proposal `decision`\n   - Architecture review accepts the in-process model. Build approved.\n3. `2025 Q3` Codebook GA `live`\n   - Phase 1 rollout complete; 12 production tenants on the new path.\n4. `2026 Q1` Multi-tenant DEKs `live`\n   - Hardening shipped; codebook caching cut p99 below 5 ms.\n",
   "docs": "docs/references/templates.md#chart-family"
 }

@@ -22,6 +22,6 @@
       "description": "One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption."
     }
   },
-  "skeleton": "<!-- _class: stats -->\n\n## Six months of results.\n\n- **92%**\n  - Caption for the first stat\n- **3.4×**\n  - Caption for the second stat\n- **$1.2M**\n  - Caption for the third stat\n- **−18d**\n  - Caption for the fourth stat\n",
+  "skeleton": "<!-- _class: stats -->\n\n`Impact · Pilot Results`\n\n## Six months of results across four product teams.\n\n`Measured against pre-framework baseline, same teams, same market conditions.`\n\n1. **73%** faster close\n2. **4.2×** signal recall\n3. **$1.2M** prevented losses\n4. **−18d** avg cycle time\n",
   "docs": "docs/references/templates.md#template-6-stats-kpi-row"
 }

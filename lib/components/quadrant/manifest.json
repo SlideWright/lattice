@@ -22,6 +22,6 @@
       "description": "One li per item. Format: `Label — x, y[, size]`."
     }
   },
-  "skeleton": "<!-- _class: quadrant -->\n\n`Cost vs. Value`\n\n## Where to put the next dollar.\n\n- Option A — 2, 8\n- Option B — 6, 7\n- Option C — 4, 3\n- Option D — 8, 2\n",
+  "skeleton": "<!-- _class: quadrant -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Where to put the next dollar.\n\nEffort estimated in story-points; reach as percent of addressable users.\n\n- Strategic Bets\n  - Codebook caching `3, 70`\n  - Multi-tenant DEKs `5, 85`\n- Quick Wins\n  - Per-purpose codebooks `8, 80`\n  - Snapshot exports `9, 55`\n- Defer\n  - Vendor scoping `2, 30`\n  - Manual rotation `1, 22`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n  - Bespoke SCIM `9, 28`\n",
   "docs": "docs/references/templates.md#quadrant-native-2x2-quadrant-chart-chart-family-member"
 }

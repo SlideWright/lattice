@@ -20,6 +20,6 @@
       "description": "Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable."
     }
   },
-  "skeleton": "<!-- _class: roadmap -->\n\n## What ships in each phase.\n\n- **First workstream.**\n  - [x] Q1 deliverable\n  - [-] Q2 deliverable\n  - [ ] Q3 deliverable\n- **Second workstream.**\n  - [x] Q1 deliverable\n  - [x] Q2 deliverable\n  - [-] Q3 deliverable\n- **Third workstream.**\n  - [ ] Q1 deliverable\n  - [-] Q2 deliverable\n  - [x] Q3 deliverable\n",
+  "skeleton": "<!-- _class: roadmap -->\n\n`Layout · roadmap`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | --------------------- | ---------------------- | ------------------------- |\n| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |\n| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
   "docs": "docs/references/templates.md#roadmap-phased-multi-workstream-grid"
 }

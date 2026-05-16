@@ -1,15 +1,14 @@
 <!-- _class: kpi -->
 
-## Authentication · Q4 2026
+### Financial · Q4 2026
+## Revenue ahead of plan; margin and cash both expanded.
 
-### Where we are against quarter targets.
-
-- **Sign-in success rate**
-  - 99.4%
-  - target: 99.7%
-- **MFA adoption**
-  - 68%
-  - target: 80%
-- **Account-takeover incidents**
-  - 3
-  - target: 0
+1. **$2.4B**
+   - Total revenue
+   - target $2.2B · +9% `On plan` `Board`
+2. **42%**
+   - Gross margin
+   - +2pp QoQ `On plan` `Audit`
+3. **$1.1B**
+   - Cash & equivalents
+   - +$180M QoQ `On plan` `Investor`
