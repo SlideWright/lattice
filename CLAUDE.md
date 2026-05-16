@@ -10,6 +10,12 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 
 ## Read these before non-trivial work
 
+- **`docs/design-system.md`** — Function · Form · Substance · Finish.
+  The canonical four-layer model. Tells you what kind of thing each
+  layout, modifier, chart engine, or palette token *is*, and how they
+  compose. Authors keep using short names like `cards-grid`; the model
+  organizes the catalog, docs, and engine. If you read exactly one
+  Lattice document, read this one.
 - **`docs/references/workflow.md`** — branching, feature decks, commit
   discipline, the share-the-PDF rule, three-renderer gate. Canonical
   for all workflow conventions; this file is a thin pointer.
