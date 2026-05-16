@@ -2070,6 +2070,160 @@ section.gantt.chart-frame .chart-body {
  */
 section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-heading) !important; }
 
+/* ── Axis row, lane rows, and bar chrome — appended Phase 4 ──
+ * Originally lived in lib/_legacy.css under the CHART FAMILY section.
+ * The CHART FAMILY shared infrastructure (.chart-frame, .chart-header,
+ * .chart-status etc.) stays in _legacy.css until a shared file
+ * (lib/_chart-family.css or chart-family.js's emitted styles) is established.
+ */
+
+/* ── Axis row: spacer + tick labels ── */
+.gantt-axis-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: var(--sp-xs);
+  margin-bottom: 0.3125cqi;
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.gantt-axis-spacer {
+  flex: 0 0 14.0625cqi;
+  width: 14.0625cqi;
+}
+
+.gantt-ticks {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--gantt-cols), 1fr);
+}
+
+.gantt-tick {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-label);
+}
+
+/* ── Lane rows: label + bar container ── */
+.gantt-lane {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 3.90625cqi;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+}
+.gantt-lane:last-child { border-bottom: none; }
+
+.gantt-lane-label {
+  flex: 0 0 14.0625cqi;
+  width: 14.0625cqi;
+  padding-right: var(--sp-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-heading);
+  text-align: right;
+  line-height: var(--lh-tight);
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gantt-bars {
+  flex: 1;
+  position: relative;
+  height: 3.4375cqi;
+}
+
+/* Bar — absolutely positioned within its lane's bars container.
+ * left  = (col−1) / N × 100% + inset
+ * width =  span   / N × 100% − inset×2
+ * A 3px inset gives visible air between adjacent bars that share a column
+ * boundary (e.g. "Q1→Q2" and "Q2→Q3").
+ *
+ * Fill approach mirrors the progress chart default:
+ *   color-mix(in oklab, var(--semantic) 70%, var(--bg-alt))
+ * — a tinted fill, not the raw semantic colour. This keeps bars visually
+ * proportional to the progress fill (which is 14px, no text) even though
+ * gantt bars are 34px tall and carry a label. Dark ink (--text-heading)
+ * sits on every tinted fill at ≥ 5.3:1. */
+.gantt-bar {
+  position: absolute;
+  top: 5px; bottom: 5px;
+  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
+  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
+  border-radius: 0.46875cqi;
+  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  padding: 0 0.78125cqi;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Status fills — tinted with the same formula as the default bar.
+ * All use --text-heading (dark ink) inherited from .gantt-bar. */
+.gantt-bar[data-s="on-track"],
+.gantt-bar[data-s="done"],
+.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="at-risk"],
+.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="blocked"],
+.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
+/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
+ * on this surface while still conveying the "inactive" register). */
+.gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
+  color: var(--text-body);
+}
+/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
+ * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
+.gantt-bar[data-s="pilot"],
+.gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
+
+/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
+ * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
+ * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
+section.gantt.dark .gantt-bar {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="on-track"],
+section.gantt.dark .gantt-bar[data-s="done"],
+section.gantt.dark .gantt-bar[data-s="live"]     {
+  background: color-mix(in oklab, var(--pass) 40%, white);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="at-risk"],
+section.gantt.dark .gantt-bar[data-s="warn"]     {
+  background: color-mix(in oklab, var(--warn) 45%, white);
+  color: var(--bg-dark);
+}
+section.gantt.dark .gantt-bar[data-s="blocked"],
+section.gantt.dark .gantt-bar[data-s="fail"]     {
+  background: color-mix(in oklab, var(--fail) 45%, white);
+  color: var(--bg-dark);
+}
+/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
+section.gantt.dark .gantt-bar[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
+  color: var(--on-dark-secondary);
+}
+/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
+ * by light-dark() on those tokens; no explicit override needed. */
+
+/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
+section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
+
 /* === lib/components/glossary/styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
  * See lib/components/glossary/manifest.json for the component contract.
@@ -9046,156 +9200,6 @@ section.progress.dark .progress-fill[data-s="fail"] {
 section.progress.dark .progress-fill[data-s="deferred"] {
   background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
 }
-
-
-
-
-/* ── Axis row: spacer + tick labels ── */
-.gantt-axis-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-bottom: var(--sp-xs);
-  margin-bottom: 0.3125cqi;
-  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
-}
-
-.gantt-axis-spacer {
-  flex: 0 0 14.0625cqi;
-  width: 14.0625cqi;
-}
-
-.gantt-ticks {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(var(--gantt-cols), 1fr);
-}
-
-.gantt-tick {
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--text-label);
-}
-
-/* ── Lane rows: label + bar container ── */
-.gantt-lane {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  min-height: 3.90625cqi;
-  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
-}
-.gantt-lane:last-child { border-bottom: none; }
-
-.gantt-lane-label {
-  flex: 0 0 14.0625cqi;
-  width: 14.0625cqi;
-  padding-right: var(--sp-sm);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-heading);
-  text-align: right;
-  line-height: var(--lh-tight);
-  box-sizing: border-box;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.gantt-bars {
-  flex: 1;
-  position: relative;
-  height: 3.4375cqi;
-}
-
-/* Bar — absolutely positioned within its lane's bars container.
- * left  = (col−1) / N × 100% + inset
- * width =  span   / N × 100% − inset×2
- * A 3px inset gives visible air between adjacent bars that share a column
- * boundary (e.g. "Q1→Q2" and "Q2→Q3").
- *
- * Fill approach mirrors the progress chart default:
- *   color-mix(in oklab, var(--semantic) 70%, var(--bg-alt))
- * — a tinted fill, not the raw semantic colour. This keeps bars visually
- * proportional to the progress fill (which is 14px, no text) even though
- * gantt bars are 34px tall and carry a label. Dark ink (--text-heading)
- * sits on every tinted fill at ≥ 5.3:1. */
-.gantt-bar {
-  position: absolute;
-  top: 5px; bottom: 5px;
-  left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
-  width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
-  border-radius: 0.46875cqi;
-  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
-  color: var(--text-heading);
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  padding: 0 0.78125cqi;
-  overflow: hidden;
-  white-space: nowrap;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-/* Status fills — tinted with the same formula as the default bar.
- * All use --text-heading (dark ink) inherited from .gantt-bar. */
-.gantt-bar[data-s="on-track"],
-.gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
-.gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
-.gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
-/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
- * on this surface while still conveying the "inactive" register). */
-.gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
-  color: var(--text-body);
-}
-/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
- * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
-.gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
-
-/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
- * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
- * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
-section.gantt.dark .gantt-bar {
-  background: var(--accent);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="on-track"],
-section.gantt.dark .gantt-bar[data-s="done"],
-section.gantt.dark .gantt-bar[data-s="live"]     {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="at-risk"],
-section.gantt.dark .gantt-bar[data-s="warn"]     {
-  background: color-mix(in oklab, var(--warn) 45%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="blocked"],
-section.gantt.dark .gantt-bar[data-s="fail"]     {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-  color: var(--bg-dark);
-}
-/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
-section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
-  color: var(--on-dark-secondary);
-}
-/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
- * by light-dark() on those tokens; no explicit override needed. */
-
-/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
-section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
 
 
 
