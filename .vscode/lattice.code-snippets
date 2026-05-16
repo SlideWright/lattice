@@ -492,6 +492,23 @@
     ],
     "description": "Hairline-ruled ledger of items — name on the left, body on the right."
   },
+  "lattice: math": {
+    "prefix": "lattice-math",
+    "body": [
+      "<!-- _class: math -->",
+      "",
+      "### Eyebrow · context",
+      "",
+      "## One-sentence framing of what the equation establishes.",
+      "",
+      "$$ y = f(x) $$",
+      "",
+      "- $y$ — what we predict",
+      "- $x$ — input variable",
+      "- $f$ — the relation under study"
+    ],
+    "description": "Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround."
+  },
   "lattice: matrix-2x2": {
     "prefix": "lattice-matrix-2x2",
     "body": [

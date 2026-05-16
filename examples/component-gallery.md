@@ -14,7 +14,7 @@ header: "Lattice · Component Gallery"
 
 # Lattice Component Gallery
 
-`57 components · 7 function families`
+`58 components · 7 function families`
 
 Every `example.md` in lib/components/, rendered.
 
@@ -785,7 +785,7 @@ Four weeks. Shared definition of the problem before any solution work begins.
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 06 · 12 components`
+`Section 06 · 13 components`
 
 # Evidence
 
@@ -857,6 +857,22 @@ flowchart LR
 3. **$1.1B**
    - Cash & equivalents
    - +$180M QoQ `On plan` `Investor`
+
+---
+
+<!-- _class: math -->
+<!-- _footer: "Math equation + legend · math" -->
+
+### Linear regression · OLS
+
+## The closed-form estimator.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — OLS coefficient vector
+- $X$ — design matrix, $n \times p$
+- $y$ — response vector, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
 
 ---
 

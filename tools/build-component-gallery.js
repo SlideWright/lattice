@@ -87,6 +87,7 @@ const SHORT = Object.freeze({
   redline: 'Clause diff',
   'authority-chain': 'Statute → case',
   journey: 'User-journey chart',
+  math: 'Math equation + legend',
 });
 
 function buildDeck() {
