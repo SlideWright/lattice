@@ -52,6 +52,8 @@
     "css:check": "node tools/build-css.js --check",
     "gallery:components": "node tools/build-component-gallery.js",
     "gallery:check": "node tools/build-component-gallery.js --check",
+    "docs:components": "node tools/build-component-docs.js",
+    "docs:components:check": "node tools/build-component-docs.js --check",
     "preview": "node tools/preview.js",
     "preview:watch": "node tools/preview.js --watch",
     "test": "node --test 'test/unit/**/*.test.js'",

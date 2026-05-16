@@ -132,9 +132,10 @@
         }
       }
     },
-    "anatomy": {
+    "anatomyBlock": {
       "type": "string",
-      "description": "Optional fenced ASCII diagram of the slide layout. Renders as a fenced code block in <name>.docs.md."
+      "pattern": "^T[0-9]+-[a-z][a-z0-9-]*$",
+      "description": "ID into the canonical ASCII catalog at tools/ascii-preview.py (e.g. \"T7-card-grid-2x2\"). The generator resolves this against `python3 tools/ascii-preview.py build` so geometry stays uniform across all components and the canonical block can never drift."
     }
   }
 }

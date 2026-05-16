@@ -46,6 +46,7 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
+│                  LABEL                  │
 │               Grid Title                │
 │                                         │
 │  ┌──────────────┐     ┌──────────────┐  │
@@ -56,7 +57,7 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 │  │ Card Title 3 │     │ Card Title 4 │  │
 │  │ content      │     │ content      │  │
 │  └──────────────┘     └──────────────┘  │
-│  footer                           1/N   │
+│  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
