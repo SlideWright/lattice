@@ -1,8 +1,32 @@
 /* split-compare — comparison.split.structure
  *
- * The CSS rules for section.split-compare currently live in
- * lib/_legacy.css under the SPLIT-COMPARE banner. Extraction into this
- * file is tracked as Phase 4 of the _legacy.css elimination work.
+ * Two options, one verdict. 2-column grid + spanning accent verdict row.
+ * Author: `frame label` · ## h2 · p · ul/ol (- opt1 / -- items · - opt2
+ * / -- items) · > verdict. Second top-level list item is always the
+ * preferred option. SlotLabelLift bolts the option label.
  *
  * See lib/components/split-compare/manifest.json for the component contract.
  */
+
+section.split-compare { padding:0; flex-direction:row; }
+section.split-compare .compare-left { width:30%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; }
+section.split-compare .compare-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.split-compare .compare-left h2 { font-size:var(--fs-xl); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
+section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
+section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
+section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
+section.split-compare .option > strong { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
+section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
+section.split-compare .option.preferred::after { content:'✦'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-label); color:var(--accent); line-height:1; pointer-events:none; }
+section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
+section.split-compare .option ul > li,
+section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
+section.split-compare .option ul > li:last-child,
+section.split-compare .option ol > li:last-child { margin-bottom:0; }
+section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
+section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
+section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
+section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
