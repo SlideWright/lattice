@@ -12,14 +12,25 @@
  *   4. lib/_scaffold.css         section, header, footer, pagination
  *   5. (@layer declaration emitted here)
  *   6. lib/components/<a..z>/styles.css   per-component, alphabetical
- *   7. lib/_legacy.css           residual non-extracted rules from old lattice.css
- *   8. lib/_semi-universal.css   compact, loose, accent
- *   9. lib/_universal.css        dark, with-period, bg-*, state, tone, chrome
- *  10. lib/_diagram-overrides.css  Mermaid theme overrides
+ *   7. lib/_modifiers.css        cross-cutting modifiers (subtitle,
+ *                                eyebrow, key insight, pill, dark variant,
+ *                                annotation, below-note, mirror, numbered,
+ *                                .overflow, .heat, KaTeX-in-non-math)
+ *   8. lib/_syntax-highlight.css highlight.js token theme
+ *   9. lib/_chart-family.css     shared chart-frame chrome + .chart-status
+ *                                vocabulary (progress / kanban / timeline-list)
+ *  10. lib/_backgrounds.css      27 utility classes (16 gradients + 11 marks)
+ *  11. lib/_semi-universal.css   compact, loose, accent
+ *  12. lib/_universal.css        dark, with-period, bg-*, state, tone, chrome
+ *  13. lib/_diagram-overrides.css  Mermaid SVG theme overrides
+ *
+ * lib/_legacy.css was retired on this branch — every block was either
+ * moved to its proper destination above or deleted as dead documentation
+ * comment. The file no longer exists.
  *
  * Missing source files are silently skipped — this lets the bundler
- * ramp up during the per-component migration (lib/components per-folder
- * styles.css files start empty; lib/_universal.css etc. land one at a time).
+ * ramp up during per-component migration and allows downstream forks
+ * to omit files they don't use.
  *
  * Usage:
  *   node tools/build-css.js          # write lattice.css
@@ -36,45 +47,31 @@ const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'lattice.css');
 
 const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_scaffold.css'];
-// Bundle order. Source order = cascade order — later sources beat
-// earlier ones at equal specificity. Per-component styles come AFTER
-// _legacy.css so component overrides win; _universal.css comes after
-// the components so universal variants beat component base rules.
+
+// Bundle order = cascade order — later sources beat earlier ones at
+// equal specificity. The middle tier (components, modifiers, shared
+// frames, backgrounds) was carved out of the retired lib/_legacy.css
+// across Phases 2-7; each source's bundle position preserves the
+// cascade outcome those rules had when they lived in _legacy.css.
 //
-// _legacy.css contains hundreds of !important rules that historically
-// beat both Marp's runtime scaffold AND each other via source-order
-// cascade. Wrapping _legacy.css in @layer would demote those !important
-// rules (the CSS @layer cascade REVERSES for !important), causing
-// silent regressions. So @layer is NOT active here — the @layer
-// declaration is reserved for future use once _legacy.css is fully
-// extracted into proper layered files (then per-component and shared
-// CSS can opt into @layer cleanly).
-// Cross-cutting modifier rules (SUBTITLE / EYEBROW / KEY INSIGHT /
-// UNIVERSAL PILL / DARK VARIANT / BELOW-NOTE / ANNOTATION). Bundled
-// AFTER per-component styles so modifier defaults compose on top of
-// components, BEFORE _legacy.css so the cascade outcome matches the
-// pre-extraction state (modifiers used to live at the top of
-// _legacy.css; same position in the bundle now). KEY INSIGHT's
-// selector is wrapped in :where() inside the file so component-specific
-// blockquote::before rules can override it on specificity, not source
-// order — see the cards-side / citation-card / redline extraction
-// notes for the cascade-collision history.
+// @layer is declared below but inactive (kept for future use). Wrapping
+// the current sources in @layer would reverse the cascade for any
+// !important declarations, causing silent regressions; the historical
+// _legacy.css had hundreds of such rules. Once the surviving
+// !important declarations are audited and removed, @layer can activate.
+
+// Cross-cutting modifiers (subtitle, eyebrow, key insight, universal
+// pill, dark variant, below-note, annotation, mirror, numbered,
+// .overflow, .heat, KaTeX-in-non-math). Bundled AFTER per-component
+// styles so modifier defaults compose on top of components.
 const MODIFIERS_SOURCE = 'lib/_modifiers.css';
-// highlight.js token theme (Phase 7 extraction). Bundled BEFORE
-// _legacy.css so the cascade matches where these rules sat at line 204
-// of the original _legacy.css.
+// highlight.js token theme — wires .hljs-* to the --hljs-* tokens.
 const SYNTAX_HIGHLIGHT_SOURCE = 'lib/_syntax-highlight.css';
-// Shared chart frame for list-and-pill chart layouts (Phase 7
-// cleanup). Bundled with the modifiers because .chart-frame chrome
-// composes on top of component base rules and the .chart-status
-// vocabulary is cross-component (progress / kanban / timeline-list).
+// Shared chart-frame chrome + .chart-status pill vocabulary, shared
+// by gantt, radar, quadrant, progress, piechart, kanban, timeline-list.
 const CHART_FAMILY_SOURCE = 'lib/_chart-family.css';
-const LEGACY_SOURCE = 'lib/_legacy.css';
-// Peripheral atmospheric accents (Phase 6 extraction). Bundled AFTER
-// _legacy.css so the cascade matches where these rules sat at line ~1500
-// of the original _legacy.css — anything in _legacy.css that came after
-// the BACKGROUND LIBRARY banner stays in _legacy.css and continues to
-// come AFTER backgrounds in the bundle.
+// 27 utility classes (16 gradient accents + 11 SVG accent marks) for
+// peripheral atmospheric accents. All palette-blind via var(--accent).
 const BACKGROUNDS_SOURCE = 'lib/_backgrounds.css';
 const TAIL_SOURCES = [
   'lib/_semi-universal.css',
@@ -129,60 +126,36 @@ function bundle() {
     }
   }
   // Declare the cascade once for the whole bundle (reserved for future
-  // use; see comment on LEGACY_SOURCE about why @layer is inactive).
+  // use — see file header for why @layer is inactive today).
   parts.push(LAYER_DECLARATION);
   parts.push('');
-  // Per-component CSS, alphabetical. Comes BEFORE _legacy so cross-
-  // cutting modifier rules in _legacy (accent, compact, mirror, etc.)
-  // continue to override component base rules via source order — the
-  // historical cascade pattern of "layouts first, modifiers last."
-  // Per-component selectors win their own base properties via
-  // specificity (section.foo > section).
+  // Per-component CSS, alphabetical. Component selectors are typically
+  // section.X > … (0,1,N+) which beats the modifier defaults below at
+  // higher specificity. At equal specificity, modifiers win source-
+  // order — that's why modifiers come after.
   for (const { rel, text } of componentStyles()) {
     parts.push(`/* === ${rel} === */`);
     parts.push(text);
   }
-  // Cross-cutting modifiers (post-Phase-5a). Bundled here so they sit
-  // in the SAME bundle position the modifier blocks occupied when they
-  // were at the top of _legacy.css — preserves the existing cascade
-  // for every still-in-_legacy component rule. Component-extracted
-  // rules can still override KEY INSIGHT chrome via specificity (the
-  // KEY INSIGHT selector is :where()-wrapped in this file).
+  // Cross-cutting modifiers. AFTER components so equal-specificity
+  // collisions resolve to modifier defaults. Component variants that
+  // want to override (e.g. citation-card.pull-quote.pull-quote > blockquote
+  // ::before) bump specificity in their own component file.
   const modifiers = readIfExists(MODIFIERS_SOURCE);
   if (modifiers) {
     parts.push(`/* === ${MODIFIERS_SOURCE} === */`);
     parts.push(modifiers);
   }
-  // Syntax highlighting (Phase 7). Bundled here so the cascade matches
-  // where these rules sat at line 204 of the original _legacy.css —
-  // right after the modifier blocks, before everything else.
   const syntax = readIfExists(SYNTAX_HIGHLIGHT_SOURCE);
   if (syntax) {
     parts.push(`/* === ${SYNTAX_HIGHLIGHT_SOURCE} === */`);
     parts.push(syntax);
   }
-  // Shared chart frame (Phase 7 cleanup). Bundled here because chart-
-  // frame chrome composes on top of component base rules and the
-  // .chart-status vocabulary is cross-component.
   const chartFamily = readIfExists(CHART_FAMILY_SOURCE);
   if (chartFamily) {
     parts.push(`/* === ${CHART_FAMILY_SOURCE} === */`);
     parts.push(chartFamily);
   }
-  // Legacy monolith — residual scaffold + un-extracted component CSS.
-  // Source order is the cascade order. After Phase 5a, this file no
-  // longer contains the modifier blocks (those moved to _modifiers.css
-  // above).
-  const legacy = readIfExists(LEGACY_SOURCE);
-  if (legacy) {
-    parts.push(`/* === ${LEGACY_SOURCE} === */`);
-    parts.push(legacy);
-  }
-  // Backgrounds (post-Phase-6). Bundled here so the cascade matches
-  // where the BACKGROUND LIBRARY block sat in _legacy.css before
-  // extraction (mid-file in _legacy; anything after that block stays
-  // in _legacy and continues to override backgrounds, anything before
-  // stays earlier and continues to lose).
   const backgrounds = readIfExists(BACKGROUNDS_SOURCE);
   if (backgrounds) {
     parts.push(`/* === ${BACKGROUNDS_SOURCE} === */`);
