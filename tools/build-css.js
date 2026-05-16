@@ -49,6 +49,17 @@ const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_
 // declaration is reserved for future use once _legacy.css is fully
 // extracted into proper layered files (then per-component and shared
 // CSS can opt into @layer cleanly).
+// Cross-cutting modifier rules (SUBTITLE / EYEBROW / KEY INSIGHT /
+// UNIVERSAL PILL / DARK VARIANT / BELOW-NOTE / ANNOTATION). Bundled
+// AFTER per-component styles so modifier defaults compose on top of
+// components, BEFORE _legacy.css so the cascade outcome matches the
+// pre-extraction state (modifiers used to live at the top of
+// _legacy.css; same position in the bundle now). KEY INSIGHT's
+// selector is wrapped in :where() inside the file so component-specific
+// blockquote::before rules can override it on specificity, not source
+// order — see the cards-side / citation-card / redline extraction
+// notes for the cascade-collision history.
+const MODIFIERS_SOURCE = 'lib/_modifiers.css';
 const LEGACY_SOURCE = 'lib/_legacy.css';
 const TAIL_SOURCES = [
   'lib/_semi-universal.css',
@@ -116,8 +127,21 @@ function bundle() {
     parts.push(`/* === ${rel} === */`);
     parts.push(text);
   }
-  // Legacy monolith — base rules, scaffold residual, modifiers,
-  // un-extracted component CSS. Source order is the cascade order.
+  // Cross-cutting modifiers (post-Phase-5a). Bundled here so they sit
+  // in the SAME bundle position the modifier blocks occupied when they
+  // were at the top of _legacy.css — preserves the existing cascade
+  // for every still-in-_legacy component rule. Component-extracted
+  // rules can still override KEY INSIGHT chrome via specificity (the
+  // KEY INSIGHT selector is :where()-wrapped in this file).
+  const modifiers = readIfExists(MODIFIERS_SOURCE);
+  if (modifiers) {
+    parts.push(`/* === ${MODIFIERS_SOURCE} === */`);
+    parts.push(modifiers);
+  }
+  // Legacy monolith — residual scaffold + un-extracted component CSS.
+  // Source order is the cascade order. After Phase 5a, this file no
+  // longer contains the modifier blocks (those moved to _modifiers.css
+  // above).
   const legacy = readIfExists(LEGACY_SOURCE);
   if (legacy) {
     parts.push(`/* === ${LEGACY_SOURCE} === */`);

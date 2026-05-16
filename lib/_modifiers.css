@@ -1,0 +1,556 @@
+/* _modifiers.css — cross-cutting authorial chrome.
+ *
+ * Extracted from lib/_legacy.css in Phase 5a of the destination map.
+ * These rules compose with every layout: SUBTITLE / EYEBROW
+ * (post/pre-heading inline-code paragraphs), KEY INSIGHT (default
+ * blockquote chrome), UNIVERSAL PILL (trailing inline-code badges),
+ * DARK VARIANT (per-slide dark canvas), BELOW-NOTE (hairline-rule
+ * paragraph after a list/table/blockquote), ANNOTATION (trailing
+ * italic footnote paragraph).
+ *
+ * Bundle position: AFTER components, BEFORE the residual _legacy.css.
+ * Modifiers occupy the SAME bundle position they had when these blocks
+ * lived at the top of _legacy.css — cascade outcomes are preserved
+ * bit-for-bit. Pixel-check: 23/23 decks byte/pixel-identical against
+ * pre-phase-5a baseline.
+ *
+ * Known cascade tension to resolve in Phase 5b: KEY INSIGHT collides
+ * at equal specificity (0,3,3) with component rules that want their
+ * own blockquote::before chrome (citation-card.pull-quote, redline
+ * .split / .stacked / .three-col). Today those components keep
+ * winning because their CSS lives in _legacy.css AFTER this block.
+ * Once they extract to component folders (Phase 4), they move EARLIER
+ * in the bundle and KEY INSIGHT wins by source order, breaking them.
+ * A blanket `:where()` wrap was tried and reverted (too aggressive —
+ * lets every component's > blockquote rule win regardless of intent).
+ * The right fix is surgical: per-component specificity bumps or a
+ * custom-property gate on KEY INSIGHT content. Tracked as Phase 5b.
+ *
+ * See docs/design-system.md §10 for the bundle order, §6.5 for the
+ * three-tier modifier model (universal / semi-universal / layout).
+ */
+
+/* ── SUBTITLE (inline-code paragraph after heading) ──────────────────────────
+ * A paragraph whose only child is an inline code span, placed immediately
+ * after any heading, is promoted to an italic subtitle — body font, muted
+ * color, no code pill.
+ *
+ * Cascade order note: the EYEBROW block below has identical specificity (0,1,4).
+ * When a code paragraph is sandwiched between two headings (hN → p → hN), both
+ * rules match. Because EYEBROW is declared AFTER SUBTITLE, it wins by source
+ * order — no :not() guard required (and :not(:has()) is unreliable in Marp's
+ * Chromium version anyway).
+ *
+ * Usage:
+ *   ## Slide Heading
+ *
+ *   `Four-stage processing pipeline — weekly cadence`
+ */
+section h1 + p:has(> code:only-child),
+section h2 + p:has(> code:only-child),
+section h3 + p:has(> code:only-child),
+section h4 + p:has(> code:only-child),
+section h5 + p:has(> code:only-child) {
+  color: var(--text-muted);
+  font-size: var(--fs-md);
+}
+section h1 + p:has(> code:only-child) > code,
+section h2 + p:has(> code:only-child) > code,
+section h3 + p:has(> code:only-child) > code,
+section h4 + p:has(> code:only-child) > code,
+section h5 + p:has(> code:only-child) > code {
+  font-family: var(--font-body);
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+/* Dark bookend slides are always dark but don't carry .dark — set explicitly */
+section.title   h1 + p:has(> code:only-child),
+section.title   h2 + p:has(> code:only-child),
+section.divider h1 + p:has(> code:only-child),
+section.divider h2 + p:has(> code:only-child),
+section.closing h1 + p:has(> code:only-child),
+section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
+/* .dark modifier: --text-muted is already remapped by section.dark, no extra rule needed */
+/* Centered subtitle for subtopic */
+section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
+
+
+/* ── EYEBROW (inline-code paragraph) ─────────────────────────────────────────
+ * A paragraph whose only child is an inline code span, placed immediately
+ * before any heading, is promoted to an eyebrow label — same visual style as
+ * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
+ * rules). h5 remains available for structural use (e.g. split-panel).
+ *
+ * Declared AFTER the subtitle block — same specificity (0,1,4), so source
+ * order ensures eyebrow wins when a code paragraph is sandwiched between two
+ * headings (hN → p → hN). The subtitle block handles pure post-heading labels.
+ *
+ * Selector uses an explicit comma list (not :has() inside :is()) for broadest
+ * Chromium compatibility — :has() nested in :is() is unreliable in VS Code's
+ * Marp preview engine.
+ *
+ * Usage:
+ *   `Section 01 · Foundations`
+ *
+ *   # Section Title
+ *
+ *   `Eyebrow Label`        ← also valid before a list (e.g. big-number)
+ *
+ *   - 14×
+ */
+section p:has(> code:only-child):has(+ h1),
+section p:has(> code:only-child):has(+ h2),
+section p:has(> code:only-child):has(+ h3),
+section p:has(> code:only-child):has(+ h4),
+section p:has(> code:only-child):has(+ h5),
+section p:has(> code:only-child):has(+ ul),
+section p:has(> code:only-child):has(+ ol),
+section p:has(> code:only-child):has(+ pre) {
+  margin: 0 0 0.3125cqi 0;
+}
+section p:has(> code:only-child):has(+ h1) > code,
+section p:has(> code:only-child):has(+ h2) > code,
+section p:has(> code:only-child):has(+ h3) > code,
+section p:has(> code:only-child):has(+ h4) > code,
+section p:has(> code:only-child):has(+ h5) > code,
+section p:has(> code:only-child):has(+ ul) > code,
+section p:has(> code:only-child):has(+ ol) > code,
+section p:has(> code:only-child):has(+ pre) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+/* Dark bookend overrides */
+section.title   p:has(> code:only-child):has(+ h1) > code,
+section.title   p:has(> code:only-child):has(+ h2) > code,
+section.divider p:has(> code:only-child):has(+ h1) > code,
+section.divider p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-secondary); }
+section.closing p:has(> code:only-child):has(+ h1) > code,
+section.closing p:has(> code:only-child):has(+ h2) > code { color: var(--on-dark-ghost); }
+/* Dark modifier (any layout + dark class) */
+section.dark p:has(> code:only-child):has(+ h1) > code,
+section.dark p:has(> code:only-child):has(+ h2) > code,
+section.dark p:has(> code:only-child):has(+ h3) > code,
+section.dark p:has(> code:only-child):has(+ h4) > code,
+section.dark p:has(> code:only-child):has(+ h5) > code,
+section.dark p:has(> code:only-child):has(+ ul) > code,
+section.dark p:has(> code:only-child):has(+ ol) > code,
+section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-secondary); }
+/* Centered eyebrow for subtopic */
+section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
+
+
+/* ── KEY INSIGHT ──────────────────────────────────────────────
+ * Any trailing > blockquote on a content-bearing layout renders
+ * as a warm filled panel — Option C styling.
+ * Excluded layouts handle blockquote themselves:
+ *   quote, featured (primary content)
+ */
+section:not(.quote):not(.featured):not(.math) > blockquote {
+  background:var(--accent-soft);
+  border:1px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-xs) var(--sp-md);
+  margin-top:var(--sp-sm);
+  flex-shrink:0;
+}
+section:not(.quote):not(.featured):not(.math) > blockquote::before {
+  content:'KEY INSIGHT';
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+  margin-bottom:0.46875cqi;
+}
+section:not(.quote):not(.featured):not(.math) > blockquote p {
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+  margin:0;
+}
+section:not(.quote):not(.featured):not(.math) > blockquote ul {
+  list-style:none;
+  padding:0; margin:0;
+  display:flex; flex-direction:column; gap:0.46875cqi;
+}
+section:not(.quote):not(.featured):not(.math) > blockquote li {
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+  padding-left:var(--sp-md);
+  position:relative;
+}
+section:not(.quote):not(.featured):not(.math) > blockquote li::before {
+  content:'—';
+  position:absolute; left:0;
+  color:var(--accent);
+  font-style:normal;
+}
+section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+
+/* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
+   They must render inline at text size and not pick up the block image styling
+   above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
+   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+section img.emoji {
+  display:inline-block;
+  height:1em; width:auto;
+  max-width:none; max-height:none;
+  border-radius:0; object-fit:fill;
+  vertical-align:-0.1em;
+  margin:0 0.05em;
+}
+section header {
+  position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  letter-spacing:0.10em; text-transform:uppercase; text-align:left;
+  color:var(--marp-slide-header-color, var(--text-muted));
+}
+section footer {
+  position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
+  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  line-height:1; letter-spacing:0.06em; text-align:left;
+  color:var(--marp-slide-footer-color, var(--text-muted));
+}
+
+
+
+
+
+
+
+
+/* ── UNIVERSAL PILL ─────────────────────────────────────────────────────────
+ * Trailing inline `code` on any list row, in any layout, is metadata.
+ * One rule, one authoring contract: `- row text \`metadata\``.
+ *
+ * The :where() wrapper keeps specificity at (0,0,4) so per-layout
+ * overrides — cards-grid grid placement, actors categorical hue —
+ * win the cascade without needing !important.
+ *
+ * :last-child is the metadata test: only the trailing `code` becomes
+ * a pill. Mid-sentence `code` references stay normal inline code.
+ * The :has(+ ul/ol) extension also matches a trailing `code` on the
+ * row's title line when a nested list (description) follows it \u2014
+ * authoring shape: `- Label \`pill\`\n  - description`.
+ *
+ * Per-layout custom-property hooks (defaults in parens):
+ *   --pill-border  (var(--text-muted))   border colour
+ *   --pill-bg      (var(--bg))           fill colour
+ *   --pill-fg      (var(--text-body))    text colour
+ *
+ * Deny list = layouts where a metadata pill does not earn its place,
+ * OR where the row container is grid/scaffold and the pill needs a
+ * per-layout placement override before it can join the allow list:
+ *   bookends/openers     title, divider, subtopic, closing, split-panel
+ *   single-message       featured, big-number, kpi, stats, quote
+ *   own metadata channel glossary (range-pill), agenda (page pointer),
+ *                        timeline/list-steps (counter), principles/tldr (own line),
+ *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
+ *                        compare-prose (connector), compare-table/roadmap (table)
+ *   non-list             content, code, compare-code, image, diagram
+ *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
+ *                        (grid/scaffold rows where margin-left:auto cannot
+ *                        right-anchor; opt in by adding a per-layout rule
+ *                        modeled on the actors override)
+ *
+ * Allow list (renders correctly today): cards-grid, cards-side, actors,
+ * checklist. Plus any future layout whose `> li` is `display:flex`. */
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+  > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
+  margin-left:auto;
+  align-self:center;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:600;
+  border:1px solid var(--pill-border, var(--text-muted));
+  background:var(--pill-bg, var(--bg));
+  color:var(--pill-fg, var(--text-body));
+  border-radius:999px;
+  padding:0.234375cqi 0.703125cqi;
+  white-space:nowrap;
+}
+
+
+
+
+
+/* ── DARK VARIANT ──
+ * Per-slide dark canvas. Flips this section's color-scheme to dark; the
+ * palette's surface tokens use light-dark(), so `var(--bg)` etc. resolve
+ * to the dark side automatically for every descendant of this section.
+ * Deck-wide dark is achieved the same way at :root scope, via the
+ * native Marp front-matter directive
+ *   style: ":root{color-scheme:dark}"
+ * (or the cuoio-dark / indaco-dark variant theme, which is just a
+ * thin :root color-scheme:dark wrapper). */
+section.dark {
+  color-scheme: dark;
+  background: var(--spectrum) top / 100% 1px no-repeat, var(--bg);
+  border-top: none;
+}
+
+
+
+
+/* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
+ * CLI wraps trailing <p> in .below-note. In Marp preview the raw <p> needs
+ * the same hairline-rule treatment for layouts that use it.
+ *
+ * NOTE: Marpit's CSS scoper rewrites leading `:is(section.X, ...)` to
+ * `div#:$p > svg > foreignobject > section :is(...)` — i.e. it treats
+ * the `:is(...)` as a descendant of the slide root rather than the slide
+ * itself. So leading sections must be enumerated as a comma-separated
+ * union (each gets prefixed individually), not collapsed into `:is()`.
+ *                                                                            */
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
+section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
+  margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
+  position:relative; font-size:var(--fs-body); color:var(--text-body);
+  line-height:var(--lh-relaxed); margin-bottom:0;
+}
+section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
+section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(to right, var(--accent), transparent);
+}
+
+
+/* ── ANNOTATION (trailing _italic_ paragraph) ─────────────────────────────
+ * A trailing paragraph whose only child is an <em> renders as a quiet
+ * footnote: ✦ glyph + italic muted body. Distinct from below-note (no
+ * hairline rule) and key-insight (no panel). Use for sources, scope
+ * caveats, and attributions — the editorial register that says "skim
+ * this, don't dwell."
+ *
+ * Selector covers both forms: the CLI-wrapped `.below-note > p` and the
+ * Marp-preview raw trailing `<p>`. Layouts must be enumerated as a
+ * comma-separated union (see note on the below-note fallback above).
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Suppress the below-note hairline rule when annotation triggers (CLI form),
+ * and replace it with a dotted rule on the wrapper at the same vertical
+ * position so the gap above the rule is identical to a plain below-note. */
+section.cards-grid .below-note:has(> p > em:only-child)::before,
+section.compare-prose .below-note:has(> p > em:only-child)::before,
+section.verdict-grid .below-note:has(> p > em:only-child)::before,
+section.featured .below-note:has(> p > em:only-child)::before,
+section.list-criteria .below-note:has(> p > em:only-child)::before,
+section.cards-wide .below-note:has(> p > em:only-child)::before,
+section.cards-stack .below-note:has(> p > em:only-child)::before,
+section.list .below-note:has(> p > em:only-child)::before,
+section.list-steps .below-note:has(> p > em:only-child)::before,
+section.list-tabular .below-note:has(> p > em:only-child)::before,
+section.timeline .below-note:has(> p > em:only-child)::before,
+section.principles .below-note:has(> p > em:only-child)::before,
+section.tldr .below-note:has(> p > em:only-child)::before,
+section.matrix-2x2 .below-note:has(> p > em:only-child)::before,
+section.decision .below-note:has(> p > em:only-child)::before,
+section.before-after .below-note:has(> p > em:only-child)::before,
+section.actors .below-note:has(> p > em:only-child)::before,
+section.kpi .below-note:has(> p > em:only-child)::before,
+section.agenda .below-note:has(> p > em:only-child)::before,
+section.compare-table .below-note:has(> p > em:only-child)::before {
+  background:none;
+  border-top:1px dotted var(--border);
+  height:0;
+}
+
+/* Annotation paragraph styling — covers both CLI-wrapped and Marp-preview raw forms. */
+section.cards-grid .below-note > p:has(> em:only-child),
+section.compare-prose .below-note > p:has(> em:only-child),
+section.verdict-grid .below-note > p:has(> em:only-child),
+section.featured .below-note > p:has(> em:only-child),
+section.list-criteria .below-note > p:has(> em:only-child),
+section.cards-wide .below-note > p:has(> em:only-child),
+section.cards-stack .below-note > p:has(> em:only-child),
+section.list .below-note > p:has(> em:only-child),
+section.list-steps .below-note > p:has(> em:only-child),
+section.list-tabular .below-note > p:has(> em:only-child),
+section.timeline .below-note > p:has(> em:only-child),
+section.principles .below-note > p:has(> em:only-child),
+section.tldr .below-note > p:has(> em:only-child),
+section.matrix-2x2 .below-note > p:has(> em:only-child),
+section.decision .below-note > p:has(> em:only-child),
+section.before-after .below-note > p:has(> em:only-child),
+section.actors .below-note > p:has(> em:only-child),
+section.kpi .below-note > p:has(> em:only-child),
+section.agenda .below-note > p:has(> em:only-child),
+section.compare-table .below-note > p:has(> em:only-child),
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
+  font-size:var(--fs-sm);
+  color:var(--text-muted);
+  line-height:var(--lh-snug);
+}
+/* Marp-preview raw form: rule lives on the <p> directly (no wrapper). */
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
+  border-top:1px dotted var(--border);
+  padding-top:var(--sp-xs);
+}
+
+/* ✦ glyph prefix + override the below-note ::before hairline. */
+section.cards-grid .below-note > p:has(> em:only-child)::before,
+section.compare-prose .below-note > p:has(> em:only-child)::before,
+section.verdict-grid .below-note > p:has(> em:only-child)::before,
+section.featured .below-note > p:has(> em:only-child)::before,
+section.list-criteria .below-note > p:has(> em:only-child)::before,
+section.cards-wide .below-note > p:has(> em:only-child)::before,
+section.cards-stack .below-note > p:has(> em:only-child)::before,
+section.list .below-note > p:has(> em:only-child)::before,
+section.list-steps .below-note > p:has(> em:only-child)::before,
+section.list-tabular .below-note > p:has(> em:only-child)::before,
+section.timeline .below-note > p:has(> em:only-child)::before,
+section.principles .below-note > p:has(> em:only-child)::before,
+section.tldr .below-note > p:has(> em:only-child)::before,
+section.matrix-2x2 .below-note > p:has(> em:only-child)::before,
+section.decision .below-note > p:has(> em:only-child)::before,
+section.before-after .below-note > p:has(> em:only-child)::before,
+section.actors .below-note > p:has(> em:only-child)::before,
+section.kpi .below-note > p:has(> em:only-child)::before,
+section.agenda .below-note > p:has(> em:only-child)::before,
+section.compare-table .below-note > p:has(> em:only-child)::before,
+section.cards-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
+section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before {
+  content:'\2726';
+  position:static;
+  background:none;
+  height:auto;
+  width:auto;
+  color:var(--accent);
+  font-style:normal;
+  margin-right:0.5em;
+  font-size:0.95em;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * NEW LAYOUTS (Wave 7) — proposals.md §3.1–3.6
+ * ────────────────────────────────────────────────────────────────────────
+ * Four authoring components introduced to replace the most common
+ * cards-grid / compare-prose hand-rolls in real decks.
+ *
+ *   matrix-2x2    — quadrant grid (SWOT, Eisenhower, risk/impact, …)
+ *   decision      — verdict slide; one heading + 2-3 short justifications
+ *   before-after  — explicit state-change with arrow connector
+ *   principles    — declared statements; sparser than list, larger type
+ *
+ * All four are CSS-only: they style the bare <ul>/<ol> Marp emits. No
+ * lattice.js post-processing is required because the markdown contract
+ * is simple enough that direct selectors do the job.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+
+
+
+
