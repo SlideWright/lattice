@@ -455,26 +455,6 @@ section footer {
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
-section header > p, section footer > p { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500; line-height:1; letter-spacing:0.06em; margin:0; text-align:left !important; }
-/* section::after — Marp's native pagination pseudo-element.
-   Marp's scaffold CSS sets `section::after { padding: inherit; }`, which inherits the
-   section's bottom padding (~88px) and pushes the page number above where bottom:24px
-   would otherwise place it. The scaffold loads after our theme in the cascade, so at
-   equal specificity it wins. !important here is the deliberate override. Font properties
-   are also !important because the scaffold sets defaults that don't match our footer. */
-section::after {
-  position:absolute !important;
-  bottom:1.875cqi !important;
-  right:2.34375cqi !important;
-  padding:0 !important;
-  margin:0 !important;
-  font-family:var(--font-mono) !important;
-  font-size:var(--fs-label) !important;
-  font-weight:500 !important;
-  line-height:1 !important;
-  letter-spacing:0.06em !important;
-  color:var(--marp-slide-pagination-color, var(--marp-slide-footer-color, var(--text-muted))) !important;
-}
 
 /* ── TITLE ── */
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
@@ -514,26 +494,7 @@ section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
 section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
 section.subtopic p  { font-size:var(--fs-emphasis); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
-/* ── CONTENT ── */
-section.content h3 { margin-bottom:0.3125cqi; }
-section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed); }
-section.content { justify-content:flex-start; }
 
-/* ── DIAGRAM ──
- * ### eyebrow  ## heading  `italic subtitle`  ```mermaid block
- * The mermaid-svg fills flex:1 automatically.
- */
-section.diagram { align-items:center; }
-section.diagram h3 { margin-bottom:0.3125cqi; }
-section.diagram h2 { font-size:var(--fs-xl); margin-bottom:0.3125cqi; }
-section.diagram > p { font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); margin-bottom:var(--sp-sm); }
-/* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
-   Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
-   query the container width before rendering. width:100% on a freshly-inserted flex child
-   can resolve to 0 before the browser commits a layout pass.
-   100cqi (slide width) − 2 × var(--sp-2xl) padding = 90cqi. */
-section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); height:auto; max-width:100%; box-sizing:border-box; }
 /* Source <pre> in pending/error states occupies the same slot as the rendered
  * diagram so the slide layout does not reflow when the diagram swaps in. */
 section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
@@ -788,22 +749,6 @@ section.compare-prose .connector { display:flex; align-items:center; justify-con
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
 section.compare-prose > :is(ul, ol) + p { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* ── QUOTE ──
- * > blockquote  p attribution
- */
-section.quote { justify-content:center; align-items:center; }
-section.quote blockquote {
-  position:relative;
-  background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:1.40625cqi;
-  box-shadow:0 4px 16px rgba(0,0,0,0.07);
-  padding:var(--sp-lg) var(--sp-xl);
-  max-width:64.0625cqi; width:100%;
-}
-section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
-section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
-section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
-section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
 
 /* ── TIMELINE ──
  * ol = numbered circles (sequential steps)
@@ -1142,15 +1087,6 @@ section.list-tabular.register.outline ol > li > code {
 section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
 
-/* ── BIG-NUMBER ──
- * ##### eyebrow  - number\n  - description
- */
-section.big-number { justify-content:center; align-items:center; }
-section.big-number h5 { margin-bottom:var(--sp-sm); }
-section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
-section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
-section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
-section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
 
 /* ── SPLIT-PANEL ──
  * ## left-heading  p left-intro  - bullet list right panel
@@ -1200,13 +1136,6 @@ section.split-panel {
   --marp-slide-footer-color: var(--on-dark-secondary);
 }
 
-/* ── CLOSING ── */
-section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
-section.closing { border-top: none; }
-section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
-section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
-section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
 
 /* ── CARDS-WIDE ──
  * ## heading  then 3× pairs: ### eyebrow·heading  p body

@@ -1,0 +1,20 @@
+/* big-number — statement.canvas.bignumber
+ *
+ * Authoring DOM:
+ *   section > p > code        optional eyebrow label
+ *   section > ul > li         the giant number (first li)
+ *   section > ul > li > ul    optional caption nested below
+ *
+ * See lib/components/big-number/manifest.json for the component contract.
+ */
+
+
+
+section.big-number { justify-content:center; align-items:center; }
+section.big-number h5 { margin-bottom:var(--sp-sm); }
+section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
+section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
+section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
+section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
+
+

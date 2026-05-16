@@ -236,6 +236,71 @@ describe('component-manifest', () => {
         fs.rmdirSync(tmpDir);
       }
     });
+
+    test('accepts folder-shape manifests at <name>/manifest.json', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      const sub = path.join(tmpDir, 'demo');
+      fs.mkdirSync(sub);
+      const folderManifest = { ...GOOD, name: 'demo' };
+      fs.writeFileSync(path.join(sub, 'manifest.json'), JSON.stringify(folderManifest));
+      try {
+        const ms = loadAll(tmpDir);
+        assert.equal(ms.length, 1);
+        assert.equal(ms[0].name, 'demo');
+      } finally {
+        fs.unlinkSync(path.join(sub, 'manifest.json'));
+        fs.rmdirSync(sub);
+        fs.rmdirSync(tmpDir);
+      }
+    });
+
+    test('handles a directory with no manifest.json (incomplete folder)', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      const sub = path.join(tmpDir, 'partial');
+      fs.mkdirSync(sub);
+      fs.writeFileSync(path.join(sub, 'styles.css'), '/* placeholder */');
+      try {
+        const ms = loadAll(tmpDir);
+        assert.equal(ms.length, 0);
+      } finally {
+        fs.unlinkSync(path.join(sub, 'styles.css'));
+        fs.rmdirSync(sub);
+        fs.rmdirSync(tmpDir);
+      }
+    });
+
+    test('flat + folder shapes for the same name are caught as duplicates', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      const flat = path.join(tmpDir, 'same.json');
+      const sub = path.join(tmpDir, 'same');
+      fs.mkdirSync(sub);
+      const folderManifest = path.join(sub, 'manifest.json');
+      const m = { ...GOOD, name: 'same' };
+      fs.writeFileSync(flat, JSON.stringify(m));
+      fs.writeFileSync(folderManifest, JSON.stringify(m));
+      try {
+        assert.throws(() => loadAll(tmpDir), /duplicate manifest name/);
+      } finally {
+        fs.unlinkSync(flat);
+        fs.unlinkSync(folderManifest);
+        fs.rmdirSync(sub);
+        fs.rmdirSync(tmpDir);
+      }
+    });
+
+    test('ignores index.js sibling at the loader root', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      fs.writeFileSync(path.join(tmpDir, 'index.js'), '// not a manifest');
+      fs.writeFileSync(path.join(tmpDir, 'real.json'), JSON.stringify(GOOD));
+      try {
+        const ms = loadAll(tmpDir);
+        assert.equal(ms.length, 1);
+      } finally {
+        fs.unlinkSync(path.join(tmpDir, 'index.js'));
+        fs.unlinkSync(path.join(tmpDir, 'real.json'));
+        fs.rmdirSync(tmpDir);
+      }
+    });
   });
 
   describe('groupByFunction', () => {

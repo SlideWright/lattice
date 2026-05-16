@@ -18,7 +18,7 @@
  * See docs/design-system.md §6.5 for the full vocabulary and rationale.
  */
 
-@layer universal {
+
 
 /* ── CHROME ── visibility control for the standard slide elements ───── */
 
@@ -225,4 +225,4 @@ section.confidential::before {
   pointer-events: none;
 }
 
-} /* end @layer universal */
+

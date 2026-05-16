@@ -34,8 +34,21 @@ const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'lattice.css');
 
 const HEAD_SOURCES = ['lib/_theme.css', 'lib/_base.css', 'lib/_root.css', 'lib/_scaffold.css'];
+// Bundle order. Source order = cascade order — later sources beat
+// earlier ones at equal specificity. Per-component styles come AFTER
+// _legacy.css so component overrides win; _universal.css comes after
+// the components so universal variants beat component base rules.
+//
+// _legacy.css contains hundreds of !important rules that historically
+// beat both Marp's runtime scaffold AND each other via source-order
+// cascade. Wrapping _legacy.css in @layer would demote those !important
+// rules (the CSS @layer cascade REVERSES for !important), causing
+// silent regressions. So @layer is NOT active here — the @layer
+// declaration is reserved for future use once _legacy.css is fully
+// extracted into proper layered files (then per-component and shared
+// CSS can opt into @layer cleanly).
+const LEGACY_SOURCE = 'lib/_legacy.css';
 const TAIL_SOURCES = [
-  'lib/_legacy.css',
   'lib/_semi-universal.css',
   'lib/_universal.css',
   'lib/_diagram-overrides.css',
@@ -87,16 +100,29 @@ function bundle() {
       parts.push(text);
     }
   }
-  // Declare the cascade once for the whole bundle.
+  // Declare the cascade once for the whole bundle (reserved for future
+  // use; see comment on LEGACY_SOURCE about why @layer is inactive).
   parts.push(LAYER_DECLARATION);
   parts.push('');
-  // Per-component CSS, alphabetical (within @layer components, source
-  // order doesn't matter — selectors are scoped to section.<name>).
+  // Per-component CSS, alphabetical. Comes BEFORE _legacy so cross-
+  // cutting modifier rules in _legacy (accent, compact, mirror, etc.)
+  // continue to override component base rules via source order — the
+  // historical cascade pattern of "layouts first, modifiers last."
+  // Per-component selectors win their own base properties via
+  // specificity (section.foo > section).
   for (const { rel, text } of componentStyles()) {
     parts.push(`/* === ${rel} === */`);
     parts.push(text);
   }
-  // Tail: legacy residual + semi-universal + universal + diagram overrides.
+  // Legacy monolith — base rules, scaffold residual, modifiers,
+  // un-extracted component CSS. Source order is the cascade order.
+  const legacy = readIfExists(LEGACY_SOURCE);
+  if (legacy) {
+    parts.push(`/* === ${LEGACY_SOURCE} === */`);
+    parts.push(legacy);
+  }
+  // Tail: semi-universal → universal → diagram overrides. Each later
+  // tier wins over earlier tiers by source order.
   for (const rel of TAIL_SOURCES) {
     const text = readIfExists(rel);
     if (text) {
