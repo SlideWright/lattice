@@ -19,11 +19,16 @@
  *
  * ── Destinations by line range ────────────────────────────────────────────
  *
+ * Line ranges below were captured from the original 5,938-line file. After
+ * each phase, blocks above the line of moved content shift up by N lines.
+ * The section banners (── BANNER NAME ──) are the durable reference —
+ * grep for them rather than trusting line numbers after a move.
+ *
  *   line range   destination                          notes
  *   ─────────────────────────────────────────────────────────────────────────
- *      1– 200    lib/_root.css (NEW)                  :root tokens + @import
- *    201– 224    lib/_root.css (NEW)                  universal theme defaults
- *    225– 259    lib/_base.css (NEW)                  prose/heading defaults
+ *      1– 200    lib/_root.css ✓ Phase 2              :root tokens + @import
+ *    201– 224    lib/_root.css ✓ Phase 2              universal theme defaults
+ *    225– 259    lib/_base.css ✓ Phase 2              prose/heading defaults
  *    260– 309    lib/_modifiers.css (NEW)             SUBTITLE (p>code after h*)
  *    310– 380    lib/_modifiers.css (NEW)             EYEBROW (p>code before h*)
  *    381– 464    lib/_modifiers.css (NEW)             KEY INSIGHT
@@ -116,263 +121,19 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* The @import for Google Fonts, the :root token block, the
+ * :where(:root) universal-theme-defaults block, and the BASE element
+ * rules that used to live here have moved (Phase 2):
+ *
+ *   @import + :root + :where(:root)  →  lib/_root.css
+ *   section / h1-h5 / p / strong / etc.  →  lib/_base.css
+ *
+ * Bundle order is preserved because tools/build-css.js HEAD_SOURCES
+ * already lists _theme, _base, _root, _scaffold at the head — the rules
+ * now run earlier in the bundle, which is the canonical CSS architecture
+ * (tokens + base before everything). See docs/design-system.md §10.
+ */
 
-:root {
-  /* Color tokens are defined by the active palette (themes/<name>.css),
-   * loaded before this file. The variables below are structural and
-   * shared across palettes — fonts, spacing, sizing, line-heights,
-   * Marp chrome bridges. A palette can override any of these by
-   * declaring them in its own :root block. */
-
-  /* ── Fonts ────────────────────────────────────────────────────────── */
-  /* Emoji fallbacks (Apple/Segoe/Noto) are appended to every stack so raw
-     unicode emoji in headings, body, and chrome render inline at the local
-     font's metrics. Without them, Chromium falls back unpredictably and the
-     emoji may render larger than the text and push lines around. The
-     marp-cli path also rewrites emoji to <img class="emoji"> (twemoji);
-     section img.emoji handles that variant. */
-  --font-display: 'Playfair Display', Georgia, serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
-  --font-body:    'Outfit', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
-
-  /* ── Spacing scale (cqi — proportional to the 1280px HD baseline) ───
-   * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
-   * At HD (1280px) these resolve to the original px values exactly.
-   * At 4K (3840px) they triple automatically — no extra rules needed. */
-  --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
-
-  /* ── Font sizes (cqi) ────────────────────────────────────────────── */
-  --fs-label:1.015625cqi; --fs-xs:0.9375cqi; --fs-sm:1.171875cqi; --fs-body:1.25cqi; --fs-md:1.40625cqi;
-  --fs-emphasis:1.328125cqi; --fs-content:1.484375cqi; --fs-lg:1.71875cqi; --fs-xl:2.34375cqi; --fs-2xl:2.65625cqi;
-  --fs-3xl:3.75cqi; --fs-display:4.6875cqi; --fs-stat:4.0625cqi; --fs-quote:6.25cqi;
-  --fs-hero:8.59375cqi; --fs-watermark:14.0625cqi;
-
-  /* ── Radii / line-heights ─────────────────────────────────────────── */
-  --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
-  --lh-tight:1.2; --lh-snug:1.5; --lh-base:1.6; --lh-relaxed:1.7;
-
-  /* ── Marp chrome mappings ── */
-  --marp-slide-pagination-color:     var(--text-muted);
-  --marp-slide-pagination-font-size: var(--fs-label);
-  --marp-slide-header-color:  var(--text-muted);
-  --marp-slide-footer-color:  var(--text-muted);
-
-  /* ── Categorical palette consumers ────────────────────────────────────
-   * Each theme exports 12 paired slots: --c1-light/--c1-dark .. --c12-light/
-   * --c12-dark, plus paired ink: --c-ink-light (non-flipping dark text on
-   * pale fills) and --c-ink-dark (white-ish text on deep fills, default
-   * #FFFFFF, themes can override). All --cN-light/--c-ink-light pairs are
-   * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
-   * sourced from the Brand-triad rank-1 proposal in examples/palette-audit.md. */
-
-  /* ── Universal semantic palette ───────────────────────────────────────
-   * Status-signaling colours shared by every theme. Gantt task lifecycle,
-   * sequence-diagram notes, alarm fills, today markers — none of those
-   * UI roles want a per-theme curated hue; they want the deck's one warm
-   * tint, the deck's one alarm red, the deck's one highlight yellow. So
-   * the values live here, not in each theme. Themes that have curated
-   * semantic colours (e.g. cuoio's leather-toned warm pair) override the
-   * specific tokens they want to retune; everyone else inherits.
-   *
-   * Pairs (light fill + deep stroke/ink):
-   *   warm    pale peach + warm brown  (in-progress, warn)
-   *   cool    pale slate + saturated slate (done, muted, grid)
-   *   alarm   saturated red + deep red (critical, blocked, error)
-   *
-   * Solos:
-   *   mark    saturated yellow (today, highlight, note-border)
-   *   note    pale yellow      (aside / footnote surface)
-   *
-   * These replace the prior --diagram-state-*, --diagram-note-*, and
-   * --diagram-error-* tiers. Three values were duplicated across the
-   * old tiers (done==grid, today==note-stroke, critical==error-bg);
-   * the deduplication is what shrank 12 tokens to 8. */
-  --c-warm-light: #F5E6D8;
-  --c-warm-dark:  #92400E;
-  --c-cool-light: #E0E4EA;
-  --c-cool-dark:  #475569;
-  --c-alarm:      #C20000;
-  --c-alarm-dark: #8B0000;
-  --c-mark:       #F6C700;
-  --c-note:       #FFFBE6;
-
-  /* ── Status-signaling state tokens — universal defaults ───────────────
-   * `--pass`, `--warn`, `--fail` drive the state-token disc colours
-   * across checklist, verdict-grid, obligation-matrix, and roadmap.
-   * Each is a `light-dark()` pair so the same authoring grammar reads
-   * cleanly on light and dark canvases — themes that only flip
-   * `color-scheme: dark` (indaco-dark, cuoio-dark, …) pick up the dark
-   * variant automatically.
-   *
-   * Tuning rationale (see docs/notes/2026-05-15-state-token-palette.md):
-   *   - Warn moved from #92400E (H22, L31, burnt brown-amber) to
-   *     #B45309 (H32 amber-700) in light mode and #F97316 (orange-500)
-   *     in dark mode. Bumps hue 10° clear of red and lifts luminance
-   *     so warn ≠ fail at a glance — the burnt-amber/crimson clash
-   *     was the loudest "two colours that look the same" complaint
-   *     in the state-tokens demo deck.
-   *   - Fail stays at canonical alarm red in light mode (#991B1B) and
-   *     lifts to red-400 (#F87171) in dark for AAA contrast on dark bg.
-   *   - Pass stays at brand-friendly forest green (#2D6A3F) in light
-   *     mode and lifts to emerald-400 (#4ADE80) in dark.
-   *
-   * Themes override one or all of these with their own brand-toned
-   * variants (indaco picks --pass = brand-green-deep; magnolia picks
-   * --fail = brand-garnet-deep; cuoio and carbone re-tune the trio).
-   * Each override SHOULD use light-dark() pairs so dark canvases keep
-   * AA contrast — the universal default above is the example to follow.
-   *
-   * Background soft-tints (--pass-bg, --warn-bg, --fail-bg) live in
-   * each theme and derive from these via color-mix with 10% alpha. */
-  --pass: light-dark(#2D6A3F, #4ADE80);
-  --warn: light-dark(#B45309, #F97316);
-  --fail: light-dark(#991B1B, #F87171);
-
-  /* ── On-accent text tier ──────────────────────────────────────────────
-   * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
-   * split-panel left rail, banner-tags, badges). Themes can override any
-   * tier; the defaults below adapt automatically via light-dark() so
-   * dark-canvas modes (where many palettes flip --accent to a brighter
-   * value) do not inherit a white-on-bright-pastel collision.
-   *
-   * Tier semantics mirror `--on-dark-*`:
-   *   primary   — body text, headings, labels (full opacity)
-   *   secondary — eyebrows / muted captions on the accent rail
-   *   ghost     — very muted decorative chrome
-   *   watermark — large-glyph backdrop, near-invisible
-   *
-   * Themes whose accent doesn't switch (e.g., indaco's mid-blue stays in
-   * both modes) can simplify by redefining --on-accent: #fff at :root. */
-  --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
-  --on-accent-secondary: light-dark(rgba(255,255,255,0.70), color-mix(in srgb, var(--bg-dark, #000) 70%, transparent));
-  --on-accent-ghost:     light-dark(rgba(255,255,255,0.32), color-mix(in srgb, var(--bg-dark, #000) 32%, transparent));
-  --on-accent-watermark: light-dark(rgba(255,255,255,0.12), color-mix(in srgb, var(--bg-dark, #000) 12%, transparent));
-
-  /* ── Code panel ─────────────────────────────────────────────────────────
-   * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.
-   * Themes can override --code-bg to bind it to the brand palette;
-   * --code-text is theme-defined for syntax-on-dark legibility. The
-   * fallbacks below match the indaco values so unstyled renders are still
-   * usable as a diagnostic. */
-  --code-bg:   var(--bg-dark, #001D33);
-  --code-text: #CBD9E8;
-
-
-  /* ── Sequential scale (--scale-50 … --scale-900) ───────────────────────
-   * Tailwind/Carbon-style 10-stop ramp anchored on --scale-500. Used for
-   * sequential / quantitative encoding: heatmap intensity, progress
-   * intensity ramps, hover/active states, faint grid lines.
-   *
-   * Each theme sets --scale-500 (its anchor — typically the brand mid).
-   * The other nine stops auto-derive from the anchor via OKLab color-mix.
-   * 50-400 are tints toward white; 600-900 are shades toward black.
-   *
-   * Distinct from the categorical --cN-light/--cN-dark cycle. The scale
-   * is for ORDERED data; the categorical cycle is for UNORDERED groups.
-   * Don't substitute.
-   *
-   * Default --scale-500 falls back to --accent so unstyled themes still
-   * have a usable ramp, but every theme should set it deliberately. */
-  --scale-500: var(--accent);
-  --scale-50:  color-mix(in oklab, var(--scale-500)  8%, white);
-  --scale-100: color-mix(in oklab, var(--scale-500) 18%, white);
-  --scale-200: color-mix(in oklab, var(--scale-500) 35%, white);
-  --scale-300: color-mix(in oklab, var(--scale-500) 55%, white);
-  --scale-400: color-mix(in oklab, var(--scale-500) 78%, white);
-  --scale-600: color-mix(in oklab, var(--scale-500) 78%, black);
-  --scale-700: color-mix(in oklab, var(--scale-500) 55%, black);
-  --scale-800: color-mix(in oklab, var(--scale-500) 35%, black);
-  --scale-900: color-mix(in oklab, var(--scale-500) 18%, black);
-
-  /* ── Tag (--tag-bg / --tag-text) ───────────────────────────────────────
-   * Secondary accent for status badges / brand-status pills. Distinct
-   * from --accent: gives a theme its DUOTONE partner (Atlas: navy + gold;
-   * Burgundy: wine + champagne; Onyx: black + saturated red).
-   *
-   * Default: --tag-bg = --c2-dark (the second slot of the categorical
-   * cycle, which under Brand-triad lands on a duotone complement of the
-   * theme's brand hue). Achromatic themes can collapse --tag-bg to
-   * --accent if they don't want a duotone identity. */
-  --tag-bg:   var(--c2-dark);
-  --tag-text: var(--on-accent, #fff);
-
-  /* ── Universal state-token slash mask ─────────────────────────────────
-   * The slash that marks [/] (out of scope / waived / N/A). Painted
-   * on top of the coloured disc as a semi-transparent dark stroke, so
-   * the disc keeps full colour AND the slash is unmistakable in pure
-   * greyscale. Stroke-width is ~22% of the disc diameter so [x] (filled)
-   * and [/] (filled + slash) are clearly distinct shapes.
-   *
-   * The half-disc state ([-]) is painted with a CSS linear-gradient
-   * inline at each consumer site (two tones of --state-color, not a
-   * transparent cut) so the disc stays fully coloured on tinted cell
-   * surfaces (e.g. obligation-matrix.heat). See the UNIVERSAL STATE
-   * TOKEN contract block in the LAYOUTS section.
-   *
-   * COLOUR + SHAPE both at full strength. Neither channel sacrificed
-   * for the other. */
-  --state-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='2' y1='14' x2='14' y2='2' stroke='black' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/></svg>");
-}
-
-/* ── Universal theme defaults (zero specificity — any :root override wins) ─
- * on-dark-* : opacity ramp for text on dark panel surfaces.
- * hljs-*    : fallback syntax palette; themes supply curated overrides. */
-:where(:root) {
-  --on-dark-primary:   color-mix(in srgb, white 92%, transparent);
-  --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
-  --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);
-  --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
-
-  /* hljs fallbacks — Night Owl palette, overridden by each theme */
-  --hljs-comment:    #637777;
-  --hljs-keyword:    #c792ea;
-  --hljs-built_in:   #addb67;
-  --hljs-number:     #F78C6C;
-  --hljs-literal:    #ff5874;
-  --hljs-string:     #ecc48d;
-  --hljs-title:      #DCDCAA;
-  --hljs-type:       #82aaff;
-  --hljs-variable:   #addb67;
-  --hljs-params:     #7fdbca;
-  --hljs-tag:        #7fdbca;
-  --hljs-punctuation:#d6deeb;
-}
-
-/* ── BASE ── */
-section {
-  container-type:size;
-  box-sizing:border-box; overflow:hidden; position:relative;
-  display:flex; flex-direction:column;
-  padding: calc(var(--_sec-1cqi,1cqi)*6.875) calc(var(--_sec-1cqi,1cqi)*5);
-  background: var(--bg); color:var(--text-body);
-  font-family:var(--font-body); font-size:var(--fs-md); line-height:var(--lh-base);
-  -webkit-print-color-adjust:exact; print-color-adjust:exact;
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
-  border-top: calc(var(--_sec-1cqi,1cqi)*0.3125) solid; border-image-source: var(--spectrum); border-image-slice: 1;
-}
-
-section h1 { font-family:var(--font-display); font-size:var(--fs-display); font-weight:700; color:var(--text-display); line-height:var(--lh-tight); margin:0; border:none; }
-section h2 { font-family:var(--font-display); font-size:var(--fs-2xl); font-weight:700; color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm) 0; border:none; }
-section h3 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-xs) 0; }
-section h4 { font-family:var(--font-body); font-size:var(--fs-body); font-weight:700; color:var(--text-heading); margin:0 0 var(--sp-xs) 0; }
-section h5 { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--sp-sm) 0; }
-
-section p { margin:0 0 var(--sp-xs) 0; }
-section strong { color:var(--text-heading); font-weight:600; }
-section em { font-style:italic; }
-section code { font-family:var(--font-mono); font-size:0.85em; background:var(--bg-alt); padding:0.15625cqi 0.46875cqi; border-radius:0.3125cqi; color:var(--accent); border:1px solid var(--border); }
-/* Reset inline-code chip styling for code that's inside a fenced block.
- * Covers both `<pre>` (lattice-emulator output, where mermaid is pre-rendered
- * to SVG) and `<marp-pre>` (Marp Preview's custom element, where mermaid
- * source remains in the DOM until lattice-runtime.js upgrades it). Without
- * the marp-pre branch, mermaid source blocks render briefly as inline-code
- * chips in VS Code preview before the upgrade lands. */
-section :is(pre, marp-pre) code { background:none; border:none; padding:0; border-radius:0; color:inherit; font-size:inherit; }
-section hr { border:none; height:0.15625cqi; background:var(--spectrum); border-radius:0.15625cqi; width:5.625cqi; margin:var(--sp-sm) auto; }
-section ul { list-style:none; padding:0; margin:0; }
-section ol { padding:0; margin:0; }
-section blockquote { margin:0; padding:0; border:none; }
 
 /* ── SUBTITLE (inline-code paragraph after heading) ──────────────────────────
  * A paragraph whose only child is an inline code span, placed immediately

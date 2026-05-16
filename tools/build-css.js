@@ -5,8 +5,10 @@
  *
  * Source order (declared below):
  *   1. lib/_theme.css            Marp @theme directive + header comment
- *   2. lib/_base.css             resets
- *   3. lib/_root.css             :root tokens, font-face declarations
+ *   2. lib/_root.css             :root tokens + @import (must be near
+ *                                top of the bundle so @import isn't
+ *                                silently ignored as mid-file per spec)
+ *   3. lib/_base.css             semantic HTML defaults (section, h*, p)
  *   4. lib/_scaffold.css         section, header, footer, pagination
  *   5. (@layer declaration emitted here)
  *   6. lib/components/<a..z>/styles.css   per-component, alphabetical
@@ -33,7 +35,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'lattice.css');
 
-const HEAD_SOURCES = ['lib/_theme.css', 'lib/_base.css', 'lib/_root.css', 'lib/_scaffold.css'];
+const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_scaffold.css'];
 // Bundle order. Source order = cascade order — later sources beat
 // earlier ones at equal specificity. Per-component styles come AFTER
 // _legacy.css so component overrides win; _universal.css comes after
