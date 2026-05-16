@@ -73,6 +73,19 @@ const SHORT = Object.freeze({
   piechart: 'Pie / donut chart',
   image: 'Image + text slot',
   featured: 'Featured + sub-grid',
+  // SPLIT-* family — split-form decision/brief/metric/steps/quote layouts.
+  'split-brief': 'Executive brief',
+  'split-metric': 'One hero metric',
+  'split-steps': 'Phase + steps',
+  'split-compare': 'Two options + verdict',
+  'split-statement': 'Pull quote + impact',
+  // Legal family — promoted from _legacy.css to first-class components.
+  'statute-stack': 'Citation hierarchy',
+  'citation-card': 'Single authority',
+  'obligation-matrix': 'Regulation × duty',
+  'regulatory-update': 'Change log',
+  redline: 'Clause diff',
+  'authority-chain': 'Statute → case',
 });
 
 function buildDeck() {

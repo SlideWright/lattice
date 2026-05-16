@@ -1,0 +1,32 @@
+{
+  "name": "split-brief",
+  "function": "statement",
+  "form": "split",
+  "substance": "structure",
+  "description": "Executive brief — dark left anchor, findings list on the right with left-rule chrome.",
+  "purpose": "Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.",
+  "slots": {
+    "eyebrow": {
+      "selector": "p:first-of-type > code",
+      "required": false,
+      "description": "Optional inline-code eyebrow above the heading."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Heading shown in the dark left anchor."
+    },
+    "lede": {
+      "selector": "p",
+      "required": true,
+      "description": "One-sentence framing paragraph under the heading."
+    },
+    "findings": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Right-side findings. Lead each with **Title.** then nested body lines."
+    }
+  },
+  "skeleton": "<!-- _class: split-brief -->\n\n`Eyebrow context`\n\n## Headline that anchors the brief.\n\nOne-sentence framing paragraph explaining what the findings cover.\n\n- **First finding.** Supporting detail explaining the first finding.\n- **Second finding.** Supporting detail explaining the second finding.\n- **Third finding.** Supporting detail explaining the third finding.\n",
+  "docs": "docs/references/templates.md#template-30-split-brief"
+}

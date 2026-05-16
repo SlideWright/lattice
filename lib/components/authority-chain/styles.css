@@ -1,0 +1,9 @@
+/* authority-chain — progression.timeline.structure
+ *
+ * The CSS rules for section.authority-chain (plus .branching / .trail
+ * variants) currently live in lib/_legacy.css under the
+ * AUTHORITY-CHAIN banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/authority-chain/manifest.json for the component contract.
+ */

@@ -569,6 +569,17 @@ section.agenda.progress-9 ol > li:nth-child(-n+8) {
   opacity:0.4;
 }
 
+/* === lib/components/authority-chain/styles.css === */
+/* authority-chain — progression.timeline.structure
+ *
+ * The CSS rules for section.authority-chain (plus .branching / .trail
+ * variants) currently live in lib/_legacy.css under the
+ * AUTHORITY-CHAIN banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/authority-chain/manifest.json for the component contract.
+ */
+
 /* === lib/components/before-after/styles.css === */
 /* before-after — extracted from lib/_legacy.css (batch 4).
  * See lib/components/before-after/manifest.json for the component contract.
@@ -1289,6 +1300,16 @@ section.checklist > ol > li em {
   font-weight:400;
   color:var(--text-muted);
 }
+
+/* === lib/components/citation-card/styles.css === */
+/* citation-card — evidence.canvas.prose
+ *
+ * The CSS rules for section.citation-card currently live in
+ * lib/_legacy.css under the CITATION-CARD banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/citation-card/manifest.json for the component contract.
+ */
 
 /* === lib/components/closing/styles.css === */
 /* closing — anchor.bookend.closing
@@ -3530,6 +3551,17 @@ section.matrix-2x2 li > ol > li {
   line-height:var(--lh-base);
 }
 
+/* === lib/components/obligation-matrix/styles.css === */
+/* obligation-matrix — comparison.matrix.structure
+ *
+ * The CSS rules for section.obligation-matrix (plus .heat /
+ * .asymmetric variants) currently live in lib/_legacy.css under the
+ * OBLIGATION-MATRIX banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/obligation-matrix/manifest.json for the component contract.
+ */
+
 /* === lib/components/piechart/styles.css === */
 /* piechart — extracted from lib/_legacy.css (batch 9).
  * See lib/components/piechart/manifest.json for the component contract.
@@ -4047,6 +4079,28 @@ section .radarAxisLabel {
 }
 section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
 
+/* === lib/components/redline/styles.css === */
+/* redline — comparison.canvas.prose
+ *
+ * The CSS rules for section.redline (plus .annotated / .three-col
+ * variants) currently live in lib/_legacy.css under the REDLINE
+ * banner. Extraction into this file is tracked as Phase 4 of the
+ * _legacy.css elimination work.
+ *
+ * See lib/components/redline/manifest.json for the component contract.
+ */
+
+/* === lib/components/regulatory-update/styles.css === */
+/* regulatory-update — progression.ledger.structure
+ *
+ * The CSS rules for section.regulatory-update (plus .timeline /
+ * .priority variants) currently live in lib/_legacy.css under the
+ * REGULATORY-UPDATE banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/regulatory-update/manifest.json for the component contract.
+ */
+
 /* === lib/components/roadmap/styles.css === */
 /* roadmap — extracted from lib/_legacy.css (batch 7).
  * See lib/components/roadmap/manifest.json for the component contract.
@@ -4524,6 +4578,36 @@ section.roadmap.milestones tbody td:not(:first-child) {
   background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
+/* === lib/components/split-brief/styles.css === */
+/* split-brief — statement.split.structure
+ *
+ * The CSS rules for section.split-brief currently live in
+ * lib/_legacy.css under the SPLIT-BRIEF banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-brief/manifest.json for the component contract.
+ */
+
+/* === lib/components/split-compare/styles.css === */
+/* split-compare — comparison.split.structure
+ *
+ * The CSS rules for section.split-compare currently live in
+ * lib/_legacy.css under the SPLIT-COMPARE banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-compare/manifest.json for the component contract.
+ */
+
+/* === lib/components/split-metric/styles.css === */
+/* split-metric — evidence.split.structure
+ *
+ * The CSS rules for section.split-metric currently live in
+ * lib/_legacy.css under the SPLIT-METRIC banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-metric/manifest.json for the component contract.
+ */
+
 /* === lib/components/split-panel/styles.css === */
 /* split-panel — extracted from lib/_legacy.css (batch 5).
  * See lib/components/split-panel/manifest.json for the component contract.
@@ -4654,6 +4738,26 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
+/* === lib/components/split-statement/styles.css === */
+/* split-statement — statement.split.structure
+ *
+ * The CSS rules for section.split-statement currently live in
+ * lib/_legacy.css under the SPLIT-STATEMENT banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-statement/manifest.json for the component contract.
+ */
+
+/* === lib/components/split-steps/styles.css === */
+/* split-steps — progression.split.structure
+ *
+ * The CSS rules for section.split-steps currently live in
+ * lib/_legacy.css under the SPLIT-STEPS banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-steps/manifest.json for the component contract.
+ */
+
 /* === lib/components/stats/styles.css === */
 /* stats — evidence.stack.stats
  *
@@ -4672,6 +4776,17 @@ section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2x
 section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
 section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
+
+/* === lib/components/statute-stack/styles.css === */
+/* statute-stack — inventory.ledger.structure
+ *
+ * The CSS rules for section.statute-stack (plus .hierarchy / .bands /
+ * .preemption / .lane variants) currently live in lib/_legacy.css under
+ * the STATUTE-STACK banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/statute-stack/manifest.json for the component contract.
+ */
 
 /* === lib/components/subtopic/styles.css === */
 /* subtopic — anchor.divider.subtopic

@@ -31,6 +31,28 @@
     ],
     "description": "Auto-numbered table of contents for the deck."
   },
+  "lattice: authority-chain": {
+    "prefix": "lattice-authority-chain",
+    "body": [
+      "<!-- _class: authority-chain -->",
+      "",
+      "## Rule name — the chain, tier by tier.",
+      "",
+      "1. Statute",
+      "   - `Citation reference`",
+      "   - One-line gloss naming the body that issued it and what it does.",
+      "2. Regulation",
+      "   - `Citation reference`",
+      "   - One-line gloss naming the agency rule.",
+      "3. Guidance",
+      "   - `Citation reference`",
+      "   - One-line gloss naming the staff guidance.",
+      "4. Case",
+      "   - `Citation reference`",
+      "   - One-line gloss naming the precedent."
+    ],
+    "description": "Provenance chain — statute → regulation → guidance → case, walked in order."
+  },
   "lattice: before-after": {
     "prefix": "lattice-before-after",
     "body": [
@@ -120,6 +142,22 @@
       "- [ ] Fourth item that is not yet started."
     ],
     "description": "Items with state markers — done, partial, todo."
+  },
+  "lattice: citation-card": {
+    "prefix": "lattice-citation-card",
+    "body": [
+      "<!-- _class: citation-card -->",
+      "",
+      "## Headline framing what this citation establishes.",
+      "",
+      "`Citation reference · short name`",
+      "",
+      "> Verbatim quotation of the cited language.",
+      "",
+      "- Plain-English interpretation of what the language covers.",
+      "- **What we must do.** The concrete action this citation argues for."
+    ],
+    "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss."
   },
   "lattice: closing": {
     "prefix": "lattice-closing",
@@ -454,6 +492,23 @@
     ],
     "description": "Static 2×2 quadrant grid with author-placed items per cell."
   },
+  "lattice: obligation-matrix": {
+    "prefix": "lattice-obligation-matrix",
+    "body": [
+      "<!-- _class: obligation-matrix -->",
+      "",
+      "## Headline framing what the matrix compares.",
+      "",
+      "| Regulation | Obligation A | Obligation B | Obligation C |",
+      "| ---------- | :----------: | :----------: | :----------: |",
+      "| Regime 1   | [x]          | [x]          | [-]          |",
+      "| Regime 2   | [x]          | [-]          | [x]          |",
+      "| Regime 3   | [x]          | [ ]          | [x]          |",
+      "",
+      "Filled = applies, half = partial, empty = exempt."
+    ],
+    "description": "Regulation × obligation grid — state-marker cells encode applies / partial / exempt at a glance."
+  },
   "lattice: piechart": {
     "prefix": "lattice-piechart",
     "body": [
@@ -572,6 +627,45 @@
     ],
     "description": "Native radar / spider chart — items rated across multiple axes."
   },
+  "lattice: redline": {
+    "prefix": "lattice-redline",
+    "body": [
+      "<!-- _class: redline -->",
+      "",
+      "## Headline naming the amendment.",
+      "",
+      "`Citation reference · amendment name (year)`",
+      "",
+      "> Verbatim language with <del>old wording</del> <ins>new wording</ins> inline so the diff reads cleanly.",
+      "",
+      "- **Why this matters.** What the amendment changes in operational terms, in one sentence."
+    ],
+    "description": "Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracking the amendment."
+  },
+  "lattice: regulatory-update": {
+    "prefix": "lattice-regulatory-update",
+    "body": [
+      "<!-- _class: regulatory-update -->",
+      "",
+      "## Headline naming the period or theme.",
+      "",
+      "`Scope label · jurisdiction tier`",
+      "",
+      "1. Change name",
+      "   - `Citation reference`",
+      "   - Summary in one sentence.",
+      "   - `Effective Mon YYYY`",
+      "2. Change name",
+      "   - `Citation reference`",
+      "   - Summary in one sentence.",
+      "   - `Effective Mon YYYY`",
+      "3. Change name",
+      "   - `Citation reference`",
+      "   - Summary in one sentence.",
+      "   - `Effective Mon YYYY`"
+    ],
+    "description": "Change log against a baseline — numbered list of statutes/cases/rules with citation, summary, and effective date."
+  },
   "lattice: roadmap": {
     "prefix": "lattice-roadmap",
     "body": [
@@ -592,6 +686,62 @@
     ],
     "description": "Phased multi-workstream grid — phases across the top, workstreams down the side."
   },
+  "lattice: split-brief": {
+    "prefix": "lattice-split-brief",
+    "body": [
+      "<!-- _class: split-brief -->",
+      "",
+      "`Eyebrow context`",
+      "",
+      "## Headline that anchors the brief.",
+      "",
+      "One-sentence framing paragraph explaining what the findings cover.",
+      "",
+      "- **First finding.** Supporting detail explaining the first finding.",
+      "- **Second finding.** Supporting detail explaining the second finding.",
+      "- **Third finding.** Supporting detail explaining the third finding."
+    ],
+    "description": "Executive brief — dark left anchor, findings list on the right with left-rule chrome."
+  },
+  "lattice: split-compare": {
+    "prefix": "lattice-split-compare",
+    "body": [
+      "<!-- _class: split-compare -->",
+      "",
+      "`Decision Required`",
+      "",
+      "## Headline that frames the choice.",
+      "",
+      "One-sentence context paragraph explaining the stakes.",
+      "",
+      "- Alternative option",
+      "  - First fact about the alternative",
+      "  - Second fact about the alternative",
+      "- Preferred option",
+      "  - First fact about the preferred path",
+      "  - Second fact about the preferred path",
+      "",
+      "> The recommendation in one decisive sentence."
+    ],
+    "description": "Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right."
+  },
+  "lattice: split-metric": {
+    "prefix": "lattice-split-metric",
+    "body": [
+      "<!-- _class: split-metric -->",
+      "",
+      "`Metric name`",
+      "",
+      "## 114*%*",
+      "",
+      "Measurement window and qualifying detail in one short sentence.",
+      "",
+      "- **First supporting point.** Why this metric matters and what's driving it.",
+      "- **Second supporting point.** What concentration or trend explains it.",
+      "- **Third supporting point.** What this number unlocks or threatens."
+    ],
+    "description": "One number owns the room — light left with the hero metric, dark right with supporting findings."
+  },
   "lattice: split-panel": {
     "prefix": "lattice-split-panel",
     "body": [
@@ -606,6 +756,38 @@
       "- **Third point.** Supporting sentence explaining the third point."
     ],
     "description": "Featured left panel + supporting list on the right."
+  },
+  "lattice: split-statement": {
+    "prefix": "lattice-split-statement",
+    "body": [
+      "<!-- _class: split-statement -->",
+      "",
+      "> The quotation, one or two sentences worth committing half the slide to.",
+      "",
+      "`Speaker · Role, Organisation, Year`",
+      "",
+      "- **First implication.** What this quote means for the work in front of us.",
+      "- **Second implication.** A second-order consequence worth naming.",
+      "- **Third implication.** The action this quote argues for."
+    ],
+    "description": "Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right."
+  },
+  "lattice: split-steps": {
+    "prefix": "lattice-split-steps",
+    "body": [
+      "<!-- _class: split-steps -->",
+      "",
+      "`02`",
+      "",
+      "## Phase name",
+      "",
+      "One-sentence summary describing what this phase produces.",
+      "",
+      "1. **First step.** What happens and what gets produced.",
+      "2. **Second step.** What follows and how it's validated.",
+      "3. **Third step.** What closes the phase out."
+    ],
+    "description": "Sequential process — phase label + heading on the left, numbered step timeline on the right with a connecting line."
   },
   "lattice: stats": {
     "prefix": "lattice-stats",
@@ -624,6 +806,28 @@
       "4. **−18d** avg cycle time"
     ],
     "description": "Row of 3–5 stat tiles, each with a big number and a label."
+  },
+  "lattice: statute-stack": {
+    "prefix": "lattice-statute-stack",
+    "body": [
+      "<!-- _class: statute-stack -->",
+      "",
+      "## Jurisdiction comparison framing the three obligations.",
+      "",
+      "- Federal",
+      "  - `Citation · Statute name`",
+      "  - Headline obligation in one sentence.",
+      "  - `Status or effective date`",
+      "- State",
+      "  - `Citation · Statute name`",
+      "  - Headline obligation in one sentence.",
+      "  - `Status or effective date`",
+      "- Local",
+      "  - `Citation · Statute name`",
+      "  - Headline obligation in one sentence.",
+      "  - `Status or effective date`"
+    ],
+    "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status."
   },
   "lattice: subtopic": {
     "prefix": "lattice-subtopic",

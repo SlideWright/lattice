@@ -1,0 +1,9 @@
+/* obligation-matrix — comparison.matrix.structure
+ *
+ * The CSS rules for section.obligation-matrix (plus .heat /
+ * .asymmetric variants) currently live in lib/_legacy.css under the
+ * OBLIGATION-MATRIX banner. Extraction into this file is tracked as
+ * Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/obligation-matrix/manifest.json for the component contract.
+ */

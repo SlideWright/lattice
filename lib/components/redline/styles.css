@@ -1,0 +1,9 @@
+/* redline — comparison.canvas.prose
+ *
+ * The CSS rules for section.redline (plus .annotated / .three-col
+ * variants) currently live in lib/_legacy.css under the REDLINE
+ * banner. Extraction into this file is tracked as Phase 4 of the
+ * _legacy.css elimination work.
+ *
+ * See lib/components/redline/manifest.json for the component contract.
+ */

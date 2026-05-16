@@ -1,0 +1,31 @@
+{
+  "name": "regulatory-update",
+  "function": "progression",
+  "form": "ledger",
+  "substance": "structure",
+  "description": "Change log against a baseline — numbered list of statutes/cases/rules with citation, summary, and effective date.",
+  "purpose": "Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).",
+  "variants": [
+    "timeline",
+    "priority"
+  ],
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the period or theme of the changes."
+    },
+    "scope": {
+      "selector": "p:first-of-type > code",
+      "required": false,
+      "description": "Optional inline-code scope label (e.g. 'Federal · State · International')."
+    },
+    "items": {
+      "selector": "ol > li",
+      "required": true,
+      "description": "Ordered list of changes. Each item leads with a plain text name; nested ul carries citation (code), summary, and effective date (code)."
+    }
+  },
+  "skeleton": "<!-- _class: regulatory-update -->\n\n## Headline naming the period or theme.\n\n`Scope label · jurisdiction tier`\n\n1. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n2. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n3. Change name\n   - `Citation reference`\n   - Summary in one sentence.\n   - `Effective Mon YYYY`\n",
+  "docs": "docs/references/templates.md#regulatory-update"
+}

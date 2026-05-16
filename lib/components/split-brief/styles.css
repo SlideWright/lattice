@@ -1,0 +1,8 @@
+/* split-brief — statement.split.structure
+ *
+ * The CSS rules for section.split-brief currently live in
+ * lib/_legacy.css under the SPLIT-BRIEF banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-brief/manifest.json for the component contract.
+ */

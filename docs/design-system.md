@@ -526,7 +526,7 @@ discovery story that markdown alone can't provide.
 
 - This document — the canonical four-layer model + component contract.
 - The 7-family taxonomy + 11 forms + 4 substances vocabulary.
-- `lib/components/` — 45 manifests + loader + validator + universal-variant tiers.
+- `lib/components/` — 56 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family promoted in Phase 3 of the _legacy.css split.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.

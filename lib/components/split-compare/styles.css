@@ -1,0 +1,8 @@
+/* split-compare — comparison.split.structure
+ *
+ * The CSS rules for section.split-compare currently live in
+ * lib/_legacy.css under the SPLIT-COMPARE banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-compare/manifest.json for the component contract.
+ */

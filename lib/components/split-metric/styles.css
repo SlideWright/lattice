@@ -1,0 +1,8 @@
+/* split-metric — evidence.split.structure
+ *
+ * The CSS rules for section.split-metric currently live in
+ * lib/_legacy.css under the SPLIT-METRIC banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-metric/manifest.json for the component contract.
+ */

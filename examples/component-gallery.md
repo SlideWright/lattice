@@ -14,7 +14,7 @@ header: "Lattice · Component Gallery"
 
 # Lattice Component Gallery
 
-`45 components · 7 function families`
+`56 components · 7 function families`
 
 Every `example.md` in lib/components/, rendered.
 
@@ -83,7 +83,7 @@ Forty-five components, one page each, by function family.
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 02 · 4 components`
+`Section 02 · 6 components`
 
 # Statement
 
@@ -121,6 +121,24 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ---
 
+<!-- _class: split-brief -->
+<!-- _footer: "Executive brief · split-brief" -->
+
+`Q2 Performance Review`
+
+## Enterprise revenue stalled in Q2
+
+Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+
+- Renewal pricing complexity is driving churn at the segment ceiling
+  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
+- Competitive displacement accelerated in the $80–200K ACV tier
+  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+
+---
+
 <!-- _class: split-panel -->
 <!-- _footer: "Featured panel + list · split-panel" -->
 
@@ -135,12 +153,28 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ---
 
+<!-- _class: split-statement -->
+<!-- _footer: "Pull quote + impact · split-statement" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- Clarity is a product decision, not a marketing one
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- Onboarding is the product's first argument for itself
+  - The moment a user first succeeds defines their frame for everything that follows.
+- Understanding, not delight, is the retention driver at scale
+  - Users who understand the system's logic stay through friction. Build for comprehension.
+
+---
+
 <!-- _class: divider -->
 <!-- _paginate: false -->
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 03 · 12 components`
+`Section 03 · 13 components`
 
 # Inventory
 
@@ -304,6 +338,31 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ---
 
+<!-- _class: statute-stack -->
+<!-- _footer: "Citation hierarchy · statute-stack" -->
+
+## Children's data — three jurisdictions, three obligations.
+
+- Federal
+  - `15 U.S.C. §6501 · COPPA`
+  - Verifiable parental consent for under-13 personal data.
+  - Operators must post a clear notice and a deletion route.
+  - `In effect since 2000`
+- State
+  - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+  - Opt-in for selling or sharing under-16 data; opt-out for over-16.
+  - DSAR handling within 45 days; deletion verified.
+  - `Enforced 2023`
+- Local
+  - `NYC Admin Code §22-1201`
+  - Bias-audit obligation for AEDTs used in employment decisions.
+  - Annual audit + candidate notice + public summary.
+  - `Effective 2023`
+
+When the room wants three parallel facts at a glance.
+
+---
+
 <!-- _class: tldr -->
 <!-- _footer: "Single-line takeaways · tldr" -->
 
@@ -322,7 +381,7 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 04 · 7 components`
+`Section 04 · 10 components`
 
 # Comparison
 
@@ -435,6 +494,59 @@ const cards = loadOne('cards-grid');
 
 ---
 
+<!-- _class: obligation-matrix -->
+<!-- _footer: "Regulation × duty · obligation-matrix" -->
+
+## Privacy obligations across regimes — neutral grid.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+
+---
+
+<!-- _class: redline -->
+<!-- _footer: "Clause diff · redline" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** SB-362 collapses "sale" and "sharing" into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+
+---
+
+<!-- _class: split-compare -->
+<!-- _footer: "Two options + verdict · split-compare" -->
+
+`Decision Required`
+
+## Build the data layer or buy it?
+
+Both paths are viable. The difference is where we spend the next 18 months.
+
+- Build in-house
+  - Full control over schema and roadmap
+  - 2–3 engineer-quarters to reach feature parity
+  - Ongoing maintenance burden stays internal
+- Buy + configure
+  - Ship in 6 weeks, not 9 months
+  - Engineering capacity redirects to product-layer features
+  - Exit risk manageable — data export contractually guaranteed
+
+> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+
+---
+
 <!-- _class: verdict-grid -->
 <!-- _footer: "Options vs criteria · verdict-grid" -->
 
@@ -460,9 +572,29 @@ const cards = loadOne('cards-grid');
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 05 · 6 components`
+`Section 05 · 9 components`
 
 # Progression
+
+---
+
+<!-- _class: authority-chain -->
+<!-- _footer: "Statute → case · authority-chain" -->
+
+## COPPA — the chain, tier by tier.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — verifiable parental consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule; 2013 rewrite expanded covered identifiers.
+3. Guidance
+   - `FTC Six-Step Compliance Plan`
+   - Staff guidance — non-binding, but cited in every consent order.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order — operationalised "actual knowledge" standard.
 
 ---
 
@@ -548,6 +680,32 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ---
 
+<!-- _class: regulatory-update -->
+<!-- _footer: "Change log · regulatory-update" -->
+
+## Privacy & AI motion — Q1 2026.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity-assessment pre-market obligation took effect.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Developer + deployer duties for consequential-decision systems.
+   - `Effective Feb 2026`
+3. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order; clarifies the deception standard for privacy branding.
+   - `Final Mar 2026`
+4. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - `Effective Mar 2026`
+
+---
+
 <!-- _class: roadmap -->
 <!-- _footer: "Phased roadmap grid · roadmap" -->
 
@@ -563,6 +721,26 @@ Four columns, mixed card density. Size badge sits in the title row.
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+
+---
+
+<!-- _class: split-steps -->
+<!-- _footer: "Phase + steps · split-steps" -->
+
+`02`
+
+## Discovery & Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data quality review.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, what requires a separate decision.
 
 ---
 
@@ -587,9 +765,23 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _header: "" -->
 <!-- _footer: "Section break · divider" -->
 
-`Section 06 · 10 components`
+`Section 06 · 12 components`
 
 # Evidence
+
+---
+
+<!-- _class: citation-card -->
+<!-- _footer: "Single authority · citation-card" -->
+
+## What counts as "personal information" under CCPA.
+
+`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`
+
+> "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
+
+- In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
+- **What we must do.** Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 ---
 
@@ -731,6 +923,24 @@ Effort estimated in story-points; reach as percent of addressable users.
   - Support `7`
   - Ecosystem `8`
   - Security `8`
+
+---
+
+<!-- _class: split-metric -->
+<!-- _footer: "One hero metric · split-metric" -->
+
+`Net Revenue Retention`
+
+## 114*%*
+
+Measured across all customers active for 12+ months, March 31 cohort.
+
+- Existing customers are growing faster than we lose them
+  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
+- Expansion is concentrated — three segments drive 80% of the gain
+  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
+- Sustained above 110%, this unlocks a capital-efficient growth path
+  - NRR above 110% meets the investor threshold for venture-category efficiency.
 
 ---
 

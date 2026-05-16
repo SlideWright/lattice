@@ -1,0 +1,8 @@
+/* split-statement — statement.split.structure
+ *
+ * The CSS rules for section.split-statement currently live in
+ * lib/_legacy.css under the SPLIT-STATEMENT banner. Extraction into this
+ * file is tracked as Phase 4 of the _legacy.css elimination work.
+ *
+ * See lib/components/split-statement/manifest.json for the component contract.
+ */
