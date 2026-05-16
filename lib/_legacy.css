@@ -632,25 +632,6 @@ section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
  * CSS :has() is supported in Chromium 105+ (Electron used by the Marp extension).
  */
 
-/* ── STATS ──────────────────────────────────────────────────────────────────
- * ol > li(<strong>num</strong> label) → mimic .stats-row > .stat-item         */
-section.stats:not(:has(.stats-row)) ol {
-  display:flex; justify-content:center; gap:var(--sp-2xl);
-  list-style:none; padding:0; margin:0;
-}
-section.stats:not(:has(.stats-row)) ol > li {
-  display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; text-align:center;
-  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
-  letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
-}
-section.stats:not(:has(.stats-row)) ol > li > strong {
-  font-family:var(--font-body); font-size:var(--fs-stat); font-weight:700;
-  color:var(--accent); line-height:1; display:block;
-  letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
-}
-
-
-
 /* ── SPLIT-BRIEF ──────────────────────────────────────────────────────────────
  * Executive brief. Dark left anchor. Right panel: findings list via left-rule.
  * Author: `eyebrow` · ## h2 · p · tight ul (title / -- body). SlotLabelLift bolts title.
