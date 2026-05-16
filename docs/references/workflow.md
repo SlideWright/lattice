@@ -184,7 +184,7 @@ graduates from "new" to "documented". Treat them like
    git rebase origin/main
    ```
 
-The lefthook pre-commit hook runs `npm test` + Biome on staged files; the pre-push hook re-runs both against the full tree. `npm install` wires these automatically via the `prepare` script. Bypass with `--no-verify` only as a genuine last resort; fix the root cause instead.
+The lefthook pre-commit hook runs Biome on staged files plus the scoped test suites those files affect (via `tools/affected-tests.js` — `lib/palette.js` triggers `test:palette`, etc.; renderers and unknown files fall back to the full unit suite). Pre-push runs the full lint + full unit suite as a safety net. A commit-msg hook validates `area(scope): summary` formatting. `npm install` wires all three automatically via the `prepare` script. Bypass with `--no-verify` only as a genuine last resort.
 
 For coverage visibility on a feature, run `npm run test:coverage` (unit only) or `npm run test:coverage:all` (unit + integration). c8 writes an HTML report to `.scratch/coverage/index.html` and a text summary to the console. Coverage is not a CI gate — it's a diagnostic for "what's untested in the area I'm changing?"
 
