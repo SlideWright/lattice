@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const _puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const { resolveSelector } = require(path.join(__dirname, '..', 'lib', 'match-section'));
@@ -191,7 +191,7 @@ function loadPuppeteer() {
   if (selector !== 'all' && result.indices.length === 0) {
     console.error(`error: selector "${selector}" matched no slide`);
     console.error('available h2 titles:');
-    meta.slice(0, 10).forEach((m, i) => console.error(`  ${i + 1}: ${m.h2 || '(no h2)'}`));
+    meta.slice(0, 10).forEach((m, i) => { console.error(`  ${i + 1}: ${m.h2 || '(no h2)'}`); });
     if (meta.length > 10) console.error(`  … and ${meta.length - 10} more`);
     await browser.close();
     process.exit(1);

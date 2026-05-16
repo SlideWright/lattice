@@ -12,7 +12,7 @@
  *   node tools/contrast-audit.js --fails-only  # suppress passing themes
  */
 
-'use strict';
+
 
 const fs   = require('fs');
 const path = require('path');
@@ -86,7 +86,7 @@ function parseHex(hex) {
 
 function toLinear(c) {
   c /= 255;
-  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 }
 
 function luminance(hex) {
@@ -106,7 +106,7 @@ function contrastRatio(fg, bg) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-function wcagGrade(ratio) {
+function _wcagGrade(ratio) {
   if (ratio === null)  return 'N/A  ';
   if (ratio >= 7.0)    return 'AAA  ';
   if (ratio >= 4.5)    return 'AA   ';
@@ -198,7 +198,7 @@ const allThemes = fs.readdirSync(THEMES_DIR)
 const themes = themeArgs.length ? themeArgs : allThemes;
 
 let totalFails = 0;
-let totalWarns = 0;
+const totalWarns = 0;
 let totalChecks = 0;
 
 console.log('');
@@ -281,7 +281,7 @@ for (const theme of themes) {
           })
         ))
       : Infinity;
-    const distStr = isFinite(minDist) ? `  chart min ΔE ${minDist.toFixed(3)}` : '';
+    const distStr = Number.isFinite(minDist) ? `  chart min ΔE ${minDist.toFixed(3)}` : '';
     console.log(`     ✓ all checks pass${distStr}`);
   } else {
     for (const f of fails) {

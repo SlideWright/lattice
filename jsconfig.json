@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["lib/**/*.js", "lattice-emulator.js", "lattice-runtime.js", "marp.config.js", "tools/**/*.js", "test/**/*.js"],
+  "exclude": ["node_modules", "mermaid-v11.min.js", ".scratch"]
+}

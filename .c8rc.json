@@ -1,0 +1,20 @@
+{
+  "include": [
+    "lib/**/*.js",
+    "lattice-emulator.js",
+    "lattice-runtime.js",
+    "marp.config.js"
+  ],
+  "exclude": [
+    "test/**",
+    "examples/**",
+    "node_modules/**",
+    ".scratch/**",
+    "tools/**",
+    "mermaid-v11.min.js"
+  ],
+  "reporter": ["text-summary", "html"],
+  "report-dir": ".scratch/coverage",
+  "all": true,
+  "check-coverage": false
+}

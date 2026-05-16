@@ -8,22 +8,21 @@
  * per `---` slide separator) must hold.
  *
  * If this test fails, one renderer added or dropped a slide. Inspect
- * both HTMLs side-by-side; the emulator's output is in /tmp by
- * default, marp's path is configurable via MARP_OUT.
+ * both HTMLs side-by-side; paths are under .scratch/test-cache when
+ * caching is on, /tmp when CI=true.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const fs     = require('fs');
-const { runEmulator, runMarp } = require('../helpers/render');
-const { pageCount } = require('../helpers/pdf');
+const { runEmulator, runMarp } = require('../../helpers/render');
+const { pageCount } = require('../../helpers/pdf');
 
-test('parity: emulator and marp-cli agree on gallery.md page count',
-  { timeout: 240000 },
-  () => {
-    const emPdf = runEmulator('gallery.md');
-    const mpPdf = runMarp('gallery.md');
-    try {
+describe('parity', () => {
+  test('emulator and marp-cli agree on gallery.md page count',
+    { timeout: 240000 },
+    () => {
+      const emPdf = runEmulator('gallery.md');
+      const mpPdf = runMarp('gallery.md');
       const em = pageCount(emPdf);
       const mp = pageCount(mpPdf);
       // Marp/Chromium adds one blank trailing page; tolerate a delta of 1.
@@ -31,9 +30,5 @@ test('parity: emulator and marp-cli agree on gallery.md page count',
         Math.abs(em - mp) <= 1,
         `cross-renderer drift: emulator=${em} pages, marp-cli=${mp} pages`,
       );
-    } finally {
-      for (const p of [emPdf, mpPdf]) {
-        if (fs.existsSync(p)) fs.unlinkSync(p);
-      }
-    }
-  });
+    });
+});

@@ -14,7 +14,7 @@
  *   6. Chart-family integration: transformChartSection wires up correctly.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   QUADRANT_MODIFIERS,
@@ -34,7 +34,7 @@ const {
   centroid,
   bubbleRadius,
   matchEyebrowText,
-} = require('../../lib/quadrant');
+} = require('../../../lib/quadrant');
 
 // ── Fixtures ───────────────────────────────────────────────────────────
 
@@ -426,30 +426,32 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
 // Quadrant is a chart-family member; section dispatch + chart-frame
 // wrapping are owned by lib/chart-family.js. These pin the wiring.
 
-const { transformChartSection } = require('../../lib/chart-family');
+const { transformChartSection } = require('../../../lib/chart-family');
 
-test('chart-family: quadrant section is wrapped in chart-frame', () => {
-  const inner = '<h2>Where to put the next dollar.</h2>' + UL_FOUR;
-  const { html, cls, transformed } = transformChartSection(inner, 'quadrant');
-  assert.equal(transformed, true);
-  assert.match(cls, /\bchart-frame\b/);
-  assert.match(html, /<div class="chart-header">/);
-  assert.match(html, /<div class="chart-body"><div class="quadrant-figure"/);
-});
+describe('quadrant', () => {
+  test('chart-family: quadrant section is wrapped in chart-frame', () => {
+    const inner = '<h2>Where to put the next dollar.</h2>' + UL_FOUR;
+    const { html, cls, transformed } = transformChartSection(inner, 'quadrant');
+    assert.equal(transformed, true);
+    assert.match(cls, /\bchart-frame\b/);
+    assert.match(html, /<div class="chart-header">/);
+    assert.match(html, /<div class="chart-body"><div class="quadrant-figure"/);
+  });
 
-test('chart-family: quadrant variant rides the class list', () => {
-  const inner = '<h2>X</h2>' + UL_BUBBLE;
-  const { html } = transformChartSection(inner, 'quadrant bubble');
-  assert.match(html, /data-variant="bubble"/);
-  assert.match(html, /class="quadrant-bubble"/);
-});
+  test('chart-family: quadrant variant rides the class list', () => {
+    const inner = '<h2>X</h2>' + UL_BUBBLE;
+    const { html } = transformChartSection(inner, 'quadrant bubble');
+    assert.match(html, /data-variant="bubble"/);
+    assert.match(html, /class="quadrant-bubble"/);
+  });
 
-test('chart-family: eyebrow scale + targets reach the figure', () => {
-  const inner = '<p><code>Effort 0–10 → Reach 0–100 · targets 6, 75</code></p>' +
-    '<h2>X</h2>' + UL_FOUR;
-  const { html } = transformChartSection(inner, 'quadrant threshold');
-  assert.match(html, /data-tx="6"/);
-  assert.match(html, /data-ty="75"/);
-  // Eyebrow stays in the DOM as `.chart-eyebrow`.
-  assert.match(html, /class="chart-eyebrow"/);
+  test('chart-family: eyebrow scale + targets reach the figure', () => {
+    const inner = '<p><code>Effort 0–10 → Reach 0–100 · targets 6, 75</code></p>' +
+      '<h2>X</h2>' + UL_FOUR;
+    const { html } = transformChartSection(inner, 'quadrant threshold');
+    assert.match(html, /data-tx="6"/);
+    assert.match(html, /data-ty="75"/);
+    // Eyebrow stays in the DOM as `.chart-eyebrow`.
+    assert.match(html, /class="chart-eyebrow"/);
+  });
 });

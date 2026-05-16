@@ -45,10 +45,25 @@
     "build:kpi": "node lattice-emulator.js examples/kpi-gallery.md examples/kpi-gallery.pdf",
     "build": "npm run build:gallery && npm run build:mermaid && npm run build:backgrounds && npm run build:kpi",
     "new:theme": "node tools/new-theme.js",
-    "test": "node --test test/unit",
-    "test:integration": "node --test test/integration",
-    "test:all": "node --test test/unit test/integration",
+    "test": "node --test 'test/unit/**/*.test.js'",
+    "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
+    "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
+    "test:coverage:all": "c8 node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
+    "test:palette": "node --test 'test/unit/palette/*.test.js'",
+    "test:mermaid": "node --test 'test/unit/mermaid/*.test.js'",
+    "test:parsing": "node --test 'test/unit/parsing/*.test.js'",
+    "test:layouts": "node --test 'test/unit/layouts/*.test.js'",
+    "test:cli": "node --test 'test/unit/cli/*.test.js'",
+    "test:integration": "node --test 'test/integration/**/*.test.js'",
+    "test:integration:galleries": "node --test 'test/integration/galleries/*.test.js'",
+    "test:integration:parity": "node --test 'test/integration/parity/*.test.js'",
+    "test:integration:mermaid": "node --test 'test/integration/mermaid/*.test.js'",
+    "test:integration:screenshot": "node --test 'test/integration/screenshot/*.test.js'",
+    "test:all": "node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
     "clean:scratch": "find .scratch -mindepth 1 -mtime +14 -print -delete",
+    "prepare": "lefthook install || true",
     "prepublishOnly": "npm test"
   },
   "dependencies": {
@@ -59,6 +74,11 @@
     "puppeteer": "^23.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
+    "c8": "^11.0.0",
+    "lefthook": "^2.1.6"
   }
 }

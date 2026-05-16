@@ -174,14 +174,17 @@ graduates from "new" to "documented". Treat them like
 
 ## Before opening a PR
 
-1. `npm test` — unit suite must be green (<100 ms, no child processes).
+1. `npm test` — full unit suite must be green.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
-3. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
-4. Rebase onto current `main` if the branch has drifted:
+3. `npm run lint` — Biome over every JS file. CI runs this on Node 18/20/22/24.
+4. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
+5. Rebase onto current `main` if the branch has drifted:
    ```bash
    git fetch origin
    git rebase origin/main
    ```
+
+For inner-loop iteration, scoped test scripts (`test:palette`, `test:layouts`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
 
 ## Three-renderer rule
 

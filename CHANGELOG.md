@@ -52,6 +52,15 @@ in patch versions.
 
 ### Changed
 
+- **BREAKING: Node 22 is now the minimum supported runtime.** `engines.node`
+  bumped from `>=18.0.0` to `>=22.0.0`; CI matrix narrowed from `[18, 20, 22, 24]`
+  to `[22, 24]`. Node 18 has been EOL since April 2025; Node 20 entered
+  maintenance in April 2026. Lattice's test infrastructure now uses
+  `node --test` glob arguments (Node 21+) and `describe({ concurrency: true })`
+  (Node 20.10+) — supporting older versions would mean freezing into a
+  pre-Node-21 API forever. Consumers on Node 18 or 20 should pin to
+  Lattice 1.x.
+
 - **Repository reorganization (pre-release).** The project layout was
   flattened, renamed, and re-tested in eight phases. Because Lattice
   has not been released into the wild, every change is a clean break

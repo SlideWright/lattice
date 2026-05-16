@@ -103,7 +103,7 @@ function verdictGridBadges(markdown) {
       if (token.type === "bullet_list_close" || token.type === "ordered_list_close") { listDepth--; continue; }
       if (token.type !== "inline" || listDepth < 2 || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
-      const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+      const m = /^\[([x\-/ ])\]\s*(.*)$/.exec(text);
       if (!m) continue;
       const { sem, shape } = stateClassesFor(m[1]);
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
@@ -138,7 +138,7 @@ function obligationMatrixBadges(markdown) {
       if (token.type === "td_close") { inTd = false; continue; }
       if (token.type !== "inline" || !inTd || !token.children) continue;
       const text = token.children.map(c => c.content || "").join("").trim();
-      const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+      const m = /^\[([x\-/ ])\]\s*(.*)$/.exec(text);
       if (!m) continue;
       const { sem, shape } = stateClassesFor(m[1]);
       const htmlToken = new (token.children[0].constructor)("html_inline", "", 0);
@@ -180,7 +180,7 @@ function checklistItemStates(markdown) {
       // Find the first text child and inspect its leading marker.
       const textChild = token.children.find((c) => c.type === "text");
       if (!textChild) { pendingItemOpen = null; continue; }
-      const m = /^\[([x\-\/ ])\]\s*/.exec(textChild.content);
+      const m = /^\[([x\-/ ])\]\s*/.exec(textChild.content);
       if (!m) { pendingItemOpen = null; continue; }
       const { sem, shape } = stateClassesFor(m[1]);
       const stateClass = `state ${sem} ${shape}`;
@@ -407,7 +407,7 @@ function glossaryRange(markdown) {
           const range = firstTermChar === lastTermChar
             ? firstTermChar
             : `${firstTermChar} – ${lastTermChar || firstTermChar}`;
-          const Ctor = (h2InlineToken.children && h2InlineToken.children[0])
+          const Ctor = (h2InlineToken.children?.[0])
             ? h2InlineToken.children[0].constructor
             : null;
           if (Ctor) {
@@ -486,7 +486,7 @@ const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/word-clou
  */
 function latticeplotFences(md) {
   const defaultFence = md.renderer.rules.fence;
-  md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
     const token = tokens[idx];
     const info = (token.info || '').trim();
     if (info === 'latticeplot') {

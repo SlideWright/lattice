@@ -1,0 +1,35 @@
+# Lefthook configuration — pre-commit, pre-push, and commit-msg hooks.
+#
+# `lefthook install` wires the .git/hooks symlinks; the package.json
+# `prepare` script runs that on `npm install` so contributors get the
+# hooks automatically.
+#
+# Bypass with `git commit --no-verify` only as a last resort — if a hook
+# fails, fix the root cause instead of skipping it.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: '*.{js,mjs,cjs,json}'
+      run: npx biome check --no-errors-on-unmatched {staged_files}
+    - name: affected-tests
+      # Maps staged files → scoped test scripts and runs only those.
+      # Falls back to the full unit suite for cross-cutting changes
+      # (lattice-emulator.js, lattice.css, package.json, …). The full
+      # suite still runs in pre-push as a safety net.
+      run: node tools/affected-tests.js {staged_files}
+
+pre-push:
+  jobs:
+    - name: lint
+      run: npm run lint
+    - name: unit-tests
+      # Safety net: full unit suite runs before push regardless of what
+      # pre-commit's affected-tests ran. Integration suite stays in CI.
+      run: npm test
+
+commit-msg:
+  jobs:
+    - name: format
+      run: tools/check-commit-msg.sh {1}

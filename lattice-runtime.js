@@ -6,7 +6,7 @@
    We upgrade those wrappers + run Mermaid after DOMContentLoaded.
 */
 
-(function () {
+(() => {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
   if (globalScope.__llMermaidBootstrapLoaded) return;
   globalScope.__llMermaidBootstrapLoaded = true;
@@ -335,7 +335,7 @@
       // one further down — making the diagram visually disappear after the
       // first successful render.
       let target = preEl.nextElementSibling;
-      if (target && target.classList.contains("mermaid")) {
+      if (target?.classList.contains("mermaid")) {
         // Existing sibling. If it already holds an SVG, the diagram survived
         // intact — flag the pre as rendered and we're done.
         if (target.querySelector("svg")) {
@@ -491,7 +491,7 @@
     ].join(",");
     for (const preEl of document.querySelectorAll(FENCE_SELECTOR)) {
       const codeEl = preEl.querySelector(":scope > code");
-      const target = preEl.nextElementSibling && preEl.nextElementSibling.classList.contains("mermaid")
+      const target = preEl.nextElementSibling?.classList.contains("mermaid")
         ? preEl.nextElementSibling
         : null;
       if (!codeEl || !target) continue;
@@ -517,7 +517,7 @@
         .then((result) => {
           // Mermaid may resolve with `undefined` if it failed silently in
           // older versions. Treat absence-of-svg as an error.
-          const svg = result && result.svg;
+          const svg = result?.svg;
           if (!svg) {
             attachError(preEl, target, new Error("Mermaid produced no SVG"));
             return;
@@ -541,8 +541,8 @@
 
     // Idempotent: don't append a second error block if scheduleRun fires twice.
     let errEl = null;
-    let scan = target ? target.nextElementSibling : preEl.nextElementSibling;
-    if (scan && scan.classList.contains("mermaid-error")) errEl = scan;
+    const scan = target ? target.nextElementSibling : preEl.nextElementSibling;
+    if (scan?.classList.contains("mermaid-error")) errEl = scan;
     if (!errEl) {
       errEl = document.createElement("div");
       errEl.className = "mermaid-error";
@@ -606,7 +606,7 @@
         for (const li of badgeItems) {
           if (li.querySelector('.badge')) continue; // already transformed
           const text = li.textContent.trim();
-          const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+          const m = /^\[([x\-/ ])\]\s*(.*)$/.exec(text);
           if (!m) continue;
           const { sem, shape } = stateClassesFor(m[1]);
           li.innerHTML = `<span class="badge ${sem} ${shape}">${m[2]}</span>`;
@@ -629,7 +629,7 @@
       for (const td of section.querySelectorAll('td')) {
         if (td.querySelector('.state')) continue; // already transformed
         const text = td.textContent.trim();
-        const m = /^\[([x\-\/ ])\]\s*(.*)$/.exec(text);
+        const m = /^\[([x\-/ ])\]\s*(.*)$/.exec(text);
         if (!m) continue;
         const { sem, shape } = stateClassesFor(m[1]);
         td.innerHTML = `<span class="state ${sem} ${shape}">${m[2]}</span>`;
@@ -660,7 +660,7 @@
           return null;
         })();
         if (!firstText) continue;
-        const m = /^\[([x\-\/ ])\]\s*/.exec(firstText.nodeValue);
+        const m = /^\[([x\-/ ])\]\s*/.exec(firstText.nodeValue);
         if (!m) continue;
         const { sem, shape } = stateClassesFor(m[1]);
         firstText.nodeValue = firstText.nodeValue.slice(m[0].length);
@@ -755,7 +755,7 @@
       const right = document.createElement('div');
       right.className = 'brief-right';
       const header = sec.querySelector('header');
-      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      [...sec.children].filter(el => el !== header).forEach((el) => { right.appendChild(el); });
       sec.appendChild(left);
       sec.appendChild(right);
     }
@@ -790,7 +790,7 @@
       const right = document.createElement('div');
       right.className = 'metric-right';
       const header = sec.querySelector('header');
-      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      [...sec.children].filter(el => el !== header).forEach((el) => { right.appendChild(el); });
       sec.appendChild(left);
       sec.appendChild(right);
     }
@@ -819,7 +819,7 @@
       const right = document.createElement('div');
       right.className = 'steps-right';
       const header = sec.querySelector('header');
-      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      [...sec.children].filter(el => el !== header).forEach((el) => { right.appendChild(el); });
       sec.appendChild(left);
       sec.appendChild(right);
     }
@@ -857,7 +857,7 @@
         [...optionList.children].filter(el => el.tagName === 'LI').forEach((li, i) => {
           const div = document.createElement('div');
           div.className = i === 1 ? 'option preferred' : 'option';
-          [...li.childNodes].forEach(n => div.appendChild(n));
+          [...li.childNodes].forEach((n) => { div.appendChild(n); });
           opts.appendChild(div);
         });
         optionList.remove();
@@ -894,7 +894,7 @@
       const right = document.createElement('div');
       right.className = 'statement-right';
       const header = sec.querySelector('header');
-      [...sec.children].filter(el => el !== header).forEach(el => right.appendChild(el));
+      [...sec.children].filter(el => el !== header).forEach((el) => { right.appendChild(el); });
       sec.appendChild(left);
       sec.appendChild(right);
     }
@@ -946,14 +946,14 @@
           const td = tds[i];
           if (td.classList.contains('cell-state')) continue;
           const text = td.textContent;
-          const m = /^\s*\[([x\-\/ ])\]\s*/.exec(text);
+          const m = /^\s*\[([x\-/ ])\]\s*/.exec(text);
           if (!m) continue;
           const state = roadmapMarkerToState(m[1]);
           if (!state) continue;
           const label = ROADMAP_STATE_LABEL[state];
           // Strip the marker from the first text node and wrap the
           // remaining content in a <span class="cell-state-text">.
-          const firstText = (function () {
+          const firstText = (() => {
             for (const n of td.childNodes) {
               if (n.nodeType === 3) return n;
               if (n.nodeType === 1) return null;
@@ -961,7 +961,7 @@
             return null;
           })();
           if (firstText) {
-            firstText.nodeValue = firstText.nodeValue.replace(/^\s*\[[x\-\/ ]\]\s*/, '');
+            firstText.nodeValue = firstText.nodeValue.replace(/^\s*\[[x\-/ ]\]\s*/, '');
           }
           // Wrap remaining content
           const wrap = document.createElement('span');
@@ -1131,7 +1131,7 @@
   function wcLerp(a, b, t) { return a + (b - a) * t; }
   function wcSizeFromWeight(w, opts) {
     const t = (w - 1) / 4;
-    const e = Math.pow(t, opts.sizeCurve);
+    const e = t ** opts.sizeCurve;
     return wcLerp(opts.sizeSpread[0], opts.sizeSpread[1], e);
   }
   function wcRotatedForRank(rank, weight, opts) {
@@ -1199,7 +1199,7 @@
       const startTheta = wi * WC_GOLDEN_ANGLE;
       let found = null, finalSize = w.size, finalBbox = null;
       for (let retry = 0; retry <= WC_SHRINK_RETRIES; retry++) {
-        const trialSize = w.size * Math.pow(WC_SHRINK_FACTOR, retry);
+        const trialSize = w.size * WC_SHRINK_FACTOR ** retry;
         const plain = (w.text || '').replace(/<[^>]+>/g, '');
         const natBbox = wcBboxFor(plain, trialSize);
         const trialBbox = w.rotated
@@ -1444,9 +1444,7 @@
       let chosen = null;
       for (let len = 1; len <= name.length; len++) {
         const prefix = name.slice(0, len).toUpperCase();
-        const collides = actorNames.some(function (other) {
-          return other !== name && other.slice(0, len).toUpperCase() === prefix;
-        });
+        const collides = actorNames.some((other) => other !== name && other.slice(0, len).toUpperCase() === prefix);
         if (!collides) { chosen = prefix; break; }
       }
       labels.set(name, chosen || name.toUpperCase());
@@ -1458,11 +1456,9 @@
     if (taskCount === 0) return '';
     const actorColor = jAssignActorColors(model);
     const actors = [...actorColor.entries()];
-    const actorLabel = jAssignActorLabels(actors.map(function (e) { return e[0]; }));
-    const sectionVolumes = model.sections.map(function (s) {
-      return s.tasks.reduce(function (sum, t) { return sum + (t.volume == null ? 1 : t.volume); }, 0);
-    });
-    const legendHtml = actors.map(function (e) {
+    const actorLabel = jAssignActorLabels(actors.map((e) => e[0]));
+    const sectionVolumes = model.sections.map((s) => s.tasks.reduce((sum, t) => sum + (t.volume == null ? 1 : t.volume), 0));
+    const legendHtml = actors.map((e) => {
       const n = e[0], c = e[1];
       const lbl = actorLabel.get(n);
       return '<li class="journey-actor" data-actor="' + jEscAttr(n) + '" style="--actor-color:' + c + '">' +
@@ -1472,12 +1468,10 @@
     }).join('');
     const moodLegendHtml = (
       '<li class="journey-mood-key journey-mood-key-low">Pain</li>' +
-      [1, 2, 3, 4, 5].map(function (m) {
-        return '<li class="journey-mood-key" data-mood="' + m + '">' +
+      [1, 2, 3, 4, 5].map((m) => '<li class="journey-mood-key" data-mood="' + m + '">' +
                  '<span class="journey-mood-key-swatch" aria-hidden="true"></span>' +
                  '<span class="journey-mood-key-label">' + m + '</span>' +
-               '</li>';
-      }).join('') +
+               '</li>').join('') +
       '<li class="journey-mood-key journey-mood-key-high">Delight</li>'
     );
     const sectionsHtml = model.sections.map((s, i) =>
@@ -1492,7 +1486,7 @@
     for (let si = 0; si < model.sections.length; si++) {
       for (const t of model.sections[si].tasks) {
         col++;
-        const dots = t.actors.map(function (a) {
+        const dots = t.actors.map((a) => {
           const lbl = actorLabel.get(a);
           return '<span class="journey-actor-dot" data-actor="' + jEscAttr(a) +
             '" data-label-len="' + lbl.length + '" ' +
@@ -1535,11 +1529,9 @@
         '</li>'
       );
     }).join('');
-    const gridLines = [0, 1, 2, 3, 4].map(function (y) {
-      return '<line class="journey-curve-grid" x1="0" y1="' + y + '" x2="' + taskCount + '" y2="' + y + '" ' +
+    const gridLines = [0, 1, 2, 3, 4].map((y) => '<line class="journey-curve-grid" x1="0" y1="' + y + '" x2="' + taskCount + '" y2="' + y + '" ' +
              'stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" ' +
-             'vector-effect="non-scaling-stroke"/>';
-    }).join('');
+             'vector-effect="non-scaling-stroke"/>').join('');
     const curveSvg = (
       '<svg class="journey-curve" viewBox="0 0 ' + taskCount + ' 5" preserveAspectRatio="none" aria-hidden="true">' +
         gridLines +
@@ -1712,7 +1704,7 @@
   function rNiceCeil(v) {
     if (!(v > 0)) return 1;
     const exp = Math.floor(Math.log10(v));
-    const base = Math.pow(10, exp);
+    const base = 10 ** exp;
     const n = v / base;
     let nice;
     if (n <= 1) nice = 1;
@@ -2188,7 +2180,7 @@
   function qNiceCeil(v) {
     if (!(v > 0)) return 1;
     const exp = Math.floor(Math.log10(v));
-    const base = Math.pow(10, exp);
+    const base = 10 ** exp;
     const n = v / base;
     let nice;
     if (n <= 1) nice = 1;
@@ -2733,8 +2725,7 @@
     ].join(",");
     for (const preEl of document.querySelectorAll(PENDING_SEL)) {
       const codeEl = preEl.querySelector(":scope > code");
-      const target = preEl.nextElementSibling &&
-        preEl.nextElementSibling.classList.contains("mermaid")
+      const target = preEl.nextElementSibling?.classList.contains("mermaid")
         ? preEl.nextElementSibling : null;
       if (!codeEl || !target) continue;
       const svg = mermaidSvgCache.get((codeEl.textContent || "").trim());
@@ -2810,7 +2801,7 @@
           }
         } else if (m.type === "characterData") {
           // Walk up from the changed text node to its <code> parent.
-          const codeEl = m.target && m.target.parentElement;
+          const codeEl = m.target?.parentElement;
           if (!isOwnedCode(codeEl)) continue;
           // Source changed in a fence we own — invalidate the cached render
           // so initAndRun picks it up again. Reset state and clear the SVG
@@ -2819,7 +2810,7 @@
           if (!preEl) continue;
           delete preEl.dataset.mermaidState;
           const sib = preEl.nextElementSibling;
-          if (sib && sib.classList.contains("mermaid")) sib.innerHTML = "";
+          if (sib?.classList.contains("mermaid")) sib.innerHTML = "";
           scheduleRun();
           triggered = true;
         }
@@ -2841,7 +2832,7 @@
   // 2-column table with the term auto-bolded. Mirrors the Marpit plugin in
   // marp.config.js and the post-processor in lattice-emulator.js.
   function applyGlossaryListTable(root) {
-    if (!root || !root.querySelectorAll) return;
+    if (!root?.querySelectorAll) return;
     const slides = root.querySelectorAll('section.glossary');
     slides.forEach((sec) => {
       // Skip if a table is already present (already transformed, or table-input author).
@@ -2864,7 +2855,7 @@
           termHtml = li.innerHTML.trim();
         }
         if (!/^<(?:strong|b)\b/i.test(termHtml)) termHtml = `<strong>${termHtml}</strong>`;
-        const defLi = nested && nested.querySelector(':scope > li');
+        const defLi = nested?.querySelector(':scope > li');
         const defHtml = defLi ? defLi.innerHTML.trim() : '';
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${termHtml}</td><td>${defHtml}</td>`;
@@ -2887,7 +2878,7 @@
   // here so every `section.compare-table.glossary` gets its h2 pill in the
   // preview just like in marp-cli output.
   function applyGlossaryRangePills(root) {
-    if (!root || !root.querySelectorAll) return;
+    if (!root?.querySelectorAll) return;
     const slides = root.querySelectorAll('section.glossary');
     slides.forEach((sec) => {
       const h2 = sec.querySelector('h2');
@@ -3378,7 +3369,7 @@
   }
 
   function applyChartFamily(root) {
-    if (!root || !root.querySelectorAll) return;
+    if (!root?.querySelectorAll) return;
     for (const layout of CHART_LAYOUTS) {
       for (const section of root.querySelectorAll('section.' + layout)) {
         try { transformChartSection(section, layout); }
@@ -3451,10 +3442,10 @@
         ).length;
         console.log('[lattice-runtime] bootstrap', {
           mermaidLoaded: typeof globalScope.mermaid !== 'undefined',
-          mermaidVersion: globalScope.mermaid && globalScope.mermaid.version,
+          mermaidVersion: globalScope.mermaid?.version,
           fenceCount,
           readyState: document.readyState,
-          host: location && location.href,
+          host: location?.href,
         });
       } catch (_) { /* swallow */ }
     }
@@ -3625,7 +3616,7 @@
         cfg.target = div;
         cfg.width  = cfg.width  || Math.round(rect.width)  || 480;
         cfg.height = cfg.height || Math.round(rect.height) || 320;
-        if (!cfg.tip) cfg.tip = { renderer: function(){} };
+        if (!cfg.tip) cfg.tip = { renderer: ()=> {} };
         window.functionPlot(cfg);
         div.dataset.fpInflated = '1';
       } catch (e) {
