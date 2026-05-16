@@ -1,4 +1,4 @@
-# Lefthook configuration — pre-commit and pre-push hooks.
+# Lefthook configuration — pre-commit, pre-push, and commit-msg hooks.
 #
 # `lefthook install` wires the .git/hooks symlinks; the package.json
 # `prepare` script runs that on `npm install` so contributors get the
@@ -13,16 +13,20 @@ pre-commit:
     - name: lint
       glob: '*.{js,mjs,cjs,json}'
       run: npx biome check --no-errors-on-unmatched {staged_files}
-    - name: unit-tests
-      # Fast (~5s) and catches obvious regressions before the commit
-      # reaches the remote. Integration suite stays in CI, not here.
-      run: npm test
+    - name: affected-tests
+      # Maps staged files → scoped test scripts and runs only those.
+      # Falls back to the full unit suite for cross-cutting changes
+      # (lattice-emulator.js, lattice.css, package.json, …). The full
+      # suite still runs in pre-push as a safety net.
+      run: node tools/affected-tests.js {staged_files}
 
 pre-push:
   jobs:
     - name: lint
       run: npm run lint
     - name: unit-tests
+      # Safety net: full unit suite runs before push regardless of what
+      # pre-commit's affected-tests ran. Integration suite stays in CI.
       run: npm test
 
 commit-msg:
