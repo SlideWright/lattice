@@ -46,6 +46,8 @@
     "build": "npm run build:gallery && npm run build:mermaid && npm run build:backgrounds && npm run build:kpi",
     "new:theme": "node tools/new-theme.js",
     "new:slide": "node tools/new-slide.js",
+    "snippets:build": "node tools/build-snippets.js",
+    "snippets:check": "node tools/build-snippets.js --check",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
