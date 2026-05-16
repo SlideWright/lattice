@@ -530,13 +530,14 @@ discovery story that markdown alone can't provide.
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.
+- Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
 
 **In progress on this branch:**
 
 - Component folder restructure — moving each `lib/components/<name>.json` to `lib/components/<name>/manifest.json` + `styles.css` + (optional) `transform.js` + `example.md` + `README.md`. Migrating in batches of 5 with per-batch visual diff validation.
 - `tools/build-css.js` — CSS bundler that concatenates per-component CSS via `@layer`.
 - State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the CSS rules are landing alongside the folder migration.
-- Test scope rename — `test/unit/layouts/` → `test/unit/components/`.
+- `cards-side` CSS extraction — currently shares rules with `cards-grid` in `cards-grid/styles.css`; pending split so each component owns its own selectors. Tracked with the broader CSS layer activation work.
 
 **Ratified on this branch:**
 

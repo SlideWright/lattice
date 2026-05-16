@@ -199,7 +199,7 @@ graduates from "new" to "documented". Treat them like
    git rebase origin/main
    ```
 
-For inner-loop iteration, scoped test scripts (`test:palette`, `test:layouts`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
+For inner-loop iteration, scoped test scripts (`test:palette`, `test:components`, …), `test:watch`, the pre-commit / pre-push / commit-msg hooks, coverage, and the integration-test cache all live in `docs/references/development.md`. That file is the tooling reference; this one is the process reference.
 
 ## Three-renderer rule
 

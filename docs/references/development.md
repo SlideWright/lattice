@@ -68,7 +68,8 @@ test/unit/palette/      palette, palette-resolution, contrast
 test/unit/mermaid/      mermaid-var-map
 test/unit/parsing/      source-parse, match-section, splitter,
                         slot-label-lift, marp-plugins
-test/unit/layouts/      journey, roadmap, word-cloud, quadrant, radar
+test/unit/components/   component-manifest, journey, roadmap,
+                        word-cloud, quadrant, radar
 test/unit/cli/          cli
 test/integration/galleries/   emulator.{gallery,kpi-gallery,mermaid},
                               marp.gallery

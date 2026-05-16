@@ -61,7 +61,7 @@
     "test:palette": "node --test 'test/unit/palette/*.test.js'",
     "test:mermaid": "node --test 'test/unit/mermaid/*.test.js'",
     "test:parsing": "node --test 'test/unit/parsing/*.test.js'",
-    "test:layouts": "node --test 'test/unit/layouts/*.test.js'",
+    "test:components": "node --test 'test/unit/components/*.test.js'",
     "test:cli": "node --test 'test/unit/cli/*.test.js'",
     "test:integration": "node --test 'test/integration/**/*.test.js'",
     "test:integration:galleries": "node --test 'test/integration/galleries/*.test.js'",
