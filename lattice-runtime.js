@@ -901,13 +901,13 @@
   }
 
   // ── Roadmap modifier transforms ─────────────────────────────────────────
-  // Mirror lib/roadmap.js / lattice-emulator.js. Idempotent: each transform
-  // checks for the marker class on the section/cell and bails early when it
-  // has already run.
+  // Mirror lib/components/roadmap/transform.js / lattice-emulator.js. Idempotent:
+  // each transform checks for the marker class on the section/cell and bails
+  // early when it has already run.
   //
   // Sibling implementations (parity contract):
-  //   lib/roadmap.js        — HTML-string transform run by marp.config.js render hook
-  //   lattice-emulator.js   — per-slide emulator path delegates to lib/roadmap.js
+  //   lib/components/roadmap/transform.js — HTML-string transform run by marp.config.js render hook
+  //   lattice-emulator.js                 — per-slide emulator path delegates to the transform
   //
   // These DOM transforms act as a fallback for web export and for any
   // preview path that didn't run the engine plugin.
@@ -1022,7 +1022,7 @@
         const eyebrow = document.createElement('span');
         eyebrow.className = 'horizon-eyebrow';
         eyebrow.textContent = 'Phase ' + String(idx + 1).padStart(2, '0');
-        // Lift a trailing <code> into a meta pill — mirrors lib/roadmap.js.
+        // Lift a trailing <code> into a meta pill — mirrors lib/components/roadmap/transform.js.
         let headerHtml = header;
         let metaText = '';
         const trailingCode = header.match(/\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*$/);

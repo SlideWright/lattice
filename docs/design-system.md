@@ -531,13 +531,14 @@ discovery story that markdown alone can't provide.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
+- `cards-side` CSS extraction — split out of `cards-grid/styles.css` into its own `lib/components/cards-side/styles.css`. Validated by same-sandbox before/after PDF byte-compare on all five decks using either component (0–1 byte drift = pixel-identical).
+- `_legacy.css` destination map — top-of-file comment block directing the future full split (per-block destinations, DEAD-CANDIDATE list for ~1,400 lines of removed-vertical CSS). The split itself is deferred; the map unblocks the next focused session.
+- Per-component transform location — every component whose transform exists is now at `lib/components/<name>/transform.js` (word-cloud, quadrant, radar, roadmap). Top-level `lib/journey.js` and `lib/chart-family.js` are genuinely shared infrastructure and stay at `lib/` root.
 
 **In progress on this branch:**
 
-- Component folder restructure — moving each `lib/components/<name>.json` to `lib/components/<name>/manifest.json` + `styles.css` + (optional) `transform.js` + `example.md` + `README.md`. Migrating in batches of 5 with per-batch visual diff validation.
-- `tools/build-css.js` — CSS bundler that concatenates per-component CSS via `@layer`.
-- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the CSS rules are landing alongside the folder migration.
-- `cards-side` CSS extraction — currently shares rules with `cards-grid` in `cards-grid/styles.css`; pending split so each component owns its own selectors. Tracked with the broader CSS layer activation work.
+- Full `_legacy.css` split — the destination map ships in the file header; the actual moves (5,938 lines into `_root.css` + `_base.css` + `_modifiers.css` + `_backgrounds.css` + `_syntax-highlight.css` + per-component) wait for a focused next session. Start with DEAD-CANDIDATE verification (~1,400 line reclaim at zero visual risk).
+- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the actual CSS rules for these tiers haven't landed. Bundled with the `_legacy.css` split work above.
 
 **Ratified on this branch:**
 

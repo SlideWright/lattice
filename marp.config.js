@@ -472,7 +472,7 @@ function registerMermaidHljs(marp) {
 
 const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
 const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
-const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
+const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/transform');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/journey');
 const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/transform');
 

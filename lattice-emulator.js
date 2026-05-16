@@ -939,7 +939,7 @@ const { liftSlotLabel }  = require('./lib/slot-label-lift');
 // Roadmap modifier transforms — `roadmap status` (cell state markers) and
 // `roadmap horizons` (table → three-card transpose). Shared with the
 // Marp Core engine wrapper in marp.config.js (parity contract).
-const { transformRoadmapSection } = require('./lib/roadmap');
+const { transformRoadmapSection } = require('./lib/components/roadmap/transform');
 // Journey transform — nested list → .journey-board DOM. Shared with
 // marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
 const { transformJourneySection } = require('./lib/journey');
@@ -1337,7 +1337,7 @@ function parseSlide(raw, index) {
 
   // roadmap status / horizons: state-marker tagging on <td> cells, or
   // transpose the workstream × phase table into a horizons-card grid.
-  // Implementation lives in lib/roadmap.js — shared with marp.config.js
+  // Implementation lives in lib/components/roadmap/transform.js — shared with marp.config.js
   // and mirrored by the runtime DOM transform in lattice-runtime.js so
   // every render path produces the same DOM.
   if (cls.includes('roadmap')) {
@@ -1364,7 +1364,7 @@ function parseSlide(raw, index) {
   }
 
   // Universal state-token grammar — shared by verdict-grid, obligation-matrix,
-  // checklist (and roadmap, in lib/roadmap.js). Markdown markers map to
+  // checklist (and roadmap, in lib/components/roadmap/transform.js). Markdown markers map to
   // semantic + shape classes; CSS draws the visual via SVG masks (see the
   // UNIVERSAL STATE TOKEN block in lattice.css). Sibling implementations
   // in marp.config.js and lattice-runtime.js must stay in sync.

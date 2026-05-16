@@ -28,7 +28,6 @@ const SCRIPT_FOR_LIB = {
   'palette.js':           'test:palette',
   'resolve-palette.js':   'test:palette',
   'journey.js':           'test:components',
-  'roadmap.js':           'test:components',
   'chart-family.js':      'test:components',
   'match-section.js':     'test:parsing',
   'slot-label-lift.js':   'test:parsing',
