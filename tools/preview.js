@@ -55,13 +55,9 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 // set we'll actually build. Update when a new deck is added.
 const ALL_DECKS = Object.freeze([
   'gallery',
-  'mermaid-gallery',
-  'kpi-gallery',
-  'backgrounds-gallery',
-  'gallery-guide',
+  'gallery-mermaid',
   'gallery-jargon',
   'design-system',
-  'component-gallery',
   'chart-family-experiment',
   'diagram-tokens',
   'image-concepts',
@@ -79,8 +75,10 @@ const ALL_DECKS = Object.freeze([
   'word-cloud',
 ]);
 
-// Page-counted baselines — the three canonical galleries CI asserts on.
-const CANONICAL_DECKS = Object.freeze(['gallery', 'mermaid-gallery', 'kpi-gallery']);
+// Page-counted baselines — the two canonical top-level galleries CI
+// asserts on (per-component galleries self-assert via the formula in
+// expectedGallerySlideCount; gallery-jargon is editorial, not asserted).
+const CANONICAL_DECKS = Object.freeze(['gallery', 'gallery-mermaid']);
 
 // Pattern detectors. Source-order matters: most-specific first.
 const PATTERNS = Object.freeze({
@@ -109,8 +107,7 @@ const PATTERNS = Object.freeze({
     // Component metadata only affects scaffolder/snippets, not rendering.
     /^lib\/components\/index\.js$/,
     /^lib\/components\/manifest\.schema\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/(?:[a-z][a-z0-9-]*\.)?manifest\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/(?:[a-z][a-z0-9-]*\.)?README\.md$/,
+    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.manifest\.json$/,
     /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
   ],
   // Full diff triggers — shared CSS, theme, three-renderer paths.
@@ -129,13 +126,11 @@ const PATTERNS = Object.freeze({
     /^lib\/class-aliases\.js$/,
     /^lattice\.css$/,
   ],
-  // Component-scoped triggers — affect every deck using the component.
-  // Accept both dotted (<name>.styles.css) and legacy (styles.css) shapes.
-  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?styles\.css$/,
-  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?transform\.js$/,
-  // Example.md triggers — single slide in component-gallery.
-  componentExample: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?example\.md$/,
-  // Per-component gallery.md trigger — only that component's gallery rebuilds.
+  // Component-scoped triggers — affect that component's per-component
+  // gallery + every top-level deck that uses the component.
+  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.styles\.css$/,
+  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.transform\.js$/,
+  // Per-component gallery.md change — rebuild that component's gallery only.
   componentGallery: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
   // Deck source — that deck only.
   deckSource: /^examples\/([a-z][a-z0-9-]*)\.md$/,
@@ -206,19 +201,17 @@ function detectScope(changes, override) {
 
   const affectedComponents = new Set();
   const affectedDecks = new Set();
-  const exampleOnlyComponents = new Set();
-  let exampleOnly = true;
 
   for (const f of visual) {
     let matched = false;
     const cssM = f.match(PATTERNS.componentCss);
-    if (cssM) { affectedComponents.add(cssM[1]); matched = true; exampleOnly = false; }
+    if (cssM) { affectedComponents.add(cssM[1]); matched = true; }
     const jsM = f.match(PATTERNS.componentTransform);
-    if (jsM) { affectedComponents.add(jsM[1]); matched = true; exampleOnly = false; }
-    const exM = f.match(PATTERNS.componentExample);
-    if (exM) { exampleOnlyComponents.add(exM[1]); matched = true; }
+    if (jsM) { affectedComponents.add(jsM[1]); matched = true; }
+    const galleryM = f.match(PATTERNS.componentGallery);
+    if (galleryM) { affectedComponents.add(galleryM[1]); matched = true; }
     const deckM = f.match(PATTERNS.deckSource);
-    if (deckM) { affectedDecks.add(deckM[1]); matched = true; exampleOnly = false; }
+    if (deckM) { affectedDecks.add(deckM[1]); matched = true; }
     if (!matched) {
       // Unknown lib/ file — be conservative, treat as full.
       return {
@@ -229,21 +222,12 @@ function detectScope(changes, override) {
     }
   }
 
-  // Component CSS / transform → rebuild every deck using that component
+  // Component CSS / transform → rebuild every deck using that component.
+  // The per-component gallery is implicit: it's the canonical demo deck
+  // for that component, so callers can rebuild <name>.gallery.pdf
+  // directly from the affectedComponents set.
   for (const c of affectedComponents) {
     for (const d of decksUsingComponent(c)) affectedDecks.add(d);
-  }
-  // Example.md → only component-gallery's slide for that component
-  if (exampleOnlyComponents.size > 0) affectedDecks.add('component-gallery');
-  if (affectedComponents.size > 0) affectedDecks.add('component-gallery');
-
-  if (exampleOnly && affectedDecks.size === 1 && affectedDecks.has('component-gallery')) {
-    return {
-      level: 'L1',
-      decks: ['component-gallery'],
-      components: [...exampleOnlyComponents],
-      reason: `example.md changed for ${[...exampleOnlyComponents].join(', ')}`,
-    };
   }
 
   if (affectedComponents.size > 0) {

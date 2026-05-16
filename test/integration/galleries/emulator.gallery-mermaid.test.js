@@ -1,5 +1,5 @@
 /**
- * Integration: rebuild mermaid-gallery.md through the lattice emulator
+ * Integration: rebuild gallery-mermaid.md through the lattice emulator
  * and assert the produced PDF matches the expected page count.
  *
  * Very slow on cache miss (~2 minutes — 25 mmdc cold starts via
@@ -14,12 +14,12 @@ const { pageCount }   = require('../../helpers/pdf');
 
 const EXPECTED_PAGES = 31;
 
-describe('emulator.mermaid', () => {
-  test('emulator: mermaid-gallery.md builds and produces expected page count',
+describe('emulator.gallery-mermaid', () => {
+  test('emulator: gallery-mermaid.md builds and produces expected page count',
     { timeout: 600000 },
     () => {
-      const pdf = runEmulator('mermaid-gallery.md');
+      const pdf = runEmulator('gallery-mermaid.md');
       assert.equal(pageCount(pdf), EXPECTED_PAGES,
-        'mermaid-gallery.md page count drifted');
+        'gallery-mermaid.md page count drifted');
     });
 });

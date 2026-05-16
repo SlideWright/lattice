@@ -60,22 +60,23 @@ tier asserts cross-renderer parity on slide count.
 Full tooling details (scopes, hooks, CI structure, cache behaviour)
 live in `docs/references/development.md`.
 
-**Three regression tiers:**
+**Two regression tiers:**
 
 - **Per-component galleries** (58 total, one per `lib/components/<name>/`)
   — every enriched manifest's `expectedGallerySlideCount()` is asserted
   against the rendered PDF page count. Adding a variant updates the
   formula; a transform that drops a slide fails its component's test.
-  See `test/integration/components/component-galleries.test.js`.
+  See `test/integration/components/component-galleries.test.js`. The
+  KPI regression signal lives in `lib/components/kpi/kpi.gallery.pdf`'s
+  per-component assertion (was the standalone `kpi-gallery.md` deck).
 - **Top-level baseline decks** (CI-asserted, page count inlined in each
-  test file): `gallery.md` (89pp), `kpi-gallery.md` (13pp),
-  `mermaid-gallery.md` (31pp). A drift on any of these fails the
-  integration tier.
-- **Long-running editorial decks** (stable and shared, but not
-  page-count-asserted): `backgrounds-gallery.md`, `gallery-guide.md`,
-  `gallery-jargon.md`. Hand-curated showcases.
+  test file): `gallery.md` (89pp) and `gallery-mermaid.md` (31pp). A
+  drift on either fails the integration tier. The cross-renderer parity
+  gate also runs on `gallery.md` only.
 
-The isolation rule applies to **all** baseline + editorial decks — see workflow.md.
+`gallery-jargon.md` is a long-running editorial showcase — stable and
+shared, but not page-count-asserted. The isolation rule applies to all
+three top-level decks — see workflow.md.
 
 ## The visual-iteration loop
 

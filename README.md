@@ -48,7 +48,7 @@ and Puppeteer (which downloads a matching Chromium).
 
 ```sh
 node lattice-emulator.js examples/gallery.md examples/gallery.pdf
-node lattice-emulator.js examples/mermaid-gallery.md examples/mermaid-gallery.pdf
+node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pdf
 ```
 
 The two galleries are committed to `examples/` as ground-truth fixtures
@@ -149,7 +149,7 @@ lattice/
 │
 ├── examples/
 │   ├── gallery.md / gallery.pdf                  # 71-page layout gallery
-│   ├── mermaid-gallery.md / mermaid-gallery.pdf  # 31-page diagram gallery
+│   ├── gallery-mermaid.md / gallery-mermaid.pdf  # 31-page diagram gallery
 │   └── sample-image*.svg
 │
 ├── docs/
@@ -185,9 +185,9 @@ npm run test:all          # both tiers
 ```
 
 The unit tier finishes in under 100 ms and is the inner loop. The
-integration tier takes ~30 s (mostly the mermaid-gallery rebuild) and
+integration tier takes ~30 s (mostly the gallery-mermaid rebuild) and
 is what CI runs before merge. Both top-level galleries
-(`examples/gallery.md` and `examples/mermaid-gallery.md`) are the
+(`examples/gallery.md` and `examples/gallery-mermaid.md`) are the
 authoritative test fixtures; their committed PDFs are the regression
 baseline. Expected page counts are inlined in each test file; the 58
 per-component galleries derive their counts from the manifest itself
