@@ -4,92 +4,112 @@
  * Tests --help / --version, friendly error paths, and exit codes by
  * spawning each tool as a subprocess and asserting on exit code,
  * stdout, and stderr. No Chromium / no Marp pipeline runs — these
- * exit before any heavy work, so the suite stays in the "<100 ms
- * inner loop" budget for the unit tier.
+ * exit before any heavy work.
+ *
+ * Async + `{ concurrency: true }` so the 17 subprocess spawns overlap
+ * on the worker thread instead of running serially. With sync spawnSync
+ * the file took ~4s and was the long pole of the unit suite; async
+ * brings it to ~1s on a 4-core box.
  */
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
-const { spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 
-describe('cli', () => {
+describe('cli', { concurrency: true }, () => {
   const ROOT = path.join(__dirname, '..', '..', '..');
   const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
   const SCREENSHOT = path.join(ROOT, 'tools', 'screenshot-slides.js');
 
   function run(script, args = [], { env = {} } = {}) {
-    return spawnSync(process.execPath, [script, ...args], {
-      cwd: ROOT,
-      encoding: 'utf8',
-      env: { ...process.env, ...env },
-      timeout: 10000,
+    return new Promise((resolve, reject) => {
+      const child = spawn(process.execPath, [script, ...args], {
+        cwd: ROOT,
+        env: { ...process.env, ...env },
+      });
+      let stdout = '';
+      let stderr = '';
+      child.stdout.on('data', (d) => { stdout += d.toString('utf8'); });
+      child.stderr.on('data', (d) => { stderr += d.toString('utf8'); });
+      const timer = setTimeout(() => {
+        child.kill();
+        reject(new Error(`cli test timeout after 10s: ${script} ${args.join(' ')}`));
+      }, 10000);
+      child.on('close', (status) => {
+        clearTimeout(timer);
+        resolve({ status, stdout, stderr });
+      });
+      child.on('error', (err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
     });
   }
 
   // ── lattice-emulator ──────────────────────────────────────────────────────
 
-  test('emulator: --help exits 0 with usage on stdout', () => {
-    const r = run(EMULATOR, ['--help']);
+  test('emulator: --help exits 0 with usage on stdout', async () => {
+    const r = await run(EMULATOR, ['--help']);
     assert.equal(r.status, 0, `expected 0, got ${r.status}; stderr: ${r.stderr}`);
     assert.match(r.stdout, /USAGE/);
     assert.match(r.stdout, /lattice-emulator/);
     assert.match(r.stdout, /EXIT CODES/);
   });
 
-  test('emulator: -h is a synonym for --help', () => {
-    const r = run(EMULATOR, ['-h']);
+  test('emulator: -h is a synonym for --help', async () => {
+    const r = await run(EMULATOR, ['-h']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /USAGE/);
   });
 
-  test('emulator: --version exits 0 with version string', () => {
-    const r = run(EMULATOR, ['--version']);
+  test('emulator: --version exits 0 with version string', async () => {
+    const r = await run(EMULATOR, ['--version']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /^lattice-emulator \d+\.\d+\.\d+/);
   });
 
-  test('emulator: -v is a synonym for --version', () => {
-    const r = run(EMULATOR, ['-v']);
+  test('emulator: -v is a synonym for --version', async () => {
+    const r = await run(EMULATOR, ['-v']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /^lattice-emulator \d/);
   });
 
-  test('emulator: no args exits 1 with usage on stderr', () => {
-    const r = run(EMULATOR);
+  test('emulator: no args exits 1 with usage on stderr', async () => {
+    const r = await run(EMULATOR);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /Usage/);
     assert.equal(r.stdout, '');
   });
 
-  test('emulator: unknown flag exits 1 with friendly error', () => {
-    const r = run(EMULATOR, ['--bogus', 'deck.md', 'out.pdf']);
+  test('emulator: unknown flag exits 1 with friendly error', async () => {
+    const r = await run(EMULATOR, ['--bogus', 'deck.md', 'out.pdf']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /unknown option: --bogus/);
     assert.doesNotMatch(r.stderr, /at .+\.js:\d+/, 'stderr should not contain a stack trace');
   });
 
-  test('emulator: --palette without value exits 1', () => {
-    const r = run(EMULATOR, ['deck.md', 'out.pdf', '--palette']);
+  test('emulator: --palette without value exits 1', async () => {
+    const r = await run(EMULATOR, ['deck.md', 'out.pdf', '--palette']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /--palette requires a value/);
   });
 
-  test('emulator: missing source.md exits 1 with friendly message (no stack trace)', () => {
-    const r = run(EMULATOR, ['does-not-exist.md', 'out.pdf']);
+  test('emulator: missing source.md exits 1 with friendly message (no stack trace)', async () => {
+    const r = await run(EMULATOR, ['does-not-exist.md', 'out.pdf']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /source markdown not found/);
     assert.doesNotMatch(r.stderr, /at .+\.js:\d+/);
   });
 
-  test('emulator: missing custom CSS exits 1 with friendly message', () => {
-    const r = run(EMULATOR, ['examples/gallery.md', 'does-not-exist.css', 'out.pdf']);
+  test('emulator: missing custom CSS exits 1 with friendly message', async () => {
+    const r = await run(EMULATOR, ['examples/gallery.md', 'does-not-exist.css', 'out.pdf']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /layout CSS not found/);
   });
 
-  test('emulator: bad palette exits 1 and lists available palettes', () => {
-    const r = run(EMULATOR, ['examples/gallery.md', 'out.pdf', 'nonesuch']);
+  test('emulator: bad palette exits 1 and lists available palettes', async () => {
+    const r = await run(EMULATOR, ['examples/gallery.md', 'out.pdf', 'nonesuch']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /palette not found: nonesuch/);
     assert.match(r.stderr, /available palettes:.*indaco/);
@@ -97,47 +117,47 @@ describe('cli', () => {
 
   // ── screenshot-slides ─────────────────────────────────────────────────────
 
-  test('screenshot: --help exits 0 with usage on stdout', () => {
-    const r = run(SCREENSHOT, ['--help']);
+  test('screenshot: --help exits 0 with usage on stdout', async () => {
+    const r = await run(SCREENSHOT, ['--help']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /USAGE/);
     assert.match(r.stdout, /SELECTOR FORMS/);
     assert.match(r.stdout, /EXIT CODES/);
   });
 
-  test('screenshot: -h is a synonym for --help', () => {
-    const r = run(SCREENSHOT, ['-h']);
+  test('screenshot: -h is a synonym for --help', async () => {
+    const r = await run(SCREENSHOT, ['-h']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /USAGE/);
   });
 
-  test('screenshot: --version exits 0 with version string', () => {
-    const r = run(SCREENSHOT, ['--version']);
+  test('screenshot: --version exits 0 with version string', async () => {
+    const r = await run(SCREENSHOT, ['--version']);
     assert.equal(r.status, 0);
     assert.match(r.stdout, /^screenshot-slides \d+\.\d+\.\d+/);
   });
 
-  test('screenshot: missing HTML exits 1 with friendly message', () => {
-    const r = run(SCREENSHOT, ['does-not-exist.html']);
+  test('screenshot: missing HTML exits 1 with friendly message', async () => {
+    const r = await run(SCREENSHOT, ['does-not-exist.html']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /HTML not found/);
     assert.doesNotMatch(r.stderr, /at .+\.js:\d+/);
   });
 
-  test('screenshot: bad scale exits 1 with explanation', () => {
-    const r = run(SCREENSHOT, ['--scale', 'abc']);
+  test('screenshot: bad scale exits 1 with explanation', async () => {
+    const r = await run(SCREENSHOT, ['--scale', 'abc']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /scale must be a number ≥ 1/);
   });
 
-  test('screenshot: unknown flag exits 1', () => {
-    const r = run(SCREENSHOT, ['--bogus']);
+  test('screenshot: unknown flag exits 1', async () => {
+    const r = await run(SCREENSHOT, ['--bogus']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /unknown option: --bogus/);
   });
 
-  test('screenshot: --selector without value exits 1', () => {
-    const r = run(SCREENSHOT, ['--selector']);
+  test('screenshot: --selector without value exits 1', async () => {
+    const r = await run(SCREENSHOT, ['--selector']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /--selector requires a value/);
   });
