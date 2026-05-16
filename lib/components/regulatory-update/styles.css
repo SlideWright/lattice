@@ -1,9 +1,11 @@
 /* regulatory-update — progression.ledger.structure
  *
- * The CSS rules for section.regulatory-update (plus .timeline /
- * .priority variants) currently live in lib/_legacy.css under the
- * REGULATORY-UPDATE banner. Extraction into this file is tracked as
- * Phase 4 of the _legacy.css elimination work.
+ * The CSS rules for section.regulatory-update currently live in
+ * lib/_legacy.css under the REGULATORY-UPDATE banner. Extraction into
+ * this file is deferred pending investigation of a subtle layout
+ * difference on the .timeline variant when rules move from _legacy.css
+ * to the component folder (same byte-identical rules, but rendering
+ * shifts slightly — root cause TBD).
  *
  * See lib/components/regulatory-update/manifest.json for the component contract.
  */

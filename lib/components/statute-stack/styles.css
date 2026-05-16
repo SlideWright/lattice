@@ -1,9 +1,260 @@
 /* statute-stack — inventory.ledger.structure
  *
- * The CSS rules for section.statute-stack (plus .hierarchy / .bands /
- * .preemption / .lane variants) currently live in lib/_legacy.css under
- * the STATUTE-STACK banner. Extraction into this file is tracked as
- * Phase 4 of the _legacy.css elimination work.
- *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/statute-stack/manifest.json for the component contract.
  */
+
+/* ── STATUTE-STACK ────────────────────────────────────────────────────
+ * <!-- _class: statute-stack -->
+ *
+ * - Federal
+ *   - `15 U.S.C. §6501 · COPPA`
+ *   - Verifiable parental consent for under-13 personal data.
+ *   - `In effect since 2000`
+ * - State
+ *   - `Cal. Civ. Code §1798.120 · CCPA/CPRA`
+ *   - …
+ *
+ * Authoring contract: top-level li carries ONLY the jurisdiction label
+ * (auto-bolded by slotLabelLift in all three renderers — author writes
+ * `- Federal`, not `- **Federal**`). The nested ul holds the body — the
+ * first item is the citation chip (only-child <code>), middle items are
+ * prose obligations, and the last item is the status pill (only-child
+ * <code>). Matches before-after / decision shape so slot-labelled
+ * layouts share one authoring convention.
+ *
+ * Default = three equal vertical rails. Modifiers reshape the same DOM:
+ * .hierarchy (authority pyramid), .bands (horizontal full-width rows),
+ * .preemption (arrowed cascade), .lane (markdown table — different
+ * shape, see below).
+ * ──────────────────────────────────────────────────────────────────── */
+section.statute-stack { display:flex; flex-direction:column; }
+section.statute-stack h2 { margin-bottom:var(--sp-md); }
+section.statute-stack > ul,
+section.statute-stack > ol {
+  list-style:none; padding:0; margin:0;
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:var(--sp-md); flex:1;
+}
+section.statute-stack > ul > li,
+section.statute-stack > ol > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-top:3px solid var(--jur-accent, var(--accent));
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+  color:var(--text-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-base);
+  font-weight:400;
+}
+section.statute-stack > ul > li::marker,
+section.statute-stack > ol > li::marker { content:''; }
+/* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
+ * sienna, Local = warm slate. Cycles after three. */
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--c4-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--c6-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--c1-dark); }
+/* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
+section.statute-stack > ul > li > strong:first-child,
+section.statute-stack > ol > li > strong:first-child {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--jur-accent, var(--accent));
+}
+/* Body list. */
+section.statute-stack > ul > li > ul,
+section.statute-stack > ol > li > ul,
+section.statute-stack > ul > li > ol,
+section.statute-stack > ol > li > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  flex:1;
+}
+section.statute-stack > ul > li > :is(ul, ol) > li,
+section.statute-stack > ol > li > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+  color:var(--text-body);
+}
+section.statute-stack > ul > li > :is(ul, ol) > li::marker,
+section.statute-stack > ol > li > :is(ul, ol) > li::marker { content:''; }
+/* Citation chip — first body item, only-child <code>. Non-pill hanging
+ * cite: mono, body-heading colour, no chrome. */
+section.statute-stack > ul > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code,
+section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  color:var(--text-heading);
+  background:none; border:none; padding:0;
+  letter-spacing:0.02em;
+}
+/* Status pill — last body item, only-child <code>. Pill chrome in the
+ * jurisdiction accent colour. */
+section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
+section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.156cqi 0.625cqi;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--jur-accent, var(--accent));
+  border:1px solid var(--jur-accent, var(--accent));
+  margin-top:auto;
+  align-self:flex-start;
+}
+
+/* .hierarchy — vertical stack, Federal full-tall, State mid, Local short. */
+section.statute-stack.hierarchy > ul,
+section.statute-stack.hierarchy > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:1.5fr 1fr 0.7fr;
+}
+section.statute-stack.hierarchy > ul > li,
+section.statute-stack.hierarchy > ol > li {
+  border-top:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  display:grid;
+  grid-template-columns:12cqi 1fr;
+  column-gap:var(--sp-lg);
+  align-items:start;
+}
+section.statute-stack.hierarchy > :is(ul, ol) > li > strong:first-child { grid-column:1; padding-top:0.234375cqi; }
+section.statute-stack.hierarchy > :is(ul, ol) > li > :is(ul, ol) { grid-column:2; }
+
+/* .bands — three horizontal full-width rows: badge | body | status. */
+section.statute-stack.bands > ul,
+section.statute-stack.bands > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:1fr;
+}
+section.statute-stack.bands > ul > li,
+section.statute-stack.bands > ol > li {
+  border-top:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  display:grid;
+  grid-template-columns:11cqi 1fr;
+  column-gap:var(--sp-lg);
+  align-items:center;
+}
+section.statute-stack.bands > :is(ul, ol) > li > strong:first-child {
+  grid-column:1;
+  font-size:var(--fs-md);
+  letter-spacing:0.08em;
+  align-self:center;
+}
+section.statute-stack.bands > :is(ul, ol) > li > :is(ul, ol) {
+  grid-column:2;
+  align-self:center;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:var(--sp-md);
+}
+
+/* .preemption — vertical stack with arrows between cards. */
+section.statute-stack.preemption > ul,
+section.statute-stack.preemption > ol {
+  grid-template-columns:1fr;
+  grid-auto-rows:auto;
+  gap:0;
+  align-content:center;
+}
+section.statute-stack.preemption > ul > li,
+section.statute-stack.preemption > ol > li {
+  border:1px solid var(--border);
+  border-left:4px solid var(--jur-accent, var(--accent));
+  border-top:1px solid var(--border);
+  position:relative;
+  margin-bottom:var(--sp-lg);
+}
+section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
+  content:'↓';
+  position:absolute;
+  left:50%; bottom:calc(-1 * var(--sp-lg));
+  transform:translate(-50%, 50%);
+  font-size:var(--fs-xl);
+  font-weight:300;
+  color:var(--accent);
+  line-height:1;
+  background:var(--bg);
+  padding:0 var(--sp-xs);
+  z-index:1;
+}
+section.statute-stack.preemption > :is(ul, ol) > li:last-child { margin-bottom:0; }
+
+/* .lane — markdown table; columns are aspects (cite, obligation, status).
+ * Authoring example:
+ *   | Jurisdiction | Citation              | Headline obligation       | Status      |
+ *   | ------------ | --------------------- | ------------------------- | ----------- |
+ *   | Federal      | 15 U.S.C. §6501       | Parental consent <13 data | In effect   |
+ *   | State        | Cal. Civ. Code §1798  | Notice + opt-out + DSAR   | Enforced    |
+ *   | Local        | NYC §22-1201          | Annual AEDT bias audit    | Effective   |
+ */
+section.statute-stack.lane > ul,
+section.statute-stack.lane > ol { display:none; }
+section.statute-stack.lane table {
+  width:100%; border-collapse:collapse;
+  flex:1; font-size:var(--fs-body);
+  table-layout:auto;
+}
+section.statute-stack.lane thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.statute-stack.lane thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  padding:0.625cqi var(--sp-sm);
+  text-align:left;
+}
+section.statute-stack.lane td {
+  padding:var(--sp-sm) var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+}
+section.statute-stack.lane td:first-child {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--lane-jur, var(--accent));
+  white-space:nowrap;
+}
+section.statute-stack.lane td:nth-child(2) {
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  color:var(--text-heading);
+  white-space:nowrap;
+}
+section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--c4-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--c6-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--c1-dark); }
+section.statute-stack.lane tbody tr > td:first-child {
+  border-left:3px solid var(--lane-jur, var(--accent));
+  padding-left:var(--sp-md);
+}
+section.statute-stack.lane td:last-child {
+  text-align:right;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  letter-spacing:0.04em;
+  color:var(--text-muted);
+  white-space:nowrap;
+}
+

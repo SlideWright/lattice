@@ -1,8 +1,17 @@
 /* citation-card — evidence.canvas.prose
  *
  * The CSS rules for section.citation-card currently live in
- * lib/_legacy.css under the CITATION-CARD banner. Extraction into this
- * file is tracked as Phase 4 of the _legacy.css elimination work.
+ * lib/_legacy.css under the CITATION-CARD banner. Extraction into
+ * this file is deferred to Phase 5 because citation-card.pull-quote
+ * has a blockquote::before content override that collides at equal
+ * specificity (0,2,3 vs 0,3,3) with the KEY INSIGHT modifier rule in
+ * _legacy.css. KEY INSIGHT today supplies the default eyebrow label
+ * for citation-card's other variants. Both relationships depend on
+ * source-order cascade; moving citation-card rules earlier in the
+ * bundle (into this file) would let KEY INSIGHT override pull-quote
+ * AND break the other variants' eyebrow. Phase 5 will move modifiers
+ * into _modifiers.css positioned after components, then citation-card
+ * can extract cleanly.
  *
  * See lib/components/citation-card/manifest.json for the component contract.
  */

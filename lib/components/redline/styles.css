@@ -1,9 +1,14 @@
 /* redline — comparison.canvas.prose
  *
- * The CSS rules for section.redline (plus .annotated / .three-col
- * variants) currently live in lib/_legacy.css under the REDLINE
- * banner. Extraction into this file is tracked as Phase 4 of the
- * _legacy.css elimination work.
+ * The CSS rules for section.redline currently live in lib/_legacy.css
+ * under the REDLINE banner. Extraction into this file is deferred to
+ * Phase 5 because redline.split / .stacked / .three-col have
+ * blockquote::before content overrides that collide at equal
+ * specificity (0,3,3) with the KEY INSIGHT modifier rule in _legacy.css.
+ * Moving redline rules into this file (earlier in the bundle) would
+ * let KEY INSIGHT override them. The cascade order will be restored
+ * after Phase 5 moves modifiers into _modifiers.css positioned after
+ * components in the bundle.
  *
  * See lib/components/redline/manifest.json for the component contract.
  */

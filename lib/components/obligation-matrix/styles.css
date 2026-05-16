@@ -1,9 +1,58 @@
 /* obligation-matrix — comparison.matrix.structure
  *
- * The CSS rules for section.obligation-matrix (plus .heat /
- * .asymmetric variants) currently live in lib/_legacy.css under the
- * OBLIGATION-MATRIX banner. Extraction into this file is tracked as
- * Phase 4 of the _legacy.css elimination work.
- *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/obligation-matrix/manifest.json for the component contract.
  */
+
+/* ── OBLIGATION-MATRIX ────────────────────────────────────────────────
+ * Markdown table layout. Rows = regulations, columns = obligations.
+ *
+ * <!-- _class: obligation-matrix -->
+ * | Regulation | Notice | Consent | Retention | Breach | DSAR |
+ * | ---------- | :----: | :-----: | :-------: | :----: | :--: |
+ * | CCPA       | ●      | ◐       | ●         | ●      | ●    |
+ *
+ * The default uses cell glyphs (●/◐/○ or text). Variants: .heat (cell
+ * fills), .pills (cell pills), .lanes (row stripes), .asymmetric (cards).
+ * ──────────────────────────────────────────────────────────────────── */
+section.obligation-matrix { display:flex; flex-direction:column; }
+section.obligation-matrix h2 { margin-bottom:var(--sp-md); }
+section.obligation-matrix table {
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:var(--fs-body);
+  flex:1;
+  table-layout:auto;
+}
+section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
+section.obligation-matrix thead th {
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:var(--text-label);
+  padding:0.46875cqi var(--sp-sm) 0.78125cqi;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+section.obligation-matrix thead th:first-child { text-align:left; }
+section.obligation-matrix td {
+  padding:0.78125cqi var(--sp-sm);
+  border-bottom:1px solid var(--border);
+  text-align:center;
+  vertical-align:middle;
+  color:var(--text-body);
+}
+section.obligation-matrix td:first-child {
+  text-align:left;
+  font-weight:700;
+  color:var(--text-heading);
+  white-space:nowrap;
+  padding-left:var(--sp-md);
+}
+/* Soft row zebra for grid scan. */
+section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
+  background:color-mix(in srgb, var(--accent) 4%, transparent);
+}
