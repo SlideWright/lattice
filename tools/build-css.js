@@ -64,6 +64,11 @@ const MODIFIERS_SOURCE = 'lib/_modifiers.css';
 // _legacy.css so the cascade matches where these rules sat at line 204
 // of the original _legacy.css.
 const SYNTAX_HIGHLIGHT_SOURCE = 'lib/_syntax-highlight.css';
+// Shared chart frame for list-and-pill chart layouts (Phase 7
+// cleanup). Bundled with the modifiers because .chart-frame chrome
+// composes on top of component base rules and the .chart-status
+// vocabulary is cross-component (progress / kanban / timeline-list).
+const CHART_FAMILY_SOURCE = 'lib/_chart-family.css';
 const LEGACY_SOURCE = 'lib/_legacy.css';
 // Peripheral atmospheric accents (Phase 6 extraction). Bundled AFTER
 // _legacy.css so the cascade matches where these rules sat at line ~1500
@@ -155,6 +160,14 @@ function bundle() {
   if (syntax) {
     parts.push(`/* === ${SYNTAX_HIGHLIGHT_SOURCE} === */`);
     parts.push(syntax);
+  }
+  // Shared chart frame (Phase 7 cleanup). Bundled here because chart-
+  // frame chrome composes on top of component base rules and the
+  // .chart-status vocabulary is cross-component.
+  const chartFamily = readIfExists(CHART_FAMILY_SOURCE);
+  if (chartFamily) {
+    parts.push(`/* === ${CHART_FAMILY_SOURCE} === */`);
+    parts.push(chartFamily);
   }
   // Legacy monolith — residual scaffold + un-extracted component CSS.
   // Source order is the cascade order. After Phase 5a, this file no

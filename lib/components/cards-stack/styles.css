@@ -59,3 +59,22 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
+
+/* ── Cards-stack horizontal modifier — appended Phase 7 ──
+ */
+/* ────────────────────────────────────────────────────────────────────────
+ * Layout-specific modifiers — cards-stack horizontal
+ * Reference: proposals.md §2.2 cards-stack
+ *
+ * Default cards-stack flows the cards as a vertical stack (one per row).
+ * `horizontal` flips to a horizontal row, useful when cards are short and
+ * the slide reads left-to-right rather than top-to-bottom.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+section.cards-stack.horizontal > ul,
+section.cards-stack.horizontal > ol,
+section.cards-stack.horizontal .cards-stack-inner {
+  flex-direction: row;
+  align-items: stretch;
+}
+
