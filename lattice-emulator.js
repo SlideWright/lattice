@@ -946,17 +946,17 @@ const { transformJourneySection } = require('./lib/journey');
 // Word-cloud layout transform — list-to-canvas rewrite for the
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
-const { transformWordCloudSection } = require('./lib/word-cloud');
+const { transformWordCloudSection } = require('./lib/components/word-cloud/transform');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/radar');
+const radar = require('./lib/components/radar/transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/quadrant');
+const quadrant = require('./lib/components/quadrant/transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;

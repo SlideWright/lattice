@@ -34,7 +34,7 @@ const {
   centroid,
   bubbleRadius,
   matchEyebrowText,
-} = require('../../../lib/quadrant');
+} = require('../../../lib/components/quadrant/transform');
 
 // ── Fixtures ───────────────────────────────────────────────────────────
 

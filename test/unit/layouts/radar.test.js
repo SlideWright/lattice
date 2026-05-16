@@ -30,7 +30,7 @@ const {
   axisAngle,
   polar,
   matchEyebrowText,
-} = require('../../../lib/radar');
+} = require('../../../lib/components/radar/transform');
 
 // ── Fixtures ────────────────────────────────────────────────────────────
 

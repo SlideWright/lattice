@@ -474,7 +474,7 @@ const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-fam
 const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/roadmap');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/journey');
-const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/word-cloud');
+const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/transform');
 
 /**
  * latticeplotFences — rewrites ```latticeplot fenced code blocks into a

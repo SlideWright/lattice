@@ -3204,6 +3204,129 @@ section.principles.roman ol > li::before {
 /* Plain bullets — no numeric counter. */
 section.principles.bullet ol > li::before { content:'·'; }
 
+/* === lib/components/quadrant/styles.css === */
+/* quadrant — extracted from lib/_legacy.css (batch 8).
+ * See lib/components/quadrant/manifest.json for the component contract.
+ */
+
+/* ── QUADRANT ───────────────────────────────────────────────────────────────
+ * Native 2×2 quadrant chart — build-time SVG, no charting library.
+ *
+ * Source contract: a group-by-quadrant nested <ul>. Each top-level <li> is
+ * a quadrant label (reading order: TL, TR, BL, BR); nested <li>s are items
+ * with a trailing `<code>x, y</code>` pill. The eyebrow declares axis names
+ * and (optionally) per-axis ranges + threshold target lines.
+ *
+ * Layout output:
+ *   <div class="quadrant-figure" data-variant="default" data-groups="4" data-items="N">
+ *     <svg class="quadrant-svg" viewBox="0 0 420 320">
+ *       <g class="quadrant-tints">…four region rects…</g>
+ *       <g class="quadrant-frame">…bounds + midlines/target lines…</g>
+ *       <g class="quadrant-axes">…axis labels + corner ticks…</g>
+ *       <g class="quadrant-labels">…four corner labels…</g>
+ *       <g class="quadrant-plot">…dots + dot labels…</g>
+ *     </svg>
+ *   </div>
+ *
+ * One default + five modifier variants — see lib/quadrant.js. `minimal`
+ * (no tints) and `dark` (lifted grid) are composable cross-cutting
+ * modifiers handled here in CSS.
+ *
+ * Per-cell colour rides --cell-color, set per-rect/dot/label from the
+ * categorical palette in lib/quadrant.js. Layouts stay palette-blind.
+ *
+ * Sibling implementations:
+ *   - lib/quadrant.js       transform module (canonical)
+ *   - lattice-emulator.js   per-slide HTML-string transform
+ *   - marp.config.js        marp-cli render hook
+ *   - lattice-runtime.js    DOM transform for marp-vscode preview
+ */
+
+/* Palette routing — two contexts, one custom-property pair:
+ *
+ *   --cell-fill   pale L≈85 background tint (region rect, hull, bubble)
+ *   --cell-ink    deep AA-paired ink (dot, label, stroke, text)
+ *
+ * Positional variants (default/bubble/trail/threshold/magic) pull the
+ * theme's `--c-quadrant-N-fill` / `--c-quadrant-N-text` aliases — these
+ * are hue-tuned per the theme's boardroom semantics (e.g. brand blue
+ * in the top-right "strategic" zone). My kernel uses reading-order
+ * indices (cell 0=TL, 1=TR, 2=BL, 3=BR) while the theme's aliases use
+ * Mermaid math convention (Q1=TR, Q2=TL, Q3=BL, Q4=BR) — the mapping
+ * below translates.
+ *
+ * Cohort variant cycles c1…c4 instead: cohort groups have no semantic
+ * quadrant position, so a vanilla categorical sequence is correct.
+ *
+ * Themes can override either set without touching the kernel. */
+section.quadrant {
+  --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
+  --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
+  --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+}
+
+/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
+section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
+
+/* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
+
+/* quadrant is a chart-family member — section layout, header/body/caption
+ * skeleton and h2 styling all come from section.chart-frame. The figure
+ * just slots into .chart-body as a centred flex row of svg (+ optional
+ * legend, for the cohort variant). */
+section.quadrant.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl);
+}
+
+/* Title area: drop the lucent gradient strip and use the .minimal
+ * treatment instead — a centred header with a short accent hairline.
+ * The lucent strip on a scatter chart compresses the visible plot
+ * area and the gradient reads as heavy chrome at small render sizes.
+ * chart-family-experiment.md explicitly documents both treatments
+ * (`Treatment A` lucent vs `Treatment B` .minimal); quadrant picks
+ * the cleaner one for its baseline. The `.minimal` modifier on
+ * quadrant now controls the quadrant tints / bubble fills only —
+ * the header treatment is shared between default and minimal. */
+section.quadrant.chart-frame .chart-header {
+  background: none;
+  padding: var(--sp-2xl) var(--sp-2xl) var(--sp-md);
+}
+section.quadrant.chart-frame .chart-header::after {
+  width: 7.5cqi;
+  height: 1px;
+  background: color-mix(in oklab, var(--accent) 50%, transparent);
+}
+
+section.quadrant .quadrant-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xl);
+  width: 100%;
+}
+
+section.quadrant .quadrant-svg {
+  /* Fixed pixel dimensions, matching radar's vertical extent (360 tall).
+   * chart-body's available height is ~440px and inherits overflow:hidden
+   * from the shared chart-frame rule; sizing at radar's height means the
+   * SVG fits with the same breathing-room above and below that other
+   * chart-family slides have. An earlier 540×412 SVG still clipped
+   * descenders on the x-axis name. Width follows the 420:320 viewBox
+   * aspect (= 472 wide). */
+  width: 472px;
+  height: 360px;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
 /* === lib/components/quote/styles.css === */
 /* quote — statement.canvas.quote
  *
@@ -3229,6 +3352,115 @@ section.quote blockquote::before { content:'\201C'; font-family:var(--font-displ
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
 section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
+
+/* === lib/components/radar/styles.css === */
+/* radar — extracted from lib/_legacy.css (batch 8).
+ * See lib/components/radar/manifest.json for the component contract.
+ */
+
+/* ── RADAR ───────────────────────────────────────────────────────────────────
+ * Native radar / spider chart — build-time SVG, no charting library.
+ *
+ * Source contract: one series-major nested <ul> per slide. Each top-level
+ * <li> is a series; nested <li>s are `axis <code>value</code>`. The eyebrow
+ * <code> may pin the value scale (`0–100`); otherwise it auto-fits the data.
+ * lib/radar.js parses the list, resolves the scale, and emits a positioned
+ * SVG — deterministic, palette-blind, zero client-side JS.
+ *
+ * Layout output:
+ *   <div class="radar-figure" data-variant="default" data-axes="N" data-series="M">
+ *     <svg class="radar-svg" viewBox="0 0 300 300">
+ *       <g class="radar-grid">…rings + spokes…</g>
+ *       <g class="radar-axes">…axis labels…</g>
+ *       <g class="radar-ticks">…ring values…</g>
+ *       <g class="radar-plot">…series polygons + vertex dots…</g>
+ *     </svg>
+ *     <ol class="radar-legend">…</ol>
+ *   </div>
+ *
+ * One default + five modifier variants. Per-variant DOM differs (target adds
+ * gap segments, benchmark adds an envelope band, quadrant adds sectors,
+ * small-multiples emits one mini per series) — see lib/radar.js. `minimal`
+ * (stroke-only) and `dark` are composable cross-cutting modifiers handled
+ * here in CSS.
+ *
+ * Series colour rides --series-color, set per polygon/dot from the
+ * categorical palette in lib/radar.js. Layouts stay palette-blind.
+ *
+ * Sibling implementations:
+ *   - lib/radar.js          transform module (canonical)
+ *   - lattice-emulator.js   per-slide HTML-string transform
+ *   - marp.config.js        marp-cli render hook
+ *   - lattice-runtime.js    DOM transform for marp-vscode preview
+ */
+
+section.radar {
+  --radar-grid:       color-mix(in srgb, var(--text-muted) 42%, transparent);
+  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 20%, transparent);
+  --radar-spoke:      color-mix(in srgb, var(--text-muted) 34%, transparent);
+  --radar-fill:       18%;   /* series-colour share in the polygon fill */
+}
+
+/* radar is a chart-family member — section layout, header/body/caption
+ * skeleton and h2 styling all come from section.chart-frame. The figure
+ * just slots into .chart-body as a centred flex row of svg + legend. */
+section.radar.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl);
+}
+
+section.radar .radar-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xl);
+}
+
+section.radar .radar-svg {
+  width: 360px;
+  height: 360px;
+  flex: 0 0 auto;
+  overflow: visible;   /* rim labels paint outside the 300-unit viewBox */
+}
+
+/* ── RADAR ──
+ * No per-curve theme variables exist. Both curves render gray by default.
+ * Force distinct brand colors with semi-transparent fills so overlap
+ * stays visible. Re-skin grid rings from default light gray to a pale
+ * brand tint so the chrome matches the rest of the deck.
+ */
+section .radarGraticule {
+  fill: var(--c1-light) !important;
+  fill-opacity: 0.25 !important;
+  stroke: var(--c-stroke) !important;
+  stroke-opacity: 0.20 !important;
+  stroke-width: 1 !important;
+}
+section .radarAxisLine {
+  stroke: var(--c-stroke) !important;
+  stroke-width: 1.5 !important;
+  stroke-opacity: 0.5 !important;
+}
+section .radarCurve-0 {
+  fill: var(--accent) !important;
+  fill-opacity: 0.30 !important;
+  stroke: var(--accent) !important;
+  stroke-width: 2.5 !important;
+}
+section .radarCurve-1 {
+  fill: var(--c-accent-warm) !important;
+  fill-opacity: 0.30 !important;
+  stroke: var(--c-accent-warm) !important;
+  stroke-width: 2.5 !important;
+}
+section .radarLegendBox-0 { fill: var(--accent) !important; }
+section .radarLegendBox-1 { fill: var(--c-accent-warm) !important; }
+section .radarAxisLabel {
+  fill: var(--text-heading) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
 
 /* === lib/components/roadmap/styles.css === */
 /* roadmap — extracted from lib/_legacy.css (batch 7).
@@ -4160,6 +4392,116 @@ section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { backgrou
 section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
 section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
+
+/* === lib/components/word-cloud/styles.css === */
+/* word-cloud — extracted from lib/_legacy.css (batch 8).
+ * See lib/components/word-cloud/manifest.json for the component contract.
+ */
+
+/* ── WORD-CLOUD ──────────────────────────────────────────────────────────────
+ * Curated word cloud: real 2D spiral packing, multi-hue, axis-aligned.
+ *
+ * Source contract: one <ul> per slide. Each <li> is a word; the trailing
+ * <code> element holds a continuous weight in [1, 5] (defaults to 3
+ * when omitted, clamped). lib/word-cloud.js runs a build-time
+ * Archimedean spiral packer, computes per-word size / rotation /
+ * color from rank + weight, and emits absolute-positioned spans with
+ * CSS variables. No client-side packing or randomness — every layout
+ * is deterministic across rebuilds.
+ *
+ * Layout output:
+ *   <div class="word-cloud-canvas" style="--wc-canvas-w:1200px;--wc-canvas-h:540px">
+ *     <span class="wc-word" data-weight="5" data-rank="1"
+ *           style="--wc-x:..;--wc-y:..;--wc-size:..;--wc-rot:..;--wc-color:..">Word</span>
+ *     …
+ *   </div>
+ *
+ * The CSS reads the per-word variables and positions each span at its
+ * center coordinate; the packer's collision rects are bbox-aligned
+ * (top-left), so the CSS translate(-50%,-50%) converts coordinates
+ * back. Rotation policy is rank-keyed in the packer; CSS just applies
+ * the value.
+ *
+ * Five variants share the engine; per-variant behavior lives entirely
+ * in lib/word-cloud.js's VARIANT_OPTS table — CSS treats them all the
+ * same. The data-variant attribute is informational, not required.
+ *
+ *   word-cloud                 moderate, multi-cat, occasional 90°
+ *   word-cloud constellation   sparse, accent + supporting cat, 0° only
+ *   word-cloud dense           tight, full cat rotation, 0° + 90° mix
+ *   word-cloud spectrum        moderate, heat-ramp by weight, 0° only
+ *   word-cloud focal           tight, hero top tier + cat satellites
+ *
+ * Sibling implementations:
+ *   - lib/word-cloud.js     transform module (shared)
+ *   - lattice-emulator.js   per-slide HTML-string transform
+ *   - marp.config.js        marp-cli render hook
+ *   - lattice-runtime.js    DOM transform for marp-vscode preview
+ */
+
+section.word-cloud {
+  display: flex;
+  flex-direction: column;
+}
+
+section.word-cloud > h2 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-sm);
+}
+
+/* Canvas is a fixed-pixel rectangle (1200×540) — the packer works in
+ * the same coordinate space. The slide is fixed at 1280×720 by Marp,
+ * so this fits with 40px horizontal breathing room and ~180px for
+ * h2 + below-note + header chrome. Centered horizontally. */
+section.word-cloud .word-cloud-canvas {
+  position: relative;
+  width: var(--wc-canvas-w);
+  height: var(--wc-canvas-h);
+  margin: 0 auto;
+  flex: 0 0 auto;
+}
+
+section.word-cloud .wc-word {
+  position: absolute;
+  left: var(--wc-x);
+  top:  var(--wc-y);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--wc-size);
+  color: var(--wc-color);
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: -0.015em;
+  transform: translate(-50%, -50%) rotate(var(--wc-rot, 0deg));
+  transform-origin: center;
+}
+
+/* Bottom-tier words read as supporting vocabulary — lighter weight and
+ * tracked tighter so the eye groups them as ambient context rather
+ * than competing with the focal tier. */
+section.word-cloud .wc-word[data-weight="1"],
+section.word-cloud .wc-word[data-weight^="1."] {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Top tier — slight letter-spacing tightening for visual mass. */
+section.word-cloud .wc-word[data-weight="5"],
+section.word-cloud .wc-word[data-weight^="4.5"],
+section.word-cloud .wc-word[data-weight^="4.6"],
+section.word-cloud .wc-word[data-weight^="4.7"],
+section.word-cloud .wc-word[data-weight^="4.8"],
+section.word-cloud .wc-word[data-weight^="4.9"] {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Vertical (90°) words pick up tighter spacing — when read top-to-bottom
+ * they need to feel like they belong to the same family as the
+ * horizontal ones, not like inserted captions. */
+section.word-cloud .wc-word[data-rotated="1"] {
+  letter-spacing: -0.01em;
+}
 
 /* === lib/_legacy.css === */
 
@@ -8418,176 +8760,7 @@ section.gantt.dark .gantt-bar[data-s="deferred"] {
 section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
 
 
-/* ── WORD-CLOUD ──────────────────────────────────────────────────────────────
- * Curated word cloud: real 2D spiral packing, multi-hue, axis-aligned.
- *
- * Source contract: one <ul> per slide. Each <li> is a word; the trailing
- * <code> element holds a continuous weight in [1, 5] (defaults to 3
- * when omitted, clamped). lib/word-cloud.js runs a build-time
- * Archimedean spiral packer, computes per-word size / rotation /
- * color from rank + weight, and emits absolute-positioned spans with
- * CSS variables. No client-side packing or randomness — every layout
- * is deterministic across rebuilds.
- *
- * Layout output:
- *   <div class="word-cloud-canvas" style="--wc-canvas-w:1200px;--wc-canvas-h:540px">
- *     <span class="wc-word" data-weight="5" data-rank="1"
- *           style="--wc-x:..;--wc-y:..;--wc-size:..;--wc-rot:..;--wc-color:..">Word</span>
- *     …
- *   </div>
- *
- * The CSS reads the per-word variables and positions each span at its
- * center coordinate; the packer's collision rects are bbox-aligned
- * (top-left), so the CSS translate(-50%,-50%) converts coordinates
- * back. Rotation policy is rank-keyed in the packer; CSS just applies
- * the value.
- *
- * Five variants share the engine; per-variant behavior lives entirely
- * in lib/word-cloud.js's VARIANT_OPTS table — CSS treats them all the
- * same. The data-variant attribute is informational, not required.
- *
- *   word-cloud                 moderate, multi-cat, occasional 90°
- *   word-cloud constellation   sparse, accent + supporting cat, 0° only
- *   word-cloud dense           tight, full cat rotation, 0° + 90° mix
- *   word-cloud spectrum        moderate, heat-ramp by weight, 0° only
- *   word-cloud focal           tight, hero top tier + cat satellites
- *
- * Sibling implementations:
- *   - lib/word-cloud.js     transform module (shared)
- *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
- *   - lattice-runtime.js    DOM transform for marp-vscode preview
- */
 
-section.word-cloud {
-  display: flex;
-  flex-direction: column;
-}
-
-section.word-cloud > h2 {
-  font-size: var(--fs-lg);
-  margin-bottom: var(--sp-sm);
-}
-
-/* Canvas is a fixed-pixel rectangle (1200×540) — the packer works in
- * the same coordinate space. The slide is fixed at 1280×720 by Marp,
- * so this fits with 40px horizontal breathing room and ~180px for
- * h2 + below-note + header chrome. Centered horizontally. */
-section.word-cloud .word-cloud-canvas {
-  position: relative;
-  width: var(--wc-canvas-w);
-  height: var(--wc-canvas-h);
-  margin: 0 auto;
-  flex: 0 0 auto;
-}
-
-section.word-cloud .wc-word {
-  position: absolute;
-  left: var(--wc-x);
-  top:  var(--wc-y);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--wc-size);
-  color: var(--wc-color);
-  line-height: 1;
-  white-space: nowrap;
-  letter-spacing: -0.015em;
-  transform: translate(-50%, -50%) rotate(var(--wc-rot, 0deg));
-  transform-origin: center;
-}
-
-/* Bottom-tier words read as supporting vocabulary — lighter weight and
- * tracked tighter so the eye groups them as ambient context rather
- * than competing with the focal tier. */
-section.word-cloud .wc-word[data-weight="1"],
-section.word-cloud .wc-word[data-weight^="1."] {
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-/* Top tier — slight letter-spacing tightening for visual mass. */
-section.word-cloud .wc-word[data-weight="5"],
-section.word-cloud .wc-word[data-weight^="4.5"],
-section.word-cloud .wc-word[data-weight^="4.6"],
-section.word-cloud .wc-word[data-weight^="4.7"],
-section.word-cloud .wc-word[data-weight^="4.8"],
-section.word-cloud .wc-word[data-weight^="4.9"] {
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-/* Vertical (90°) words pick up tighter spacing — when read top-to-bottom
- * they need to feel like they belong to the same family as the
- * horizontal ones, not like inserted captions. */
-section.word-cloud .wc-word[data-rotated="1"] {
-  letter-spacing: -0.01em;
-}
-
-
-/* ── RADAR ───────────────────────────────────────────────────────────────────
- * Native radar / spider chart — build-time SVG, no charting library.
- *
- * Source contract: one series-major nested <ul> per slide. Each top-level
- * <li> is a series; nested <li>s are `axis <code>value</code>`. The eyebrow
- * <code> may pin the value scale (`0–100`); otherwise it auto-fits the data.
- * lib/radar.js parses the list, resolves the scale, and emits a positioned
- * SVG — deterministic, palette-blind, zero client-side JS.
- *
- * Layout output:
- *   <div class="radar-figure" data-variant="default" data-axes="N" data-series="M">
- *     <svg class="radar-svg" viewBox="0 0 300 300">
- *       <g class="radar-grid">…rings + spokes…</g>
- *       <g class="radar-axes">…axis labels…</g>
- *       <g class="radar-ticks">…ring values…</g>
- *       <g class="radar-plot">…series polygons + vertex dots…</g>
- *     </svg>
- *     <ol class="radar-legend">…</ol>
- *   </div>
- *
- * One default + five modifier variants. Per-variant DOM differs (target adds
- * gap segments, benchmark adds an envelope band, quadrant adds sectors,
- * small-multiples emits one mini per series) — see lib/radar.js. `minimal`
- * (stroke-only) and `dark` are composable cross-cutting modifiers handled
- * here in CSS.
- *
- * Series colour rides --series-color, set per polygon/dot from the
- * categorical palette in lib/radar.js. Layouts stay palette-blind.
- *
- * Sibling implementations:
- *   - lib/radar.js          transform module (canonical)
- *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
- *   - lattice-runtime.js    DOM transform for marp-vscode preview
- */
-
-section.radar {
-  --radar-grid:       color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 20%, transparent);
-  --radar-spoke:      color-mix(in srgb, var(--text-muted) 34%, transparent);
-  --radar-fill:       18%;   /* series-colour share in the polygon fill */
-}
-
-/* radar is a chart-family member — section layout, header/body/caption
- * skeleton and h2 styling all come from section.chart-frame. The figure
- * just slots into .chart-body as a centred flex row of svg + legend. */
-section.radar.chart-frame .chart-body {
-  width: 100%;
-  padding: var(--sp-md) var(--sp-2xl);
-}
-
-section.radar .radar-figure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-xl);
-}
-
-section.radar .radar-svg {
-  width: 360px;
-  height: 360px;
-  flex: 0 0 auto;
-  overflow: visible;   /* rim labels paint outside the 300-unit viewBox */
-}
 
 /* ── Grid: concentric ring polygons + radial spokes ───────────────────── */
 section.radar .radar-ring {
@@ -8789,123 +8962,6 @@ section.radar.dark {
 }
 
 
-/* ── QUADRANT ───────────────────────────────────────────────────────────────
- * Native 2×2 quadrant chart — build-time SVG, no charting library.
- *
- * Source contract: a group-by-quadrant nested <ul>. Each top-level <li> is
- * a quadrant label (reading order: TL, TR, BL, BR); nested <li>s are items
- * with a trailing `<code>x, y</code>` pill. The eyebrow declares axis names
- * and (optionally) per-axis ranges + threshold target lines.
- *
- * Layout output:
- *   <div class="quadrant-figure" data-variant="default" data-groups="4" data-items="N">
- *     <svg class="quadrant-svg" viewBox="0 0 420 320">
- *       <g class="quadrant-tints">…four region rects…</g>
- *       <g class="quadrant-frame">…bounds + midlines/target lines…</g>
- *       <g class="quadrant-axes">…axis labels + corner ticks…</g>
- *       <g class="quadrant-labels">…four corner labels…</g>
- *       <g class="quadrant-plot">…dots + dot labels…</g>
- *     </svg>
- *   </div>
- *
- * One default + five modifier variants — see lib/quadrant.js. `minimal`
- * (no tints) and `dark` (lifted grid) are composable cross-cutting
- * modifiers handled here in CSS.
- *
- * Per-cell colour rides --cell-color, set per-rect/dot/label from the
- * categorical palette in lib/quadrant.js. Layouts stay palette-blind.
- *
- * Sibling implementations:
- *   - lib/quadrant.js       transform module (canonical)
- *   - lattice-emulator.js   per-slide HTML-string transform
- *   - marp.config.js        marp-cli render hook
- *   - lattice-runtime.js    DOM transform for marp-vscode preview
- */
-
-/* Palette routing — two contexts, one custom-property pair:
- *
- *   --cell-fill   pale L≈85 background tint (region rect, hull, bubble)
- *   --cell-ink    deep AA-paired ink (dot, label, stroke, text)
- *
- * Positional variants (default/bubble/trail/threshold/magic) pull the
- * theme's `--c-quadrant-N-fill` / `--c-quadrant-N-text` aliases — these
- * are hue-tuned per the theme's boardroom semantics (e.g. brand blue
- * in the top-right "strategic" zone). My kernel uses reading-order
- * indices (cell 0=TL, 1=TR, 2=BL, 3=BR) while the theme's aliases use
- * Mermaid math convention (Q1=TR, Q2=TL, Q3=BL, Q4=BR) — the mapping
- * below translates.
- *
- * Cohort variant cycles c1…c4 instead: cohort groups have no semantic
- * quadrant position, so a vanilla categorical sequence is correct.
- *
- * Themes can override either set without touching the kernel. */
-section.quadrant {
-  --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
-}
-
-/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
-
-/* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
-
-/* quadrant is a chart-family member — section layout, header/body/caption
- * skeleton and h2 styling all come from section.chart-frame. The figure
- * just slots into .chart-body as a centred flex row of svg (+ optional
- * legend, for the cohort variant). */
-section.quadrant.chart-frame .chart-body {
-  width: 100%;
-  padding: var(--sp-md) var(--sp-2xl);
-}
-
-/* Title area: drop the lucent gradient strip and use the .minimal
- * treatment instead — a centred header with a short accent hairline.
- * The lucent strip on a scatter chart compresses the visible plot
- * area and the gradient reads as heavy chrome at small render sizes.
- * chart-family-experiment.md explicitly documents both treatments
- * (`Treatment A` lucent vs `Treatment B` .minimal); quadrant picks
- * the cleaner one for its baseline. The `.minimal` modifier on
- * quadrant now controls the quadrant tints / bubble fills only —
- * the header treatment is shared between default and minimal. */
-section.quadrant.chart-frame .chart-header {
-  background: none;
-  padding: var(--sp-2xl) var(--sp-2xl) var(--sp-md);
-}
-section.quadrant.chart-frame .chart-header::after {
-  width: 7.5cqi;
-  height: 1px;
-  background: color-mix(in oklab, var(--accent) 50%, transparent);
-}
-
-section.quadrant .quadrant-figure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-xl);
-  width: 100%;
-}
-
-section.quadrant .quadrant-svg {
-  /* Fixed pixel dimensions, matching radar's vertical extent (360 tall).
-   * chart-body's available height is ~440px and inherits overflow:hidden
-   * from the shared chart-frame rule; sizing at radar's height means the
-   * SVG fits with the same breathing-room above and below that other
-   * chart-family slides have. An earlier 540×412 SVG still clipped
-   * descenders on the x-axis name. Width follows the 420:320 viewBox
-   * aspect (= 472 wide). */
-  width: 472px;
-  height: 360px;
-  flex: 0 0 auto;
-  overflow: visible;
-}
 
 /* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
 section.quadrant .quadrant-tint {
@@ -9785,44 +9841,6 @@ section text.legendW, section text.legendT, section .legend text, section .legen
   fill: var(--c-ink-light) !important;
 }
 
-/* ── RADAR ──
- * No per-curve theme variables exist. Both curves render gray by default.
- * Force distinct brand colors with semi-transparent fills so overlap
- * stays visible. Re-skin grid rings from default light gray to a pale
- * brand tint so the chrome matches the rest of the deck.
- */
-section .radarGraticule {
-  fill: var(--c1-light) !important;
-  fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
-  stroke-opacity: 0.20 !important;
-  stroke-width: 1 !important;
-}
-section .radarAxisLine {
-  stroke: var(--c-stroke) !important;
-  stroke-width: 1.5 !important;
-  stroke-opacity: 0.5 !important;
-}
-section .radarCurve-0 {
-  fill: var(--accent) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--accent) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarCurve-1 {
-  fill: var(--c-accent-warm) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--c-accent-warm) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarLegendBox-0 { fill: var(--accent) !important; }
-section .radarLegendBox-1 { fill: var(--c-accent-warm) !important; }
-section .radarAxisLabel {
-  fill: var(--text-heading) !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-}
-section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
 
 /* ── VENN ──
  * Full-opacity band fills with strong stroke. Mermaid's default puts inline
