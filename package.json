@@ -47,6 +47,8 @@
     "new:theme": "node tools/new-theme.js",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
+    "test:coverage": "c8 node --test 'test/unit/**/*.test.js'",
+    "test:coverage:all": "c8 node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
     "test:palette": "node --test 'test/unit/palette/*.test.js'",
     "test:mermaid": "node --test 'test/unit/mermaid/*.test.js'",
     "test:parsing": "node --test 'test/unit/parsing/*.test.js'",
@@ -76,6 +78,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
+    "c8": "^11.0.0",
     "lefthook": "^2.1.6"
   }
 }

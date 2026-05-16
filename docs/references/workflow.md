@@ -186,6 +186,8 @@ graduates from "new" to "documented". Treat them like
 
 The lefthook pre-commit hook runs `npm test` + Biome on staged files; the pre-push hook re-runs both against the full tree. `npm install` wires these automatically via the `prepare` script. Bypass with `--no-verify` only as a genuine last resort; fix the root cause instead.
 
+For coverage visibility on a feature, run `npm run test:coverage` (unit only) or `npm run test:coverage:all` (unit + integration). c8 writes an HTML report to `.scratch/coverage/index.html` and a text summary to the console. Coverage is not a CI gate — it's a diagnostic for "what's untested in the area I'm changing?"
+
 ### Inner-loop scoping
 
 When iterating on a single area, run only that area's suite. The umbrella `npm test` / `npm run test:integration` are still the pre-commit gate — scoped runs are for the tight edit-test cycle, not the gate.
