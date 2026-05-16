@@ -5156,6 +5156,226 @@ section.quadrant .quadrant-svg {
   overflow: visible;
 }
 
+/* ── Native 2×2 quadrant SVG chrome — appended Phase 4 ──
+ * Originally lived in lib/_legacy.css under the CHART FAMILY section.
+ * Includes per-cell tints, plot frame + split lines, axis labels,
+ * scatter dots + per-dot labels, and 5 variants (bubble, trail,
+ * cohort, threshold, plus the default scatter).
+ */
+
+/* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
+section.quadrant .quadrant-tint {
+  fill: var(--cell-fill);
+  stroke: none;
+}
+
+/* ── Plot frame + split lines ─────────────────────────────────────────── */
+section.quadrant .quadrant-bounds {
+  fill: none;
+  stroke: var(--quadrant-frame);
+  stroke-width: 1.25;
+}
+section.quadrant .quadrant-split {
+  stroke: var(--quadrant-split);
+  stroke-width: 1;
+}
+/* Threshold variant: target lines pop more than ordinary centerlines. */
+section.quadrant .quadrant-split[data-kind="target"] {
+  stroke: var(--quadrant-target);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 4;
+}
+
+/* ── Axis labels + corner ticks ───────────────────────────────────────── */
+section.quadrant .quadrant-axis-name {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+section.quadrant .quadrant-tick {
+  fill: var(--text-muted);
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: 8px;
+  font-weight: 500;
+}
+
+/* ── Quadrant corner labels ───────────────────────────────────────────── */
+section.quadrant .quadrant-label {
+  fill: var(--cell-ink);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* Magic variant: heavier, more ceremonial labels with extra tracking. */
+section.quadrant .quadrant-label--magic {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+/* Threshold variant: zone names live ON the chart as action prompts. */
+section.quadrant .quadrant-label--zone {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+}
+
+/* ── Scatter dots + per-dot labels ────────────────────────────────────── */
+section.quadrant .quadrant-dot {
+  fill: var(--cell-ink);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+section.quadrant .quadrant-dot-label {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+/* ── Bubble variant: √-area bubble + smart label position ─────────────── */
+section.quadrant .quadrant-bubble {
+  fill: var(--cell-fill);
+  stroke: var(--cell-ink);
+  stroke-width: 1.5;
+}
+section.quadrant .quadrant-bubble-value {
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 700;
+}
+/* Inside a pale bubble fill, dark ink is the AA pairing. */
+section.quadrant .quadrant-bubble-value[data-pos="inside"] {
+  fill: var(--cell-ink);
+}
+section.quadrant .quadrant-bubble-value[data-pos="above"] {
+  fill: var(--cell-ink);
+}
+section.quadrant .quadrant-bubble-label {
+  fill: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+/* ── Trail variant: faded before + dashed connector + solid after ─────── */
+section.quadrant .quadrant-trail-line {
+  stroke: var(--cell-ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+section.quadrant .quadrant-trail-before {
+  fill: none;
+  stroke: var(--cell-ink);
+  stroke-width: 1.5;
+  opacity: 0.6;
+}
+section.quadrant .quadrant-trail-after {
+  fill: var(--cell-ink);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+/* ── Cohort variant: convex hulls + centroid labels + legend ──────────── */
+section.quadrant .quadrant-hull {
+  fill: var(--cell-fill);
+  stroke: var(--cell-ink);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+  opacity: 0.65;
+}
+section.quadrant .quadrant-hull-line {
+  stroke: var(--cell-ink);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.65;
+}
+section.quadrant .quadrant-cohort-label {
+  fill: var(--cell-ink);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+section.quadrant .quadrant-figure[data-variant="cohort"] {
+  gap: var(--sp-lg);
+}
+section.quadrant .quadrant-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2xs);
+  flex: 0 1 auto;
+}
+section.quadrant .quadrant-legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-xs);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+section.quadrant .quadrant-legend .quadrant-swatch {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 3px;
+  background: var(--cell-fill);
+  border: 1px solid var(--cell-ink);
+}
+section.quadrant .quadrant-legend .quadrant-legend-count {
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ── Threshold variant: target badges at the axis crossings ───────────── */
+section.quadrant .quadrant-target-badge {
+  fill: var(--quadrant-target);
+  font-family: var(--font-mono, var(--font-sans));
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* ── minimal: no fills, fainter grid (composable) ─────────────────────── */
+section.quadrant.minimal .quadrant-tint {
+  fill: none;
+}
+section.quadrant.minimal {
+  --quadrant-frame: color-mix(in srgb, var(--text-muted) 28%, transparent);
+  --quadrant-split: color-mix(in srgb, var(--text-muted) 18%, transparent);
+}
+section.quadrant.minimal .quadrant-bubble {
+  fill: none;
+}
+section.quadrant.minimal .quadrant-hull {
+  fill: none;
+}
+
+/* ── dark: lift frame + split for dark surfaces (composable) ──────────── */
+section.quadrant.dark {
+  --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
+  --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
+  --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
+}
+
 /* === lib/components/quote/styles.css === */
 /* quote — statement.canvas.quote
  *
@@ -9407,220 +9627,6 @@ section.progress.dark .progress-fill[data-s="deferred"] {
 }
 
 
-
-
-/* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
-section.quadrant .quadrant-tint {
-  fill: var(--cell-fill);
-  stroke: none;
-}
-
-/* ── Plot frame + split lines ─────────────────────────────────────────── */
-section.quadrant .quadrant-bounds {
-  fill: none;
-  stroke: var(--quadrant-frame);
-  stroke-width: 1.25;
-}
-section.quadrant .quadrant-split {
-  stroke: var(--quadrant-split);
-  stroke-width: 1;
-}
-/* Threshold variant: target lines pop more than ordinary centerlines. */
-section.quadrant .quadrant-split[data-kind="target"] {
-  stroke: var(--quadrant-target);
-  stroke-width: 1.75;
-  stroke-dasharray: 5 4;
-}
-
-/* ── Axis labels + corner ticks ───────────────────────────────────────── */
-section.quadrant .quadrant-axis-name {
-  fill: var(--text-heading);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-section.quadrant .quadrant-tick {
-  fill: var(--text-muted);
-  font-family: var(--font-mono, var(--font-sans));
-  font-size: 8px;
-  font-weight: 500;
-}
-
-/* ── Quadrant corner labels ───────────────────────────────────────────── */
-section.quadrant .quadrant-label {
-  fill: var(--cell-ink);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-/* Magic variant: heavier, more ceremonial labels with extra tracking. */
-section.quadrant .quadrant-label--magic {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-}
-/* Threshold variant: zone names live ON the chart as action prompts. */
-section.quadrant .quadrant-label--zone {
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-}
-
-/* ── Scatter dots + per-dot labels ────────────────────────────────────── */
-section.quadrant .quadrant-dot {
-  fill: var(--cell-ink);
-  stroke: var(--bg);
-  stroke-width: 1.5;
-}
-section.quadrant .quadrant-dot-label {
-  fill: var(--text-heading);
-  font-family: var(--font-sans);
-  font-size: 8.5px;
-  font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
-}
-
-/* ── Bubble variant: √-area bubble + smart label position ─────────────── */
-section.quadrant .quadrant-bubble {
-  fill: var(--cell-fill);
-  stroke: var(--cell-ink);
-  stroke-width: 1.5;
-}
-section.quadrant .quadrant-bubble-value {
-  font-family: var(--font-sans);
-  font-size: 8.5px;
-  font-weight: 700;
-}
-/* Inside a pale bubble fill, dark ink is the AA pairing. */
-section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--cell-ink);
-}
-section.quadrant .quadrant-bubble-value[data-pos="above"] {
-  fill: var(--cell-ink);
-}
-section.quadrant .quadrant-bubble-label {
-  fill: var(--text-heading);
-  font-family: var(--font-sans);
-  font-size: 8.5px;
-  font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
-}
-
-/* ── Trail variant: faded before + dashed connector + solid after ─────── */
-section.quadrant .quadrant-trail-line {
-  stroke: var(--cell-ink);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 3;
-  stroke-linecap: round;
-  opacity: 0.7;
-}
-section.quadrant .quadrant-trail-before {
-  fill: none;
-  stroke: var(--cell-ink);
-  stroke-width: 1.5;
-  opacity: 0.6;
-}
-section.quadrant .quadrant-trail-after {
-  fill: var(--cell-ink);
-  stroke: var(--bg);
-  stroke-width: 1.5;
-}
-
-/* ── Cohort variant: convex hulls + centroid labels + legend ──────────── */
-section.quadrant .quadrant-hull {
-  fill: var(--cell-fill);
-  stroke: var(--cell-ink);
-  stroke-width: 1.25;
-  stroke-linejoin: round;
-  opacity: 0.65;
-}
-section.quadrant .quadrant-hull-line {
-  stroke: var(--cell-ink);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  opacity: 0.65;
-}
-section.quadrant .quadrant-cohort-label {
-  fill: var(--cell-ink);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 3;
-  stroke-linejoin: round;
-}
-section.quadrant .quadrant-figure[data-variant="cohort"] {
-  gap: var(--sp-lg);
-}
-section.quadrant .quadrant-legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2xs);
-  flex: 0 1 auto;
-}
-section.quadrant .quadrant-legend li {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--sp-xs);
-  font-size: var(--fs-sm);
-  color: var(--text-body);
-}
-section.quadrant .quadrant-legend .quadrant-swatch {
-  width: 0.85em;
-  height: 0.85em;
-  border-radius: 3px;
-  background: var(--cell-fill);
-  border: 1px solid var(--cell-ink);
-}
-section.quadrant .quadrant-legend .quadrant-legend-count {
-  font-family: var(--font-mono, var(--font-sans));
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
-}
-
-/* ── Threshold variant: target badges at the axis crossings ───────────── */
-section.quadrant .quadrant-target-badge {
-  fill: var(--quadrant-target);
-  font-family: var(--font-mono, var(--font-sans));
-  font-size: 9px;
-  font-weight: 700;
-}
-
-/* ── minimal: no fills, fainter grid (composable) ─────────────────────── */
-section.quadrant.minimal .quadrant-tint {
-  fill: none;
-}
-section.quadrant.minimal {
-  --quadrant-frame: color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-split: color-mix(in srgb, var(--text-muted) 18%, transparent);
-}
-section.quadrant.minimal .quadrant-bubble {
-  fill: none;
-}
-section.quadrant.minimal .quadrant-hull {
-  fill: none;
-}
-
-/* ── dark: lift frame + split for dark surfaces (composable) ──────────── */
-section.quadrant.dark {
-  --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
-  --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
-}
 
 
 /* ════════════════════════════════════════════════════════════════════════════
