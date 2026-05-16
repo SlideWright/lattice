@@ -61,6 +61,12 @@ const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_
 // notes for the cascade-collision history.
 const MODIFIERS_SOURCE = 'lib/_modifiers.css';
 const LEGACY_SOURCE = 'lib/_legacy.css';
+// Peripheral atmospheric accents (Phase 6 extraction). Bundled AFTER
+// _legacy.css so the cascade matches where these rules sat at line ~1500
+// of the original _legacy.css — anything in _legacy.css that came after
+// the BACKGROUND LIBRARY banner stays in _legacy.css and continues to
+// come AFTER backgrounds in the bundle.
+const BACKGROUNDS_SOURCE = 'lib/_backgrounds.css';
 const TAIL_SOURCES = [
   'lib/_semi-universal.css',
   'lib/_universal.css',
@@ -146,6 +152,16 @@ function bundle() {
   if (legacy) {
     parts.push(`/* === ${LEGACY_SOURCE} === */`);
     parts.push(legacy);
+  }
+  // Backgrounds (post-Phase-6). Bundled here so the cascade matches
+  // where the BACKGROUND LIBRARY block sat in _legacy.css before
+  // extraction (mid-file in _legacy; anything after that block stays
+  // in _legacy and continues to override backgrounds, anything before
+  // stays earlier and continues to lose).
+  const backgrounds = readIfExists(BACKGROUNDS_SOURCE);
+  if (backgrounds) {
+    parts.push(`/* === ${BACKGROUNDS_SOURCE} === */`);
+    parts.push(backgrounds);
   }
   // Tail: semi-universal → universal → diagram overrides. Each later
   // tier wins over earlier tiers by source order.
