@@ -2,7 +2,27 @@
 
 All layouts are 1280×720 (16:9). Slide padding: 48-64px. Usable content area: approximately 1160×600.
 
-28 templates plus 4 documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+34 templates plus documented variants. CSS class names shown in `monospace` — use directly in `<!-- _class: name -->` directives.
+
+> **Discovery.** For the conceptual organization — *what kind of slide am I making?* — see [docs/design-system.md §3-§5](../design-system.md): seven function families × eleven forms × four substances. This document is the catalog; the design-system doc is the index.
+>
+> **Scaffolder.** `npm run new:slide <component-name>` emits a working skeleton for any of the 45 shipped components. Run `npm run new:slide -- --list` to enumerate them.
+
+## Components by function family
+
+The seven function families from [design-system.md §3](../design-system.md#3-the-7-functions), with the components that belong to each. Use this to find the right component when you know the *purpose* of the slide but not its name.
+
+| Function | When to use | Components |
+|----------|-------------|------------|
+| **anchor**      | Title, section breaks, closing — slide chrome that locates the audience in the deck | `title`, `divider`, `subtopic`, `closing` |
+| **statement**   | One idea per slide, said plainly | `big-number`, `content`, `quote`, `split-panel`, `split-statement` |
+| **inventory**   | Lists of things — cards, bullets, criteria, glossaries | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `list`, `list-tabular`, `glossary`, `actors`, `agenda`, `principles`, `tldr` |
+| **comparison**  | Two-or-more side-by-side, table-of-options, before/after | `compare-prose`, `compare-code`, `compare-table`, `before-after`, `decision`, `verdict-grid`, `matrix-2x2`, `split-compare` |
+| **progression** | Ordered steps, timelines, phases | `list-steps`, `list-criteria`, `timeline`, `roadmap`, `gantt`, `kanban`, `split-steps` |
+| **evidence**    | Numbers, charts, diagrams that argue a point | `stats`, `kpi`, `quadrant`, `radar`, `word-cloud`, `progress`, `piechart`, `timeline-list`, `diagram`, `code`, `split-metric`, `split-brief` |
+| **imagery**     | Image-first or featured-recommendation slides | `image`, `featured` |
+
+For per-component contracts (slots, variants, skeleton) see `lib/components/<name>/manifest.json` and the matching template entry below.
 
 ## Layout Inventory: Structured vs Unstructured
 
