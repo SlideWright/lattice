@@ -1,3 +1,103 @@
+/*
+ * ════════════════════════════════════════════════════════════════════════════
+ * _legacy.css — destination map
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * This file is the residual monolith from before the per-component folder
+ * migration (design-system.md §9). It contains: shared tokens, base
+ * typography, cross-cutting modifiers (eyebrow, subtitle, pill, dark variant,
+ * annotation, key insight), un-extracted per-component CSS, and a quantity
+ * of suspected dead code from removed components. It will be retired
+ * incrementally; this map directs the next session to the right destination.
+ *
+ * Why not split now: many rules carry `!important` and rely on source-order
+ * cascade to beat sibling !important. CSS @layer cascade REVERSES priority
+ * for !important, so wrapping rules in layers can silently flip wins/losses.
+ * See tools/build-css.js header comment on LEGACY_SOURCE for the longer
+ * version. A clean split requires per-block specificity audits.
+ *
+ *
+ * ── Destinations by line range ────────────────────────────────────────────
+ *
+ *   line range   destination                          notes
+ *   ─────────────────────────────────────────────────────────────────────────
+ *      1– 200    lib/_root.css (NEW)                  :root tokens + @import
+ *    201– 224    lib/_root.css (NEW)                  universal theme defaults
+ *    225– 259    lib/_base.css (NEW)                  prose/heading defaults
+ *    260– 309    lib/_modifiers.css (NEW)             SUBTITLE (p>code after h*)
+ *    310– 380    lib/_modifiers.css (NEW)             EYEBROW (p>code before h*)
+ *    381– 464    lib/_modifiers.css (NEW)             KEY INSIGHT
+ *    465– 518    lib/_modifiers.css (NEW)             UNIVERSAL PILL
+ *    519– 535    lib/_modifiers.css (NEW)             DARK VARIANT
+ *    536– 601    lib/_diagram-overrides.css           Mermaid (merges existing)
+ *    602– 756    lib/_syntax-highlight.css (NEW)      highlight.js theming
+ *    757– 775    lib/components/stats/styles.css      STATS per-component
+ *    776– 793    lib/components/split-brief/...       SPLIT-BRIEF (NEW MANIFEST)
+ *    794– 811    lib/components/split-metric/...      SPLIT-METRIC (NEW MANIFEST)
+ *    812– 833    lib/components/split-steps/...       SPLIT-STEPS (NEW MANIFEST)
+ *    834– 861    lib/components/split-compare/...     SPLIT-COMPARE (NEW MANIFEST)
+ *    862– 904    lib/components/split-statement/...   SPLIT-STATEMENT (NEW MANIFEST)
+ *    905– 960    lib/_modifiers.css                   BELOW-NOTE fallback
+ *    961–1146    lib/_modifiers.css                   ANNOTATION (trailing _italic_)
+ *   1147–1778    lib/components/user-journey/...      JOURNEY per-component
+ *   1779–1815    lib/_modifiers.css                   ROW PILL
+ *
+ * ── DEAD-CANDIDATE blocks (no matching component manifest; verify before delete)
+ *
+ *   line range   class name              status
+ *   ─────────────────────────────────────────────────────────────────────────
+ *   1816–2069    statute-stack           DEAD-CANDIDATE — vertical-removed
+ *   2070–2253    citation-card           DEAD-CANDIDATE — vertical-removed
+ *   2254–2305    obligation-matrix       DEAD-CANDIDATE — vertical-removed
+ *   2306–2450    state glyphs            DEAD-CANDIDATE — verify modifier usage
+ *   2451–2519    (divider banner — gap)
+ *   2520–2728    regulatory-update       DEAD-CANDIDATE — vertical-removed
+ *   2729–2969    redline                 DEAD-CANDIDATE — vertical-removed
+ *   2970–3172    authority-chain         DEAD-CANDIDATE — vertical-removed
+ *
+ * ── Destinations continued (3173+)
+ *
+ *   line range   destination                          notes
+ *   ─────────────────────────────────────────────────────────────────────────
+ *   3173–3216    lib/_semi-universal.css              compact / loose / accent
+ *                                                     (may duplicate existing —
+ *                                                     diff before merging)
+ *   3217–3712    lib/components/gantt/styles.css      GANTT per-component
+ *   3713–3981    lib/components/radar/styles.css      RADAR (axis/lane/grid)
+ *   3982–4182    lib/components/radar/styles.css      RADAR (continued)
+ *   4183–4415    lib/components/quadrant/styles.css   QUADRANT (tints, frame,
+ *                                                     bubble, trail, cohort,
+ *                                                     threshold variants)
+ *   4416–4783    lib/_backgrounds.css (NEW)           COMPOSITOR / GLOWS /
+ *                                                     EDGE WASHES / ATMOSPHERIC /
+ *                                                     MULTI-ACCENT / SVG MARKS
+ *   4784–5270    lib/_diagram-overrides.css           RESET + diagram families
+ *                                                     (flowchart, journey,
+ *                                                     mindmap, gitgraph, treemap,
+ *                                                     c4, venn, ishikawa,
+ *                                                     sankey, packet,
+ *                                                     architecture, er)
+ *   5271–5931    lib/components/math/styles.css       MATH per-component
+ *   5932–end     lib/_modifiers.css                   KaTeX-in-non-math fallback
+ *
+ * ── Migration order (suggested for the next session) ──────────────────────
+ *
+ *   1. DEAD-CANDIDATE verification first. Search examples/ + tests for each
+ *      class. If unused, delete the block — this removes ~1,400 lines (~24%
+ *      of the file) with zero visual risk.
+ *   2. Token + base extraction (lines 1–259) to _root.css + _base.css. Pure
+ *      reorganization, no specificity changes.
+ *   3. Per-component blocks to their folders, alphabetically. Each move is
+ *      a same-sandbox before/after PDF byte-compare (see the cards-side
+ *      extraction commit for the validation pattern).
+ *   4. Modifiers (_modifiers.css) and backgrounds (_backgrounds.css) last —
+ *      these have the highest cascade-interaction risk; isolate by leaving
+ *      them in source-order position and only physically moving the file.
+ *
+ * Per-block destinations may shift as the split proceeds; treat this map
+ * as a starting hypothesis, not a contract.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 

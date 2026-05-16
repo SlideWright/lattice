@@ -1,5 +1,6 @@
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-grid/manifest.json for the component contract.
+ * Sibling cards-side rules live in lib/components/cards-side/styles.css.
  */
 
 /* ── CARDS-GRID ──
@@ -10,17 +11,14 @@
  */
 section.cards-grid h2 { margin-bottom:var(--sp-sm); }
 section.cards-grid { display:flex; flex-direction:column; }
-section.cards-side { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.cards-grid > ul, section.cards-grid > ol,
-section.cards-side > ul, section.cards-side > ol {
+section.cards-grid > ul, section.cards-grid > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
 section.cards-grid > ul, section.cards-grid > ol { grid-auto-rows:1fr; }
-section.cards-grid > ul > li, section.cards-grid > ol > li,
-section.cards-side > ul > li, section.cards-side > ol > li {
+section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
@@ -29,71 +27,59 @@ section.cards-side > ul > li, section.cards-side > ol > li {
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.cards-grid > ul > li > strong,
-section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
 /* — inline code badge pinned to title row.
  *   This rule must carry full chrome because the markdown emits
  *   `<li>Title <code>pill</code><ul>nested body</ul></li>` — the
  *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-grid > ul > li > code,
-section.cards-grid > ol > li > code,
-section.cards-side > ul > li > code,
-section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
-section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol,
-section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
-section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li,
-section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
-section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
-section.cards-grid .cards-grid-inner--ordered,
-section.cards-side .cards-grid-inner,
-section.cards-side .cards-grid-inner--ordered {
+section.cards-grid .cards-grid-inner--ordered {
   display:grid; grid-template-columns:1fr 1fr;
   grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
 }
-section.cards-grid .card,
-section.cards-side .card {
+section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.cards-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
+section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-grid .card > ul, section.cards-grid .card > ol,
-section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid .card > ul > li, section.cards-grid .card > ol > li,
-section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
-section.cards-grid > ol, section.cards-side > ol { counter-reset:card; }
-section.cards-grid > ol > li, section.cards-side > ol > li {
+section.cards-grid > ol { counter-reset:card; }
+section.cards-grid > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid > ol > li::before, section.cards-side > ol > li::before {
+section.cards-grid > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
-section.cards-grid .cards-grid-inner--ordered, section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
-section.cards-grid .cards-grid-inner--ordered > .card, section.cards-side .cards-grid-inner--ordered > .card {
+section.cards-grid .cards-grid-inner--ordered { counter-reset:card; }
+section.cards-grid .cards-grid-inner--ordered > .card {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-side .cards-grid-inner--ordered > .card::before {
+section.cards-grid .cards-grid-inner--ordered > .card::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -104,64 +90,42 @@ section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-sid
 /* ── CARDS-GRID ───────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → mimic .cards-grid-inner > .card             */
 section.cards-grid:not(:has(.cards-grid-inner)) > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
-section.cards-grid:not(:has(.cards-grid-inner)) > ol, section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
-
-
-

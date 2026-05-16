@@ -480,6 +480,7 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
 /* === lib/components/cards-grid/styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-grid/manifest.json for the component contract.
+ * Sibling cards-side rules live in lib/components/cards-side/styles.css.
  */
 
 /* ── CARDS-GRID ──
@@ -490,17 +491,14 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
  */
 section.cards-grid h2 { margin-bottom:var(--sp-sm); }
 section.cards-grid { display:flex; flex-direction:column; }
-section.cards-side { display:flex; flex-direction:column; }
 /* — Marp CLI native path — */
-section.cards-grid > ul, section.cards-grid > ol,
-section.cards-side > ul, section.cards-side > ol {
+section.cards-grid > ul, section.cards-grid > ol {
   display:grid; grid-template-columns:1fr 1fr;
   gap:var(--sp-md); flex:1;
   list-style:none; padding:0; margin:0;
 }
 section.cards-grid > ul, section.cards-grid > ol { grid-auto-rows:1fr; }
-section.cards-grid > ul > li, section.cards-grid > ol > li,
-section.cards-side > ul > li, section.cards-side > ol > li {
+section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
@@ -509,71 +507,59 @@ section.cards-side > ul > li, section.cards-side > ol > li {
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
-section.cards-grid > ul > li > strong,
-section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
 /* — inline code badge pinned to title row.
  *   This rule must carry full chrome because the markdown emits
  *   `<li>Title <code>pill</code><ul>nested body</ul></li>` — the
  *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-grid > ul > li > code,
-section.cards-grid > ol > li > code,
-section.cards-side > ul > li > code,
-section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
-section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol,
-section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
-section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li,
-section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
-section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
-section.cards-grid .cards-grid-inner--ordered,
-section.cards-side .cards-grid-inner,
-section.cards-side .cards-grid-inner--ordered {
+section.cards-grid .cards-grid-inner--ordered {
   display:grid; grid-template-columns:1fr 1fr;
   grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
 }
-section.cards-grid .card,
-section.cards-side .card {
+section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-grid .card > strong, section.cards-side .card > strong { display:block; grid-column:1 / -1; }
-section.cards-grid .card > code, section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
+section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
-section.cards-grid .card > ul, section.cards-grid .card > ol,
-section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid .card > ul > li, section.cards-grid .card > ol > li,
-section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
-section.cards-grid > ol, section.cards-side > ol { counter-reset:card; }
-section.cards-grid > ol > li, section.cards-side > ol > li {
+section.cards-grid > ol { counter-reset:card; }
+section.cards-grid > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid > ol > li::before, section.cards-side > ol > li::before {
+section.cards-grid > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
-section.cards-grid .cards-grid-inner--ordered, section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
-section.cards-grid .cards-grid-inner--ordered > .card, section.cards-side .cards-grid-inner--ordered > .card {
+section.cards-grid .cards-grid-inner--ordered { counter-reset:card; }
+section.cards-grid .cards-grid-inner--ordered > .card {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-side .cards-grid-inner--ordered > .card::before {
+section.cards-grid .cards-grid-inner--ordered > .card::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -584,58 +570,39 @@ section.cards-grid .cards-grid-inner--ordered > .card::before, section.cards-sid
 /* ── CARDS-GRID ───────────────────────────────────────────────────────────────
  * ul/ol > li (nested list format) → mimic .cards-grid-inner > .card             */
 section.cards-grid:not(:has(.cards-grid-inner)) > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol {
   display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
   gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
   font-weight:700; color:var(--text-heading);
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
-section.cards-grid:not(:has(.cards-grid-inner)) > ol, section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
   counter-increment:card;
   position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
 }
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
   content:counter(card);
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
@@ -646,15 +613,139 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
 /* === lib/components/cards-side/styles.css === */
 /* cards-side — inventory.split.cards
  *
- * The CSS rules for section.cards-side currently live in
- * lib/components/cards-grid/styles.css — cards-side and cards-grid
- * share the .cards-grid-inner post-processed DOM, so their rules are
- * authored together. Splitting the shared rules into a dedicated
- * shared file is tracked as a follow-up.
+ * Two-column card grid where the second column is a peer, not a wrap.
+ * Shares the post-processed DOM (.cards-grid-inner > .card) with
+ * cards-grid, so the rules look near-identical — historically they were
+ * authored together in cards-grid/styles.css. Split per the
+ * design-system §9 "components own their rules" contract.
  *
- * See lib/components/cards-side/manifest.json for the component contract
- * and lib/components/cards-grid/styles.css for the actual rules.
+ * Differences from cards-grid:
+ *   - cards-side does NOT set grid-auto-rows:1fr on the wrapper ul/ol,
+ *     so card heights follow content (cards-grid forces uniform rows).
+ *   - cards-side does NOT have the "last child of odd count spans both
+ *     columns" rule (it's always a 2-card slide; never odd).
  */
+
+section.cards-side { display:flex; flex-direction:column; }
+
+/* — Marp CLI native path — */
+section.cards-side > ul, section.cards-side > ol {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:var(--sp-md); flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.cards-side > ul > li, section.cards-side > ol > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; grid-template-columns:1fr auto; align-content:start;
+  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+}
+/* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
+section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
+/* — inline code badge pinned to title row.
+ *   This rule must carry full chrome because the markdown emits
+ *   `<li>Title <code>pill</code><ul>nested body</ul></li>` — the
+ *   `<code>` is neither :last-child nor preceded by `<ul>`, so the
+ *   universal pill rule's :last-child guard does not fire here. — */
+section.cards-side > ul > li > code,
+section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
+/* — card body (nested list) — */
+section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
+section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
+section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+
+/* — lattice.js post-processed path — */
+section.cards-side .cards-grid-inner,
+section.cards-side .cards-grid-inner--ordered {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-auto-rows:1fr; gap:var(--sp-md); flex:1;
+}
+section.cards-side .card {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; grid-template-columns:1fr auto; align-content:start;
+  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+}
+section.cards-side .card > strong { display:block; grid-column:1 / -1; }
+section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
+section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+
+/* — numbered cards (ol): flush corner tag via absolute ::before — */
+section.cards-side > ol { counter-reset:card; }
+section.cards-side > ol > li {
+  counter-increment:card;
+  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
+}
+section.cards-side > ol > li::before {
+  content:counter(card);
+  position:absolute; top:0; left:0;
+  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
+  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+}
+section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
+section.cards-side .cards-grid-inner--ordered > .card {
+  counter-increment:card;
+  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
+}
+section.cards-side .cards-grid-inner--ordered > .card::before {
+  content:counter(card);
+  position:absolute; top:0; left:0;
+  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
+  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+}
+
+/* ── nested-list fallback (no .cards-grid-inner) ─────────────────────────────
+ * Mirrors the Marp CLI native path for environments where the
+ * post-processor didn't run (e.g. vanilla marp-vscode preview).
+ */
+section.cards-side:not(:has(.cards-grid-inner)) > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol {
+  display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
+  gap:var(--sp-md); flex:1; list-style:none; padding:0; margin:0;
+}
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
+  display:grid; grid-template-columns:1fr auto; align-content:start;
+  font-weight:700; color:var(--text-heading);
+}
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
+  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+/* — numbered cards (ol source, VS Code fallback) — */
+section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
+  counter-increment:card;
+  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
+}
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
+  content:counter(card);
+  position:absolute; top:0; left:0;
+  padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
+  font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
+  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+}
 
 /* === lib/components/cards-stack/styles.css === */
 /* cards-stack — extracted from lib/_legacy.css (batch 6).
@@ -4798,6 +4889,106 @@ section.word-cloud .wc-word[data-rotated="1"] {
 }
 
 /* === lib/_legacy.css === */
+/*
+ * ════════════════════════════════════════════════════════════════════════════
+ * _legacy.css — destination map
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * This file is the residual monolith from before the per-component folder
+ * migration (design-system.md §9). It contains: shared tokens, base
+ * typography, cross-cutting modifiers (eyebrow, subtitle, pill, dark variant,
+ * annotation, key insight), un-extracted per-component CSS, and a quantity
+ * of suspected dead code from removed components. It will be retired
+ * incrementally; this map directs the next session to the right destination.
+ *
+ * Why not split now: many rules carry `!important` and rely on source-order
+ * cascade to beat sibling !important. CSS @layer cascade REVERSES priority
+ * for !important, so wrapping rules in layers can silently flip wins/losses.
+ * See tools/build-css.js header comment on LEGACY_SOURCE for the longer
+ * version. A clean split requires per-block specificity audits.
+ *
+ *
+ * ── Destinations by line range ────────────────────────────────────────────
+ *
+ *   line range   destination                          notes
+ *   ─────────────────────────────────────────────────────────────────────────
+ *      1– 200    lib/_root.css (NEW)                  :root tokens + @import
+ *    201– 224    lib/_root.css (NEW)                  universal theme defaults
+ *    225– 259    lib/_base.css (NEW)                  prose/heading defaults
+ *    260– 309    lib/_modifiers.css (NEW)             SUBTITLE (p>code after h*)
+ *    310– 380    lib/_modifiers.css (NEW)             EYEBROW (p>code before h*)
+ *    381– 464    lib/_modifiers.css (NEW)             KEY INSIGHT
+ *    465– 518    lib/_modifiers.css (NEW)             UNIVERSAL PILL
+ *    519– 535    lib/_modifiers.css (NEW)             DARK VARIANT
+ *    536– 601    lib/_diagram-overrides.css           Mermaid (merges existing)
+ *    602– 756    lib/_syntax-highlight.css (NEW)      highlight.js theming
+ *    757– 775    lib/components/stats/styles.css      STATS per-component
+ *    776– 793    lib/components/split-brief/...       SPLIT-BRIEF (NEW MANIFEST)
+ *    794– 811    lib/components/split-metric/...      SPLIT-METRIC (NEW MANIFEST)
+ *    812– 833    lib/components/split-steps/...       SPLIT-STEPS (NEW MANIFEST)
+ *    834– 861    lib/components/split-compare/...     SPLIT-COMPARE (NEW MANIFEST)
+ *    862– 904    lib/components/split-statement/...   SPLIT-STATEMENT (NEW MANIFEST)
+ *    905– 960    lib/_modifiers.css                   BELOW-NOTE fallback
+ *    961–1146    lib/_modifiers.css                   ANNOTATION (trailing _italic_)
+ *   1147–1778    lib/components/user-journey/...      JOURNEY per-component
+ *   1779–1815    lib/_modifiers.css                   ROW PILL
+ *
+ * ── DEAD-CANDIDATE blocks (no matching component manifest; verify before delete)
+ *
+ *   line range   class name              status
+ *   ─────────────────────────────────────────────────────────────────────────
+ *   1816–2069    statute-stack           DEAD-CANDIDATE — vertical-removed
+ *   2070–2253    citation-card           DEAD-CANDIDATE — vertical-removed
+ *   2254–2305    obligation-matrix       DEAD-CANDIDATE — vertical-removed
+ *   2306–2450    state glyphs            DEAD-CANDIDATE — verify modifier usage
+ *   2451–2519    (divider banner — gap)
+ *   2520–2728    regulatory-update       DEAD-CANDIDATE — vertical-removed
+ *   2729–2969    redline                 DEAD-CANDIDATE — vertical-removed
+ *   2970–3172    authority-chain         DEAD-CANDIDATE — vertical-removed
+ *
+ * ── Destinations continued (3173+)
+ *
+ *   line range   destination                          notes
+ *   ─────────────────────────────────────────────────────────────────────────
+ *   3173–3216    lib/_semi-universal.css              compact / loose / accent
+ *                                                     (may duplicate existing —
+ *                                                     diff before merging)
+ *   3217–3712    lib/components/gantt/styles.css      GANTT per-component
+ *   3713–3981    lib/components/radar/styles.css      RADAR (axis/lane/grid)
+ *   3982–4182    lib/components/radar/styles.css      RADAR (continued)
+ *   4183–4415    lib/components/quadrant/styles.css   QUADRANT (tints, frame,
+ *                                                     bubble, trail, cohort,
+ *                                                     threshold variants)
+ *   4416–4783    lib/_backgrounds.css (NEW)           COMPOSITOR / GLOWS /
+ *                                                     EDGE WASHES / ATMOSPHERIC /
+ *                                                     MULTI-ACCENT / SVG MARKS
+ *   4784–5270    lib/_diagram-overrides.css           RESET + diagram families
+ *                                                     (flowchart, journey,
+ *                                                     mindmap, gitgraph, treemap,
+ *                                                     c4, venn, ishikawa,
+ *                                                     sankey, packet,
+ *                                                     architecture, er)
+ *   5271–5931    lib/components/math/styles.css       MATH per-component
+ *   5932–end     lib/_modifiers.css                   KaTeX-in-non-math fallback
+ *
+ * ── Migration order (suggested for the next session) ──────────────────────
+ *
+ *   1. DEAD-CANDIDATE verification first. Search examples/ + tests for each
+ *      class. If unused, delete the block — this removes ~1,400 lines (~24%
+ *      of the file) with zero visual risk.
+ *   2. Token + base extraction (lines 1–259) to _root.css + _base.css. Pure
+ *      reorganization, no specificity changes.
+ *   3. Per-component blocks to their folders, alphabetically. Each move is
+ *      a same-sandbox before/after PDF byte-compare (see the cards-side
+ *      extraction commit for the validation pattern).
+ *   4. Modifiers (_modifiers.css) and backgrounds (_backgrounds.css) last —
+ *      these have the highest cascade-interaction risk; isolate by leaving
+ *      them in source-order position and only physically moving the file.
+ *
+ * Per-block destinations may shift as the split proceeds; treat this map
+ * as a starting hypothesis, not a contract.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
