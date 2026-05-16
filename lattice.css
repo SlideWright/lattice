@@ -1483,21 +1483,204 @@ section.checklist > ol > li em {
 /* === lib/components/citation-card/styles.css === */
 /* citation-card — evidence.canvas.prose
  *
- * The CSS rules for section.citation-card currently live in
- * lib/_legacy.css under the CITATION-CARD banner. Extraction into
- * this file is deferred to Phase 5 because citation-card.pull-quote
- * has a blockquote::before content override that collides at equal
- * specificity (0,2,3 vs 0,3,3) with the KEY INSIGHT modifier rule in
- * _legacy.css. KEY INSIGHT today supplies the default eyebrow label
- * for citation-card's other variants. Both relationships depend on
- * source-order cascade; moving citation-card rules earlier in the
- * bundle (into this file) would let KEY INSIGHT override pull-quote
- * AND break the other variants' eyebrow. Phase 5 will move modifiers
- * into _modifiers.css positioned after components, then citation-card
- * can extract cleanly.
- *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/citation-card/manifest.json for the component contract.
+ *
+ * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css split
+ * moves component CSS EARLIER in the bundle than lib/_modifiers.css.
+ * For rules that tie KEY INSIGHT on specificity (0,3,3) — here, the
+ * `.pull-quote > blockquote::before` content + chrome override — the
+ * post-extraction cascade would let KEY INSIGHT win by source order
+ * and break the variant's rendering. Until KEY INSIGHT is redesigned
+ * (Phase 5b proper — likely a custom-property gate), the conflicting
+ * selector is duplicated (`.pull-quote.pull-quote`) to bump its
+ * specificity to 0,4,3 so it beats KEY INSIGHT on specificity, not
+ * source order. Pixel-check verified: 0 diff against pre-phase-5b.
  */
+
+/* ── CITATION-CARD ────────────────────────────────────────────────────
+ * Three-band rhythm: verbatim quote → plain-English translate → obligation.
+ *
+ * <!-- _class: citation-card -->
+ * ## Headline.
+ * `Cal. Civ. Code §1798.140(o) · CCPA`
+ * > "Personal information" means information that identifies, relates
+ * > to, describes, is capable of being associated with…
+ * - In plain English: any data tied to a household or device, not just
+ *   to a named person.
+ * - **What we must do** Treat household-level identifiers as PI in our
+ *   notice, retention, and DSAR workflows.
+ *
+ * Variants: .split, .pull-quote, .margin, .triptych.
+ * ──────────────────────────────────────────────────────────────────── */
+section.citation-card { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.citation-card h2 { margin-bottom:var(--sp-xs); }
+/* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
+section.citation-card > p:has(> code:only-child) {
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--accent);
+}
+section.citation-card > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0;
+  color:inherit; font-size:inherit;
+}
+/* Verbatim quote — blockquote, serif italic, accent rule. */
+section.citation-card > blockquote {
+  margin:0;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:none;
+  border-left:4px solid var(--accent);
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+  font-family:var(--font-display);
+  font-size:var(--fs-md);
+  font-style:italic;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+}
+section.citation-card > blockquote > p { margin:0; }
+section.citation-card > blockquote > p + p { margin-top:var(--sp-xs); }
+/* Translation — first list, body sans, muted heading. */
+section.citation-card > ul,
+section.citation-card > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1;
+}
+section.citation-card > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  line-height:var(--lh-relaxed);
+  color:var(--text-body);
+}
+section.citation-card > :is(ul, ol) > li::marker { content:''; }
+/* The "what we must do" item carries a strong label as the eyebrow. */
+section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--accent-soft);
+  border-radius:var(--radius-md);
+  border-left:4px solid var(--accent);
+  color:var(--text-heading);
+  font-weight:500;
+}
+section.citation-card > :is(ul, ol) > li > strong:first-child {
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:0.234375cqi;
+}
+
+/* .split — verbatim left, translate+do right. */
+section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); grid-template-rows:auto 1fr; }
+section.citation-card.split h2 { grid-column:1 / -1; }
+section.citation-card.split > p:has(> code:only-child) { grid-column:1; grid-row:2; align-self:start; }
+section.citation-card.split > blockquote { grid-column:1; grid-row:2; align-self:stretch; margin-top:var(--sp-lg); }
+section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
+
+/* .pull-quote — hero quote dominant. */
+section.citation-card.pull-quote > blockquote {
+  font-size:var(--fs-xl);
+  line-height:var(--lh-snug);
+  padding:var(--sp-lg) var(--sp-xl);
+  background:none;
+  border-left:6px solid var(--accent);
+  position:relative;
+  flex:1; display:flex; align-items:center;
+}
+section.citation-card.pull-quote.pull-quote > blockquote::before {
+  content:'\201C';
+  position:absolute;
+  top:-0.78cqi; left:0;
+  font-family:var(--font-display);
+  font-size:var(--fs-hero);
+  line-height:1;
+  color:var(--accent-soft);
+  z-index:-1;
+}
+section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
+
+/* .margin — quote center, citation in left margin, "what" in right margin. */
+section.citation-card.margin {
+  display:grid;
+  grid-template-columns:18cqi 1fr 22cqi;
+  column-gap:var(--sp-lg);
+  grid-template-rows:auto 1fr;
+}
+section.citation-card.margin h2 { grid-column:1 / -1; }
+section.citation-card.margin > p:has(> code:only-child) {
+  grid-column:1; grid-row:2;
+  align-self:start;
+  text-align:right;
+  font-size:var(--fs-xs);
+  padding-top:var(--sp-md);
+}
+section.citation-card.margin > blockquote {
+  grid-column:2; grid-row:2;
+  background:none; padding:var(--sp-md) 0;
+  border-left:none;
+  border-top:1px solid var(--accent);
+  border-bottom:1px solid var(--accent);
+  text-align:center; align-self:center;
+  font-size:var(--fs-lg);
+}
+section.citation-card.margin > :is(ul, ol) {
+  grid-column:3; grid-row:2;
+  align-self:center;
+  gap:var(--sp-xs);
+}
+section.citation-card.margin > :is(ul, ol) > li {
+  padding:0;
+  background:none;
+  border-left:3px solid var(--accent);
+  padding-left:var(--sp-md);
+  font-size:var(--fs-sm);
+}
+section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
+  background:none; padding-left:var(--sp-md);
+  border-left:3px solid var(--accent);
+}
+
+/* .triptych — three side-by-side cards: Quote / Translate / Do.
+ * Author shape: regular author shape, but the blockquote becomes col 1,
+ * the first non-do li becomes col 2, the do li becomes col 3. */
+section.citation-card.triptych {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych h2 { grid-column:1 / -1; }
+section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
+section.citation-card.triptych > blockquote {
+  grid-column:1; grid-row:3;
+  font-size:var(--fs-body);
+  background:var(--bg-alt);
+  border-left:4px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) {
+  grid-column:2 / span 2; grid-row:3;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+}
+section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
+  background:var(--accent-soft);
+  border-color:var(--accent);
+}
 
 /* === lib/components/closing/styles.css === */
 /* closing — anchor.bookend.closing
@@ -4319,18 +4502,284 @@ section .radarLegendText, section .radarTitle { fill: var(--text-heading) !impor
 /* === lib/components/redline/styles.css === */
 /* redline — comparison.canvas.prose
  *
- * The CSS rules for section.redline currently live in lib/_legacy.css
- * under the REDLINE banner. Extraction into this file is deferred to
- * Phase 5 because redline.split / .stacked / .three-col have
- * blockquote::before content overrides that collide at equal
- * specificity (0,3,3) with the KEY INSIGHT modifier rule in _legacy.css.
- * Moving redline rules into this file (earlier in the bundle) would
- * let KEY INSIGHT override them. The cascade order will be restored
- * after Phase 5 moves modifiers into _modifiers.css positioned after
- * components in the bundle.
- *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
  * See lib/components/redline/manifest.json for the component contract.
+ *
+ * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css
+ * split moves component CSS EARLIER in the bundle than lib/_modifiers.css.
+ * For rules that tie KEY INSIGHT on specificity (0,3,3 for ::before,
+ * 0,3,2 for blockquote) — every `.split`, `.stacked`, and `.three-col`
+ * variant that overrides blockquote chrome and blockquote::before
+ * content (OLD/NEW labels) — the post-extraction cascade would let
+ * KEY INSIGHT win by source order and break the variants. Until KEY
+ * INSIGHT is redesigned (Phase 5b proper — likely a custom-property
+ * gate), each conflicting selector is duplicated (`.split.split`,
+ * `.stacked.stacked`, `.three-col.three-col`) to bump specificity to
+ * 0,4,X so it beats KEY INSIGHT on specificity, not source order.
+ * Pixel-check verified: 0 diff against pre-phase-5b.
  */
+
+/* ── REDLINE ──────────────────────────────────────────────────────────
+ * Textual diff. Uses <ins> / <del> HTML (or ~~md~~ for deletions).
+ *
+ * <!-- _class: redline -->
+ * `Cal. Civ. Code §1798.130 · amendment SB-362`
+ * > A business shall <del>provide</del> <ins>publish on its homepage</ins>
+ * > a clear and conspicuous link <ins>titled "Your Privacy Choices"</ins>
+ * > that enables a consumer to opt out…
+ *
+ * Variants: .split (old | new), .annotated (numbered margin notes),
+ * .stacked (old block atop new block), .three-col (old | new | rationale).
+ * ──────────────────────────────────────────────────────────────────── */
+section.redline { display:flex; flex-direction:column; gap:var(--sp-sm); }
+section.redline h2 { margin-bottom:var(--sp-xs); }
+section.redline > p:has(> code:only-child) {
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  letter-spacing:0.04em;
+  color:var(--accent);
+}
+section.redline > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0; color:inherit;
+}
+section.redline > blockquote {
+  margin:0;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:4px solid var(--text-muted);
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+  font-family:var(--font-display);
+  font-size:var(--fs-md);
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  flex:1;
+}
+section.redline > blockquote > p { margin:0; }
+section.redline > blockquote > p + p { margin-top:var(--sp-sm); }
+/* Insertions and deletions — ins/del HTML, also ~~md~~ which renders as s. */
+section.redline ins, section.redline :is(p) ins {
+  text-decoration:underline;
+  text-decoration-thickness:2px;
+  text-decoration-color:var(--pass);
+  color:var(--pass);
+  background:var(--pass-bg);
+  padding:0 0.234375cqi;
+  border-radius:var(--radius-sm);
+  font-style:normal;
+  font-weight:600;
+}
+section.redline del, section.redline s {
+  text-decoration:line-through;
+  text-decoration-thickness:2px;
+  text-decoration-color:var(--fail);
+  color:var(--fail);
+  background:var(--fail-bg);
+  padding:0 0.234375cqi;
+  border-radius:var(--radius-sm);
+  opacity:0.85;
+}
+/* Annotation list — appears below the quote, gives reviewer plain-English
+ * rationale for each numbered delta in the text. */
+section.redline > ol,
+section.redline > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+}
+section.redline > :is(ol, ul) > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-snug);
+  padding-left:var(--sp-md);
+  border-left:2px solid var(--accent);
+}
+section.redline > :is(ol, ul) > li::marker { content:''; }
+section.redline > :is(ol, ul) > li > strong {
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.10em;
+  color:var(--accent);
+  margin-right:var(--sp-xs);
+}
+
+/* .split — two blockquotes side-by-side: old left, new right. */
+section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
+section.redline.split h2 { grid-column:1 / -1; }
+section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
+section.redline.split.split > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:3;
+  border-left-color:var(--fail);
+  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+}
+section.redline.split.split > blockquote:nth-of-type(1)::before {
+  content:'OLD';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.split.split > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:3;
+  border-left-color:var(--pass);
+  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+}
+section.redline.split.split > blockquote:nth-of-type(2)::before {
+  content:'NEW';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
+
+/* .annotated — single passage with numbered sup markers; annotations below. */
+section.redline.annotated > blockquote sup {
+  display:inline-block;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-family:var(--font-mono);
+  font-size:0.7em;
+  font-weight:700;
+  padding:0 0.4em;
+  border-radius:999px;
+  margin-left:0.156cqi;
+  line-height:1.4;
+  vertical-align:super;
+}
+section.redline.annotated > :is(ol, ul) {
+  counter-reset:rl;
+  margin-top:var(--sp-md);
+}
+section.redline.annotated > :is(ol, ul) > li {
+  counter-increment:rl;
+  position:relative;
+  padding-left:calc(var(--sp-lg) + var(--sp-xs));
+}
+section.redline.annotated > :is(ol, ul) > li::before {
+  content:counter(rl);
+  position:absolute; left:0; top:0.156cqi;
+  background:var(--accent); color:var(--on-accent);
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  padding:0 0.5em;
+  border-radius:999px;
+  line-height:1.4;
+}
+
+/* .stacked — two blockquotes vertically: old on top (struck), new below. */
+section.redline.stacked.stacked > blockquote:nth-of-type(1) {
+  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
+  border-left-color:var(--fail);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
+  opacity:0.78;
+}
+section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
+  content:'OLD — prior text';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  text-decoration:none;
+  margin-bottom:var(--sp-xs);
+}
+section.redline.stacked.stacked > blockquote:nth-of-type(2) {
+  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
+  border-left-color:var(--pass);
+}
+section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
+  content:'NEW · current';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+
+/* .three-col — old | new | rationale columns. The author writes two
+ * blockquotes plus a list for the rationale column. */
+section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
+section.redline.three-col h2 { grid-column:1 / -1; }
+section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
+section.redline.three-col.three-col > blockquote:nth-of-type(1) {
+  grid-column:1; grid-row:3;
+  border-left-color:var(--fail);
+  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  font-size:var(--fs-body);
+}
+section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
+  content:'OLD'; display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--fail);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.three-col.three-col > blockquote:nth-of-type(2) {
+  grid-column:2; grid-row:3;
+  border-left-color:var(--pass);
+  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  font-size:var(--fs-body);
+}
+section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {
+  content:'NEW'; display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--pass);
+  margin-bottom:var(--sp-xs);
+}
+section.redline.three-col > :is(ol, ul) {
+  grid-column:3; grid-row:3;
+  align-self:stretch;
+}
+section.redline.three-col > :is(ol, ul)::before {
+  content:'WHY';
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-label);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+  margin-bottom:var(--sp-xs);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+ * MODIFIERS — cross-cutting authorial intent flags
+ * ────────────────────────────────────────────────────────────────────────
+ * Modifiers compose with any layout. They redefine palette/spacing
+ * variables on the section element; layouts that read those variables
+ * via var() pick up the new values automatically. This keeps modifiers
+ * additive — no per-layout cascade edits required.
+ *
+ * Composition rules:
+ *   - Modifiers never collide with layouts; any modifier may pair with
+ *     any layout where the appendix matrix in references/proposals.md
+ *     marks it ● or ○.
+ *   - When two density modifiers are stacked (e.g. compact loose), the
+ *     last one in the source order wins, per normal cascade.
+ *   - Layout-specific modifiers (declared further below) compose with
+ *     cross-cutting modifiers.
+ *
+ * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
+ * ════════════════════════════════════════════════════════════════════════ */
 
 /* === lib/components/regulatory-update/styles.css === */
 /* regulatory-update — progression.ledger.structure
@@ -7506,190 +7955,6 @@ section.journey.weighted .journey-task-actors {
  * universal deny list so the recipe fires for free).
  * ──────────────────────────────────────────────────────────────────── */
 
-/* ── CITATION-CARD ────────────────────────────────────────────────────
- * Three-band rhythm: verbatim quote → plain-English translate → obligation.
- *
- * <!-- _class: citation-card -->
- * ## Headline.
- * `Cal. Civ. Code §1798.140(o) · CCPA`
- * > "Personal information" means information that identifies, relates
- * > to, describes, is capable of being associated with…
- * - In plain English: any data tied to a household or device, not just
- *   to a named person.
- * - **What we must do** Treat household-level identifiers as PI in our
- *   notice, retention, and DSAR workflows.
- *
- * Variants: .split, .pull-quote, .margin, .triptych.
- * ──────────────────────────────────────────────────────────────────── */
-section.citation-card { display:flex; flex-direction:column; gap:var(--sp-sm); }
-section.citation-card h2 { margin-bottom:var(--sp-xs); }
-/* Hanging citation eyebrow — leading paragraph that is just a `<code>`. */
-section.citation-card > p:has(> code:only-child) {
-  margin:0;
-  font-family:var(--font-mono);
-  font-size:var(--fs-sm);
-  font-weight:600;
-  letter-spacing:0.04em;
-  color:var(--accent);
-}
-section.citation-card > p:has(> code:only-child) > code {
-  background:none; border:none; padding:0;
-  color:inherit; font-size:inherit;
-}
-/* Verbatim quote — blockquote, serif italic, accent rule. */
-section.citation-card > blockquote {
-  margin:0;
-  padding:var(--sp-md) var(--sp-lg);
-  background:var(--bg-alt);
-  border:none;
-  border-left:4px solid var(--accent);
-  border-radius:0 var(--radius-md) var(--radius-md) 0;
-  font-family:var(--font-display);
-  font-size:var(--fs-md);
-  font-style:italic;
-  line-height:var(--lh-snug);
-  color:var(--text-heading);
-}
-section.citation-card > blockquote > p { margin:0; }
-section.citation-card > blockquote > p + p { margin-top:var(--sp-xs); }
-/* Translation — first list, body sans, muted heading. */
-section.citation-card > ul,
-section.citation-card > ol {
-  list-style:none; padding:0; margin:0;
-  display:flex; flex-direction:column; gap:var(--sp-sm);
-  flex:1;
-}
-section.citation-card > :is(ul, ol) > li {
-  font-size:var(--fs-body);
-  line-height:var(--lh-relaxed);
-  color:var(--text-body);
-}
-section.citation-card > :is(ul, ol) > li::marker { content:''; }
-/* The "what we must do" item carries a strong label as the eyebrow. */
-section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
-  padding:var(--sp-md) var(--sp-lg);
-  background:var(--accent-soft);
-  border-radius:var(--radius-md);
-  border-left:4px solid var(--accent);
-  color:var(--text-heading);
-  font-weight:500;
-}
-section.citation-card > :is(ul, ol) > li > strong:first-child {
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.16em;
-  text-transform:uppercase;
-  color:var(--accent);
-  margin-bottom:0.234375cqi;
-}
-
-/* .split — verbatim left, translate+do right. */
-section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); grid-template-rows:auto 1fr; }
-section.citation-card.split h2 { grid-column:1 / -1; }
-section.citation-card.split > p:has(> code:only-child) { grid-column:1; grid-row:2; align-self:start; }
-section.citation-card.split > blockquote { grid-column:1; grid-row:2; align-self:stretch; margin-top:var(--sp-lg); }
-section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
-
-/* .pull-quote — hero quote dominant. */
-section.citation-card.pull-quote > blockquote {
-  font-size:var(--fs-xl);
-  line-height:var(--lh-snug);
-  padding:var(--sp-lg) var(--sp-xl);
-  background:none;
-  border-left:6px solid var(--accent);
-  position:relative;
-  flex:1; display:flex; align-items:center;
-}
-section.citation-card.pull-quote > blockquote::before {
-  content:'\201C';
-  position:absolute;
-  top:-0.78cqi; left:0;
-  font-family:var(--font-display);
-  font-size:var(--fs-hero);
-  line-height:1;
-  color:var(--accent-soft);
-  z-index:-1;
-}
-section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
-
-/* .margin — quote center, citation in left margin, "what" in right margin. */
-section.citation-card.margin {
-  display:grid;
-  grid-template-columns:18cqi 1fr 22cqi;
-  column-gap:var(--sp-lg);
-  grid-template-rows:auto 1fr;
-}
-section.citation-card.margin h2 { grid-column:1 / -1; }
-section.citation-card.margin > p:has(> code:only-child) {
-  grid-column:1; grid-row:2;
-  align-self:start;
-  text-align:right;
-  font-size:var(--fs-xs);
-  padding-top:var(--sp-md);
-}
-section.citation-card.margin > blockquote {
-  grid-column:2; grid-row:2;
-  background:none; padding:var(--sp-md) 0;
-  border-left:none;
-  border-top:1px solid var(--accent);
-  border-bottom:1px solid var(--accent);
-  text-align:center; align-self:center;
-  font-size:var(--fs-lg);
-}
-section.citation-card.margin > :is(ul, ol) {
-  grid-column:3; grid-row:2;
-  align-self:center;
-  gap:var(--sp-xs);
-}
-section.citation-card.margin > :is(ul, ol) > li {
-  padding:0;
-  background:none;
-  border-left:3px solid var(--accent);
-  padding-left:var(--sp-md);
-  font-size:var(--fs-sm);
-}
-section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
-  background:none; padding-left:var(--sp-md);
-  border-left:3px solid var(--accent);
-}
-
-/* .triptych — three side-by-side cards: Quote / Translate / Do.
- * Author shape: regular author shape, but the blockquote becomes col 1,
- * the first non-do li becomes col 2, the do li becomes col 3. */
-section.citation-card.triptych {
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows:auto auto 1fr;
-  gap:var(--sp-md);
-}
-section.citation-card.triptych h2 { grid-column:1 / -1; }
-section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
-section.citation-card.triptych > blockquote {
-  grid-column:1; grid-row:3;
-  font-size:var(--fs-body);
-  background:var(--bg-alt);
-  border-left:4px solid var(--accent);
-  border-radius:var(--radius-md);
-  padding:var(--sp-md);
-}
-section.citation-card.triptych > :is(ul, ol) {
-  grid-column:2 / span 2; grid-row:3;
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:var(--sp-md);
-}
-section.citation-card.triptych > :is(ul, ol) > li {
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-radius:var(--radius-md);
-  padding:var(--sp-md);
-}
-section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
-  background:var(--accent-soft);
-  border-color:var(--accent);
-}
-
 /* ── State glyphs ─────────────────────────────────────────────────────
  * Author writes the universal [x]/[-]/[ ]/[/] grammar; the marpit/
  * emulator/runtime transforms strip the marker and wrap the cell
@@ -8112,268 +8377,6 @@ section.regulatory-update.priority > :is(ol, ul) > li:nth-child(2) { border-left
 section.regulatory-update.priority > :is(ol, ul) > li:nth-child(2)::before { background:var(--warn); }
 section.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
 section.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }
-
-/* ── REDLINE ──────────────────────────────────────────────────────────
- * Textual diff. Uses <ins> / <del> HTML (or ~~md~~ for deletions).
- *
- * <!-- _class: redline -->
- * `Cal. Civ. Code §1798.130 · amendment SB-362`
- * > A business shall <del>provide</del> <ins>publish on its homepage</ins>
- * > a clear and conspicuous link <ins>titled "Your Privacy Choices"</ins>
- * > that enables a consumer to opt out…
- *
- * Variants: .split (old | new), .annotated (numbered margin notes),
- * .stacked (old block atop new block), .three-col (old | new | rationale).
- * ──────────────────────────────────────────────────────────────────── */
-section.redline { display:flex; flex-direction:column; gap:var(--sp-sm); }
-section.redline h2 { margin-bottom:var(--sp-xs); }
-section.redline > p:has(> code:only-child) {
-  margin:0;
-  font-family:var(--font-mono);
-  font-size:var(--fs-sm);
-  letter-spacing:0.04em;
-  color:var(--accent);
-}
-section.redline > p:has(> code:only-child) > code {
-  background:none; border:none; padding:0; color:inherit;
-}
-section.redline > blockquote {
-  margin:0;
-  padding:var(--sp-md) var(--sp-lg);
-  background:var(--bg-alt);
-  border:1px solid var(--border);
-  border-left:4px solid var(--text-muted);
-  border-radius:0 var(--radius-md) var(--radius-md) 0;
-  font-family:var(--font-display);
-  font-size:var(--fs-md);
-  line-height:var(--lh-relaxed);
-  color:var(--text-heading);
-  flex:1;
-}
-section.redline > blockquote > p { margin:0; }
-section.redline > blockquote > p + p { margin-top:var(--sp-sm); }
-/* Insertions and deletions — ins/del HTML, also ~~md~~ which renders as s. */
-section.redline ins, section.redline :is(p) ins {
-  text-decoration:underline;
-  text-decoration-thickness:2px;
-  text-decoration-color:var(--pass);
-  color:var(--pass);
-  background:var(--pass-bg);
-  padding:0 0.234375cqi;
-  border-radius:var(--radius-sm);
-  font-style:normal;
-  font-weight:600;
-}
-section.redline del, section.redline s {
-  text-decoration:line-through;
-  text-decoration-thickness:2px;
-  text-decoration-color:var(--fail);
-  color:var(--fail);
-  background:var(--fail-bg);
-  padding:0 0.234375cqi;
-  border-radius:var(--radius-sm);
-  opacity:0.85;
-}
-/* Annotation list — appears below the quote, gives reviewer plain-English
- * rationale for each numbered delta in the text. */
-section.redline > ol,
-section.redline > ul {
-  list-style:none; padding:0; margin:0;
-  display:flex; flex-direction:column; gap:var(--sp-xs);
-}
-section.redline > :is(ol, ul) > li {
-  font-size:var(--fs-body);
-  color:var(--text-body);
-  line-height:var(--lh-snug);
-  padding-left:var(--sp-md);
-  border-left:2px solid var(--accent);
-}
-section.redline > :is(ol, ul) > li::marker { content:''; }
-section.redline > :is(ol, ul) > li > strong {
-  display:inline-block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.10em;
-  color:var(--accent);
-  margin-right:var(--sp-xs);
-}
-
-/* .split — two blockquotes side-by-side: old left, new right. */
-section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
-section.redline.split h2 { grid-column:1 / -1; }
-section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
-section.redline.split > blockquote:nth-of-type(1) {
-  grid-column:1; grid-row:3;
-  border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
-}
-section.redline.split > blockquote:nth-of-type(1)::before {
-  content:'OLD';
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--fail);
-  margin-bottom:var(--sp-xs);
-}
-section.redline.split > blockquote:nth-of-type(2) {
-  grid-column:2; grid-row:3;
-  border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
-}
-section.redline.split > blockquote:nth-of-type(2)::before {
-  content:'NEW';
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--pass);
-  margin-bottom:var(--sp-xs);
-}
-section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
-
-/* .annotated — single passage with numbered sup markers; annotations below. */
-section.redline.annotated > blockquote sup {
-  display:inline-block;
-  background:var(--accent);
-  color:var(--on-accent);
-  font-family:var(--font-mono);
-  font-size:0.7em;
-  font-weight:700;
-  padding:0 0.4em;
-  border-radius:999px;
-  margin-left:0.156cqi;
-  line-height:1.4;
-  vertical-align:super;
-}
-section.redline.annotated > :is(ol, ul) {
-  counter-reset:rl;
-  margin-top:var(--sp-md);
-}
-section.redline.annotated > :is(ol, ul) > li {
-  counter-increment:rl;
-  position:relative;
-  padding-left:calc(var(--sp-lg) + var(--sp-xs));
-}
-section.redline.annotated > :is(ol, ul) > li::before {
-  content:counter(rl);
-  position:absolute; left:0; top:0.156cqi;
-  background:var(--accent); color:var(--on-accent);
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  padding:0 0.5em;
-  border-radius:999px;
-  line-height:1.4;
-}
-
-/* .stacked — two blockquotes vertically: old on top (struck), new below. */
-section.redline.stacked > blockquote:nth-of-type(1) {
-  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
-  border-left-color:var(--fail);
-  text-decoration:line-through;
-  text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
-  opacity:0.78;
-}
-section.redline.stacked > blockquote:nth-of-type(1)::before {
-  content:'OLD — prior text';
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--fail);
-  text-decoration:none;
-  margin-bottom:var(--sp-xs);
-}
-section.redline.stacked > blockquote:nth-of-type(2) {
-  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
-  border-left-color:var(--pass);
-}
-section.redline.stacked > blockquote:nth-of-type(2)::before {
-  content:'NEW · current';
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--pass);
-  margin-bottom:var(--sp-xs);
-}
-
-/* .three-col — old | new | rationale columns. The author writes two
- * blockquotes plus a list for the rationale column. */
-section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
-section.redline.three-col h2 { grid-column:1 / -1; }
-section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
-section.redline.three-col > blockquote:nth-of-type(1) {
-  grid-column:1; grid-row:3;
-  border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
-  font-size:var(--fs-body);
-}
-section.redline.three-col > blockquote:nth-of-type(1)::before {
-  content:'OLD'; display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--fail);
-  margin-bottom:var(--sp-xs);
-}
-section.redline.three-col > blockquote:nth-of-type(2) {
-  grid-column:2; grid-row:3;
-  border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
-  font-size:var(--fs-body);
-}
-section.redline.three-col > blockquote:nth-of-type(2)::before {
-  content:'NEW'; display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--pass);
-  margin-bottom:var(--sp-xs);
-}
-section.redline.three-col > :is(ol, ul) {
-  grid-column:3; grid-row:3;
-  align-self:stretch;
-}
-section.redline.three-col > :is(ol, ul)::before {
-  content:'WHY';
-  display:block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-label);
-  font-weight:700;
-  letter-spacing:0.12em;
-  color:var(--accent);
-  margin-bottom:var(--sp-xs);
-}
-
-
-/* ════════════════════════════════════════════════════════════════════════
- * MODIFIERS — cross-cutting authorial intent flags
- * ────────────────────────────────────────────────────────────────────────
- * Modifiers compose with any layout. They redefine palette/spacing
- * variables on the section element; layouts that read those variables
- * via var() pick up the new values automatically. This keeps modifiers
- * additive — no per-layout cascade edits required.
- *
- * Composition rules:
- *   - Modifiers never collide with layouts; any modifier may pair with
- *     any layout where the appendix matrix in references/proposals.md
- *     marks it ● or ○.
- *   - When two density modifiers are stacked (e.g. compact loose), the
- *     last one in the source order wins, per normal cascade.
- *   - Layout-specific modifiers (declared further below) compose with
- *     cross-cutting modifiers.
- *
- * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
- * ════════════════════════════════════════════════════════════════════════ */
 
 /* ── compact ────────────────────────────────────────────────────────────
  * Tighter spacing for dense slides. Shrinks the spacing scale ~25 %; the
