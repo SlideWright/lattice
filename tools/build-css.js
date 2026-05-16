@@ -107,9 +107,16 @@ function componentStyles() {
     .sort();
   const out = [];
   for (const name of names) {
-    const rel = path.join('lib', 'components', name, 'styles.css');
-    const text = readIfExists(rel);
-    if (text) out.push({ rel, text });
+    // Dotted convention: <name>.styles.css; tolerate legacy styles.css too.
+    const dotted = path.join('lib', 'components', name, `${name}.styles.css`);
+    const legacy = path.join('lib', 'components', name, 'styles.css');
+    const dottedText = readIfExists(dotted);
+    if (dottedText) {
+      out.push({ rel: dotted, text: dottedText });
+      continue;
+    }
+    const legacyText = readIfExists(legacy);
+    if (legacyText) out.push({ rel: legacy, text: legacyText });
   }
   return out;
 }

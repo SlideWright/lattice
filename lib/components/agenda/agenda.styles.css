@@ -1,0 +1,76 @@
+/* agenda — extracted from lib/_legacy.css (batch 3).
+ * See lib/components/agenda/agenda.manifest.json for the component contract.
+ */
+
+/* ── AGENDA ────────────────────────────────────────────────────────────
+ * ## heading
+ * 1. The Design       — page 7
+ * 2. The Phasing      — page 18
+ * 3. The Choices      — page 26
+ *
+ * Auto-numbered table-of-contents. Each row: counter prefix, section
+ * title, dotted leader, page reference. Used between sections in
+ * long decks.
+ *
+ * Modifier `progress N` (where N is 1-9) highlights the Nth row as
+ * "you are here." Past rows render muted; future rows render normal.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.agenda { display:flex; flex-direction:column; }
+section.agenda h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-lg); }
+section.agenda ol {
+  list-style:none; padding:0; margin:0;
+  counter-reset:agenda-counter;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+}
+section.agenda ol > li {
+  counter-increment:agenda-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-md);
+  align-items:baseline;
+  font-size:var(--fs-emphasis);
+  font-weight:500;
+  line-height:var(--lh-relaxed);
+  color:var(--text-heading);
+  padding:var(--sp-xs) 0;
+  border-bottom:1px solid var(--border);
+}
+section.agenda ol > li::before {
+  content:counter(agenda-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.12em;
+  color:var(--accent);
+}
+/* progress modifier — highlights "you are here" row */
+section.agenda[class*="progress-"] ol > li { opacity:0.55; }
+section.agenda.progress-1 ol > li:nth-child(1),
+section.agenda.progress-2 ol > li:nth-child(2),
+section.agenda.progress-3 ol > li:nth-child(3),
+section.agenda.progress-4 ol > li:nth-child(4),
+section.agenda.progress-5 ol > li:nth-child(5),
+section.agenda.progress-6 ol > li:nth-child(6),
+section.agenda.progress-7 ol > li:nth-child(7),
+section.agenda.progress-8 ol > li:nth-child(8),
+section.agenda.progress-9 ol > li:nth-child(9) {
+  opacity:1;
+  background:var(--accent-soft);
+  border-left:3px solid var(--accent);
+  margin-left:calc(-1 * var(--sp-md));
+  padding-left:var(--sp-md);
+  border-bottom-color:var(--accent);
+}
+/* Past rows (those before the highlighted one) get muted-but-not-faded text. */
+section.agenda.progress-2 ol > li:nth-child(-n+1),
+section.agenda.progress-3 ol > li:nth-child(-n+2),
+section.agenda.progress-4 ol > li:nth-child(-n+3),
+section.agenda.progress-5 ol > li:nth-child(-n+4),
+section.agenda.progress-6 ol > li:nth-child(-n+5),
+section.agenda.progress-7 ol > li:nth-child(-n+6),
+section.agenda.progress-8 ol > li:nth-child(-n+7),
+section.agenda.progress-9 ol > li:nth-child(-n+8) {
+  opacity:0.4;
+}

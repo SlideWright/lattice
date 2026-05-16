@@ -1,5 +1,5 @@
 /**
- * Unit: lib/components/journey/transform.js — user-journey diagram transforms.
+ * Unit: lib/components/journey/journey.transform.js — user-journey diagram transforms.
  *
  * Parser:    nested <ul> with inline `@actor`/`:mood`/`+volume` <code> tokens
  *            → { sections: [{ name, tasks: [{ label, actors, mood, volume }] }] }
@@ -23,7 +23,7 @@ const {
   transformJourneySection,
   applyToRenderedHtml,
   JOURNEY_ACTOR_PALETTE,
-} = require('../../../lib/components/journey/transform');
+} = require('../../../lib/components/journey/journey.transform');
 
 describe('journey', () => {
   // ── clampMood ─────────────────────────────────────────────────────────

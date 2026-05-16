@@ -108,8 +108,10 @@ const PATTERNS = Object.freeze({
     /^tools\//,
     // Component metadata only affects scaffolder/snippets, not rendering.
     /^lib\/components\/index\.js$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/manifest\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/README\.md$/,
+    /^lib\/components\/manifest\.schema\.json$/,
+    /^lib\/components\/[a-z][a-z0-9-]*\/(?:[a-z][a-z0-9-]*\.)?manifest\.json$/,
+    /^lib\/components\/[a-z][a-z0-9-]*\/(?:[a-z][a-z0-9-]*\.)?README\.md$/,
+    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
   ],
   // Full diff triggers — shared CSS, theme, three-renderer paths.
   fullDiff: [
@@ -128,10 +130,13 @@ const PATTERNS = Object.freeze({
     /^lattice\.css$/,
   ],
   // Component-scoped triggers — affect every deck using the component.
-  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/styles\.css$/,
-  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/transform\.js$/,
+  // Accept both dotted (<name>.styles.css) and legacy (styles.css) shapes.
+  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?styles\.css$/,
+  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?transform\.js$/,
   // Example.md triggers — single slide in component-gallery.
-  componentExample: /^lib\/components\/([a-z][a-z0-9-]*)\/example\.md$/,
+  componentExample: /^lib\/components\/([a-z][a-z0-9-]*)\/(?:\1\.)?example\.md$/,
+  // Per-component gallery.md trigger — only that component's gallery rebuilds.
+  componentGallery: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
   // Deck source — that deck only.
   deckSource: /^examples\/([a-z][a-z0-9-]*)\.md$/,
 });

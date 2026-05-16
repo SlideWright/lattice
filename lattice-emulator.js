@@ -939,24 +939,24 @@ const { liftSlotLabel }  = require('./lib/slot-label-lift');
 // Roadmap modifier transforms — `roadmap status` (cell state markers) and
 // `roadmap horizons` (table → three-card transpose). Shared with the
 // Marp Core engine wrapper in marp.config.js (parity contract).
-const { transformRoadmapSection } = require('./lib/components/roadmap/transform');
+const { transformRoadmapSection } = require('./lib/components/roadmap/roadmap.transform');
 // Journey transform — nested list → .journey-board DOM. Shared with
 // marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
-const { transformJourneySection } = require('./lib/components/journey/transform');
+const { transformJourneySection } = require('./lib/components/journey/journey.transform');
 // Word-cloud layout transform — list-to-canvas rewrite for the
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
-const { transformWordCloudSection } = require('./lib/components/word-cloud/transform');
+const { transformWordCloudSection } = require('./lib/components/word-cloud/word-cloud.transform');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/radar/transform');
+const radar = require('./lib/components/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/quadrant/transform');
+const quadrant = require('./lib/components/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;

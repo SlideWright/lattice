@@ -1,0 +1,130 @@
+/* checklist — extracted from lib/_legacy.css (batch 3).
+ * See lib/components/checklist/checklist.manifest.json for the component contract.
+ */
+
+/* ── CHECKLIST ─────────────────────────────────────────────────────────
+ * <!-- _class: checklist -->
+ *
+ * ## Phase 1 acceptance, by item.
+ *
+ * - [x] Codebook signing in production
+ * - [x] HSM-anchored audit trail
+ * - [-] TTL refresh under cold-start load — _open, see slide 27_
+ * - [ ] Multi-tenant operation — _Phase 2_
+ * - [/] Cross-region replication — _deferred to Phase 3_
+ *
+ * Each top-level list item carries a state marker (universal grammar):
+ *   [x] → pass + state-full     (filled disc, --pass green)
+ *   [-] → warn + state-half     (half-filled disc, --warn amber)
+ *   [ ] → fail + state-empty    (outline disc, --fail red)
+ *   [/] → skip + state-slashed  (filled disc + slash, --text-muted; row strikethrough)
+ *
+ * The Marp plugin (build) and runtime transformer (preview) strip the
+ * marker and add `class="state {pass|warn|fail|skip} {state-full|...}"`
+ * to the <li>; CSS paints the universal state token via ::before. The
+ * row background tint and left rail pick up the same --state-color.
+ * Trailing inline `code` on a row floats right as a status pill
+ * (universal pill convention). */
+section.checklist { display:flex; flex-direction:column; }
+section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.checklist > ul,
+section.checklist > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+  justify-content:center;
+}
+section.checklist > ul > li,
+section.checklist > ol > li {
+  position:relative;
+  display:flex;
+  align-items:baseline;
+  gap:var(--sp-md);
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(2em + var(--sp-md));
+  background:var(--bg-alt);
+  border-left:3px solid var(--border);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:var(--fs-md);
+  font-weight:500;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+  break-inside:avoid;
+}
+section.checklist > ul > li::marker,
+section.checklist > ol > li::marker { content:''; }
+
+/* Per-row colour token + chrome — rail and background tint pick up the
+ * resolved --state-color via color-mix. The token itself draws via
+ * ::before below. */
+section.checklist > ul > li.state.pass,
+section.checklist > ol > li.state.pass {
+  --state-color:var(--pass);
+  border-left-color:var(--state-color);
+  background:var(--pass-bg, var(--bg-alt));
+}
+section.checklist > ul > li.state.warn,
+section.checklist > ol > li.state.warn {
+  --state-color:var(--warn);
+  border-left-color:var(--state-color);
+  background:var(--warn-bg, var(--bg-alt));
+}
+section.checklist > ul > li.state.fail,
+section.checklist > ol > li.state.fail {
+  --state-color:var(--fail);
+  border-left-color:var(--state-color);
+  background:var(--fail-bg, var(--bg-alt));
+}
+section.checklist > ul > li.state.skip,
+section.checklist > ol > li.state.skip {
+  --state-color:var(--text-muted);
+  border-left-color:var(--state-color);
+  background:var(--bg-alt);
+  color:var(--text-muted);
+  text-decoration:line-through;
+  text-decoration-color:color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+
+/* Universal state token — circular glyph in the row's left column.
+ * Shape branches on state-full / state-half / state-empty / state-slashed
+ * via the two shared SVG masks. No font dependency. */
+section.checklist > ul > li.state::before,
+section.checklist > ol > li.state::before {
+  content:'';
+  position:absolute;
+  left:var(--sp-md);
+  top:calc(var(--sp-sm) + 0.18em);
+  width:1.15em;
+  height:1.15em;
+  border-radius:50%;
+  background-color:var(--state-color, var(--text-muted));
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  box-sizing:border-box;
+}
+/* state-half: tonal split — both halves coloured, sharp bisector. */
+section.checklist > ul > li.state.state-half::before,
+section.checklist > ol > li.state.state-half::before {
+  background:linear-gradient(to right,
+    var(--state-color, var(--text-muted)) 50%,
+    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+}
+section.checklist > ul > li.state.state-empty::before,
+section.checklist > ol > li.state.state-empty::before {
+  background-color:transparent;
+  border:2px solid var(--state-color, var(--text-muted));
+}
+/* state-slashed: semi-transparent dark slash on the coloured disc. */
+section.checklist > ul > li.state.state-slashed::before,
+section.checklist > ol > li.state.state-slashed::before {
+  background-image:var(--state-slash);
+}
+/* Inline _em_ tail inside an item — soft annotation. Renders as muted
+ * italic body voice; the eye still reads the label first. */
+section.checklist > ul > li em,
+section.checklist > ol > li em {
+  font-style:italic;
+  font-weight:400;
+  color:var(--text-muted);
+}

@@ -1,0 +1,100 @@
+/* actors — extracted from lib/_legacy.css (batch 3).
+ * See lib/components/actors/actors.manifest.json for the component contract.
+ */
+
+/* ── ACTORS ────────────────────────────────────────────────────────────
+ * ## heading
+ * - **Key custody** `HSM admin`
+ *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Policy** `Platform operator`
+ *   - Owns codebook policy, signing keys, version floors.
+ *
+ * Roster of responsibilities owned by named actors. Strong = the
+ * responsibility (left header). Inline `code` = the actor name,
+ * rendered as a filled accent pill, right-aligned. Nested li = body.
+ *
+ * Convention: bold is the primary scannable thing; code is the
+ * metadata chip. Same convention as everywhere else in Lattice.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.actors { display:flex; flex-direction:column; }
+section.actors h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.actors > ul,
+section.actors > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+  justify-content:center;
+}
+section.actors > ul > li,
+section.actors > ol > li {
+  display:grid;
+  grid-template-columns:1fr auto;
+  column-gap:var(--sp-md);
+  row-gap:var(--sp-xs);
+  align-items:center;
+  padding:var(--sp-md) var(--sp-lg);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+}
+section.actors > ul > li::marker,
+section.actors > ol > li::marker { content:''; }
+/* Strong = primary header (responsibility / capability), left-aligned. */
+section.actors > ul > li > strong,
+section.actors > ol > li > strong {
+  grid-column:1; grid-row:1;
+  font-size:var(--fs-emphasis);
+  font-weight:700;
+  color:var(--text-heading);
+  line-height:var(--lh-snug);
+}
+/* Inline code = actor name chip, filled categorical pill, right-aligned.
+ * Pill chrome (font, border, bg, color, radius) inherits from the
+ * universal pill rule. This block adds grid placement and the actors-
+ * specific letter-spacing + slightly wider padding. The categorical
+ * border colour is fed via --pill-border below (set per-row by the
+ * nth-child rotation), which the universal rule consumes directly.
+ * The --cN-dark palette is theme-defined; both cuoio (warm earth
+ * pigments) and indaco (cool L≈32 deeps) ship balanced sets. */
+section.actors > ul > li > code,
+section.actors > ol > li > code {
+  grid-column:2; grid-row:1;
+  justify-self:end;
+  display:inline-flex; align-items:center;
+  letter-spacing:0.04em;
+  padding:3px 11px;
+}
+/* Categorical rotation across items (cycle of 6, then mauve/slate).
+ * Sets --pill-border on the <li>; both the universal pill rule
+ * (border on the <code>) and the actors row marker (border-left on
+ * the <li>) consume the same variable. */
+section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--c1-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--c2-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--c3-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--c4-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--c5-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--c6-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--c7-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--c8-dark); }
+/* The accent left-border picks up the same hue as the chip. */
+section.actors > :is(ul, ol) > li {
+  border-left-color:var(--pill-border, var(--accent));
+}
+/* Body row spans full width below the header. */
+section.actors > ul > li > ul,
+section.actors > ol > li > ul,
+section.actors > ul > li > ol,
+section.actors > ol > li > ol {
+  grid-column:1 / -1; grid-row:2;
+  list-style:none; padding:0; margin:0;
+}
+section.actors > ul > li > ul > li,
+section.actors > ol > li > ul > li,
+section.actors > ul > li > ol > li,
+section.actors > ol > li > ol > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}

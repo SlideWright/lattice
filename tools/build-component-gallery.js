@@ -128,8 +128,11 @@ Every \`example.md\` in lib/components/, rendered.`);
 
 # ${fn[0].toUpperCase() + fn.slice(1)}`);
     for (const m of items) {
-      const exPath = path.join(ROOT, 'lib', 'components', m.name, 'example.md');
-      if (!fs.existsSync(exPath)) continue;
+      // Dotted convention: <name>.example.md; fall back to legacy example.md.
+      const dotted = path.join(ROOT, 'lib', 'components', m.name, `${m.name}.example.md`);
+      const legacy = path.join(ROOT, 'lib', 'components', m.name, 'example.md');
+      const exPath = fs.existsSync(dotted) ? dotted : (fs.existsSync(legacy) ? legacy : null);
+      if (!exPath) continue;
       let content = fs.readFileSync(exPath, 'utf8').trim();
       const label = SHORT[m.name] || m.name;
       const footer = `${label} · ${m.name}`;
