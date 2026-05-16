@@ -163,7 +163,7 @@ describe('component-manifest', () => {
 
   describe('loadOne', () => {
     test('loads and validates a real manifest file', () => {
-      const m = loadOne(path.join(__dirname, '..', '..', '..', 'lib', 'components', 'cards-grid.json'));
+      const m = loadOne(path.join(__dirname, '..', '..', '..', 'lib', 'components', 'cards-grid', 'manifest.json'));
       assert.equal(m.name, 'cards-grid');
       assert.equal(m.function, 'inventory');
     });
