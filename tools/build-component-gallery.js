@@ -128,12 +128,20 @@ Every \`example.md\` in lib/components/, rendered.`);
 
 # ${fn[0].toUpperCase() + fn.slice(1)}`);
     for (const m of items) {
-      // Dotted convention: <name>.example.md; fall back to legacy example.md.
-      const dotted = path.join(ROOT, 'lib', 'components', m.name, `${m.name}.example.md`);
-      const legacy = path.join(ROOT, 'lib', 'components', m.name, 'example.md');
-      const exPath = fs.existsSync(dotted) ? dotted : (fs.existsSync(legacy) ? legacy : null);
-      if (!exPath) continue;
-      let content = fs.readFileSync(exPath, 'utf8').trim();
+      // Source preference (Phase 2 onwards):
+      //   1. manifest.sample (the source of truth for per-component prose)
+      //   2. <name>.example.md sibling (transitional)
+      //   3. legacy example.md (pre-Phase 1)
+      let content = null;
+      if (typeof m.sample === 'string' && m.sample.trim()) {
+        content = m.sample.trim();
+      } else {
+        const dotted = path.join(ROOT, 'lib', 'components', m.name, `${m.name}.example.md`);
+        const legacy = path.join(ROOT, 'lib', 'components', m.name, 'example.md');
+        const exPath = fs.existsSync(dotted) ? dotted : (fs.existsSync(legacy) ? legacy : null);
+        if (!exPath) continue;
+        content = fs.readFileSync(exPath, 'utf8').trim();
+      }
       const label = SHORT[m.name] || m.name;
       const footer = `${label} · ${m.name}`;
       content = content.replace(

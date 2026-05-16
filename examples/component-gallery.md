@@ -31,11 +31,8 @@ Every `example.md` in lib/components/, rendered.
 
 ---
 
-<!-- _class: closing -->
+<!-- _class: closing silent -->
 <!-- _footer: "Closing slide · closing" -->
-<!-- _paginate: false -->
-<!-- _header: "" -->
-<!-- _footer: "" -->
 
 # Function · Form · Substance · Finish.
 
@@ -43,11 +40,8 @@ Every `example.md` in lib/components/, rendered.
 
 ---
 
-<!-- _class: divider -->
+<!-- _class: divider silent -->
 <!-- _footer: "Section break · divider" -->
-<!-- _paginate: false -->
-<!-- _header: "" -->
-<!-- _footer: "" -->
 
 `Section 03`
 
@@ -64,17 +58,14 @@ Every `example.md` in lib/components/, rendered.
 
 ---
 
-<!-- _class: title -->
+<!-- _class: title silent -->
 <!-- _footer: "Title slide · title" -->
-<!-- _paginate: false -->
-<!-- _header: "" -->
-<!-- _footer: "" -->
 
-# The component model in one deck
+# From Signal to Strategy
 
-`Lattice · Component Gallery`
+`Product Strategy · Q3 2025`
 
-Forty-five components, one page each, by function family.
+A decision framework for product leaders navigating market uncertainty.
 
 ---
 
@@ -115,7 +106,7 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: quote -->
 <!-- _footer: "Pulled quotation · quote" -->
 
-> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided. The framework's value isn't the data — it's the moment in the calendar when the question gets asked.
+> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.
 
 — Head of Product, Pilot Team 3
 
@@ -126,15 +117,15 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 `Q2 Performance Review`
 
-## Enterprise revenue stalled in Q2
+## Enterprise revenue stalled in Q2.
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- Renewal pricing complexity is driving churn at the segment ceiling
+- **Renewal pricing complexity is driving churn at the segment ceiling.**
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
+- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- Competitive displacement accelerated in the $80–200K ACV tier
+- **Competitive displacement accelerated in the $80-200K ACV tier.**
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 ---
@@ -149,7 +140,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 - **One claim deserves emphasis.** The panel headline carries the weight; the right side substantiates.
 - **You need both a thesis and proof.** Statement on the left, evidence list on the right.
 - **The right side is short.** Three to four supporting points; longer lists belong in `cards-stack`.
-- **Modifier mirror flips it.** Image-style decks often want the panel on the right.
+- **The mirror modifier flips it.** Image-style decks often want the panel on the right.
 
 ---
 
@@ -160,11 +151,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 `Morgan Chase · Head of Product, Vercel, 2024`
 
-- Clarity is a product decision, not a marketing one
+- **Clarity is a product decision, not a marketing one.**
   - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
-- Onboarding is the product's first argument for itself
+- **Onboarding is the product's first argument for itself.**
   - The moment a user first succeeds defines their frame for everything that follows.
-- Understanding, not delight, is the retention driver at scale
+- **Understanding, not delight, is the retention driver at scale.**
   - Users who understand the system's logic stay through friction. Build for comprehension.
 
 ---
@@ -209,16 +200,12 @@ Three structural factors explain 90% of the shortfall — all addressable before
 <!-- _class: cards-grid -->
 <!-- _footer: "2-4 parallel cards · cards-grid" -->
 
-## When to reach for cards-grid.
+## The framework has four components.
 
-- Parallel items
-  - Four cards or fewer, each item gets equal weight in the layout. Audience compares them at a glance.
-- Scannable at a glance
-  - The audience absorbs the whole set in one look — no scrolling, no eye-leaping between rows.
-- Equal information density
-  - Each card carries roughly the same text length. Uneven density makes the grid feel unbalanced.
-- Order is decorative
-  - When sequence carries meaning, use list-steps or list-criteria instead. cards-grid is for parallel options.
+- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- **Calibration Loop.** Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
 
 ---
 
@@ -227,10 +214,8 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 ## Two cards, equal weight, side-by-side.
 
-- Use for an explicit pair
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides.
-- Different from compare-prose
-  - compare-prose adds connector chrome and a chosen modifier; cards-side stays neutral. Pick cards-side when neither option is the winner.
+- **An explicit pair.** Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
+- **Different from compare-prose.** compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
 
 ---
 
@@ -330,11 +315,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 ## How we make calls when the spec is silent.
 
-1. Default to the choice that is cheaper to reverse.
-2. Name the actor, never the system.
-3. Write down the bet on the same slide as the choice.
-4. Form follows function — let the audience need shape the layout.
-5. One main idea per slide; split if you cannot summarise it in one sentence.
+- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
+- **Form follows function.** Let the audience's need shape the layout, not the other way around.
+- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
 
 ---
 
@@ -358,8 +343,6 @@ Three structural factors explain 90% of the shortfall — all addressable before
   - Bias-audit obligation for AEDTs used in employment decisions.
   - Annual audit + candidate notice + public summary.
   - `Effective 2023`
-
-When the room wants three parallel facts at a glance.
 
 ---
 
@@ -448,7 +431,7 @@ const cards = loadOne('cards-grid');
 - First option
   - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
 - Second option
-  - Two-sentence description of the second option, including the strongest argument for it. Modifier chosen marks the verdict when a decision has been made.
+  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
 
 ---
 
@@ -521,7 +504,7 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 
 > A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
 
-- **Why this matters.** SB-362 collapses "sale" and "sharing" into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+- **Why this matters.** SB-362 collapses sale and sharing into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
 
 ---
 
@@ -625,7 +608,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 <!-- _class: journey -->
 <!-- _footer: "User-journey chart · journey" -->
 
-## Customer onboarding · trial → activation
+## Customer onboarding · trial to activation.
 
 - Evaluate
   - Read case study `@prospect` `:5`
@@ -637,8 +620,6 @@ Three workstreams across four quarters. Status pills tint each bar.
 - Activate
   - First report `@user` `:3`
   - Daily use `@user` `:5`
-
-> **Setup is the chokepoint.** Mood drops three points between trial signup and first report — the only stretch we own end-to-end and the only place we can move conversion this quarter.
 
 ---
 
@@ -653,8 +634,11 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 - Backlog
   - Per-purpose codebooks `S`
+    - compliance
   - Crypto-shred runbook `M`
+    - platform
   - Dependency dashboard `S`
+    - platform
 - In progress
   - Multi-tenant DEKs `M`
     - platform `at-risk`
@@ -665,7 +649,9 @@ Four columns, mixed card density. Size badge sits in the title row.
     - compliance
 - Done
   - Codebook signing `M`
+    - platform
   - Manual rotation `S`
+    - operations
 
 ---
 
@@ -674,16 +660,11 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name**
-   - Kebab-case, matching the class directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph.
-5. **Skeleton plus example**
-   - Skeleton scaffolds blank slides for the new-slide CLI; example.md demonstrates the component substantively for the gallery.
+1. **Stable name.** Kebab-case, matching the `_class` directive authors type when invoking the component.
+2. **Function coordinate.** One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate.** One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate.** One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
+5. **Skeleton plus sample.** Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
 
 ---
 
@@ -692,18 +673,21 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## How to add a new component to Lattice.
 
-1. Create the component folder with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Write the styles scoped to the section class. Wrap in the components layer once the cascade migration completes.
-3. Add a transform module if the substance is structure or series. Wire it into all three render paths.
-4. Author example.md and README.md. Regenerate the catalog gallery from the manifests.
-5. Add a unit test under the component test path. Run the full suite locally before pushing.
+1. Scaffold the folder
+   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
+2. Author the styles
+   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
+3. Add a transform if needed
+   - Substance `structure` or `series` ships a transform module wired into all three render paths.
+4. Demo and document
+   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
 
 ---
 
 <!-- _class: regulatory-update -->
 <!-- _footer: "Change log · regulatory-update" -->
 
-## Privacy & AI motion — Q1 2026.
+## Privacy and AI motion — Q1 2026.
 
 `Federal · State · International`
 
@@ -713,7 +697,7 @@ Four columns, mixed card density. Size badge sits in the title row.
    - `Effective Feb 2026`
 2. Colorado AI Act
    - `SB 24-205`
-   - Developer + deployer duties for consequential-decision systems.
+   - Developer and deployer duties for consequential-decision systems.
    - `Effective Feb 2026`
 3. FTC v. Avast
    - `§5 unfairness`
@@ -749,18 +733,18 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `02`
 
-## Discovery & Scoping
+## Discovery and Scoping
 
 Four weeks. Shared definition of the problem before any solution work begins.
 
 1. Stakeholder Interviews
    - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
 2. Current-State Audit
-   - System inventory, workflow documentation, and data quality review.
+   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.
 3. Problem Framing Workshop
    - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
 4. Scope Confirmation
-   - Written sign-off on what is in, what is out, what requires a separate decision.
+   - Written sign-off on what is in, what is out, and what requires a separate decision.
 
 ---
 
@@ -770,13 +754,13 @@ Four weeks. Shared definition of the problem before any solution work begins.
 ## How a deck moves from draft to share.
 
 1. **Draft**
-   - *Author writes markdown with appropriate `_class` directives.*
+   - *Author writes markdown with the appropriate `_class` directives.*
 2. **Build**
    - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
 3. **Review**
-   - *Reviewer opens the raw PDF link; per-feature deck shows the change in context.*
+   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
 4. **Ship**
-   - *Merge the PR; CI rebuilds against main and updates the gallery.*
+   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
 
 ---
 
@@ -813,7 +797,7 @@ Four weeks. Shared definition of the problem before any solution work begins.
 ```js
 const { loadAll, groupByFunction } = require("./lib/components");
 
-const manifests = loadAll();           // 45 components, validated
+const manifests = loadAll();           // 58 components, validated
 const byFunction = groupByFunction(manifests);
 
 for (const m of byFunction.evidence) {
@@ -857,6 +841,9 @@ flowchart LR
 3. **$1.1B**
    - Cash & equivalents
    - +$180M QoQ `On plan` `Investor`
+4. **+18%**
+   - YoY revenue growth
+   - vs 14% prior year `Ahead` `Board`
 
 ---
 
@@ -876,7 +863,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 ---
 
-<!-- _class: piechart donut -->
+<!-- _class: piechart -->
 <!-- _footer: "Pie / donut chart · piechart" -->
 
 `H1 2026 · 1,840 person-hours`
@@ -971,11 +958,11 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 Measured across all customers active for 12+ months, March 31 cohort.
 
-- Existing customers are growing faster than we lose them
+- **Existing customers are growing faster than we lose them.**
   - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
-- Expansion is concentrated — three segments drive 80% of the gain
+- **Expansion is concentrated — three segments drive 80% of the gain.**
   - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
-- Sustained above 110%, this unlocks a capital-efficient growth path
+- **Sustained above 110%, this unlocks a capital-efficient growth path.**
   - NRR above 110% meets the investor threshold for venture-category efficiency.
 
 ---
@@ -1052,7 +1039,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## Applying the criteria, here is where the evidence points.
 
-- **Self-contained component folders.** One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses.
+- **Self-contained component folders.** One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.
 - **Bundler concatenates CSS at build time.** Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
 - **Manifests are the single source of truth.** Scaffolder, snippets, this gallery, and docs all read from the same JSON.
 - **Tests stay scoped.** One test file per component under the components test path, runnable as a scoped npm script.
