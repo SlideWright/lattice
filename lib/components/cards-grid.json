@@ -1,0 +1,28 @@
+{
+  "name": "cards-grid",
+  "function": "inventory",
+  "form": "grid",
+  "substance": "structure",
+  "description": "2–4 parallel items, similar weight, scannable in a grid.",
+  "purpose": "Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.",
+  "variants": ["compact", "loose", "dark", "mirror", "accent", "numbered", "four", "three"],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "cards": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Each list item becomes one card. Lead each li with **Card Title.** then body text."
+    },
+    "insight": {
+      "selector": "blockquote",
+      "required": false,
+      "description": "Optional key-insight panel above the cards."
+    }
+  },
+  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
+  "docs": "docs/references/templates.md#template-7-card-grid-2x2"
+}
