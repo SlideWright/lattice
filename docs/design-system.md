@@ -221,6 +221,49 @@ the rendering pipeline:
 The rendering pipeline (CSS rules, JS post-processors, Mermaid
 integration) is unchanged. The manifest is metadata, not behavior.
 
+### 6.5 Universal variants — three tiers
+
+Variants don't all belong to one component. Some apply to every layout
+("dark", "with-period"); some apply to most ("compact", "loose",
+"accent"); some are strictly per-layout ("mirror" for split-panel,
+"four" for cards-grid). The manifest model recognises three tiers:
+
+**Tier 1 — Universal (25 variants).** Apply to every component. Added
+automatically by `effectiveVariants()`; manifests must NOT list them.
+Six categories:
+
+| Category | Variants |
+|---|---|
+| Mood (1) | `dark` |
+| Decoration (6) | `bg-none`, `bg-corner-tl`, `bg-orbit-br`, `bg-vignette`, `bg-edge-right`, `bg-thread-diagonal` |
+| Typography (2) | `with-period`, `no-period` |
+| Chrome (4) | `silent`, `no-header`, `no-footer`, `no-paginate` |
+| State (8) | `wip`, `draft`, `tbd`, `confidential`, `redacted`, `archived`, `pinned`, `revised` |
+| Tone (4) | `tone-pass`, `tone-warn`, `tone-fail`, `tone-skip` |
+
+The State variants are the team-collaboration vocabulary — visible
+markers for slides that are in-progress, confidential, or otherwise
+need a meta-signal independent of the content. The Tone variants
+reuse the state-token color system (pass/warn/fail/skip) at the
+canvas level — a "this slide is the failure slide" treatment.
+
+**Tier 2 — Semi-universal (3 variants).** Apply to most layouts but
+not all. Manifests opt OUT via `excludes`; default is accepted.
+
+| Variant | Excluded by |
+|---|---|
+| `compact` | layouts with no internal density (bookends, single-canvas) |
+| `loose` | same |
+| `accent` | dense ledger layouts where the focal is ambiguous |
+
+**Tier 3 — Layout-specific.** The manifest's `variants` field. Things
+like `mirror`, `numbered`, `four`, `chosen`, `donut`, etc. Specific to
+one or a few layouts.
+
+The validator rejects any manifest that lists a Tier 1 or Tier 2
+variant in its `variants` array — those are added automatically, and
+listing them risks drift if the universal set changes later.
+
 ---
 
 ## 7. Discovery
@@ -318,7 +361,126 @@ render paths. Write the CSS. Manifest + demo deck.
 
 ---
 
-## 9. What this document is NOT
+## 9. Component folder layout on disk
+
+Each component is self-contained in a single folder:
+
+```text
+lib/components/cards-grid/
+  manifest.json     ← was lib/components/cards-grid.json
+  styles.css        ← extracted from lattice.css; @layer components
+  transform.js      ← post-processor (only for structure/series substance)
+  example.md        ← canonical demo (also referenced from manifest.skeleton)
+  README.md         ← per-component author guide
+```
+
+Tests live at `test/unit/components/<name>.test.js` — the directory
+mirrors the component path. (The previous `test/unit/layouts/` scope
+is renamed to `components` as part of the migration.)
+
+This is the same shape every mature component library uses (Lit, MUI,
+Chakra, Mantine, shadcn). Everything a component "owns" lives in its
+folder; touching the component means opening one directory.
+
+Shared infrastructure (the renderer plugins, the chart-family
+dispatch, the universal-variant module) lives at the top level of
+`lib/`:
+
+```text
+lib/
+  components/
+    index.js                   ← manifest loader, validator,
+                                  effectiveVariants(), vocabularies
+    cards-grid/...             ← per-component folders
+    quote/...
+    ...
+  chart-family.js              ← shared dispatch for series substance
+  match-section.js             ← shared cross-component helper
+  mermaid-hljs.js              ← shared highlight definition
+  resolve-palette.js           ← shared palette utility
+  _base.css / _root.css /      ← shared CSS, see §10
+  _scaffold.css / _universal.css /
+  _semi-universal.css / _diagram-overrides.css
+```
+
+The split is: per-component things go in the component folder;
+genuinely shared things stay at `lib/` root.
+
+---
+
+## 10. CSS architecture — bundling + `@layer`
+
+Per-component CSS files (`lib/components/<name>/styles.css`) are
+concatenated into `lattice.css` at build time. The bundled file is
+committed (like `.vscode/lattice.code-snippets`) so the renderer
+loads exactly one file with zero fetch dependency.
+
+Cascade order is enforced via **CSS `@layer`** — independent of source
+or bundle order:
+
+```css
+@layer base, root, scaffold, components, semi-universal, universal, diagram-overrides;
+```
+
+Each per-component CSS file wraps its rules in the `components`
+layer:
+
+```css
+/* lib/components/cards-grid/styles.css */
+@layer components {
+  section.cards-grid h2 { … }
+  section.cards-grid > ul { … }
+}
+```
+
+Universal variants (`dark`, `with-period`, `tone-warn`, etc.) live in
+`lib/_universal.css` wrapped in `@layer universal`, which always wins
+over any component-level rule regardless of bundle order or
+specificity. Adding a new universal variant is guaranteed safe — no
+ordering bugs possible.
+
+### The bundler
+
+`tools/build-css.js` concatenates the following in declared order:
+
+1. `lib/_base.css` — resets, `*`, `html`, `body`
+2. `lib/_root.css` — `:root` tokens, font-face declarations
+3. `lib/_scaffold.css` — `section`, `header`, `footer`, pagination
+4. `lib/components/*/styles.css` — every per-component file (alphabetical)
+5. `lib/_semi-universal.css` — `compact`, `loose`, `accent` rules
+6. `lib/_universal.css` — `dark`, `with-period`, `bg-*`, State, Tone, Chrome
+7. `lib/_diagram-overrides.css` — Mermaid theme overrides
+
+Output: `lattice.css` (committed). Header comment lists source files.
+
+### npm scripts
+
+| Script | Purpose |
+|---|---|
+| `npm run css:build` | Regenerate `lattice.css` from sources |
+| `npm run css:check` | Fail if `lattice.css` is stale relative to sources (CI gate) |
+
+The `css:check` script runs as part of the pre-push hook (along with
+the snippets freshness gate). If anyone modifies a per-component
+`styles.css` without regenerating, the push fails with a
+"`npm run css:build` to regenerate" message.
+
+### Migration
+
+Components are extracted from the monolithic `lattice.css` in batches
+of 5, with per-batch validation: rebuild the three baseline decks
+(`gallery.md`, `mermaid-gallery.md`, `kpi-gallery.md`) plus the
+design-system demo, then diff page-by-page (via `pdftoppm` rendering
+to PNG) against the pre-batch baseline. Any visual change fails the
+batch.
+
+Until extraction is complete, un-migrated components' CSS remains in
+`lib/_unmigrated.css` (the renamed residual `lattice.css` content),
+which sits in `@layer components` alongside the migrated files.
+
+---
+
+## 11. What this document is NOT
 
 - **Not a tutorial.** That is `skill.md`.
 - **Not a layout catalog.** That is `templates.md`, which is being
@@ -331,7 +493,7 @@ render paths. Write the CSS. Manifest + demo deck.
 
 ---
 
-## 10. The component model versus the alternatives
+## 12. The component model versus the alternatives
 
 | Approach | Library that uses it | Pros | Cons |
 |----------|----------------------|------|------|
@@ -347,16 +509,23 @@ discovery story that markdown alone can't provide.
 
 ---
 
-## 11. Status
+## 13. Status
 
 **Shipped on this branch:**
 
-- This document.
-- The 7-family taxonomy + 10 forms + 4 substances vocabulary.
-- `lib/components/*.json` — one manifest per layout.
+- This document — the canonical four-layer model + component contract.
+- The 7-family taxonomy + 11 forms + 4 substances vocabulary.
+- `lib/components/` — 45 manifests + loader + validator + universal-variant tiers.
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.
+
+**In progress on this branch:**
+
+- Component folder restructure — moving each `lib/components/<name>.json` to `lib/components/<name>/manifest.json` + `styles.css` + (optional) `transform.js` + `example.md` + `README.md`. Migrating in batches of 5 with per-batch visual diff validation.
+- `tools/build-css.js` — CSS bundler that concatenates per-component CSS via `@layer`.
+- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the CSS rules are landing alongside the folder migration.
+- Test scope rename — `test/unit/layouts/` → `test/unit/components/`.
 
 **Deferred (open questions):**
 
