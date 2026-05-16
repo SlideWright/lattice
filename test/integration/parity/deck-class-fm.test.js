@@ -21,34 +21,36 @@
  * emulator always runs the Chromium PDF stage as part of its pipeline.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
 const fs     = require('fs');
 const { ROOT, runEmulator } = require('../../helpers/render');
 
-const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'deck-class-fm.md');
+describe('deck-class-fm', () => {
+  const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'deck-class-fm.md');
 
-test('emulator: front-matter `class:` is applied to every slide and composes with `_class:`', { timeout: 60000 }, () => {
-  const pdf = runEmulator(FIXTURE, { timeout: 60000 });
-  const htmlPath = pdf.replace(/\.pdf$/, '.html');
-  if (!fs.existsSync(htmlPath)) throw new Error(`HTML sidecar missing: ${htmlPath}`);
-  const sidecar = fs.readFileSync(htmlPath, 'utf8');
+  test('emulator: front-matter `class:` is applied to every slide and composes with `_class:`', { timeout: 60000 }, () => {
+    const pdf = runEmulator(FIXTURE, { timeout: 60000 });
+    const htmlPath = pdf.replace(/\.pdf$/, '.html');
+    if (!fs.existsSync(htmlPath)) throw new Error(`HTML sidecar missing: ${htmlPath}`);
+    const sidecar = fs.readFileSync(htmlPath, 'utf8');
 
-  const sections = [...sidecar.matchAll(/<section[^>]*\bid="(\d+)"[^>]*\bclass="([^"]*)"/g)]
-    .map(m => ({ id: m[1], cls: m[2].split(/\s+/).filter(Boolean) }));
+    const sections = [...sidecar.matchAll(/<section[^>]*\bid="(\d+)"[^>]*\bclass="([^"]*)"/g)]
+      .map(m => ({ id: m[1], cls: m[2].split(/\s+/).filter(Boolean) }));
 
-  assert.equal(sections.length, 3, 'expected 3 sections');
+    assert.equal(sections.length, 3, 'expected 3 sections');
 
-  // Every slide must carry the deck-wide `dark` token (Lattice append semantic).
-  for (const s of sections) {
-    assert.ok(s.cls.includes('dark'),
-      `slide ${s.id} missing deck-wide 'dark'; got class="${s.cls.join(' ')}"`);
-  }
+    // Every slide must carry the deck-wide `dark` token (Lattice append semantic).
+    for (const s of sections) {
+      assert.ok(s.cls.includes('dark'),
+        `slide ${s.id} missing deck-wide 'dark'; got class="${s.cls.join(' ')}"`);
+    }
 
-  // Slide 2's per-slide `_class: title` must compose with the deck-wide class,
-  // not replace it. Order: per-slide first, deck-wide appended after.
-  const slide2 = sections.find(s => s.id === '2');
-  assert.ok(slide2.cls.includes('title'),
-    `slide 2 lost per-slide 'title'; got class="${slide2.cls.join(' ')}"`);
+    // Slide 2's per-slide `_class: title` must compose with the deck-wide class,
+    // not replace it. Order: per-slide first, deck-wide appended after.
+    const slide2 = sections.find(s => s.id === '2');
+    assert.ok(slide2.cls.includes('title'),
+      `slide 2 lost per-slide 'title'; got class="${slide2.cls.join(' ')}"`);
+  });
 });

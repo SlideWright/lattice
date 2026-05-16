@@ -12,21 +12,23 @@
  * caching is on, /tmp when CI=true.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { runEmulator, runMarp } = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
 
-test('parity: emulator and marp-cli agree on gallery.md page count',
-  { timeout: 240000 },
-  () => {
-    const emPdf = runEmulator('gallery.md');
-    const mpPdf = runMarp('gallery.md');
-    const em = pageCount(emPdf);
-    const mp = pageCount(mpPdf);
-    // Marp/Chromium adds one blank trailing page; tolerate a delta of 1.
-    assert.ok(
-      Math.abs(em - mp) <= 1,
-      `cross-renderer drift: emulator=${em} pages, marp-cli=${mp} pages`,
-    );
-  });
+describe('parity', () => {
+  test('parity: emulator and marp-cli agree on gallery.md page count',
+    { timeout: 240000 },
+    () => {
+      const emPdf = runEmulator('gallery.md');
+      const mpPdf = runMarp('gallery.md');
+      const em = pageCount(emPdf);
+      const mp = pageCount(mpPdf);
+      // Marp/Chromium adds one blank trailing page; tolerate a delta of 1.
+      assert.ok(
+        Math.abs(em - mp) <= 1,
+        `cross-renderer drift: emulator=${em} pages, marp-cli=${mp} pages`,
+      );
+    });
+});

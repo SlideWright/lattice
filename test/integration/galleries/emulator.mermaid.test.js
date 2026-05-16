@@ -7,16 +7,18 @@
  * it, the inner-loop `npm test` does not.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');
 const expected = require('../../fixtures/expected-page-counts.json');
 
-test('emulator: mermaid-gallery.md builds and produces expected page count',
-  { timeout: 600000 },
-  () => {
-    const pdf = runEmulator('mermaid-gallery.md');
-    assert.equal(pageCount(pdf), expected['mermaid-gallery'],
-      'mermaid-gallery.md page count drifted');
-  });
+describe('emulator.mermaid', () => {
+  test('emulator: mermaid-gallery.md builds and produces expected page count',
+    { timeout: 600000 },
+    () => {
+      const pdf = runEmulator('mermaid-gallery.md');
+      assert.equal(pageCount(pdf), expected['mermaid-gallery'],
+        'mermaid-gallery.md page count drifted');
+    });
+});

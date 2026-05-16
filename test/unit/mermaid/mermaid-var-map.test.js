@@ -12,48 +12,50 @@
  * top-level CLI; see test/unit/source-parse.test.js for the rationale).
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
 const path   = require('path');
 const { loadPalette } = require('../../helpers/palette');
 
-const EMULATOR_SRC = fs.readFileSync(
-  path.join(__dirname, '..', '..', '..', 'lattice-emulator.js'),
-  'utf8',
-);
+describe('mermaid-var-map', () => {
+  const EMULATOR_SRC = fs.readFileSync(
+    path.join(__dirname, '..', '..', '..', 'lattice-emulator.js'),
+    'utf8',
+  );
 
-function extractRequiredVars(src) {
-  // Locate the MERMAID_VAR_MAP block; bail loudly if its shape changes.
-  const mapStart = src.indexOf('const MERMAID_VAR_MAP = {');
-  assert.ok(mapStart > 0, 'MERMAID_VAR_MAP not found in lattice-emulator.js');
-  const mapEnd = src.indexOf('\n};', mapStart);
-  assert.ok(mapEnd > mapStart, 'MERMAID_VAR_MAP closing brace not found');
-  const block = src.slice(mapStart, mapEnd);
+  function extractRequiredVars(src) {
+    // Locate the MERMAID_VAR_MAP block; bail loudly if its shape changes.
+    const mapStart = src.indexOf('const MERMAID_VAR_MAP = {');
+    assert.ok(mapStart > 0, 'MERMAID_VAR_MAP not found in lattice-emulator.js');
+    const mapEnd = src.indexOf('\n};', mapStart);
+    assert.ok(mapEnd > mapStart, 'MERMAID_VAR_MAP closing brace not found');
+    const block = src.slice(mapStart, mapEnd);
 
-  const vars = new Set();
-  const re = /\{\s*var:\s*['"]([a-z0-9-]+)['"]\s*\}/gi;
-  let m;
-  while ((m = re.exec(block)) !== null) {
-    vars.add(m[1]);
+    const vars = new Set();
+    const re = /\{\s*var:\s*['"]([a-z0-9-]+)['"]\s*\}/gi;
+    let m;
+    while ((m = re.exec(block)) !== null) {
+      vars.add(m[1]);
+    }
+    return [...vars].sort();
   }
-  return [...vars].sort();
-}
 
-const required = extractRequiredVars(EMULATOR_SRC);
+  const required = extractRequiredVars(EMULATOR_SRC);
 
-test('mermaid-var-map: extracts a non-trivial set of required vars', () => {
-  assert.ok(required.length >= 20,
-    `expected MERMAID_VAR_MAP to reference at least 20 distinct CSS vars, got ${required.length}`);
-});
-
-for (const name of ['indaco', 'cuoio']) {
-  test(`mermaid-var-map: every required var is defined in themes/${name}.css`, () => {
-    const p = loadPalette(name);
-    const missing = required.filter(v => !p.vars[v]);
-    assert.deepEqual(missing, [],
-      `themes/${name}.css does not define: ${missing.join(', ')}\n` +
-      `MERMAID_VAR_MAP in lattice-emulator.js references these but the palette is silent. ` +
-      `Either define the variable in the palette or change the map entry.`);
+  test('mermaid-var-map: extracts a non-trivial set of required vars', () => {
+    assert.ok(required.length >= 20,
+      `expected MERMAID_VAR_MAP to reference at least 20 distinct CSS vars, got ${required.length}`);
   });
-}
+
+  for (const name of ['indaco', 'cuoio']) {
+    test(`mermaid-var-map: every required var is defined in themes/${name}.css`, () => {
+      const p = loadPalette(name);
+      const missing = required.filter(v => !p.vars[v]);
+      assert.deepEqual(missing, [],
+        `themes/${name}.css does not define: ${missing.join(', ')}\n` +
+        `MERMAID_VAR_MAP in lattice-emulator.js references these but the palette is silent. ` +
+        `Either define the variable in the palette or change the map entry.`);
+    });
+  }
+});

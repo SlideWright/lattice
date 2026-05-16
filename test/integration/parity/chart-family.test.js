@@ -11,99 +11,101 @@
  * the build-path output so a regression in either path fails CI.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
 const fs     = require('fs');
 const { ROOT, runEmulator } = require('../../helpers/render');
 
-const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'chart-family.md');
+describe('chart-family', () => {
+  const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'chart-family.md');
 
-// Module-scoped memoization: the cached helper returns the same PDF path
-// for matching inputs, so all six tests below read the same sidecar.
-let _html;
-function getHtml() {
-  if (_html !== undefined) return _html;
-  const pdf = runEmulator(FIXTURE, { timeout: 120000 });
-  const htmlPath = pdf.replace(/\.pdf$/, '.html');
-  if (!fs.existsSync(htmlPath)) throw new Error(`HTML sidecar missing: ${htmlPath}`);
-  _html = fs.readFileSync(htmlPath, 'utf8');
-  return _html;
-}
-
-test('chart-family: every chart-layout slide gets the chart-frame class', { timeout: 180000 }, () => {
-  const html = getHtml();
-  const sections = html.match(/<section[^>]*class="[^"]*"/g) || [];
-  const charty = sections.filter(s =>
-    /\b(progress|timeline-list|piechart)\b/.test(s) && !/\bagenda\b/.test(s)
-  );
-  assert.ok(charty.length >= 4, `expected ≥4 chart sections, got ${charty.length}`);
-  for (const s of charty) {
-    assert.match(s, /\bchart-frame\b/, `chart-frame missing from: ${s}`);
+  // Module-scoped memoization: the cached helper returns the same PDF path
+  // for matching inputs, so all six tests below read the same sidecar.
+  let _html;
+  function getHtml() {
+    if (_html !== undefined) return _html;
+    const pdf = runEmulator(FIXTURE, { timeout: 120000 });
+    const htmlPath = pdf.replace(/\.pdf$/, '.html');
+    if (!fs.existsSync(htmlPath)) throw new Error(`HTML sidecar missing: ${htmlPath}`);
+    _html = fs.readFileSync(htmlPath, 'utf8');
+    return _html;
   }
-});
 
-test('chart-family: progress slide emits progress-bars with one row per item', { timeout: 180000 }, () => {
-  const html = getHtml();
-  assert.match(html, /<div class="progress-bars">/);
-  // Five rows in the first progress slide
-  const firstProgress = html.match(/<section[^>]*class="progress chart-frame"[^>]*>[\s\S]*?<\/section>/);
-  assert.ok(firstProgress, 'first progress section not found');
-  const rows = (firstProgress[0].match(/<div class="progress-row">/g) || []).length;
-  assert.equal(rows, 5, `expected 5 progress-row, got ${rows}`);
-  // Status data attribute carries the pill token through to the fill
-  assert.match(firstProgress[0], /<div class="progress-fill" data-s="on-track"/);
-  assert.match(firstProgress[0], /<div class="progress-fill" data-s="blocked"/);
-  // Numeric percentage extracted into progress-pct
-  assert.match(firstProgress[0], /<div class="progress-pct">92%<\/div>/);
-});
+  test('chart-family: every chart-layout slide gets the chart-frame class', { timeout: 180000 }, () => {
+    const html = getHtml();
+    const sections = html.match(/<section[^>]*class="[^"]*"/g) || [];
+    const charty = sections.filter(s =>
+      /\b(progress|timeline-list|piechart)\b/.test(s) && !/\bagenda\b/.test(s)
+    );
+    assert.ok(charty.length >= 4, `expected ≥4 chart sections, got ${charty.length}`);
+    for (const s of charty) {
+      assert.match(s, /\bchart-frame\b/, `chart-frame missing from: ${s}`);
+    }
+  });
 
-test('chart-family: progress dark + minimal modifiers compose with chart-frame', { timeout: 180000 }, () => {
-  const html = getHtml();
-  // The combo slide: progress + dark + minimal + chart-frame all present
-  assert.match(html, /class="progress dark minimal chart-frame"/);
-});
+  test('chart-family: progress slide emits progress-bars with one row per item', { timeout: 180000 }, () => {
+    const html = getHtml();
+    assert.match(html, /<div class="progress-bars">/);
+    // Five rows in the first progress slide
+    const firstProgress = html.match(/<section[^>]*class="progress chart-frame"[^>]*>[\s\S]*?<\/section>/);
+    assert.ok(firstProgress, 'first progress section not found');
+    const rows = (firstProgress[0].match(/<div class="progress-row">/g) || []).length;
+    assert.equal(rows, 5, `expected 5 progress-row, got ${rows}`);
+    // Status data attribute carries the pill token through to the fill
+    assert.match(firstProgress[0], /<div class="progress-fill" data-s="on-track"/);
+    assert.match(firstProgress[0], /<div class="progress-fill" data-s="blocked"/);
+    // Numeric percentage extracted into progress-pct
+    assert.match(firstProgress[0], /<div class="progress-pct">92%<\/div>/);
+  });
 
-test('chart-family: timeline-list emits a spine with date pills + status pills + body', { timeout: 180000 }, () => {
-  const html = getHtml();
-  assert.match(html, /<div class="timeline-spine">/);
-  const tl = html.match(/<section[^>]*class="timeline-list chart-frame"[^>]*>[\s\S]*?<\/section>/);
-  assert.ok(tl, 'timeline-list section not found');
-  const items = (tl[0].match(/<div class="timeline-item">/g) || []).length;
-  assert.equal(items, 4, `expected 4 timeline-item, got ${items}`);
-  // Date pills
-  assert.match(tl[0], /<div class="timeline-pill">2024 Q3<\/div>/);
-  assert.match(tl[0], /<div class="timeline-pill">2026 Q1<\/div>/);
-  // Trailing status pills
-  assert.match(tl[0], /<span class="chart-status" data-s="decision">decision<\/span>/);
-  assert.match(tl[0], /<span class="chart-status" data-s="live">live<\/span>/);
-  // Body of nested bullets
-  assert.match(tl[0], /<div class="timeline-body">/);
-});
+  test('chart-family: progress dark + minimal modifiers compose with chart-frame', { timeout: 180000 }, () => {
+    const html = getHtml();
+    // The combo slide: progress + dark + minimal + chart-frame all present
+    assert.match(html, /class="progress dark minimal chart-frame"/);
+  });
 
-test('chart-family: piechart donut emits an SVG donut with proportional wedges and a legend', { timeout: 180000 }, () => {
-  const html = getHtml();
-  const pc = html.match(/<section[^>]*class="piechart donut chart-frame"[^>]*>[\s\S]*?<\/section>/);
-  assert.ok(pc, 'piechart donut section not found');
-  assert.match(pc[0], /<div class="piechart-figure">/);
-  assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 200 200"/);
-  // Donut path uses inner radius (r=50) — solid pies wouldn't carry it
-  assert.match(pc[0], /A 50 50 0/);
-  // 5 wedges + 5 legend rows
-  const wedges = (pc[0].match(/<path class="wedge"/g) || []).length;
-  const legend = (pc[0].match(/<li><span class="legend-swatch"/g) || []).length;
-  assert.equal(wedges, 5, `expected 5 wedges, got ${wedges}`);
-  assert.equal(legend, 5, `expected 5 legend rows, got ${legend}`);
-});
+  test('chart-family: timeline-list emits a spine with date pills + status pills + body', { timeout: 180000 }, () => {
+    const html = getHtml();
+    assert.match(html, /<div class="timeline-spine">/);
+    const tl = html.match(/<section[^>]*class="timeline-list chart-frame"[^>]*>[\s\S]*?<\/section>/);
+    assert.ok(tl, 'timeline-list section not found');
+    const items = (tl[0].match(/<div class="timeline-item">/g) || []).length;
+    assert.equal(items, 4, `expected 4 timeline-item, got ${items}`);
+    // Date pills
+    assert.match(tl[0], /<div class="timeline-pill">2024 Q3<\/div>/);
+    assert.match(tl[0], /<div class="timeline-pill">2026 Q1<\/div>/);
+    // Trailing status pills
+    assert.match(tl[0], /<span class="chart-status" data-s="decision">decision<\/span>/);
+    assert.match(tl[0], /<span class="chart-status" data-s="live">live<\/span>/);
+    // Body of nested bullets
+    assert.match(tl[0], /<div class="timeline-body">/);
+  });
 
-test('chart-family: header/body/caption skeleton extracts eyebrow, subtitle, italic caption', { timeout: 180000 }, () => {
-  const html = getHtml();
-  const firstProgress = html.match(/<section[^>]*class="progress chart-frame"[^>]*>[\s\S]*?<\/section>/);
-  assert.ok(firstProgress);
-  // Eyebrow extracted from the leading <p><code>...</code></p>
-  assert.match(firstProgress[0], /<div class="chart-header">[\s\S]*<p class="chart-eyebrow"><code>H1 2026 · Phase 1 readiness<\/code><\/p>/);
-  // Subtitle is the first paragraph after h2
-  assert.match(firstProgress[0], /<p class="chart-subtitle">Snapshot taken at 14:00 UTC[^<]*<\/p>/);
-  // Caption is the trailing italic paragraph, stripped of the <em> wrapper
-  assert.match(firstProgress[0], /<p class="chart-caption">Source: Linear · refreshed 2026-05-07<\/p>/);
+  test('chart-family: piechart donut emits an SVG donut with proportional wedges and a legend', { timeout: 180000 }, () => {
+    const html = getHtml();
+    const pc = html.match(/<section[^>]*class="piechart donut chart-frame"[^>]*>[\s\S]*?<\/section>/);
+    assert.ok(pc, 'piechart donut section not found');
+    assert.match(pc[0], /<div class="piechart-figure">/);
+    assert.match(pc[0], /<svg class="piechart-svg" viewBox="0 0 200 200"/);
+    // Donut path uses inner radius (r=50) — solid pies wouldn't carry it
+    assert.match(pc[0], /A 50 50 0/);
+    // 5 wedges + 5 legend rows
+    const wedges = (pc[0].match(/<path class="wedge"/g) || []).length;
+    const legend = (pc[0].match(/<li><span class="legend-swatch"/g) || []).length;
+    assert.equal(wedges, 5, `expected 5 wedges, got ${wedges}`);
+    assert.equal(legend, 5, `expected 5 legend rows, got ${legend}`);
+  });
+
+  test('chart-family: header/body/caption skeleton extracts eyebrow, subtitle, italic caption', { timeout: 180000 }, () => {
+    const html = getHtml();
+    const firstProgress = html.match(/<section[^>]*class="progress chart-frame"[^>]*>[\s\S]*?<\/section>/);
+    assert.ok(firstProgress);
+    // Eyebrow extracted from the leading <p><code>...</code></p>
+    assert.match(firstProgress[0], /<div class="chart-header">[\s\S]*<p class="chart-eyebrow"><code>H1 2026 · Phase 1 readiness<\/code><\/p>/);
+    // Subtitle is the first paragraph after h2
+    assert.match(firstProgress[0], /<p class="chart-subtitle">Snapshot taken at 14:00 UTC[^<]*<\/p>/);
+    // Caption is the trailing italic paragraph, stripped of the <em> wrapper
+    assert.match(firstProgress[0], /<p class="chart-caption">Source: Linear · refreshed 2026-05-07<\/p>/);
+  });
 });

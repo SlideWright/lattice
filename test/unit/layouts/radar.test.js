@@ -12,7 +12,7 @@
  *   4. Variant emission: buildRadar — one default + five modifiers.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   RADAR_MODIFIERS,
@@ -299,51 +299,53 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
 
 const { transformChartSection, applyToRenderedHtml } = require('../../../lib/chart-family');
 
-test('chart-family: radar section is wrapped in chart-frame', () => {
-  const inner = '<h2>Skills</h2>' + UL_TWO;
-  const { html, cls, transformed } = transformChartSection(inner, 'radar');
-  assert.equal(transformed, true);
-  assert.match(cls, /\bchart-frame\b/);
-  assert.match(html, /<div class="chart-header">/);
-  assert.match(html, /<div class="chart-body"><div class="radar-figure"/);
-});
+describe('radar', () => {
+  test('chart-family: radar section is wrapped in chart-frame', () => {
+    const inner = '<h2>Skills</h2>' + UL_TWO;
+    const { html, cls, transformed } = transformChartSection(inner, 'radar');
+    assert.equal(transformed, true);
+    assert.match(cls, /\bchart-frame\b/);
+    assert.match(html, /<div class="chart-header">/);
+    assert.match(html, /<div class="chart-body"><div class="radar-figure"/);
+  });
 
-test('chart-family: radar variant rides the class list', () => {
-  const inner = '<h2>Cap</h2>' + UL_QUADRANT;
-  const { html } = transformChartSection(inner, 'radar quadrant');
-  assert.match(html, /data-variant="quadrant"/);
-  assert.match(html, /class="radar-sector"/);
-});
+  test('chart-family: radar variant rides the class list', () => {
+    const inner = '<h2>Cap</h2>' + UL_QUADRANT;
+    const { html } = transformChartSection(inner, 'radar quadrant');
+    assert.match(html, /data-variant="quadrant"/);
+    assert.match(html, /class="radar-sector"/);
+  });
 
-test('chart-family: eyebrow scale override is honoured', () => {
-  const inner = '<p><code>0–10</code></p><h2>Skills</h2>' + UL_TWO;
-  const { html } = transformChartSection(inner, 'radar');
-  // Eyebrow lifts to .chart-eyebrow but the value text survives for parsing.
-  assert.match(html, /<p class="chart-eyebrow"><code>0–10<\/code><\/p>/);
-  assert.match(html, /<div class="radar-figure"/);
-});
+  test('chart-family: eyebrow scale override is honoured', () => {
+    const inner = '<p><code>0–10</code></p><h2>Skills</h2>' + UL_TWO;
+    const { html } = transformChartSection(inner, 'radar');
+    // Eyebrow lifts to .chart-eyebrow but the value text survives for parsing.
+    assert.match(html, /<p class="chart-eyebrow"><code>0–10<\/code><\/p>/);
+    assert.match(html, /<div class="radar-figure"/);
+  });
 
-const RADAR_SECTION = (
-  '<section id="1" class="radar" data-marpit-slide="1"><h2>Skills</h2>' + UL_TWO + '</section>'
-);
-const RADAR_QUAD_SECTION = (
-  '<section id="2" class="radar quadrant" data-marpit-slide="2"><h2>Cap</h2>' + UL_QUADRANT + '</section>'
-);
+  const RADAR_SECTION = (
+    '<section id="1" class="radar" data-marpit-slide="1"><h2>Skills</h2>' + UL_TWO + '</section>'
+  );
+  const RADAR_QUAD_SECTION = (
+    '<section id="2" class="radar quadrant" data-marpit-slide="2"><h2>Cap</h2>' + UL_QUADRANT + '</section>'
+  );
 
-test('chart-family: applyToRenderedHtml transforms radar sections', () => {
-  const out = applyToRenderedHtml(RADAR_SECTION);
-  assert.match(out, /<div class="radar-figure"/);
-  assert.match(out, /class="radar chart-frame"/);
-});
+  test('chart-family: applyToRenderedHtml transforms radar sections', () => {
+    const out = applyToRenderedHtml(RADAR_SECTION);
+    assert.match(out, /<div class="radar-figure"/);
+    assert.match(out, /class="radar chart-frame"/);
+  });
 
-test('chart-family: applyToRenderedHtml handles modifier variants', () => {
-  const out = applyToRenderedHtml(RADAR_QUAD_SECTION);
-  assert.match(out, /data-variant="quadrant"/);
-  assert.match(out, /class="radar quadrant chart-frame"/);
-});
+  test('chart-family: applyToRenderedHtml handles modifier variants', () => {
+    const out = applyToRenderedHtml(RADAR_QUAD_SECTION);
+    assert.match(out, /data-variant="quadrant"/);
+    assert.match(out, /class="radar quadrant chart-frame"/);
+  });
 
-test('chart-family: idempotent on re-application (already chart-frame)', () => {
-  const once  = applyToRenderedHtml(RADAR_SECTION);
-  const twice = applyToRenderedHtml(once);
-  assert.equal(once, twice);
+  test('chart-family: idempotent on re-application (already chart-frame)', () => {
+    const once  = applyToRenderedHtml(RADAR_SECTION);
+    const twice = applyToRenderedHtml(once);
+    assert.equal(once, twice);
+  });
 });

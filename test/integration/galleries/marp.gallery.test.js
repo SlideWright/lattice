@@ -8,25 +8,27 @@
  * expected Marp page count. The parity test captures this delta.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
 const { runMarp }   = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
 const expected = require('../../fixtures/expected-page-counts.json');
 
-test('marp-cli: gallery.md builds and produces expected page count',
-  { timeout: 180000 },
-  () => {
-    const pdf = runMarp('gallery.md');
-    try {
-      // Marp/Chromium adds one blank trailing page; allow gallery ± 1.
-      const actual = pageCount(pdf);
-      assert.ok(
-        actual === expected.gallery || actual === expected.gallery + 1,
-        `marp-cli gallery.md page count drifted from the contract: expected ${expected.gallery} or ${expected.gallery + 1}, got ${actual}`,
-      );
-    } finally {
-      if (fs.existsSync(pdf)) fs.unlinkSync(pdf);
-    }
-  });
+describe('marp.gallery', () => {
+  test('marp-cli: gallery.md builds and produces expected page count',
+    { timeout: 180000 },
+    () => {
+      const pdf = runMarp('gallery.md');
+      try {
+        // Marp/Chromium adds one blank trailing page; allow gallery ± 1.
+        const actual = pageCount(pdf);
+        assert.ok(
+          actual === expected.gallery || actual === expected.gallery + 1,
+          `marp-cli gallery.md page count drifted from the contract: expected ${expected.gallery} or ${expected.gallery + 1}, got ${actual}`,
+        );
+      } finally {
+        if (fs.existsSync(pdf)) fs.unlinkSync(pdf);
+      }
+    });
+});

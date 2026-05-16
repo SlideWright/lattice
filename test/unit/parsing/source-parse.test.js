@@ -8,23 +8,25 @@
  * checking to `node --check`, which lexes + parses without executing.
  */
 
-const test   = require('node:test');
+const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const path   = require('path');
 const { execFileSync } = require('child_process');
 
-const ROOT = path.join(__dirname, '..', '..', '..');
+describe('source-parse', () => {
+  const ROOT = path.join(__dirname, '..', '..', '..');
 
-function nodeCheck(file) {
-  execFileSync(process.execPath, ['--check', path.join(ROOT, file)], {
-    stdio: ['ignore', 'pipe', 'pipe'],
+  function nodeCheck(file) {
+    execFileSync(process.execPath, ['--check', path.join(ROOT, file)], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  }
+
+  test('lattice-emulator.js parses', () => {
+    assert.doesNotThrow(() => nodeCheck('lattice-emulator.js'));
   });
-}
 
-test('lattice-emulator.js parses', () => {
-  assert.doesNotThrow(() => nodeCheck('lattice-emulator.js'));
-});
-
-test('lattice-runtime.js parses', () => {
-  assert.doesNotThrow(() => nodeCheck('lattice-runtime.js'));
+  test('lattice-runtime.js parses', () => {
+    assert.doesNotThrow(() => nodeCheck('lattice-runtime.js'));
+  });
 });
