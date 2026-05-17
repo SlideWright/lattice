@@ -549,12 +549,136 @@ _Compliance checkpoint · 2026-05-09_
 
 ---
 
+<!-- _class: subtopic -->
+<!-- _footer: "Experiment · radar" -->
+
+## `radar` — categorical spider chart.
+
+Build-time SVG, no charting library. Series-major list parsed into a positioned polygon; legend on the right. Light + dark variants of the default overlay treatment.
+
+---
+
+<!-- _class: radar -->
+<!-- _footer: "Experiment · radar (light)" -->
+
+`Scale · 0–10`
+
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `5`
+  - Support `7`
+  - Ecosystem `7`
+  - Security `8`
+
+_Three competitive profiles across five buying criteria._
+
+---
+
+<!-- _class: radar dark -->
+<!-- _footer: "Experiment · radar (dark)" -->
+
+`Scale · 0–10`
+
+## Same data, dark canvas.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `5`
+  - Support `7`
+  - Ecosystem `7`
+  - Security `8`
+
+---
+
+<!-- _class: subtopic -->
+<!-- _footer: "Experiment · quadrant" -->
+
+## `quadrant` — 2×2 scatter / matrix.
+
+Effort × impact (or any two scales). Items group into four named quadrants in source order; build-time SVG positions each dot. Light + dark variants of the default treatment.
+
+---
+
+<!-- _class: quadrant -->
+<!-- _footer: "Experiment · quadrant (light)" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar.
+
+Effort estimated in story-points; reach as percent of addressable users.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+  - Manual rotation `1, 22`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM `9, 28`
+
+_Illustrative · 8 candidate initiatives._
+
+---
+
+<!-- _class: quadrant dark -->
+<!-- _footer: "Experiment · quadrant (dark)" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Same matrix, dark canvas.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+  - Manual rotation `1, 22`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM `9, 28`
+
+---
+
 <!-- _class: closing -->
 <!-- _footer: "Experiment · end" -->
 
 # End of chart-family experiment.
 
-Five layouts, two treatments, one frame, all on-theme tokens. Emulator path only — not yet wired through marp-cli or lattice-runtime.js.
+Seven layouts, two treatments, one frame, all on-theme tokens. Emulator path only — not yet wired through marp-cli or lattice-runtime.js.
 
 <!-- markdownlint-disable MD033 -->
 <script src="../mermaid-v11.min.js"></script>
