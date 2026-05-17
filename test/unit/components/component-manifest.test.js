@@ -27,8 +27,10 @@ const {
   UNIVERSAL_GROUPS,
   UNIVERSAL_VARIANTS,
   SEMI_UNIVERSAL_VARIANTS,
+  CARD_STYLE_LAYOUTS,
   validate,
   effectiveVariants,
+  findInlineTitleBodyLine,
   loadOne,
   loadAll,
   groupByFunction,
@@ -163,6 +165,78 @@ describe('component-manifest', () => {
     test('prefixes error messages with source path when provided', () => {
       const errors = validate({ ...GOOD, name: '' }, 'lib/components/x.json');
       assert.match(errors[0], /^lib\/components\/x\.json:/);
+    });
+
+    test('card-style layouts reject inline `- **Title.** body` format in sample', () => {
+      const m = {
+        ...GOOD,
+        name: 'cards-grid', // listed in CARD_STYLE_LAYOUTS
+        sample: '<!-- _class: cards-grid -->\n\n## …\n\n- **Title.** body text on same line.\n',
+      };
+      const errors = validate(m);
+      assert.ok(
+        errors.some((e) => /inline.*Title.*body/.test(e)),
+        'expected inline-format error, got: ' + JSON.stringify(errors),
+      );
+    });
+
+    test('card-style layouts reject inline format in variantDocs[*].sample', () => {
+      const m = {
+        ...GOOD,
+        name: 'cards-grid',
+        variants: ['three'],
+        variantDocs: {
+          three: {
+            caption: 'three-column variant',
+            sample: '<!-- _class: cards-grid three -->\n\n- **Title.** body text.\n',
+          },
+        },
+      };
+      const errors = validate(m);
+      assert.ok(
+        errors.some((e) => /variantDocs.*three.*inline/.test(e)),
+        'expected variantDocs inline-format error, got: ' + JSON.stringify(errors),
+      );
+    });
+
+    test('card-style layouts accept nested-list format', () => {
+      const m = {
+        ...GOOD,
+        name: 'cards-grid',
+        sample: '<!-- _class: cards-grid -->\n\n## …\n\n- Title\n  - body text.\n',
+      };
+      const errors = validate(m);
+      assert.deepEqual(errors, []);
+    });
+
+    test('non-card-style layouts permit inline format', () => {
+      const m = {
+        ...GOOD,
+        name: 'actors', // NOT in CARD_STYLE_LAYOUTS — its li is one conceptual unit
+        sample: '<!-- _class: actors -->\n\n- **Author.** Drafts the deck.\n',
+      };
+      const errors = validate(m);
+      assert.deepEqual(errors, []);
+    });
+  });
+
+  describe('findInlineTitleBodyLine', () => {
+    test('matches inline title+body on a bullet line', () => {
+      const line = findInlineTitleBodyLine('- **Title.** body');
+      assert.equal(line, '- **Title.** body');
+    });
+    test('matches inline title+body on any bullet (`-` or `*`)', () => {
+      assert.ok(findInlineTitleBodyLine('* **Title.** body'));
+    });
+    test('returns null on nested-list format', () => {
+      assert.equal(findInlineTitleBodyLine('- Title\n  - body'), null);
+    });
+    test('returns null when strong is alone on the line (no inline body)', () => {
+      assert.equal(findInlineTitleBodyLine('- **Title only**'), null);
+    });
+    test('returns null on empty input', () => {
+      assert.equal(findInlineTitleBodyLine(''), null);
+      assert.equal(findInlineTitleBodyLine(null), null);
     });
 
     test('reports multiple errors at once', () => {

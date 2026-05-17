@@ -44,3 +44,10 @@ section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
 
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }

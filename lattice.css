@@ -950,6 +950,14 @@ section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > stron
   color: var(--on-cat, #fff);
 }
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.before-after :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/big-number/big-number.styles.css === */
 /* big-number — statement.canvas.bignumber
  *
@@ -1142,6 +1150,14 @@ section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
   grid-column: auto;
 }
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/cards-side/cards-side.styles.css === */
 /* cards-side — inventory.split.cards
  *
@@ -1279,6 +1295,13 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-side :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/cards-stack/cards-stack.styles.css === */
 /* cards-stack — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-stack/cards-stack.manifest.json for the component contract.
@@ -1360,6 +1383,14 @@ section.cards-stack.horizontal .cards-stack-inner {
   align-items: stretch;
 }
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/cards-wide/cards-wide.styles.css === */
 /* cards-wide — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-wide/cards-wide.manifest.json for the component contract.
@@ -1405,6 +1436,15 @@ section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wid
 section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
+
+
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
@@ -1740,6 +1780,14 @@ section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
   border-color:var(--accent);
 }
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/closing/closing.styles.css === */
 /* closing — anchor.bookend.closing
  *
@@ -2007,6 +2055,14 @@ section.compare-prose.vertical .compare-prose-inner .connector {
   font-size: var(--fs-2xl);
 }
 
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/compare-table/compare-table.styles.css === */
 /* compare-table — extracted from lib/_legacy.css (batch 4).
  * See lib/components/compare-table/compare-table.manifest.json for the component contract.
@@ -2111,6 +2167,13 @@ section.decision > ol > li > ul {
   list-style:none;
   padding:0;
 }
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/diagram/diagram.styles.css === */
 /* diagram — evidence.canvas.graph
@@ -2225,6 +2288,13 @@ section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul > li {
 /* Suppress list markers */
 section.featured:not(:has(.feat-layout)) > ul > li::before { display:none !important; content:none !important; }
 section.featured:not(:has(.feat-layout)) > ul > li > ul > li::before { display:none !important; content:none !important; }
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.featured :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/gantt/gantt.styles.css === */
 /* gantt — extracted from lib/_legacy.css (batch 7).
@@ -5631,6 +5701,13 @@ section.matrix-2x2 li > ol > li {
   line-height:var(--lh-base);
 }
 
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/obligation-matrix/obligation-matrix.styles.css === */
 /* obligation-matrix — comparison.matrix.structure
  *
@@ -7941,6 +8018,13 @@ section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
 /* === lib/components/split-statement/split-statement.styles.css === */
 /* split-statement — statement.split.structure
  *
@@ -8701,6 +8785,13 @@ section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { backgrou
 section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
 section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/word-cloud/word-cloud.styles.css === */
 /* word-cloud — extracted from lib/_legacy.css (batch 8).
