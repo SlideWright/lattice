@@ -22,10 +22,7 @@ section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); color:var(--text-body);
-  /* font-weight removed: author drives emphasis via markdown semantics.
-   * `<strong>` → bold (HTML default). `<em>` → italic. Plain text → plain.
-   * Card body text after **Title.** stays plain instead of inheriting bold. */
+  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
@@ -55,8 +52,7 @@ section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); color:var(--text-body);
-  /* font-weight removed — see note on the > ul > li rule above. */
+  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
@@ -103,7 +99,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  color:var(--text-body);
+  font-weight:700; color:var(--text-heading);
 }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }

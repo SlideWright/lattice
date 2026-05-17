@@ -27,9 +27,12 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 
 ### Section rubric
 
-- **First point.** Supporting sentence explaining the first point.
-- **Second point.** Supporting sentence explaining the second point.
-- **Third point.** Supporting sentence explaining the third point.
+- First point
+  - Supporting sentence explaining the first point.
+- Second point
+  - Supporting sentence explaining the second point.
+- Third point
+  - Supporting sentence explaining the third point.
 ```
 
 ## Slots
@@ -69,9 +72,12 @@ Flips the dark accent panel from the left to the right. Use when the deck's visu
 
 ### Use when
 
-- **Decks with image slides.** Image bleed sits left; the panel reads as a closing statement on the right.
-- **Alternating visual rhythm.** Pair a default split-panel and a mirrored one across a section to keep the eye moving.
-- **Right-to-left framing.** The argument reads more naturally when the claim follows the evidence rather than preceding it.
+- Decks with image slides
+  - Image bleed sits left; the panel reads as a closing statement on the right.
+- Alternating visual rhythm
+  - Pair a default split-panel and a mirrored one across a section to keep the eye moving.
+- Right-to-left framing
+  - The argument reads more naturally when the claim follows the evidence rather than preceding it.
 ```
 
 ## Universal modifiers

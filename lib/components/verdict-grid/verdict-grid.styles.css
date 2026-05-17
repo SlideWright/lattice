@@ -53,8 +53,7 @@ section.verdict-grid > ul > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi;
   display:flex; flex-direction:column; gap:var(--sp-xs);
-  font-size:var(--fs-body); color:var(--text-body);
-  /* font-weight removed — author drives emphasis via markdown semantics. */
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
 section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); position:relative; overflow:hidden; padding-right:3.125cqi; }
 section.verdict-grid > ul > li:last-child::after {
