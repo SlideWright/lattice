@@ -26,7 +26,6 @@
   },
   "skeleton": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. First section title\n2. Second section title\n3. Third section title\n4. Fourth section title\n",
   "anatomyBlock": "agenda",
-  "docs": "docs/references/templates.md#agenda-auto-numbered-table-of-contents",
   "sample": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n",
   "whenToUse": [
     {
@@ -57,10 +56,22 @@
     }
   ],
   "related": [
-    { "name": "subtopic", "when": "opening a single section mid-deck" },
-    { "name": "divider", "when": "marking a section boundary without restating the menu" },
-    { "name": "tldr", "when": "closing the deck with the takeaways the agenda promised" },
-    { "name": "title", "when": "the slide immediately preceding the agenda" }
+    {
+      "name": "subtopic",
+      "when": "opening a single section mid-deck"
+    },
+    {
+      "name": "divider",
+      "when": "marking a section boundary without restating the menu"
+    },
+    {
+      "name": "tldr",
+      "when": "closing the deck with the takeaways the agenda promised"
+    },
+    {
+      "name": "title",
+      "when": "the slide immediately preceding the agenda"
+    }
   ],
   "variantDocs": {
     "progress-2": {

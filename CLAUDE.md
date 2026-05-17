@@ -31,8 +31,15 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`docs/theming.md`** — palette tokens, Mermaid contract.
 - **`docs/editorial.md`** — prose rules for the gallery and shipped decks.
 - **`docs/skill.md`** — deck-authoring contract.
-- **`docs/references/`** — canonical references (design, templates,
-  pipeline, mermaid, audit, gotchas, backgrounds).
+- **`docs/references/`** — canonical references (design, pipeline,
+  mermaid, audit, gotchas, backgrounds, workflow, development).
+- **`lib/base/base.docs.md`** — cross-cutting authoring contract
+  (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
+  decoration backgrounds). Was previously inside
+  `docs/references/templates.md`, retired 2026-05-17.
+- **`lib/components/<name>/<name>.docs.md`** — per-component contracts
+  (slots, variants, when/why, anti-patterns) generated from each
+  manifest's prose fields.
 - **`docs/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
 
 ## Three render paths must agree

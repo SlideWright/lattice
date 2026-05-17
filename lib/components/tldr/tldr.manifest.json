@@ -23,7 +23,6 @@
   },
   "skeleton": "<!-- _class: tldr -->\n\n## What this section showed.\n\n- The first takeaway as a complete one-line claim.\n- The second takeaway as a complete one-line claim.\n- The third takeaway as a complete one-line claim.\n- The fourth takeaway as a complete one-line claim.\n",
   "anatomyBlock": "tldr",
-  "docs": "docs/references/templates.md#tldr-single-line-takeaways-recap",
   "sample": "<!-- _class: tldr -->\n\n## What this section will tell you, in five lines.\n\n- Components stay short — `cards-grid` not `inventory.grid.cards`.\n- The four layers organise the catalog; they do not name components.\n- Manifests are the single source of truth for every component.\n- Discovery happens via the scaffolder and IDE snippets, not the directive.\n- Forty-five components ship — one folder each.\n",
   "whenToUse": [
     {
@@ -54,10 +53,22 @@
     }
   ],
   "related": [
-    { "name": "list", "when": "lines are general bullets, not section takeaways" },
-    { "name": "principles", "when": "each line is a stated rule with a justification body" },
-    { "name": "closing", "when": "the slide is the deck's final word, not a section recap" },
-    { "name": "agenda", "when": "previewing what's coming at the top of the deck" }
+    {
+      "name": "list",
+      "when": "lines are general bullets, not section takeaways"
+    },
+    {
+      "name": "principles",
+      "when": "each line is a stated rule with a justification body"
+    },
+    {
+      "name": "closing",
+      "when": "the slide is the deck's final word, not a section recap"
+    },
+    {
+      "name": "agenda",
+      "when": "previewing what's coming at the top of the deck"
+    }
   ],
   "variantDocs": {
     "numbered": {

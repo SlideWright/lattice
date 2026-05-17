@@ -50,11 +50,25 @@
     }
   ],
   "related": [
-    { "name": "progress", "when": "the weights need precise visual comparison" },
-    { "name": "stats", "when": "the headline metrics are independent numbers, not a corpus" },
-    { "name": "piechart", "when": "the items are parts of a whole, not free-form themes" },
-    { "name": "quote", "when": "the verbatim language matters more than the frequency" },
-    { "name": "tldr", "when": "the qualitative summary is prose, not a packed cloud" }
-  ],
-  "docs": "docs/references/templates.md#word-cloud-spiral-packed-weighted-word-cloud"
+    {
+      "name": "progress",
+      "when": "the weights need precise visual comparison"
+    },
+    {
+      "name": "stats",
+      "when": "the headline metrics are independent numbers, not a corpus"
+    },
+    {
+      "name": "piechart",
+      "when": "the items are parts of a whole, not free-form themes"
+    },
+    {
+      "name": "quote",
+      "when": "the verbatim language matters more than the frequency"
+    },
+    {
+      "name": "tldr",
+      "when": "the qualitative summary is prose, not a packed cloud"
+    }
+  ]
 }

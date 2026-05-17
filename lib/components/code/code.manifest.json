@@ -50,10 +50,21 @@
     }
   ],
   "related": [
-    { "name": "compare-code", "when": "before/after snippet comparison" },
-    { "name": "diagram", "when": "the architecture matters more than the code" },
-    { "name": "math", "when": "the equation is the argument, not the implementation" },
-    { "name": "content", "when": "code is one piece of a longer prose explanation" }
-  ],
-  "docs": "docs/references/templates.md#code"
+    {
+      "name": "compare-code",
+      "when": "before/after snippet comparison"
+    },
+    {
+      "name": "diagram",
+      "when": "the architecture matters more than the code"
+    },
+    {
+      "name": "math",
+      "when": "the equation is the argument, not the implementation"
+    },
+    {
+      "name": "content",
+      "when": "code is one piece of a longer prose explanation"
+    }
+  ]
 }

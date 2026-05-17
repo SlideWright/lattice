@@ -53,11 +53,26 @@
     }
   ],
   "related": [
-    { "name": "cards-grid", "when": "all options carry equal weight; no winner declared" },
-    { "name": "verdict-grid", "when": "options scored against shared criteria, not picked" },
-    { "name": "cards-side", "when": "two options side by side, no hierarchy between them" },
-    { "name": "decision", "when": "the recommendation needs an explicit pro/con frame" },
-    { "name": "split-brief", "when": "the recommendation is a thesis sentence + supporting findings" }
+    {
+      "name": "cards-grid",
+      "when": "all options carry equal weight; no winner declared"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "options scored against shared criteria, not picked"
+    },
+    {
+      "name": "cards-side",
+      "when": "two options side by side, no hierarchy between them"
+    },
+    {
+      "name": "decision",
+      "when": "the recommendation needs an explicit pro/con frame"
+    },
+    {
+      "name": "split-brief",
+      "when": "the recommendation is a thesis sentence + supporting findings"
+    }
   ],
   "variantDocs": {
     "mirror": {
@@ -65,6 +80,5 @@
       "caption": "Flips the layout: the supporting sub-grid sits on the left, the featured card on the right. Use when the surrounding deck reads left-to-right and the hero needs to fall on the page-turn edge.",
       "sample": "<!-- _class: featured mirror -->\n\n## After the audit, the recommendation lands on the right.\n\n- **Self-contained component folders.** One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.\n- **Bundler concatenates CSS at build time.** Per-component sources combine into the shipped lattice stylesheet via the build-css tool.\n- **Manifests are the single source of truth.** Scaffolder, snippets, this gallery, and docs all read from the same JSON.\n- **Tests stay scoped.** One test file per component under the components test path.\n"
     }
-  },
-  "docs": "docs/references/templates.md#template-23-featured-card-sub-grid"
+  }
 }

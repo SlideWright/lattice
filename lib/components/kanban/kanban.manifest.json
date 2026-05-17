@@ -50,10 +50,21 @@
     }
   ],
   "related": [
-    { "name": "gantt", "when": "schedule of overlapping tasks across lanes, not current state" },
-    { "name": "roadmap", "when": "phased grid of deliverables across workstreams" },
-    { "name": "checklist", "when": "single list of items with done/in-flight/planned states" },
-    { "name": "verdict-grid", "when": "options scored against shared criteria, not stage-tracked" }
-  ],
-  "docs": "docs/references/templates.md#chart-family"
+    {
+      "name": "gantt",
+      "when": "schedule of overlapping tasks across lanes, not current state"
+    },
+    {
+      "name": "roadmap",
+      "when": "phased grid of deliverables across workstreams"
+    },
+    {
+      "name": "checklist",
+      "when": "single list of items with done/in-flight/planned states"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "options scored against shared criteria, not stage-tracked"
+    }
+  ]
 }

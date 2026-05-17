@@ -55,10 +55,21 @@
     }
   ],
   "related": [
-    { "name": "stats", "when": "row of 2-3 metrics, comparable visual weight" },
-    { "name": "kpi", "when": "grid of 4-6 metrics with status indicators" },
-    { "name": "split-metric", "when": "the metric needs a paragraph of context alongside it" },
-    { "name": "content", "when": "the argument is mostly prose with a number embedded" }
-  ],
-  "docs": "docs/references/templates.md#template-16-big-number-single-stat"
+    {
+      "name": "stats",
+      "when": "row of 2-3 metrics, comparable visual weight"
+    },
+    {
+      "name": "kpi",
+      "when": "grid of 4-6 metrics with status indicators"
+    },
+    {
+      "name": "split-metric",
+      "when": "the metric needs a paragraph of context alongside it"
+    },
+    {
+      "name": "content",
+      "when": "the argument is mostly prose with a number embedded"
+    }
+  ]
 }

@@ -55,11 +55,25 @@
     }
   ],
   "related": [
-    { "name": "quadrant", "when": "two axes are enough — the other six dimensions drop out" },
-    { "name": "verdict-grid", "when": "the criteria are categorical (pass/fail), not graded" },
-    { "name": "kpi", "when": "the comparison is one option's metrics, not multi-option" },
-    { "name": "compare-table", "when": "a precise tabular comparison reads better than a shape" },
-    { "name": "piechart", "when": "the question is part-to-whole, not multi-criterion" }
-  ],
-  "docs": "docs/references/templates.md#radar-native-radar-spider-chart-chart-family-member"
+    {
+      "name": "quadrant",
+      "when": "two axes are enough — the other six dimensions drop out"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "the criteria are categorical (pass/fail), not graded"
+    },
+    {
+      "name": "kpi",
+      "when": "the comparison is one option's metrics, not multi-option"
+    },
+    {
+      "name": "compare-table",
+      "when": "a precise tabular comparison reads better than a shape"
+    },
+    {
+      "name": "piechart",
+      "when": "the question is part-to-whole, not multi-criterion"
+    }
+  ]
 }

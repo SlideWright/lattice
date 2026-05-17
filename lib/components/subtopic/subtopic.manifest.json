@@ -53,9 +53,18 @@
     }
   ],
   "related": [
-    { "name": "divider", "when": "major section starts — darker, h1, dedicated canvas" },
-    { "name": "title", "when": "opens the deck — same dark-bookend chrome as divider" },
-    { "name": "content", "when": "the body slides that follow a subtopic" }
+    {
+      "name": "divider",
+      "when": "major section starts — darker, h1, dedicated canvas"
+    },
+    {
+      "name": "title",
+      "when": "opens the deck — same dark-bookend chrome as divider"
+    },
+    {
+      "name": "content",
+      "when": "the body slides that follow a subtopic"
+    }
   ],
   "variantDocs": {
     "numbered": {
@@ -63,6 +72,5 @@
       "caption": "Stamps an auto-incrementing module number. Each subtopic carries an independent counter from divider's section counter, so \"Section 02 · Module 04\" makes sense.",
       "sample": "<!-- _class: subtopic numbered -->\n\n`Module 04`\n\n## Then the next sub-topic, numbered automatically.\n"
     }
-  },
-  "docs": "docs/references/templates.md#template-3-sub-topic"
+  }
 }

@@ -63,10 +63,22 @@
     }
   ],
   "related": [
-    { "name": "statute-stack", "when": "two or three citations need to land on one slide" },
-    { "name": "quote", "when": "the source is a person, not a document" },
-    { "name": "split-statement", "when": "a quote with three or four implications" },
-    { "name": "content", "when": "the citation is one input among several in a prose argument" }
+    {
+      "name": "statute-stack",
+      "when": "two or three citations need to land on one slide"
+    },
+    {
+      "name": "quote",
+      "when": "the source is a person, not a document"
+    },
+    {
+      "name": "split-statement",
+      "when": "a quote with three or four implications"
+    },
+    {
+      "name": "content",
+      "when": "the citation is one input among several in a prose argument"
+    }
   ],
   "variantDocs": {
     "pull-quote": {
@@ -74,6 +86,5 @@
       "caption": "Promotes the blockquote to a pull-quote scale — the verbatim language reads as the headline; the gloss compresses to the actionable item.",
       "sample": "<!-- _class: citation-card pull-quote -->\n\n## \"Personal information\" includes the household, not just the person.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- **What we must do.** Audit pixel inventory; treat household IDs as PI in DSAR workflows.\n"
     }
-  },
-  "docs": "docs/references/templates.md#citation-card"
+  }
 }

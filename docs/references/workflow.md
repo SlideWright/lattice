@@ -125,8 +125,8 @@ three build cycles.
 **Atomic commits per design decision.** One thematic change (e.g.
 "swap pill placement to meta-on-the-right") ships in one commit that
 covers CSS + transforms + examples + docs together. The commit is
-the unit of "this design move." Smaller mechanical splits (a typo
-in templates.md after the design ships) get their own commit.
+the unit of "this design move." Smaller mechanical splits (a typo in
+a `<name>.docs.md` after the design ships) get their own commit.
 
 ### Share — during dev, `SendUserFile`; at PR end, the raw URL
 

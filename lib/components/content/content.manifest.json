@@ -50,11 +50,25 @@
     }
   ],
   "related": [
-    { "name": "quote", "when": "the prose IS a quote — let the quotation chrome carry it" },
-    { "name": "big-number", "when": "the prose IS a metric — let the number carry it" },
-    { "name": "cards-grid", "when": "the prose IS a parallel list of items" },
-    { "name": "compare-prose", "when": "the prose IS a two-way comparison" },
-    { "name": "list-steps", "when": "the prose IS an ordered sequence" }
-  ],
-  "docs": "docs/references/templates.md#template-4-content-text-only"
+    {
+      "name": "quote",
+      "when": "the prose IS a quote — let the quotation chrome carry it"
+    },
+    {
+      "name": "big-number",
+      "when": "the prose IS a metric — let the number carry it"
+    },
+    {
+      "name": "cards-grid",
+      "when": "the prose IS a parallel list of items"
+    },
+    {
+      "name": "compare-prose",
+      "when": "the prose IS a two-way comparison"
+    },
+    {
+      "name": "list-steps",
+      "when": "the prose IS an ordered sequence"
+    }
+  ]
 }

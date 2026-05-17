@@ -50,9 +50,17 @@
     }
   ],
   "related": [
-    { "name": "split-statement", "when": "the quote needs implications spelled out alongside it" },
-    { "name": "content", "when": "the language is paraphrasable — let prose carry it" },
-    { "name": "big-number", "when": "the most memorable thing is a metric, not a phrase" }
-  ],
-  "docs": "docs/references/templates.md#template-12-quote-testimonial"
+    {
+      "name": "split-statement",
+      "when": "the quote needs implications spelled out alongside it"
+    },
+    {
+      "name": "content",
+      "when": "the language is paraphrasable — let prose carry it"
+    },
+    {
+      "name": "big-number",
+      "when": "the most memorable thing is a metric, not a phrase"
+    }
+  ]
 }

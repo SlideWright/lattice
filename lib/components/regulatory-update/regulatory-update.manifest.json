@@ -59,10 +59,22 @@
     }
   ],
   "related": [
-    { "name": "authority-chain", "when": "single rule walked statute → regulation → guidance → case" },
-    { "name": "list-criteria", "when": "flat enumeration of requirements without dates or citations" },
-    { "name": "timeline", "when": "chronological sequence of events on a single axis" },
-    { "name": "list-tabular", "when": "structured metadata per row but no regulatory framing" }
+    {
+      "name": "authority-chain",
+      "when": "single rule walked statute → regulation → guidance → case"
+    },
+    {
+      "name": "list-criteria",
+      "when": "flat enumeration of requirements without dates or citations"
+    },
+    {
+      "name": "timeline",
+      "when": "chronological sequence of events on a single axis"
+    },
+    {
+      "name": "list-tabular",
+      "when": "structured metadata per row but no regulatory framing"
+    }
   ],
   "variantDocs": {
     "timeline": {
@@ -75,6 +87,5 @@
       "caption": "Stamps a priority rail on the left of each row and ranks by exposure rather than effective date. Use for board updates where the audience needs 'what to do' before 'when it landed'.",
       "sample": "<!-- _class: regulatory-update priority -->\n\n## Q1 motion ranked by exposure.\n\n`Top three · by ARR at risk`\n\n1. EU AI Act\n   - `Title III`\n   - High-risk system inventory due before April.\n   - `Effective Feb 2026`\n2. Colorado AI Act\n   - `SB 24-205`\n   - Deployer disclosures required; copy in flight.\n   - `Effective Feb 2026`\n3. Texas DPSA\n   - `§541.151`\n   - DSAR opt-out portal mandatory.\n   - `Effective Mar 2026`\n"
     }
-  },
-  "docs": "docs/references/templates.md#regulatory-update"
+  }
 }

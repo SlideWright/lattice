@@ -50,10 +50,21 @@
     }
   ],
   "related": [
-    { "name": "roadmap", "when": "phased grid of deliverables across workstreams without continuous spans" },
-    { "name": "timeline", "when": "single-lane sequence of milestones" },
-    { "name": "kanban", "when": "current state by stage rather than schedule by lane" },
-    { "name": "list-steps", "when": "sequential process with descriptive steps, no parallel lanes" }
-  ],
-  "docs": "docs/references/templates.md#chart-family"
+    {
+      "name": "roadmap",
+      "when": "phased grid of deliverables across workstreams without continuous spans"
+    },
+    {
+      "name": "timeline",
+      "when": "single-lane sequence of milestones"
+    },
+    {
+      "name": "kanban",
+      "when": "current state by stage rather than schedule by lane"
+    },
+    {
+      "name": "list-steps",
+      "when": "sequential process with descriptive steps, no parallel lanes"
+    }
+  ]
 }

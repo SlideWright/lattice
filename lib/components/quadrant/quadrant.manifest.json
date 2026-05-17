@@ -55,11 +55,25 @@
     }
   ],
   "related": [
-    { "name": "matrix-2x2", "when": "the 2×2 is categorical, not coordinate-based" },
-    { "name": "radar", "when": "items rated across more than two criteria" },
-    { "name": "progress", "when": "percent-complete on a single axis" },
-    { "name": "piechart", "when": "part-to-whole, not bivariate position" },
-    { "name": "verdict-grid", "when": "comparing options against shared categorical criteria" }
-  ],
-  "docs": "docs/references/templates.md#quadrant-native-2x2-quadrant-chart-chart-family-member"
+    {
+      "name": "matrix-2x2",
+      "when": "the 2×2 is categorical, not coordinate-based"
+    },
+    {
+      "name": "radar",
+      "when": "items rated across more than two criteria"
+    },
+    {
+      "name": "progress",
+      "when": "percent-complete on a single axis"
+    },
+    {
+      "name": "piechart",
+      "when": "part-to-whole, not bivariate position"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "comparing options against shared categorical criteria"
+    }
+  ]
 }

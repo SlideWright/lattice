@@ -63,11 +63,26 @@
     }
   ],
   "related": [
-    { "name": "kpi", "when": "value + target + status tiles, not a single percent" },
-    { "name": "stats", "when": "independent headline metrics, no completion scale" },
-    { "name": "gantt", "when": "the rows are time-bound and need a date axis" },
-    { "name": "checklist", "when": "binary done / not-done across a flat list" },
-    { "name": "timeline-list", "when": "the workstreams resolve in sequence, not in parallel" }
+    {
+      "name": "kpi",
+      "when": "value + target + status tiles, not a single percent"
+    },
+    {
+      "name": "stats",
+      "when": "independent headline metrics, no completion scale"
+    },
+    {
+      "name": "gantt",
+      "when": "the rows are time-bound and need a date axis"
+    },
+    {
+      "name": "checklist",
+      "when": "binary done / not-done across a flat list"
+    },
+    {
+      "name": "timeline-list",
+      "when": "the workstreams resolve in sequence, not in parallel"
+    }
   ],
   "variantDocs": {
     "minimal": {
@@ -75,6 +90,5 @@
       "caption": "Strips the eyebrow, subtitle, and pill colour tinting back to plain bars + percentages. Use when the bars are the whole story and the surrounding text would just repeat them.",
       "sample": "<!-- _class: progress minimal -->\n\n## Quarter readiness, no commentary.\n\n- Codebook platform `92%`\n- Operations runbook `68%`\n- Compliance audit pack `81%`\n- SDK polyglot parity `34%`\n- Dependency dashboard `12%`\n"
     }
-  },
-  "docs": "docs/references/templates.md#chart-family"
+  }
 }

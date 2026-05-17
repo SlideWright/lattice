@@ -53,10 +53,22 @@
     }
   ],
   "related": [
-    { "name": "progress", "when": "comparable parts but precise differences matter" },
-    { "name": "stats", "when": "the values are independent metrics, not a partition" },
-    { "name": "big-number", "when": "the headline is one slice, not the breakdown" },
-    { "name": "kpi", "when": "the slices need status framing and targets" }
+    {
+      "name": "progress",
+      "when": "comparable parts but precise differences matter"
+    },
+    {
+      "name": "stats",
+      "when": "the values are independent metrics, not a partition"
+    },
+    {
+      "name": "big-number",
+      "when": "the headline is one slice, not the breakdown"
+    },
+    {
+      "name": "kpi",
+      "when": "the slices need status framing and targets"
+    }
   ],
   "variantDocs": {
     "donut": {
@@ -64,6 +76,5 @@
       "caption": "Hollows the pie into a donut. Visually cleaner for executive decks; the centre can be left blank or used for a total label. Default pick for board and investor material.",
       "sample": "<!-- _class: piechart donut -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the engineering quarter went.\n\nWedges drawn proportionally; legend reads in author order with raw values.\n\n- Codebook platform `46%`\n- Operations runbook `22%`\n- Compliance work `18%`\n- Pilot support `9%`\n- Toil and on-call `5%`\n"
     }
-  },
-  "docs": "docs/references/templates.md#chart-family"
+  }
 }

@@ -23,7 +23,6 @@
   },
   "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
   "anatomyBlock": "principles",
-  "docs": "docs/references/templates.md#principles-declared-statements",
   "sample": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.\n- **Name the actor, never the system.** \"The PM decides\" lands; \"the process decides\" hides accountability.\n- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.\n- **Form follows function.** Let the audience's need shape the layout, not the other way around.\n- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.\n",
   "whenToUse": [
     {
@@ -54,10 +53,22 @@
     }
   ],
   "related": [
-    { "name": "actors", "when": "rules attach to named owners, not shared tenets" },
-    { "name": "tldr", "when": "single-line takeaways without justification body" },
-    { "name": "list", "when": "items are short bullets without title + body shape" },
-    { "name": "cards-stack", "when": "each principle needs two sentences of body" }
+    {
+      "name": "actors",
+      "when": "rules attach to named owners, not shared tenets"
+    },
+    {
+      "name": "tldr",
+      "when": "single-line takeaways without justification body"
+    },
+    {
+      "name": "list",
+      "when": "items are short bullets without title + body shape"
+    },
+    {
+      "name": "cards-stack",
+      "when": "each principle needs two sentences of body"
+    }
   ],
   "variantDocs": {
     "numbered": {

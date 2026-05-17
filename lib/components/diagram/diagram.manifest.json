@@ -55,11 +55,25 @@
     }
   ],
   "related": [
-    { "name": "code", "when": "the implementation, not the topology, is the argument" },
-    { "name": "quadrant", "when": "items positioned by two numeric attributes" },
-    { "name": "radar", "when": "options rated across several criteria" },
-    { "name": "timeline-list", "when": "the graph is a sequence in time, not a topology" },
-    { "name": "content", "when": "the diagram is one element in a prose slide" }
-  ],
-  "docs": "docs/references/templates.md#template-5-diagram-single"
+    {
+      "name": "code",
+      "when": "the implementation, not the topology, is the argument"
+    },
+    {
+      "name": "quadrant",
+      "when": "items positioned by two numeric attributes"
+    },
+    {
+      "name": "radar",
+      "when": "options rated across several criteria"
+    },
+    {
+      "name": "timeline-list",
+      "when": "the graph is a sequence in time, not a topology"
+    },
+    {
+      "name": "content",
+      "when": "the diagram is one element in a prose slide"
+    }
+  ]
 }

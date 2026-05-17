@@ -55,9 +55,17 @@
     }
   ],
   "related": [
-    { "name": "quote", "when": "the quote IS the slide — no implications needed" },
-    { "name": "split-brief", "when": "the left carries a thesis statement, not a quote" },
-    { "name": "split-panel", "when": "the right side is supporting points, no quoted claim on the left" }
-  ],
-  "docs": "docs/references/templates.md#template-34-split-statement"
+    {
+      "name": "quote",
+      "when": "the quote IS the slide — no implications needed"
+    },
+    {
+      "name": "split-brief",
+      "when": "the left carries a thesis statement, not a quote"
+    },
+    {
+      "name": "split-panel",
+      "when": "the right side is supporting points, no quoted claim on the left"
+    }
+  ]
 }

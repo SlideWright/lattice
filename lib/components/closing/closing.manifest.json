@@ -58,9 +58,18 @@
     }
   ],
   "related": [
-    { "name": "title", "when": "opens the deck — same dark-bookend chrome" },
-    { "name": "divider", "when": "mid-deck section breaks — same dark canvas" },
-    { "name": "big-number", "when": "single emphatic statement mid-deck without the bookend signal" }
+    {
+      "name": "title",
+      "when": "opens the deck — same dark-bookend chrome"
+    },
+    {
+      "name": "divider",
+      "when": "mid-deck section breaks — same dark canvas"
+    },
+    {
+      "name": "big-number",
+      "when": "single emphatic statement mid-deck without the bookend signal"
+    }
   ],
   "variantDocs": {
     "numbered": {
@@ -68,6 +77,5 @@
       "caption": "Stamps an auto-incrementing closing number, independent of the divider section counter. Useful for serialized deck families where each deck closes on numbered note `Closing 04`.",
       "sample": "<!-- _class: closing silent numbered -->\n\n# Take this away.\n\n`Closing 04`\n"
     }
-  },
-  "docs": "docs/references/templates.md#template-18-closing-dark-bookend"
+  }
 }

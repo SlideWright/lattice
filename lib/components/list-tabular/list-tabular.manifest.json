@@ -30,7 +30,6 @@
   },
   "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
   "anatomyBlock": "list-tabular",
-  "docs": "docs/references/templates.md#variant-t14-tabular",
   "sample": "<!-- _class: list-tabular -->\n\n## The four substance contracts a component plugs into.\n\n1. Prose\n   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.\n   - _CSS-only; no post-processor required_\n2. Structure\n   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.\n   - _Per-component transform.js in lib/components_\n3. Series\n   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.\n   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_\n4. Graph\n   - External graph language (Mermaid today; D2 or PlantUML in the future).\n   - _External CLI; palette injected at build time_\n",
   "whenToUse": [
     {
@@ -61,11 +60,26 @@
     }
   ],
   "related": [
-    { "name": "glossary", "when": "term/definition pairs with auto-derived range pill" },
-    { "name": "cards-stack", "when": "two or three richer items, not a ledger" },
-    { "name": "actors", "when": "the left column is a named person, not a key" },
-    { "name": "principles", "when": "rows are stated rules, not reference entries" },
-    { "name": "list", "when": "rows are bullets without a label-plus-description shape" }
+    {
+      "name": "glossary",
+      "when": "term/definition pairs with auto-derived range pill"
+    },
+    {
+      "name": "cards-stack",
+      "when": "two or three richer items, not a ledger"
+    },
+    {
+      "name": "actors",
+      "when": "the left column is a named person, not a key"
+    },
+    {
+      "name": "principles",
+      "when": "rows are stated rules, not reference entries"
+    },
+    {
+      "name": "list",
+      "when": "rows are bullets without a label-plus-description shape"
+    }
   ],
   "variantDocs": {
     "def": {

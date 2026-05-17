@@ -50,11 +50,25 @@
     }
   ],
   "related": [
-    { "name": "gantt", "when": "milestones occupy date ranges, not single moments" },
-    { "name": "list-steps", "when": "the sequence has no dates, just an order" },
-    { "name": "journey", "when": "stage-by-stage progress without calendar dates" },
-    { "name": "roadmap", "when": "the timeline is forward-looking and bucketed by horizon" },
-    { "name": "progress", "when": "the events are parallel workstreams with completion percentages" }
-  ],
-  "docs": "docs/references/templates.md#chart-family"
+    {
+      "name": "gantt",
+      "when": "milestones occupy date ranges, not single moments"
+    },
+    {
+      "name": "list-steps",
+      "when": "the sequence has no dates, just an order"
+    },
+    {
+      "name": "journey",
+      "when": "stage-by-stage progress without calendar dates"
+    },
+    {
+      "name": "roadmap",
+      "when": "the timeline is forward-looking and bucketed by horizon"
+    },
+    {
+      "name": "progress",
+      "when": "the events are parallel workstreams with completion percentages"
+    }
+  ]
 }

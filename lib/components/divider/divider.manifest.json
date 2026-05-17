@@ -53,9 +53,18 @@
     }
   ],
   "related": [
-    { "name": "title", "when": "opens the deck — same dark-bookend chrome" },
-    { "name": "subtopic", "when": "lighter mid-section orientation on the bright canvas" },
-    { "name": "closing", "when": "closes the deck — completes the bookend trio" }
+    {
+      "name": "title",
+      "when": "opens the deck — same dark-bookend chrome"
+    },
+    {
+      "name": "subtopic",
+      "when": "lighter mid-section orientation on the bright canvas"
+    },
+    {
+      "name": "closing",
+      "when": "closes the deck — completes the bookend trio"
+    }
   ],
   "variantDocs": {
     "numbered": {
@@ -63,6 +72,5 @@
       "caption": "Stamps an auto-incrementing section number in the corner. Each divider in the deck increments the counter; closing slides carry an independent counter.",
       "sample": "<!-- _class: divider silent numbered -->\n\n`Section 03`\n\n# Inventory\n"
     }
-  },
-  "docs": "docs/references/templates.md#template-2-section-divider"
+  }
 }

@@ -55,11 +55,25 @@
     }
   ],
   "related": [
-    { "name": "big-number", "when": "one number is enough to carry the slide" },
-    { "name": "kpi", "when": "metrics need targets, trends, and status pills" },
-    { "name": "split-metric", "when": "one focal KPI with a paragraph of supporting prose" },
-    { "name": "piechart", "when": "the numbers are parts of a whole, not independent" },
-    { "name": "progress", "when": "the metrics are completion percentages across workstreams" }
-  ],
-  "docs": "docs/references/templates.md#template-6-stats-kpi-row"
+    {
+      "name": "big-number",
+      "when": "one number is enough to carry the slide"
+    },
+    {
+      "name": "kpi",
+      "when": "metrics need targets, trends, and status pills"
+    },
+    {
+      "name": "split-metric",
+      "when": "one focal KPI with a paragraph of supporting prose"
+    },
+    {
+      "name": "piechart",
+      "when": "the numbers are parts of a whole, not independent"
+    },
+    {
+      "name": "progress",
+      "when": "the metrics are completion percentages across workstreams"
+    }
+  ]
 }

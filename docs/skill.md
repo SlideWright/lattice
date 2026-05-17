@@ -15,8 +15,9 @@ Open the relevant file before starting work. Only load what the current task nee
 | Task | Load |
 |------|------|
 | **Understanding the catalog** — function families, forms, substances, the component model | [design-system.md](./design-system.md) — the canonical four-layer model |
-| Writing or editing slide content | [references/design.md](./references/design.md) + [references/templates.md](./references/templates.md) |
-| **Picking a component** by purpose (the *what kind of slide*) | [references/templates.md § Components by function family](./references/templates.md#components-by-function-family) |
+| Writing or editing slide content | [references/design.md](./references/design.md) + `lib/components/<name>/<name>.docs.md` per component |
+| **Picking a component** by purpose (the *what kind of slide*) | [design-system.md §3](./design-system.md#3-the-7-functions) — function families table |
+| **Cross-cutting authoring patterns** (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered, etc.) | [../lib/base/base.docs.md](../lib/base/base.docs.md) |
 | Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 45 shipped components |
 | Adding a background accent (`bg-*` classes) | [references/backgrounds.md](./references/backgrounds.md) |
 | Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |

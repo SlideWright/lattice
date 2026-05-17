@@ -60,11 +60,25 @@
     }
   ],
   "related": [
-    { "name": "list-steps", "when": "standalone ordered process without a phase anchor" },
-    { "name": "timeline", "when": "horizontal sequence of short-labelled steps" },
-    { "name": "roadmap", "when": "phased grid across multiple workstreams" },
-    { "name": "split-panel", "when": "left-anchor + right-list shape without a step sequence" },
-    { "name": "split-brief", "when": "executive framing with substantiating findings rather than steps" }
-  ],
-  "docs": "docs/references/templates.md#template-32-split-steps"
+    {
+      "name": "list-steps",
+      "when": "standalone ordered process without a phase anchor"
+    },
+    {
+      "name": "timeline",
+      "when": "horizontal sequence of short-labelled steps"
+    },
+    {
+      "name": "roadmap",
+      "when": "phased grid across multiple workstreams"
+    },
+    {
+      "name": "split-panel",
+      "when": "left-anchor + right-list shape without a step sequence"
+    },
+    {
+      "name": "split-brief",
+      "when": "executive framing with substantiating findings rather than steps"
+    }
+  ]
 }

@@ -59,7 +59,7 @@ describe('component-manifest', () => {
           title: { selector: 'h2', required: true, description: 'Heading.' },
         },
         example: 'examples/snippets/cards-grid.md',
-        docs: 'docs/references/templates.md#cards-grid',
+        anatomyBlock: 'T7-card-grid-2x2',
       };
       assert.deepEqual(validate(m), []);
     });

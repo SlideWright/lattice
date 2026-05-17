@@ -113,7 +113,7 @@ view_image /tmp/marp-slides/019.png      ← reference
 view_image /tmp/lattice-slides/019.png   ← candidate
 ```
 
-**Prioritize by layout class.** From the manifest, collect all slides whose class includes any of these — these are the **structured layouts** with JS post-processor logic most likely to diverge (full list and definition: [templates.md → Layout Inventory](./templates.md#layout-inventory-structured-vs-unstructured)):
+**Prioritize by layout class.** From the manifest, collect all slides whose class includes any of these — these are the **structured layouts** with JS post-processor logic most likely to diverge (full list and definition: [architecture.md → Layout categories](../architecture.md#layout-categories-structured-vs-unstructured)):
 
 | Class keyword       | Why it's risky                             |
 | ------------------- | ------------------------------------------ |

@@ -20,7 +20,6 @@
   },
   "skeleton": "<!-- _class: checklist -->\n\n## Pre-launch readiness.\n\n- [x] First item that is fully done.\n- [x] Second item that is fully done.\n- [-] Third item that is partially complete with a caveat.\n- [ ] Fourth item that is not yet started.\n",
   "anatomyBlock": "checklist",
-  "docs": "docs/references/templates.md#state-convention",
   "sample": "<!-- _class: checklist -->\n\n## Pre-flight checklist for a new component.\n\n- [x] Pick function and form coordinates per the spec\n- [x] Write the manifest with name, function, form, substance, and slots\n- [x] Author CSS rules scoped to the section class\n- [-] Add a transform module if substance is structure or series\n- [-] Write a substantive example and README\n- [ ] Update the templates catalog reference\n- [ ] Add unit tests under the new component test path\n",
   "whenToUse": [
     {
@@ -51,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "list", "when": "items have no state — just bullets" },
-    { "name": "tldr", "when": "summary lines without per-item completion tracking" },
-    { "name": "list-tabular", "when": "rows need a label-plus-description structure, not state" },
-    { "name": "cards-stack", "when": "each item needs two sentences of body" }
+    {
+      "name": "list",
+      "when": "items have no state — just bullets"
+    },
+    {
+      "name": "tldr",
+      "when": "summary lines without per-item completion tracking"
+    },
+    {
+      "name": "list-tabular",
+      "when": "rows need a label-plus-description structure, not state"
+    },
+    {
+      "name": "cards-stack",
+      "when": "each item needs two sentences of body"
+    }
   ]
 }

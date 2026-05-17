@@ -54,10 +54,22 @@
     }
   ],
   "related": [
-    { "name": "regulatory-update", "when": "period-bounded changelog rather than a single rule's lineage" },
-    { "name": "list-criteria", "when": "flat enumeration of requirements without tier hierarchy" },
-    { "name": "timeline", "when": "the sequence is chronological events, not legal tiers" },
-    { "name": "list-steps", "when": "the rows are procedural steps rather than authority tiers" }
+    {
+      "name": "regulatory-update",
+      "when": "period-bounded changelog rather than a single rule's lineage"
+    },
+    {
+      "name": "list-criteria",
+      "when": "flat enumeration of requirements without tier hierarchy"
+    },
+    {
+      "name": "timeline",
+      "when": "the sequence is chronological events, not legal tiers"
+    },
+    {
+      "name": "list-steps",
+      "when": "the rows are procedural steps rather than authority tiers"
+    }
   ],
   "variantDocs": {
     "branching": {
@@ -70,6 +82,5 @@
       "caption": "Transposes the vertical chain into a left-to-right trail of numbered cards joined by arrows. Use when the slide canvas favours a wide read and the tiers fit in four short steps.",
       "sample": "<!-- _class: authority-chain trail -->\n\n## COPPA — statute through case, left to right.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule.\n3. Guidance\n   - `FTC Six-Step Plan`\n   - Cited in every consent order.\n4. Case\n   - `Epic Games · 2022`\n   - $245M consent order.\n"
     }
-  },
-  "docs": "docs/references/templates.md#authority-chain"
+  }
 }

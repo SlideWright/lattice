@@ -53,11 +53,26 @@
     }
   ],
   "related": [
-    { "name": "gantt", "when": "continuous task bars across a date axis rather than discrete phase cells" },
-    { "name": "kanban", "when": "current state by stage rather than phased schedule" },
-    { "name": "list-steps", "when": "single workstream sequence without parallel lanes" },
-    { "name": "verdict-grid", "when": "options scored against shared criteria, not phased delivery" },
-    { "name": "checklist", "when": "single list with state markers, no workstream dimension" }
+    {
+      "name": "gantt",
+      "when": "continuous task bars across a date axis rather than discrete phase cells"
+    },
+    {
+      "name": "kanban",
+      "when": "current state by stage rather than phased schedule"
+    },
+    {
+      "name": "list-steps",
+      "when": "single workstream sequence without parallel lanes"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "options scored against shared criteria, not phased delivery"
+    },
+    {
+      "name": "checklist",
+      "when": "single list with state markers, no workstream dimension"
+    }
   ],
   "variantDocs": {
     "horizons": {
@@ -65,6 +80,5 @@
       "caption": "Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.",
       "sample": "<!-- _class: roadmap horizons -->\n\n`Three-horizon planning`\n\n## Where the platform invests across horizons.\n\n| Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |\n| ---------- | ------------------------ | ------------------------ | ------------------------- |\n| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |\n| SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |\n\nHorizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.\n"
     }
-  },
-  "docs": "docs/references/templates.md#roadmap-phased-multi-workstream-grid"
+  }
 }

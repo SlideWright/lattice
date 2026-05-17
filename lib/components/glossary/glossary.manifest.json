@@ -20,7 +20,6 @@
   },
   "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
   "anatomyBlock": "glossary",
-  "docs": "docs/references/templates.md#glossary",
   "sample": "<!-- _class: glossary -->\n\n## Glossary\n\n- Component\n  - A self-contained unit at lib/components, one folder per component, with manifest plus styles plus example plus optional transform plus README.\n- Function\n  - The communication purpose a slide serves; one of seven families (Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery).\n- Form\n  - The spatial composition of a slide; one of eleven shapes (bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split).\n- Manifest\n  - The JSON description of a component, consumed by the scaffolder, snippets, docs catalog, and autocomplete.\n- Substance\n  - The kind of data that fills the form; one of four (prose, structure, series, graph).\n",
   "whenToUse": [
     {
@@ -51,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "list-tabular", "when": "rows are key/value reference, not term/definition" },
-    { "name": "subtopic", "when": "one term needs a full slide of explanation" },
-    { "name": "actors", "when": "the left column is a named person, not a term" },
-    { "name": "principles", "when": "the entries are stated rules, not defined terms" }
+    {
+      "name": "list-tabular",
+      "when": "rows are key/value reference, not term/definition"
+    },
+    {
+      "name": "subtopic",
+      "when": "one term needs a full slide of explanation"
+    },
+    {
+      "name": "actors",
+      "when": "the left column is a named person, not a term"
+    },
+    {
+      "name": "principles",
+      "when": "the entries are stated rules, not defined terms"
+    }
   ]
 }

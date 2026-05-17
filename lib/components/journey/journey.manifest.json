@@ -56,10 +56,22 @@
     }
   ],
   "related": [
-    { "name": "timeline", "when": "linear sequence without per-step mood or actors" },
-    { "name": "list-steps", "when": "process needs descriptive body per step, no chart" },
-    { "name": "gantt", "when": "schedule of overlapping tasks across lanes" },
-    { "name": "kanban", "when": "current status by stage rather than sequence over time" }
+    {
+      "name": "timeline",
+      "when": "linear sequence without per-step mood or actors"
+    },
+    {
+      "name": "list-steps",
+      "when": "process needs descriptive body per step, no chart"
+    },
+    {
+      "name": "gantt",
+      "when": "schedule of overlapping tasks across lanes"
+    },
+    {
+      "name": "kanban",
+      "when": "current status by stage rather than sequence over time"
+    }
   ],
   "variantDocs": {
     "heatmap": {
@@ -82,6 +94,5 @@
       "caption": "Chip widths scale to the `+volume` token; chip colour still encodes mood. Two dimensions at once — schedule shape and traffic-mix — for journeys with skewed loads.",
       "sample": "<!-- _class: journey weighted -->\n\n## Weighted · where the traffic actually lands.\n\n- Discover\n  - Search `@prospect` `:4` `+45`\n  - Referral `@prospect` `:5` `+18`\n- Convert\n  - Pricing page `@prospect` `:3` `+12`\n  - Checkout `@prospect` `:2` `+10`\n- Support\n  - Settings `@user` `:3` `+8`\n  - Help docs `@user` `:4` `+7`\n"
     }
-  },
-  "docs": "docs/references/templates.md#journey"
+  }
 }

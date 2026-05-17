@@ -56,11 +56,26 @@
     }
   ],
   "related": [
-    { "name": "timeline", "when": "shorter labels per step, horizontal axis instead of vertical cards" },
-    { "name": "list-criteria", "when": "gating requirements rather than a sequence of actions" },
-    { "name": "split-steps", "when": "phase label + heading on the left, steps on the right" },
-    { "name": "roadmap", "when": "phased grid across multiple workstreams" },
-    { "name": "principles", "when": "tenets or values rather than a procedural sequence" }
+    {
+      "name": "timeline",
+      "when": "shorter labels per step, horizontal axis instead of vertical cards"
+    },
+    {
+      "name": "list-criteria",
+      "when": "gating requirements rather than a sequence of actions"
+    },
+    {
+      "name": "split-steps",
+      "when": "phase label + heading on the left, steps on the right"
+    },
+    {
+      "name": "roadmap",
+      "when": "phased grid across multiple workstreams"
+    },
+    {
+      "name": "principles",
+      "when": "tenets or values rather than a procedural sequence"
+    }
   ],
   "variantDocs": {
     "vertical": {
@@ -83,6 +98,5 @@
       "caption": "Replaces the leading-zero decimal counter with letters. Composes with any prefix; useful when the rows are options or tracks rather than ordered work.",
       "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
     }
-  },
-  "docs": "docs/references/templates.md#variant-t13-step-cards"
+  }
 }

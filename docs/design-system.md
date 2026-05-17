@@ -8,8 +8,9 @@ you what kind of thing each layout, modifier, chart engine, or palette
 token *is*, and how they compose.
 
 If you read exactly one Lattice document, read this one. The other
-references (`skill.md`, `templates.md`, `theming.md`, `architecture.md`)
-become specialist references for one layer once you have this model.
+references (`skill.md`, `theming.md`, `architecture.md`,
+`lib/base/base.docs.md`, per-component `<name>.docs.md`) become
+specialist references for one layer once you have this model.
 
 ---
 
@@ -216,7 +217,7 @@ lib/components/cards-grid.json
   },
   "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
   "example": "examples/snippets/cards-grid.md",
-  "docs": "docs/references/templates.md#cards-grid"
+  "anatomyBlock": "T7-card-grid-2x2"
 }
 ```
 
@@ -225,7 +226,7 @@ the rendering pipeline:
 
 - the **scaffolder** (`npm run new:slide <name>`) emits the `skeleton`
 - **VS Code snippets** are generated from the skeleton + name
-- the **docs catalog** (templates.md) groups by `function`
+- the **per-component docs** (`lib/components/<name>/<name>.docs.md`) are generated from the enriched manifest fields
 - the **autocomplete data** for editor plugins reads `variants`
 - the **gallery decision-tree** uses `function` → `form` → `name`
 
@@ -494,8 +495,9 @@ which sits in `@layer components` alongside the migrated files.
 ## 11. What this document is NOT
 
 - **Not a tutorial.** That is `skill.md`.
-- **Not a layout catalog.** That is `templates.md`, which is being
-  reorganized to group by function family.
+- **Not a layout catalog.** That role moved to per-component docs at
+  `lib/components/<name>/<name>.docs.md`; this file's §3 keeps the
+  function-family index that points there.
 - **Not a palette spec.** That is `theming.md` + `design.md` §1.3–§1.6.
 - **Not an architecture deep-dive.** That is `architecture.md`.
 - **Not an authoring-grammar change.** Component names stay short.

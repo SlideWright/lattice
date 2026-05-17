@@ -20,7 +20,6 @@
   },
   "skeleton": "<!-- _class: list -->\n\n## Slide heading.\n\n- First short bullet point.\n- Second short bullet point.\n- Third short bullet point.\n- Fourth short bullet point.\n- Fifth short bullet point.\n",
   "anatomyBlock": "list",
-  "docs": "docs/references/templates.md#template-14-list-bullet-points",
   "sample": "<!-- _class: list -->\n\n## When the items truly are a list.\n\n- Five to six short points, each under twelve words.\n- No internal structure per item — if items have title + body, use cards-stack instead.\n- Numbered (ol) when order matters; bulleted (ul) when it does not.\n- Inline-code metadata at the end of a row becomes a pill via the universal-pill recipe.\n- For richer items with descriptions, prefer list-tabular.\n",
   "whenToUse": [
     {
@@ -51,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "tldr", "when": "single-line takeaways at the end of a section" },
-    { "name": "cards-stack", "when": "each item has a title plus body sentence" },
-    { "name": "list-tabular", "when": "five or more rows with label-plus-description" },
-    { "name": "checklist", "when": "items carry state markers (done / partial / todo)" }
+    {
+      "name": "tldr",
+      "when": "single-line takeaways at the end of a section"
+    },
+    {
+      "name": "cards-stack",
+      "when": "each item has a title plus body sentence"
+    },
+    {
+      "name": "list-tabular",
+      "when": "five or more rows with label-plus-description"
+    },
+    {
+      "name": "checklist",
+      "when": "items carry state markers (done / partial / todo)"
+    }
   ]
 }

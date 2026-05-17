@@ -69,10 +69,22 @@
     }
   ],
   "related": [
-    { "name": "code", "when": "the implementation, not the equation, is the argument" },
-    { "name": "diagram", "when": "the structure of the model, not its closed form" },
-    { "name": "stats", "when": "a row of statistical results without a single equation focus" },
-    { "name": "content", "when": "one inline equation inside a paragraph of prose" }
+    {
+      "name": "code",
+      "when": "the implementation, not the equation, is the argument"
+    },
+    {
+      "name": "diagram",
+      "when": "the structure of the model, not its closed form"
+    },
+    {
+      "name": "stats",
+      "when": "a row of statistical results without a single equation focus"
+    },
+    {
+      "name": "content",
+      "when": "one inline equation inside a paragraph of prose"
+    }
   ],
   "variantDocs": {
     "feature": {
@@ -110,6 +122,5 @@
       "caption": "Point estimate with uncertainty (CI, $p$-value, $n$) followed by plain-English interpretation. Best for treatment-effect slides, regression coefficients, A/B test readouts.",
       "sample": "<!-- _class: math stats -->\n\n## Effect of the treatment.\n\n$$ \\hat\\beta = 0.42 \\pm 0.03 $$\n\n> 95% CI: $[0.36,\\; 0.48]$\n> $p < 0.001 \\quad\\cdot\\quad n = 1{,}204$\n\nFor every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.\n"
     }
-  },
-  "docs": "docs/references/templates.md#math"
+  }
 }

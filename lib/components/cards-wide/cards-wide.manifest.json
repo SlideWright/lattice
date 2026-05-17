@@ -20,7 +20,6 @@
   },
   "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- **First row title.** Body text for the first wide row, one or two sentences.\n- **Second row title.** Body text for the second wide row.\n- **Third row title.** Body text for the third wide row.\n",
   "anatomyBlock": "cards-wide",
-  "docs": "docs/references/templates.md#template-19-three-row-wide-cards",
   "sample": "<!-- _class: cards-wide -->\n\n## When the items want full-width rows.\n\n1. Each item has substantial body text\n   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.\n2. The slide scans top-to-bottom\n   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.\n3. Three or four rows feels right\n   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.\n",
   "whenToUse": [
     {
@@ -51,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "cards-stack", "when": "two or three rows with shorter body per card" },
-    { "name": "cards-grid", "when": "four or fewer parallel items in a scannable grid" },
-    { "name": "list-tabular", "when": "five or more reference-style rows" },
-    { "name": "list-steps", "when": "rows carry an explicit, ordered sequence" }
+    {
+      "name": "cards-stack",
+      "when": "two or three rows with shorter body per card"
+    },
+    {
+      "name": "cards-grid",
+      "when": "four or fewer parallel items in a scannable grid"
+    },
+    {
+      "name": "list-tabular",
+      "when": "five or more reference-style rows"
+    },
+    {
+      "name": "list-steps",
+      "when": "rows carry an explicit, ordered sequence"
+    }
   ]
 }

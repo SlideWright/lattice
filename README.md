@@ -160,8 +160,7 @@ lattice/
 │   ├── notes/                 # durable developer / agent investigation notes
 │   │                          # (also: forward-looking design proposals)
 │   └── references/            # canonical references
-│       └── design.md, templates.md, pipeline.md,
-│           mermaid.md, audit.md
+│       └── design.md, pipeline.md, mermaid.md, audit.md
 │
 ├── test/
 │   ├── unit/                  # fast (<100 ms); no child processes

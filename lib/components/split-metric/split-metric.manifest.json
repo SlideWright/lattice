@@ -60,11 +60,25 @@
     }
   ],
   "related": [
-    { "name": "big-number", "when": "the number is the whole slide — no supporting findings needed" },
-    { "name": "stats", "when": "a row of comparable headline metrics instead of one focal KPI" },
-    { "name": "kpi", "when": "the metric needs targets, status pills, and a dashboard frame" },
-    { "name": "split-statement", "when": "the left is a quote, not a metric" },
-    { "name": "split-brief", "when": "the left is a thesis statement, not a number" }
-  ],
-  "docs": "docs/references/templates.md#template-31-split-metric"
+    {
+      "name": "big-number",
+      "when": "the number is the whole slide — no supporting findings needed"
+    },
+    {
+      "name": "stats",
+      "when": "a row of comparable headline metrics instead of one focal KPI"
+    },
+    {
+      "name": "kpi",
+      "when": "the metric needs targets, status pills, and a dashboard frame"
+    },
+    {
+      "name": "split-statement",
+      "when": "the left is a quote, not a metric"
+    },
+    {
+      "name": "split-brief",
+      "when": "the left is a thesis statement, not a number"
+    }
+  ]
 }

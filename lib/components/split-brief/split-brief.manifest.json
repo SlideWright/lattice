@@ -60,10 +60,21 @@
     }
   ],
   "related": [
-    { "name": "split-panel", "when": "the right side is a list of supporting points, not findings" },
-    { "name": "split-statement", "when": "the left side carries a quote, not a thesis" },
-    { "name": "cards-stack", "when": "the slide is mostly the list of findings; no executive framing needed" },
-    { "name": "tldr", "when": "5+ one-line takeaways without supporting detail" }
-  ],
-  "docs": "docs/references/templates.md#template-30-split-brief"
+    {
+      "name": "split-panel",
+      "when": "the right side is a list of supporting points, not findings"
+    },
+    {
+      "name": "split-statement",
+      "when": "the left side carries a quote, not a thesis"
+    },
+    {
+      "name": "cards-stack",
+      "when": "the slide is mostly the list of findings; no executive framing needed"
+    },
+    {
+      "name": "tldr",
+      "when": "5+ one-line takeaways without supporting detail"
+    }
+  ]
 }

@@ -61,11 +61,26 @@
     }
   ],
   "related": [
-    { "name": "featured", "when": "the recommendation is a card, not an image" },
-    { "name": "diagram", "when": "the visual is a Mermaid graph, not a photo or screenshot" },
-    { "name": "content", "when": "the slide is mostly prose with one inline visual" },
-    { "name": "title", "when": "the image is a bookend hero, not the body of a slide" },
-    { "name": "quote", "when": "the slide is a quotation, not an image" }
+    {
+      "name": "featured",
+      "when": "the recommendation is a card, not an image"
+    },
+    {
+      "name": "diagram",
+      "when": "the visual is a Mermaid graph, not a photo or screenshot"
+    },
+    {
+      "name": "content",
+      "when": "the slide is mostly prose with one inline visual"
+    },
+    {
+      "name": "title",
+      "when": "the image is a bookend hero, not the body of a slide"
+    },
+    {
+      "name": "quote",
+      "when": "the slide is a quotation, not an image"
+    }
   ],
   "variantDocs": {
     "full": {
@@ -88,6 +103,5 @@
       "caption": "Flips the default split: text leads from the right, image anchors from the left. Use when the surrounding deck reads right-to-left across a spread or when the page-turn lands on the image edge.",
       "sample": "<!-- _class: image mirror -->\n\n## Mirror lands the image on the left.\n\nText leads from the right; image anchors from the left. Use when the surrounding spread reads right-to-left or when the page-turn cue lands on the image side.\n\n![bg left](sample-image-landscape.svg)\n"
     }
-  },
-  "docs": "docs/references/templates.md#template-24-image"
+  }
 }
