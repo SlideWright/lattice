@@ -307,7 +307,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // Resolve palette name from the precedence chain (CLI > env > front
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
-const { resolvePalette } = require('./lib/resolve-palette');
+const { resolvePalette } = require('./lib/engine/resolve-palette');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -933,9 +933,9 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 
 // Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
 // directly. See that file for the fence-and-headingDivider rationale.
-const { splitSlides }    = require('./lib/split-slides');
+const { splitSlides }    = require('./lib/engine/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
-const { liftSlotLabel }  = require('./lib/slot-label-lift');
+const { liftSlotLabel }  = require('./lib/engine/slot-label-lift');
 // Roadmap modifier transforms — `roadmap status` (cell state markers) and
 // `roadmap horizons` (table → three-card transpose). Shared with the
 // Marp Core engine wrapper in marp.config.js (parity contract).

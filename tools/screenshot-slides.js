@@ -1,7 +1,7 @@
 const _puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
-const { resolveSelector } = require(path.join(__dirname, '..', 'lib', 'match-section'));
+const { resolveSelector } = require(path.join(__dirname, '..', 'lib', 'engine', 'match-section'));
 
 // ── Help / version (handled before positional parsing) ─────────────────────
 function showHelp() {

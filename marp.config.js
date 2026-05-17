@@ -300,7 +300,7 @@ function addHeadingPeriods(markdown) {
   });
 }
 
-const mermaidLanguage = require("./lib/mermaid-hljs");
+const mermaidLanguage = require("./lib/integrations/mermaid/mermaid.hljs");
 
 /**
  * Marpit plugin: on a `glossary` slide, transforms a top-level 2-level
@@ -470,8 +470,8 @@ function registerMermaidHljs(marp) {
   } catch (_e) { /* already registered */ }
 }
 
-const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
-const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
+const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family/chart-family');
+const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/engine/split-panels');
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/roadmap.transform');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/components/journey/journey.transform');
 const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/word-cloud.transform');

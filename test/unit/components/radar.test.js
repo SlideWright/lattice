@@ -297,7 +297,7 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
 // regression in either module surfaces here, not only in the integration
 // PDF build.
 
-const { transformChartSection, applyToRenderedHtml } = require('../../../lib/chart-family');
+const { transformChartSection, applyToRenderedHtml } = require('../../../lib/chart-family/chart-family');
 
 describe('radar', () => {
   test('chart-family: radar section is wrapped in chart-frame', () => {
