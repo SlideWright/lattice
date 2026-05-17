@@ -25,7 +25,7 @@ section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-md); line-height:var(--lh-snug); color:var(--text-body);
 }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
 section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
@@ -54,7 +54,7 @@ section.cards-side .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-md); line-height:var(--lh-snug); color:var(--text-body);
 }
 section.cards-side .card > strong { display:block; grid-column:1 / -1; }
 section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
@@ -103,7 +103,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-weight:700; color:var(--text-heading);
+  color:var(--text-body);
 }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li:last-child:nth-child(odd),
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }

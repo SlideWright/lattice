@@ -787,12 +787,9 @@
       "",
       "### Section rubric",
       "",
-      "- First point",
-      "  - Supporting sentence explaining the first point.",
-      "- Second point",
-      "  - Supporting sentence explaining the second point.",
-      "- Third point",
-      "  - Supporting sentence explaining the third point."
+      "- **First point.** Supporting sentence explaining the first point.",
+      "- **Second point.** Supporting sentence explaining the second point.",
+      "- **Third point.** Supporting sentence explaining the third point."
     ],
     "description": "Featured left panel + supporting list on the right."
   },

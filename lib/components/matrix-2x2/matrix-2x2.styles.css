@@ -33,9 +33,10 @@ section.matrix-2x2 > ol > li {
   border-radius:var(--radius-md);
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
-  font-weight:700; color:var(--text-heading);
+  color:var(--text-body);
   font-size:var(--fs-md);
   position:relative; overflow:hidden;
+  /* font-weight removed — author drives emphasis via markdown semantics. */
 }
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
 section.matrix-2x2 > ul > li:nth-child(4),

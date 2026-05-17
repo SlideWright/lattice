@@ -34,12 +34,14 @@ section.cards-wide:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); color:var(--text-body);
+  /* font-weight removed — author drives emphasis via markdown semantics. */
 }
 section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
 section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
 section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
+/* strong gets HTML default bold; no override needed now that li no longer forces font-weight. */
+section.cards-wide:not(:has(.three-stack)) ol > li > strong { color:var(--text-heading); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
 

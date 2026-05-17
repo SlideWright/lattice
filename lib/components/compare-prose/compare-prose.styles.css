@@ -12,7 +12,8 @@ section.compare-prose .compare-prose-inner { display:flex; align-items:stretch; 
 section.compare-prose .compare-prose-inner .card {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  font-weight:700; color:var(--text-heading);
+  color:var(--text-body);
+  /* font-weight removed — author drives emphasis via markdown semantics. */
 }
 section.compare-prose .compare-prose-inner .card > strong { display:block; }
 section.compare-prose .compare-prose-inner .card > ul,
@@ -45,7 +46,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; align-content:start; justify-items:start;
-  font-weight:700; color:var(--text-heading);
+  color:var(--text-body);
 }
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li > strong,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > strong { display:block; }
