@@ -3460,7 +3460,6 @@
           img.src = logo;
           img.alt = '';
           img.setAttribute('aria-hidden', 'true');
-          img.style.setProperty('--deck-logo-src', 'url("' + logo.replace(/"/g, '\\"') + '")');
           section.insertBefore(img, section.firstChild);
         }
       })

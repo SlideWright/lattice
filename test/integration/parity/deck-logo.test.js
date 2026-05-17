@@ -49,8 +49,6 @@ describe('deck-logo', () => {
         `slide ${s.id} should reference the logo path`);
       assert.match(s.inner, /aria-hidden="true"/,
         `slide ${s.id} logo should be aria-hidden`);
-      assert.match(s.inner, /--deck-logo-src:url\(&quot;\.\/acme-logo\.svg&quot;\)/,
-        `slide ${s.id} logo should carry the inline custom property for the mask rule`);
     }
   });
 });

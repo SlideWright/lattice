@@ -64,11 +64,11 @@ to spot during palette development.
 
 Custom-logo authors point `logo:` in front matter at an image file.
 A build-stage rewriter injects `<img class="deck-logo">` as the
-first child of each section; the chrome rule then paints the
-silhouette in `currentColor` at watermark opacity, so the mark
-inherits each slide's ink without a theme-specific asset. See
-[lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md) for
-the authoring contract.
+first child of each section; CSS desaturates the img to a faint
+grayscale watermark via `filter`, inverting the brightness on
+dark-canvas layouts so the mark stays legible without a theme-specific
+asset. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
+for the authoring contract.
 
 ### Semantic signals
 

@@ -98,6 +98,15 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   whole-deck modifiers, but the directive is a real convenience.
 - **Commits:** `f9068a7` (plugin), `b502bcc` (emulator parsing).
 
+### Chromium blocks `file://` URLs as `mask-image` sources
+
+- **Symptom:** A CSS rule like `.foo { background: white; mask: url("./asset.svg") center / contain no-repeat; }` works in HTTP-served pages and in dev tools, but the masked element renders completely invisible in headless Chromium loading from `file://` (which is how every lattice-emulator PDF build works).
+- **Cause:** Chromium treats each `file://` URL as its own origin and refuses to load mask sources cross-origin, even within `file://`. The same URL works fine as `<img src>` or as `background-image` — only `mask-image` is restricted. No console error; the mask just resolves to fully-transparent.
+- **Mitigation:** Don't use `file://` URLs as `mask-image`. Inline the source as a `data:` URL (works), use an inline SVG `<mask>` element reference (works), or do the visual treatment via a different mechanism (`filter`, `mix-blend-mode`, etc.). The custom-logo feature went through three iterations on this: `::before` pseudo with `var(--deck-logo)` mask → real `<img>` with mask → final filter-only approach with no mask, because filter has none of the origin restrictions and works equally well in marp-cli, lattice-emulator, marp-vscode, and exported HTML.
+- **Triggered by:** Any author writing `mask-image: url("./local.svg")` and building locally.
+- **Removable when:** Chromium relaxes the file-origin policy for mask sources. Unlikely.
+- **Commits:** This branch (the custom-logo redesign).
+
 ### Custom `logo:` front-matter directive shows nothing in marp-vscode preview
 
 - **Symptom:** A deck with `logo: ./acme-logo.svg` in front matter

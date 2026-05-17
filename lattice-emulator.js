@@ -963,11 +963,20 @@ const _total     = rawSlides.length;
 
 // ── Inline parser ────────────────────────────────────────────────────────────
 function parseInline(t) {
+  // Escape HTML special chars inside inline code so authors can write
+  // angle-bracket-y samples (e.g. `<section>`, `<img src="...">`) without
+  // the browser parsing them as real DOM elements. Standard markdown
+  // behaviour; previously omitted, which let literal `<section>` text
+  // inside code blocks spawn nested DOM sections that broke layout.
+  const escapeInlineCode = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
   return t
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
     .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g,       '<code>$1</code>');
+    .replace(/`(.+?)`/g,       (_, c) => '<code>' + escapeInlineCode(c) + '</code>');
 }
 
 // ── Slide parser ─────────────────────────────────────────────────────────────
@@ -2564,7 +2573,7 @@ ${katexCssLink}
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
 ${css}
-section { width: ${slideW}px !important; height: ${slideH}px !important; }
+section[data-marpit-slide] { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>

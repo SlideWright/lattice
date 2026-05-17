@@ -111,10 +111,11 @@ see [theming.md § Dark mode](./theming.md#dark-mode).
 
 ## Custom logo (quick reference)
 
-Discreet top-right brand mark; silhouette is auto-painted in
-`currentColor` so the mark adapts to dark and light canvases without
-per-author variants. Works on SVG, PNG, and JPEG. Composes with every
-`bg-*` decoration (gradient or SVG mark).
+Discreet top-right brand mark; the img is desaturated to a faint
+grayscale watermark via CSS `filter`, with brightness inverted on
+dark-canvas layouts so the mark adapts without per-author variants.
+Works on SVG, PNG, and JPEG. Composes with every `bg-*` decoration
+(gradient or SVG mark).
 
 | Goal | Front-matter |
 |---|---|

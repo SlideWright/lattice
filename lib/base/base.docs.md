@@ -467,12 +467,12 @@ Available classes: `bg-none`, `bg-corner-tl`, `bg-orbit-br`,
 A discreet author-supplied brand mark, top-right corner of every
 slide. A build-stage rewriter injects `<img class="deck-logo"
 src="…">` as the first child of each selected `<section>` — same
-shape Marp uses for `<header>` and `<footer>`. CSS uses the img's
-own src as a `mask-image` and paints the silhouette in `currentColor`
-at watermark opacity (~15%), so the mark auto-adapts to whatever ink
-the active slide uses — white on the dark title canvas, dark on body
-slides over a light theme. One rule covers SVG, PNG, and JPEG without
-per-author light/dark variants.
+shape Marp uses for `<header>` and `<footer>`. CSS desaturates the
+img to a faint grayscale watermark via `filter: grayscale(1)`,
+inverting the brightness on dark-canvas layouts (`.title`,
+`.divider`, `.closing`, `.dark`) so the mark stays legible on every
+theme without per-author light/dark variants. Works on SVG, PNG, and
+JPEG.
 
 ```yaml
 ---

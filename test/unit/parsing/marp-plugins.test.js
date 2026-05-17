@@ -123,7 +123,9 @@ describe('marp-plugins', () => {
         `unexpected 'deck-logo-brand'; got ${m[0]}`);
     }
     // Inline custom property must carry the src for the mask rule.
-    assert.match(out, /style="--deck-logo-src:url\(&quot;\.\/acme\.svg&quot;\)"/);
+    // The img's src attribute carries the path; CSS handles the
+    // grayscale-watermark filter via the `.deck-logo` class.
+    assert.match(out, /src="\.\/acme\.svg"/);
   });
 
   test('applyDeckLogoToHtml: img is the first child of each section (so absolute positioning is predictable)', () => {
@@ -180,7 +182,6 @@ describe('marp-plugins', () => {
     const md = '---\nlogo: "./assets/with space/acme.svg"\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
     assert.match(out, /<img[^>]*class="deck-logo/);
-    // Path with space survives into both src and the inline custom property.
     assert.match(out, /src="\.\/assets\/with space\/acme\.svg"/);
   });
 
@@ -188,7 +189,6 @@ describe('marp-plugins', () => {
     const html = '<section id="1" data-marpit-slide="1"></section>';
     const md = '---\nlogo: "./acme.svg\\"><script>alert(1)</script>"\n---\n';
     const out = plugins.applyDeckLogoToHtml(html, md);
-    // The angle brackets and quote must be entity-encoded inside the src.
     assert.doesNotMatch(out, /<script>alert\(1\)<\/script>/);
     assert.match(out, /&quot;|&lt;|&gt;/);
   });

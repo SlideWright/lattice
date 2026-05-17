@@ -107,15 +107,9 @@ function applyDeckLogoToHtml(html, markdown) {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-  // CSS-escape for inside a `url("...")` CSS string: backslashes first,
-  // then quotes (so quote-escapes aren't doubled by the backslash pass).
-  // Then HTML-encode for the surrounding style attribute context so the
-  // raw value can't break out of the attribute.
-  const cssEscape = (s) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   const safeSrc = htmlEscape(cfg.logo);
-  const safeCssSrc = htmlEscape(cssEscape(cfg.logo));
   const classes = `deck-logo${cfg.brand ? ' deck-logo-brand' : ''}`;
-  const img = `<img class="${classes}" src="${safeSrc}" alt="" aria-hidden="true" style="--deck-logo-src:url(&quot;${safeCssSrc}&quot;)">`;
+  const img = `<img class="${classes}" src="${safeSrc}" alt="" aria-hidden="true">`;
   let firstSeen = false;
   // Match Marp-emitted section opens only — they all carry
   // `data-marpit-slide="N"`. The qualifier prevents the rewriter from

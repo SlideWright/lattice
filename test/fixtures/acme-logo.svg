@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-label="Acme">
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160" viewBox="0 0 240 160" role="img" aria-label="Acme">
   <title>Acme</title>
   <path d="M0 130 L80 30 L160 130 L130 130 L80 65 L30 130 Z" fill="#0066B3"/>
   <path d="M80 130 L160 30 L240 130 L210 130 L160 65 L110 130 Z" fill="#FFB400"/>
