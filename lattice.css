@@ -2428,50 +2428,22 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status fills — tinted with the same formula as the default bar.
- * All use --text-heading (dark ink) inherited from .gantt-bar. */
-.gantt-bar[data-s="on-track"],
-.gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
-.gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
-.gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
-/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
- * on this surface while still conveying the "inactive" register). */
-.gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
-  color: var(--text-body);
-}
 /* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
  * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
 .gantt-bar[data-s="pilot"],
 .gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
 
-/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
- * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
- * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
+/* Dark canvas — status fills auto-flip via the chameleon
+ * --chart-*-fill / --pass / --warn / --fail tokens (color-scheme:dark on
+ * section.dark cascades into the section's tokens). No per-mode pinned
+ * mix needed for status. Default (statusless) bar still uses --accent;
+ * dark-mode text colour is the only override left. Deferred still rides
+ * --text-muted which doesn't chameleon, so it keeps its dark-canvas
+ * tint. */
 section.gantt.dark .gantt-bar {
   background: var(--accent);
   color: var(--bg-dark);
 }
-section.gantt.dark .gantt-bar[data-s="on-track"],
-section.gantt.dark .gantt-bar[data-s="done"],
-section.gantt.dark .gantt-bar[data-s="live"]     {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="at-risk"],
-section.gantt.dark .gantt-bar[data-s="warn"]     {
-  background: color-mix(in oklab, var(--warn) 45%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="blocked"],
-section.gantt.dark .gantt-bar[data-s="fail"]     {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-  color: var(--bg-dark);
-}
-/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
 section.gantt.dark .gantt-bar[data-s="deferred"] {
   background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
   color: var(--on-dark-secondary);
@@ -2481,6 +2453,32 @@ section.gantt.dark .gantt-bar[data-s="deferred"] {
 
 /* Axis / lane structural tokens use light-dark() and need no dark overrides. */
 section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
+
+/* ── Status fills ─────────────────────────────────────────────────────
+ * Placed AFTER the `.dark` default override so equal-specificity ties
+ * (both at 0,3,1) resolve in favour of the status hue rather than the
+ * statusless default. Read --chart-*-fill (recessive chameleon — pale on
+ * light canvas, deep saturated on dark). Fall back to the UI semantic
+ * --pass / --warn / --fail for themes that haven't generated the
+ * chart-status namespace yet. Same lightness rung as pie wedges,
+ * progress bars, mermaid bands. All use --text-heading (dark ink)
+ * inherited from .gantt-bar. */
+/* Status bars also pin text colour to --c-ink-light (chameleon: dark on
+ * light fill, white on deep dark-mode fill) so the bar label stays
+ * readable when the .dark default override would otherwise force
+ * --bg-dark navy text onto a deep saturated bar. */
+section.gantt .gantt-bar[data-s="on-track"],
+section.gantt .gantt-bar[data-s="done"],
+section.gantt .gantt-bar[data-s="live"]     { background: var(--chart-positive-fill, color-mix(in oklab, var(--pass) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="at-risk"],
+section.gantt .gantt-bar[data-s="warn"]     { background: var(--chart-neutral-fill,  color-mix(in oklab, var(--warn) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="blocked"],
+section.gantt .gantt-bar[data-s="fail"]     { background: var(--chart-negative-fill, color-mix(in oklab, var(--fail) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+/* Deferred — muted grey fill; --text-body ink. */
+section.gantt .gantt-bar[data-s="deferred"] {
+  background: var(--chart-inactive-fill, color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt)));
+  color: var(--text-body);
+}
 
 /* === lib/components/glossary/glossary.styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
@@ -10253,25 +10251,13 @@ section.chart-frame.dark .chart-status[data-s="deferred"] {
   border-color: color-mix(in oklab, var(--text-muted) 38%, transparent);
 }
 
-/* Dark-canvas progress fill — the same brand greens/ambers/reds read
- * darker on a dark canvas; lift them with a partial white mix so the
- * fill ratio is visually obvious. */
-section.progress.dark .progress-fill[data-s="on-track"],
-section.progress.dark .progress-fill[data-s="done"],
-section.progress.dark .progress-fill[data-s="live"] {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="at-risk"],
-section.progress.dark .progress-fill[data-s="warn"] {
-  background: color-mix(in oklab, var(--warn) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="blocked"],
-section.progress.dark .progress-fill[data-s="fail"] {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-}
-section.progress.dark .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
-}
+/* Dark-canvas progress fill — chameleon tokens (--chart-*-fill, with
+ * fallback to --pass / --warn / --fail) flip to their deep-mode values
+ * automatically via the color-scheme: dark on section.dark. No per-mode
+ * pinned mix is needed. The previous override here mixed status colours
+ * with white at a fixed ratio (bypassing the chameleon) which was the
+ * source of the "dark slide on light deck doesn't pick up dark
+ * palette" bug. */
 
 /* === lib/base/base.treatments.css === */
 /* base.treatments.css — peripheral atmospheric accents.
