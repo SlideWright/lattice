@@ -198,11 +198,14 @@ section.radar .radar-gap {
   stroke-width: 3;
   stroke-linecap: round;
 }
+/* Semantic state tokens — --pass / --fail come from lattice.css :root,
+ * tuned per theme. Was --cat-green / --cat-rose before the 2026-05-15
+ * themes refactor (commit 552e84a) removed the named-cat tokens. */
 section.radar .radar-gap[data-dir="under"] {
-  stroke: var(--cat-rose);
+  stroke: var(--fail);
 }
 section.radar .radar-gap[data-dir="over"] {
-  stroke: color-mix(in srgb, var(--cat-green) 60%, transparent);
+  stroke: color-mix(in srgb, var(--pass) 60%, transparent);
   stroke-width: 2;
 }
 
@@ -217,8 +220,8 @@ section.radar .radar-delta-seg {
   stroke-width: 3;
   stroke-linecap: round;
 }
-section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--cat-green); }
-section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--cat-rose); }
+section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--pass); }
+section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--fail); }
 section.radar .radar-delta-seg[data-dir="flat"] { stroke: var(--radar-spoke); }
 
 /* ── benchmark: hero series over a min–max envelope band ──────────────── */

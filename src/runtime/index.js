@@ -913,9 +913,12 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
   const WC_GOLDEN_ANGLE = 2.399963229728653;
   const WC_SHRINK_FACTOR = 0.9;
   const WC_SHRINK_RETRIES = 4;
+  // Mirror of CAT_ROTATION in lib/components/word-cloud/word-cloud.transform.js.
+  // --c{N}-dark scheme matches PIE_PALETTE / journey / roadmap / radar.
+  // Was --cat-* before the 2026-05-15 themes refactor (commit 552e84a).
   const WC_CAT_ROTATION = [
-    'var(--cat-blue)', 'var(--cat-orange)', 'var(--cat-teal)',
-    'var(--cat-rose)', 'var(--cat-purple)', 'var(--cat-green)',
+    'var(--c1-dark)', 'var(--c2-dark)', 'var(--c3-dark)',
+    'var(--c4-dark)', 'var(--c5-dark)', 'var(--c6-dark)',
   ];
   const WC_VARIANT_OPTS = {
     default: {
@@ -979,7 +982,7 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
     }
     if (opts.color === 'accent-pair') {
       if (weight >= 4) return 'var(--accent)';
-      if (weight >= 2.5) return 'var(--cat-mauve)';
+      if (weight >= 2.5) return 'var(--c7-dark)';
       return 'var(--text-muted)';
     }
     if (opts.color === 'focal-cats') {
@@ -1407,9 +1410,12 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
    * modules. Three-renderer parity rule applies: edit both or neither.
    */
   const R_MODIFIERS = ['target', 'delta', 'benchmark', 'quadrant', 'small-multiples'];
+  // Mirror of RADAR_PALETTE in lib/components/radar/radar.transform.js.
+  // See that file for the regression history of the --cat-* → --c{N}-dark
+  // token rename.
   const R_PALETTE = [
-    'var(--cat-blue)',  'var(--cat-orange)', 'var(--cat-teal)',  'var(--cat-rose)',
-    'var(--cat-purple)', 'var(--cat-green)', 'var(--cat-mauve)', 'var(--cat-slate)',
+    'var(--c1-dark)', 'var(--c2-dark)', 'var(--c3-dark)', 'var(--c4-dark)',
+    'var(--c5-dark)', 'var(--c6-dark)', 'var(--c7-dark)', 'var(--c8-dark)',
   ];
   const R_GEOM = { cx: 150, cy: 150, R: 105, rings: 4, labelGap: 22, viewBox: '0 0 300 300' };
 
