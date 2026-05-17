@@ -36,7 +36,7 @@
  * need to change.
  */
 
-/* === lib/_root.css === */
+/* === lib/base/base.tokens.css === */
 /* _root.css — :root token definitions + the Google Fonts @import.
  *
  * Extracted from lib/_legacy.css in Phase 2 of the destination map.
@@ -292,7 +292,7 @@
   --hljs-punctuation:#d6deeb;
 }
 
-/* === lib/_base.css === */
+/* === lib/base/base.elements.css === */
 /* _base.css — semantic HTML defaults that every slide inherits.
  *
  * Extracted from lib/_legacy.css in Phase 2 of the destination map.
@@ -339,7 +339,7 @@ section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
-/* === lib/_scaffold.css === */
+/* === lib/integrations/marp/marp.scaffold.css === */
 /* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
  *
  * These rules use !important to override Marp's scaffold defaults that
@@ -8812,7 +8812,7 @@ section.word-cloud .wc-word[data-rotated="1"] {
   letter-spacing: -0.01em;
 }
 
-/* === lib/_modifiers.css === */
+/* === lib/base/base.modifiers.css === */
 /* _modifiers.css — cross-cutting authorial chrome.
  *
  * Extracted from lib/_legacy.css in Phase 5a of the destination map.
@@ -9624,7 +9624,7 @@ section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
 }
 
-/* === lib/_syntax-highlight.css === */
+/* === lib/integrations/highlight-js/highlight-js.css === */
 /* _syntax-highlight.css — highlight.js token theme.
  *
  * Extracted from lib/_legacy.css in Phase 7 of the destination map.
@@ -9780,7 +9780,7 @@ section.diagram > .mermaid svg .packetTitle,
 section.diagram .mermaid-svg svg [class$="TitleText"],
 section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 
-/* === lib/_chart-family.css === */
+/* === lib/chart-family/chart-family.css === */
 /* _chart-family.css — shared chart frame for list-and-pill chart layouts.
  *
  * Extracted from lib/_legacy.css in Phase 7 cleanup. Provides the
@@ -10099,7 +10099,7 @@ section.progress.dark .progress-fill[data-s="deferred"] {
   background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
 }
 
-/* === lib/_backgrounds.css === */
+/* === lib/base/base.decorations.css === */
 /* _backgrounds.css — peripheral atmospheric accents.
  *
  * Extracted from lib/_legacy.css in Phase 6 of the destination map.
@@ -10517,7 +10517,7 @@ section.bg-none {
   --_bg-linear: none;
 }
 
-/* === lib/_semi-universal.css === */
+/* === lib/shared/shared.styles.css === */
 /* _semi-universal.css — density and accent modifiers that compose with most layouts.
  *
  * Extracted from lib/_legacy.css in Phase 7 cleanup. Bundled in
@@ -10579,7 +10579,7 @@ section.accent.dark {
 }
 section.accent.dark h2 { color: var(--accent); }
 
-/* === lib/_universal.css === */
+/* === lib/base/base.variants.css === */
 /* Universal variants — apply to every layout.
  *
  * Three categories shipped here:
@@ -10807,7 +10807,7 @@ section.confidential::before {
   pointer-events: none;
 }
 
-/* === lib/_diagram-overrides.css === */
+/* === lib/integrations/mermaid/mermaid.css === */
 /* _diagram-overrides.css — Mermaid SVG selectors, palette-blind.
  *
  * Extracted from lib/_legacy.css in Phase 7 of the destination map.
