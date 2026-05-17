@@ -54,11 +54,11 @@ Build-time only. The directive does not render in the marp-vscode preview pane b
 
 ---
 
-<!-- _class: content bg-sweep -->
+<!-- _class: content bg-corner-tl bg-edge-right -->
 
-## Body slide on a light canvas with `bg-sweep`.
+## Layered gradient background, logo on top.
 
-The watermark darkens automatically on light canvases. Same SVG, same rule — the filter just inverts brightness based on the layout class. Gradient backgrounds (`bg-sweep`, `bg-spotlight`, `bg-vignette`, the corner gradients) all compose cleanly with the logo because they paint on the section background, not through `::before`.
+`bg-corner-tl` adds a top-left radial glow; `bg-edge-right` adds a right-edge linear wash; both compose into the section's `background-image` slot. The watermark sits on top, darkened automatically because the canvas is light — same SVG, same rule, the filter just inverts brightness based on the layout class.
 
 ---
 
