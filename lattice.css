@@ -10691,17 +10691,31 @@ section.bg-seeds {
     radial-gradient(ellipse 2px   4px at 91.25% 89.58%, color-mix(in srgb, var(--accent) 18%, transparent) 80%, transparent 100%);
 }
 
-/* bg-pills-right — 4 horizontal pill shapes, far-right margin. */
+/* bg-pills-right — 4 horizontal pill shapes, far-right margin.
+ * Painted as one ::before (a single pill) + 3 box-shadow copies offset
+ * vertically. Same approach as bg-tick-right: Apple PDFKit drops mask
+ * SVGs unreliably regardless of whether the shapes inside are <line
+ * stroke> or <rect fill>; box-shadow is a paint operator, not a mask,
+ * so it renders identically in every PDF viewer. border-radius on the
+ * ::before propagates to the shadow copies so each pill is rounded.
+ * Per-pill width variation from the original (20–26px) collapses to
+ * one uniform width (~24px); opacity grading (1.0, 0.85, 0.95, 0.8)
+ * preserved as graded accent-mix percentages.
+ */
 section.bg-pills-right::before {
   content: '';
   position: absolute;
-  top: 18.8cqi; right: 0.1cqi;
-  width: 2.5cqi; height: 17.6cqi;
+  top: 18.98cqi;            /* pill 1 y (243 / 12.8) */
+  right: 0.31cqi;           /* ~4px from right edge */
+  width: 1.875cqi;          /* 24px */
+  height: 0.547cqi;         /* 7px */
+  border-radius: 0.273cqi;  /* 3.5px */
   pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1247 240 32 225'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
-  -webkit-mask: var(--m) center / contain no-repeat;
-          mask: var(--m) center / contain no-repeat;
+  box-shadow:
+    0  5.55cqi 0 0 color-mix(in srgb, var(--accent) 24%, transparent),
+    0 11.09cqi 0 0 color-mix(in srgb, var(--accent) 27%, transparent),
+    0 16.56cqi 0 0 color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 /* bg-asterisk-scatter — asterisks + micro dots, opposing corners.
