@@ -4,7 +4,7 @@ version: 1
 companion:
   - 2026-05-15-shipped-without-proposal.md
   - ../design-system.md
-last-updated: 2026-05-16
+last-updated: 2026-05-17
 ---
 
 # Post-foundation follow-ups
@@ -30,17 +30,11 @@ coherent batch without designing the order from scratch.
 
 ## Tier 1 — low-risk cleanup (~1 session total)
 
-### 1.1  Delete stub READMEs
+### 1.1  ~~Delete stub READMEs~~ ✓ DONE
 
-- **What.** ~40 of the 57 `lib/components/<name>/README.md` files are
-  stubs that just repeat the manifest description. Delete the
-  empty ones; keep only the ones with genuine prose.
-- **Why.** Drops the component-folder file count ~14% with zero
-  semantic loss. Manifest description is the single source of truth.
-- **Effort.** 1 hour. `grep -l "^Add prose here" lib/components/*/README.md`
-  then `git rm`.
-- **Risk.** None — manifests + example.md remain.
-- **Depends on.** Nothing.
+Shipped. 10 of 59 components retain a README, all prose-bearing
+(33–56 lines). The ~47 stubs were removed; manifest description is now
+the single source of truth for the rest.
 
 ### 1.2  ~~Migrate `lib/journey.js` → `lib/components/journey/transform.js`~~ ✓ DONE
 
@@ -69,15 +63,12 @@ genuinely shared infrastructure.
 - **Risk.** None — comment-only.
 - **Depends on.** Nothing.
 
-### 1.5  Update `docs/design-system.md` §13
+### 1.5  ~~Update `docs/design-system.md` §13~~ ✓ DONE
 
-- **What.** §13 currently lists "in progress" items that all shipped.
-  Move them to "shipped"; remove the destination-map references (the
-  destination map header in `_legacy.css` is gone with the file).
-- **Why.** Doc-of-record drift.
-- **Effort.** 30 minutes.
-- **Risk.** None — prose only.
-- **Depends on.** Nothing.
+Shipped. §13 now lists `_legacy.css` retirement and `pixel-check.js`
+under "Shipped on this branch"; "Deferred" reduced to two items
+(State/Tone/Chrome CSS — now also done, see 2.3 — and @layer/!important).
+No more destination-map references.
 
 ---
 
@@ -123,24 +114,23 @@ genuinely shared infrastructure.
   test suite doesn't catch. Per-category pixel-check after each rewrite.
 - **Depends on.** Nothing.
 
-### 2.3  State / Tone / Chrome universal-variant CSS
+### 2.3  ~~State / Tone / Chrome universal-variant CSS~~ ✓ DONE
 
-- **What.** The `state` (wip / draft / tbd / confidential / redacted /
-  archived / pinned / revised), `tone` (tone-pass / -warn / -fail /
-  -skip), and `chrome` (silent / no-header / no-footer / no-paginate)
-  universal-variant *metadata* shipped in §6.5 but the matching CSS
-  rules never landed. The classes are declared in
-  `lib/components/index.js` `UNIVERSAL_GROUPS` but render as no-ops.
-- **Why.** Half-shipped feature. Authors who try `<!-- _class: content
-  wip -->` get no visual signal.
-- **Effort.** 1 session — needs design (what should each variant look
-  like?), implementation in `_universal.css`, demo slides in
-  `examples/state-tokens.md` (which already exists but only exercises
-  the existing state grammar).
-- **Risk.** Visual design choices; pixel-check on new demo slides will
-  necessarily show diffs (they're new content).
-- **Depends on.** Nothing. Could fold into 2.1 since both touch the
-  modifier/universal layers.
+Shipped in `lib/_universal.css` (lines 23–226). All three tiers have
+visible treatments:
+
+- **CHROME** — `silent` / `no-header` / `no-footer` / `no-paginate`
+  hide the corresponding band via `display:none` + pagination override.
+- **TONE** — `tone-pass` / `-warn` / `-fail` / `-skip` paint an 8px
+  vertical rail on the left edge from `--pass` / `--warn` / `--fail`
+  / `--text-muted`.
+- **STATE** — `wip` / `pinned` / `revised` render rotated corner stamps;
+  `draft` / `redacted` render full-canvas watermarks; `tbd` / `archived`
+  use tinted overlays; `confidential` adds a top header band.
+
+Authors write the unprefixed class word (`<!-- _class: content wip -->`,
+not `state-wip`) — matches the metadata declared in
+`lib/components/index.js` `UNIVERSAL_GROUPS`.
 
 ### 2.4  Component-namespace variant classes
 
@@ -330,18 +320,16 @@ worth keeping open.
 
 If we tackle this list as a single branch:
 
-1. **Remaining Tier 1 cleanup** (single commit at the top — 30 min;
-   items 1.1, 1.2, 1.5 already shipped during PR prep)
+1. **Remaining Tier 1 cleanup** (item 1.4 only — 15 min; items 1.1,
+   1.2, 1.5 shipped; 1.3 still open)
 2. **`!important` audit** (Tier 2.2 — 2-3 sessions; 352 declarations,
    batch by category not per-declaration)
 3. **`@layer` activation** (Tier 2.1 — 1 session, blocked on 2.2)
 4. **Retire specificity-bump hacks** (Tier 2.1 follow-up — half
    session)
-5. **State / Tone / Chrome CSS** (Tier 2.3 — 1 session)
-6. **Pixel-check tooling** docs + optional hook (Tier 2.5 — half
+5. **Pixel-check tooling** docs + optional hook (Tier 2.5 — half
    session)
 
-That's **~5-6 sessions** for a coherent "consolidation" branch
-(was ~4 in the original estimate; the !important audit grew once
-the actual count came in). Tier 3 items each become their own branch
-as priorities clarify.
+That's **~4-5 sessions** for a coherent "consolidation" branch
+(2.3 has since shipped, dropping a session from the original estimate).
+Tier 3 items each become their own branch as priorities clarify.

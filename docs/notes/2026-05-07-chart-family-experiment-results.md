@@ -1,10 +1,29 @@
 ---
-status: experiment-results
+status: experiment-results — recommendations shipped
 date: 2026-05-07
+last-status-update: 2026-05-17
 companion: 2026-05-07-chart-family-proposals.md
 ---
 
 # Chart-family experiment — overnight results
+
+> **Status update (2026-05-17).** All three Recommendation items
+> downstream of this experiment have shipped:
+>
+> 1. **Marpit-plugin port** — `lib/chart-family.js` wires the transforms
+>    into `marp.config.js` and `lattice-runtime.js`, so marp-cli, the
+>    VS Code preview, and the emulator now agree.
+> 2. **`gantt` + `kanban`** — both shipped as first-class components
+>    (`lib/components/gantt/`, `lib/components/kanban/`) with canonical
+>    references in `templates.md` Templates 29d / 29e.
+> 3. **Modifier set from §1–§3 of the proposal** — partially shipped.
+>    The base layouts ship the variants listed in their manifests
+>    (`progress.minimal`, `piechart.donut`); the proposal modifiers
+>    `era` / `dated` (timeline-list), `target` / `stacked` / `radial`
+>    (progress), `half` / `legend-left` (piechart) remain **Open**.
+> 4. **Linter rule wired into `components.json`** — **Open.** Neither
+>    `components.json` nor `lattice-lint` exists yet (tracked in
+>    [2026-05-04-authoring-proposals.md §4.6](2026-05-04-authoring-proposals.md#46-rollout-order)).
 
 This is the experiment build for the chart-family proposal in
 [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md).
@@ -92,10 +111,17 @@ Iteration history (kept for diffing the design choices):
 
 ## Known gaps
 
-1. **`gantt` and `kanban` not implemented.** Out of scope for tonight; both are 2-D and need their own design pass.
-2. **`marp-cli` and `lattice-runtime.js` paths don't yet show charts.** The transforms live only in `lattice-emulator.js`. Porting them to Marpit plugins (mirroring the patterns of `verdictGridBadges` / `slotLabelLift` in `marp.config.js`) and to the runtime DOM rewriter is the natural next step if the design is approved.
-3. **Linter rules** for the markdown contract (validate pill positions and counts) not added. The proposal calls them out as part of the family rollout; would land with the marp-cli port.
-4. **Modifiers from the proposal not implemented**: `era` / `dated` for timeline-list; `target` / `stacked` / `radial` for progress; `half` / `legend-left` for piechart. Easy follow-ups.
+1. ~~**`gantt` and `kanban` not implemented.**~~ ✓ DONE. Both shipped as
+   first-class components — see `lib/components/gantt/` and
+   `lib/components/kanban/`, canonical references at Templates 29d / 29e
+   in `docs/references/templates.md`.
+2. ~~**`marp-cli` and `lattice-runtime.js` paths don't yet show charts.**~~
+   ✓ DONE. `lib/chart-family.js` ships the shared dispatch; `marp.config.js`
+   wraps `render()` with `applyChartFamilyToHtml`; `lattice-runtime.js`
+   mirrors the same transforms for the VS Code preview. All three render
+   paths now agree.
+3. **Linter rules** for the markdown contract (validate pill positions and counts) not added. The proposal calls them out as part of the family rollout; would land with the marp-cli port. — **Still Open** (no `lattice-lint` CLI yet).
+4. **Modifiers from the proposal not implemented**: `era` / `dated` for timeline-list; `target` / `stacked` / `radial` for progress; `half` / `legend-left` for piechart. Easy follow-ups. — **Still Open** (manifests confirm only `minimal` and `donut` shipped so far).
 5. **Caption is a single-line claim.** Multi-paragraph captions will only have the trailing one wrapped; the rest stay in body. Acceptable for the typical "Source: …" footnote usage.
 6. **Class-token collision risk noted.** `agenda` uses `progress-N` as a modifier; the chart-family transform uses exact-token matching (`classTokens.includes('progress')`) to avoid the collision, but the principle applies to every future chart-family class — must not pick a name that's already a substring-modifier.
 
@@ -106,7 +132,7 @@ brand identity, which I'd default to for boardroom decks; the minimal
 variant suits research-style decks where the chart is the artefact. If the
 visual direction holds, the next pass is:
 
-1. Port the transforms to Marpit plugins (so marp-cli and VS Code preview agree with the emulator).
-2. Implement `gantt` and `kanban` as the second wave.
-3. Add the modifier set named in §1–§3 of the proposal.
-4. Wire the linter rule into `components.json`.
+1. ~~Port the transforms to Marpit plugins (so marp-cli and VS Code preview agree with the emulator).~~ ✓ DONE.
+2. ~~Implement `gantt` and `kanban` as the second wave.~~ ✓ DONE.
+3. Add the modifier set named in §1–§3 of the proposal. — **Still Open.**
+4. Wire the linter rule into `components.json`. — **Still Open.**

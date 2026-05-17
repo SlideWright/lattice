@@ -59,14 +59,22 @@ it is load-bearing.
   companion to the May 4 RFC: chart-family layouts that turn
   list/sublist + inline-code pills into timelines, Gantts, pie /
   progress / kanban, plus adjacent candidates. Same component-model
-  frame; same non-canonical status. **Status (2026-05-15):** 5/5
-  core layouts Shipped (§1 – §3.3); 0/5 adjacent candidates Shipped
-  (§4.1 – §4.5). Each proposal carries an inline status tag.
+  frame; same non-canonical status. **Status (2026-05-15, re-verified
+  2026-05-17):** 5/5 core layouts Shipped (§1 – §3.3); 0/5 adjacent
+  candidates Shipped (§4.1 funnel, §4.2 org, §4.3 heatmap, §4.4
+  q-and-a, §4.5 spectrum). Each proposal carries an inline status tag.
 - [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
   canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
   ASCII layout preview in `templates.md`, plus the
   [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
   and builder library.
+- [2026-05-07-chart-family-experiment-results.md](2026-05-07-chart-family-experiment-results.md) —
+  overnight experiment build for the chart-family proposals.
+  **Status (2026-05-17):** all three Recommendation items downstream
+  of the experiment shipped (`gantt` + `kanban` as components,
+  Marpit-plugin port across all three render paths). Still Open: the
+  per-layout modifier set (`era` / `dated` / `target` / `stacked` /
+  `radial` / `half` / `legend-left`) and the linter rule.
 - [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) —
   decision note for multi-resolution support (HD + 4K, candidate 4:3):
   native Marp `@size` + px→cqi refactor + `container-type:size` on section.
@@ -141,6 +149,35 @@ it is load-bearing.
   root cause analysis for every reported 4K visual defect, section-level cqi
   ambiguity (padding bleed into header/footer), Mermaid sizing investigation,
   and step-by-step implementation order for the next session.
+- [2026-05-11-inline-code-directives.md](2026-05-11-inline-code-directives.md) —
+  proposed namespaced inline-code vocabulary (`$var`, `fa:icon`,
+  bracket-pill shapes). **Status: decisions-locked, not-yet-implemented.**
+  Five open design questions resolved 2026-05-15; awaiting an
+  implementation session.
+- [2026-05-12-diagram-elevation.md](2026-05-12-diagram-elevation.md) —
+  decision note for diagram-on-band tonality: the card-on-band rule was
+  narrowed to `kanban` only (timeline / journey reverted after regression),
+  and the 12 band slots were darkened L≈90→L≈83 for visibility.
+  Shipped.
+- [2026-05-12-diagram-tokens.md](2026-05-12-diagram-tokens.md) — rename
+  `--mermaid-*` → `--diagram-*`, drop the `themeCSS` sentinel, and add
+  an AA-contrast unit test on the diagram palette. Shipped.
+- [2026-05-12-kpi-candidates.md](2026-05-12-kpi-candidates.md) —
+  exploratory KPI layout candidates (`kpi.ops` / `.compliance` /
+  `.trajectory` / `.spotlight`) ahead of the redesign. Shipped via
+  the redesign note.
+- [2026-05-12-kpi-redesign.md](2026-05-12-kpi-redesign.md) — one
+  cohesive `kpi` base + six layout modifiers (`target` / `attention` /
+  `ops` / `compliance` / `trajectory` / `spotlight`). Shipped;
+  canonical reference in `templates.md`.
+- [2026-05-12-roadmap-redesign.md](2026-05-12-roadmap-redesign.md) —
+  `roadmap` base redesign + `horizons` modifier. Shipped.
+- [2026-05-12-workflow-debt.md](2026-05-12-workflow-debt.md) —
+  three proposals for workflow friction not addressed by the
+  2026-05-12 doc reconciliation: per-feature deck archive policy,
+  graduation-commit automation, retiring `gallery-jargon.md`.
+  **Status (2026-05-17): all three Open.** Three-renderer parity at
+  page-count level shipped under the "What this won't fix" addendum.
 - [2026-05-15-radar-chart.md](2026-05-15-radar-chart.md) — decision note
   for the native `radar` layout: series-major authoring contract,
   auto-fit/eyebrow scale resolution, the six-variant lineup (each variant
@@ -153,3 +190,13 @@ it is load-bearing.
   `radar`, the seven `math*` layouts, and the six legal-family
   layouts. Housekeeping, not history: when a layout ships outside
   the catalogues, add an entry here.
+- [2026-05-16-html-assertion-refactor.md](2026-05-16-html-assertion-refactor.md) —
+  proposal to replace 118 regex-on-HTML assertions across 8 test
+  files with `linkedom`-parsed DOM queries via a new
+  `test/helpers/dom.js`. **Status: design-locked, not-yet-implemented.**
+- [2026-05-16-post-foundation-followups.md](2026-05-16-post-foundation-followups.md) —
+  every workitem surfaced during the `design-system-foundation`
+  branch that we deferred or only landed via a transitional hack.
+  **Status (2026-05-17):** Tier 1.1 / 1.2 / 1.5 and Tier 2.3 shipped;
+  Tier 1.3 / 1.4 and Tier 2.1 / 2.2 / 2.4 / 2.5 remain Open;
+  Tier 3 unchanged.

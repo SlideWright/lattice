@@ -1,5 +1,17 @@
 # Workflow debt — analysis and proposals
 
+> **Status (2026-05-17).** None of the three proposals in this note
+> have shipped end-to-end; the closest landed work is the page-count
+> half of the three-renderer parity check (see the "What this won't
+> fix" section at the bottom). Open:
+>
+> - Proposal 1 — per-feature deck archive policy. **Open.** No
+>   `examples/MANIFEST.md` and no `_meta: archived` convention yet.
+> - Proposal 2 — graduation-commit automation. **Open.** No GitHub
+>   Action; the trigger is still informal.
+> - Proposal 3 — retire `gallery-jargon.md` in favour of
+>   `gallery-guide.md`. **Open.** Both decks still live in `examples/`.
+
 After the 2026-05-12 workflow reconciliation (commits `0f7d67b` and
 `492bcaa`), the docs are *consistent* but the underlying workflow
 still has real friction that no doc-rewrite can address. This note
@@ -145,8 +157,14 @@ overhead for DOM transforms) or the **raw-URL discipline**
 - Three-renderer parity: a unit test that imports each transform
   module and asserts that the same set of layout names is registered
   in `lattice-emulator.js`, `lib/`, and `lattice-runtime.js`.
+  **Partially shipped (2026-05-17):** `test/integration/parity/parity.test.js`
+  catches drift at the page-count level (emulator vs marp-cli on
+  `gallery.md`), and `tools/affected-tests.js` plus the
+  `test:components` scope route per-component changes through their
+  unit suites. A registration-set assertion across all three render
+  paths is still missing.
 - Raw-URL: a `git push --feature-deck` wrapper that prints the URL
-  to stdout after push; agent / user copies into reply.
+  to stdout after push; agent / user copies into reply. **Still Open.**
 
 Both are smaller wins and probably worth their own notes file if /
 when prioritised.
