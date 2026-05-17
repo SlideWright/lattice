@@ -86,45 +86,47 @@ describe('split-panels transformer (via registry)', () => {
     }
   });
 
-  test('applyToSectionInner rewrites split-brief into brief-left / brief-right', () => {
+  test('applyToSection rewrites split-brief; cls unchanged', () => {
     const inner =
       '<p><code>EYEBROW</code></p>' +
       '<h2>Title</h2>' +
       '<p>Intro paragraph.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const out = splitPanels.applyToSectionInner(inner, 'split-brief');
-    assert.match(out, /<div class="brief-left">/);
-    assert.match(out, /<span class="eyebrow">EYEBROW<\/span>/);
-    assert.match(out, /<div class="brief-right">/);
+    const { html, cls } = splitPanels.applyToSection(inner, 'split-brief');
+    assert.match(html, /<div class="brief-left">/);
+    assert.match(html, /<span class="eyebrow">EYEBROW<\/span>/);
+    assert.match(html, /<div class="brief-right">/);
+    assert.equal(cls, 'split-brief', 'split-panels does not mutate cls');
   });
 
-  test('applyToSectionInner rewrites split-list into panel-left / panel-right', () => {
+  test('applyToSection rewrites split-list into panel-left / panel-right', () => {
     const inner =
       '<h5>section heading</h5>' +
       '<p><code>Section 02</code></p>' +
       '<h2>List title</h2>' +
       '<ul><li>item</li></ul>';
-    const out = splitPanels.applyToSectionInner(inner, 'split-list');
-    assert.match(out, /<div class="panel-left">/);
-    assert.match(out, /<div class="watermark">L<\/div>/);
-    assert.match(out, /<div class="panel-right">/);
+    const { html } = splitPanels.applyToSection(inner, 'split-list');
+    assert.match(html, /<div class="panel-left">/);
+    assert.match(html, /<div class="watermark">L<\/div>/);
+    assert.match(html, /<div class="panel-right">/);
   });
 
-  test('applyToSectionInner passes through non-split sections', () => {
+  test('applyToSection passes through non-split sections', () => {
     const inner = '<h2>Plain content</h2><p>nothing special.</p>';
-    const out = splitPanels.applyToSectionInner(inner, 'content');
-    assert.equal(out, inner);
+    const { html, cls } = splitPanels.applyToSection(inner, 'content');
+    assert.equal(html, inner);
+    assert.equal(cls, 'content');
   });
 
-  test('applyToSectionInner is idempotent per layout', () => {
+  test('applyToSection is idempotent per layout', () => {
     const inner =
       '<p><code>20</code></p>' +
       '<h2>42%</h2>' +
       '<p>of teams report cycle wins.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const once  = splitPanels.applyToSectionInner(inner, 'split-metric');
-    const twice = splitPanels.applyToSectionInner(once,  'split-metric');
-    assert.equal(twice, once);
+    const once  = splitPanels.applyToSection(inner, 'split-metric');
+    const twice = splitPanels.applyToSection(once.html,  'split-metric');
+    assert.equal(twice.html, once.html);
   });
 
   test('applyToHtml runs against full Marpit HTML and rewrites only split-* sections', () => {
@@ -140,5 +142,82 @@ describe('split-panels transformer (via registry)', () => {
     // Split section rewritten.
     assert.match(out, /<div class="brief-left">/);
     assert.match(out, /<div class="brief-right">/);
+  });
+});
+
+describe('chart-family transformer (via registry)', () => {
+  const chartFamily = registry.getByName('chart-family');
+
+  test('declares the seven chart layouts', () => {
+    const expected = [
+      'progress', 'timeline-list', 'piechart',
+      'gantt', 'kanban', 'radar', 'quadrant',
+    ];
+    for (const layout of expected) {
+      assert.ok(chartFamily.layouts.includes(layout), `missing layout: ${layout}`);
+    }
+  });
+
+  test('applyToSection on a progress slide wraps in chart-frame + appends class', () => {
+    const inner =
+      '<h2>Q3 progress</h2>' +
+      '<p>Five workstreams.</p>' +
+      '<ul>' +
+      '<li>API surface <code>72</code> <code>on-track</code></li>' +
+      '<li>Migrations <code>40</code> <code>at-risk</code></li>' +
+      '</ul>';
+    const { html, cls } = chartFamily.applyToSection(inner, 'progress');
+    assert.match(html, /<div class="chart-header">/);
+    assert.match(html, /<div class="chart-body">/);
+    assert.match(html, /<div class="progress-bars">/);
+    assert.ok(cls.split(/\s+/).includes('chart-frame'),
+      `chart-frame should be appended to cls; got "${cls}"`);
+  });
+
+  test('applyToSection passes through non-chart sections', () => {
+    const inner = '<h2>Plain</h2><p>nothing.</p>';
+    const { html, cls } = chartFamily.applyToSection(inner, 'content');
+    assert.equal(html, inner);
+    assert.equal(cls, 'content');
+  });
+
+  test('applyToSection is idempotent — chart-frame already set is a no-op', () => {
+    const inner =
+      '<h2>Title</h2>' +
+      '<ul><li>row <code>50</code></li></ul>';
+    const once  = chartFamily.applyToSection(inner, 'progress');
+    const twice = chartFamily.applyToSection(once.html, once.cls);
+    // Idempotent at the class-list level — chart-frame should not double.
+    const tokens = twice.cls.split(/\s+/).filter(Boolean);
+    const frameCount = tokens.filter(t => t === 'chart-frame').length;
+    assert.equal(frameCount, 1, `chart-frame appears ${frameCount} times in "${twice.cls}"`);
+  });
+});
+
+describe('applyAllToSection — registry composition', () => {
+  test('chart-family runs before split-panels (no-op on each other\'s sections)', () => {
+    const chartInner =
+      '<h2>Progress</h2>' +
+      '<ul><li>row <code>50</code></li></ul>';
+    const r = registry.applyAllToSection(chartInner, 'progress');
+    assert.match(r.html, /<div class="chart-body">/, 'chart-family ran');
+    assert.ok(r.cls.split(/\s+/).includes('chart-frame'));
+  });
+
+  test('applyAllToSection on a split-brief section runs split-panels (chart-family is a no-op)', () => {
+    const inner =
+      '<p><code>X</code></p><h2>T</h2><p>intro.</p>' +
+      '<ul><li>a</li></ul>';
+    const r = registry.applyAllToSection(inner, 'split-brief');
+    assert.match(r.html, /<div class="brief-left">/);
+    // chart-family didn't touch this section — cls unchanged
+    assert.equal(r.cls, 'split-brief');
+  });
+
+  test('applyAllToSection on a plain section is a complete no-op', () => {
+    const inner = '<h2>Plain</h2><p>nothing.</p>';
+    const r = registry.applyAllToSection(inner, 'content');
+    assert.equal(r.html, inner);
+    assert.equal(r.cls, 'content');
   });
 });
