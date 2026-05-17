@@ -557,7 +557,7 @@ function registerMermaidHljs(marp) {
 }
 
 const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family/chart-family');
-const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/engine/split-panels');
+const { applyAllToHtml: applyTransformerRegistryToHtml } = require('./lib/transformers/registry');
 const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/roadmap.transform');
 const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/components/journey/journey.transform');
 const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/word-cloud.transform');
@@ -632,7 +632,10 @@ module.exports = {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
         result.html = applyChartFamilyToHtml(result.html);
-        result.html = applySplitPanelsToHtml(result.html);
+        // Shared transformer registry — currently dispatches split-panels.
+        // Chart-family, roadmap, journey, and word-cloud will migrate into
+        // the registry in follow-up PRs (see lib/transformers/registry.js).
+        result.html = applyTransformerRegistryToHtml(result.html);
         result.html = applyRoadmapToHtml(result.html);
         result.html = applyJourneyToHtml(result.html);
         result.html = applyWordCloudToHtml(result.html);

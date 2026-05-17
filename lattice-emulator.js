@@ -947,6 +947,9 @@ const { transformJourneySection } = require('./lib/components/journey/journey.tr
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
 const { transformWordCloudSection } = require('./lib/components/word-cloud/word-cloud.transform');
+// Shared transformer registry — currently dispatches split-panels via
+// applyToSectionInner. See lib/transformers/registry.js for the shape.
+const splitPanelsTransformer = require('./lib/transformers/split-panels');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
@@ -1483,177 +1486,12 @@ function parseSlide(raw, index) {
     }
   }
 
-  // split-list: h2+h5+code-only-p go in panel-left, everything after in panel-right
-  if (cls.includes('split-list')) {
-    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
-    const h5Match = html.match(/<h5>([\s\S]*?)<\/h5>/);
-    // Code-only paragraph (e.g. `Section 02`) → left panel, matching the CSS fallback
-    const codePMatch = html.match(/<p><code>[^<]+<\/code><\/p>/);
-    const h2 = h2Match ? h2Match[0] : '';
-    const h5 = h5Match ? h5Match[0] : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const watermarkLetter = h2Match ? h2Match[1].trim()[0] : 'S';
-    const rest = html
-      .replace(h2, '')
-      .replace(h5, '')
-      .replace(codeP, '')
-      .trim();
-    html = `<div class="panel-left"><div class="watermark">${watermarkLetter}</div>${codeP}${h5}${h2}</div><div class="panel-right">${rest}</div>`;
-  }
-
-  // Depth-aware lift of each top-level <li> in the first ul/ol of `src`.
-  // Mirrors the slot-label-lift Marpit plugin for the emulator path.
-  function liftListItems(src) {
-    const listMatch = src.match(/<(ul|ol)>/);
-    if (!listMatch) return src;
-    const listTag = listMatch[1];
-    const openList = `<${listTag}>`, closeList = `</${listTag}>`;
-    const listStart = src.indexOf(openList);
-    let depth = 0, pos = listStart, listEnd = -1;
-    while (pos < src.length) {
-      if (src.startsWith(openList, pos)) { depth++; pos += openList.length; }
-      else if (src.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
-      else pos++;
-    }
-    if (listEnd === -1) return src;
-    const inner = src.slice(listStart + openList.length, listEnd);
-    const out = []; let liDepth = 0, liStart = -1, i = 0, lastEmitted = 0;
-    while (i < inner.length) {
-      if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-      else if (inner.startsWith('</li>', i)) {
-        liDepth--;
-        if (liDepth === 0 && liStart !== -1) {
-          out.push(inner.slice(lastEmitted, liStart));
-          out.push(liftSlotLabel(inner.slice(liStart, i)));
-          lastEmitted = i; liStart = -1;
-        }
-        i += 5;
-      } else i++;
-    }
-    out.push(inner.slice(lastEmitted));
-    return src.slice(0, listStart) + openList + out.join('') + closeList + src.slice(listEnd + closeList.length);
-  }
-
-  // split-brief: `eyebrow` code-p + h2 + first non-code p → brief-left;
-  // tight ul (title / -- body sub-item pairs, title auto-lifted) → brief-right.
-  if (cls.includes('split-brief')) {
-    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
-    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
-    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
-    const eyebrow = codePMatch ? `<span class="eyebrow">${codePMatch[1]}</span>` : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const h2 = h2Match ? h2Match[0] : '';
-    const introP = introPMatch ? introPMatch[0] : '';
-    let right = html;
-    if (codeP) right = right.replace(codeP, '');
-    if (h2) right = right.replace(h2, '');
-    if (introP) right = right.replace(introP, '');
-    right = liftListItems(right.trim());
-    html = `<div class="brief-left">${eyebrow}${h2}${introP}</div><div class="brief-right">${right}</div>`;
-  }
-
-  // split-metric: `unit-label` code-p → span.unit-label; h2 = hero number;
-  // first non-code p → span.metric-context; tight ul (title auto-lifted) → metric-right.
-  if (cls.includes('split-metric')) {
-    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
-    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
-    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
-    const unitLabel = codePMatch ? `<span class="unit-label">${codePMatch[1]}</span>` : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const h2 = h2Match ? h2Match[0] : '';
-    const introP = introPMatch ? introPMatch[0] : '';
-    const context = introP ? `<span class="metric-context">${introP.replace(/<\/?p>/g, '')}</span>` : '';
-    let right = html;
-    if (codeP) right = right.replace(codeP, '');
-    if (h2) right = right.replace(h2, '');
-    if (introP) right = right.replace(introP, '');
-    right = liftListItems(right.trim());
-    html = `<div class="metric-left">${unitLabel}${h2}${context}</div><div class="metric-right">${right}</div>`;
-  }
-
-  // split-steps: `phase-num` code-p → span.phase-num; h2 + first non-code p →
-  // steps-left; tight ol (title auto-lifted / -- body sub-item) → steps-right.
-  if (cls.includes('split-steps')) {
-    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
-    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
-    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
-    const phaseNum = codePMatch ? `<span class="phase-num">${codePMatch[1]}</span>` : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const h2 = h2Match ? h2Match[0] : '';
-    const introP = introPMatch ? introPMatch[0] : '';
-    let right = html;
-    if (codeP) right = right.replace(codeP, '');
-    if (h2) right = right.replace(h2, '');
-    if (introP) right = right.replace(introP, '');
-    right = liftListItems(right.trim());
-    html = `<div class="steps-left">${phaseNum}${h2}${introP}</div><div class="steps-right">${right}</div>`;
-  }
-
-  // split-compare: `frame-label` code-p + h2 + first non-code p → compare-left;
-  // ul/ol top-level li items → .option / .option.preferred; blockquote → .verdict.
-  // Second top-level list item is always the preferred option.
-  if (cls.includes('split-compare')) {
-    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
-    const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
-    const introPMatch = html.match(/<p>(?!<code>)([\s\S]*?)<\/p>/);
-    const bqMatch = html.match(/<blockquote>([\s\S]*?)<\/blockquote>/);
-    const frameLabel = codePMatch ? `<span class="frame-label">${codePMatch[1]}</span>` : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const h2 = h2Match ? h2Match[0] : '';
-    const introP = introPMatch ? introPMatch[0] : '';
-    const bq = bqMatch ? bqMatch[0] : '';
-    let body = html;
-    if (codeP) body = body.replace(codeP, '');
-    if (h2) body = body.replace(h2, '');
-    if (introP) body = body.replace(introP, '');
-    if (bq) body = body.replace(bq, '');
-    body = body.trim();
-    // Split the first ul/ol into top-level li items → .option divs.
-    const listMatch = body.match(/<(ul|ol)>/);
-    let options = '';
-    if (listMatch) {
-      const listTag = listMatch[1];
-      const openList = `<${listTag}>`, closeList = `</${listTag}>`;
-      const listStart = body.indexOf(openList);
-      let depth = 0, pos = listStart, listEnd = -1;
-      while (pos < body.length) {
-        if (body.startsWith(openList, pos)) { depth++; pos += openList.length; }
-        else if (body.startsWith(closeList, pos)) { depth--; if (depth === 0) { listEnd = pos; break; } pos += closeList.length; }
-        else pos++;
-      }
-      if (listEnd !== -1) {
-        const inner = body.slice(listStart + openList.length, listEnd);
-        const items = []; let liDepth = 0, liStart = -1, i = 0;
-        while (i < inner.length) {
-          if (inner.startsWith('<li>', i)) { if (liDepth === 0) liStart = i + 4; liDepth++; i += 4; }
-          else if (inner.startsWith('</li>', i)) { liDepth--; if (liDepth === 0 && liStart !== -1) { items.push(inner.slice(liStart, i)); liStart = -1; } i += 5; }
-          else i++;
-        }
-        options = items.map((item, idx) => {
-          const optCls = idx === 1 ? 'option preferred' : 'option';
-          return `<div class="${optCls}">${liftSlotLabel(item)}</div>`;
-        }).join('');
-      }
-    }
-    const verdict = bq ? `<div class="verdict">${bq}</div>` : '';
-    html = `<div class="compare-left">${frameLabel}${h2}${introP}</div>`
-         + `<div class="compare-right"><div class="options">${options}</div>${verdict}</div>`;
-  }
-
-  // split-statement: leading blockquote → statement-left; `cite` code-p → cite
-  // element; tight ul (title auto-lifted / -- body sub-item pairs) → statement-right.
-  if (cls.includes('split-statement')) {
-    const bqMatch = html.match(/<blockquote>([\s\S]*?)<\/blockquote>/);
-    const codePMatch = html.match(/<p><code>([^<]+)<\/code><\/p>/);
-    const bq = bqMatch ? bqMatch[0] : '';
-    const codeP = codePMatch ? codePMatch[0] : '';
-    const cite = codePMatch ? `<cite>${codePMatch[1]}</cite>` : '';
-    let right = html;
-    if (bq) right = right.replace(bq, '');
-    if (codeP) right = right.replace(codeP, '');
-    right = liftListItems(right.trim());
-    html = `<div class="statement-left">${bq}${cite}</div><div class="statement-right">${right}</div>`;
-  }
+  // split-* family (split-list, split-brief, split-metric, split-steps,
+  // split-compare, split-statement) — delegated to the shared transformer
+  // registry. The engine kernel at lib/engine/split-panels.js is the
+  // canonical implementation; marp.config.js dispatches through the same
+  // registry on the marp-cli path.
+  html = splitPanelsTransformer.applyToSectionInner(html, cls);
 
   // cards-wide: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
   if (cls.includes('cards-wide')) {

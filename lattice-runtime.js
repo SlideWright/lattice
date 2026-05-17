@@ -723,14 +723,23 @@
   }
 
   // ── Split panel DOM transforms ──────────────────────────────────────────────
-  // Each mirrors the matching block in lattice-emulator.js. Idempotent: skips
-  // sections already wrapped (left/right div present). Called from initAndRun.
-  // Sibling implementations:
-  //   lattice-emulator.js  — post-process per-slide transform
-  //   lib/engine/split-panels.js  — HTML-string transform run by marp.config.js render
-  //                          hook (primary path for marp-vscode preview)
-  // These DOM transforms act as a fallback for web export where scripts execute
-  // but the marp.config.js engine hook has not run.
+  // Hand-edited DOM mirror of the canonical HTML-string kernel at
+  // lib/engine/split-panels.js (exposed to marp-cli AND the emulator via the
+  // shared transformer registry at lib/transformers/split-panels.js).
+  // Idempotent: skips sections already wrapped (left/right div present).
+  // Called from initAndRun.
+  //
+  // Sibling implementations (parity contract):
+  //   - lib/transformers/split-panels.js  — the canonical registry adapter
+  //   - lib/engine/split-panels.js        — the HTML-string kernel both
+  //                                         marp.config.js and lattice-emulator.js
+  //                                         consume via the registry
+  //   - this file                          — DOM mirror for the marp-vscode preview
+  //                                         and web-export paths (no bundler yet)
+  //
+  // When the runtime gains a bundler step, this block goes away — the registry's
+  // applyToDom slot is filled in and lattice-runtime.js imports it. Until then,
+  // any change to the kernel needs the matching change here (and vice versa).
 
   function transformSplitBrief() {
     if (typeof document === 'undefined') return;
