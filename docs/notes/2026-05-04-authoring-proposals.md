@@ -566,7 +566,7 @@ The last-slide-of-section citation list. Numbered, mono, smaller font. Today aut
 
 ## References cited in this section.
 
-1. NIST SP 800-38G — _FF1 / FF3-1 specification_
+1. [NIST SP 800-38G](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-38G.pdf) — _FF1 / FF3-1 specification_
 2. PCI-SSC Tokenization Guidelines v2.0 — _Type 1 substitution model_
 3. Internal audit AUDIT-2025-Q3-014 — _vendor evaluation_
 ```
