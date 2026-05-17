@@ -247,7 +247,7 @@ Six categories:
 | Category | Variants |
 |---|---|
 | Mood (1) | `dark` |
-| Decoration (6) | `bg-none`, `bg-corner-tl`, `bg-orbit-br`, `bg-vignette`, `bg-edge-right`, `bg-thread-diagonal` |
+| Decoration (6) | `treatment-none`, `tint-corner at-tl`, `mark-orbit`, `tint-vignette`, `tint-edge at-right`, `mark-threads` |
 | Typography (2) | `with-period`, `no-period` |
 | Chrome (4) | `silent`, `no-header`, `no-footer`, `no-paginate` |
 | State (8) | `wip`, `draft`, `tbd`, `confidential`, `redacted`, `archived`, `pinned`, `revised` |
@@ -460,7 +460,7 @@ ordering bugs possible.
 3. `lib/_scaffold.css` — `section`, `header`, `footer`, pagination
 4. `lib/components/*/styles.css` — every per-component file (alphabetical)
 5. `lib/_semi-universal.css` — `compact`, `loose`, `accent` rules
-6. `lib/_universal.css` — `dark`, `with-period`, `bg-*`, State, Tone, Chrome
+6. `lib/_universal.css` — `dark`, `with-period`, `tint-*`, `mark-*`, State, Tone, Chrome
 7. `lib/_diagram-overrides.css` — Mermaid theme overrides
 
 Output: `lattice.css` (committed). Header comment lists source files.

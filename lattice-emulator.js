@@ -2505,7 +2505,7 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 // Convenience `logo:` directive — inject the `<img class="deck-logo">`
 // element into each section per the `logo-on` rule. Real DOM (not a
 // ::before pseudo) so it composes with ::before-based decorations like
-// bg-orbit-br. Sibling: marp.config.js's `applyDeckLogoToHtml` — both
+// mark-orbit. Sibling: marp.config.js's `applyDeckLogoToHtml` — both
 // renderers must produce identical injection. See the function's
 // header comment for the build-time-only contract.
 //

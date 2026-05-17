@@ -54,19 +54,19 @@ Build-time only. The directive does not render in the marp-vscode preview pane b
 
 ---
 
-<!-- _class: content bg-corner-tl bg-edge-right -->
+<!-- _class: content tint-corner at-tl tint-edge at-right -->
 
 ## Layered gradient background, logo on top.
 
-`bg-corner-tl` adds a top-left radial glow; `bg-edge-right` adds a right-edge linear wash; both compose into the section's `background-image` slot. The watermark sits on top, darkened automatically because the canvas is light — same SVG, same rule, the filter just inverts brightness based on the layout class.
+`tint-corner at-tl` adds a top-left radial glow; `tint-edge at-right` adds a right-edge linear wash; both compose into the section's `background-image` slot. The watermark sits on top, darkened automatically because the canvas is light — same SVG, same rule, the filter just inverts brightness based on the layout class.
 
 ---
 
-<!-- _class: content bg-orbit-br -->
+<!-- _class: content mark-orbit -->
 
 ## SVG-mark background and logo coexist.
 
-`bg-orbit-br` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `img` element, so it sits on a different render layer. Every `bg-` class — gradients and SVG marks alike — composes with the logo.
+`mark-orbit` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `img` element, so it sits on a different render layer. Every treatment — `tint-*` or `mark-*` — composes with the logo.
 
 ---
 

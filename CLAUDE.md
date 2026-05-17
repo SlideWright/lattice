@@ -32,10 +32,10 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`docs/editorial.md`** — prose rules for the gallery and shipped decks.
 - **`docs/skill.md`** — deck-authoring contract.
 - **`docs/references/`** — canonical references (design, pipeline,
-  mermaid, audit, gotchas, backgrounds, workflow, development).
+  mermaid, audit, gotchas, treatments, workflow, development).
 - **`lib/base/base.docs.md`** — cross-cutting authoring contract
   (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
-  decoration backgrounds). Was previously inside
+  treatments). Was previously inside
   `docs/references/templates.md`, retired 2026-05-17.
 - **`lib/components/<name>/<name>.docs.md`** — per-component contracts
   (slots, variants, when/why, anti-patterns) generated from each
@@ -154,7 +154,7 @@ caught by the hook instead of by reviewer eyeballs.
   any slide that uses `<!-- _class: X -->`, open
   `lib/components/X/X.docs.md` AND grep `examples/gallery.md` for a
   working example **in the same turn**. Same rule for base modifiers
-  (`bg-*`, `with-*`, `dark`, `numbered`, …): open
+  (`tint-*`, `mark-*`, `with-*`, `dark`, `numbered`, …): open
   `lib/base/base.docs.md` first. Do not author from memory of docs
   read earlier in the session. The docs name the slot syntax, the
   required nesting depth, the bullet shape, and the markdown footguns
@@ -162,7 +162,7 @@ caught by the hook instead of by reviewer eyeballs.
   inline code needs escaping or `&lt;`). Skipping this step is how
   decks ship with `**Label.** body` when the layout actually wants
   `- Label\n  - body`, or with prose describing an abandoned
-  implementation, or with `bg-<em>` leaking into rendered output.
+  implementation, or with `tint-<em>` leaking into rendered output.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**

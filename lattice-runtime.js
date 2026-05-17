@@ -3407,7 +3407,7 @@
    * source `.md`, parse front matter, inject `<img class="deck-logo">`
    * as the first child of each section selected by the `logo-on`
    * rule. Real DOM (not a `::before` pseudo) so the logo composes
-   * with `::before`-based decorations like `bg-orbit-br`.
+   * with `::before`-based decorations like `mark-orbit`.
    *
    * Sibling implementations:
    *   - marp.config.js's `applyDeckLogoToHtml` (marp-cli path)

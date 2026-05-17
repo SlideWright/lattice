@@ -19,7 +19,7 @@ in patch versions.
   layouts (`.title`, `.divider`, `.closing`, `.dark`) so the mark
   stays legible without per-author light/dark variants. Real DOM
   (rather than a `::before` pseudo) lets the logo compose with every
-  `bg-*` decoration, gradients and SVG marks alike. Three render
+  treatment, tints and marks alike. Three render
   paths: `applyDeckLogoToHtml` in `marp.config.js` (marp-cli), the
   same helper called from `lattice-emulator.js`'s post-render pass
   (emulator), and `applyDeckLogoFromFrontMatter` in
@@ -86,6 +86,35 @@ in patch versions.
   `docs/references/templates.md#quadrant`.
 
 ### Changed
+
+- **BREAKING: `bg-*` decoration classes renamed to `tint-*` / `mark-*`.**
+  The Background Library is now the Treatment Library, split into two
+  semantic families: 12 `tint-*` gradient washes (corner glows, edge
+  washes, atmospheric, multi-accent) and 11 `mark-*` SVG accent shapes,
+  plus a `treatment-none` reset (was `bg-none`). `tint-corner` and
+  `tint-edge` now carry an `at-*` placement axis — write
+  `tint-corner at-tl` (was `bg-corner-tl`), `tint-edge at-right`
+  (was `bg-edge-right`), etc. Both long and short forms are accepted
+  (`at-tl` ≡ `top-left`), with a per-layer escape hatch (`tint-at-tl`)
+  for composing two tints at different placements. Marks render at a
+  fixed default home in v1 (e.g. `mark-orbit` defaults to bottom-right,
+  matching the old `bg-orbit-br` position); writing `at-*` alongside a
+  mark is silently ignored. The mark placement axis is a v2 follow-up.
+  No alias period — `bg-*` classes are removed in this release. Source
+  file renamed `lib/base/base.decorations.css` → `lib/base/base.treatments.css`;
+  doc renamed `docs/references/backgrounds.md` → `docs/references/treatments.md`.
+  Three marks switched rendering mechanism along the way because Apple
+  PDFKit drops Chromium-emitted `mask-image` constructs unreliably:
+  `mark-ticks` and `mark-pills` paint via `::before` + `box-shadow`
+  copies (no mask), and `mark-seeds` paints as 12 stacked
+  radial-gradients in the `--_bg-radial` slot. See
+  `docs/references/treatments.md` for the catalogue,
+  `docs/notes/2026-05-17-treatments-rename.md` for the rationale, and
+  `docs/references/gotchas.md` → "Chromium PDF output of CSS
+  `mask-image` renders inconsistently across viewers" for the
+  underlying browser/PDF behaviour. Author migration: search-and-
+  replace the `bg-X` class with its `tint-*` / `mark-*` equivalent
+  per the table in the rename note.
 
 - **BREAKING: Node 22 is now the minimum supported runtime.** `engines.node`
   bumped from `>=18.0.0` to `>=22.0.0`; CI matrix narrowed from `[18, 20, 22, 24]`

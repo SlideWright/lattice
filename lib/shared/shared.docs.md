@@ -83,7 +83,7 @@ entries are a subset of the semi-universal set.
 |---|---|---|
 | Composition | Auto-detected or always-on | Opt-in via class |
 | Audience | Every component | Most components (opt-out per manifest) |
-| Examples | Eyebrow detection, key-insight panel, `dark` variant, decoration backgrounds | `compact`, `loose`, `accent` |
+| Examples | Eyebrow detection, key-insight panel, `dark` variant, treatments (`tint-*` / `mark-*`) | `compact`, `loose`, `accent` |
 
 If a feature applies to every component without exception, it belongs
 in `lib/base/`. If it applies broadly but some components legitimately

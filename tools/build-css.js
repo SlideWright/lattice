@@ -19,9 +19,9 @@
  *   8. lib/_syntax-highlight.css highlight.js token theme
  *   9. lib/_chart-family.css     shared chart-frame chrome + .chart-status
  *                                vocabulary (progress / kanban / timeline-list)
- *  10. lib/_backgrounds.css      27 utility classes (16 gradients + 11 marks)
+ *  10. lib/base/base.treatments.css  27 utility classes (12 tints + 11 marks + reset)
  *  11. lib/_semi-universal.css   compact, loose, accent
- *  12. lib/_universal.css        dark, with-period, bg-*, state, tone, chrome
+ *  12. lib/_universal.css        dark, with-period, tint-*, mark-*, state, tone, chrome
  *  13. lib/_diagram-overrides.css  Mermaid SVG theme overrides
  *
  * lib/_legacy.css was retired on this branch — every block was either
@@ -75,9 +75,9 @@ const SYNTAX_HIGHLIGHT_SOURCE = 'lib/integrations/highlight-js/highlight-js.css'
 // Shared chart-frame chrome + .chart-status pill vocabulary, shared
 // by gantt, radar, quadrant, progress, piechart, kanban, timeline-list.
 const CHART_FAMILY_SOURCE = 'lib/chart-family/chart-family.css';
-// 27 utility classes (16 gradient accents + 11 SVG accent marks) for
+// 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
-const BACKGROUNDS_SOURCE = 'lib/base/base.decorations.css';
+const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
 const TAIL_SOURCES = [
   'lib/shared/shared.styles.css',
   'lib/base/base.variants.css',
@@ -168,10 +168,10 @@ function bundle() {
     parts.push(`/* === ${CHART_FAMILY_SOURCE} === */`);
     parts.push(chartFamily);
   }
-  const backgrounds = readIfExists(BACKGROUNDS_SOURCE);
-  if (backgrounds) {
-    parts.push(`/* === ${BACKGROUNDS_SOURCE} === */`);
-    parts.push(backgrounds);
+  const treatments = readIfExists(TREATMENTS_SOURCE);
+  if (treatments) {
+    parts.push(`/* === ${TREATMENTS_SOURCE} === */`);
+    parts.push(treatments);
   }
   // Tail: semi-universal → universal → diagram overrides. Each later
   // tier wins over earlier tiers by source order.

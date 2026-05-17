@@ -1158,51 +1158,51 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 
 <!-- _class: divider -->
 <!-- _paginate: false -->
-<!-- _footer: "Background Library — section break · divider" -->
+<!-- _footer: "Treatment Library — section break · divider" -->
 
-`Background Library · Any Layout Class`
+`Treatment Library · Any Layout Class`
 
-# bg-* classes add peripheral accents from the active palette
+# `tint-*` and `mark-*` classes add peripheral accents from the active palette
 
-Add a `bg-*` class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
+Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
 
 ---
 
-<!-- _class: content bg-corner-tl -->
-<!-- _footer: "Background — corner glow · content bg-corner-tl" -->
+<!-- _class: content tint-corner at-tl -->
+<!-- _footer: "Background — corner glow · content tint-corner at-tl" -->
 
 `Background · Corner Glow`
 
 ## A radial glow anchored at the corner fades before reaching the content zone
 
-`bg-corner-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `bg-corner-*` variants share the same weight and fade profile; only the anchor differs.
+`tint-corner at-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `at-*` placements share the same weight and fade profile; only the anchor differs.
 
 All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides.
 
 ---
 
-<!-- _class: content bg-orbit-br dark -->
-<!-- _footer: "Background — SVG marks · content bg-orbit-br dark" -->
+<!-- _class: content mark-orbit dark -->
+<!-- _footer: "Background — SVG marks · content mark-orbit dark" -->
 
 `Background · SVG Marks · Dark`
 
 ## SVG accent marks are painted through a mask in the active accent colour
 
-`bg-orbit-br` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
+`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
 
 ---
 
-<!-- _class: content bg-vignette bg-edge-right -->
-<!-- _footer: "Background — layered radial + linear · content bg-vignette bg-edge-right" -->
+<!-- _class: content tint-vignette tint-edge at-right -->
+<!-- _footer: "Background — layered radial + linear · content tint-vignette tint-edge at-right" -->
 
 `Background · Layered`
 
 ## One class from each slot layers without conflict
 
-Every `bg-*` class writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
+Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
 
-- `bg-vignette` — radial slot — accent-tinted perimeter, open center
-- `bg-edge-right` — linear slot — wash bleeding in from the right edge
+- `tint-vignette` — radial slot — accent-tinted perimeter, open center
+- `tint-edge at-right` — linear slot — wash bleeding in from the right edge
 
 The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently.
 
