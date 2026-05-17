@@ -26,6 +26,39 @@ Single oversized number as the focal claim.
 
 ---
 
+<!-- _class: big-number dark -->
+<!-- _footer: "Composition: dark · big-number dark" -->
+
+`Audience recall`
+
+- 92%
+  - of the audience remembers a single number from a deck. Make it count.
+
+
+---
+
+<!-- _class: big-number compact -->
+<!-- _footer: "Composition: compact · big-number compact" -->
+
+`Audience recall`
+
+- 92%
+  - of the audience remembers a single number from a deck. Make it count.
+
+
+---
+
+<!-- _class: big-number accent -->
+<!-- _footer: "Composition: accent · big-number accent" -->
+
+`Audience recall`
+
+- 92%
+  - of the audience remembers a single number from a deck. Make it count.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · big-number" -->
 

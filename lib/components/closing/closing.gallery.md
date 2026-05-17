@@ -35,6 +35,26 @@ Final slide. Dark canvas mirror of title.
 
 ---
 
+<!-- _class: closing silent compact -->
+<!-- _footer: "Composition: compact · closing compact" -->
+
+# Function · Form · Substance · Finish.
+
+`docs/design-system.md`
+
+
+---
+
+<!-- _class: closing silent accent -->
+<!-- _footer: "Composition: accent · closing accent" -->
+
+# Function · Form · Substance · Finish.
+
+`docs/design-system.md`
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · closing" -->
 

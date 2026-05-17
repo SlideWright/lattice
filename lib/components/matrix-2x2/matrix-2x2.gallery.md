@@ -34,6 +34,63 @@ Static 2×2 quadrant grid with author-placed items per cell.
 
 ---
 
+<!-- _class: matrix-2x2 dark -->
+<!-- _footer: "Composition: dark · matrix-2x2 dark" -->
+
+## Where each component substance lives.
+
+- **Author-driven · DOM output.**
+  - prose — headings + paragraphs
+  - structure — nested lists
+- **Author-driven · SVG output.**
+  - series — tabular DSL
+  - graph — external language
+- **Data-driven · DOM output.**
+  - (Lattice does not target this cell)
+- **Data-driven · SVG output.**
+  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+
+
+---
+
+<!-- _class: matrix-2x2 compact -->
+<!-- _footer: "Composition: compact · matrix-2x2 compact" -->
+
+## Where each component substance lives.
+
+- **Author-driven · DOM output.**
+  - prose — headings + paragraphs
+  - structure — nested lists
+- **Author-driven · SVG output.**
+  - series — tabular DSL
+  - graph — external language
+- **Data-driven · DOM output.**
+  - (Lattice does not target this cell)
+- **Data-driven · SVG output.**
+  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+
+
+---
+
+<!-- _class: matrix-2x2 accent -->
+<!-- _footer: "Composition: accent · matrix-2x2 accent" -->
+
+## Where each component substance lives.
+
+- **Author-driven · DOM output.**
+  - prose — headings + paragraphs
+  - structure — nested lists
+- **Author-driven · SVG output.**
+  - series — tabular DSL
+  - graph — external language
+- **Data-driven · DOM output.**
+  - (Lattice does not target this cell)
+- **Data-driven · SVG output.**
+  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · matrix-2x2" -->
 

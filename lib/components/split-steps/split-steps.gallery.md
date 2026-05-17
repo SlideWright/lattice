@@ -36,6 +36,69 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 ---
 
+<!-- _class: split-steps dark -->
+<!-- _footer: "Composition: dark · split-steps dark" -->
+
+`02`
+
+## Discovery and Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, and what requires a separate decision.
+
+
+---
+
+<!-- _class: split-steps compact -->
+<!-- _footer: "Composition: compact · split-steps compact" -->
+
+`02`
+
+## Discovery and Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, and what requires a separate decision.
+
+
+---
+
+<!-- _class: split-steps accent -->
+<!-- _footer: "Composition: accent · split-steps accent" -->
+
+`02`
+
+## Discovery and Scoping
+
+Four weeks. Shared definition of the problem before any solution work begins.
+
+1. Stakeholder Interviews
+   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
+2. Current-State Audit
+   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.
+3. Problem Framing Workshop
+   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
+4. Scope Confirmation
+   - Written sign-off on what is in, what is out, and what requires a separate decision.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-steps" -->
 

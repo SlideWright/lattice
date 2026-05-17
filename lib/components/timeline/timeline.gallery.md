@@ -32,6 +32,57 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ---
 
+<!-- _class: timeline dark -->
+<!-- _footer: "Composition: dark · timeline dark" -->
+
+## How a deck moves from draft to share.
+
+1. **Draft**
+   - *Author writes markdown with the appropriate `_class` directives.*
+2. **Build**
+   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
+3. **Review**
+   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
+4. **Ship**
+   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+
+
+---
+
+<!-- _class: timeline compact -->
+<!-- _footer: "Composition: compact · timeline compact" -->
+
+## How a deck moves from draft to share.
+
+1. **Draft**
+   - *Author writes markdown with the appropriate `_class` directives.*
+2. **Build**
+   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
+3. **Review**
+   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
+4. **Ship**
+   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+
+
+---
+
+<!-- _class: timeline accent -->
+<!-- _footer: "Composition: accent · timeline accent" -->
+
+## How a deck moves from draft to share.
+
+1. **Draft**
+   - *Author writes markdown with the appropriate `_class` directives.*
+2. **Build**
+   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
+3. **Review**
+   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
+4. **Ship**
+   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · timeline" -->
 

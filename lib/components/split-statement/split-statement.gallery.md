@@ -32,6 +32,57 @@ Pull quote — half the slide committed to one quoted idea on a dark left panel,
 
 ---
 
+<!-- _class: split-statement dark -->
+<!-- _footer: "Composition: dark · split-statement dark" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- **Clarity is a product decision, not a marketing one.**
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- **Onboarding is the product's first argument for itself.**
+  - The moment a user first succeeds defines their frame for everything that follows.
+- **Understanding, not delight, is the retention driver at scale.**
+  - Users who understand the system's logic stay through friction. Build for comprehension.
+
+
+---
+
+<!-- _class: split-statement compact -->
+<!-- _footer: "Composition: compact · split-statement compact" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- **Clarity is a product decision, not a marketing one.**
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- **Onboarding is the product's first argument for itself.**
+  - The moment a user first succeeds defines their frame for everything that follows.
+- **Understanding, not delight, is the retention driver at scale.**
+  - Users who understand the system's logic stay through friction. Build for comprehension.
+
+
+---
+
+<!-- _class: split-statement accent -->
+<!-- _footer: "Composition: accent · split-statement accent" -->
+
+> The best product does not win. The most understood product does.
+
+`Morgan Chase · Head of Product, Vercel, 2024`
+
+- **Clarity is a product decision, not a marketing one.**
+  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
+- **Onboarding is the product's first argument for itself.**
+  - The moment a user first succeeds defines their frame for everything that follows.
+- **Understanding, not delight, is the retention driver at scale.**
+  - Users who understand the system's logic stay through friction. Build for comprehension.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-statement" -->
 

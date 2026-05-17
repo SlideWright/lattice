@@ -36,6 +36,69 @@ Spiral-packed word cloud — items sized by weight.
 
 ---
 
+<!-- _class: word-cloud dark -->
+<!-- _footer: "Composition: dark · word-cloud dark" -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
+
+
+---
+
+<!-- _class: word-cloud compact -->
+<!-- _footer: "Composition: compact · word-cloud compact" -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
+
+
+---
+
+<!-- _class: word-cloud accent -->
+<!-- _footer: "Composition: accent · word-cloud accent" -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · word-cloud" -->
 

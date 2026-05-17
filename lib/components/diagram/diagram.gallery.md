@@ -35,6 +35,66 @@ flowchart LR
 
 ---
 
+<!-- _class: diagram dark -->
+<!-- _footer: "Composition: dark · diagram dark" -->
+
+## How a Lattice slide goes from markdown to PDF.
+
+```mermaid
+flowchart LR
+  A[deck.md] --> B[lattice-emulator.js]
+  B --> C{has mermaid?}
+  C -->|yes| D[mmdc → inline SVG]
+  C -->|no| E[parse + process]
+  D --> E
+  E --> F[HTML]
+  F --> G[Puppeteer print]
+  G --> H[deck.pdf]
+```
+
+
+---
+
+<!-- _class: diagram compact -->
+<!-- _footer: "Composition: compact · diagram compact" -->
+
+## How a Lattice slide goes from markdown to PDF.
+
+```mermaid
+flowchart LR
+  A[deck.md] --> B[lattice-emulator.js]
+  B --> C{has mermaid?}
+  C -->|yes| D[mmdc → inline SVG]
+  C -->|no| E[parse + process]
+  D --> E
+  E --> F[HTML]
+  F --> G[Puppeteer print]
+  G --> H[deck.pdf]
+```
+
+
+---
+
+<!-- _class: diagram accent -->
+<!-- _footer: "Composition: accent · diagram accent" -->
+
+## How a Lattice slide goes from markdown to PDF.
+
+```mermaid
+flowchart LR
+  A[deck.md] --> B[lattice-emulator.js]
+  B --> C{has mermaid?}
+  C -->|yes| D[mmdc → inline SVG]
+  C -->|no| E[parse + process]
+  D --> E
+  E --> F[HTML]
+  F --> G[Puppeteer print]
+  G --> H[deck.pdf]
+```
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · diagram" -->
 

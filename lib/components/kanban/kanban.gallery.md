@@ -48,6 +48,105 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ---
 
+<!-- _class: kanban dark -->
+<!-- _footer: "Composition: dark · kanban dark" -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+Four columns, mixed card density. Size badge sits in the title row.
+
+- Backlog
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
+  - Dependency dashboard `S`
+    - platform
+- In progress
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
+- Review
+  - Centralised log `S`
+    - compliance
+- Done
+  - Codebook signing `M`
+    - platform
+  - Manual rotation `S`
+    - operations
+
+
+---
+
+<!-- _class: kanban compact -->
+<!-- _footer: "Composition: compact · kanban compact" -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+Four columns, mixed card density. Size badge sits in the title row.
+
+- Backlog
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
+  - Dependency dashboard `S`
+    - platform
+- In progress
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
+- Review
+  - Centralised log `S`
+    - compliance
+- Done
+  - Codebook signing `M`
+    - platform
+  - Manual rotation `S`
+    - operations
+
+
+---
+
+<!-- _class: kanban accent -->
+<!-- _footer: "Composition: accent · kanban accent" -->
+
+`Phase 2 · Sprint 14`
+
+## Where Phase 2 work stands today.
+
+Four columns, mixed card density. Size badge sits in the title row.
+
+- Backlog
+  - Per-purpose codebooks `S`
+    - compliance
+  - Crypto-shred runbook `M`
+    - platform
+  - Dependency dashboard `S`
+    - platform
+- In progress
+  - Multi-tenant DEKs `M`
+    - platform `at-risk`
+  - Examiner pack v2 `L`
+    - compliance
+- Review
+  - Centralised log `S`
+    - compliance
+- Done
+  - Codebook signing `M`
+    - platform
+  - Manual rotation `S`
+    - operations
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · kanban" -->
 

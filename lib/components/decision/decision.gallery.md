@@ -28,6 +28,45 @@ The verdict slide — one chosen path, named explicitly.
 
 ---
 
+<!-- _class: decision dark -->
+<!-- _footer: "Composition: dark · decision dark" -->
+
+## What we are doing.
+
+- Chosen path.
+  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
+- Rejected option.
+  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+
+
+---
+
+<!-- _class: decision compact -->
+<!-- _footer: "Composition: compact · decision compact" -->
+
+## What we are doing.
+
+- Chosen path.
+  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
+- Rejected option.
+  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+
+
+---
+
+<!-- _class: decision accent -->
+<!-- _footer: "Composition: accent · decision accent" -->
+
+## What we are doing.
+
+- Chosen path.
+  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
+- Rejected option.
+  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · decision" -->
 

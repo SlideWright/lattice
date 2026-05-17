@@ -244,6 +244,59 @@ function renderDocs(m) {
  *
  * Page count derivable as expectedGallerySlideCount(m).
  */
+/**
+ * Universal modifiers we showcase per component in the gallery. Each gets
+ * one composition slide that re-uses the component's sample with the
+ * modifier appended to the `_class:` directive. Components opt out via
+ * manifest.excludes (semi-universals) or by being unsuitable for the
+ * modifier (e.g. layouts that already declare `dark` in their default
+ * chrome — title, divider, closing — get no extra dark composition).
+ *
+ * The set is bounded: dark / compact / accent. loose is the inverse of
+ * compact and not separately interesting; mirror is layout-specific
+ * (only some layouts have asymmetric halves to flip).
+ */
+const COMPOSITION_MODIFIERS = ['dark', 'compact', 'accent'];
+
+/**
+ * Layouts whose default chrome already includes dark (so a `dark`
+ * composition slide would be visually identical and add noise).
+ */
+const DARK_BY_DEFAULT = new Set(['title', 'divider', 'closing']);
+
+/**
+ * Compute the list of composition modifiers that apply to a component.
+ * Returns the subset of COMPOSITION_MODIFIERS that:
+ *   - the manifest doesn't list in `excludes`,
+ *   - aren't already in `variants[]` (the variant slide demos it),
+ *   - aren't already default-on for the layout (dark on bookends).
+ */
+function compositionModifiersFor(m) {
+  const excludes = new Set(Array.isArray(m.excludes) ? m.excludes : []);
+  const variants = new Set(Array.isArray(m.variants) ? m.variants : []);
+  return COMPOSITION_MODIFIERS.filter((mod) => {
+    if (excludes.has(mod)) return false;
+    if (variants.has(mod)) return false;
+    if (mod === 'dark' && DARK_BY_DEFAULT.has(m.name)) return false;
+    return true;
+  });
+}
+
+/**
+ * Build a composition slide: take the sample (or another representative
+ * slide content) and append the modifier to its `_class:` directive.
+ * Returns null if the manifest has no sample to compose from.
+ */
+function renderCompositionSlide(m, modifier) {
+  if (!m.sample) return null;
+  // Append the modifier to the existing _class directive.
+  const composed = m.sample.replace(
+    /^<!--\s*_class:\s*([^>]*?)\s*-->/,
+    (_match, klass) => `<!-- _class: ${klass.trim()} ${modifier} -->`
+  );
+  return injectFooter(composed, `Composition: ${modifier} · ${m.name} ${modifier}`);
+}
+
 function renderGallery(m) {
   const slides = [];
   const variantKeys = Array.isArray(m.variants) && m.variantDocs
@@ -268,6 +321,12 @@ ${m.description}`);
     const label = vd.label || v;
     const sampleWithFooter = injectFooter(vd.sample, `${label} · ${m.name} ${v}`);
     slides.push(sampleWithFooter);
+  }
+
+  // Composition slides — one per universal modifier the component accepts.
+  for (const mod of compositionModifiersFor(m)) {
+    const slide = renderCompositionSlide(m, mod);
+    if (slide) slides.push(slide);
   }
 
   if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) {
@@ -339,6 +398,8 @@ function expectedGallerySlideCount(m) {
   let n = 1; // title
   if (m.sample) n += 1;
   n += variantKeys;
+  // Composition slides — emitted only if there's a sample to compose from.
+  if (m.sample) n += compositionModifiersFor(m).length;
   if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) n += 1;
   if (Array.isArray(m.related) && m.related.length) n += 1;
   return n;
@@ -450,6 +511,8 @@ module.exports = {
   renderDocs,
   renderGallery,
   expectedGallerySlideCount,
+  compositionModifiersFor,
+  COMPOSITION_MODIFIERS,
   isEnriched,
   buildOne,
   checkOne,

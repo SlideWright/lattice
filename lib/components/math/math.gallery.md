@@ -160,6 +160,57 @@ For every additional unit of exposure, the outcome rises by 0.42 SD — roughly 
 
 ---
 
+<!-- _class: math dark -->
+<!-- _footer: "Composition: dark · math dark" -->
+
+### Linear regression · OLS
+
+## The closed-form estimator.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — OLS coefficient vector
+- $X$ — design matrix, $n \times p$
+- $y$ — response vector, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
+
+
+---
+
+<!-- _class: math compact -->
+<!-- _footer: "Composition: compact · math compact" -->
+
+### Linear regression · OLS
+
+## The closed-form estimator.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — OLS coefficient vector
+- $X$ — design matrix, $n \times p$
+- $y$ — response vector, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
+
+
+---
+
+<!-- _class: math accent -->
+<!-- _footer: "Composition: accent · math accent" -->
+
+### Linear regression · OLS
+
+## The closed-form estimator.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — OLS coefficient vector
+- $X$ — design matrix, $n \times p$
+- $y$ — response vector, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · math" -->
 

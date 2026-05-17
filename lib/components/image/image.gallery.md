@@ -75,6 +75,42 @@ Text leads from the right; image anchors from the left. Use when the surrounding
 
 ---
 
+<!-- _class: image dark -->
+<!-- _footer: "Composition: dark · image dark" -->
+
+## Image right is the default — text leads, evidence follows.
+
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
+
+![bg right](sample-image-landscape.svg)
+
+
+---
+
+<!-- _class: image compact -->
+<!-- _footer: "Composition: compact · image compact" -->
+
+## Image right is the default — text leads, evidence follows.
+
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
+
+![bg right](sample-image-landscape.svg)
+
+
+---
+
+<!-- _class: image accent -->
+<!-- _footer: "Composition: accent · image accent" -->
+
+## Image right is the default — text leads, evidence follows.
+
+The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
+
+![bg right](sample-image-landscape.svg)
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · image" -->
 

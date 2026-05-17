@@ -44,6 +44,93 @@ Native radar / spider chart — items rated across multiple axes.
 
 ---
 
+<!-- _class: radar dark -->
+<!-- _footer: "Composition: dark · radar dark" -->
+
+`Scale · 0–10`
+
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+
+
+---
+
+<!-- _class: radar compact -->
+<!-- _footer: "Composition: compact · radar compact" -->
+
+`Scale · 0–10`
+
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+
+
+---
+
+<!-- _class: radar accent -->
+<!-- _footer: "Composition: accent · radar accent" -->
+
+`Scale · 0–10`
+
+## How we stack up across the buying criteria.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · radar" -->
 

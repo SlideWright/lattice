@@ -34,6 +34,63 @@ for (const m of byFunction.evidence) {
 
 ---
 
+<!-- _class: code dark -->
+<!-- _footer: "Composition: dark · code dark" -->
+
+## What loading a manifest looks like.
+
+```js
+const { loadAll, groupByFunction } = require("./lib/components");
+
+const manifests = loadAll();           // 58 components, validated
+const byFunction = groupByFunction(manifests);
+
+for (const m of byFunction.evidence) {
+  console.log(m.name, m.form, m.substance);
+}
+```
+
+
+---
+
+<!-- _class: code compact -->
+<!-- _footer: "Composition: compact · code compact" -->
+
+## What loading a manifest looks like.
+
+```js
+const { loadAll, groupByFunction } = require("./lib/components");
+
+const manifests = loadAll();           // 58 components, validated
+const byFunction = groupByFunction(manifests);
+
+for (const m of byFunction.evidence) {
+  console.log(m.name, m.form, m.substance);
+}
+```
+
+
+---
+
+<!-- _class: code accent -->
+<!-- _footer: "Composition: accent · code accent" -->
+
+## What loading a manifest looks like.
+
+```js
+const { loadAll, groupByFunction } = require("./lib/components");
+
+const manifests = loadAll();           // 58 components, validated
+const byFunction = groupByFunction(manifests);
+
+for (const m of byFunction.evidence) {
+  console.log(m.name, m.form, m.substance);
+}
+```
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · code" -->
 

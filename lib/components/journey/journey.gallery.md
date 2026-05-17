@@ -106,6 +106,63 @@ Native user-journey chart — sections of tasks, each tagged with actor(s) and a
 
 ---
 
+<!-- _class: journey dark -->
+<!-- _footer: "Composition: dark · journey dark" -->
+
+## Customer onboarding · trial to activation.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
+
+
+---
+
+<!-- _class: journey compact -->
+<!-- _footer: "Composition: compact · journey compact" -->
+
+## Customer onboarding · trial to activation.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
+
+
+---
+
+<!-- _class: journey accent -->
+<!-- _footer: "Composition: accent · journey accent" -->
+
+## Customer onboarding · trial to activation.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · journey" -->
 

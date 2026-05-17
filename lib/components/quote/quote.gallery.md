@@ -25,6 +25,36 @@ A pulled quotation, centered, with attribution.
 
 ---
 
+<!-- _class: quote dark -->
+<!-- _footer: "Composition: dark · quote dark" -->
+
+> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.
+
+— Head of Product, Pilot Team 3
+
+
+---
+
+<!-- _class: quote compact -->
+<!-- _footer: "Composition: compact · quote compact" -->
+
+> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.
+
+— Head of Product, Pilot Team 3
+
+
+---
+
+<!-- _class: quote accent -->
+<!-- _footer: "Composition: accent · quote accent" -->
+
+> The signal was always there. We just didn't have a system that forced us to look at it before we'd already decided.
+
+— Head of Product, Pilot Team 3
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · quote" -->
 

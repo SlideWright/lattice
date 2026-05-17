@@ -27,6 +27,30 @@ A decision framework for product leaders navigating market uncertainty.
 
 ---
 
+<!-- _class: title silent compact -->
+<!-- _footer: "Composition: compact · title compact" -->
+
+# From Signal to Strategy
+
+`Product Strategy · Q3 2025`
+
+A decision framework for product leaders navigating market uncertainty.
+
+
+---
+
+<!-- _class: title silent accent -->
+<!-- _footer: "Composition: accent · title accent" -->
+
+# From Signal to Strategy
+
+`Product Strategy · Q3 2025`
+
+A decision framework for product leaders navigating market uncertainty.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · title" -->
 

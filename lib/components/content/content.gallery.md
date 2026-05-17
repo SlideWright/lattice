@@ -29,6 +29,48 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ---
 
+<!-- _class: content dark -->
+<!-- _footer: "Composition: dark · content dark" -->
+
+## The catch-all prose slide.
+
+Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+
+- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
+- For comparisons, prefer `compare-prose` or `compare-table`.
+- For single metrics, prefer `big-number` or `stats`.
+
+
+---
+
+<!-- _class: content compact -->
+<!-- _footer: "Composition: compact · content compact" -->
+
+## The catch-all prose slide.
+
+Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+
+- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
+- For comparisons, prefer `compare-prose` or `compare-table`.
+- For single metrics, prefer `big-number` or `stats`.
+
+
+---
+
+<!-- _class: content accent -->
+<!-- _footer: "Composition: accent · content accent" -->
+
+## The catch-all prose slide.
+
+Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+
+- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
+- For comparisons, prefer `compare-prose` or `compare-table`.
+- For single metrics, prefer `big-number` or `stats`.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · content" -->
 

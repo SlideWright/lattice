@@ -28,6 +28,45 @@ Explicit state-change comparison — what was, what is.
 
 ---
 
+<!-- _class: before-after dark -->
+<!-- _footer: "Composition: dark · before-after dark" -->
+
+## What the manifest refactor produced.
+
+- Before.
+  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+- After.
+  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+
+
+---
+
+<!-- _class: before-after compact -->
+<!-- _footer: "Composition: compact · before-after compact" -->
+
+## What the manifest refactor produced.
+
+- Before.
+  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+- After.
+  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+
+
+---
+
+<!-- _class: before-after accent -->
+<!-- _footer: "Composition: accent · before-after accent" -->
+
+## What the manifest refactor produced.
+
+- Before.
+  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+- After.
+  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · before-after" -->
 

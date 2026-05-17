@@ -96,6 +96,57 @@ header: "Lattice · cards-grid"
 
 ---
 
+<!-- _class: cards-grid dark -->
+<!-- _footer: "Composition: dark · cards-grid dark" -->
+
+## The framework has four components.
+
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- Calibration Loop.
+  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
+
+
+---
+
+<!-- _class: cards-grid compact -->
+<!-- _footer: "Composition: compact · cards-grid compact" -->
+
+## The framework has four components.
+
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- Calibration Loop.
+  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
+
+
+---
+
+<!-- _class: cards-grid accent -->
+<!-- _footer: "Composition: accent · cards-grid accent" -->
+
+## The framework has four components.
+
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- Calibration Loop.
+  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-grid" -->
 

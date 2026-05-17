@@ -41,6 +41,45 @@ Two cards side-by-side, co-equal.
 
 ---
 
+<!-- _class: cards-side dark -->
+<!-- _footer: "Composition: dark · cards-side dark" -->
+
+## Two cards, equal weight, side-by-side.
+
+- An explicit pair.
+  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
+- Different from compare-prose.
+  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+
+
+---
+
+<!-- _class: cards-side compact -->
+<!-- _footer: "Composition: compact · cards-side compact" -->
+
+## Two cards, equal weight, side-by-side.
+
+- An explicit pair.
+  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
+- Different from compare-prose.
+  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+
+
+---
+
+<!-- _class: cards-side accent -->
+<!-- _footer: "Composition: accent · cards-side accent" -->
+
+## Two cards, equal weight, side-by-side.
+
+- An explicit pair.
+  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
+- Different from compare-prose.
+  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-side" -->
 

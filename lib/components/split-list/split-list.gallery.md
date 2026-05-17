@@ -51,6 +51,63 @@ Featured left panel + supporting list on the right.
 
 ---
 
+<!-- _class: split-list dark -->
+<!-- _footer: "Composition: dark · split-list dark" -->
+
+## A featured statement on the left lands the argument.
+
+### Use when
+
+- One claim deserves emphasis
+  - The panel headline carries the weight; the right side substantiates.
+- You need both a thesis and proof
+  - Statement on the left, evidence list on the right.
+- The right side is short
+  - Three to four supporting points; longer lists belong in cards-stack.
+- The mirror modifier flips it
+  - Image-style decks often want the panel on the right.
+
+
+---
+
+<!-- _class: split-list compact -->
+<!-- _footer: "Composition: compact · split-list compact" -->
+
+## A featured statement on the left lands the argument.
+
+### Use when
+
+- One claim deserves emphasis
+  - The panel headline carries the weight; the right side substantiates.
+- You need both a thesis and proof
+  - Statement on the left, evidence list on the right.
+- The right side is short
+  - Three to four supporting points; longer lists belong in cards-stack.
+- The mirror modifier flips it
+  - Image-style decks often want the panel on the right.
+
+
+---
+
+<!-- _class: split-list accent -->
+<!-- _footer: "Composition: accent · split-list accent" -->
+
+## A featured statement on the left lands the argument.
+
+### Use when
+
+- One claim deserves emphasis
+  - The panel headline carries the weight; the right side substantiates.
+- You need both a thesis and proof
+  - Statement on the left, evidence list on the right.
+- The right side is short
+  - Three to four supporting points; longer lists belong in cards-stack.
+- The mirror modifier flips it
+  - Image-style decks often want the panel on the right.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-list" -->
 

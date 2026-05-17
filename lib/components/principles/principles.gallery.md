@@ -43,6 +43,48 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ---
 
+<!-- _class: principles dark -->
+<!-- _footer: "Composition: dark · principles dark" -->
+
+## How we make calls when the spec is silent.
+
+- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
+- **Form follows function.** Let the audience's need shape the layout, not the other way around.
+- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+
+
+---
+
+<!-- _class: principles compact -->
+<!-- _footer: "Composition: compact · principles compact" -->
+
+## How we make calls when the spec is silent.
+
+- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
+- **Form follows function.** Let the audience's need shape the layout, not the other way around.
+- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+
+
+---
+
+<!-- _class: principles accent -->
+<!-- _footer: "Composition: accent · principles accent" -->
+
+## How we make calls when the spec is silent.
+
+- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
+- **Form follows function.** Let the audience's need shape the layout, not the other way around.
+- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · principles" -->
 

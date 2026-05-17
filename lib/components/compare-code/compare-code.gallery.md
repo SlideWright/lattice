@@ -93,6 +93,138 @@ function loadOne(name) {
 
 ---
 
+<!-- _class: compare-code dark -->
+<!-- _footer: "Composition: dark · compare-code dark" -->
+
+`Before & after · Component manifest loading`
+
+## Flat-file lookup versus folder-shape lookup.
+
+`Before · flat file`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    `${name}.json`
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+`After · folder shape`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    name, 'manifest.json'
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+
+---
+
+<!-- _class: compare-code compact -->
+<!-- _footer: "Composition: compact · compare-code compact" -->
+
+`Before & after · Component manifest loading`
+
+## Flat-file lookup versus folder-shape lookup.
+
+`Before · flat file`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    `${name}.json`
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+`After · folder shape`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    name, 'manifest.json'
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+
+---
+
+<!-- _class: compare-code accent -->
+<!-- _footer: "Composition: accent · compare-code accent" -->
+
+`Before & after · Component manifest loading`
+
+## Flat-file lookup versus folder-shape lookup.
+
+`Before · flat file`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    `${name}.json`
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+`After · folder shape`
+
+```js
+const fs = require('node:fs');
+const path = require('node:path');
+
+function loadOne(name) {
+  const p = path.join(
+    __dirname, 'lib', 'components',
+    name, 'manifest.json'
+  );
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+const cards = loadOne('cards-grid');
+```
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-code" -->
 

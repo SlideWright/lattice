@@ -35,6 +35,26 @@ Section boundary slide. Dark canvas with a single heading.
 
 ---
 
+<!-- _class: divider silent compact -->
+<!-- _footer: "Composition: compact · divider compact" -->
+
+`Section 03`
+
+# Inventory
+
+
+---
+
+<!-- _class: divider silent accent -->
+<!-- _footer: "Composition: accent · divider accent" -->
+
+`Section 03`
+
+# Inventory
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · divider" -->
 

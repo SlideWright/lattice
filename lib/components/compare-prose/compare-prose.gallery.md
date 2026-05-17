@@ -80,6 +80,45 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 ---
 
+<!-- _class: compare-prose dark -->
+<!-- _footer: "Composition: dark · compare-prose dark" -->
+
+## Two options, equal weight, head-to-head.
+
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+
+
+---
+
+<!-- _class: compare-prose compact -->
+<!-- _footer: "Composition: compact · compare-prose compact" -->
+
+## Two options, equal weight, head-to-head.
+
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+
+
+---
+
+<!-- _class: compare-prose accent -->
+<!-- _footer: "Composition: accent · compare-prose accent" -->
+
+## Two options, equal weight, head-to-head.
+
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-prose" -->
 

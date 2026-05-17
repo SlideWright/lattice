@@ -69,6 +69,63 @@ Each row promotes to a card with body-level breathing room.
 
 ---
 
+<!-- _class: obligation-matrix dark -->
+<!-- _footer: "Composition: dark · obligation-matrix dark" -->
+
+## Privacy obligations across regimes — neutral grid.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+
+
+---
+
+<!-- _class: obligation-matrix compact -->
+<!-- _footer: "Composition: compact · obligation-matrix compact" -->
+
+## Privacy obligations across regimes — neutral grid.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+
+
+---
+
+<!-- _class: obligation-matrix accent -->
+<!-- _footer: "Composition: accent · obligation-matrix accent" -->
+
+## Privacy obligations across regimes — neutral grid.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · obligation-matrix" -->
 

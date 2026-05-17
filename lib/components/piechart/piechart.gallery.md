@@ -51,6 +51,60 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ---
 
+<!-- _class: piechart dark -->
+<!-- _footer: "Composition: dark · piechart dark" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the engineering quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Codebook platform `46%`
+- Operations runbook `22%`
+- Compliance work `18%`
+- Pilot support `9%`
+- Toil and on-call `5%`
+
+
+---
+
+<!-- _class: piechart compact -->
+<!-- _footer: "Composition: compact · piechart compact" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the engineering quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Codebook platform `46%`
+- Operations runbook `22%`
+- Compliance work `18%`
+- Pilot support `9%`
+- Toil and on-call `5%`
+
+
+---
+
+<!-- _class: piechart accent -->
+<!-- _footer: "Composition: accent · piechart accent" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the engineering quarter went.
+
+Wedges drawn proportionally; legend reads in author order with raw values.
+
+- Codebook platform `46%`
+- Operations runbook `22%`
+- Compliance work `18%`
+- Pilot support `9%`
+- Toil and on-call `5%`
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · piechart" -->
 

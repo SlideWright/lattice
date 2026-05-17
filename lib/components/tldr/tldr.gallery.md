@@ -43,6 +43,48 @@ Single-line takeaways — the deck or section's headline points.
 
 ---
 
+<!-- _class: tldr dark -->
+<!-- _footer: "Composition: dark · tldr dark" -->
+
+## What this section will tell you, in five lines.
+
+- Components stay short — `cards-grid` not `inventory.grid.cards`.
+- The four layers organise the catalog; they do not name components.
+- Manifests are the single source of truth for every component.
+- Discovery happens via the scaffolder and IDE snippets, not the directive.
+- Forty-five components ship — one folder each.
+
+
+---
+
+<!-- _class: tldr compact -->
+<!-- _footer: "Composition: compact · tldr compact" -->
+
+## What this section will tell you, in five lines.
+
+- Components stay short — `cards-grid` not `inventory.grid.cards`.
+- The four layers organise the catalog; they do not name components.
+- Manifests are the single source of truth for every component.
+- Discovery happens via the scaffolder and IDE snippets, not the directive.
+- Forty-five components ship — one folder each.
+
+
+---
+
+<!-- _class: tldr accent -->
+<!-- _footer: "Composition: accent · tldr accent" -->
+
+## What this section will tell you, in five lines.
+
+- Components stay short — `cards-grid` not `inventory.grid.cards`.
+- The four layers organise the catalog; they do not name components.
+- Manifests are the single source of truth for every component.
+- Discovery happens via the scaffolder and IDE snippets, not the directive.
+- Forty-five components ship — one folder each.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · tldr" -->
 

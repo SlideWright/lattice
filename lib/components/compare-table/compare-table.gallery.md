@@ -30,6 +30,51 @@ Multi-row comparison table with consistent columns.
 
 ---
 
+<!-- _class: compare-table dark -->
+<!-- _footer: "Composition: dark · compare-table dark" -->
+
+## Where the four substance contracts come from.
+
+| Substance | Author writes | Renderer | Output |
+| --- | --- | --- | --- |
+| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
+| structure | nested lists with conventions | lib/*.js post-processor | DOM |
+| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
+| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+
+
+---
+
+<!-- _class: compare-table compact -->
+<!-- _footer: "Composition: compact · compare-table compact" -->
+
+## Where the four substance contracts come from.
+
+| Substance | Author writes | Renderer | Output |
+| --- | --- | --- | --- |
+| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
+| structure | nested lists with conventions | lib/*.js post-processor | DOM |
+| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
+| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+
+
+---
+
+<!-- _class: compare-table accent -->
+<!-- _footer: "Composition: accent · compare-table accent" -->
+
+## Where the four substance contracts come from.
+
+| Substance | Author writes | Renderer | Output |
+| --- | --- | --- | --- |
+| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
+| structure | nested lists with conventions | lib/*.js post-processor | DOM |
+| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
+| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-table" -->
 

@@ -35,6 +35,36 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 
 ---
 
+<!-- _class: subtopic dark -->
+<!-- _footer: "Composition: dark · subtopic dark" -->
+
+`Anchor family · light divider`
+
+## Subtopic introduces a specific topic within a section.
+
+
+---
+
+<!-- _class: subtopic compact -->
+<!-- _footer: "Composition: compact · subtopic compact" -->
+
+`Anchor family · light divider`
+
+## Subtopic introduces a specific topic within a section.
+
+
+---
+
+<!-- _class: subtopic accent -->
+<!-- _footer: "Composition: accent · subtopic accent" -->
+
+`Anchor family · light divider`
+
+## Subtopic introduces a specific topic within a section.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · subtopic" -->
 

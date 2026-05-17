@@ -32,6 +32,57 @@ Row of 3–5 stat tiles, each with a big number and a label.
 
 ---
 
+<!-- _class: stats dark -->
+<!-- _footer: "Composition: dark · stats dark" -->
+
+`Impact · Pilot Results`
+
+## Six months of results across four product teams.
+
+`Measured against pre-framework baseline, same teams, same market conditions.`
+
+1. **73%** faster close
+2. **4.2×** signal recall
+3. **$1.2M** prevented losses
+4. **−18d** avg cycle time
+
+
+---
+
+<!-- _class: stats compact -->
+<!-- _footer: "Composition: compact · stats compact" -->
+
+`Impact · Pilot Results`
+
+## Six months of results across four product teams.
+
+`Measured against pre-framework baseline, same teams, same market conditions.`
+
+1. **73%** faster close
+2. **4.2×** signal recall
+3. **$1.2M** prevented losses
+4. **−18d** avg cycle time
+
+
+---
+
+<!-- _class: stats accent -->
+<!-- _footer: "Composition: accent · stats accent" -->
+
+`Impact · Pilot Results`
+
+## Six months of results across four product teams.
+
+`Measured against pre-framework baseline, same teams, same market conditions.`
+
+1. **73%** faster close
+2. **4.2×** signal recall
+3. **$1.2M** prevented losses
+4. **−18d** avg cycle time
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · stats" -->
 

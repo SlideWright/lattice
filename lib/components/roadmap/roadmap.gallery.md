@@ -53,6 +53,63 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 
 ---
 
+<!-- _class: roadmap dark -->
+<!-- _footer: "Composition: dark · roadmap dark" -->
+
+`Layout · roadmap`
+
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+
+
+---
+
+<!-- _class: roadmap compact -->
+<!-- _footer: "Composition: compact · roadmap compact" -->
+
+`Layout · roadmap`
+
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+
+
+---
+
+<!-- _class: roadmap accent -->
+<!-- _footer: "Composition: accent · roadmap accent" -->
+
+`Layout · roadmap`
+
+## What ships in each phase, by workstream.
+
+| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | --------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+
+
+---
+
 <!-- _class: list -->
 <!-- _footer: "Anti-patterns · roadmap" -->
 
