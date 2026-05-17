@@ -34,7 +34,7 @@ Use for an explicit pair — two options, two phases, two artifacts presented wi
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `cards` | `ul > li` | yes | Exactly two list items, each one card. Lead each with **Card Title.** then body text. |
+| `cards` | `ul > li` | yes | Exactly two list items, each one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text. |
 
 ## Anatomy
 

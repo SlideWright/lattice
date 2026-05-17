@@ -38,7 +38,7 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `cards` | `ul > li` | yes | Each list item becomes one card. Lead each li with **Card Title.** then body text. |
+| `cards` | `ul > li` | yes | Each list item becomes one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text (renders normal weight via the nested-list rule). |
 | `insight` | `blockquote` | no | Optional key-insight panel above the cards. |
 
 ## Anatomy

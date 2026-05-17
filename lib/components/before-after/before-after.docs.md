@@ -34,7 +34,7 @@ Use to show the transformation produced by a change. Left = the prior state; rig
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the change. |
-| `states` | `ul > li` | yes | Exactly two list items. Lead each with **Before** or **After** then a 1–2 sentence description. |
+| `states` | `ul > li` | yes | Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description. |
 
 ## Anatomy
 

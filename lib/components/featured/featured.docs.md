@@ -36,7 +36,7 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the recommendation. |
-| `items` | `ul > li` | yes | First li becomes the featured card; remaining lis form the sub-grid. Lead each with **Title.** then body. |
+| `items` | `ul > li` | yes | First li becomes the featured card; remaining lis form the sub-grid. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text. |
 
 ## Anatomy
 

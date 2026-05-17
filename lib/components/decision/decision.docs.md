@@ -34,7 +34,7 @@ Use after a comparison slide to land the decision. The chosen option is the foca
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the decision. |
-| `options` | `ul > li` | yes | List items. Lead each with **Option name.** then a short rationale. The chosen option carries the focal styling. |
+| `options` | `ul > li` | yes | List items. Authoring contract: a top-level bullet is the option name (renders bold by default); an indented bullet underneath carries the short rationale. The chosen option carries the focal styling. |
 
 ## Anatomy
 

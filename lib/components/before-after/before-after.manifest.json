@@ -15,7 +15,7 @@
     "states": {
       "selector": "ul > li",
       "required": true,
-      "description": "Exactly two list items. Lead each with **Before** or **After** then a 1–2 sentence description."
+      "description": "Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description."
     }
   },
   "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",

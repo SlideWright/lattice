@@ -18,7 +18,7 @@
     "items": {
       "selector": "ul > li",
       "required": true,
-      "description": "First li becomes the featured card; remaining lis form the sub-grid. Lead each with **Title.** then body."
+      "description": "First li becomes the featured card; remaining lis form the sub-grid. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
     }
   },
   "skeleton": "<!-- _class: featured -->\n\n## Applying the criteria, here is where the evidence points.\n\n- **Featured recommendation.** One to two sentences making the case.\n- **Supporting card.** Short context on a related option.\n- **Supporting card.** Short context on another option.\n- **Supporting card.** Short context on another option.\n",

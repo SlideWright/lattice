@@ -18,7 +18,7 @@
     "cards": {
       "selector": "ul > li",
       "required": true,
-      "description": "Exactly two list items, each one card. Lead each with **Card Title.** then body text."
+      "description": "Exactly two list items, each one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
     }
   },
   "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- **Left card title.** Body text for the left card, two short sentences.\n- **Right card title.** Body text for the right card, two short sentences.\n",

@@ -15,7 +15,7 @@
     "options": {
       "selector": "ul > li",
       "required": true,
-      "description": "List items. Lead each with **Option name.** then a short rationale. The chosen option carries the focal styling."
+      "description": "List items. Authoring contract: a top-level bullet is the option name (renders bold by default); an indented bullet underneath carries the short rationale. The chosen option carries the focal styling."
     }
   },
   "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",

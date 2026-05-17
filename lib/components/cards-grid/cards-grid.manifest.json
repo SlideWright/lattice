@@ -21,7 +21,7 @@
     "cards": {
       "selector": "ul > li",
       "required": true,
-      "description": "Each list item becomes one card. Lead each li with **Card Title.** then body text."
+      "description": "Each list item becomes one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text (renders normal weight via the nested-list rule)."
     },
     "insight": {
       "selector": "blockquote",
