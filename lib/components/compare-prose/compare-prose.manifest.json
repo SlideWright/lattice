@@ -10,7 +10,8 @@
     "mirror",
     "chosen",
     "decision",
-    "vertical"
+    "vertical",
+    "banner-tag"
   ],
   "slots": {
     "title": {
@@ -56,11 +57,26 @@
     }
   ],
   "related": [
-    { "name": "before-after", "when": "two states of one system, not two alternatives" },
-    { "name": "compare-code", "when": "the columns are code, not prose" },
-    { "name": "split-compare", "when": "the verdict needs a bottom recommendation bar" },
-    { "name": "verdict-grid", "when": "three or more options scored against shared criteria" },
-    { "name": "decision", "when": "the verdict slide that lands after a comparison" }
+    {
+      "name": "before-after",
+      "when": "two states of one system, not two alternatives"
+    },
+    {
+      "name": "compare-code",
+      "when": "the columns are code, not prose"
+    },
+    {
+      "name": "split-compare",
+      "when": "the verdict needs a bottom recommendation bar"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "three or more options scored against shared criteria"
+    },
+    {
+      "name": "decision",
+      "when": "the verdict slide that lands after a comparison"
+    }
   ],
   "variantDocs": {
     "mirror": {
@@ -82,6 +98,11 @@
       "label": "Vertical — stack cards top-to-bottom",
       "caption": "Stacks the two cards vertically and rotates the connector 90°. Use for long-body comparisons where the side-by-side format would crowd the prose.",
       "sample": "<!-- _class: compare-prose vertical -->\n\n## Long-body options stacked for room.\n\n- Build in-house\n  - Full control over the schema and the roadmap, with 2–3 engineer-quarters before feature parity. Ongoing maintenance burden stays internal; the team owns every escalation, every migration, every breaking change. Worth it when the data model is the differentiation; expensive when it isn't.\n- Buy + configure\n  - Ships in 6 weeks rather than 9 months, with engineering capacity redirecting to product-layer features the customer actually pays for. Exit risk is bounded by contractual data export; switching cost is a known number rather than a moving target. The right call when the data layer is plumbing rather than differentiation.\n"
+    },
+    "banner-tag": {
+      "label": "Banner tag — slot label as full-width header strip",
+      "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
+      "sample": "<!-- _class: compare-prose banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
     }
   }
 }

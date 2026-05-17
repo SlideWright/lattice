@@ -52,6 +52,25 @@ Use to show the transformation produced by a change. Left = the prior state; rig
 └─────────────────────────────────────────┘
 ```
 
+## Variants (layout-specific)
+
+### `banner-tag` — Banner tag — slot label as full-width header strip
+
+Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.
+
+```markdown
+<!-- _class: before-after banner-tag -->
+
+## Three reasons we are building.
+
+- BUILD
+  - The platform is the product. Owning it owns the roadmap.
+- WHY NOT BUY
+  - No vendor matches our compliance posture without surrender of control.
+- WHY NOT DELAY
+  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, decoration backgrounds). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.

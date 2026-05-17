@@ -28,6 +28,21 @@ The verdict slide — one chosen path, named explicitly.
 
 ---
 
+<!-- _class: decision banner-tag -->
+<!-- _footer: "Banner tag — slot label as full-width header strip · decision banner-tag" -->
+
+## Three reasons we are building.
+
+- BUILD
+  - The platform is the product. Owning it owns the roadmap.
+- WHY NOT BUY
+  - No vendor matches our compliance posture without surrender of control.
+- WHY NOT DELAY
+  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+
+
+---
+
 <!-- _class: decision dark -->
 <!-- _footer: "Composition: dark · decision dark" -->
 

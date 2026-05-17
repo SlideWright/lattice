@@ -28,6 +28,21 @@ Explicit state-change comparison — what was, what is.
 
 ---
 
+<!-- _class: before-after banner-tag -->
+<!-- _footer: "Banner tag — slot label as full-width header strip · before-after banner-tag" -->
+
+## Three reasons we are building.
+
+- BUILD
+  - The platform is the product. Owning it owns the roadmap.
+- WHY NOT BUY
+  - No vendor matches our compliance posture without surrender of control.
+- WHY NOT DELAY
+  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+
+
+---
+
 <!-- _class: before-after dark -->
 <!-- _footer: "Composition: dark · before-after dark" -->
 

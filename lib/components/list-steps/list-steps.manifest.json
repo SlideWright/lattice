@@ -10,7 +10,11 @@
     "vertical",
     "phase",
     "milestone",
-    "lettered"
+    "lettered",
+    "stage",
+    "rank",
+    "tier",
+    "roman"
   ],
   "slots": {
     "title": {
@@ -97,6 +101,26 @@
       "label": "Lettered — counter format becomes A, B, C",
       "caption": "Replaces the leading-zero decimal counter with letters. Composes with any prefix; useful when the rows are options or tracks rather than ordered work.",
       "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
+    },
+    "stage": {
+      "label": "Stage",
+      "caption": "Badge prefix becomes `STAGE 01`, `STAGE 02`, …",
+      "sample": "<!-- _class: list-steps stage -->\n\n## Three stages, with explicit stage prefixes.\n\n1. Plan\n   - Define the work and the artifacts each stage produces.\n2. Execute\n   - Run the work against the plan; track variance.\n3. Review\n   - Compare actuals to plan; capture lessons for the next cycle.\n"
+    },
+    "rank": {
+      "label": "Rank",
+      "caption": "Badge prefix becomes `RANK 01`, `RANK 02`, … Use for ordered lists where each position is a competitive rank.",
+      "sample": "<!-- _class: list-steps rank -->\n\n## Top three risks, ranked by exposure.\n\n1. Renewal cohort\n   - $2.1M ARR at risk if pricing comp gap persists.\n2. Pipeline conversion\n   - 11 pp below Q1; legal review is the chokepoint.\n3. Competitive displacement\n   - Seven losses to one competitor in the $80-200K tier.\n"
+    },
+    "tier": {
+      "label": "Tier",
+      "caption": "Badge prefix becomes `TIER 01`, `TIER 02`, … Use for stratified groupings where each tier is qualitatively distinct.",
+      "sample": "<!-- _class: list-steps tier roman -->\n\n## Three engagement tiers.\n\n1. Strategic\n   - Quarterly executive review, dedicated success manager.\n2. Growth\n   - Monthly check-in, shared success pool.\n3. Self-serve\n   - Async docs, community support.\n"
+    },
+    "roman": {
+      "label": "Roman numerals",
+      "caption": "Counter format becomes `I`, `II`, `III` (composes with any prefix).",
+      "sample": "<!-- _class: list-steps phase roman -->\n\n## Three phases, roman-numeral counter.\n\n1. Discovery\n   - Identify the constraints and the success criteria.\n2. Design\n   - Sketch options against the constraints; pick one.\n3. Delivery\n   - Build, ship, measure.\n"
     }
   }
 }

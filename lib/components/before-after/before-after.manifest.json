@@ -66,5 +66,15 @@
       "name": "list-steps",
       "when": "the change has more than two phases"
     }
-  ]
+  ],
+  "variants": [
+    "banner-tag"
+  ],
+  "variantDocs": {
+    "banner-tag": {
+      "label": "Banner tag — slot label as full-width header strip",
+      "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
+      "sample": "<!-- _class: before-after banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
+    }
+  }
 }

@@ -116,8 +116,10 @@ audience should remember from a card-grid slide.
 
 **Supported layouts:** `cards-grid`, `cards-stack`, `cards-side`,
 `cards-wide`, `compare-prose`, `compare-table`, `verdict-grid`,
-`featured`, `kpi`. Other layouts render blockquote as default
-blockquote chrome.
+`featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`,
+`timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`,
+`before-after`, `actors`, `kpi`, `agenda`. Other layouts render
+blockquote as default blockquote chrome.
 
 ### Below-Note
 
@@ -137,10 +139,17 @@ shouldn't get card weight.
 — Note: figures are pre-audit; final numbers ship in Q3.
 ```
 
+**Supported layouts:** same set as Key Insight Panel above —
+`cards-grid`, `cards-stack`, `cards-side`, `cards-wide`,
+`compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`,
+`list-criteria`, `list-steps`, `list-tabular`, `timeline`,
+`principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`,
+`actors`, `kpi`, `agenda`.
+
 Renders as muted body text with a thin top border. Inherits the slide's
 text color so it reads on either light or dark canvas.
 
-### Annotation
+### Annotation (HTML-comment register)
 
 A trailing `<!-- annotation: text -->` HTML comment on any slide
 renders as a corner overlay (top-right by default) for editorial or
@@ -156,6 +165,119 @@ process notes. Used during deck review to mark slides as `WIP`,
 
 Suppressed when `_class` includes `silent` (review chrome shouldn't
 leak into final delivery).
+
+### Annotation (italic-paragraph register)
+
+A trailing paragraph whose only content is an `_italic_` span renders
+as an annotation — a `✦` (U+2726) glyph in `--accent` followed by
+smaller, muted, label-size text. No hairline rule. Distinct from a
+below-note: lighter visual weight, lower information density, signals
+"this is a footnote, not a continuation of the argument."
+
+```markdown
+<!-- _class: cards-grid -->
+
+## Slide heading.
+
+- Card Title 1
+  - Card body.
+- Card Title 2
+  - Card body.
+
+_Source: pilot retrospective, six months across four product teams._
+```
+
+CSS pattern: `p:has(> em:only-child)` — the paragraph must contain a
+single `<em>` and nothing else (no leading/trailing text outside the
+italic span). Glyph: `✦` at `0.95em` in `--accent`. Text: 15px
+(`--fs-sm`) in `--text-muted`. Use for source citations, scope
+caveats, asterisk-style footnotes — content that *frames* the slide
+rather than extending its argument.
+
+**Supported layouts:** same set as Below-Note —
+`cards-grid`, `cards-stack`, `cards-wide`, `compare-prose`,
+`compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`,
+`list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`,
+`matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`.
+
+### The three trailing-paragraph registers — comparison
+
+The blockquote / plain-paragraph / italic-paragraph registers compose
+by markdown shape on the same set of card-bearing layouts:
+
+| Markdown shape | Renders as | Visual |
+|---|---|---|
+| `> blockquote` | **Key Insight** | accent-tinted panel, "KEY INSIGHT" eyebrow |
+| Plain `<p>` (em-dash prefix) | **Below-Note** | hairline rule + body text |
+| `<p>` containing only `_italic_` | **Annotation** | `✦` glyph + muted label-size text |
+
+A slide may carry one Key Insight (blockquote) plus one trailing-
+paragraph register (below-note OR annotation), in that order. See
+`examples/gallery.md` slide 21 for key-insight + below-note,
+slide 22 for key-insight + annotation.
+
+### Labeled Corner Tag
+
+The named-slot sibling of the numbered corner tag. On `before-after`,
+`compare-prose`, and `decision`, the slot label sits at the top of
+each card as a flush corner tag — same geometry as the numbered tag
+(see Auto-Numbered Cards below), but the content is editorial text
+instead of a counter. The card body fills from the top; no first line
+is consumed by a label.
+
+```markdown
+<!-- _class: before-after -->
+
+## Detokenize used to require a vault round-trip.
+
+- Before
+  - Every detokenize call: network round-trip to the central vault, p99 60 ms.
+- After
+  - Local function call against an in-process codebook, p99 8 ms.
+```
+
+**Layouts that support the labeled corner tag:** `before-after`,
+`compare-prose`, `decision`.
+
+**Authoring is plain.** Write the slot label as the first line of each
+list item — no bold, no syntax. The build pipeline lifts it into a
+`<strong>` automatically because in these named-slot layouts the
+leading text is structurally a slot label, not editorial emphasis.
+Authors don't carry presentational markup.
+
+- Tag chrome matches the numbered corner tag — accent fill, white mono
+  text, flush top-left geometry. The labeled and numbered variants are
+  visually a family.
+- `before-after` and `compare-prose` use the unified accent fill (their
+  slots have semantic ordering: before/after, A/B). `decision` is the
+  categorical case: each slot is an independent reason, so the tag and
+  the bottom border cycle through the categorical palette (`--c1-dark`,
+  `--c2-dark`, `--c3-dark`, …) — same palette and cycle as
+  `kpi.trajectory`, inverted to the bottom edge so the two layouts read
+  as siblings (kpi.trajectory = top accent, decision = bottom accent).
+- Composes with `compare-prose` modifiers `chosen` / `decision` — the
+  corner tag inherits the modifier's editorial signal.
+- **`banner-tag` modifier** flips each card from a flush-corner tag
+  into a full-width header strip:
+
+  ```markdown
+  <!-- _class: decision banner-tag -->
+  ```
+
+  The card becomes a vertical column-flex: tag fits its content height
+  and spans the full card width; body stretches into the remaining
+  height (vertically centred). Use when the slot label is the
+  architectural signal of the card — the categorical case (`BUILD` /
+  `WHY NOT BUY` / `WHY NOT DELAY`) — rather than a quiet marker.
+  Default flush-corner stays for the editorial register where the body
+  owns the card. Same lift infrastructure feeds both styles, so
+  authoring is unchanged. Composes with all existing modifiers
+  (`chosen`, `decision`, `mirror`, `vertical`).
+- Named-slot only — `before-after`, `compare-prose`, and `decision`
+  exist precisely to label their cards. Other card-bearing layouts
+  (`cards-grid`, `cards-stack`, etc.) keep the in-card title row
+  because their card titles are editorial sentences, not categorical
+  labels.
 
 ### Auto-Numbered cards
 
