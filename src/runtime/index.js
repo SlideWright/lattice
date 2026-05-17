@@ -457,11 +457,11 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
     transformObligationMatrixBadges();
     transformChecklistItemStates();
     transformSlotLabels();
-    // split-* DOM transforms come from the shared registry; this includes
-    // split-list, which the legacy inline mirror omitted.
+    // Registry-managed DOM transforms — split-panels (all 6 layouts)
+    // and roadmap (Status + Horizons). chart-family, journey, and
+    // word-cloud will join here in follow-up PRs; until then their
+    // explicit calls below stay in place.
     sharedTransformerRegistry.applyAllToDom(document);
-    transformRoadmapStatus();
-    transformRoadmapHorizons();
     transformJourney();
     transformWordCloud();
     // Radar is a chart-family member; its DOM transform fires from
@@ -728,173 +728,6 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
 
   // split-* DOM transforms now live in lib/transformers/split-panels.js,
   // bundled in via the registry above. Called from runAllContentTransforms.
-
-  // ── Roadmap modifier transforms ─────────────────────────────────────────
-  // Mirror lib/components/roadmap/transform.js / lattice-emulator.js. Idempotent:
-  // each transform checks for the marker class on the section/cell and bails
-  // early when it has already run.
-  //
-  // Sibling implementations (parity contract):
-  //   lib/components/roadmap/transform.js — HTML-string transform run by marp.config.js render hook
-  //   lattice-emulator.js                 — per-slide emulator path delegates to the transform
-  //
-  // These DOM transforms act as a fallback for web export and for any
-  // preview path that didn't run the engine plugin.
-
-  const ROADMAP_HORIZON_ACCENTS = [
-    'var(--c1-dark)',   'var(--c2-dark)',  'var(--c3-dark)', 'var(--c4-dark)',
-    'var(--c5-dark)',   'var(--c6-dark)',   'var(--c7-dark)',  'var(--c8-dark)',
-  ];
-  const ROADMAP_STATE_LABEL = {
-    'state-shipped':  'Shipped',
-    'state-wip':      'In flight',
-    'state-planned':  'Planned',
-    'state-skipped':  'Out of scope',
-  };
-  function roadmapMarkerToState(marker) {
-    switch (marker) {
-      case 'x': return 'state-shipped';
-      case '-': return 'state-wip';
-      case ' ': return 'state-planned';
-      case '/': return 'state-skipped';
-      default:  return '';
-    }
-  }
-
-  function transformRoadmapStatus() {
-    // State markers `[x]/[-]/[ ]/[/]` work on any roadmap variant. The
-    // .status modifier adds the heavy treatment via CSS; other variants
-    // get the light treatment (state-coloured dot + skip strike).
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.roadmap')) {
-      const rows = section.querySelectorAll(':scope > table > tbody > tr');
-      for (const tr of rows) {
-        const tds = tr.querySelectorAll(':scope > td');
-        for (let i = 0; i < tds.length; i++) {
-          if (i === 0) continue; // workstream label cell
-          const td = tds[i];
-          if (td.classList.contains('cell-state')) continue;
-          const text = td.textContent;
-          const m = /^\s*\[([x\-/ ])\]\s*/.exec(text);
-          if (!m) continue;
-          const state = roadmapMarkerToState(m[1]);
-          if (!state) continue;
-          const label = ROADMAP_STATE_LABEL[state];
-          // Strip the marker from the first text node and wrap the
-          // remaining content in a <span class="cell-state-text">.
-          const firstText = (() => {
-            for (const n of td.childNodes) {
-              if (n.nodeType === 3) return n;
-              if (n.nodeType === 1) return null;
-            }
-            return null;
-          })();
-          if (firstText) {
-            firstText.nodeValue = firstText.nodeValue.replace(/^\s*\[[x\-/ ]\]\s*/, '');
-          }
-          // Wrap remaining content
-          const wrap = document.createElement('span');
-          wrap.className = 'cell-state-text';
-          while (td.firstChild) wrap.appendChild(td.firstChild);
-          const eyebrow = document.createElement('span');
-          eyebrow.className = 'cell-state-label';
-          eyebrow.textContent = label;
-          td.appendChild(eyebrow);
-          td.appendChild(wrap);
-          td.classList.add('cell-state', state);
-        }
-      }
-    }
-  }
-
-  function transformRoadmapHorizons() {
-    if (typeof document === 'undefined') return;
-    for (const section of document.querySelectorAll('section.roadmap.horizons')) {
-      if (section.querySelector('.horizons')) continue;
-      const table = section.querySelector(':scope > table');
-      if (!table) continue;
-      const headRow = table.querySelector(':scope > thead > tr');
-      if (!headRow) continue;
-      const headCells = [...headRow.children];
-      if (headCells.length < 2) continue;
-      const phaseHeaders = headCells.slice(1).map(c => c.innerHTML.trim());
-
-      const bodyRows = [...table.querySelectorAll(':scope > tbody > tr')]
-        .map(tr => {
-          const cells = [...tr.children];
-          return {
-            label: cells[0] ? cells[0].innerHTML.trim() : '',
-            cells: cells.slice(1).map(c => {
-              // Pull the state class (set by transformRoadmapStatus
-              // upstream when a [x]/[-]/[ ]/[/] marker was present)
-              // and the plain text content out of the cell.
-              let state = '';
-              for (const cls of c.classList) {
-                if (/^state-/.test(cls)) { state = cls; break; }
-              }
-              const textSpan = c.querySelector(':scope > .cell-state-text');
-              const text = textSpan ? textSpan.innerHTML.trim() : c.innerHTML.trim();
-              return { text, state };
-            }),
-          };
-        })
-        .filter(r => r.label !== '');
-
-      const wrap = document.createElement('div');
-      wrap.className = 'horizons';
-      phaseHeaders.forEach((header, idx) => {
-        const card = document.createElement('div');
-        card.className = 'horizon-card';
-        card.style.setProperty('--phase-accent', ROADMAP_HORIZON_ACCENTS[idx % ROADMAP_HORIZON_ACCENTS.length]);
-        const head = document.createElement('div');
-        head.className = 'horizon-head';
-        const eyebrow = document.createElement('span');
-        eyebrow.className = 'horizon-eyebrow';
-        eyebrow.textContent = 'Phase ' + String(idx + 1).padStart(2, '0');
-        // Lift a trailing <code> into a meta pill — mirrors lib/components/roadmap/transform.js.
-        let headerHtml = header;
-        let metaText = '';
-        const trailingCode = header.match(/\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*$/);
-        if (trailingCode) {
-          headerHtml = header.slice(0, trailingCode.index).trim();
-          metaText = trailingCode[1];
-        }
-        const title = document.createElement('span');
-        title.className = 'horizon-title';
-        title.innerHTML = headerHtml;
-        head.appendChild(eyebrow);
-        head.appendChild(title);
-        if (metaText) {
-          const meta = document.createElement('span');
-          meta.className = 'horizon-meta';
-          meta.innerHTML = metaText;
-          head.appendChild(meta);
-        }
-        const ul = document.createElement('ul');
-        ul.className = 'horizon-rows';
-        for (const r of bodyRows) {
-          const cell = r.cells[idx] || { text: '', state: '' };
-          const li = document.createElement('li');
-          if (cell.state) li.className = 'cell-state ' + cell.state;
-          const lbl = document.createElement('span');
-          lbl.className = 'row-label';
-          lbl.innerHTML = r.label;
-          const text = cell.text;
-          const isEmpty = !text || text === '—' || text === '-';
-          const txt = document.createElement('span');
-          txt.className = isEmpty ? 'row-text row-empty' : 'row-text';
-          txt.innerHTML = isEmpty ? '—' : text;
-          li.appendChild(lbl);
-          li.appendChild(txt);
-          ul.appendChild(li);
-        }
-        card.appendChild(head);
-        card.appendChild(ul);
-        wrap.appendChild(card);
-      });
-      table.replaceWith(wrap);
-    }
-  }
 
   // ── Word-cloud layout transform ─────────────────────────────────────────
   // Mirrors the build-time spiral packer in lib/word-cloud.js so the
