@@ -143,6 +143,32 @@
   --warn: light-dark(#B45309, #F97316);
   --fail: light-dark(#991B1B, #F87171);
 
+  /* ── Universal data-signal tokens — positive / negative / neutral / inactive ─
+   * Four-way semantic axis for chart series, KPI deltas, journey moods,
+   * matrix cells — anywhere a data point needs to read as good / bad /
+   * steady / unused at a glance. Distinct from --pass / --warn / --fail
+   * which mark INTENT (test passing, task warned, obligation failed); the
+   * positive/negative/neutral/inactive axis marks OBSERVATIONS about data
+   * (gain, loss, no-change, no-data).
+   *
+   * Values are copied (not aliased) from the existing status palette so
+   * the two axes ship visually aligned during the transition. The chart
+   * cleanup that follows will retune these without churning the
+   * --pass / --warn / --fail call-sites.
+   *
+   *   positive  forest green (light) / emerald-400 (dark)  — gain, up, good
+   *   negative  alarm red    (light) / red-400     (dark)  — loss, down, bad
+   *   neutral   amber-700    (light) / orange-500  (dark)  — flat, no change
+   *   inactive  slate-600    (light) / slate-400   (dark)  — no data, dimmed
+   *
+   * Each is a light-dark() pair so dark canvases lift to AA contrast
+   * automatically. Themes can override any of these with brand-toned
+   * variants; the override SHOULD stay a light-dark() pair. */
+  --positive: light-dark(#2D6A3F, #4ADE80);
+  --negative: light-dark(#991B1B, #F87171);
+  --neutral:  light-dark(#B45309, #F97316);
+  --inactive: light-dark(#475569, #94A3B8);
+
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
    * split-list left rail, banner-tags, badges). Themes can override any
