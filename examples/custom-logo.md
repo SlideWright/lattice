@@ -66,7 +66,7 @@ Build-time only. The directive does not render in the marp-vscode preview pane b
 
 ## SVG-mark background and logo coexist.
 
-`mark-orbit` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `img` element, so it sits on a different render layer. Every `bg-` class — gradients and SVG marks alike — composes with the logo.
+`mark-orbit` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `img` element, so it sits on a different render layer. Every treatment — `tint-*` or `mark-*` — composes with the logo.
 
 ---
 

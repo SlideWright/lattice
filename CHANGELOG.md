@@ -19,7 +19,7 @@ in patch versions.
   layouts (`.title`, `.divider`, `.closing`, `.dark`) so the mark
   stays legible without per-author light/dark variants. Real DOM
   (rather than a `::before` pseudo) lets the logo compose with every
-  `bg-*` decoration, gradients and SVG marks alike. Three render
+  treatment, tints and marks alike. Three render
   paths: `applyDeckLogoToHtml` in `marp.config.js` (marp-cli), the
   same helper called from `lattice-emulator.js`'s post-render pass
   (emulator), and `applyDeckLogoFromFrontMatter` in

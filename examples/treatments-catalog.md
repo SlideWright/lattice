@@ -427,4 +427,4 @@ Radial corner, linear edge, SVG mark — three independent layers, no conflict. 
 
 `27 classes · 4 composition examples · 1 cross-mode demo`
 
-Rename PR will sweep every class name in this deck (`bg-*` → `tint-*` / `mark-*`) and the rest is the same pixels.
+Every treatment Lattice ships, rendered once on the `mustard` palette. Use this deck as the visual reference when picking a class.
