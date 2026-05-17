@@ -88,8 +88,8 @@ describe('chart-family.applyToDom', () => {
     // Regression guard for the radar --cat-* bug (now fixed).
     const styles = [...polys].map(p => p.getAttribute('style') || '');
     for (const s of styles) {
-      assert.match(s, /--series-color:\s*var\(--c\d-dark\)/,
-        `series-color resolves through --c{N}-dark, not --cat-*; got "${s}"`);
+      assert.match(s, /--series-color:\s*var\(--c\d-light\)/,
+        `series-color resolves through --c{N}-light (recessive register, mermaid-band parity); got "${s}"`);
     }
   });
 
