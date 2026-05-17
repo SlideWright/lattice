@@ -201,6 +201,37 @@ Recommended VS Code extensions:
 - `biomejs.biome` — inline lint feedback from `biome.json`
 - `marp-team.marp-vscode` — preview `.md` decks
 
+## Claude Code on the web
+
+Sessions started from claude.ai/code run in an ephemeral container:
+repo cloned fresh, `node_modules` empty, and the Playwright-bundled
+Chromium pre-installed at `/opt/pw-browsers/chromium`. Two pieces of
+config in `.claude/` make this Just Work without manual `npm install`
+or env-var fiddling per branch:
+
+- **`.claude/settings.json` → `env.PUPPETEER_EXECUTABLE_PATH`** —
+  points puppeteer/mmdc/mar-cli at the container's bundled Chromium
+  (stable symlink, survives container rebuilds). Without it,
+  lattice-emulator and marp-cli crash with
+  *"No Chrome binary detected"* during the PDF rasterize step.
+
+- **`.claude/hooks/session-start.sh`** — SessionStart hook that runs
+  `PUPPETEER_SKIP_DOWNLOAD=true npm install --prefer-offline --no-audit
+  --no-fund` iff `node_modules` is missing or `package-lock.json` is
+  newer than `node_modules/.package-lock.json`. Idempotent, quiet on
+  success, full log on failure. `PUPPETEER_SKIP_DOWNLOAD` is set
+  because the system Chromium is used, not puppeteer's bundled copy.
+
+Both files are committed (project-level settings), so any user opening
+a web session on this repo gets a working build environment without
+intervention.
+
+Local desktop: the hook is harmless (npm install is fast / no-op when
+the tree is already populated). The env var is also harmless (it
+points at a path that doesn't exist locally; puppeteer's existing
+resolution order in `lattice-emulator.js` falls back to the local
+puppeteer cache or system Chromium).
+
 ---
 
 ## Cross-cutting rules
