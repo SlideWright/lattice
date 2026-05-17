@@ -197,7 +197,7 @@ The default placement for each placement-aware treatment is the location its cur
 | `mark-ticks` | `at-right` | Current single variant is right margin |
 | `mark-brackets` | `at-right` | Current single variant is right margin |
 | `mark-asterisks` | n/a | Placement-agnostic (opposing corners — TR + BL, baked into SVG) |
-| `mark-grid` | n/a | Placement-agnostic (top-right band; not truly fullbleed despite v1's table, and SVG ships only the one location for now — see [open question 1](#open-questions)) |
+| `mark-grid` | `at-tr` | Current single variant is top-right header band; refactored to orbit pattern alongside the other marks, so a future `mark-grid at-tl` would actually move it. A true fullbleed-grid variant is a separate design (different SVG density / ink budget) and out of scope for the rename. |
 | `mark-seeds` | n/a | Placement-agnostic (all four corners, scattered) |
 
 ---
@@ -256,7 +256,7 @@ Two prefixes (`tint`, `mark`) mirror the mental model the user stated explicitly
 | `bg-bracket-right` | `mark-brackets` | default `at-right`; refactored to orbit pattern |
 | `bg-asterisk-scatter` | `mark-asterisks` | **placement-agnostic** (opposing corners — `at-*` is a no-op; v1 table said default `at-br` — wrong) |
 | `bg-seeds` | `mark-seeds` | placement-agnostic (all four corners) |
-| `bg-grid-micro` | `mark-grid` | **placement-agnostic** for v1 of the rename; SVG ships top-right only (v1 table said "fullbleed" — wrong, the 4×4 dot grid sits in the top-right header band). See [open question 1](#open-questions). |
+| `bg-grid-micro` | `mark-grid` | default `at-tr`; refactored to orbit pattern (v1 table said "fullbleed" — wrong, the 4×4 dot grid sits in the top-right header band). A true fullbleed-grid variant is a follow-up design, not a rename concern. |
 
 Note the editorial cleanups: `bg-asterisk-scatter` → `mark-asterisks`, `bg-slash-tr` → `mark-slashes`, `bg-bracket-right` → `mark-brackets`, `bg-thread-diagonal` → `mark-threads`, `bg-micro-tr` → `mark-micro` all drop redundant suffixes now that placement is either explicit, defaulted, or genuinely agnostic.
 
@@ -343,26 +343,26 @@ mark refactor; the rename alone would be a half-day.
 
 ---
 
-## Open questions
+## Resolved decisions (was: open questions)
 
-1. **Should `mark-grid` ship a true fullbleed variant?** Today the SVG
-   is a 4×4 dot grid in the top-right header band only — calling it
-   `mark-grid` (no placement, suggesting "the slide has a grid") is
-   slightly misleading. Two options: (a) ship it as-is, accept that
-   `mark-grid` means "grid accent in the top-right" and revisit later;
-   or (b) add a second SVG variant in the rename PR for the true
-   fullbleed case and make the existing one `mark-grid at-tr`. The
-   rename PR can defer this — it's a follow-up feature, not a rename
-   decision.
-2. **Should the orbit-pattern refactor land before, with, or after the
-   rename?** Three sequencings: (a) one PR for everything (proposed —
-   atomic, but big diff); (b) refactor marks to orbit pattern first in
-   a no-rename PR (`bg-*` keeps its names, every mark gets cropped
-   viewBox), then a smaller rename PR follows (smaller blast radius
-   per PR, but two breaking churns through the gallery); (c) rename
-   first, refactor follow-up (means `mark-*` ships with broken
-   placement for 10 of 11 marks — bad UX). Recommend (a) unless the
-   reviewer prefers split.
+1. **`mark-grid` defaults to `at-tr`, refactored to orbit pattern.** Joins
+   the rest of the mark family architecturally — same cropped-viewBox
+   `::before` shape, same `at-*` placement vocabulary that would
+   actually move it. The current single SVG variant is the top-right
+   header band, so `at-tr` is the natural default and the migration
+   sed (`bg-grid-micro` → `mark-grid`, no placement token) stays
+   mechanical. A true fullbleed-grid variant requires new SVG design
+   work (different dot density, different ink budget) and is a
+   follow-up feature, not a rename concern. The mild misleadingness of
+   "mark-grid means top-right grid" is acceptable.
+2. **Single PR — rename + mark refactor land together.** The refactor
+   is what makes the rename's central promise (placement actually
+   works) true: shipping `mark-orbit at-tl` as a class that compiles
+   but doesn't move the orbit would ship a broken contract. Splitting
+   means two rounds of full gallery PDF rebuilds and two CHANGELOG
+   entries for what is conceptually one change. The diff is large but
+   mechanical (~50 CSS lines for the refactor, plus the rename); the
+   reviewer benefits from seeing the new shape end-to-end in one place.
 
 ---
 
@@ -375,8 +375,8 @@ mark refactor; the rename alone would be a half-day.
 - [x] Rename table reviewed in detail (treatment-by-treatment, v2 corrections applied)
 - [x] Default placement per placement-aware treatment confirmed (per-treatment, matches current single-variant home; `tint-corner` / `tint-edge` are placement-required)
 - [x] Architectural reality acknowledged (two mechanisms; `mark-*` refactor to orbit pattern is part of the rename PR)
-- [ ] Open question 1 (mark-grid fullbleed variant) — defer or decide
-- [ ] Open question 2 (refactor sequencing) — confirm single-PR vs split
+- [x] `mark-grid` resolution agreed (default `at-tr`, refactored alongside the rest)
+- [x] Refactor sequencing agreed (single PR — rename + mark refactor together)
 - [ ] Implementation PR opened (`claude/treatments-rename-*`)
 - [ ] All example decks migrated and rebuilt
 - [ ] Docs swept
