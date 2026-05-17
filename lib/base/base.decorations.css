@@ -31,7 +31,7 @@
  *   <!-- _class: content bg-corner-tl bg-edge-right bg-seeds -->  two gradients + mark
  *
  * Slot reference (gradient classes only — SVG marks carry no slot)
- *   --_bg-radial  corner glows, vignette, spotlight, duotone, asterisk-scatter
+ *   --_bg-radial  corner glows, vignette, spotlight, duotone
  *   --_bg-linear  edge washes, horizon, ground, sweep, ambient, frame
  *
  * See docs/references/backgrounds.md for the full catalogue and constraints.
@@ -260,16 +260,33 @@ section.bg-ambient {
 
 /* ── SVG ACCENT MARKS ─────────────────────────────────────────────────
  * Architecture: one CSS layer per pattern — no gradient slot occupied.
+ * Each mark is a small absolutely-positioned ::before (and ::after, for
+ * marks whose shapes straddle multiple corners) with the SVG viewBox
+ * cropped to the shapes' bounding box. The ::before is sized in cqi
+ * (1cqi ≈ 12.8px on a 1280×720 slide) and positioned via top/right/
+ * bottom/left rather than inset:0.
  *
  *   section.bg-*::before  mask-image: SVG + accent paint — the shapes
  *
+ * Why the cropped-bbox shape, not inset:0:
+ *   Chromium's vector PDF output of mask-image isn't applied
+ *   consistently by every PDF viewer (Skia / PDFium / Apple PDFKit
+ *   render the unmasked background, producing an accent-tinted panel
+ *   covering whatever area the ::before occupied). With a cropped
+ *   ::before, even a fully-failed mask shows only a small tinted patch
+ *   the size of the mark itself — degradation rather than slide-
+ *   breaking artifact. See docs/references/gotchas.md → "Chromium PDF
+ *   output of CSS mask-image renders inconsistently across viewers".
+ *
  * Marks carry no --_bg-radial or --_bg-linear value, so they combine
  * freely with any gradient class. Stack one gradient + one mark; both
- * render independently. Two marks on the same slide: both ::before rules
- * apply but only one set of shapes wins (last defined in this file).
+ * render independently. Two marks on the same slide: both ::before
+ * rules apply, but ::before is a singleton so only the last-defined
+ * mark's shapes render — avoid stacking two marks.
  *
- * The ::before uses the SVG geometry as a CSS luminance/alpha mask.
- * Paint: color-mix(in srgb, var(--accent) 28%, transparent). Because
+ * The ::before uses the SVG geometry as a CSS luminance/alpha mask via
+ * the shorthand `mask: var(--m) center / contain no-repeat`. Paint:
+ * color-mix(in srgb, var(--accent) 28%, transparent). Because
  * var(--accent) resolves via the theme's light-dark() token, marks are
  * always on-brand in both light and dark — no media-query duplication.
  *
@@ -277,56 +294,47 @@ section.bg-ambient {
  * through; transparent = paint hidden. fill-opacity / stroke-opacity
  * grade each shape within the 28% accent ceiling.
  *
- * Safe peripheral slots:
+ * Safe peripheral slots (logical slide coordinates):
  *   Top-right band   x > 1100, y 68–118   header band right of text
  *   Right margin     x > 1250, y 70–640   clear of all content
  *   Bottom-right     x > 1100, y 595–652  above footer + pagination
  *   Bottom-left      x < 200,  y 595–652
+ *
+ * Two marks whose shapes span multiple corners and so use two pseudos:
+ *   bg-asterisk-scatter  ::before TR cluster · ::after BL cluster
+ *   bg-seeds             ::before top band   · ::after bottom band
  */
 
 /* bg-micro-tr — 9 micro circles, top-right header band. r 2–4.5. */
 section.bg-micro-tr::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 5.3cqi; right: 1cqi;
+  width: 6.4cqi; height: 4cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1192' cy='80' r='4.5' fill='white' fill-opacity='1'/><circle cx='1215' cy='74' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1240' cy='82' r='3' fill='white' fill-opacity='0.85'/><circle cx='1262' cy='75' r='2.5' fill='white' fill-opacity='0.8'/><circle cx='1206' cy='97' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1232' cy='100' r='3' fill='white' fill-opacity='0.8'/><circle cx='1256' cy='93' r='2' fill='white' fill-opacity='0.7'/><circle cx='1221' cy='113' r='3' fill='white' fill-opacity='0.75'/><circle cx='1248' cy='110' r='2' fill='white' fill-opacity='0.65'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1185 68 82 50'><circle cx='1192' cy='80' r='4.5' fill='white' fill-opacity='1'/><circle cx='1215' cy='74' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1240' cy='82' r='3' fill='white' fill-opacity='0.85'/><circle cx='1262' cy='75' r='2.5' fill='white' fill-opacity='0.8'/><circle cx='1206' cy='97' r='3.5' fill='white' fill-opacity='0.9'/><circle cx='1232' cy='100' r='3' fill='white' fill-opacity='0.8'/><circle cx='1256' cy='93' r='2' fill='white' fill-opacity='0.7'/><circle cx='1221' cy='113' r='3' fill='white' fill-opacity='0.75'/><circle cx='1248' cy='110' r='2' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537. */
 section.bg-tick-right::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 15.2cqi; right: 0.4cqi;
+  width: 2cqi; height: 27cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1250 195 25 345'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right.
- *
- * Implemented as a small absolutely-positioned ::before cropped to the
- * orbit's bounding box, NOT as an inset:0 ::before with a slide-spanning
- * accent-tinted background masked to a corner. The slide-spanning form
- * renders correctly in poppler but Chromium's vector PDF output of
- * mask-image isn't applied consistently by every PDF viewer (Skia /
- * PDFium / Preview render the unmasked background, producing a
- * vertical accent-tinted panel covering the corner half of the slide).
- *
- * With a small ::before, even a fully-failed mask shows only a tiny
- * corner-sized accent square — an acceptable degradation rather than
- * a slide-breaking artifact. The mask SVG's viewBox is cropped to the
- * orbit content's bounding box so the circles render at the right
- * scale inside the smaller box.
- *
- * If the broader SVG-mark bg-* family (bg-slash-tr, bg-asterisk-scatter,
- * bg-grid-micro, bg-thread-diagonal, bg-chevron-bl, etc.) needs the
- * same treatment, replicate this pattern in a follow-up PR. See
- * docs/references/gotchas.md → "Chromium PDF output of CSS mask-image
- * renders inconsistently across viewers". */
+ * Originally the prototype for the cropped-bbox ::before pattern; the
+ * rest of the mark family now follows it (see the section header
+ * above for the architectural rationale). */
 section.bg-orbit-br::before {
   content: '';
   position: absolute;
@@ -344,89 +352,142 @@ section.bg-orbit-br::before {
 /* bg-slash-tr — 5 parallel slash lines at 45°, top-right corner. */
 section.bg-slash-tr::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 6.4cqi; right: 1cqi;
+  width: 6.5cqi; height: 2.6cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1188' y1='112' x2='1201' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1204' y1='105' x2='1217' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><line x1='1220' y1='112' x2='1233' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='1236' y1='105' x2='1249' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.7'/><line x1='1252' y1='98' x2='1265' y2='85' stroke='white' stroke-width='1.5' stroke-opacity='0.6'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1185 82 83 33'><line x1='1188' y1='112' x2='1201' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1204' y1='105' x2='1217' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><line x1='1220' y1='112' x2='1233' y2='99' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='1236' y1='105' x2='1249' y2='92' stroke='white' stroke-width='1.5' stroke-opacity='0.7'/><line x1='1252' y1='98' x2='1265' y2='85' stroke='white' stroke-width='1.5' stroke-opacity='0.6'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-seeds — 12 elongated micro ellipses, three per corner, rotated. */
+/* bg-seeds — 12 elongated micro ellipses, three per corner, rotated.
+ * Shapes span all four corners, so the orbit-pattern bbox can't fully
+ * localise this mark. Split into top-band ::before (TL + TR clusters)
+ * and bottom-band ::after (BL + BR clusters). Mask failure degrades to
+ * two thin tinted strips top and bottom rather than a full-slide tint.
+ */
 section.bg-seeds::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 5.7cqi; left: 3.7cqi;
+  width: 95cqi; height: 2.4cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='47 73 1217 31'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
+}
+
+section.bg-seeds::after {
+  content: '';
+  position: absolute;
+  bottom: 5.2cqi; left: 2.6cqi;
+  width: 95.5cqi; height: 2.9cqi;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='33 616 1222 37'><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-pills-right — 4 horizontal pill shapes, far-right margin. */
 section.bg-pills-right::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 18.8cqi; right: 0.1cqi;
+  width: 2.5cqi; height: 17.6cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1247 240 32 225'><rect x='1252' y='243' width='24' height='7' rx='3.5' fill='white' fill-opacity='1'/><rect x='1255' y='314' width='20' height='7' rx='3.5' fill='white' fill-opacity='0.85'/><rect x='1250' y='385' width='26' height='7' rx='3.5' fill='white' fill-opacity='0.95'/><rect x='1253' y='455' width='22' height='7' rx='3.5' fill='white' fill-opacity='0.8'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-asterisk-scatter — asterisks + micro dots, opposing corners. */
+/* bg-asterisk-scatter — asterisks + micro dots, opposing corners.
+ * TR cluster goes in ::before, BL cluster in ::after. Each pseudo is
+ * cropped to its cluster's bbox so mask failure degrades to a small
+ * tinted patch at each corner rather than a slide-spanning panel.
+ */
 section.bg-asterisk-scatter::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 5.7cqi; right: 1.2cqi;
+  width: 5.9cqi; height: 2.7cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1206.5' y1='88' x2='1213.5' y2='88' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1211.8' y1='85' x2='1208.2' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1208.2' y1='85' x2='1211.8' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1238' y1='100' x2='1244' y2='100' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1242.5' y1='97.4' x2='1239.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1239.5' y1='97.4' x2='1242.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><circle cx='1228' cy='78' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1258' cy='85' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1195' cy='105' r='1.5' fill='white' fill-opacity='0.65'/><line x1='62' y1='628' x2='68' y2='628' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='66.5' y1='625.4' x2='63.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='63.5' y1='625.4' x2='66.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='107.5' y1='640' x2='112.5' y2='640' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='111.25' y1='637.8' x2='108.75' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='108.75' y1='637.8' x2='111.25' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><circle cx='85' cy='618' r='1.5' fill='white' fill-opacity='0.65'/><circle cx='142' cy='632' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1190 73 75 35'><line x1='1206.5' y1='88' x2='1213.5' y2='88' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1211.8' y1='85' x2='1208.2' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1208.2' y1='85' x2='1211.8' y2='91' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1238' y1='100' x2='1244' y2='100' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1242.5' y1='97.4' x2='1239.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><line x1='1239.5' y1='97.4' x2='1242.5' y2='102.6' stroke='white' stroke-width='1.5' stroke-opacity='0.85'/><circle cx='1228' cy='78' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1258' cy='85' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1195' cy='105' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
+}
+
+section.bg-asterisk-scatter::after {
+  content: '';
+  position: absolute;
+  bottom: 5.8cqi; left: 4.6cqi;
+  width: 6.7cqi; height: 2.5cqi;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='59 614 86 32'><line x1='62' y1='628' x2='68' y2='628' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='66.5' y1='625.4' x2='63.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='63.5' y1='625.4' x2='66.5' y2='630.6' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='107.5' y1='640' x2='112.5' y2='640' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='111.25' y1='637.8' x2='108.75' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><line x1='108.75' y1='637.8' x2='111.25' y2='642.2' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><circle cx='85' cy='618' r='1.5' fill='white' fill-opacity='0.65'/><circle cx='142' cy='632' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-thread-diagonal — 3 hairline slash strokes, top-right corner. */
 section.bg-thread-diagonal::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 5.2cqi; right: 0;
+  width: 4.1cqi; height: 2.1cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><line x1='1257' y1='90' x2='1278' y2='69' stroke='white' stroke-width='1' stroke-opacity='1'/><line x1='1244' y1='90' x2='1265' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1231' y1='90' x2='1252' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.7'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1228 66 52 27'><line x1='1257' y1='90' x2='1278' y2='69' stroke='white' stroke-width='1' stroke-opacity='1'/><line x1='1244' y1='90' x2='1265' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1231' y1='90' x2='1252' y2='69' stroke='white' stroke-width='1' stroke-opacity='0.7'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-bracket-right — two ] bracket marks, far-right margin. */
 section.bg-bracket-right::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 24cqi; right: 0.3cqi;
+  width: 1cqi; height: 10.5cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><path d='M1268,310 L1274,310 L1274,326 L1268,326' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><path d='M1268,422 L1274,422 L1274,438 L1268,438' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1265 307 11 134'><path d='M1268,310 L1274,310 L1274,326 L1268,326' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><path d='M1268,422 L1274,422 L1274,438 L1268,438' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-grid-micro — 4×4 dot grid, top-right, rightmost column edge-bleeds. */
+/* bg-grid-micro — 4×4 dot grid, top-right header band. The rightmost
+ * column was originally edge-bleeding (cx=1280, half off-slide); with
+ * the cropped-viewBox refactor it sits flush at the right edge inside
+ * the ::before box rather than half-clipping. Visual is otherwise
+ * identical. */
 section.bg-grid-micro::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  top: 5.3cqi; right: 0;
+  width: 3.1cqi; height: 3.5cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1244' cy='72' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='72' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='72' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='72' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='84' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='84' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='84' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='84' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='96' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='96' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='96' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='96' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='108' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='108' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='108' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='108' r='1.5' fill='white' fill-opacity='0.7'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1240 68 40 44'><circle cx='1244' cy='72' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='72' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='72' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='72' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='84' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='84' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='84' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='84' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='96' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='96' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='96' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='96' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1244' cy='108' r='1.5' fill='white' fill-opacity='1'/><circle cx='1256' cy='108' r='1.5' fill='white' fill-opacity='0.9'/><circle cx='1268' cy='108' r='1.5' fill='white' fill-opacity='0.8'/><circle cx='1280' cy='108' r='1.5' fill='white' fill-opacity='0.7'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-chevron-bl — 3 right-pointing chevrons, bottom-left corner. */
 section.bg-chevron-bl::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  bottom: 6.3cqi; left: 2.4cqi;
+  width: 3.9cqi; height: 1.4cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><polyline points='34,625 42,631 34,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><polyline points='52,625 60,631 52,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><polyline points='70,625 78,631 70,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='31 622 50 18'><polyline points='34,625 42,631 34,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='1'/><polyline points='52,625 60,631 52,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.8'/><polyline points='70,625 78,631 70,637' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.65'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 
