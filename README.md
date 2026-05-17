@@ -1,5 +1,7 @@
 # Lattice
 
+> **New here?** Read [INTRODUCTION.md](INTRODUCTION.md) first — a plain-English explanation of what Lattice is and who it's for. This README is the technical setup guide.
+
 A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
 
 Lattice produces decks where every slide is a deliberate layout — title,
