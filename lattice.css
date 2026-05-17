@@ -9729,7 +9729,7 @@ section.overflow {
  * All three inject `<img class="deck-logo" src="…">` as the first
  * child of each tagged section. Real DOM (rather than a `::before`
  * pseudo) so the logo composes with `::before`-based chrome like
- * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ * `mark-orbit`, `mark-asterisks`, `mark-grid`, etc.
  *
  * BUILD-TIME ONLY. The marp-vscode preview pane does NOT load
  * workspace `marp.config.js` plugins, so the logo does not appear
@@ -10265,69 +10265,98 @@ section.progress.dark .progress-fill[data-s="deferred"] {
   background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
 }
 
-/* === lib/base/base.decorations.css === */
-/* _backgrounds.css — peripheral atmospheric accents.
+/* === lib/base/base.treatments.css === */
+/* base.treatments.css — peripheral atmospheric accents.
  *
- * Extracted from lib/_legacy.css in Phase 6 of the destination map.
- * 27 utility classes (16 gradient accents + 11 SVG accent marks).
- * All colors go through var(--accent) so palette swap = background
- * color swap automatically.
+ * Renamed from base.decorations.css; the old bg-* class names are
+ * replaced by tint-* (gradient washes) and mark-* (graphic accents),
+ * with an at-* placement axis on tint-corner / tint-edge. See
+ * docs/references/treatments.md for the catalogue + composition rules
+ * and docs/notes/2026-05-17-treatments-rename.md for the rationale.
  *
  * Bundle position: AFTER lib/_legacy.css, BEFORE the universal /
  * semi-universal / diagram-overrides tail. Preserves the cascade
- * position these rules had at line ~1500 of the original _legacy.css
- * — any rule in _legacy.css that came after the BACKGROUND LIBRARY
- * banner (RESET, DIAGRAM TITLE SUPPRESSION, MERMAID overrides, etc.)
- * still comes after backgrounds because those stay in _legacy.css
- * and _backgrounds.css comes after _legacy.css in the bundle.
- *
- * Layer composability: 16 gradient classes use two slots (radial /
- * linear). SVG marks are slot-free — combine with any gradient, no
- * conflicts. See docs/references/backgrounds.md for the full
- * catalogue and constraints.
+ * position the bg-* rules had at line ~1500 of the original
+ * _legacy.css — any rule in _legacy.css that came after the
+ * TREATMENT LIBRARY banner (RESET, DIAGRAM TITLE SUPPRESSION, MERMAID
+ * overrides, etc.) still comes after treatments because those stay in
+ * _legacy.css and base.treatments.css comes after _legacy.css in the
+ * bundle.
  */
 
 /* ════════════════════════════════════════════════════════════════════════════
- * BACKGROUND LIBRARY
- * 27 utility classes (16 gradient accents + 11 SVG accent marks) for
- * peripheral atmospheric accents. All colors go through var(--accent) so
- * palette swap = background color swap automatically.
+ * TREATMENT LIBRARY
  *
- * Layer composability: 16 gradient classes use two slots (radial/linear).
- * SVG marks are slot-free — combine with any gradient, no conflicts.
- *   <!-- _class: content bg-vignette bg-micro-tr -->              gradient + mark
- *   <!-- _class: content bg-corner-tl bg-edge-right bg-seeds -->  two gradients + mark
+ * Two categories — tint (gradient washes, paint via background-image
+ * slots) and mark (graphic accents, paint via ::before pseudos, a
+ * box-shadow stack, or a stacked-radial-gradient slot depending on
+ * the mark's geometry). All colors go through var(--accent) so palette
+ * swap = treatment colour swap automatically.
+ *
+ * Layer composability — tints stack via two slots (--_bg-radial,
+ * --_bg-linear). Most marks paint via ::before and own no slot, so
+ * they compose freely with any tint. Two marks consume a slot:
+ *   - mark-seeds → --_bg-radial (12 stacked radial gradients, one
+ *     per dot; chosen over a mask because shapes span all four
+ *     corners and a wide ::before fails the PDFKit mask gotcha)
+ *   - mark-ticks / mark-pills → no slot, but paint via ::before +
+ *     box-shadow rather than a mask, because their mask SVGs
+ *     dropped unreliably in Apple PDFKit even after the orbit-
+ *     pattern cropped-bbox refactor
  *
  * Slot reference (gradient classes plus the seeds mark — other marks carry no slot)
- *   --_bg-radial  corner glows, vignette, spotlight, duotone, seeds
- *   --_bg-linear  edge washes, horizon, ground, sweep, ambient, frame
+ *   --_bg-radial  tint-corner, tint-vignette, tint-spotlight, tint-duotone, mark-seeds
+ *   --_bg-linear  tint-edge, tint-horizon, tint-ground, tint-sweep, tint-ambient, tint-frame
  *
- * See docs/references/backgrounds.md for the full catalogue and constraints.
+ *   <!-- _class: content tint-vignette mark-orbit -->                       tint + mark
+ *   <!-- _class: content tint-corner at-tl tint-edge at-right mark-seeds --> two tints + mark
+ *
+ * Placement axis (tint-corner, tint-edge) — both long and short forms
+ * are CSS aliases (`top-left` ≡ `at-tl`). Per-layer modifiers
+ * (`tint-at-*` / `mark-at-*`) override the universal `at-*` for the
+ * named layer only — escape hatch for composing two layers at
+ * different placements. v1 ships placement only for tint-corner and
+ * tint-edge; marks render at their per-treatment default home (the
+ * old bg-name's suffix). Adding placement to marks is a v2 feature.
+ *
+ * See docs/references/treatments.md for the full catalogue, the
+ * placement vocabulary, and the design constraints.
  * ════════════════════════════════════════════════════════════════════════════ */
 
 
 /* ── COMPOSITOR ───────────────────────────────────────────────────────
- * Assembles the two gradient slots into background-image. Each bg-*
+ * Assembles the two gradient slots into background-image. Each tint-*
  * class writes --_bg-radial or --_bg-linear; this rule combines them.
- * Combine any radial-slot class with any linear-slot class by stacking
+ * Combine any radial-slot tint with any linear-slot tint by stacking
  * both on the same slide — layers compose without extra authoring.
+ *
+ * Selector matches any tint-* or mark-* class. tint-at-* and mark-at-*
+ * (per-layer placement modifiers) also match harmlessly — they set no
+ * slot values so the compositor renders `none, none` if they're alone.
  */
-section[class*="bg-"] {
+section:where([class*="tint-"], [class*="mark-"]) {
   background-image: var(--_bg-radial, none), var(--_bg-linear, none);
 }
 
 
-/* ── CORNER GLOWS ─────────────────────────────────────────────────────
- * Radial ellipse anchored at a corner. The ellipse is sized so its
+/* ── TINTS · CORNER GLOWS ─────────────────────────────────────────────
+ * Radial ellipse anchored at one corner. The ellipse is sized so its
  * farthest edge reaches roughly the slide center — accent is present
  * at the corner, gone before it reaches the content zone.
+ *
+ * Placement-required: tint-corner alone does nothing; author must add
+ * at-tl / at-tr / at-bl / at-br (or the long form top-left etc., or
+ * the per-layer form tint-at-tl etc.). A build-time validator catches
+ * tint-corner without a placement modifier.
  *
  * Ellipse sizing at 1280×720 (16:9):
  *   62% h × 55% v = ~793px × ~396px — fills roughly the outer third
  *   of the slide from that corner before fading to zero.
  */
 
-section.bg-corner-tl {
+section.tint-corner.at-tl,
+section.tint-corner.top-left,
+section.tint-corner.tint-at-tl {
   --_bg-radial: radial-gradient(
     ellipse 62% 55% at 0% 0%,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10335,7 +10364,9 @@ section.bg-corner-tl {
   );
 }
 
-section.bg-corner-tr {
+section.tint-corner.at-tr,
+section.tint-corner.top-right,
+section.tint-corner.tint-at-tr {
   --_bg-radial: radial-gradient(
     ellipse 62% 55% at 100% 0%,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10343,7 +10374,9 @@ section.bg-corner-tr {
   );
 }
 
-section.bg-corner-bl {
+section.tint-corner.at-bl,
+section.tint-corner.bottom-left,
+section.tint-corner.tint-at-bl {
   --_bg-radial: radial-gradient(
     ellipse 62% 55% at 0% 100%,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10351,7 +10384,9 @@ section.bg-corner-bl {
   );
 }
 
-section.bg-corner-br {
+section.tint-corner.at-br,
+section.tint-corner.bottom-right,
+section.tint-corner.tint-at-br {
   --_bg-radial: radial-gradient(
     ellipse 62% 55% at 100% 100%,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10360,9 +10395,12 @@ section.bg-corner-br {
 }
 
 
-/* ── EDGE WASHES ──────────────────────────────────────────────────────
+/* ── TINTS · EDGE WASHES ──────────────────────────────────────────────
  * Linear gradient from one edge. Gone well before mid-slide so the
  * content zone is always on a clean surface.
+ *
+ * Placement-required: same contract as tint-corner. Author must add
+ * at-top / at-right / at-bottom / at-left (or long form / per-layer).
  *
  * Opacity profile: 10% at the physical edge → 0% at 35%.
  * A mid-stop at 12% is added 6% in from the edge to give the gradient
@@ -10371,7 +10409,9 @@ section.bg-corner-br {
  * rather than a deliberate accent.
  */
 
-section.bg-edge-top {
+section.tint-edge.at-top,
+section.tint-edge.top,
+section.tint-edge.tint-at-top {
   --_bg-linear: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10380,7 +10420,9 @@ section.bg-edge-top {
   );
 }
 
-section.bg-edge-bottom {
+section.tint-edge.at-bottom,
+section.tint-edge.bottom,
+section.tint-edge.tint-at-bottom {
   --_bg-linear: linear-gradient(
     to top,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10389,7 +10431,9 @@ section.bg-edge-bottom {
   );
 }
 
-section.bg-edge-left {
+section.tint-edge.at-left,
+section.tint-edge.left,
+section.tint-edge.tint-at-left {
   --_bg-linear: linear-gradient(
     to right,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10398,7 +10442,9 @@ section.bg-edge-left {
   );
 }
 
-section.bg-edge-right {
+section.tint-edge.at-right,
+section.tint-edge.right,
+section.tint-edge.tint-at-right {
   --_bg-linear: linear-gradient(
     to left,
     color-mix(in srgb, var(--accent) 12%, transparent) 0%,
@@ -10408,16 +10454,18 @@ section.bg-edge-right {
 }
 
 
-/* ── ATMOSPHERIC ──────────────────────────────────────────────────────
+/* ── TINTS · ATMOSPHERIC ──────────────────────────────────────────────
  * Full-canvas tonal effects. The gradient is still peripheral —
  * the center remains transparent — but the effect wraps all four
  * edges rather than originating from one point or one edge.
+ *
+ * Placement-agnostic: at-* on these is a no-op.
  */
 
 /* Vignette: accent-tinted perimeter, fully open at center.
  * The opaque stop begins at 55% radius so a 16:9 slide has
  * roughly a 700×400 clean zone in the middle. */
-section.bg-vignette {
+section.tint-vignette {
   --_bg-radial: radial-gradient(
     ellipse 88% 85% at center,
     transparent 0%,
@@ -10430,7 +10478,7 @@ section.bg-vignette {
 /* Spotlight: gentle reverse-vignette — center slightly warmer,
  * edges fully transparent. The accent is at most 7% so it reads
  * as warmth rather than color. */
-section.bg-spotlight {
+section.tint-spotlight {
   --_bg-radial: radial-gradient(
     ellipse 55% 50% at center,
     color-mix(in srgb, var(--accent) 7%, transparent) 0%,
@@ -10441,7 +10489,7 @@ section.bg-spotlight {
 /* Horizon: accent heaviest at the top edge, fades to nothing by 45%.
  * Simulates a light source above the frame — suits slides about
  * ambition, aspiration, or the view from the top floor. */
-section.bg-horizon {
+section.tint-horizon {
   --_bg-linear: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--accent) 11%, transparent) 0%,
@@ -10453,7 +10501,7 @@ section.bg-horizon {
 /* Ground: mirror of horizon — heaviest at bottom.
  * Suits slides that are closing arguments, summaries,
  * or anything that signals conclusion and landing. */
-section.bg-ground {
+section.tint-ground {
   --_bg-linear: linear-gradient(
     to top,
     color-mix(in srgb, var(--accent) 11%, transparent) 0%,
@@ -10463,19 +10511,21 @@ section.bg-ground {
 }
 
 
-/* ── MULTI-ACCENT ─────────────────────────────────────────────────────
+/* ── TINTS · MULTI-ACCENT ─────────────────────────────────────────────
  * Two or more gradient layers composed. Weight budget is split between
  * them so the total perceived ink stays equivalent to a single-gradient
  * pattern — each layer runs at ~8% rather than 12%.
- * These patterns own their slot exclusively (duotone/asterisk-scatter
- * own --_bg-radial; frame owns --_bg-linear) and cannot safely share it
+ * These patterns own their slot exclusively (duotone owns --_bg-radial;
+ * frame/sweep/ambient own --_bg-linear) and cannot safely share it
  * with another class in the same slot.
+ *
+ * All placement-agnostic.
  */
 
 /* Duotone: opposing corner pair. The two glows never overlap in the
  * center — they meet around mid-slide and both fade to transparent
  * before intersecting. Creates a natural diagonal axis. */
-section.bg-duotone {
+section.tint-duotone {
   --_bg-radial:
     radial-gradient(
       ellipse 55% 50% at 0% 0%,
@@ -10493,7 +10543,7 @@ section.bg-duotone {
  * the slide has a presence at every edge without any one side
  * dominating. The four gradients each reach 0% at 22% inset,
  * leaving the inner ~56% × ~56% completely clean. */
-section.bg-frame {
+section.tint-frame {
   --_bg-linear:
     linear-gradient(to bottom, color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
     linear-gradient(to top,    color-mix(in srgb, var(--accent)  8%, transparent) 0%, transparent 22%),
@@ -10504,7 +10554,7 @@ section.bg-frame {
 /* Sweep: diagonal accent wash from top-right to bottom-left.
  * The most directional pattern — suits decks about forward motion
  * or where the visual language should read left-to-right. */
-section.bg-sweep {
+section.tint-sweep {
   --_bg-linear: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 10%, transparent) 0%,
@@ -10517,7 +10567,7 @@ section.bg-sweep {
  * The safest option — a barely-there suggestion of color that
  * ensures the slide never reads as plain white. Use on content-dense
  * slides or wherever any stronger accent would compete. */
-section.bg-ambient {
+section.tint-ambient {
   --_bg-linear: linear-gradient(
     160deg,
     color-mix(in srgb, var(--accent) 7%, transparent) 0%,
@@ -10526,31 +10576,33 @@ section.bg-ambient {
 }
 
 
-/* ── SVG ACCENT MARKS ─────────────────────────────────────────────────
- * Architecture: one CSS layer per pattern — no gradient slot occupied.
- * Each mark is a small absolutely-positioned ::before (and ::after, for
- * marks whose shapes straddle multiple corners) with the SVG viewBox
- * cropped to the shapes' bounding box. The ::before is sized in cqi
- * (1cqi ≈ 12.8px on a 1280×720 slide) and positioned via top/right/
- * bottom/left rather than inset:0.
+/* ── MARKS ────────────────────────────────────────────────────────────
+ * Each mark is a small absolutely-positioned ::before (and ::after,
+ * for marks whose shapes straddle multiple corners) with the SVG
+ * viewBox cropped to the shapes' bounding box, OR a box-shadow stack
+ * for marks whose shapes repeat at evenly-spaced offsets, OR (for
+ * mark-seeds) 12 stacked radial-gradients in the --_bg-radial slot.
  *
- *   section.bg-*::before  mask-image: SVG + accent paint — the shapes
+ *   section.mark-*::before   mask-image: SVG + accent paint — the shapes
  *
- * Why the cropped-bbox shape, not inset:0:
- *   Chromium's vector PDF output of mask-image isn't applied
- *   consistently by every PDF viewer (Skia / PDFium / Apple PDFKit
- *   render the unmasked background, producing an accent-tinted panel
- *   covering whatever area the ::before occupied). With a cropped
- *   ::before, even a fully-failed mask shows only a small tinted patch
- *   the size of the mark itself — degradation rather than slide-
- *   breaking artifact. See docs/references/gotchas.md → "Chromium PDF
- *   output of CSS mask-image renders inconsistently across viewers".
+ * Why the cropped-bbox ::before (and the gradient/box-shadow escape
+ * hatches): Chromium's vector PDF output of CSS mask-image isn't
+ * applied consistently by Apple PDFKit / Skia / PDFium. With a
+ * cropped ::before, even a fully-failed mask shows only a small
+ * tinted patch the size of the mark itself — degradation rather than
+ * slide-breaking artifact. For mark-ticks / mark-pills the small-
+ * ::before mask still dropped on PDFKit, so they're rendered as
+ * box-shadow copies (no mask involved). For mark-seeds the four-
+ * corner geometry has no small bbox, so it renders as stacked radial
+ * gradients in --_bg-radial (gradients have no mask to drop).
  *
- * Marks carry no --_bg-radial or --_bg-linear value, so they combine
- * freely with any gradient class. Stack one gradient + one mark; both
- * render independently. Two marks on the same slide: both ::before
- * rules apply, but ::before is a singleton so only the last-defined
- * mark's shapes render — avoid stacking two marks.
+ * See docs/references/gotchas.md → "Chromium PDF output of CSS
+ * mask-image renders inconsistently across viewers".
+ *
+ * Marks (other than mark-seeds) carry no --_bg-radial or --_bg-linear
+ * value, so they combine freely with any tint. Two marks on the same
+ * slide: ::before is a singleton so only the last-defined mark's
+ * shapes render — avoid stacking two marks.
  *
  * The ::before uses the SVG geometry as a CSS luminance/alpha mask via
  * the shorthand `mask: var(--m) center / contain no-repeat`. Paint:
@@ -10568,19 +10620,15 @@ section.bg-ambient {
  *   Bottom-right     x > 1100, y 595–652  above footer + pagination
  *   Bottom-left      x < 200,  y 595–652
  *
- * Two marks whose shapes span multiple corners:
- *   bg-asterisk-scatter  ::before TR cluster · ::after BL cluster
- *                        (cropped tight to each corner's bbox)
- *   bg-seeds             special case — renders as 12 stacked
- *                        radial-gradients in the --_bg-radial slot
- *                        rather than a mask, because the four-corner
- *                        geometry can't be localised to 2 small
- *                        ::before/::after boxes. See the seeds rule
- *                        for the architectural rationale.
+ * v1 ships each mark at its default home (the old bg-name's suffix —
+ * mark-orbit defaults bottom-right, mark-chevron defaults bottom-left,
+ * etc.). at-* on a mark is silently ignored in v1. Adding mark
+ * placement is a v2 feature; see the rename proposal note.
  */
 
-/* bg-micro-tr — 9 micro circles, top-right header band. r 2–4.5. */
-section.bg-micro-tr::before {
+/* mark-micro — 9 micro circles, top-right header band. r 2–4.5.
+ * Default at-tr. */
+section.mark-micro::before {
   content: '';
   position: absolute;
   top: 5.3cqi; right: 1cqi;
@@ -10592,19 +10640,18 @@ section.bg-micro-tr::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537.
- * Painted as one ::before sized to a single tick + 4 box-shadow copies
- * offset vertically — no SVG mask. Apple PDFKit renders stroke-based
- * mask SVGs unreliably even at small ::before sizes (fill-based masks
- * like <rect> in bg-pills-right are fine; stroke-based <line> drops).
- * box-shadow is a paint operator, not a mask, so it renders
- * identically in every PDF viewer. The trade-off: uniform tick width
- * (the original SVG had 14–18px variations) and a single x-anchor
- * (the original had ±4px scatter). Both differences are imperceptible
- * at this size. Per-tick opacity grading from the original (1.0, 0.85,
- * 0.95, 0.8, 0.9) is preserved as accent-mix percentages.
+/* mark-ticks — 5 horizontal ticks, far-right margin. y 197–537.
+ * Default at-right. Painted as one ::before sized to a single tick +
+ * 4 box-shadow copies offset vertically — no SVG mask. Apple PDFKit
+ * renders stroke-based mask SVGs unreliably even at small ::before
+ * sizes; box-shadow is a paint operator, not a mask, so it renders
+ * identically in every PDF viewer. Per-tick opacity from the original
+ * (1.0, 0.85, 0.95, 0.8, 0.9) preserved as graded accent-mix %.
+ * Trade-off: uniform tick width (the original SVG had 14–18px
+ * variations) and a single x-anchor (the original scattered each tick
+ * ±4px), both imperceptible at this size.
  */
-section.bg-tick-right::before {
+section.mark-ticks::before {
   content: '';
   position: absolute;
   top: 15.33cqi;       /* tick 1 y (196.25 / 12.8) */
@@ -10620,11 +10667,11 @@ section.bg-tick-right::before {
     0 26.56cqi 0 0 color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
-/* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right.
- * Originally the prototype for the cropped-bbox ::before pattern; the
- * rest of the mark family now follows it (see the section header
- * above for the architectural rationale). */
-section.bg-orbit-br::before {
+/* mark-orbit — concentric rings + center dot + 3 satellites, bottom-right.
+ * Default at-br. The prototype for the cropped-bbox ::before pattern
+ * that the rest of the mask-based mark family follows; see the
+ * section header above for the architectural rationale. */
+section.mark-orbit::before {
   content: '';
   position: absolute;
   bottom: 6.3cqi;
@@ -10638,8 +10685,9 @@ section.bg-orbit-br::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-slash-tr — 5 parallel slash lines at 45°, top-right corner. */
-section.bg-slash-tr::before {
+/* mark-slashes — 5 parallel slash lines at 45°, top-right corner.
+ * Default at-tr. */
+section.mark-slashes::before {
   content: '';
   position: absolute;
   top: 6.4cqi; right: 1cqi;
@@ -10651,31 +10699,27 @@ section.bg-slash-tr::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-seeds — 12 elongated micro ellipses, three per corner.
- * Unlike the other marks, seeds renders as 12 stacked radial-gradients
- * in the --_bg-radial slot rather than an SVG mask. The orbit pattern
- * doesn't help here: shapes span all four corners, so the ::before
- * would need to be wide-but-thin to localise to a strip — and a
- * wide-but-thin ::before fails the same way an inset:0 ::before does
- * on Apple PDFKit / Skia (mask drops, full-strip background shows).
- * Native gradients have no mask to drop, so they render reliably in
- * every PDF viewer. Seeds is the only "mark" in this family that
- * consumes a gradient slot — it conflicts with other --_bg-radial
- * classes (corners, vignette, spotlight, duotone) but composes
- * cleanly with --_bg-linear classes (edges, horizon, ground, sweep,
- * ambient, frame).
+/* mark-seeds — 12 elongated micro ellipses, three per corner.
+ * Placement-agnostic. Renders as 12 stacked radial-gradients in the
+ * --_bg-radial slot rather than an SVG mask: the four-corner geometry
+ * can't be localised to a small bbox, so a wide ::before would fail
+ * the same way an inset:0 ::before does on Apple PDFKit (mask drops,
+ * full-strip background shows). Native gradients have no mask to drop.
+ *
+ * Trade-off: mark-seeds is the only "mark" that consumes the
+ * --_bg-radial slot, so it conflicts with corner glows, vignette,
+ * spotlight, duotone. Composes cleanly with --_bg-linear classes
+ * (edges, horizon, ground, sweep, ambient, frame). The original SVG
+ * used transform='rotate(...)' on each ellipse for a subtle scatter;
+ * radial gradients are axis-aligned so that rotation is dropped here.
+ * Imperceptible at this size.
  *
  * Position is expressed in % of slide (1280×720) to match the
- * original SVG cx/cy. Each ellipse's rx/ry maps to the gradient's
- * ellipse size in px; the inner 80% paints accent at 18–25%
- * (preserving the original fill-opacity 0.65–0.9 grading) and the
- * outer 20% fades to transparent for an antialiased edge.
- *
- * The original SVG used transform='rotate(...)' on each ellipse for a
- * subtle scatter feel; that rotation is dropped here since gradients
- * are axis-aligned. The change is barely perceptible at these sizes.
+ * original SVG cx/cy. Each gradient's inner 80% paints accent at
+ * 18–25% (preserving the original fill-opacity 0.65–0.9 grading) and
+ * the outer 20% fades to transparent for an antialiased edge.
  */
-section.bg-seeds {
+section.mark-seeds {
   --_bg-radial:
     radial-gradient(ellipse 2.5px 5px at 92.19% 12.22%, color-mix(in srgb, var(--accent) 25%, transparent) 80%, transparent 100%),
     radial-gradient(ellipse 2px   4px at 95.47% 11.11%, color-mix(in srgb, var(--accent) 21%, transparent) 80%, transparent 100%),
@@ -10691,18 +10735,14 @@ section.bg-seeds {
     radial-gradient(ellipse 2px   4px at 91.25% 89.58%, color-mix(in srgb, var(--accent) 18%, transparent) 80%, transparent 100%);
 }
 
-/* bg-pills-right — 4 horizontal pill shapes, far-right margin.
- * Painted as one ::before (a single pill) + 3 box-shadow copies offset
- * vertically. Same approach as bg-tick-right: Apple PDFKit drops mask
- * SVGs unreliably regardless of whether the shapes inside are <line
- * stroke> or <rect fill>; box-shadow is a paint operator, not a mask,
- * so it renders identically in every PDF viewer. border-radius on the
- * ::before propagates to the shadow copies so each pill is rounded.
- * Per-pill width variation from the original (20–26px) collapses to
- * one uniform width (~24px); opacity grading (1.0, 0.85, 0.95, 0.8)
- * preserved as graded accent-mix percentages.
+/* mark-pills — 4 horizontal pill shapes, far-right margin.
+ * Default at-right. Same box-shadow approach as mark-ticks:
+ * Apple PDFKit drops mask SVGs unreliably regardless of whether
+ * the shapes inside are <line stroke> or <rect fill>. border-radius
+ * on the ::before propagates to the shadow copies so each pill is
+ * rounded. Trade-off: uniform pill width (original SVG varied 20–26px).
  */
-section.bg-pills-right::before {
+section.mark-pills::before {
   content: '';
   position: absolute;
   top: 18.98cqi;            /* pill 1 y (243 / 12.8) */
@@ -10718,12 +10758,13 @@ section.bg-pills-right::before {
     0 16.56cqi 0 0 color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-/* bg-asterisk-scatter — asterisks + micro dots, opposing corners.
- * TR cluster goes in ::before, BL cluster in ::after. Each pseudo is
- * cropped to its cluster's bbox so mask failure degrades to a small
- * tinted patch at each corner rather than a slide-spanning panel.
+/* mark-asterisks — asterisks + micro dots, opposing corners.
+ * Placement-agnostic. TR cluster goes in ::before, BL cluster in
+ * ::after. Each pseudo is cropped to its cluster's bbox so mask
+ * failure degrades to a small tinted patch at each corner rather
+ * than a slide-spanning panel.
  */
-section.bg-asterisk-scatter::before {
+section.mark-asterisks::before {
   content: '';
   position: absolute;
   top: 5.7cqi; right: 1.2cqi;
@@ -10735,7 +10776,7 @@ section.bg-asterisk-scatter::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-section.bg-asterisk-scatter::after {
+section.mark-asterisks::after {
   content: '';
   position: absolute;
   bottom: 5.8cqi; left: 4.6cqi;
@@ -10747,8 +10788,9 @@ section.bg-asterisk-scatter::after {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-thread-diagonal — 3 hairline slash strokes, top-right corner. */
-section.bg-thread-diagonal::before {
+/* mark-threads — 3 hairline slash strokes, top-right corner.
+ * Default at-tr. */
+section.mark-threads::before {
   content: '';
   position: absolute;
   top: 5.2cqi; right: 0;
@@ -10760,8 +10802,9 @@ section.bg-thread-diagonal::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-bracket-right — two ] bracket marks, far-right margin. */
-section.bg-bracket-right::before {
+/* mark-brackets — two ] bracket marks, far-right margin.
+ * Default at-right. */
+section.mark-brackets::before {
   content: '';
   position: absolute;
   top: 24cqi; right: 0.3cqi;
@@ -10773,12 +10816,13 @@ section.bg-bracket-right::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-grid-micro — 4×4 dot grid, top-right header band. The rightmost
- * column was originally edge-bleeding (cx=1280, half off-slide); with
- * the cropped-viewBox refactor it sits flush at the right edge inside
- * the ::before box rather than half-clipping. Visual is otherwise
- * identical. */
-section.bg-grid-micro::before {
+/* mark-grid — 4×4 dot grid, top-right header band. Default at-tr.
+ * The rightmost column was originally edge-bleeding (cx=1280, half
+ * off-slide); with the cropped-viewBox refactor it sits flush at the
+ * right edge inside the ::before box rather than half-clipping.
+ * Visual is otherwise identical. A true fullbleed-grid variant is a
+ * follow-up feature. */
+section.mark-grid::before {
   content: '';
   position: absolute;
   top: 5.3cqi; right: 0;
@@ -10790,8 +10834,9 @@ section.bg-grid-micro::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-chevron-bl — 3 right-pointing chevrons, bottom-left corner. */
-section.bg-chevron-bl::before {
+/* mark-chevron — 3 right-pointing chevrons, bottom-left corner.
+ * Default at-bl. */
+section.mark-chevron::before {
   content: '';
   position: absolute;
   bottom: 6.3cqi; left: 2.4cqi;
@@ -10805,10 +10850,10 @@ section.bg-chevron-bl::before {
 
 
 /* ── RESET ────────────────────────────────────────────────────────────
- * Per-slide opt-out when a bg-* is set deck-wide and one slide
+ * Per-slide opt-out when a treatment is set deck-wide and one slide
  * needs a clean surface (full-bleed image, neutral chart page, TOC).
  */
-section.bg-none {
+section.treatment-none {
   --_bg-radial: none;
   --_bg-linear: none;
 }

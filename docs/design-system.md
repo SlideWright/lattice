@@ -247,7 +247,7 @@ Six categories:
 | Category | Variants |
 |---|---|
 | Mood (1) | `dark` |
-| Decoration (6) | `bg-none`, `bg-corner-tl`, `bg-orbit-br`, `bg-vignette`, `bg-edge-right`, `bg-thread-diagonal` |
+| Decoration (6) | `treatment-none`, `tint-corner at-tl`, `mark-orbit`, `tint-vignette`, `tint-edge at-right`, `mark-threads` |
 | Typography (2) | `with-period`, `no-period` |
 | Chrome (4) | `silent`, `no-header`, `no-footer`, `no-paginate` |
 | State (8) | `wip`, `draft`, `tbd`, `confidential`, `redacted`, `archived`, `pinned`, `revised` |

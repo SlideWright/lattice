@@ -154,7 +154,7 @@ caught by the hook instead of by reviewer eyeballs.
   any slide that uses `<!-- _class: X -->`, open
   `lib/components/X/X.docs.md` AND grep `examples/gallery.md` for a
   working example **in the same turn**. Same rule for base modifiers
-  (`bg-*`, `with-*`, `dark`, `numbered`, …): open
+  (`tint-*`, `mark-*`, `with-*`, `dark`, `numbered`, …): open
   `lib/base/base.docs.md` first. Do not author from memory of docs
   read earlier in the session. The docs name the slot syntax, the
   required nesting depth, the bullet shape, and the markdown footguns

@@ -12,9 +12,9 @@ header: "Lattice · Treatments Catalog"
 
 # The Treatments Catalog
 
-`Proposal Companion · 2026-05-17`
+`Visual Catalog · 2026-05-17`
 
-Every `bg-*` class rendered once — the visual material the `tint-*` / `mark-*` rename will operate on. Footers show the current name and the proposed new name side by side. Companion to `docs/notes/2026-05-17-treatments-rename.md`.
+Every treatment class rendered once — 12 tints (corner glows, edge washes, atmospheric, multi-accent) and 11 marks (circles, ticks, orbits, slashes, seeds, pills, asterisks, threads, brackets, grids, chevrons) plus 4 composition examples and a dark-canvas demo. Each footer carries the exact class spec used on the slide. See `docs/references/treatments.md` for the full catalogue and `docs/notes/2026-05-17-treatments-rename.md` for the design rationale.
 
 ---
 
@@ -28,45 +28,45 @@ Every `bg-*` class rendered once — the visual material the `tint-*` / `mark-*`
 
 ---
 
-<!-- _class: content bg-corner-tl -->
-<!-- _footer: "bg-corner-tl  →  tint-corner at-tl" -->
+<!-- _class: content tint-corner at-tl -->
+<!-- _footer: "tint-corner at-tl" -->
 
 `Tint · Corner Glow · Top-Left`
 
-## `bg-corner-tl`
+## `tint-corner at-tl`
 
 Radial ellipse anchored at the top-left corner. 12% peak accent, gone before reaching the content zone.
 
 ---
 
-<!-- _class: content bg-corner-tr -->
-<!-- _footer: "bg-corner-tr  →  tint-corner at-tr" -->
+<!-- _class: content tint-corner at-tr -->
+<!-- _footer: "tint-corner at-tr" -->
 
 `Tint · Corner Glow · Top-Right`
 
-## `bg-corner-tr`
+## `tint-corner at-tr`
 
 Same weight and fade profile, anchored at top-right.
 
 ---
 
-<!-- _class: content bg-corner-bl -->
-<!-- _footer: "bg-corner-bl  →  tint-corner at-bl" -->
+<!-- _class: content tint-corner at-bl -->
+<!-- _footer: "tint-corner at-bl" -->
 
 `Tint · Corner Glow · Bottom-Left`
 
-## `bg-corner-bl`
+## `tint-corner at-bl`
 
 Same profile, anchored at bottom-left.
 
 ---
 
-<!-- _class: content bg-corner-br -->
-<!-- _footer: "bg-corner-br  →  tint-corner at-br" -->
+<!-- _class: content tint-corner at-br -->
+<!-- _footer: "tint-corner at-br" -->
 
 `Tint · Corner Glow · Bottom-Right`
 
-## `bg-corner-br`
+## `tint-corner at-br`
 
 Same profile, anchored at bottom-right.
 
@@ -82,47 +82,47 @@ Same profile, anchored at bottom-right.
 
 ---
 
-<!-- _class: content bg-edge-top -->
-<!-- _footer: "bg-edge-top  →  tint-edge at-top" -->
+<!-- _class: content tint-edge at-top -->
+<!-- _footer: "tint-edge at-top" -->
 
 `Tint · Edge Wash · Top`
 
-## `bg-edge-top`
+## `tint-edge at-top`
 
 Linear gradient down from the top edge. 10% at the edge, transparent by 35%.
 
 ---
 
-<!-- _class: content bg-edge-right -->
-<!-- _footer: "bg-edge-right  →  tint-edge at-right" -->
+<!-- _class: content tint-edge at-right -->
+<!-- _footer: "tint-edge at-right" -->
 
 `Tint · Edge Wash · Right`
 
-## `bg-edge-right`
+## `tint-edge at-right`
 
 Wash bleeding in from the right edge. Same opacity profile, transparent by 30%.
 
 ---
 
-<!-- _class: content bg-edge-bottom -->
-<!-- _footer: "bg-edge-bottom  →  tint-edge at-bottom" -->
+<!-- _class: content tint-edge at-bottom -->
+<!-- _footer: "tint-edge at-bottom" -->
 
 `Tint · Edge Wash · Bottom`
 
-## `bg-edge-bottom`
+## `tint-edge at-bottom`
 
-Wash rising from the bottom edge. Mirrors `bg-edge-top`.
+Wash rising from the bottom edge. Mirrors `tint-edge at-top`.
 
 ---
 
-<!-- _class: content bg-edge-left -->
-<!-- _footer: "bg-edge-left  →  tint-edge at-left" -->
+<!-- _class: content tint-edge at-left -->
+<!-- _footer: "tint-edge at-left" -->
 
 `Tint · Edge Wash · Left`
 
-## `bg-edge-left`
+## `tint-edge at-left`
 
-Wash bleeding in from the left edge. Mirrors `bg-edge-right`.
+Wash bleeding in from the left edge. Mirrors `tint-edge at-right`.
 
 ---
 
@@ -136,45 +136,45 @@ Wash bleeding in from the left edge. Mirrors `bg-edge-right`.
 
 ---
 
-<!-- _class: content bg-vignette -->
-<!-- _footer: "bg-vignette  →  tint-vignette" -->
+<!-- _class: content tint-vignette -->
+<!-- _footer: "tint-vignette" -->
 
 `Tint · Atmospheric · Vignette`
 
-## `bg-vignette`
+## `tint-vignette`
 
 Accent-tinted perimeter, open center. Roughly a 700×400 clean zone in the middle of a 16:9 slide.
 
 ---
 
-<!-- _class: content bg-spotlight -->
-<!-- _footer: "bg-spotlight  →  tint-spotlight" -->
+<!-- _class: content tint-spotlight -->
+<!-- _footer: "tint-spotlight" -->
 
 `Tint · Atmospheric · Spotlight`
 
-## `bg-spotlight`
+## `tint-spotlight`
 
 Reverse vignette — accent warmer at center, transparent at edges. Caps at 7% so it reads as warmth rather than colour.
 
 ---
 
-<!-- _class: content bg-horizon -->
-<!-- _footer: "bg-horizon  →  tint-horizon" -->
+<!-- _class: content tint-horizon -->
+<!-- _footer: "tint-horizon" -->
 
 `Tint · Atmospheric · Horizon`
 
-## `bg-horizon`
+## `tint-horizon`
 
 Heaviest at the top edge, fades to nothing by 45%. Suits slides about aspiration, elevation, the view from the top floor.
 
 ---
 
-<!-- _class: content bg-ground -->
-<!-- _footer: "bg-ground  →  tint-ground" -->
+<!-- _class: content tint-ground -->
+<!-- _footer: "tint-ground" -->
 
 `Tint · Atmospheric · Ground`
 
-## `bg-ground`
+## `tint-ground`
 
 Mirror of horizon — heaviest at the bottom. Suits closing arguments, summaries, conclusions, landings.
 
@@ -190,45 +190,45 @@ Mirror of horizon — heaviest at the bottom. Suits closing arguments, summaries
 
 ---
 
-<!-- _class: content bg-duotone -->
-<!-- _footer: "bg-duotone  →  tint-duotone" -->
+<!-- _class: content tint-duotone -->
+<!-- _footer: "tint-duotone" -->
 
 `Tint · Multi-accent · Duotone`
 
-## `bg-duotone`
+## `tint-duotone`
 
 Opposing-corner pair — top-left + bottom-right at 9% each. The two glows meet around mid-slide and fade before intersecting.
 
 ---
 
-<!-- _class: content bg-frame -->
-<!-- _footer: "bg-frame  →  tint-frame" -->
+<!-- _class: content tint-frame -->
+<!-- _footer: "tint-frame" -->
 
 `Tint · Multi-accent · Frame`
 
-## `bg-frame`
+## `tint-frame`
 
 All four edges at half-weight (8% each, gone by 22% inset). Quiet all-round accent; no single side dominates.
 
 ---
 
-<!-- _class: content bg-sweep -->
-<!-- _footer: "bg-sweep  →  tint-sweep" -->
+<!-- _class: content tint-sweep -->
+<!-- _footer: "tint-sweep" -->
 
 `Tint · Multi-accent · Sweep`
 
-## `bg-sweep`
+## `tint-sweep`
 
 Diagonal accent wash from top-right to bottom-left. The most directional tint — suits forward motion, left-to-right reading.
 
 ---
 
-<!-- _class: content bg-ambient -->
-<!-- _footer: "bg-ambient  →  tint-ambient" -->
+<!-- _class: content tint-ambient -->
+<!-- _footer: "tint-ambient" -->
 
 `Tint · Multi-accent · Ambient`
 
-## `bg-ambient`
+## `tint-ambient`
 
 The lowest-key option — broad off-axis tint at 7%. A barely-there suggestion of colour that ensures the slide never reads as plain white.
 
@@ -244,122 +244,122 @@ The lowest-key option — broad off-axis tint at 7%. A barely-there suggestion o
 
 ---
 
-<!-- _class: content bg-micro-tr -->
-<!-- _footer: "bg-micro-tr  →  mark-micro  (default at-tr)" -->
+<!-- _class: content mark-micro -->
+<!-- _footer: "mark-micro" -->
 
 `Mark · Micro Circles · Top-Right`
 
-## `bg-micro-tr`
+## `mark-micro`
 
 Nine micro circles, radius 2–4.5, scattered across the top-right header band.
 
 ---
 
-<!-- _class: content bg-tick-right -->
-<!-- _footer: "bg-tick-right  →  mark-ticks  (default at-right)" -->
+<!-- _class: content mark-ticks -->
+<!-- _footer: "mark-ticks" -->
 
 `Mark · Ticks · Right Margin`
 
-## `bg-tick-right`
+## `mark-ticks`
 
-Five horizontal ticks in the far-right margin. Strokes vary 1–1.5 in opacity 0.8–1.
+Five horizontal ticks in the far-right margin. Painted as a `::before` plus four `box-shadow` copies — no mask — so it survives Apple PDFKit's mask-drop bug intact.
 
 ---
 
-<!-- _class: content bg-orbit-br -->
-<!-- _footer: "bg-orbit-br  →  mark-orbit  (default at-br)" -->
+<!-- _class: content mark-orbit -->
+<!-- _footer: "mark-orbit" -->
 
 `Mark · Orbit · Bottom-Right`
 
-## `bg-orbit-br`
+## `mark-orbit`
 
-Concentric rings, center dot, three satellite dots. Already uses the cropped-viewBox `::before` pattern that the rename will generalise to every mark.
+Concentric rings, center dot, three satellite dots. The prototype for the cropped-viewBox `::before` pattern shared by the rest of the mask-based mark family.
 
 ---
 
-<!-- _class: content bg-slash-tr -->
-<!-- _footer: "bg-slash-tr  →  mark-slashes  (default at-tr)" -->
+<!-- _class: content mark-slashes -->
+<!-- _footer: "mark-slashes" -->
 
 `Mark · Slashes · Top-Right`
 
-## `bg-slash-tr`
+## `mark-slashes`
 
 Five parallel 45° slashes in the top-right corner. Opacity steps down 1.0 → 0.6 along the cluster.
 
 ---
 
-<!-- _class: content bg-seeds -->
-<!-- _footer: "bg-seeds  →  mark-seeds  (placement-agnostic)" -->
+<!-- _class: content mark-seeds -->
+<!-- _footer: "mark-seeds" -->
 
 `Mark · Seeds · All Four Corners`
 
-## `bg-seeds`
+## `mark-seeds`
 
-Twelve elongated ellipses, three per corner, rotated. The first of two placement-agnostic marks.
+Twelve elongated ellipses, three per corner. Renders as 12 stacked radial-gradients in the `--_bg-radial` slot, not a mask — four-corner geometry has no small bbox, so the orbit-pattern escape doesn't help. Placement-agnostic; conflicts with corner glows and other `--_bg-radial` tints.
 
 ---
 
-<!-- _class: content bg-pills-right -->
-<!-- _footer: "bg-pills-right  →  mark-pills  (default at-right)" -->
+<!-- _class: content mark-pills -->
+<!-- _footer: "mark-pills" -->
 
 `Mark · Pills · Right Margin`
 
-## `bg-pills-right`
+## `mark-pills`
 
-Four horizontal pill shapes in the far-right margin. Widths vary 20–26.
+Four horizontal pill shapes in the far-right margin. Same `box-shadow` approach as `mark-ticks` — `border-radius` on the `::before` propagates to the shadow copies so each pill is rounded.
 
 ---
 
-<!-- _class: content bg-asterisk-scatter -->
-<!-- _footer: "bg-asterisk-scatter  →  mark-asterisks  (placement-agnostic)" -->
+<!-- _class: content mark-asterisks -->
+<!-- _footer: "mark-asterisks" -->
 
 `Mark · Asterisks · Opposing Corners`
 
-## `bg-asterisk-scatter`
+## `mark-asterisks`
 
-Asterisks plus micro dots at top-right AND bottom-left. The dual-corner geometry is why this mark stays placement-agnostic in the rename.
+Asterisks plus micro dots at top-right AND bottom-left. The dual-corner geometry is why this mark is placement-agnostic — the TR cluster lives in `::before`, the BL cluster in `::after`, each cropped to its own bbox.
 
 ---
 
-<!-- _class: content bg-thread-diagonal -->
-<!-- _footer: "bg-thread-diagonal  →  mark-threads  (default at-tr)" -->
+<!-- _class: content mark-threads -->
+<!-- _footer: "mark-threads" -->
 
 `Mark · Threads · Top-Right`
 
-## `bg-thread-diagonal`
+## `mark-threads`
 
 Three hairline diagonals (stroke 0.5) in the top-right corner. The pattern direction is diagonal — the placement is the corner.
 
 ---
 
-<!-- _class: content bg-bracket-right -->
-<!-- _footer: "bg-bracket-right  →  mark-brackets  (default at-right)" -->
+<!-- _class: content mark-brackets -->
+<!-- _footer: "mark-brackets" -->
 
 `Mark · Brackets · Right Margin`
 
-## `bg-bracket-right`
+## `mark-brackets`
 
 Two `]` bracket marks in the far-right margin. The most editorial of the marks.
 
 ---
 
-<!-- _class: content bg-grid-micro -->
-<!-- _footer: "bg-grid-micro  →  mark-grid  (default at-tr)" -->
+<!-- _class: content mark-grid -->
+<!-- _footer: "mark-grid" -->
 
 `Mark · Grid · Top-Right`
 
-## `bg-grid-micro`
+## `mark-grid`
 
 Four-by-four dot grid in the top-right header band. A true fullbleed-grid variant is a follow-up feature, not a rename concern.
 
 ---
 
-<!-- _class: content bg-chevron-bl -->
-<!-- _footer: "bg-chevron-bl  →  mark-chevron  (default at-bl)" -->
+<!-- _class: content mark-chevron -->
+<!-- _footer: "mark-chevron" -->
 
 `Mark · Chevrons · Bottom-Left`
 
-## `bg-chevron-bl`
+## `mark-chevron`
 
 Three right-pointing chevrons in the bottom-left corner. Opacity ramps 1.0 → 0.65.
 
@@ -375,19 +375,19 @@ Three right-pointing chevrons in the bottom-left corner. Opacity ramps 1.0 → 0
 
 ---
 
-<!-- _class: content bg-vignette bg-edge-right -->
-<!-- _footer: "bg-vignette bg-edge-right  →  tint-vignette tint-edge at-right" -->
+<!-- _class: content tint-vignette tint-edge at-right -->
+<!-- _footer: "tint-vignette tint-edge at-right" -->
 
 `Composition · Two tints in different slots`
 
 ## Radial + linear in one class list
 
-`bg-vignette` writes the radial slot, `bg-edge-right` writes the linear slot. The compositor rule assembles both into one `background-image` with two live layers.
+`tint-vignette` writes the radial slot, `tint-edge at-right` writes the linear slot. The compositor rule assembles both into one `background-image` with two live layers.
 
 ---
 
-<!-- _class: content bg-corner-tl bg-orbit-br -->
-<!-- _footer: "bg-corner-tl bg-orbit-br  →  tint-corner at-tl mark-orbit" -->
+<!-- _class: content tint-corner at-tl mark-orbit -->
+<!-- _footer: "tint-corner at-tl mark-orbit" -->
 
 `Composition · Tint plus mark`
 
@@ -397,8 +397,8 @@ The corner glow paints through the gradient slot; the orbit mark paints through 
 
 ---
 
-<!-- _class: content bg-horizon bg-seeds dark -->
-<!-- _footer: "bg-horizon bg-seeds dark  →  tint-horizon mark-seeds dark" -->
+<!-- _class: content tint-horizon mark-seeds dark -->
+<!-- _footer: "tint-horizon mark-seeds dark" -->
 
 `Composition · Dark canvas, two layers`
 
@@ -408,8 +408,8 @@ The corner glow paints through the gradient slot; the orbit mark paints through 
 
 ---
 
-<!-- _class: content bg-corner-tl bg-edge-right bg-micro-tr -->
-<!-- _footer: "bg-corner-tl bg-edge-right bg-micro-tr  →  tint-corner at-tl tint-edge at-right mark-micro" -->
+<!-- _class: content tint-corner at-tl tint-edge at-right mark-micro -->
+<!-- _footer: "tint-corner at-tl tint-edge at-right mark-micro" -->
 
 `Composition · Three layers, three slots`
 

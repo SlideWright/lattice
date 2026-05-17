@@ -12,7 +12,7 @@ that any component can opt into.
 | `base.elements.css` | Semantic HTML defaults (`section`, `h1`-`h5`, `p`, `strong`, `em`, `code`, `hr`, `ul`, `ol`, `blockquote`). Element selectors only. |
 | `base.modifiers.css` | Auto-detected chrome — eyebrow, subtitle, key-insight panel, below-note, annotation. Triggered by markdown patterns the author writes (no class needed). |
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
-| `base.decorations.css` | 27 decoration utility classes (`bg-corner-tl`, `bg-orbit-br`, `bg-vignette`, etc.) for peripheral atmospheric accents. |
+| `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
 
 ---
 
@@ -447,20 +447,22 @@ that must stay in lockstep — Marp build (`marp.config.js`:
 layouts strip the marker and add `class="state pass|warn|fail"` to the
 carrier element. CSS owns all the visual chrome from there.
 
-### Decoration backgrounds — `bg-*`
+### Treatments — `tint-*` and `mark-*`
 
-27 utility classes for peripheral atmospheric accents (gradient washes,
-SVG accent marks, vignettes). All palette-blind via `var(--accent)` so
-palette swap = background color swap.
+27 utility classes for peripheral atmospheric accents — 12 tints
+(gradient washes, vignettes) and 11 marks (SVG accent shapes), plus a
+`treatment-none` reset. `tint-corner` and `tint-edge` carry a placement
+axis (`at-tl`, `at-top`, etc.). All palette-blind via `var(--accent)`
+so palette swap = treatment colour swap.
 
 ```markdown
-<!-- _class: content bg-corner-tl -->
-<!-- _class: divider bg-orbit-br -->
-<!-- _class: closing bg-vignette -->
+<!-- _class: content tint-corner at-tl -->
+<!-- _class: divider mark-orbit -->
+<!-- _class: closing tint-vignette -->
 ```
 
-Available classes: `bg-none`, `bg-corner-tl`, `bg-orbit-br`,
-`bg-vignette`, `bg-edge-right`, `bg-thread-diagonal`, plus 21 more.
+Available classes: `treatment-none`, `tint-corner at-tl`, `mark-orbit`,
+`tint-vignette`, `tint-edge at-right`, `mark-threads`, plus 21 more.
 
 ### Custom logo
 
@@ -483,10 +485,10 @@ logo-on: all | title              # optional, default `all`
 ```
 
 A real DOM element (rather than a `::before` pseudo) is what lets
-the logo compose with every `bg-*` decoration — gradients
-(`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`, …) and
-SVG marks alike (`bg-orbit-br`, `bg-asterisk-scatter`,
-`bg-grid-micro`, `bg-chevron-bl`, …). Each layer paints
+the logo compose with every treatment — tints
+(`tint-sweep`, `tint-spotlight`, `tint-corner at-tl`, `tint-vignette`, …) and
+marks alike (`mark-orbit`, `mark-asterisks`,
+`mark-grid`, `mark-chevron`, …). Each layer paints
 independently.
 
 **Three render paths must agree:**

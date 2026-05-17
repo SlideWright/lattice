@@ -823,7 +823,7 @@ section.overflow {
  * All three inject `<img class="deck-logo" src="…">` as the first
  * child of each tagged section. Real DOM (rather than a `::before`
  * pseudo) so the logo composes with `::before`-based chrome like
- * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ * `mark-orbit`, `mark-asterisks`, `mark-grid`, etc.
  *
  * BUILD-TIME ONLY. The marp-vscode preview pane does NOT load
  * workspace `marp.config.js` plugins, so the logo does not appear

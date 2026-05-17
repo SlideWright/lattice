@@ -87,7 +87,7 @@ function readDeckLogoFrontMatter(src) {
  *
  * Real DOM injection (rather than a `::before` pseudo) is what lets
  * the logo compose with `::before`-based decorations like
- * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ * `mark-orbit`, `mark-asterisks`, `mark-grid`, etc.
  * Each chrome rule paints on its own render layer.
  *
  * Sibling: lattice-emulator.js requires this same function and calls

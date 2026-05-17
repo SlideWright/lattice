@@ -19,7 +19,7 @@ Open the relevant file before starting work. Only load what the current task nee
 | **Picking a component** by purpose (the *what kind of slide*) | [design-system.md §3](./design-system.md#3-the-7-functions) — function families table |
 | **Cross-cutting authoring patterns** (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered, etc.) | [../lib/base/base.docs.md](../lib/base/base.docs.md) |
 | Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 58 shipped components |
-| Adding a background accent (`bg-*` classes) | [references/backgrounds.md](./references/backgrounds.md) |
+| Adding a treatment — tint or mark (`tint-*` / `mark-*` classes, `at-*` placement) | [references/treatments.md](./references/treatments.md) |
 | Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |
 | Running the render pipeline (PDF/HTML/PPTX) | [references/pipeline.md](./references/pipeline.md) |
 | Comparing lattice-emulator.js vs marp-cli output | [references/audit.md](./references/audit.md) |
@@ -114,8 +114,8 @@ see [theming.md § Dark mode](./theming.md#dark-mode).
 Discreet top-right brand mark; the img is desaturated to a faint
 grayscale watermark via CSS `filter`, with brightness inverted on
 dark-canvas layouts so the mark adapts without per-author variants.
-Works on SVG, PNG, and JPEG. Composes with every `bg-*` decoration
-(gradient or SVG mark).
+Works on SVG, PNG, and JPEG. Composes with every treatment
+(`tint-*` or `mark-*`).
 
 | Goal | Front-matter |
 |---|---|

@@ -94,7 +94,34 @@ Each treatment's per-layer rule (`.tint-at-tl` / `.mark-at-tl`) appears AFTER th
 
 ---
 
-## Architectural reality — two mechanisms, one placement vocabulary
+## Architectural reality — three mechanisms, one placement vocabulary
+
+> **v3 (post-catalog-rebuild) update.** The catalog deck forced a third
+> rendering mechanism into the design. v2 said "all marks refactor to the
+> orbit pattern (mask-based `::before` with a cropped viewBox)" and that the
+> small bbox would localise any mask-drop failure. That mitigates blast
+> radius for most marks, but it doesn't actually prevent the mask from
+> dropping — Apple PDFKit ignores certain Chromium-emitted mask constructs
+> regardless of ::before size, regardless of whether the SVG uses `<line
+> stroke>` or `<rect fill>`. Three marks survived the catalog only by
+> dropping the mask entirely:
+> - `mark-ticks`, `mark-pills` → `::before` + `box-shadow` copies (no mask)
+> - `mark-seeds` → 12 stacked `radial-gradient` values in `--_bg-radial`
+>   slot (no mask, no `::before`)
+>
+> The rename note's two-mechanism story is preserved below for the
+> tint-vs-mask design rationale, but the catalog of mechanisms in
+> practice is:
+>
+> | Mechanism | Used by | Why |
+> |---|---|---|
+> | Gradient slot (no mask) | All `tint-*` + `mark-seeds` | Native PDF, never drops |
+> | Cropped-bbox `::before` mask | 8 marks (orbit, micro, slashes, asterisks, threads, brackets, grid, chevron) | Compact failure mode if mask drops |
+> | `::before` + `box-shadow` stack | `mark-ticks`, `mark-pills` | Mask still dropped on PDFKit; geometry maps cleanly to repeated shapes |
+>
+> Documented in `docs/references/gotchas.md` → "Chromium PDF output of CSS
+> `mask-image` renders inconsistently across viewers" and in
+> `docs/references/treatments.md` → "Mark rendering".
 
 The `tint-*` and `mark-*` categories paint through completely different CSS mechanisms today. v1's implementation sketch only covered the `::before` case; v2 makes the two-mechanism design explicit so the rename PR can ship both correctly.
 
@@ -374,11 +401,19 @@ mark refactor; the rename alone would be a half-day.
 - [x] Migration strategy agreed (hard rename, no alias period)
 - [x] Rename table reviewed in detail (treatment-by-treatment, v2 corrections applied)
 - [x] Default placement per placement-aware treatment confirmed (per-treatment, matches current single-variant home; `tint-corner` / `tint-edge` are placement-required)
-- [x] Architectural reality acknowledged (two mechanisms; `mark-*` refactor to orbit pattern is part of the rename PR)
+- [x] Architectural reality acknowledged (three mechanisms — gradient slot, cropped-bbox mask, box-shadow stack — see v3 update above)
 - [x] `mark-grid` resolution agreed (default `at-tr`, refactored alongside the rest)
-- [x] Refactor sequencing agreed (single PR — rename + mark refactor together)
-- [ ] Implementation PR opened (`claude/treatments-rename-*`)
-- [ ] All example decks migrated and rebuilt
-- [ ] Docs swept
-- [ ] CHANGELOG breaking-change entry
-- [ ] Gotchas entry pointing here + updated mask-rendering note
+- [x] Refactor sequencing agreed (rename shipped on the proposal branch — one PR, not two)
+- [x] CSS source renamed: `lib/base/base.decorations.css` → `lib/base/base.treatments.css`
+- [x] All 27 classes renamed + `at-*` placement axis wired for `tint-corner` and `tint-edge`
+- [x] Build tool (`tools/build-css.js`) updated to read the new source
+- [x] All example decks migrated and rebuilt (`gallery.md`, `treatments-catalog.md`, `custom-logo.md`)
+- [x] Docs swept (`treatments.md`, `base.docs.md`, `design-system.md`, `skill.md`, `CLAUDE.md`)
+- [x] CHANGELOG breaking-change entry
+- [x] Gotchas entry added — "Chromium PDF output of CSS `mask-image` renders inconsistently across viewers"
+
+### Deferred to a v2 of the rename
+
+- **Mark placement axis.** v1 ships each mark at its default home only (the position the old `bg-` suffix encoded). Writing `at-*` alongside a mark is silently ignored today. Adding placement requires per-mark, per-placement rules (or per-mark custom-property anchors) and is a meaningful design exercise for the asymmetric repeat marks (`mark-ticks`, `mark-pills`, `mark-brackets`) — their "axis of repetition" doesn't trivially flip from `at-right` to `at-left` or rotate to `at-top`. Picked up when a real new mark variant lands and forces the conversation.
+- **Build-time validator for placement-required tints.** `tint-corner` and `tint-edge` paint nothing without `at-*`; a validator should fail the build if either appears without a placement modifier. Today it just silently no-ops, which is the same failure mode as v0. Cheap to add but deferred so the rename PR doesn't grow further.
+- **Lefthook pre-commit hook for leftover `bg-*` strings.** Catches author drift after the hard rename. Defer; the search-and-replace migration table in the rename note + CHANGELOG covers the same ground.
