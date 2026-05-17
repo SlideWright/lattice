@@ -11,9 +11,9 @@ logo: ./acme-logo.svg
 
 # Custom Logo
 
-`Lattice · A discreet brand mark in two lines of front matter.`
+`Lattice · A discreet brand mark in one line of front matter.`
 
-A theme-aware silhouette in the top-right corner — auto-adapting to dark and light canvases without per-author variants.
+A grayscale watermark in the top-right corner — auto-adapting brightness so the mark stays legible on dark or light canvases without per-author variants.
 
 ---
 
@@ -21,9 +21,9 @@ A theme-aware silhouette in the top-right corner — auto-adapting to dark and l
 
 ## How it works.
 
-The image becomes a CSS `mask-image`. Lattice paints the silhouette in `currentColor` at watermark opacity, so the mark inherits whatever ink the active slide uses — white on the dark title canvas, dark on body slides over a light theme.
+A build-stage rewriter injects an `img` element with class `deck-logo` as the first child of every selected section. CSS desaturates it via `filter: grayscale(1)` and tunes brightness per canvas: darker on light themes, brighter on dark themes.
 
-One rule in `lattice.css` covers SVG, PNG, and JPEG. No per-author light/dark variants required.
+One CSS rule covers SVG, PNG, and JPEG. No per-author light/dark variants required.
 
 ---
 
@@ -31,9 +31,7 @@ One rule in `lattice.css` covers SVG, PNG, and JPEG. No per-author light/dark va
 
 ## How it lands in the DOM.
 
-A small Marpit-stage rewriter injects `<img class="deck-logo" src="…">` as the first child of every selected `<section>` — same shape Marp uses for `<header>` and `<footer>`. CSS positions it absolutely top-right and applies the silhouette via `mask-image` on the img's own src.
-
-A real DOM element (rather than a `::before` pseudo) is what lets the logo compose with `::before`-based chrome like `bg-orbit-br`, `bg-grid-micro`, or `bg-asterisk-scatter`. Each decoration paints on its own layer.
+Same shape Marp uses for `header` and `footer`: a real DOM element, absolutely positioned, removed from flow. A real element rather than a `::before` pseudo is what lets the logo compose with `::before`-based chrome like the SVG-mark backgrounds (`bg-orbit-br`, `bg-grid-micro`, `bg-asterisk-scatter`). Each decoration paints on its own layer.
 
 ```yaml
 logo: ./acme-logo.svg
@@ -41,7 +39,7 @@ logo-style: auto | brand          # optional, default `auto`
 logo-on: all | title              # optional, default `all`
 ```
 
-⚠️ Build-time only — the directive does **not** render in the marp-vscode preview, because the extension doesn't load workspace `marp.config.js` plugins. The published-HTML path (`lattice-runtime.js`) restores it for any deck served from a web origin.
+⚠️ Build-time only. The directive does **not** render in the marp-vscode preview pane because the extension doesn't load workspace `marp.config.js` plugins.
 
 ---
 
@@ -49,8 +47,8 @@ logo-on: all | title              # optional, default `all`
 
 ## When to use which style.
 
-- **`auto` (default).** Silhouette painted in `currentColor` at 15% opacity. Quiet brand chrome that harmonises with any theme. Best for marks you want present but not loud — a watermark, not a statement.
-- **`brand`.** Original colours preserved on a soft surface plate (`var(--bg-alt)` at 70% with a slight backdrop blur). Best for logos whose colours carry meaning — government insignia, university crests, marks that *are* the brand.
+- **Auto (default).** A faint grayscale watermark, brightness inverted on dark-canvas layouts so the mark stays legible on every theme. Best for marks you want present but not loud — a watermark, not a statement.
+- **Brand.** Original colours preserved on a soft surface plate. Best for logos whose colours carry meaning — government insignia, university crests, marks that *are* the brand.
 
 ---
 
@@ -58,21 +56,19 @@ logo-on: all | title              # optional, default `all`
 
 ## Body slide on a light canvas with `bg-sweep`.
 
-The watermark renders here too, painted in `currentColor` against the body canvas — typically dark ink on a light background.
+The watermark darkens automatically on light canvases. Same SVG, same rule — the filter just inverts brightness based on the layout class.
 
-Same SVG. Same rule. Different tone. The mask gets recoloured by the cascade, so every theme is covered without authoring a second asset. Gradient backgrounds (`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`, …) compose cleanly with the logo.
+Gradient backgrounds (`bg-sweep`, `bg-spotlight`, `bg-vignette`, the corner gradients) all compose cleanly with the logo because they paint on the section background, not through `::before`.
 
 ---
 
 <!-- _class: bg-orbit-br -->
 
-## SVG-mark background + logo coexist.
+## SVG-mark background and logo coexist.
 
-`bg-orbit-br` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `<img>` element, so it sits on a different render layer and the two compose without contest.
+`bg-orbit-br` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `img` element, so it sits on a different render layer.
 
-Every `bg-*` class — gradients (`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`) and SVG marks (`bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, `bg-chevron-bl`, …) — composes with the logo.
-
----
+Every `bg-` class — gradients and SVG marks alike — composes with the logo.
 
 ---
 
@@ -81,4 +77,4 @@ Every `bg-*` class — gradients (`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg
 
 `Lattice · custom logo`
 
-## Two lines of front matter. One CSS rule. Every theme.
+## One line of front matter. One CSS rule. Every theme.
