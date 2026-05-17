@@ -21,6 +21,8 @@
  * Chrome reservation (top/bottom 88px) is intentionally preserved so header
  * and footer never collide with content. */
 section.compact {
+  --sp-3xs: 0.1171875cqi;
+  --sp-2xs: 0.234375cqi;
   --sp-xs: 0.46875cqi;
   --sp-sm: 0.9375cqi;
   --sp-md: 1.40625cqi;
@@ -32,6 +34,8 @@ section.compact {
 /* ── loose ──────────────────────────────────────────────────────────────
  * More breathing room. Inverse of compact. */
 section.loose {
+  --sp-3xs: 0.1953125cqi;
+  --sp-2xs: 0.390625cqi;
   --sp-xs: 0.78125cqi;
   --sp-sm: 1.5625cqi;
   --sp-md: 2.34375cqi;

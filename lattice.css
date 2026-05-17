@@ -93,7 +93,7 @@
    * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
    * At HD (1280px) these resolve to the original px values exactly.
    * At 4K (3840px) they triple automatically — no extra rules needed. */
-  --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
+  --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
   /* ── Font sizes (cqi) ────────────────────────────────────────────── */
   --fs-label:1.015625cqi; --fs-xs:0.9375cqi; --fs-sm:1.171875cqi; --fs-body:1.25cqi; --fs-md:1.40625cqi;
@@ -3243,15 +3243,15 @@ section.image-chamber.full.mirror p:last-of-type {
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
   --journey-section-fg:   var(--on-accent);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
-  --journey-task-fg:      var(--fg);
-  --journey-timeline:     color-mix(in srgb, var(--fg) 55%, transparent);
-  --journey-plumb:        color-mix(in srgb, var(--fg) 50%, transparent);
+  --journey-task-fg:      var(--text-body);
+  --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
+  --journey-plumb:        color-mix(in srgb, var(--text-body) 50%, transparent);
   --journey-face-bg:      var(--bg);
   /* All journey tokens that resolve to a half-transparent fg use the
    * `srgb` color-mix space — Chromium 1194 (Playwright build that runs
    * the PDF rasterizer) silently drops `oklab` color-mix(... transparent)
    * in stroke/border-color/background contexts. */
-  --journey-axis:         color-mix(in srgb, var(--fg) 32%, transparent);
+  --journey-axis:         color-mix(in srgb, var(--text-body) 32%, transparent);
 
   /* Per-row height in the mood band. Drives both the band's total
    * height (5 rows = 5 × this) and the plumb-line length calc. Smaller
@@ -3293,7 +3293,7 @@ section.journey .journey-legend {
   margin: 0;
   padding: 0;
   font-size: var(--fs-sm);
-  color: var(--fg-muted, var(--fg));
+  color: var(--text-muted, var(--text-body));
 }
 section.journey .journey-actor {
   display: inline-flex;
@@ -3339,7 +3339,7 @@ section.journey .journey-mood-legend {
   margin: 0;
   padding: 0;
   font-size: var(--fs-xs);
-  color: var(--fg-muted, var(--fg));
+  color: var(--text-muted, var(--text-body));
   letter-spacing: 0.02em;
 }
 section.journey .journey-mood-key {
@@ -3438,7 +3438,7 @@ section.journey .journey-task {
   min-height: 4.375cqi;
   font-size: var(--fs-sm);
   text-align: center;
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 8%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text-body) 8%, transparent);
 }
 /* Inset top-left corner — no overhang. The dot's own letter avatar is
  * the actor identifier; no white ring is needed to lift it off the chip. */
@@ -3534,7 +3534,7 @@ section.journey .journey-face {
   width: 2.8125cqi;
   height: 2.8125cqi;
   color: var(--mood-color);
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent));
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--text-body) 10%, transparent));
 }
 section.journey .journey-mood[data-mood="5"] { --mood-color: var(--journey-mood-5); }
 section.journey .journey-mood[data-mood="4"] { --mood-color: var(--journey-mood-4); }
@@ -3645,16 +3645,16 @@ section.journey.curve .journey-curve {
    * scale survives non-uniform viewBox stretching. */
 }
 section.journey.curve .journey-curve polyline {
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--fg) 6%, transparent));
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--text-body) 6%, transparent));
 }
 section.journey.curve .journey-curve .journey-curve-grid {
   /* `stroke="currentColor"` on the line element resolves via the
-   * computed `color`. Setting `color: var(--fg)` here propagates to the
+   * computed `color`. Setting `color: var(--text-body)` here propagates to the
    * currentColor binding; `opacity` fades to a subtle ruled grid.
    * (Avoid setting `stroke:` directly via CSS — the PDF rasterizer
    * silently drops CSS-applied stroke on bare SVG line elements that
    * already carry a `stroke=` attribute.) */
-  color: var(--fg);
+  color: var(--text-body);
   opacity: 0.32;
 }
 
@@ -3704,7 +3704,7 @@ section.journey .journey-lane-label {
   padding: 0 var(--sp-md) 0 0;
   display: flex;
   align-items: center;
-  color: var(--fg);
+  color: var(--text-body);
   position: relative;
   padding-left: var(--sp-md);
 }
@@ -6004,7 +6004,7 @@ section.principles ol > li {
   grid-template-columns:auto 1fr;
   column-gap:var(--sp-lg);
   align-items:center;
-  font-family:var(--font-display, var(--font-sans));
+  font-family:var(--font-display, var(--font-body));
   font-size:clamp(var(--fs-md), 11cqh, var(--fs-2xl));
   font-weight:500;
   line-height:var(--lh-snug);
@@ -6277,14 +6277,14 @@ section.quadrant .quadrant-split[data-kind="target"] {
 /* ── Axis labels + corner ticks ───────────────────────────────────────── */
 section.quadrant .quadrant-axis-name {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 section.quadrant .quadrant-tick {
   fill: var(--text-muted);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 8px;
   font-weight: 500;
 }
@@ -6292,7 +6292,7 @@ section.quadrant .quadrant-tick {
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
 section.quadrant .quadrant-label {
   fill: var(--cell-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -6317,7 +6317,7 @@ section.quadrant .quadrant-dot {
 }
 section.quadrant .quadrant-dot-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
   paint-order: stroke;
@@ -6333,7 +6333,7 @@ section.quadrant .quadrant-bubble {
   stroke-width: 1.5;
 }
 section.quadrant .quadrant-bubble-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 700;
 }
@@ -6346,7 +6346,7 @@ section.quadrant .quadrant-bubble-value[data-pos="above"] {
 }
 section.quadrant .quadrant-bubble-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
   paint-order: stroke;
@@ -6391,7 +6391,7 @@ section.quadrant .quadrant-hull-line {
 }
 section.quadrant .quadrant-cohort-label {
   fill: var(--cell-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -6429,7 +6429,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
   border: 1px solid var(--cell-ink);
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: var(--fs-xs);
   color: var(--text-muted);
 }
@@ -6437,7 +6437,7 @@ section.quadrant .quadrant-legend .quadrant-legend-count {
 /* ── Threshold variant: target badges at the axis crossings ───────────── */
 section.quadrant .quadrant-target-badge {
   fill: var(--quadrant-target);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 9px;
   font-weight: 700;
 }
@@ -6622,13 +6622,13 @@ section.radar .radar-spoke {
 /* ── Axis + tick labels ───────────────────────────────────────────────── */
 section.radar .radar-axis-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 9px;
   font-weight: 600;
 }
 section.radar .radar-tick {
   fill: var(--text-muted);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 6.5px;
   font-weight: 500;
 }
@@ -6742,7 +6742,7 @@ section.radar .radar-sector-mean {
 }
 section.radar .radar-sector-label {
   fill: var(--series-color);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -7703,7 +7703,7 @@ section.roadmap.horizons .horizon-eyebrow {
   color:var(--phase-accent, var(--accent));
 }
 section.roadmap.horizons .horizon-title {
-  font-family:var(--font-serif);
+  font-family:var(--font-display);
   font-size:var(--fs-md);
   font-weight:700;
   color:var(--text-heading);
@@ -7759,7 +7759,7 @@ section.roadmap.swimlane tbody tr > td:first-child {
   border-bottom:1px solid var(--border);
   border-right:0;
   border-radius:var(--radius-md) 0 0 var(--radius-md);
-  font-family:var(--font-serif);
+  font-family:var(--font-display);
   font-weight:700;
   color:var(--text-heading);
   font-size:var(--fs-md);
@@ -10885,6 +10885,8 @@ section.treatment-none {
  * Chrome reservation (top/bottom 88px) is intentionally preserved so header
  * and footer never collide with content. */
 section.compact {
+  --sp-3xs: 0.1171875cqi;
+  --sp-2xs: 0.234375cqi;
   --sp-xs: 0.46875cqi;
   --sp-sm: 0.9375cqi;
   --sp-md: 1.40625cqi;
@@ -10896,6 +10898,8 @@ section.compact {
 /* ── loose ──────────────────────────────────────────────────────────────
  * More breathing room. Inverse of compact. */
 section.loose {
+  --sp-3xs: 0.1953125cqi;
+  --sp-2xs: 0.390625cqi;
   --sp-xs: 0.78125cqi;
   --sp-sm: 1.5625cqi;
   --sp-md: 2.34375cqi;

@@ -129,13 +129,13 @@ section.radar .radar-spoke {
 /* ── Axis + tick labels ───────────────────────────────────────────────── */
 section.radar .radar-axis-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 9px;
   font-weight: 600;
 }
 section.radar .radar-tick {
   fill: var(--text-muted);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 6.5px;
   font-weight: 500;
 }
@@ -249,7 +249,7 @@ section.radar .radar-sector-mean {
 }
 section.radar .radar-sector-label {
   fill: var(--series-color);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;

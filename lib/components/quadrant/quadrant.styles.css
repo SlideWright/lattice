@@ -153,14 +153,14 @@ section.quadrant .quadrant-split[data-kind="target"] {
 /* ── Axis labels + corner ticks ───────────────────────────────────────── */
 section.quadrant .quadrant-axis-name {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 section.quadrant .quadrant-tick {
   fill: var(--text-muted);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 8px;
   font-weight: 500;
 }
@@ -168,7 +168,7 @@ section.quadrant .quadrant-tick {
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
 section.quadrant .quadrant-label {
   fill: var(--cell-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -193,7 +193,7 @@ section.quadrant .quadrant-dot {
 }
 section.quadrant .quadrant-dot-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
   paint-order: stroke;
@@ -209,7 +209,7 @@ section.quadrant .quadrant-bubble {
   stroke-width: 1.5;
 }
 section.quadrant .quadrant-bubble-value {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 700;
 }
@@ -222,7 +222,7 @@ section.quadrant .quadrant-bubble-value[data-pos="above"] {
 }
 section.quadrant .quadrant-bubble-label {
   fill: var(--text-heading);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
   paint-order: stroke;
@@ -267,7 +267,7 @@ section.quadrant .quadrant-hull-line {
 }
 section.quadrant .quadrant-cohort-label {
   fill: var(--cell-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -305,7 +305,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
   border: 1px solid var(--cell-ink);
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: var(--fs-xs);
   color: var(--text-muted);
 }
@@ -313,7 +313,7 @@ section.quadrant .quadrant-legend .quadrant-legend-count {
 /* ── Threshold variant: target badges at the axis crossings ───────────── */
 section.quadrant .quadrant-target-badge {
   fill: var(--quadrant-target);
-  font-family: var(--font-mono, var(--font-sans));
+  font-family: var(--font-mono, var(--font-body));
   font-size: 9px;
   font-weight: 700;
 }

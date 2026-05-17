@@ -42,35 +42,27 @@ const EXTERNAL_TOKEN_ALLOWLIST = new Set([
   '--marp-pre',
 ]);
 
-// Pre-existing unresolved tokens, baselined when this test landed. Each
-// entry is a real bug of the same class as the --cat-* regression (token
-// referenced but never defined anywhere). The test enforces this set as
-// an exact match — adding a NEW unresolved token fails the test
-// (catching new regressions immediately); fixing one of these without
+// Pre-existing unresolved tokens, baselined when a token slips through
+// without an obvious fix. The test enforces exact-match — adding a NEW
+// unresolved token fails (catches new regressions); fixing one without
 // removing it from the set also fails (forces the allowlist to shrink).
 //
-// Disposition for each:
-//   --fg          → 22 refs in lattice.css; canonical is --text-body /
-//                   --text-heading / --text-display depending on context.
-//                   Mechanical substitution risks visual drift; needs
-//                   per-call-site design review.
-//   --font-sans   → 26 refs; should be --font-body (the defined family).
-//   --font-serif  → 5 refs; should be --font-display.
-//   --sp-2xs      → 4 refs; --sp-xs is the smallest defined step. The
-//                   "2xs" and "3xs" names suggest the design wanted even
-//                   smaller steps that were never added to the spacing
-//                   scale. Either add --sp-2xs/--sp-3xs to lattice.css
-//                   :root or rewrite the call sites to use --sp-xs.
-//   --sp-3xs      → 2 refs; same disposition as --sp-2xs.
+// Currently empty. The five entries from the initial baseline
+// (--fg, --font-sans, --font-serif, --sp-2xs, --sp-3xs) were all
+// resolved in the same commit that emptied this set:
+//   --fg          → --text-body, --fg-muted → --text-muted (journey)
+//   --font-sans   → --font-body  (radar, quadrant, principles)
+//   --font-serif  → --font-display  (roadmap)
+//   --sp-2xs      → added to lib/base/base.tokens.css :root spacing scale
+//                   + matching shrunken values in shared.styles.css's
+//                   .compact / .loose density variants
+//   --sp-3xs      → same as --sp-2xs
 //
-// When fixing one of these: edit the source AND remove the token from
-// this set in the same commit. CI will fail otherwise.
+// When you add a token here: include a one-line disposition comment so
+// the next person knows what's intended (mechanical replacement vs.
+// design review vs. requires a new theme token).
 const KNOWN_UNRESOLVED_BASELINE = new Set([
-  '--fg',
-  '--font-sans',
-  '--font-serif',
-  '--sp-2xs',
-  '--sp-3xs',
+  // Empty.
 ]);
 
 // Directories to scan. Generated bundle (lattice-runtime.js) intentionally
