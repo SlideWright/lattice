@@ -100,6 +100,99 @@ describe('marp-plugins', () => {
     assert.ok(cls.includes('cards-grid'));
   });
 
+  // ── applyDeckLogoToHtml ────────────────────────────────────────────────
+
+  function logoFixture(html) {
+    // Helper: minimal Marp-shaped section list for the rewriter to walk.
+    return html;
+  }
+
+  test('applyDeckLogoToHtml: `logo:` with default `logo-on: all` injects <img class="deck-logo"> into every section', () => {
+    const html = logoFixture([
+      '<section id="1" data-marpit-slide="1"></section>',
+      '<section id="2" class="title" data-marpit-slide="2"></section>',
+      '<section id="3" data-marpit-slide="3"></section>',
+    ].join(''));
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const imgs = [...out.matchAll(/<img[^>]*class="deck-logo[^"]*"[^>]*>/g)];
+    assert.equal(imgs.length, 3, `expected 3 deck-logo imgs; got ${imgs.length}`);
+    // No brand class when style is default `auto`.
+    for (const m of imgs) {
+      assert.ok(!/deck-logo-brand/.test(m[0]),
+        `unexpected 'deck-logo-brand'; got ${m[0]}`);
+    }
+    // Inline custom property must carry the src for the mask rule.
+    // The img's src attribute carries the path; CSS handles the
+    // grayscale-watermark filter via the `.deck-logo` class.
+    assert.match(out, /src="\.\/acme\.svg"/);
+  });
+
+  test('applyDeckLogoToHtml: img is the first child of each section (so absolute positioning is predictable)', () => {
+    const html = '<section id="1" data-marpit-slide="1"><h1>Title</h1></section>';
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<section id="1" data-marpit-slide="1"><img[^>]*class="deck-logo[^>]*><h1>Title<\/h1><\/section>/);
+  });
+
+  test('applyDeckLogoToHtml: ignores literal <section> text inside code blocks (no `data-marpit-slide`)', () => {
+    const html = [
+      '<section id="1" data-marpit-slide="1"><code>&lt;section&gt;</code></section>',
+      // Marp parses unescaped `<section>` in source as a real DOM element,
+      // but it won't have `data-marpit-slide`. Make sure we leave it alone.
+      '<section id="2" data-marpit-slide="2"><p>before <code><section><img></code> after</p></section>',
+    ].join('');
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const imgs = [...out.matchAll(/<img[^>]*class="deck-logo[^"]*"/g)];
+    assert.equal(imgs.length, 2, `expected exactly 2 deck-logo imgs (one per real Marp section); got ${imgs.length}`);
+  });
+
+  test('applyDeckLogoToHtml: `logo-on: title` injects only on the first slide and on `title`-classed slides', () => {
+    const html = [
+      '<section id="1" class="title" data-marpit-slide="1"></section>',
+      '<section id="2" data-marpit-slide="2"></section>',
+      '<section id="3" class="title" data-marpit-slide="3"></section>',
+    ].join('');
+    const md = '---\nlogo: ./acme.svg\nlogo-on: title\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const sections = out.split(/(?=<section)/);
+    assert.equal(sections.length, 3);
+    assert.match(sections[0], /<img[^>]*class="deck-logo/,    `cover should have logo: ${sections[0]}`);
+    assert.doesNotMatch(sections[1], /<img[^>]*class="deck-logo/, `body should NOT have logo: ${sections[1]}`);
+    assert.match(sections[2], /<img[^>]*class="deck-logo/,    `second cover should have logo: ${sections[2]}`);
+  });
+
+  test('applyDeckLogoToHtml: `logo-style: brand` adds `deck-logo-brand` class', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\nlogo-style: brand\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<img[^>]*class="deck-logo deck-logo-brand"/);
+  });
+
+  test('applyDeckLogoToHtml: no-op when front matter has no `logo:` directive', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\ntheme: indaco\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.equal(out, html);
+  });
+
+  test('applyDeckLogoToHtml: tolerates quoted YAML value and paths with spaces', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: "./assets/with space/acme.svg"\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<img[^>]*class="deck-logo/);
+    assert.match(out, /src="\.\/assets\/with space\/acme\.svg"/);
+  });
+
+  test('applyDeckLogoToHtml: HTML-escapes src to prevent attribute-injection', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: "./acme.svg\\"><script>alert(1)</script>"\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.doesNotMatch(out, /<script>alert\(1\)<\/script>/);
+    assert.match(out, /&quot;|&lt;|&gt;/);
+  });
+
   // ── verdictGridBadges ──────────────────────────────────────────────────
 
   test('verdictGridBadges: [x] / [-] / [ ] / [/] markers become badge spans with shape classes', () => {

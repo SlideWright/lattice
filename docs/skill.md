@@ -109,6 +109,29 @@ see [theming.md § Dark mode](./theming.md#dark-mode).
 
 ---
 
+## Custom logo (quick reference)
+
+Discreet top-right brand mark; the img is desaturated to a faint
+grayscale watermark via CSS `filter`, with brightness inverted on
+dark-canvas layouts so the mark adapts without per-author variants.
+Works on SVG, PNG, and JPEG. Composes with every `bg-*` decoration
+(gradient or SVG mark).
+
+| Goal | Front-matter |
+|---|---|
+| Logo on every slide | `logo: ./logo.svg` |
+| Title slide only | `logo: ./logo.svg` + `logo-on: title` |
+| Preserve brand colours on a plate | `logo: ./logo.svg` + `logo-style: brand` |
+
+The directive runs at build time. It does **not** render in the
+marp-vscode preview pane because the extension doesn't load workspace
+`marp.config.js` plugins. The published-HTML path
+(`lattice-runtime.js`) restores it for any deck served from a web
+origin. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
+and [references/gotchas.md](./references/gotchas.md).
+
+---
+
 ## Visual testing — pick the right path
 
 Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully different costs; choose by what's changing and how many slides.

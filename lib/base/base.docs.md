@@ -462,6 +462,55 @@ palette swap = background color swap.
 Available classes: `bg-none`, `bg-corner-tl`, `bg-orbit-br`,
 `bg-vignette`, `bg-edge-right`, `bg-thread-diagonal`, plus 21 more.
 
+### Custom logo
+
+A discreet author-supplied brand mark, top-right corner of every
+slide. A build-stage rewriter injects `<img class="deck-logo"
+src="…">` as the first child of each selected `<section>` — same
+shape Marp uses for `<header>` and `<footer>`. CSS desaturates the
+img to a faint grayscale watermark via `filter: grayscale(1)`,
+inverting the brightness on dark-canvas layouts (`.title`,
+`.divider`, `.closing`, `.dark`) so the mark stays legible on every
+theme without per-author light/dark variants. Works on SVG, PNG, and
+JPEG.
+
+```yaml
+---
+logo: ./acme-logo.svg
+logo-style: auto | brand          # optional, default `auto`
+logo-on: all | title              # optional, default `all`
+---
+```
+
+A real DOM element (rather than a `::before` pseudo) is what lets
+the logo compose with every `bg-*` decoration — gradients
+(`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`, …) and
+SVG marks alike (`bg-orbit-br`, `bg-asterisk-scatter`,
+`bg-grid-micro`, `bg-chevron-bl`, …). Each layer paints
+independently.
+
+**Three render paths must agree:**
+
+1. `marp.config.js` — `applyDeckLogoToHtml(html, markdown)` runs in
+   the `render()` wrapper alongside `applyChartFamilyToHtml`.
+2. `lattice-emulator.js` — `require()`s the same helper from
+   `marp.config.js` and calls it on the assembled HTML.
+3. `lattice-runtime.js` — `applyDeckLogoFromFrontMatter()` mirrors
+   the same DOM injection at view time for published HTML decks.
+
+⚠️ **Build-time only for marp-vscode preview.** The extension doesn't
+load workspace `marp.config.js` plugins, so the logo does not appear
+there. The runtime path covers exported HTML viewed in a browser but
+gracefully no-ops in the vscode-webview sandbox (fetch can't reach
+workspace files). Same constraint `class: dark` has — see
+`docs/references/gotchas.md`.
+
+**Brand style.** `logo-style: brand` adds `deck-logo-brand` to the
+injected img. The silhouette mask is removed; the logo's original
+colours render directly on a soft `--bg-alt` plate. Use when the
+brand's colours carry meaning (government insignia, university
+crests); reach for `auto` otherwise.
+
 ---
 
 ## Composition syntax

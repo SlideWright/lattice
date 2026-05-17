@@ -9110,7 +9110,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji):not(.deck-logo) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
 
 /* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
    They must render inline at text size and not pick up the block image styling
@@ -9713,6 +9713,81 @@ section.closing.numbered::after  { content: counter(lat-closing,  decimal-leadin
  * ──────────────────────────────────────────────────────────────────── */
 section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
+ * ────────────────────────────────────────────────────────────────────────
+ * Author contract (front-matter):
+ *   logo: ./acme-logo.svg            # required
+ *   logo-style: auto | brand         # optional, default `auto`
+ *   logo-on: all | title             # optional, default `all`
+ *
+ * Parsed by `applyDeckLogoToHtml` in marp.config.js (shared by both
+ * marp-cli and lattice-emulator render paths) and by
+ * `applyDeckLogoFromFrontMatter` in lattice-runtime.js (browser path).
+ * All three inject `<img class="deck-logo" src="…">` as the first
+ * child of each tagged section. Real DOM (rather than a `::before`
+ * pseudo) so the logo composes with `::before`-based chrome like
+ * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ *
+ * BUILD-TIME ONLY. The marp-vscode preview pane does NOT load
+ * workspace `marp.config.js` plugins, so the logo does not appear
+ * there. See docs/references/gotchas.md.
+ *
+ * Visual treatment: render the image natively and fade it to a
+ * grayscale watermark via CSS `filter`. We tried CSS `mask-image`
+ * for a currentColor-tinted silhouette but Chromium blocks
+ * `file://` URLs as mask sources (treats them as cross-origin),
+ * which broke local PDF builds even though the same URL worked as
+ * an `<img src>`. The filter approach is renderer-portable: works
+ * in headless Chromium with file://, in browsers over HTTP, and in
+ * the marp-vscode webview alike.
+ *
+ * Brightness is inverted on dark canvases so the mark stays
+ * legible on title/divider/closing (which use `--bg-dark`) and on
+ * `.dark` slides without needing per-author light/dark variants.
+ *
+ * For authors whose mark must keep its original colours, opt into
+ * `logo-style: brand` (adds the `deck-logo-brand` class to the img)
+ * for a softly-plated, full-colour rendering.
+ * ──────────────────────────────────────────────────────────────────── */
+img.deck-logo {
+  position: absolute;
+  top: 1.875cqi;
+  right: 2.34375cqi;
+  width: 6.25cqi;
+  height: 4cqi;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.4;
+  /* Default tuned for light canvases (body slides): darken to a
+   * faint dark-grey watermark. */
+  filter: grayscale(1) brightness(0.4) contrast(1.2);
+}
+
+/* Dark-canvas layouts and the explicit `.dark` modifier flip the
+ * brightness so the mark shows as a faint light-grey watermark. */
+section.title    img.deck-logo,
+section.divider  img.deck-logo,
+section.closing  img.deck-logo,
+section.dark     img.deck-logo {
+  filter: grayscale(1) brightness(2.4) contrast(1.1);
+  opacity: 0.45;
+}
+
+/* `deck-logo-brand` — keep the logo's original colours on a soft
+ * plate. The plate uses the theme's surface token so it harmonises
+ * with the canvas without picking a hard hue. */
+img.deck-logo.deck-logo-brand {
+  opacity: 1;
+  filter: none;
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  backdrop-filter: blur(0.4cqi);
+  border-radius: 0.6cqi;
+  padding: 0.4cqi;
+  box-sizing: content-box;
 }
 
 /* === lib/integrations/highlight-js/highlight-js.css === */
@@ -10499,15 +10574,39 @@ section.bg-tick-right::before {
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
 }
 
-/* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right. */
+/* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right.
+ *
+ * Implemented as a small absolutely-positioned ::before cropped to the
+ * orbit's bounding box, NOT as an inset:0 ::before with a slide-spanning
+ * accent-tinted background masked to a corner. The slide-spanning form
+ * renders correctly in poppler but Chromium's vector PDF output of
+ * mask-image isn't applied consistently by every PDF viewer (Skia /
+ * PDFium / Preview render the unmasked background, producing a
+ * vertical accent-tinted panel covering the corner half of the slide).
+ *
+ * With a small ::before, even a fully-failed mask shows only a tiny
+ * corner-sized accent square — an acceptable degradation rather than
+ * a slide-breaking artifact. The mask SVG's viewBox is cropped to the
+ * orbit content's bounding box so the circles render at the right
+ * scale inside the smaller box.
+ *
+ * If the broader SVG-mark bg-* family (bg-slash-tr, bg-asterisk-scatter,
+ * bg-grid-micro, bg-thread-diagonal, bg-chevron-bl, etc.) needs the
+ * same treatment, replicate this pattern in a follow-up PR. See
+ * docs/references/gotchas.md → "Chromium PDF output of CSS mask-image
+ * renders inconsistently across viewers". */
 section.bg-orbit-br::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute;
+  bottom: 6.3cqi;
+  right: 2.5cqi;
+  width: 6cqi;
+  height: 4.5cqi;
+  pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><circle cx='1200' cy='617' r='22' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><circle cx='1200' cy='617' r='13' fill='none' stroke='white' stroke-width='1' stroke-opacity='0.75'/><circle cx='1200' cy='617' r='2.5' fill='white' fill-opacity='1'/><circle cx='1226' cy='601' r='2' fill='white' fill-opacity='0.8'/><circle cx='1242' cy='624' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1184' cy='608' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
-  -webkit-mask-image: var(--m); mask-image: var(--m);
-  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1175 593 70 48'><circle cx='1200' cy='617' r='22' fill='none' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/><circle cx='1200' cy='617' r='13' fill='none' stroke='white' stroke-width='1' stroke-opacity='0.75'/><circle cx='1200' cy='617' r='2.5' fill='white' fill-opacity='1'/><circle cx='1226' cy='601' r='2' fill='white' fill-opacity='0.8'/><circle cx='1242' cy='624' r='1.5' fill='white' fill-opacity='0.7'/><circle cx='1184' cy='608' r='1.5' fill='white' fill-opacity='0.65'/></svg>");
+  -webkit-mask: var(--m) center / contain no-repeat;
+          mask: var(--m) center / contain no-repeat;
 }
 
 /* bg-slash-tr — 5 parallel slash lines at 45°, top-right corner. */

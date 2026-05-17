@@ -62,6 +62,14 @@ to spot during palette development.
 | `--accent-soft` | Pale brand-tinted panel fill |
 | `--code-text` | Code text on dark code surface |
 
+Custom-logo authors point `logo:` in front matter at an image file.
+A build-stage rewriter injects `<img class="deck-logo">` as the
+first child of each section; CSS desaturates the img to a faint
+grayscale watermark via `filter`, inverting the brightness on
+dark-canvas layouts so the mark stays legible without a theme-specific
+asset. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
+for the authoring contract.
+
 ### Semantic signals
 
 | Token | Use |

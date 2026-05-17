@@ -150,6 +150,19 @@ caught by the hook instead of by reviewer eyeballs.
   candidate moves, recommend one. Confirm direction in one round trip
   before editing CSS or transforms. Bundle adjacent decisions in one
   `AskUserQuestion`. Kills the ship → critique → re-ship churn.
+- **Consult component docs before authoring slides.** Before writing
+  any slide that uses `<!-- _class: X -->`, open
+  `lib/components/X/X.docs.md` AND grep `examples/gallery.md` for a
+  working example **in the same turn**. Same rule for base modifiers
+  (`bg-*`, `with-*`, `dark`, `numbered`, …): open
+  `lib/base/base.docs.md` first. Do not author from memory of docs
+  read earlier in the session. The docs name the slot syntax, the
+  required nesting depth, the bullet shape, and the markdown footguns
+  (e.g. literal `*` in prose triggers emphasis; literal `<tag>` in
+  inline code needs escaping or `&lt;`). Skipping this step is how
+  decks ship with `**Label.** body` when the layout actually wants
+  `- Label\n  - body`, or with prose describing an abandoned
+  implementation, or with `bg-<em>` leaking into rendered output.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**

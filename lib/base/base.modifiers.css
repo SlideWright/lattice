@@ -204,7 +204,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji):not(.deck-logo) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
 
 /* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
    They must render inline at text size and not pick up the block image styling
@@ -807,5 +807,80 @@ section.closing.numbered::after  { content: counter(lat-closing,  decimal-leadin
  * ──────────────────────────────────────────────────────────────────── */
 section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+ * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
+ * ────────────────────────────────────────────────────────────────────────
+ * Author contract (front-matter):
+ *   logo: ./acme-logo.svg            # required
+ *   logo-style: auto | brand         # optional, default `auto`
+ *   logo-on: all | title             # optional, default `all`
+ *
+ * Parsed by `applyDeckLogoToHtml` in marp.config.js (shared by both
+ * marp-cli and lattice-emulator render paths) and by
+ * `applyDeckLogoFromFrontMatter` in lattice-runtime.js (browser path).
+ * All three inject `<img class="deck-logo" src="…">` as the first
+ * child of each tagged section. Real DOM (rather than a `::before`
+ * pseudo) so the logo composes with `::before`-based chrome like
+ * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ *
+ * BUILD-TIME ONLY. The marp-vscode preview pane does NOT load
+ * workspace `marp.config.js` plugins, so the logo does not appear
+ * there. See docs/references/gotchas.md.
+ *
+ * Visual treatment: render the image natively and fade it to a
+ * grayscale watermark via CSS `filter`. We tried CSS `mask-image`
+ * for a currentColor-tinted silhouette but Chromium blocks
+ * `file://` URLs as mask sources (treats them as cross-origin),
+ * which broke local PDF builds even though the same URL worked as
+ * an `<img src>`. The filter approach is renderer-portable: works
+ * in headless Chromium with file://, in browsers over HTTP, and in
+ * the marp-vscode webview alike.
+ *
+ * Brightness is inverted on dark canvases so the mark stays
+ * legible on title/divider/closing (which use `--bg-dark`) and on
+ * `.dark` slides without needing per-author light/dark variants.
+ *
+ * For authors whose mark must keep its original colours, opt into
+ * `logo-style: brand` (adds the `deck-logo-brand` class to the img)
+ * for a softly-plated, full-colour rendering.
+ * ──────────────────────────────────────────────────────────────────── */
+img.deck-logo {
+  position: absolute;
+  top: 1.875cqi;
+  right: 2.34375cqi;
+  width: 6.25cqi;
+  height: 4cqi;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.4;
+  /* Default tuned for light canvases (body slides): darken to a
+   * faint dark-grey watermark. */
+  filter: grayscale(1) brightness(0.4) contrast(1.2);
+}
+
+/* Dark-canvas layouts and the explicit `.dark` modifier flip the
+ * brightness so the mark shows as a faint light-grey watermark. */
+section.title    img.deck-logo,
+section.divider  img.deck-logo,
+section.closing  img.deck-logo,
+section.dark     img.deck-logo {
+  filter: grayscale(1) brightness(2.4) contrast(1.1);
+  opacity: 0.45;
+}
+
+/* `deck-logo-brand` — keep the logo's original colours on a soft
+ * plate. The plate uses the theme's surface token so it harmonises
+ * with the canvas without picking a hard hue. */
+img.deck-logo.deck-logo-brand {
+  opacity: 1;
+  filter: none;
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  backdrop-filter: blur(0.4cqi);
+  border-radius: 0.6cqi;
+  padding: 0.4cqi;
+  box-sizing: content-box;
 }
 

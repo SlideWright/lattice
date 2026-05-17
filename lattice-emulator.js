@@ -963,11 +963,20 @@ const _total     = rawSlides.length;
 
 // ── Inline parser ────────────────────────────────────────────────────────────
 function parseInline(t) {
+  // Escape HTML special chars inside inline code so authors can write
+  // angle-bracket-y samples (e.g. `<section>`, `<img src="...">`) without
+  // the browser parsing them as real DOM elements. Standard markdown
+  // behaviour; previously omitted, which let literal `<section>` text
+  // inside code blocks spawn nested DOM sections that broke layout.
+  const escapeInlineCode = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
   return t
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,     '<em>$1</em>')
     .replace(/(?<!\w)_([^_]+?)_(?!\w)/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g,       '<code>$1</code>');
+    .replace(/`(.+?)`/g,       (_, c) => '<code>' + escapeInlineCode(c) + '</code>');
 }
 
 // ── Slide parser ─────────────────────────────────────────────────────────────
@@ -2493,6 +2502,23 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
+// Convenience `logo:` directive — inject the `<img class="deck-logo">`
+// element into each section per the `logo-on` rule. Real DOM (not a
+// ::before pseudo) so it composes with ::before-based decorations like
+// bg-orbit-br. Sibling: marp.config.js's `applyDeckLogoToHtml` — both
+// renderers must produce identical injection. See the function's
+// header comment for the build-time-only contract.
+//
+// NOTE: this directive is a build-time convenience only. It does NOT
+// render in the marp-vscode preview because the extension doesn't load
+// workspace marp.config.js plugins. See docs/references/gotchas.md.
+//
+// Called on the joined HTML rather than slide-by-slide so the
+// "first slide" check in the rewriter (used by `logo-on: title`)
+// sees the slides in source order.
+const { applyDeckLogoToHtml } = require('./marp.config').plugins;
+const slidesWithLogo = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
 // so we link to the actual file in node_modules; the browser resolves the
@@ -2547,11 +2573,11 @@ ${katexCssLink}
 @page { size: ${slideW}px ${slideH}px; margin: 0; }
 body  { margin: 0; padding: 0; }
 ${css}
-section { width: ${slideW}px !important; height: ${slideH}px !important; }
+section[data-marpit-slide] { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
 ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
-${highlightedSlides.join('\n')}
+${slidesWithLogo}
 ${functionPlotScript}
 <script>
 /* Overflow watcher — tags any section whose content exceeds the slide
@@ -2560,7 +2586,7 @@ ${functionPlotScript}
 (function(){
   var TOL = 12;
   function check(){
-    document.querySelectorAll('section').forEach(function(s){
+    document.querySelectorAll('section[data-marpit-slide]').forEach(function(s){
       var over = s.scrollHeight > s.clientHeight + TOL
               || s.scrollWidth  > s.clientWidth  + TOL;
       s.classList.toggle('overflow', over);
@@ -2633,7 +2659,11 @@ const puppeteer = loadPuppeteer();
   const overflowing = await page.evaluate(() => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const flagged = [];
-    document.querySelectorAll('section').forEach((s, i) => {
+    // Scope to Marp's real slide sections only — `<section>` literals
+    // authors write inside code blocks parse as nested DOM elements
+    // (HTML doesn't treat <code> as raw text), which would otherwise
+    // pollute both the count and the flagged indices.
+    document.querySelectorAll('section[data-marpit-slide]').forEach((s, i) => {
       const over = s.scrollHeight > s.clientHeight + TOL
                 || s.scrollWidth  > s.clientWidth  + TOL;
       if (over) {

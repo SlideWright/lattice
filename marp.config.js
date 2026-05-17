@@ -41,6 +41,92 @@ function deckClassPropagate(markdown) {
 }
 
 /**
+ * Front-matter reader for the convenience `logo:` directive. Shared by
+ * the `deckLogo` Marpit plugin (token-level class injection) and the
+ * `applyDeckLogoStyleToCss` HTML-stage helper (CSS injection). Returns
+ * `{ logo, style, on, brand }` or `null` when no logo is configured.
+ *
+ * Recognised front-matter keys:
+ *   logo:        path to the image (required to activate)
+ *   logo-style:  `auto` (default) | `brand` | `mono` (alias of auto)
+ *   logo-on:     `all` (default) | `title`
+ *
+ * Mirrored by lattice-emulator.js's front-matter parser so both render
+ * paths produce identical classes and the same --deck-logo value.
+ */
+function readDeckLogoFrontMatter(src) {
+  if (typeof src !== "string" || !src.length) return null;
+  const fmMatch = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+  if (!fmMatch) return null;
+  const fm = fmMatch[1];
+  const logoMatch = fm.match(/^\s*logo:\s*["']?(.*?)["']?\s*$/m);
+  if (!logoMatch) return null;
+  const logo = logoMatch[1].trim();
+  if (!logo) return null;
+  const styleMatch = fm.match(/^\s*logo-style:\s*["']?(.*?)["']?\s*$/m);
+  const onMatch    = fm.match(/^\s*logo-on:\s*["']?(.*?)["']?\s*$/m);
+  const style = styleMatch ? styleMatch[1].trim().toLowerCase() : "auto";
+  const on    = onMatch ? onMatch[1].trim().toLowerCase() : "all";
+  return {
+    logo,
+    style,
+    on: on === "title" ? "title" : "all",
+    brand: style === "brand",
+  };
+}
+
+/**
+ * HTML-stage helper: convenience `logo:` front-matter directive.
+ *
+ * Injects `<img class="deck-logo" src="..." alt="" aria-hidden="true">`
+ * as the first child of every `<section>` selected by the `logo-on`
+ * rule. The img carries an inline `style="--deck-logo-src:url('...')"`
+ * so the CSS rule in lib/base/base.modifiers.css can paint it as a
+ * silhouette via mask-image at watermark opacity. When `logo-style:
+ * brand` is set, the `deck-logo-brand` class is added alongside.
+ *
+ * Real DOM injection (rather than a `::before` pseudo) is what lets
+ * the logo compose with `::before`-based decorations like
+ * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ * Each chrome rule paints on its own render layer.
+ *
+ * Sibling: lattice-emulator.js requires this same function and calls
+ * it on its assembled HTML so both renderers produce identical DOM.
+ *
+ * This is a build-time only convenience. The marp-vscode preview pane
+ * does NOT load workspace marp.config.js plugins, so the logo does
+ * not appear there. Same limitation
+ * lattice-runtime.js's applyDeckClassFromFrontMatter documents at
+ * lines 3399-3401. See docs/references/gotchas.md.
+ */
+function applyDeckLogoToHtml(html, markdown) {
+  const cfg = readDeckLogoFrontMatter(markdown);
+  if (!cfg) return html;
+  const htmlEscape = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  const safeSrc = htmlEscape(cfg.logo);
+  const classes = `deck-logo${cfg.brand ? ' deck-logo-brand' : ''}`;
+  const img = `<img class="${classes}" src="${safeSrc}" alt="" aria-hidden="true">`;
+  let firstSeen = false;
+  // Match Marp-emitted section opens only — they all carry
+  // `data-marpit-slide="N"`. The qualifier prevents the rewriter from
+  // touching literal `<section>` text that authors write inside code
+  // blocks, where HTML parses the tag as a real nested section element.
+  return html.replace(/<section\b([^>]*\bdata-marpit-slide="[^"]*"[^>]*)>/g, (match, attrs) => {
+    const c = attrs.match(/\sclass="([^"]*)"/);
+    const cls = c ? c[1].split(/\s+/).filter(Boolean) : [];
+    const isTitle = cls.includes('title');
+    const isFirst = !firstSeen;
+    firstSeen = true;
+    if (cfg.on !== 'all' && !isFirst && !isTitle) return match;
+    return `${match}${img}`;
+  });
+}
+
+/**
  * Marpit plugin: numbers each `.split-list` slide at build time and writes
  * `data-split-list-n="01"` onto the section. The theme reads it with
  * `content: attr(data-split-list-n)` — same mechanism Marp uses for native
@@ -550,6 +636,7 @@ module.exports = {
         result.html = applyRoadmapToHtml(result.html);
         result.html = applyJourneyToHtml(result.html);
         result.html = applyWordCloudToHtml(result.html);
+        result.html = applyDeckLogoToHtml(result.html, markdown);
       }
       return result;
     };
@@ -563,6 +650,8 @@ module.exports = {
 // safe; consumers should treat it as test-internal API.
 module.exports.plugins = {
   deckClassPropagate,
+  applyDeckLogoToHtml,
+  readDeckLogoFrontMatter,
   splitPanelCounter,
   verdictGridBadges,
   obligationMatrixBadges,
