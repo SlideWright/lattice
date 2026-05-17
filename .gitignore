@@ -12,6 +12,11 @@ tokenization/
 !examples/*.pdf
 !lib/components/**/*.pdf
 
+# esbuild check tempfile — produced next to lattice-runtime.js by
+# `npm run runtime:check`. The script cleans up on success/failure;
+# this catches the case where the process was killed mid-build.
+lattice-runtime.js.check.tmp
+
 # LibreOffice lock files
 .~lock.*#
 

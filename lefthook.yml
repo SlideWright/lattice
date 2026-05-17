@@ -26,6 +26,17 @@ pre-commit:
       # docs/references/workflow.md.
       glob: 'examples/*.md'
       run: tools/check-pdf-freshness.sh {staged_files}
+    - name: runtime-bundle-freshness
+      # Catches the "edited src/runtime/** or lib/transformers/**,
+      # forgot to rebuild lattice-runtime.js" failure mode. Cheap
+      # rebuild-to-tmp + byte-diff via npm run runtime:check.
+      # Skippable via `git commit --no-verify` only as a last resort.
+      glob:
+        - 'src/runtime/**/*'
+        - 'lib/transformers/**/*.js'
+        - 'lib/engine/**/*.js'
+        - 'lib/chart-family/**/*.js'
+      run: npm run runtime:check --silent
 
 pre-push:
   jobs:
