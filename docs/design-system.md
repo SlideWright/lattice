@@ -480,9 +480,9 @@ the snippets freshness gate). If anyone modifies a per-component
 ### Migration
 
 Components are extracted from the monolithic `lattice.css` in batches
-of 5, with per-batch validation: rebuild the three baseline decks
-(`gallery.md`, `mermaid-gallery.md`, `kpi-gallery.md`) plus the
-design-system demo, then diff page-by-page (via `pdftoppm` rendering
+of 5, with per-batch validation: rebuild the two baseline decks
+(`gallery.md`, `gallery-mermaid.md`) plus the 58 per-component
+galleries, then diff page-by-page (via `pdftoppm` rendering
 to PNG) against the pre-batch baseline. Any visual change fails the
 batch.
 
@@ -528,7 +528,7 @@ discovery story that markdown alone can't provide.
 
 - This document — the canonical four-layer model + component contract.
 - The 7-family taxonomy + 11 forms + 4 substances vocabulary.
-- `lib/components/` — 57 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey, all promoted to first-class components during the `_legacy.css` split.)
+- `lib/components/` — 58 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey + post-Phase-5 renames, all promoted to first-class components.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.

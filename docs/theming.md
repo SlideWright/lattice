@@ -407,8 +407,8 @@ When the values look right:
 ```sh
 # Build the regression galleries with your palette and inspect each PDF.
 node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         -p <name>
-node lattice-emulator.js examples/mermaid-gallery.md /tmp/<name>-mermaid.pdf -p <name>
-node lattice-emulator.js examples/kpi-gallery.md     /tmp/<name>-kpi.pdf     -p <name>
+node lattice-emulator.js examples/gallery-mermaid.md /tmp/<name>-mermaid.pdf -p <name>
+node lattice-emulator.js examples/gallery-jargon.md  /tmp/<name>-jargon.pdf  -p <name>
 ```
 
 Then register the palette in `.vscode/settings.json` under

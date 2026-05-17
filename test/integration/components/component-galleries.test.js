@@ -10,8 +10,10 @@
  * updates the expected count; a transform that silently drops a slide
  * fails the assertion.
  *
- * The three surviving top-level decks (gallery, kpi-gallery,
- * mermaid-gallery) own their counts inline in their own test files.
+ * The two surviving top-level decks (gallery, gallery-mermaid) own
+ * their counts inline in their own test files. (kpi-gallery was
+ * retired in Phase 4; its regression signal now lives in the
+ * per-component lib/components/kpi/kpi.gallery.pdf assertion below.)
  *
  * Cold runs are slow (one PDF per enriched component). The render
  * helper's cache hashes the manifest + styles.css + bundle so warm

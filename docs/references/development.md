@@ -71,7 +71,7 @@ test/unit/parsing/      source-parse, match-section, splitter,
 test/unit/components/   component-manifest, journey, roadmap,
                         word-cloud, quadrant, radar
 test/unit/cli/          cli
-test/integration/galleries/   emulator.{gallery,kpi-gallery,mermaid},
+test/integration/galleries/   emulator.{gallery,gallery-mermaid},
                               marp.gallery
 test/integration/parity/      parity, deck-class-fm, chart-family
 test/integration/mermaid/     mermaid-smoke
