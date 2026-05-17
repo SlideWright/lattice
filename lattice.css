@@ -10298,8 +10298,8 @@ section.progress.dark .progress-fill[data-s="deferred"] {
  *   <!-- _class: content bg-vignette bg-micro-tr -->              gradient + mark
  *   <!-- _class: content bg-corner-tl bg-edge-right bg-seeds -->  two gradients + mark
  *
- * Slot reference (gradient classes only — SVG marks carry no slot)
- *   --_bg-radial  corner glows, vignette, spotlight, duotone
+ * Slot reference (gradient classes plus the seeds mark — other marks carry no slot)
+ *   --_bg-radial  corner glows, vignette, spotlight, duotone, seeds
  *   --_bg-linear  edge washes, horizon, ground, sweep, ambient, frame
  *
  * See docs/references/backgrounds.md for the full catalogue and constraints.
@@ -10568,9 +10568,15 @@ section.bg-ambient {
  *   Bottom-right     x > 1100, y 595–652  above footer + pagination
  *   Bottom-left      x < 200,  y 595–652
  *
- * Two marks whose shapes span multiple corners and so use two pseudos:
+ * Two marks whose shapes span multiple corners:
  *   bg-asterisk-scatter  ::before TR cluster · ::after BL cluster
- *   bg-seeds             ::before top band   · ::after bottom band
+ *                        (cropped tight to each corner's bbox)
+ *   bg-seeds             special case — renders as 12 stacked
+ *                        radial-gradients in the --_bg-radial slot
+ *                        rather than a mask, because the four-corner
+ *                        geometry can't be localised to 2 small
+ *                        ::before/::after boxes. See the seeds rule
+ *                        for the architectural rationale.
  */
 
 /* bg-micro-tr — 9 micro circles, top-right header band. r 2–4.5. */
@@ -10630,34 +10636,44 @@ section.bg-slash-tr::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-seeds — 12 elongated micro ellipses, three per corner, rotated.
- * Shapes span all four corners, so the orbit-pattern bbox can't fully
- * localise this mark. Split into top-band ::before (TL + TR clusters)
- * and bottom-band ::after (BL + BR clusters). Mask failure degrades to
- * two thin tinted strips top and bottom rather than a full-slide tint.
+/* bg-seeds — 12 elongated micro ellipses, three per corner.
+ * Unlike the other marks, seeds renders as 12 stacked radial-gradients
+ * in the --_bg-radial slot rather than an SVG mask. The orbit pattern
+ * doesn't help here: shapes span all four corners, so the ::before
+ * would need to be wide-but-thin to localise to a strip — and a
+ * wide-but-thin ::before fails the same way an inset:0 ::before does
+ * on Apple PDFKit / Skia (mask drops, full-strip background shows).
+ * Native gradients have no mask to drop, so they render reliably in
+ * every PDF viewer. Seeds is the only "mark" in this family that
+ * consumes a gradient slot — it conflicts with other --_bg-radial
+ * classes (corners, vignette, spotlight, duotone) but composes
+ * cleanly with --_bg-linear classes (edges, horizon, ground, sweep,
+ * ambient, frame).
+ *
+ * Position is expressed in % of slide (1280×720) to match the
+ * original SVG cx/cy. Each ellipse's rx/ry maps to the gradient's
+ * ellipse size in px; the inner 80% paints accent at 18–25%
+ * (preserving the original fill-opacity 0.65–0.9 grading) and the
+ * outer 20% fades to transparent for an antialiased edge.
+ *
+ * The original SVG used transform='rotate(...)' on each ellipse for a
+ * subtle scatter feel; that rotation is dropped here since gradients
+ * are axis-aligned. The change is barely perceptible at these sizes.
  */
-section.bg-seeds::before {
-  content: '';
-  position: absolute;
-  top: 5.7cqi; left: 3.7cqi;
-  width: 95cqi; height: 2.4cqi;
-  pointer-events: none;
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='47 73 1217 31'><ellipse cx='1180' cy='88' rx='2.5' ry='5' fill='white' fill-opacity='0.9' transform='rotate(-20 1180 88)'/><ellipse cx='1222' cy='80' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(10 1222 80)'/><ellipse cx='1258' cy='96' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-15 1258 96)'/><ellipse cx='52' cy='92' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(20 52 92)'/><ellipse cx='92' cy='82' rx='2.5' ry='5' fill='white' fill-opacity='0.7' transform='rotate(-5 92 82)'/><ellipse cx='135' cy='97' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(15 135 97)'/></svg>");
-  -webkit-mask: var(--m) center / contain no-repeat;
-          mask: var(--m) center / contain no-repeat;
-}
-
-section.bg-seeds::after {
-  content: '';
-  position: absolute;
-  bottom: 5.2cqi; left: 2.6cqi;
-  width: 95.5cqi; height: 2.9cqi;
-  pointer-events: none;
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='33 616 1222 37'><ellipse cx='55' cy='628' rx='2' ry='4' fill='white' fill-opacity='0.75' transform='rotate(25 55 628)'/><ellipse cx='95' cy='638' rx='2.5' ry='5' fill='white' fill-opacity='0.85' transform='rotate(-10 95 638)'/><ellipse cx='38' cy='646' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(15 38 646)'/><ellipse cx='1210' cy='634' rx='2' ry='4' fill='white' fill-opacity='0.7' transform='rotate(-20 1210 634)'/><ellipse cx='1250' cy='624' rx='2.5' ry='5' fill='white' fill-opacity='0.65' transform='rotate(10 1250 624)'/><ellipse cx='1168' cy='645' rx='2' ry='4' fill='white' fill-opacity='0.65' transform='rotate(25 1168 645)'/></svg>");
-  -webkit-mask: var(--m) center / contain no-repeat;
-          mask: var(--m) center / contain no-repeat;
+section.bg-seeds {
+  --_bg-radial:
+    radial-gradient(ellipse 2.5px 5px at 92.19% 12.22%, color-mix(in srgb, var(--accent) 25%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at 95.47% 11.11%, color-mix(in srgb, var(--accent) 21%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2.5px 5px at 98.28% 13.33%, color-mix(in srgb, var(--accent) 24%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at  4.06% 12.78%, color-mix(in srgb, var(--accent) 20%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2.5px 5px at  7.19% 11.39%, color-mix(in srgb, var(--accent) 20%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at 10.55% 13.47%, color-mix(in srgb, var(--accent) 18%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at  4.30% 87.22%, color-mix(in srgb, var(--accent) 21%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2.5px 5px at  7.42% 88.61%, color-mix(in srgb, var(--accent) 24%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at  2.97% 89.72%, color-mix(in srgb, var(--accent) 20%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at 94.53% 88.06%, color-mix(in srgb, var(--accent) 20%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2.5px 5px at 97.66% 86.67%, color-mix(in srgb, var(--accent) 18%, transparent) 80%, transparent 100%),
+    radial-gradient(ellipse 2px   4px at 91.25% 89.58%, color-mix(in srgb, var(--accent) 18%, transparent) 80%, transparent 100%);
 }
 
 /* bg-pills-right — 4 horizontal pill shapes, far-right margin. */
