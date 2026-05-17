@@ -100,6 +100,138 @@ describe('marp-plugins', () => {
     assert.ok(cls.includes('cards-grid'));
   });
 
+  // ── deckLogo ───────────────────────────────────────────────────────────
+
+  test('deckLogo: `logo:` with default `logo-on: all` adds `with-logo` to every section', () => {
+    const m = makeMarp(plugins.deckLogo);
+    const md = [
+      '---',
+      'logo: ./acme.svg',
+      '---',
+      '',
+      '# Slide 1',
+      '',
+      '---',
+      '',
+      '<!-- _class: title -->',
+      '',
+      '# Slide 2',
+      '',
+      '---',
+      '',
+      '# Slide 3',
+    ].join('\n');
+    const { html } = m.render(md, { markdown: md });
+    const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(x => x[1].split(/\s+/).filter(Boolean));
+    assert.equal(sections.length, 3);
+    for (const cls of sections) {
+      assert.ok(cls.includes('with-logo'), `missing 'with-logo'; got [${cls.join(', ')}]`);
+    }
+    // No `with-logo-brand` when style is default `auto`.
+    for (const cls of sections) {
+      assert.ok(!cls.includes('with-logo-brand'), `unexpected 'with-logo-brand'; got [${cls.join(', ')}]`);
+    }
+  });
+
+  test('deckLogo: `logo-on: title` tags only the first slide and any `_class: title` slide', () => {
+    const m = makeMarp(plugins.deckLogo);
+    const md = [
+      '---',
+      'logo: ./acme.svg',
+      'logo-on: title',
+      '---',
+      '',
+      '<!-- _class: title -->',
+      '# Cover',
+      '',
+      '---',
+      '',
+      '# Body',
+      '',
+      '---',
+      '',
+      '<!-- _class: title -->',
+      '# Second cover',
+    ].join('\n');
+    const { html } = m.render(md, { markdown: md });
+    // Match every <section> open tag; body slide may have no class attribute at all.
+    // Anchor the `class=` match on whitespace so we don't accidentally pick up
+    // Marpit's `data-class="..."` mirror attribute (where \b would match at the
+    // dash-to-c boundary).
+    const sections = [...html.matchAll(/<section\b[^>]*>/g)].map(x => {
+      const c = x[0].match(/\sclass="([^"]*)"/);
+      return c ? c[1].split(/\s+/).filter(Boolean) : [];
+    });
+    assert.equal(sections.length, 3);
+    assert.ok(sections[0].includes('with-logo'), `cover should have 'with-logo'; got [${sections[0].join(', ')}]`);
+    assert.ok(!sections[1].includes('with-logo'), `body should NOT have 'with-logo'; got [${sections[1].join(', ')}]`);
+    assert.ok(sections[2].includes('with-logo'), `second cover should have 'with-logo'; got [${sections[2].join(', ')}]`);
+  });
+
+  test('deckLogo: `logo-style: brand` adds `with-logo-brand` alongside `with-logo`', () => {
+    const m = makeMarp(plugins.deckLogo);
+    const md = [
+      '---',
+      'logo: ./acme.svg',
+      'logo-style: brand',
+      '---',
+      '',
+      '# Slide',
+    ].join('\n');
+    const { html } = m.render(md, { markdown: md });
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.ok(cls.includes('with-logo'),       `missing 'with-logo'; got [${cls.join(', ')}]`);
+    assert.ok(cls.includes('with-logo-brand'), `missing 'with-logo-brand'; got [${cls.join(', ')}]`);
+  });
+
+  test('deckLogo: no-op when front matter has no `logo:` directive', () => {
+    const m = makeMarp(plugins.deckLogo);
+    const md = [
+      '---', 'theme: indaco', '---', '',
+      '<!-- _class: title -->',
+      '# Title',
+    ].join('\n');
+    const { html } = m.render(md, { markdown: md });
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.deepEqual(cls, ['title'], `expected only 'title'; got [${cls.join(', ')}]`);
+  });
+
+  test('deckLogo: tolerates quoted YAML value and paths with spaces', () => {
+    const m = makeMarp(plugins.deckLogo);
+    const md = [
+      '---',
+      'logo: "./assets/with space/acme.svg"',
+      '---',
+      '',
+      '# Slide',
+    ].join('\n');
+    const { html } = m.render(md, { markdown: md });
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.ok(cls.includes('with-logo'), `missing 'with-logo'; got [${cls.join(', ')}]`);
+  });
+
+  test('deckLogo: applyDeckLogoStyleToCss appends `:root{--deck-logo:url(...)}` to the CSS', () => {
+    const baseCss = 'section { color: red; }';
+    const md = [
+      '---',
+      'logo: ./acme.svg',
+      '---',
+      '',
+      '# Slide',
+    ].join('\n');
+    const out = plugins.applyDeckLogoStyleToCss(baseCss, md);
+    assert.match(out, /:root\{--deck-logo:url\("\.\/acme\.svg"\)\}/);
+    // Original CSS must be preserved (append, not replace).
+    assert.match(out, /section \{ color: red; \}/);
+  });
+
+  test('deckLogo: applyDeckLogoStyleToCss is a no-op when `logo:` is missing', () => {
+    const baseCss = 'section { color: red; }';
+    const md = '---\ntheme: indaco\n---\n\n# Slide';
+    const out = plugins.applyDeckLogoStyleToCss(baseCss, md);
+    assert.equal(out, baseCss);
+  });
+
   // ── verdictGridBadges ──────────────────────────────────────────────────
 
   test('verdictGridBadges: [x] / [-] / [ ] / [/] markers become badge spans with shape classes', () => {

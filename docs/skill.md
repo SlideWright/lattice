@@ -109,6 +109,27 @@ see [theming.md § Dark mode](./theming.md#dark-mode).
 
 ---
 
+## Custom logo (quick reference)
+
+Discreet top-right brand mark; silhouette is auto-painted in
+`currentColor` so the mark adapts to dark and light canvases without
+per-author variants. Works on SVG, PNG, and JPEG.
+
+| Goal | Front-matter |
+|---|---|
+| Logo on every slide, live-preview parity | `class: with-logo` + `style: ':root{--deck-logo:url("./logo.svg")}'` |
+| Logo on every slide, one line (build-time only) | `logo: ./logo.svg` |
+| Title slide only | `logo: ./logo.svg` + `logo-on: title` |
+| Preserve brand colours on a plate | `logo: ./logo.svg` + `logo-style: brand` |
+
+The convenience `logo:` directive does **not** render in the
+marp-vscode preview pane (the extension doesn't load workspace
+`marp.config.js` plugins). For live preview, use the native form
+above. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
+and [references/gotchas.md](./references/gotchas.md).
+
+---
+
 ## Visual testing — pick the right path
 
 Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully different costs; choose by what's changing and how many slides.

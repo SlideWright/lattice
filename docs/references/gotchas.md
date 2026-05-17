@@ -98,6 +98,38 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   whole-deck modifiers, but the directive is a real convenience.
 - **Commits:** `f9068a7` (plugin), `b502bcc` (emulator parsing).
 
+### Custom `logo:` front-matter directive shows nothing in marp-vscode preview
+
+- **Symptom:** A deck with `logo: ./acme-logo.svg` in front matter
+  builds a correct PDF (logo visible in the top-right corner of every
+  slide) but the marp-vscode preview pane shows no logo at all.
+- **Cause:** The convenience `logo:` directive is handled by the
+  `deckLogo` Marpit plugin in
+  [marp.config.js](../../marp.config.js#L43-L132) plus the front-matter
+  parser in
+  [lattice-emulator.js](../../lattice-emulator.js#L926-L955). Both run
+  at build time. The marp-vscode extension does **not** load workspace
+  `marp.config.js` plugins, so the directive is invisible to the
+  preview path. Same limitation `applyDeckClassFromFrontMatter`
+  documents at
+  [lattice-runtime.js:3399-3401](../../lattice-runtime.js#L3399-L3401).
+- **Mitigation:** Use the native authoring form for live-preview
+  parity. It uses only Marp built-in directives:
+  ```yaml
+  class: with-logo
+  style: ':root{--deck-logo:url("./acme-logo.svg")}'
+  ```
+  The CSS rule in
+  [lib/base/base.modifiers.css](../../lib/base/base.modifiers.css)
+  fires identically in every render path. The convenience directive
+  remains useful for authors who don't need live preview and want a
+  one-line entry.
+- **Triggered by:** Any `logo: <path>` in deck front matter when
+  authoring inside marp-vscode.
+- **Removable when:** marp-vscode adds workspace-config plugin
+  loading. Unlikely in the near term.
+- **Commits:** This branch.
+
 ### Marpit theme prefixer mangles `:is(...)` and `:where(...)` as a leading selector
 
 - **Symptom:** A CSS rule like `:is(section.A, section.B) > p { … }`

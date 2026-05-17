@@ -9715,6 +9715,75 @@ section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+ * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
+ * ────────────────────────────────────────────────────────────────────────
+ * Two authoring shapes, same DOM contract:
+ *   1. Native form (works everywhere including marp-vscode preview):
+ *        ---
+ *        class: with-logo
+ *        style: ':root{--deck-logo:url("./logo.svg")}'
+ *        ---
+ *   2. Convenience directive (build-time only — won't render in
+ *      marp-vscode preview because the extension doesn't load
+ *      workspace marp.config.js plugins):
+ *        ---
+ *        logo: ./logo.svg
+ *        ---
+ *      Expands to the native form via the `deckLogo` plugin
+ *      (marp.config.js) and the front-matter parser in
+ *      lattice-emulator.js.
+ *
+ * Visual treatment: use the image as a CSS mask and paint the
+ * silhouette in currentColor at watermark opacity. One rule covers
+ * SVG, PNG, and JPEG — the alpha (for transparent inputs) or the
+ * luma (for opaque inputs) drives the mask shape. currentColor
+ * auto-adapts to each slide's ink (white on .title's --bg-dark canvas,
+ * dark on body slides on light canvas), so the mark stays legible on
+ * every theme without per-author light/dark variants.
+ *
+ * For authors whose mark must keep its original colours, opt into
+ * `with-logo-brand` for a softly-plated, full-colour rendering.
+ * ──────────────────────────────────────────────────────────────────── */
+section.with-logo::before {
+  content: "";
+  position: absolute;
+  top: 1.875cqi;
+  right: 2.34375cqi;
+  width: 6.25cqi;
+  height: 4cqi;
+  background-color: color-mix(in srgb, currentColor 15%, transparent);
+  -webkit-mask: var(--deck-logo) center / contain no-repeat;
+          mask: var(--deck-logo) center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Fallback when mask isn't supported — render the image directly as
+ * a faint inline mark. Loses the silhouette-recolour but keeps the
+ * brand visible. */
+@supports not (mask-image: url("")) {
+  section.with-logo::before {
+    background: var(--deck-logo) center / contain no-repeat;
+    opacity: 0.18;
+    filter: grayscale(1);
+  }
+}
+
+/* `with-logo-brand` — keep the logo's original colours on a soft
+ * plate. The plate uses the theme's surface token so it harmonises
+ * with the canvas without picking a hard hue. */
+section.with-logo.with-logo-brand::before {
+  -webkit-mask: none;
+          mask: none;
+  background:
+    var(--deck-logo) center / contain no-repeat,
+    color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  backdrop-filter: blur(0.4cqi);
+  border-radius: 0.6cqi;
+  padding: 0.4cqi;
+  opacity: 1;
+}
+
 /* === lib/integrations/highlight-js/highlight-js.css === */
 /* _syntax-highlight.css — highlight.js token theme.
  *

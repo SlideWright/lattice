@@ -11,6 +11,21 @@ in patch versions.
 
 ### Added
 
+- **Custom deck logo.** Author-supplied SVG/PNG/JPEG renders as a
+  discreet top-right watermark on every slide. The image is used as
+  a CSS `mask-image` painted in `currentColor` at ~15% opacity, so
+  the silhouette auto-adapts to whatever ink the active slide uses —
+  no per-author light/dark variants required. Two authoring shapes:
+  the native form (`class: with-logo` + `style: ':root{--deck-logo:url("…")}'`)
+  works in marp-cli, lattice-emulator, exported HTML, and the
+  marp-vscode preview; the convenience `logo:` directive expands to
+  the native form at build time and is supported on the marp-cli /
+  emulator paths only (documented limitation, mirrors
+  `class: dark`). `logo-style: brand` keeps the logo's original
+  colours on a soft `--bg-alt` plate; `logo-on: title` restricts the
+  mark to the cover slide. See `lib/base/base.docs.md § Custom logo`
+  and `examples/custom-logo.md`.
+
 - **`quadrant` chart-family member.** Native 2×2 scatter chart joining
   the existing chart-family (progress / timeline-list / piechart /
   gantt / kanban / radar). Group-by-quadrant nested-list authoring;

@@ -924,6 +924,33 @@ function readGlobalStyle(fmText) {
   return '';
 }
 const globalStyle = readGlobalStyle(fm);
+// Convenience `logo:` directive — expands at build time to the equivalent
+// of the native authoring form (deck-wide `class: with-logo` + a
+// `:root{--deck-logo:url(...)}` injection into globalStyle). The matching
+// CSS lives in lib/base/base.modifiers.css under "CUSTOM LOGO".
+//
+// Sibling implementations:
+//   - marp.config.js's `deckLogo` Marpit plugin + `applyDeckLogoStyleToCss`
+//     (the marp-cli path).
+// Both paths must produce identical class lists and the same --deck-logo
+// custom property value (cross-renderer parity).
+//
+// NOTE: this directive is a build-time convenience only. It does NOT render
+// in the marp-vscode preview because the extension doesn't load workspace
+// marp.config.js plugins. For full preview parity, authors should use the
+// native form: `class: with-logo` + `style: ':root{--deck-logo:url("...")}'`.
+// See docs/references/gotchas.md.
+const deckLogoPath  = (fm.match(/^\s*logo:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
+const deckLogoStyle = ((fm.match(/^\s*logo-style:\s*["']?(.*?)["']?\s*$/m) || [])[1] || 'auto').toLowerCase();
+const deckLogoOnRaw = ((fm.match(/^\s*logo-on:\s*["']?(.*?)["']?\s*$/m) || [])[1] || 'all').toLowerCase();
+const deckLogoOn    = deckLogoOnRaw === 'title' ? 'title' : 'all';
+const deckLogoBrand = deckLogoStyle === 'brand';
+const deckLogoCss   = deckLogoPath
+  ? `:root{--deck-logo:url("${deckLogoPath.replace(/"/g, '\\"')}")}`
+  : '';
+const composedGlobalStyle = deckLogoCss
+  ? (globalStyle ? `${globalStyle}\n${deckLogoCss}` : deckLogoCss)
+  : globalStyle;
 const headingDivider = (() => {
   const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
   return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
@@ -991,6 +1018,21 @@ function parseSlide(raw, index) {
       if (!cur.includes(t)) cur.push(t);
     }
     classAttr = cur.join(' ');
+  }
+
+  // Convenience `logo:` directive — append the `with-logo` class (and
+  // `with-logo-brand` for `logo-style: brand`) to the slides that should
+  // carry the logo per the `logo-on` rule. Mirrors the marp.config.js
+  // `deckLogo` plugin so both renderers tag the same slide set.
+  if (deckLogoPath) {
+    const curCls = classAttr.split(/\s+/).filter(Boolean);
+    const isTitle = curCls.includes('title');
+    const isFirst = index === 0;
+    if (deckLogoOn === 'all' || isFirst || isTitle) {
+      if (!curCls.includes('with-logo')) curCls.push('with-logo');
+      if (deckLogoBrand && !curCls.includes('with-logo-brand')) curCls.push('with-logo-brand');
+      classAttr = curCls.join(' ');
+    }
   }
 
   if (raw.includes('_paginate: false')) paginate = false;
@@ -2549,7 +2591,7 @@ body  { margin: 0; padding: 0; }
 ${css}
 section { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
-${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
+${composedGlobalStyle ? `\n/* Front-matter style: directive */\n${composedGlobalStyle}\n` : ''}
 </style></head><body>
 ${highlightedSlides.join('\n')}
 ${functionPlotScript}
