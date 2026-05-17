@@ -1,14 +1,25 @@
 {
-  "$comment": "Option A: tune the solver to MATCH the current hand-authored indaco aesthetic (washy pastels, over-AA bias). Reverse-engineered from the existing --cN-light pairs in themes/indaco.css. AA target ~9 (current dark mode averages ~6.7, but the solver hits target exactly — picking 9 keeps it comfortably above current and pushes lightness toward existing pale values). Per-mode chroma matches existing: ~0.04 in light mode (near-neutral pastel), ~0.13 in dark mode (saturated deep).",
+  "$comment": "Option A — match current indaco aesthetic (washy pastels). Two-tier: recessive (--cN-light, paired c-ink-light) AND prominent (--cN-dark, paired c-ink-dark). Same hue per slot across both registers — pie wedge (--cN-dark) and mermaid band (--cN-light) at slot 2 are now both in rust family, just at different lightness.",
   "palette": "indaco-A-match",
-  "tier": {
-    "aa": 7.5,
-    "chroma": { "light": 0.04, "dark": 0.13 },
-    "lightLightRange": [0.82, 0.92],
-    "darkLightRange": [0.30, 0.55]
+  "tiers": {
+    "recessive": {
+      "$comment": "--cN-light: pale on light canvas (L≈0.87 over dark ink), deep on dark canvas (L≈0.45 under white ink). Mermaid band aesthetic.",
+      "aa": 7.5,
+      "chroma": { "light": 0.04, "dark": 0.13 },
+      "lightLightRange": [0.82, 0.92],
+      "darkLightRange": [0.30, 0.55]
+    },
+    "prominent": {
+      "$comment": "--cN-dark: saturated mid-tone on light canvas (L≈0.40 under white ink), pale tint on dark canvas (L≈0.85 over dark ink). Inverted from recessive. Pie wedge / chart mark aesthetic.",
+      "aa": 4.5,
+      "chroma": { "light": 0.13, "dark": 0.04 },
+      "lightLightRange": [0.30, 0.55],
+      "darkLightRange": [0.82, 0.92]
+    }
   },
   "inks": {
-    "primary": { "light": "#0A1628", "dark": "#FFFFFF" }
+    "primary":   { "light": "#0A1628", "dark": "#FFFFFF" },
+    "prominent": { "light": "#FFFFFF", "dark": "#0A1628" }
   },
   "slots": [
     { "hue": 220, "label": "blue (brand)" },

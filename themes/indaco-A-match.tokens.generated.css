@@ -5,15 +5,27 @@
 
 :root {
   --c1-light: light-dark(#A8CBD6, #005B7E); /* blue (brand) */
+  --c1-dark:  light-dark(#007F9E, #A8CBD6);
   --c2-light: light-dark(#DDBCB3, #8B3D2A); /* rust */
+  --c2-dark:  light-dark(#B05139, #DDBCB3);
   --c3-light: light-dark(#C3C8AB, #525900); /* green */
+  --c3-dark:  light-dark(#707900, #C3C8AB);
   --c4-light: light-dark(#D2BCD3, #7C3B81); /* magenta */
+  --c4-dark:  light-dark(#97549B, #D2BCD3);
   --c5-light: light-dark(#C3C0DD, #59479A); /* purple */
+  --c5-dark:  light-dark(#7262B7, #C3C0DD);
   --c6-light: light-dark(#A9CDC5, #00604E); /* teal */
+  --c6-dark:  light-dark(#008672, #A9CDC5);
   --c7-light: light-dark(#D8BFAB, #894000); /* amber */
+  --c7-dark:  light-dark(#A75C00, #D8BFAB);
   --c8-light: light-dark(#A7CCCE, #005E68); /* cyan */
+  --c8-dark:  light-dark(#00848A, #A7CCCE);
   --c9-light: light-dark(#DDBABE, #734950); /* rose */
+  --c9-dark:  light-dark(#AF4C60, #DDBABE);
   --c10-light: light-dark(#D2C2A8, #754C00); /* olive-yellow */
+  --c10-dark:  light-dark(#996700, #D2C2A8);
   --c11-light: light-dark(#B1C7DE, #005699); /* royal blue */
+  --c11-dark:  light-dark(#2A75BA, #B1C7DE);
   --c12-light: light-dark(#CCC4A8, #685200); /* olive */
+  --c12-dark:  light-dark(#8A6F00, #CCC4A8);
 }

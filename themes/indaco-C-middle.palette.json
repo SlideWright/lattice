@@ -1,14 +1,23 @@
 {
-  "$comment": "Option C: middle ground — AAA target (7:1) with chroma 0.06 (slightly more chromatic than current indaco's ~0.04 but well below the vivid 0.10 of option B). Accessible bias, mostly pastel, hues visible enough to differentiate without becoming the focal point.",
+  "$comment": "Option C — middle ground. AAA-ish recessive (paler bands), AA prominent (saturated marks). Both registers from same per-slot hue.",
   "palette": "indaco-C-middle",
-  "tier": {
-    "aa": 6.5,
-    "chroma": 0.06,
-    "lightLightRange": [0.80, 0.92],
-    "darkLightRange": [0.36, 0.52]
+  "tiers": {
+    "recessive": {
+      "aa": 6.5,
+      "chroma": 0.06,
+      "lightLightRange": [0.80, 0.92],
+      "darkLightRange": [0.36, 0.52]
+    },
+    "prominent": {
+      "aa": 4.5,
+      "chroma": 0.11,
+      "lightLightRange": [0.32, 0.50],
+      "darkLightRange": [0.80, 0.92]
+    }
   },
   "inks": {
-    "primary": { "light": "#0A1628", "dark": "#FFFFFF" }
+    "primary":   { "light": "#0A1628", "dark": "#FFFFFF" },
+    "prominent": { "light": "#FFFFFF", "dark": "#0A1628" }
   },
   "slots": [
     { "hue": 220, "label": "blue (brand)" },
