@@ -368,7 +368,7 @@ section.roadmap.horizons .horizon-eyebrow {
   color:var(--phase-accent, var(--accent));
 }
 section.roadmap.horizons .horizon-title {
-  font-family:var(--font-serif);
+  font-family:var(--font-display);
   font-size:var(--fs-md);
   font-weight:700;
   color:var(--text-heading);
@@ -424,7 +424,7 @@ section.roadmap.swimlane tbody tr > td:first-child {
   border-bottom:1px solid var(--border);
   border-right:0;
   border-radius:var(--radius-md) 0 0 var(--radius-md);
-  font-family:var(--font-serif);
+  font-family:var(--font-display);
   font-weight:700;
   color:var(--text-heading);
   font-size:var(--fs-md);

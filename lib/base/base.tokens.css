@@ -54,7 +54,7 @@
    * 100cqi = slide inline size. Formula: px / 1280 * 100 = cqi.
    * At HD (1280px) these resolve to the original px values exactly.
    * At 4K (3840px) they triple automatically — no extra rules needed. */
-  --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
+  --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
   /* ── Font sizes (cqi) ────────────────────────────────────────────── */
   --fs-label:1.015625cqi; --fs-xs:0.9375cqi; --fs-sm:1.171875cqi; --fs-body:1.25cqi; --fs-md:1.40625cqi;

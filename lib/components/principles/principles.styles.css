@@ -34,7 +34,7 @@ section.principles ol > li {
   grid-template-columns:auto 1fr;
   column-gap:var(--sp-lg);
   align-items:center;
-  font-family:var(--font-display, var(--font-sans));
+  font-family:var(--font-display, var(--font-body));
   font-size:clamp(var(--fs-md), 11cqh, var(--fs-2xl));
   font-weight:500;
   line-height:var(--lh-snug);

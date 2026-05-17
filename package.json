@@ -49,6 +49,9 @@
     "snippets:check": "node tools/build-snippets.js --check",
     "css:build": "node tools/build-css.js",
     "css:check": "node tools/build-css.js --check",
+    "runtime:build": "node tools/build-runtime.js",
+    "runtime:check": "node tools/build-runtime.js --check",
+    "runtime:watch": "node tools/build-runtime.js --watch",
     "docs:components": "node tools/build-component-docs.js",
     "docs:components:check": "node tools/build-component-docs.js --check",
     "preview": "node tools/preview.js",
@@ -62,6 +65,7 @@
     "test:parsing": "node --test 'test/unit/parsing/*.test.js'",
     "test:components": "node --test 'test/unit/components/*.test.js'",
     "test:cli": "node --test 'test/unit/cli/*.test.js'",
+    "test:transformers": "node --test 'test/unit/transformers/*.test.js'",
     "test:integration": "node --test 'test/integration/**/*.test.js'",
     "test:integration:galleries": "node --test 'test/integration/galleries/*.test.js'",
     "test:integration:parity": "node --test 'test/integration/parity/*.test.js'",
@@ -87,6 +91,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
     "c8": "^11.0.0",
+    "esbuild": "^0.28.0",
+    "jsdom": "^29.1.1",
     "lefthook": "^2.1.6"
   }
 }

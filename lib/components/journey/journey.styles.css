@@ -55,15 +55,15 @@
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
   --journey-section-fg:   var(--on-accent);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
-  --journey-task-fg:      var(--fg);
-  --journey-timeline:     color-mix(in srgb, var(--fg) 55%, transparent);
-  --journey-plumb:        color-mix(in srgb, var(--fg) 50%, transparent);
+  --journey-task-fg:      var(--text-body);
+  --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
+  --journey-plumb:        color-mix(in srgb, var(--text-body) 50%, transparent);
   --journey-face-bg:      var(--bg);
   /* All journey tokens that resolve to a half-transparent fg use the
    * `srgb` color-mix space — Chromium 1194 (Playwright build that runs
    * the PDF rasterizer) silently drops `oklab` color-mix(... transparent)
    * in stroke/border-color/background contexts. */
-  --journey-axis:         color-mix(in srgb, var(--fg) 32%, transparent);
+  --journey-axis:         color-mix(in srgb, var(--text-body) 32%, transparent);
 
   /* Per-row height in the mood band. Drives both the band's total
    * height (5 rows = 5 × this) and the plumb-line length calc. Smaller
@@ -105,7 +105,7 @@ section.journey .journey-legend {
   margin: 0;
   padding: 0;
   font-size: var(--fs-sm);
-  color: var(--fg-muted, var(--fg));
+  color: var(--text-muted, var(--text-body));
 }
 section.journey .journey-actor {
   display: inline-flex;
@@ -151,7 +151,7 @@ section.journey .journey-mood-legend {
   margin: 0;
   padding: 0;
   font-size: var(--fs-xs);
-  color: var(--fg-muted, var(--fg));
+  color: var(--text-muted, var(--text-body));
   letter-spacing: 0.02em;
 }
 section.journey .journey-mood-key {
@@ -250,7 +250,7 @@ section.journey .journey-task {
   min-height: 4.375cqi;
   font-size: var(--fs-sm);
   text-align: center;
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 8%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text-body) 8%, transparent);
 }
 /* Inset top-left corner — no overhang. The dot's own letter avatar is
  * the actor identifier; no white ring is needed to lift it off the chip. */
@@ -346,7 +346,7 @@ section.journey .journey-face {
   width: 2.8125cqi;
   height: 2.8125cqi;
   color: var(--mood-color);
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent));
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--text-body) 10%, transparent));
 }
 section.journey .journey-mood[data-mood="5"] { --mood-color: var(--journey-mood-5); }
 section.journey .journey-mood[data-mood="4"] { --mood-color: var(--journey-mood-4); }
@@ -457,16 +457,16 @@ section.journey.curve .journey-curve {
    * scale survives non-uniform viewBox stretching. */
 }
 section.journey.curve .journey-curve polyline {
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--fg) 6%, transparent));
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--text-body) 6%, transparent));
 }
 section.journey.curve .journey-curve .journey-curve-grid {
   /* `stroke="currentColor"` on the line element resolves via the
-   * computed `color`. Setting `color: var(--fg)` here propagates to the
+   * computed `color`. Setting `color: var(--text-body)` here propagates to the
    * currentColor binding; `opacity` fades to a subtle ruled grid.
    * (Avoid setting `stroke:` directly via CSS — the PDF rasterizer
    * silently drops CSS-applied stroke on bare SVG line elements that
    * already carry a `stroke=` attribute.) */
-  color: var(--fg);
+  color: var(--text-body);
   opacity: 0.32;
 }
 
@@ -516,7 +516,7 @@ section.journey .journey-lane-label {
   padding: 0 var(--sp-md) 0 0;
   display: flex;
   align-items: center;
-  color: var(--fg);
+  color: var(--text-body);
   position: relative;
   padding-left: var(--sp-md);
 }
