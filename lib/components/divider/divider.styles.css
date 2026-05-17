@@ -1,0 +1,14 @@
+/* divider — anchor.divider
+ *
+ * Dark canvas with a left-edge spectrum rail instead of the top border.
+ * Heading left-aligned in the lower-half of the slide.
+ *
+ * See lib/components/divider/divider.manifest.json for the component contract.
+ */
+
+section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
+section.divider { border-top: none; }
+section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
+section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
+section.divider h1,
+section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }

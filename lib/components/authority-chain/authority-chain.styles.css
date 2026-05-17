@@ -1,0 +1,188 @@
+/* authority-chain — progression.timeline.structure
+ *
+ * Extracted from lib/_legacy.css in Phase 4 of the destination map.
+ * See lib/components/authority-chain/authority-chain.manifest.json for the component contract.
+ */
+
+/* ── AUTHORITY-CHAIN ──────────────────────────────────────────────────
+ * Hierarchy of legal authority: Statute → Regulation → Guidance → Case.
+ *
+ * <!-- _class: authority-chain -->
+ * 1. Statute
+ *    - `15 U.S.C. §6501`
+ *    - COPPA, 1998 — verifiable parental consent for under-13 data.
+ * 2. Regulation
+ *    - `16 C.F.R. Part 312`
+ *    - FTC implementing rule; 2013 rewrite expanded covered identifiers.
+ *
+ * Authoring contract: top-level li carries ONLY the tier label
+ * (auto-bolded by slotLabelLift — author writes `1. Statute`, not
+ * `1. **Statute**`). Nested ul carries body — first item is citation
+ * chip (only-child <code>), remaining items are prose descriptor.
+ *
+ * Default = vertical chain with connectors. Variants:
+ *   .pyramid    visual hierarchy by tier weight
+ *   .branching  statute → multiple regs/cases (every nested item is a branch)
+ *   .bracket    bracketed cards with strong connectors
+ *   .trail      numbered horizontal trail with arrows
+ * ──────────────────────────────────────────────────────────────────── */
+section.authority-chain { display:flex; flex-direction:column; }
+section.authority-chain h2 { margin-bottom:var(--sp-md); }
+section.authority-chain > ol,
+section.authority-chain > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:0; flex:1; justify-content:center;
+  counter-reset:auth;
+}
+section.authority-chain > :is(ol, ul) > li {
+  counter-increment:auth;
+  position:relative;
+  display:grid;
+  grid-template-columns:14cqi 1fr;
+  column-gap:var(--sp-md);
+  align-items:center;
+  padding:var(--sp-md) var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:4px solid var(--tier-hue, var(--accent));
+  border-radius:var(--radius-md);
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+  color:var(--text-body);
+  margin-bottom:var(--sp-md);
+}
+section.authority-chain > :is(ol, ul) > li::marker { content:''; }
+section.authority-chain > :is(ol, ul) > li:last-child { margin-bottom:0; }
+/* Connector arrow between rows. */
+section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
+  content:'';
+  position:absolute;
+  left:7cqi; bottom:calc(-1 * var(--sp-md));
+  width:2px; height:var(--sp-md);
+  background:var(--accent);
+}
+/* Tier hue rotation — Statute / Regulation / Guidance / Case. */
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--c4-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--c1-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--c6-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3-dark); }
+section.authority-chain > :is(ol, ul) > li > strong:first-child {
+  grid-column:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-md);
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--tier-hue, var(--accent));
+}
+section.authority-chain > :is(ol, ul) > li > :is(ul, ol) {
+  grid-column:2;
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+}
+section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li::marker { content:''; }
+section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+  font-family:var(--font-mono);
+  font-size:var(--fs-sm);
+  font-weight:600;
+  color:var(--text-heading);
+  background:none; border:none; padding:0;
+  white-space:nowrap;
+}
+
+/* .pyramid — top is widest, each tier narrower. */
+section.authority-chain.pyramid > :is(ol, ul) {
+  align-items:center;
+}
+section.authority-chain.pyramid > :is(ol, ul) > li {
+  width:100%;
+  max-width:none;
+  text-align:left;
+}
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(1) { width:100%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(2) { width:84%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(3) { width:68%; }
+section.authority-chain.pyramid > :is(ol, ul) > li:nth-child(4) { width:54%; }
+section.authority-chain.pyramid > :is(ol, ul) > li::after { display:none; }
+
+/* .branching — statute root, then nested children render as connected branches. */
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) {
+  grid-column:1 / -1;
+  list-style:none; margin:var(--sp-sm) 0 0; padding:0 0 0 var(--sp-lg);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  border-left:2px dashed var(--tier-hue, var(--accent));
+}
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li {
+  padding:var(--sp-xs) var(--sp-md);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:var(--fs-sm);
+  position:relative;
+}
+section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li::before {
+  content:'';
+  position:absolute;
+  left:calc(-1 * var(--sp-lg)); top:50%;
+  width:var(--sp-md); height:2px;
+  background:var(--tier-hue, var(--accent));
+}
+section.authority-chain.branching > :is(ol, ul) > li::after { display:none; }
+
+/* .bracket — visual bracket connector tying tiers. */
+section.authority-chain.bracket > :is(ol, ul) > li {
+  border-radius:0;
+  border:1px solid var(--border);
+  border-left:6px double var(--tier-hue, var(--accent));
+  margin-bottom:0;
+}
+section.authority-chain.bracket > :is(ol, ul) > li::after { display:none; }
+section.authority-chain.bracket > :is(ol, ul) > li + li { border-top:none; }
+
+/* .trail — horizontal numbered trail with arrows. */
+section.authority-chain.trail > :is(ol, ul) {
+  flex-direction:row;
+  gap:0; justify-content:space-between;
+  align-items:stretch;
+}
+section.authority-chain.trail > :is(ol, ul) > li {
+  flex:1;
+  margin-bottom:0;
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  align-items:flex-start;
+  border-left:none;
+  border-top:4px solid var(--tier-hue, var(--accent));
+  border-radius:0;
+  padding:var(--sp-md);
+  position:relative;
+}
+section.authority-chain.trail > :is(ol, ul) > li::after {
+  content:'→';
+  display:block;
+  position:absolute;
+  right:calc(-0.5 * var(--sp-md)); top:50%;
+  transform:translateY(-50%);
+  background:none;
+  width:auto; height:auto;
+  font-size:var(--fs-xl);
+  color:var(--accent);
+  z-index:1;
+}
+section.authority-chain.trail > :is(ol, ul) > li:last-child::after { display:none; }
+section.authority-chain.trail > :is(ol, ul) > li > strong:first-child {
+  font-size:var(--fs-sm);
+  letter-spacing:0.10em;
+}
+section.authority-chain.trail > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+  font-size:var(--fs-xs);
+}
+section.authority-chain.trail > :is(ol, ul) > li::before {
+  content:counter(auth, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-2xl);
+  font-weight:700;
+  color:var(--tier-hue, var(--accent));
+  line-height:1;
+  margin-bottom:var(--sp-xs);
+}

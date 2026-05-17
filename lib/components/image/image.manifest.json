@@ -1,0 +1,107 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "image",
+  "function": "imagery",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Image as the slide's anchor, with optional text alongside.",
+  "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
+  "variants": [
+    "full",
+    "contain",
+    "museum",
+    "mirror"
+  ],
+  "slots": {
+    "image": {
+      "selector": "img",
+      "required": true,
+      "description": "Marp background image syntax: `![bg](path)` or `![bg right](path)`."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": false,
+      "description": "Optional heading in the text slot."
+    },
+    "body": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional caption or body text."
+    }
+  },
+  "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
+  "anatomyBlock": "image-canvas",
+  "sample": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nThe image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.\n\n![bg right](sample-image-landscape.svg)\n",
+  "whenToUse": [
+    {
+      "title": "The visual carries meaning",
+      "body": "Product screenshots, architectural photographs, plots, satellite imagery — anywhere the image makes the argument and the prose is annotation. If the visual is decorative, drop it and use `content` instead."
+    },
+    {
+      "title": "Pick the modifier from the asset",
+      "body": "Photographs with subject-to-edge bleed → `full`. Plots, screenshots, or assets with whitespace that should be preserved → `contain`. Single hero images that deserve gallery framing → `museum`. The default (image right) is the working pick for talking-head slides."
+    },
+    {
+      "title": "Caption earns its line",
+      "body": "If the prose alongside the image just describes what the image shows, drop it — the audience can see the picture. The text slot is for the so-what: what the audience should take away from the visual."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Decorative stock photo",
+      "body": "A generic photograph of 'people in a meeting' next to a content slide is filler. Use `content` and trust the prose; reserve image for visuals that argue for themselves."
+    },
+    {
+      "title": "Image too small to read",
+      "body": "A diagram or screenshot small enough to fit inside a half-canvas text slot is unreadable from the back of the room. Reach for `image full` or `image contain`, or move the diagram to its own `diagram` slide."
+    },
+    {
+      "title": "Image with five paragraphs of caption",
+      "body": "If the prose dominates and the image is a sidebar, you have a `content` slide that happens to have a photo. Either trust the image (drop the prose) or trust the prose (drop the image)."
+    }
+  ],
+  "related": [
+    {
+      "name": "featured",
+      "when": "the recommendation is a card, not an image"
+    },
+    {
+      "name": "diagram",
+      "when": "the visual is a Mermaid graph, not a photo or screenshot"
+    },
+    {
+      "name": "content",
+      "when": "the slide is mostly prose with one inline visual"
+    },
+    {
+      "name": "title",
+      "when": "the image is a bookend hero, not the body of a slide"
+    },
+    {
+      "name": "quote",
+      "when": "the slide is a quotation, not an image"
+    }
+  ],
+  "variantDocs": {
+    "full": {
+      "label": "Full — image fills the canvas edge to edge",
+      "caption": "The image covers the entire slide. Optional heading and body text overlay the lower portion of the canvas with a contrast scrim. Use for high-impact opener or closer slides where the photograph is the message.",
+      "sample": "<!-- _class: image full -->\n\n## Full bleed makes the photo the slide.\n\nText overlays the lower third on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.\n\n![bg](sample-image-landscape.svg)\n"
+    },
+    "contain": {
+      "label": "Contain — letterboxed for plots and screenshots",
+      "caption": "Letterboxes the image inside the canvas with surrounding background colour, so plots, screenshots, and assets with whitespace render at full fidelity without cropping. Default pick for any non-photographic visual.",
+      "sample": "<!-- _class: image contain -->\n\n## Contain preserves the asset's own framing.\n\nLetterboxed against the slide background — useful for plots, dashboards, and screenshots where every pixel of the image matters.\n\n![bg](sample-image-landscape.svg)\n"
+    },
+    "museum": {
+      "label": "Museum — matted and framed",
+      "caption": "Adds a matte border and a thin frame around the image, gallery-style. Use for the one hero image in a deck that deserves a wall-piece treatment — case-study openers, brand moments, archive material.",
+      "sample": "<!-- _class: image museum -->\n\n## Museum framing gives one image the wall.\n\nMatte border plus a hairline frame. Reserve for case-study openers, brand moments, archival material — the image that the deck remembers.\n\n![bg](sample-image-landscape.svg)\n"
+    },
+    "mirror": {
+      "label": "Mirror — text right, image left",
+      "caption": "Flips the default split: text leads from the right, image anchors from the left. Use when the surrounding deck reads right-to-left across a spread or when the page-turn lands on the image edge.",
+      "sample": "<!-- _class: image mirror -->\n\n## Mirror lands the image on the left.\n\nText leads from the right; image anchors from the left. Use when the surrounding spread reads right-to-left or when the page-turn cue lands on the image side.\n\n![bg left](sample-image-landscape.svg)\n"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "kanban",
+  "function": "progression",
+  "form": "timeline",
+  "substance": "series",
+  "description": "Kanban board — columns of cards by stage.",
+  "purpose": "Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "lanes": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Outer li per lane (stage), lead with **Stage name.**. Inner bullets per card in that lane."
+    }
+  },
+  "skeleton": "<!-- _class: kanban -->\n\n`Phase 2 · Sprint 14`\n\n## Where Phase 2 work stands today.\n\nFour columns, mixed card density. Size badge sits in the title row.\n\n- Backlog\n  - Per-purpose codebooks `S`\n  - Crypto-shred runbook `M`\n  - Dependency dashboard `S`\n- In progress\n  - Multi-tenant DEKs `M`\n    - platform `at-risk`\n  - Examiner pack v2 `L`\n    - compliance\n- Review\n  - Centralised log `S`\n    - compliance\n- Done\n  - Codebook signing `M`\n  - Manual rotation `S`\n",
+  "anatomyBlock": "kanban",
+  "sample": "<!-- _class: kanban -->\n\n`Phase 2 · Sprint 14`\n\n## Where Phase 2 work stands today.\n\nFour columns, mixed card density. Size badge sits in the title row.\n\n- Backlog\n  - Per-purpose codebooks `S`\n    - compliance\n  - Crypto-shred runbook `M`\n    - platform\n  - Dependency dashboard `S`\n    - platform\n- In progress\n  - Multi-tenant DEKs `M`\n    - platform `at-risk`\n  - Examiner pack v2 `L`\n    - compliance\n- Review\n  - Centralised log `S`\n    - compliance\n- Done\n  - Codebook signing `M`\n    - platform\n  - Manual rotation `S`\n    - operations\n",
+  "whenToUse": [
+    {
+      "title": "Status snapshot by stage",
+      "body": "When the audience needs to see what is in each lane right now — backlog, in progress, review, done. The board reads as the current state of the work, not its history or schedule."
+    },
+    {
+      "title": "Mixed card density is informative",
+      "body": "Lanes that bulge or thin out tell the story — a fat 'in progress' column flags a WIP overload; an empty 'review' column flags a handoff stall. The visual imbalance is the signal."
+    },
+    {
+      "title": "Cards carry size and status meta",
+      "body": "Trailing inline-code badges (`S`/`M`/`L`/`XL`) sit in the title row; status pills (`at-risk`, `blocked`) push right on the meta row. The card stays scannable while the second channel of information rides along."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Schedule, not status",
+      "body": "If the question is when each task ships rather than where it sits today, reach for `gantt` (spans) or `roadmap` (phases). Kanban is a snapshot, not a timeline."
+    },
+    {
+      "title": "More than five lanes",
+      "body": "Past five columns the cards compress and the column headers crowd. Group adjacent stages or split into two boards (e.g. by team) instead."
+    },
+    {
+      "title": "Cards without meta",
+      "body": "A board of bare titles wastes the layout's affordances. Add at least a size badge and a lane label so the audience can scan workload and ownership at a glance."
+    }
+  ],
+  "related": [
+    {
+      "name": "gantt",
+      "when": "schedule of overlapping tasks across lanes, not current state"
+    },
+    {
+      "name": "roadmap",
+      "when": "phased grid of deliverables across workstreams"
+    },
+    {
+      "name": "checklist",
+      "when": "single list of items with done/in-flight/planned states"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "options scored against shared criteria, not stage-tracked"
+    }
+  ]
+}

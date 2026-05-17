@@ -727,7 +727,7 @@
   // sections already wrapped (left/right div present). Called from initAndRun.
   // Sibling implementations:
   //   lattice-emulator.js  — post-process per-slide transform
-  //   lib/split-panels.js  — HTML-string transform run by marp.config.js render
+  //   lib/engine/split-panels.js  — HTML-string transform run by marp.config.js render
   //                          hook (primary path for marp-vscode preview)
   // These DOM transforms act as a fallback for web export where scripts execute
   // but the marp.config.js engine hook has not run.

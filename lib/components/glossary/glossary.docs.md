@@ -1,0 +1,72 @@
+# glossary
+
+> Two-column term/definition table with auto-derived alphabetic range pill.
+
+**Function** inventory · **Form** ledger · **Substance** structure
+
+Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
+
+## When to use
+
+- **Jargon-heavy decks.** When the audience needs a reference page they can flip back to. Acronyms, domain terms, internal names — anything the speaker won't define inline.
+- **Five to eight entries per slide.** The ledger is sized for a short page. For longer glossaries, split alphabetically across multiple slides — the runtime stamps each with its range pill.
+- **Short definitions.** Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading.
+
+## When NOT to use
+
+- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading.
+- **Mixed term lengths.** If some terms are single words and others are full phrases, the left column gets ragged. Trim long terms to their canonical short form.
+- **Hand-written range pill.** The runtime derives the range pill (e.g. "A – G") from the entries. Authoring it into the heading double-stamps it.
+
+## Authoring
+
+```markdown
+<!-- _class: glossary -->
+
+## Glossary
+
+- Adjacency
+  - The relationship between two slides that share an audience or context.
+- Anchor
+  - A title, divider, subtopic, or closing slide that orients the audience.
+- Cadence
+  - The deck's pacing — how much new information per slide.
+```
+
+## Slots
+
+| Slot | Selector | Required | Description |
+|---|---|---|---|
+| `title` | `h2` | yes | Slide heading — typically 'Glossary'. |
+| `entries` | `ul > li` | yes | Nested bullets: outer li is the term, inner li is the definition. |
+
+## Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│  Glossary heading.                      │
+│                                         │
+│  Term A    Definition or gloss.         │
+│  Term B    Definition or gloss.         │
+│  Term C    Definition or gloss.         │
+│  Term D    Definition or gloss.         │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
+## Universal modifiers
+
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, decoration backgrounds). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.
+
+## Related components
+
+- [`list-tabular`](../list-tabular/list-tabular.docs.md) — rows are key/value reference, not term/definition
+- [`subtopic`](../subtopic/subtopic.docs.md) — one term needs a full slide of explanation
+- [`actors`](../actors/actors.docs.md) — the left column is a named person, not a term
+- [`principles`](../principles/principles.docs.md) — the entries are stated rules, not defined terms
+
+## Demo deck
+
+See [glossary.gallery.pdf](./glossary.gallery.pdf) for rendered examples of every variant.

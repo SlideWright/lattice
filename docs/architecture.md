@@ -81,14 +81,53 @@ lines. Its job is:
    render the body via a small markdown-it-compatible converter, apply
    per-class scaffolding (header, footer, pagination ::after).
    Structured layouts (`cards-grid`, `cards-stack`, `compare-prose`,
-   `featured`, `split-panel`, `stats`, etc. — full list in
-   [references/templates.md](references/templates.md#layout-inventory-structured-vs-unstructured))
+   `featured`, `split-list`, `stats`, etc. — full list below in
+   [Layout categories: structured vs unstructured](#layout-categories-structured-vs-unstructured))
    rewrite their `ul`/`ol` body into purpose-built DOM the CSS targets;
    unstructured layouts pass through as plain semantic HTML.
 5. Emit one HTML file. Inline `<style>` contains the palette CSS and
    the Marp theme CSS, in that order.
 6. Hand the HTML to Puppeteer. Print to PDF at 1280×720 with the
    exact slide dimensions.
+
+## Layout categories: structured vs unstructured
+
+Every layout falls into one of two categories. The distinction matters
+because it changes what the source markdown looks like and where bugs
+are most likely to live.
+
+**Structured layouts** are post-processed by `lattice-emulator.js`: a
+flat `ul`/`ol` (sometimes with nested children) is rewritten into
+purpose-built DOM (`.card`, `.stat-item`, `.vcard`, `.feat-card`,
+`.compare-prose-inner`, `.panel-left`/`.panel-right`, etc.). The CSS
+targets that generated structure. Authors write a list; the
+post-processor turns it into the layout.
+
+**Unstructured layouts** are rendered by CSS alone from the semantic
+markdown that Marp emits. No DOM rewriting happens — the headings,
+paragraphs, and lists you write are the headings, paragraphs, and
+lists the CSS styles.
+
+| Category | Classes | Post-processor |
+|---|---|---|
+| Structured | `cards-grid`, `cards-side`, `cards-stack`, `cards-wide`, `checklist`, `compare-prose`, `compare-code`, `featured`, `list-criteria`, `list-tabular`, `quadrant`, `radar`, `roadmap`, `split-list`, `stats`, `verdict-grid`, `word-cloud` | yes — `lattice-emulator.js` rewrites DOM |
+| Unstructured | `title`, `divider`, `subtopic`, `closing`, `content`, `diagram`, `quote`, `list`, `list-steps`, `timeline`, `big-number`, `image`, `code` | no — CSS-only |
+
+Modifiers (`dark`, `mirror`, image-specific `full` / `contain`, etc.)
+compose with both categories.
+
+**Authoring implication.** Every structured layout has a single
+canonical list shape documented in its component's `<name>.docs.md`.
+Deviating from that shape (wrong list type, wrong nesting depth,
+missing `**Title.**` marker, etc.) causes the post-processor to fall
+back to the raw list rendering, which the CSS does not style. When a
+structured slide looks wrong, check the source list shape first.
+
+**Audit implication.** Structured layouts are where
+`lattice-emulator.js` and `marp-cli` are most likely to diverge — see
+[references/audit.md §11.4](references/audit.md#114-comparison-workflow).
+The three-renderer parity gate in the integration tier (running on
+`examples/gallery.md`) catches structural drift before merge.
 
 ## The runtime path
 

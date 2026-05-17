@@ -1,0 +1,126 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "math",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround.",
+  "purpose": "Use when the slide IS the equation. KaTeX renders `$$…$$` as centred display blocks and `$…$` inline. Variants surround the math with the structure each persona expects: hero + legend (feature), step + justification (derivation), Definition/Theorem/Proof cards (theorem), side-by-side comparison (compare), equation + plot (canvas), matrix + properties (matrix), estimate ± uncertainty + interpretation (stats).",
+  "variants": [
+    "feature",
+    "derivation",
+    "theorem",
+    "compare",
+    "canvas",
+    "matrix",
+    "stats"
+  ],
+  "slots": {
+    "eyebrow": {
+      "selector": "h3:first-child",
+      "required": false,
+      "description": "Optional rubric label above the heading (e.g. 'Linear regression · OLS')."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "One-sentence framing of what the math establishes."
+    },
+    "equation": {
+      "selector": "p",
+      "required": true,
+      "description": "Display equation wrapped in `$$…$$`. KaTeX renders centred."
+    },
+    "legend": {
+      "selector": "ul > li",
+      "required": false,
+      "description": "'where:' legend. Each li introduces an `$x$` symbol followed by its definition."
+    }
+  },
+  "skeleton": "<!-- _class: math -->\n\n### Eyebrow · context\n\n## One-sentence framing of what the equation establishes.\n\n$$ y = f(x) $$\n\n- $y$ — what we predict\n- $x$ — input variable\n- $f$ — the relation under study\n",
+  "anatomyBlock": "math-canvas",
+  "sample": "<!-- _class: math -->\n\n### Linear regression · OLS\n\n## The closed-form estimator.\n\n$$ \\hat\\beta = (X^\\top X)^{-1} X^\\top y $$\n\n- $\\hat\\beta$ — OLS coefficient vector\n- $X$ — design matrix, $n \\times p$\n- $y$ — response vector, length $n$\n- $X^\\top X$ — Gram matrix, $p \\times p$, must be invertible\n",
+  "whenToUse": [
+    {
+      "title": "The equation IS the argument",
+      "body": "When a single closed-form expression, identity, or estimator carries the slide. KaTeX renders it; Lattice gives it the room. For surrounding prose with one inline `$x$`, use content."
+    },
+    {
+      "title": "Pick the variant from the persona",
+      "body": "Quants reach for feature and stats. ML researchers reach for canvas (equation + plot). Pure mathematicians reach for theorem and derivation. Linear-algebra-heavy work reaches for matrix. The base layout works for everyone."
+    },
+    {
+      "title": "Legend, not footnotes",
+      "body": "The `where:` list under the equation defines every symbol introduced. The audience should never have to scroll back to remember what $\\hat\\beta$ or $X$ stands for."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Two display equations in the base layout",
+      "body": "The bare math layout is built around one hero equation. For side-by-side display, use `math compare`. For a derivation chain, use `math derivation`. Stacking two `$$` blocks in the base layout breaks the visual contract."
+    },
+    {
+      "title": "Symbols without a legend",
+      "body": "An equation with three undefined symbols is a puzzle, not a claim. Either every non-trivial symbol gets a legend entry, or the equation is simple enough that the audience knows it cold."
+    },
+    {
+      "title": "ASCII math instead of KaTeX",
+      "body": "Writing `beta_hat = (X'X)^-1 X'y` as plain text bypasses the renderer. Always wrap math in `$$…$$` (display) or `$…$` (inline) — KaTeX is the entire reason this layout exists."
+    }
+  ],
+  "related": [
+    {
+      "name": "code",
+      "when": "the implementation, not the equation, is the argument"
+    },
+    {
+      "name": "diagram",
+      "when": "the structure of the model, not its closed form"
+    },
+    {
+      "name": "stats",
+      "when": "a row of statistical results without a single equation focus"
+    },
+    {
+      "name": "content",
+      "when": "one inline equation inside a paragraph of prose"
+    }
+  ],
+  "variantDocs": {
+    "feature": {
+      "label": "Feature — hero equation + legend",
+      "caption": "Alias for the base layout — eyebrow, headline, hero equation, legend. Use when you want to make the persona framing explicit in the class list.",
+      "sample": "<!-- _class: math feature -->\n\n### Logistic regression · MLE\n\n## The log-likelihood we maximise.\n\n$$ \\ell(\\beta) = \\sum_{i=1}^{n} \\left[ y_i \\log \\sigma(x_i^\\top \\beta) + (1 - y_i) \\log\\bigl(1 - \\sigma(x_i^\\top \\beta)\\bigr) \\right] $$\n\n- $\\ell$ — log-likelihood, concave in $\\beta$\n- $\\sigma$ — logistic link, $\\sigma(z) = 1/(1+e^{-z})$\n- $y_i$ — observed label, $\\in \\{0,1\\}$\n- $x_i$ — feature vector for observation $i$\n"
+    },
+    "derivation": {
+      "label": "Derivation — proof chain with justification column",
+      "caption": "Two-column table: derivation steps on the left, the justification for each step on the right. Best for first-principles proofs, induction arguments, and any chain where every step needs to be defensible.",
+      "sample": "<!-- _class: math derivation -->\n\n## Derivative of $f$ from first principles.\n\n| Step                                                     | Justification             |\n| -------------------------------------------------------- | ------------------------- |\n| $f(x+h) = f(x) + f'(x)\\,h + O(h^2)$                      | Taylor expansion, $n = 2$ |\n| $f(x+h) - f(x) = f'(x)\\,h + O(h^2)$                      | subtract $f(x)$           |\n| $\\dfrac{f(x+h)-f(x)}{h} = f'(x) + O(h)$                  | divide by $h \\neq 0$      |\n| $\\displaystyle\\lim_{h\\to 0} \\dfrac{f(x+h)-f(x)}{h} = f'(x)$ | take the limit            |\n"
+    },
+    "theorem": {
+      "label": "Theorem — Definition / Theorem / Proof cards",
+      "caption": "Stacked colour-coded blockquote cards in the formal-statement vocabulary mathematicians expect — Definition, Theorem, Lemma, Proof. The card boundary preserves the convention that each formal statement is its own atom.",
+      "sample": "<!-- _class: math theorem -->\n\n## Intermediate Value Theorem.\n\n> **Definition.** A function $f : [a,b] \\to \\mathbb{R}$ is *continuous* on $[a,b]$ if $\\lim_{x\\to c} f(x) = f(c)$ for every $c \\in [a,b]$.\n\n> **Theorem.** Let $f$ be continuous on $[a,b]$ and let $y$ lie strictly between $f(a)$ and $f(b)$. Then there exists $c \\in (a,b)$ with $f(c) = y$.\n\n> **Proof.** Set $S = \\{x \\in [a,b] : f(x) < y\\}$. $S$ is non-empty and bounded; let $c = \\sup S$. Continuity at $c$ forces $f(c) = y$. $\\square$\n"
+    },
+    "compare": {
+      "label": "Compare — two- or three-column equations",
+      "caption": "Side-by-side equation comparison. Each column has its own h3 label, display equation, and one-line gloss. Best for frequentist-vs-Bayesian, batch-vs-streaming, primal-vs-dual.",
+      "sample": "<!-- _class: math compare -->\n\n## Frequentist vs Bayesian point estimate.\n\n### Frequentist\n\n$$ \\hat\\theta_{\\text{MLE}} = \\arg\\max_\\theta\\, p(y \\mid \\theta) $$\n\nMaximises the likelihood — no prior. Uncertainty quantified by the sampling distribution of $\\hat\\theta$ across hypothetical repeats.\n\n### Bayesian\n\n$$ \\hat\\theta_{\\text{MAP}} = \\arg\\max_\\theta\\, p(\\theta \\mid y) $$\n\nMaximises the posterior — conditions on the prior $p(\\theta)$. Uncertainty is the posterior itself, no repeated sampling required.\n"
+    },
+    "canvas": {
+      "label": "Canvas — equation left, plot right",
+      "caption": "Pairs a hero equation with a `latticeplot` chart. Best when the shape of the function is half the argument — sigmoids, distributions, decision boundaries.",
+      "sample": "<!-- _class: math canvas -->\n\n## The sigmoid.\n\n$$ \\sigma(x) = \\dfrac{1}{1 + e^{-x}} $$\n\nMaps $\\mathbb{R} \\to (0,1)$. $S$-shaped, $\\sigma(0) = 0.5$, steepest slope at the origin.\n\n```latticeplot\n{\n  \"data\": [\n    { \"fn\": \"1 / (1 + exp(-x))\" },\n    { \"fn\": \"tanh(x)\" }\n  ],\n  \"xAxis\": { \"domain\": [-6, 6], \"label\": \"x\" },\n  \"yAxis\": { \"domain\": [-1.1, 1.1], \"label\": \"f(x)\" },\n  \"grid\": true\n}\n```\n"
+    },
+    "matrix": {
+      "label": "Matrix — matrix + properties",
+      "caption": "Hero matrix with a properties / dimensions / interpretation legend. Best for design matrices, transition matrices, covariance matrices — anywhere the structure of the matrix matters as much as its values.",
+      "sample": "<!-- _class: math matrix -->\n\n## The design matrix $X$.\n\n$$\nX = \\begin{pmatrix}\n1 & x_{11} & \\cdots & x_{1p} \\\\\n1 & x_{21} & \\cdots & x_{2p} \\\\\n\\vdots & \\vdots & \\ddots & \\vdots \\\\\n1 & x_{n1} & \\cdots & x_{np}\n\\end{pmatrix}\n$$\n\n- **shape** — $n \\times (p+1)$\n- **rows** — observations\n- **cols** — intercept + $p$ features\n- **rank** — full-rank for OLS to have a unique solution\n- **column 0** — all-ones, absorbs the intercept\n"
+    },
+    "stats": {
+      "label": "Stats — estimate ± uncertainty",
+      "caption": "Point estimate with uncertainty (CI, $p$-value, $n$) followed by plain-English interpretation. Best for treatment-effect slides, regression coefficients, A/B test readouts.",
+      "sample": "<!-- _class: math stats -->\n\n## Effect of the treatment.\n\n$$ \\hat\\beta = 0.42 \\pm 0.03 $$\n\n> 95% CI: $[0.36,\\; 0.48]$\n> $p < 0.001 \\quad\\cdot\\quad n = 1{,}204$\n\nFor every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.\n"
+    }
+  }
+}

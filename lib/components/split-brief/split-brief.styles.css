@@ -1,0 +1,22 @@
+/* split-brief — statement.split.structure
+ *
+ * Executive brief. Dark left anchor. Right panel: findings list via
+ * left-rule chrome. Author: `eyebrow` · ## h2 · p · tight ul
+ * (title / -- body). SlotLabelLift bolts the per-item title.
+ *
+ * See lib/components/split-brief/split-brief.manifest.json for the component contract.
+ */
+
+section.split-brief { padding:0; flex-direction:row; }
+section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-brief .brief-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-brief .brief-left h2 { font-size:var(--fs-3xl); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-brief .brief-left p { font-size:var(--fs-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }

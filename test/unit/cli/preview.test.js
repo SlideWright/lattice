@@ -28,42 +28,34 @@ describe('preview scope detector', () => {
   });
 
   test('manifest.json change → L0 (scaffolder-only impact)', () => {
-    assert.equal(detectScope(['lib/components/cards-grid/manifest.json']).level, 'L0');
+    assert.equal(detectScope(['lib/components/cards-grid/cards-grid.manifest.json']).level, 'L0');
   });
 
-  test('README in component folder → L0', () => {
-    assert.equal(detectScope(['lib/components/quote/README.md']).level, 'L0');
+  test('docs.md in component folder → L0 (generated reference)', () => {
+    assert.equal(detectScope(['lib/components/quote/quote.docs.md']).level, 'L0');
   });
 
-  test('example.md → L1, component-gallery only', () => {
-    const s = detectScope(['lib/components/quote/example.md']);
-    assert.equal(s.level, 'L1');
-    assert.deepEqual(s.decks, ['component-gallery']);
+  test('per-component gallery.md → L2, that component only', () => {
+    const s = detectScope(['lib/components/quote/quote.gallery.md']);
+    assert.equal(s.level, 'L2');
     assert.deepEqual(s.components, ['quote']);
   });
 
-  test('multiple example.md → L1, component-gallery only', () => {
-    const s = detectScope(['lib/components/quote/example.md', 'lib/components/cards-grid/example.md']);
-    assert.equal(s.level, 'L1');
-    assert.deepEqual(s.decks, ['component-gallery']);
-  });
-
   test('deck source change → L1', () => {
-    const s = detectScope(['examples/kpi-gallery.md']);
+    const s = detectScope(['examples/gallery-mermaid.md']);
     assert.equal(s.level, 'L1');
-    assert.deepEqual(s.decks, ['kpi-gallery']);
+    assert.deepEqual(s.decks, ['gallery-mermaid']);
   });
 
   test('component CSS → L2, scoped to decks using that component', () => {
-    const s = detectScope(['lib/components/cards-grid/styles.css']);
+    const s = detectScope(['lib/components/cards-grid/cards-grid.styles.css']);
     assert.equal(s.level, 'L2');
     assert.deepEqual(s.components, ['cards-grid']);
     assert.ok(s.decks.includes('gallery'), 'gallery uses cards-grid');
-    assert.ok(s.decks.includes('component-gallery'), 'component-gallery always included for component changes');
   });
 
   test('component transform.js → L2', () => {
-    const s = detectScope(['lib/components/radar/transform.js']);
+    const s = detectScope(['lib/components/radar/radar.transform.js']);
     assert.equal(s.level, 'L2');
     assert.deepEqual(s.components, ['radar']);
   });
@@ -86,9 +78,9 @@ describe('preview scope detector', () => {
   });
 
   test('explicit deck override → L1 with that deck', () => {
-    const s = detectScope([], { deck: 'mermaid-gallery' });
+    const s = detectScope([], { deck: 'gallery-mermaid' });
     assert.equal(s.level, 'L1');
-    assert.deepEqual(s.decks, ['mermaid-gallery']);
+    assert.deepEqual(s.decks, ['gallery-mermaid']);
   });
 
   test('--full override → L3 with all decks', () => {
@@ -100,20 +92,19 @@ describe('preview scope detector', () => {
   test('mixed change with one full-diff trigger wins (L3)', () => {
     const s = detectScope([
       'lib/_legacy.css',
-      'lib/components/cards-grid/example.md',
-      'examples/kpi-gallery.md',
+      'lib/components/cards-grid/cards-grid.gallery.md',
+      'examples/gallery-jargon.md',
     ]);
     assert.equal(s.level, 'L3');
   });
 
   test('component CSS + deck source → L2 (component-scoped includes deck)', () => {
     const s = detectScope([
-      'lib/components/cards-grid/styles.css',
-      'examples/kpi-gallery.md',
+      'lib/components/cards-grid/cards-grid.styles.css',
+      'examples/gallery-jargon.md',
     ]);
     assert.equal(s.level, 'L2');
-    assert.ok(s.decks.includes('kpi-gallery'));
-    assert.ok(s.decks.includes('component-gallery'));
+    assert.ok(s.decks.includes('gallery-jargon'));
   });
 
   test('unrecognized lib/ file → L3 (conservative default)', () => {

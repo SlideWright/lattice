@@ -1,0 +1,79 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "radar",
+  "function": "evidence",
+  "form": "scatter",
+  "substance": "series",
+  "description": "Native radar / spider chart — items rated across multiple axes.",
+  "purpose": "Use to compare 2–4 options across the same 4–8 criteria. Each option becomes a polygon; overlap shows where strengths align.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the comparison."
+    },
+    "axes": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional eyebrow listing the axes."
+    },
+    "series": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per series (option). Format: `Label — v1, v2, v3, v4, …` one number per axis."
+    }
+  },
+  "skeleton": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Lattice\n  - Performance `9`\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Rival North\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Rival West\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",
+  "anatomyBlock": "radar-canvas",
+  "sample": "<!-- _class: radar -->\n\n`Scale · 0–10`\n\n## How we stack up across the buying criteria.\n\n- Lattice\n  - Performance `9`\n  - Pricing `7`\n  - Support `8`\n  - Ecosystem `6`\n  - Security `9`\n- Rival North\n  - Performance `7`\n  - Pricing `8`\n  - Support `6`\n  - Ecosystem `9`\n  - Security `7`\n- Rival West\n  - Performance `6`\n  - Pricing `9`\n  - Support `7`\n  - Ecosystem `8`\n  - Security `8`\n",
+  "whenToUse": [
+    {
+      "title": "Same criteria, multiple options",
+      "body": "Competitive comparison, vendor evaluation, candidate scoring — anywhere two to four options need to be rated on the same four-to-eight criteria. The polygon shapes show the trade-off pattern at a glance."
+    },
+    {
+      "title": "Shape is the argument",
+      "body": "Radar charts are good at 'we are strong here and weak there' — the lopsided polygon is the message. If precise pairwise comparisons matter more than the silhouette, use a grouped bar chart or `verdict-grid`."
+    },
+    {
+      "title": "Shared zero-to-ten scale",
+      "body": "Every axis must use the same scale so the polygons are comparable. Mixed units (ms, $, count) collapse the chart's meaning — normalise to a shared 0–10 or 0–100 before authoring."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "More than four series",
+      "body": "Five overlapping polygons become a tangle of edges. Trim to the two or three options the audience is actually choosing between; the rest belong in an appendix table."
+    },
+    {
+      "title": "Three or fewer axes",
+      "body": "Three axes makes a triangle — barely a shape. Below four criteria, the spider collapses and the slide should be a `cards-grid` or `verdict-grid` instead."
+    },
+    {
+      "title": "Mixed scales across axes",
+      "body": "If one axis is 0–10 and another is 0–10,000, the larger axis dominates the polygon and the comparison is misleading. Normalise everything to a shared scale first."
+    }
+  ],
+  "related": [
+    {
+      "name": "quadrant",
+      "when": "two axes are enough — the other six dimensions drop out"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "the criteria are categorical (pass/fail), not graded"
+    },
+    {
+      "name": "kpi",
+      "when": "the comparison is one option's metrics, not multi-option"
+    },
+    {
+      "name": "compare-table",
+      "when": "a precise tabular comparison reads better than a shape"
+    },
+    {
+      "name": "piechart",
+      "when": "the question is part-to-whole, not multi-criterion"
+    }
+  ]
+}

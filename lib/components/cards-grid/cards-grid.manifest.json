@@ -1,0 +1,115 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "cards-grid",
+  "function": "inventory",
+  "form": "grid",
+  "substance": "structure",
+  "description": "2–4 parallel items, similar weight, scannable in a grid.",
+  "purpose": "Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.",
+  "variants": [
+    "four",
+    "three",
+    "numbered",
+    "mirror"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "cards": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Each list item becomes one card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text (renders normal weight via the nested-list rule)."
+    },
+    "insight": {
+      "selector": "blockquote",
+      "required": false,
+      "description": "Optional key-insight panel above the cards."
+    }
+  },
+  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
+  "sample": "<!-- _class: cards-grid -->\n\n## The framework has four components.\n\n- Signal Intake.\n  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.\n- Scoring Model.\n  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.\n- Decision Log.\n  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.\n- Calibration Loop.\n  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.\n",
+  "anatomyBlock": "T7-card-grid-2x2",
+  "whenToUse": [
+    {
+      "title": "Parallel items",
+      "body": "Four cards or fewer, each item gets equal weight in the layout. Audience compares them at a glance."
+    },
+    {
+      "title": "Scannable at a glance",
+      "body": "The audience absorbs the whole set in one look — no scrolling, no eye-leaping between rows."
+    },
+    {
+      "title": "Equal information density",
+      "body": "Each card carries roughly the same text length. Uneven density makes the grid feel unbalanced."
+    },
+    {
+      "title": "Order is decorative",
+      "body": "When sequence carries meaning, use list-steps or list-criteria instead. cards-grid is for parallel options."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "More than 4 items",
+      "body": "Split into multiple slides instead. The grid loses scannability past 4 cards."
+    },
+    {
+      "title": "Order carries meaning",
+      "body": "Use list-steps or list-criteria. cards-grid is for parallel options, not sequences."
+    },
+    {
+      "title": "Lopsided density",
+      "body": "Equalize the prose when one card has three sentences and the rest have one. Otherwise change layout."
+    },
+    {
+      "title": "Inline-code-only body",
+      "body": "A body bullet containing only `code` gets promoted to an eyebrow label. Mix it with surrounding prose."
+    }
+  ],
+  "related": [
+    {
+      "name": "list-steps",
+      "when": "items carry an explicit sequence"
+    },
+    {
+      "name": "cards-stack",
+      "when": "items stack vertically as full-width rows"
+    },
+    {
+      "name": "cards-side",
+      "when": "two-card horizontal comparison"
+    },
+    {
+      "name": "cards-wide",
+      "when": "three full-width rows for longer prose per item"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "comparing options against shared criteria"
+    }
+  ],
+  "variantDocs": {
+    "three": {
+      "label": "Three columns",
+      "caption": "Three equal columns instead of the default two. The 2+1 last-child span rule is reset to `auto`.",
+      "sample": "<!-- _class: cards-grid three -->\n\n## The framework has three components.\n\n- Signal Intake.\n  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.\n- Scoring Model.\n  - Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.\n- Decision Log.\n  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied.\n"
+    },
+    "four": {
+      "label": "Four columns",
+      "caption": "Four equal columns instead of two. Pair with `compact` so the cards retain breathing room.",
+      "sample": "<!-- _class: cards-grid four compact -->\n\n## Four phases, four owners.\n\n- Intake.\n  - PM. Collect raw signals.\n- Score.\n  - Analyst. Apply weights.\n- Decide.\n  - Lead. Pick the call.\n- Calibrate.\n  - Team. Compare to actuals.\n"
+    },
+    "numbered": {
+      "label": "Numbered cards",
+      "caption": "Authored as `ol` (`1.` source), the grid stamps a flush top-left accent corner tag on each card. Sublist must be indented 3 spaces to clear the `1. ` prefix.",
+      "sample": "<!-- _class: cards-grid -->\n\n## Signal Intake produces three outputs.\n\n1. Weekly Signal Brief\n   - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday.\n2. Anomaly Alerts\n   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed to the accountable PM with a 4-hour response SLA.\n3. Monthly Signal Index\n   - The source of truth for the calibration loop. Required reading before each retrospective.\n"
+    },
+    "mirror": {
+      "label": "Mirror (no-op on symmetric grids)",
+      "caption": "The universal `mirror` modifier is declared for completeness but has no visible effect — cards-grid is a symmetric layout with no inherent left/right asymmetry to flip.",
+      "sample": "<!-- _class: cards-grid mirror -->\n\n## Mirror is a no-op here.\n\n- First card.\n  - Same position with or without `mirror`.\n- Second card.\n  - Same position with or without `mirror`.\n- Third card.\n  - Symmetric grids have nothing to flip.\n- Fourth card.\n  - This slide renders identically to the default.\n"
+    }
+  }
+}

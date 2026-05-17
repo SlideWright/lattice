@@ -70,7 +70,7 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 ## Pick by intent. Then by data shape.
 
 - **Anchor.** Orientation — title, divider, subtopic, closing.
-- **Statement.** One declarative claim — big-number, quote, split-panel, content.
+- **Statement.** One declarative claim — big-number, quote, split-list, content.
 - **Inventory.** Parallel items — cards-grid, cards-stack, list, list-tabular.
 - **Comparison.** Contrast options — compare-prose, verdict-grid, before-after.
 - **Progression.** Ordered movement — timeline, list-steps, roadmap.

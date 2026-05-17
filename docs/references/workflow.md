@@ -39,30 +39,30 @@ git worktree remove ../Lattice-contrast-audit
 
 Each worktree is fully independent — you can run `npm test` in both simultaneously. The `.git` metadata is shared; branches see each other.
 
-## The two gallery sets
+## The gallery decks
 
-The repo distinguishes **two kinds of long-running decks**, and the
-isolation rule below applies to both:
+Three top-level decks survive in `examples/` after the docs refactor.
+Per-component prose lives in `lib/components/<name>/<name>.manifest.json`
+and is rendered into `<name>.gallery.pdf` per component. The isolation
+rule below applies to the three top-level decks.
 
-**Regression baseline** — page counts asserted in CI via
-`test/fixtures/expected-page-counts.json`:
+**Regression baseline** — page counts asserted in CI (each test file
+inlines its expected count; the 58 per-component galleries derive
+theirs from `expectedGallerySlideCount(manifest)`):
 
 | Deck | npm script | Slides |
 | --- | --- | --- |
 | `examples/gallery.md` | `build:gallery` | 89 |
-| `examples/mermaid-gallery.md` | `build:mermaid` | 31 |
-| `examples/kpi-gallery.md` | `build:kpi` | 13 |
+| `examples/gallery-mermaid.md` | `build:gallery-mermaid` | 31 |
 
-A page-count drift on any of these fails `npm run test:integration`.
+A page-count drift on either fails `npm run test:integration`.
 
-**Editorial long-runners** — stable, hand-curated, not page-count
+**Editorial long-runner** — stable, hand-curated, not page-count
 asserted (but still long-running and shared):
 
 | Deck | npm script | Purpose |
 | --- | --- | --- |
-| `examples/backgrounds-gallery.md` | `build:backgrounds` | Background tokens |
-| `examples/gallery-guide.md` | (manual) | Layout field guide |
-| `examples/gallery-jargon.md` | (manual) | Decision-framework deck |
+| `examples/gallery-jargon.md` | `build:gallery-jargon` | Decision-framework deck |
 
 ## Feature decks
 
@@ -125,8 +125,8 @@ three build cycles.
 **Atomic commits per design decision.** One thematic change (e.g.
 "swap pill placement to meta-on-the-right") ships in one commit that
 covers CSS + transforms + examples + docs together. The commit is
-the unit of "this design move." Smaller mechanical splits (a typo
-in templates.md after the design ships) get their own commit.
+the unit of "this design move." Smaller mechanical splits (a typo in
+a `<name>.docs.md` after the design ships) get their own commit.
 
 ### Share — during dev, `SendUserFile`; at PR end, the raw URL
 

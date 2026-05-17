@@ -232,8 +232,8 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: split-panel -->
-<!-- _footer: "Dark panel + content · split-panel" -->
+<!-- _class: split-list -->
+<!-- _footer: "Dark panel + content · split-list" -->
 
 ## Scoring Model Deep Dive
 
@@ -864,7 +864,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · image mirror`
 
-## Mirror flips the image slot — same vocabulary as featured, split-panel, compare-prose.
+## Mirror flips the image slot — same vocabulary as featured, split-list, compare-prose.
 
 The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
 
@@ -886,8 +886,8 @@ The half-canvas image moves from the right slot to the left, and the text paddin
 
 ---
 
-<!-- _class: split-panel mirror -->
-<!-- _footer: "Modifier — split-panel mirror · split-panel mirror" -->
+<!-- _class: split-list mirror -->
+<!-- _footer: "Modifier — split-list mirror · split-list mirror" -->
 
 ## Section opener with the accent panel on the right.
 

@@ -41,9 +41,9 @@ function deckClassPropagate(markdown) {
 }
 
 /**
- * Marpit plugin: numbers each `.split-panel` slide at build time and writes
- * `data-split-panel-n="01"` onto the section. The theme reads it with
- * `content: attr(data-split-panel-n)` — same mechanism Marp uses for native
+ * Marpit plugin: numbers each `.split-list` slide at build time and writes
+ * `data-split-list-n="01"` onto the section. The theme reads it with
+ * `content: attr(data-split-list-n)` — same mechanism Marp uses for native
  * pagination (`data-marpit-pagination`), which is why it survives per-slide
  * image export while CSS counters do not.
  */
@@ -53,9 +53,9 @@ function splitPanelCounter(markdown) {
     for (const token of state.tokens) {
       if (token.type !== "marpit_slide_open") continue;
       const klass = token.attrGet("class") || "";
-      if (!/\bsplit-panel\b/.test(klass)) continue;
+      if (!/\bsplit-list\b/.test(klass)) continue;
       n += 1;
-      token.attrSet("data-split-panel-n", String(n).padStart(2, "0"));
+      token.attrSet("data-split-list-n", String(n).padStart(2, "0"));
     }
   });
 }
@@ -300,7 +300,7 @@ function addHeadingPeriods(markdown) {
   });
 }
 
-const mermaidLanguage = require("./lib/mermaid-hljs");
+const mermaidLanguage = require("./lib/integrations/mermaid/mermaid.hljs");
 
 /**
  * Marpit plugin: on a `glossary` slide, transforms a top-level 2-level
@@ -470,11 +470,11 @@ function registerMermaidHljs(marp) {
   } catch (_e) { /* already registered */ }
 }
 
-const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family');
-const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/split-panels');
-const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/transform');
-const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/components/journey/transform');
-const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/transform');
+const { applyToRenderedHtml: applyChartFamilyToHtml } = require('./lib/chart-family/chart-family');
+const { applyToRenderedHtml: applySplitPanelsToHtml } = require('./lib/engine/split-panels');
+const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/roadmap.transform');
+const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/components/journey/journey.transform');
+const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/word-cloud.transform');
 
 /**
  * latticeplotFences — rewrites ```latticeplot fenced code blocks into a

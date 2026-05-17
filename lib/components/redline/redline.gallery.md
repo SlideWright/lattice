@@ -1,0 +1,128 @@
+---
+marp: true
+theme: indaco
+paginate: true
+header: "Lattice · redline"
+---
+
+<!-- _class: title silent -->
+
+# redline
+
+`Comparison · Canvas · Prose`
+
+Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracking the amendment.
+
+---
+
+<!-- _class: redline -->
+<!-- _footer: "Default · redline" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** SB-362 collapses sale and sharing into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+
+
+---
+
+<!-- _class: redline annotated -->
+<!-- _footer: "Annotated — numbered margin notes · redline annotated" -->
+
+## SB-362 rewrote the opt-out link rule — annotated.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins><sup>1</sup> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins><sup>2</sup> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins><sup>3</sup> for use by consumers.
+
+- **Scope expansion.** Collapses sale and sharing into one duty.
+- **Method floor.** One method is now sufficient; previously two were required.
+- **Link mandate.** Pins a uniform link title across all businesses.
+
+
+---
+
+<!-- _class: redline three-col -->
+<!-- _footer: "Three-col — old | new | rationale · redline three-col" -->
+
+## SB-362 — old, new, and why side-by-side.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices," for use by consumers to direct the business not to sell or share their personal information.
+
+- **Scope.** Sale and sharing fold into one duty.
+- **Method floor.** One method now suffices.
+- **Link title.** Homepage label is mandatory and standardised.
+
+
+---
+
+<!-- _class: redline dark -->
+<!-- _footer: "Composition: dark · redline dark" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** SB-362 collapses sale and sharing into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+
+
+---
+
+<!-- _class: redline compact -->
+<!-- _footer: "Composition: compact · redline compact" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** SB-362 collapses sale and sharing into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+
+
+---
+
+<!-- _class: redline accent -->
+<!-- _footer: "Composition: accent · redline accent" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including, at minimum, a clear and conspicuous link on the homepage titled "Your Privacy Choices,"</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** SB-362 collapses sale and sharing into one duty and pins a uniform link title — homepage chrome and DSAR workflows both need a uniform UX.
+
+
+---
+
+<!-- _class: list -->
+<!-- _footer: "Anti-patterns · redline" -->
+
+## When NOT to reach for redline.
+
+- **Code diffs.** For two code snippets side-by-side, use `compare-code`. redline is for natural language — legal, regulatory, contractual — not source code.
+- **Paraphrased clauses.** If the quoted text isn't verbatim, the diff is meaningless. Either render the actual clause with its diff, or move to `compare-prose` for narrative comparison.
+- **Long passage with one tiny diff.** If one word changed in a paragraph, quote only the affected sentence or two. A wall of unchanged text with one inline mark buries the change.
+
+---
+
+<!-- _class: closing silent -->
+
+# See also.
+
+`Related components`
+
+- `compare-code` — the diff is source code, not natural language
+- `compare-prose` — two narrative alternatives, not verbatim amendments
+- `before-after` — the change is structural state, not text
+- `obligation-matrix` — comparing many regimes against shared obligations

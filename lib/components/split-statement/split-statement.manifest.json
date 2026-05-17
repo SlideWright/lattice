@@ -1,0 +1,71 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "split-statement",
+  "function": "statement",
+  "form": "split",
+  "substance": "structure",
+  "description": "Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right.",
+  "purpose": "Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from `quote` (which is the whole slide); split-statement gives equal room to quote and consequences.",
+  "slots": {
+    "quotation": {
+      "selector": "blockquote",
+      "required": true,
+      "description": "The pull quote — one or two sentences, italic display font in the dark left panel."
+    },
+    "cite": {
+      "selector": "p:first-of-type > code",
+      "required": false,
+      "description": "Optional attribution in an inline-code paragraph after the blockquote."
+    },
+    "implications": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Right-side supporting points. Lead each with **Title.** then nested body."
+    }
+  },
+  "skeleton": "<!-- _class: split-statement -->\n\n> The quotation, one or two sentences worth committing half the slide to.\n\n`Speaker · Role, Organisation, Year`\n\n- **First implication.** What this quote means for the work in front of us.\n- **Second implication.** A second-order consequence worth naming.\n- **Third implication.** The action this quote argues for.\n",
+  "anatomyBlock": "split-statement",
+  "sample": "<!-- _class: split-statement -->\n\n> The best product does not win. The most understood product does.\n\n`Morgan Chase · Head of Product, Vercel, 2024`\n\n- **Clarity is a product decision, not a marketing one.**\n  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.\n- **Onboarding is the product's first argument for itself.**\n  - The moment a user first succeeds defines their frame for everything that follows.\n- **Understanding, not delight, is the retention driver at scale.**\n  - Users who understand the system's logic stay through friction. Build for comprehension.\n",
+  "whenToUse": [
+    {
+      "title": "Quote + implications",
+      "body": "When a quotation matters AND you need to spell out the consequences alongside it. Pure quote (no implications) → `quote` slide. Pure list (no quote) → `cards-stack`. split-statement is the hybrid."
+    },
+    {
+      "title": "Expert claims that argue for action",
+      "body": "Customer voice, analyst quote, founder principle — the kind of phrase that ought to drive a decision. The right panel makes the decision explicit so the audience doesn't have to infer it."
+    },
+    {
+      "title": "Two-line quotation max",
+      "body": "The left panel is large but not infinite. Past two sentences the italic display font crowds. Trim the quote or split into a `quote` slide followed by an `cards-stack` of implications."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Implications that just paraphrase the quote",
+      "body": "If the right-panel bullets are restating what the quote said, the slide is doing two jobs that should be one. Either trust the quote (use `quote`) or make implications that genuinely extend it."
+    },
+    {
+      "title": "Quote shorter than the implications",
+      "body": "When the quote is one phrase and the right panel has three paragraphs of body, the visual balance breaks. Either lengthen the quote (within reason) or move to `split-brief` (lede + findings)."
+    },
+    {
+      "title": "No attribution",
+      "body": "The inline-code cite line is what makes a pull quote credible. An unattributed quote in a deck reads as the author's invention; attribution earns the visual weight."
+    }
+  ],
+  "related": [
+    {
+      "name": "quote",
+      "when": "the quote IS the slide — no implications needed"
+    },
+    {
+      "name": "split-brief",
+      "when": "the left carries a thesis statement, not a quote"
+    },
+    {
+      "name": "split-list",
+      "when": "the right side is supporting points, no quoted claim on the left"
+    }
+  ]
+}

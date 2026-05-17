@@ -36,7 +36,7 @@
  * need to change.
  */
 
-/* === lib/_root.css === */
+/* === lib/base/base.tokens.css === */
 /* _root.css — :root token definitions + the Google Fonts @import.
  *
  * Extracted from lib/_legacy.css in Phase 2 of the destination map.
@@ -184,7 +184,7 @@
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
-   * split-panel left rail, banner-tags, badges). Themes can override any
+   * split-list left rail, banner-tags, badges). Themes can override any
    * tier; the defaults below adapt automatically via light-dark() so
    * dark-canvas modes (where many palettes flip --accent to a brighter
    * value) do not inherit a white-on-bright-pastel collision.
@@ -292,7 +292,7 @@
   --hljs-punctuation:#d6deeb;
 }
 
-/* === lib/_base.css === */
+/* === lib/base/base.elements.css === */
 /* _base.css — semantic HTML defaults that every slide inherits.
  *
  * Extracted from lib/_legacy.css in Phase 2 of the destination map.
@@ -339,7 +339,7 @@ section ul { list-style:none; padding:0; margin:0; }
 section ol { padding:0; margin:0; }
 section blockquote { margin:0; padding:0; border:none; }
 
-/* === lib/_scaffold.css === */
+/* === lib/integrations/marp/marp.scaffold.css === */
 /* Scaffold rules — section chrome that beats Marp Core's runtime CSS.
  *
  * These rules use !important to override Marp's scaffold defaults that
@@ -389,9 +389,9 @@ section::after {
 
 @layer base, root, scaffold, components, semi-universal, universal, diagram-overrides;
 
-/* === lib/components/actors/styles.css === */
+/* === lib/components/actors/actors.styles.css === */
 /* actors — extracted from lib/_legacy.css (batch 3).
- * See lib/components/actors/manifest.json for the component contract.
+ * See lib/components/actors/actors.manifest.json for the component contract.
  */
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
@@ -491,9 +491,9 @@ section.actors > ol > li > ol > li {
   line-height:var(--lh-base);
 }
 
-/* === lib/components/agenda/styles.css === */
+/* === lib/components/agenda/agenda.styles.css === */
 /* agenda — extracted from lib/_legacy.css (batch 3).
- * See lib/components/agenda/manifest.json for the component contract.
+ * See lib/components/agenda/agenda.manifest.json for the component contract.
  */
 
 /* ── AGENDA ────────────────────────────────────────────────────────────
@@ -569,11 +569,11 @@ section.agenda.progress-9 ol > li:nth-child(-n+8) {
   opacity:0.4;
 }
 
-/* === lib/components/authority-chain/styles.css === */
+/* === lib/components/authority-chain/authority-chain.styles.css === */
 /* authority-chain — progression.timeline.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/authority-chain/manifest.json for the component contract.
+ * See lib/components/authority-chain/authority-chain.manifest.json for the component contract.
  */
 
 /* ── AUTHORITY-CHAIN ──────────────────────────────────────────────────
@@ -759,9 +759,9 @@ section.authority-chain.trail > :is(ol, ul) > li::before {
   margin-bottom:var(--sp-xs);
 }
 
-/* === lib/components/before-after/styles.css === */
+/* === lib/components/before-after/before-after.styles.css === */
 /* before-after — extracted from lib/_legacy.css (batch 4).
- * See lib/components/before-after/manifest.json for the component contract.
+ * See lib/components/before-after/before-after.manifest.json for the component contract.
  */
 
 /* ── BEFORE-AFTER ──────────────────────────────────────────────────────
@@ -950,7 +950,15 @@ section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > stron
   color: var(--on-cat, #fff);
 }
 
-/* === lib/components/big-number/styles.css === */
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.before-after :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/big-number/big-number.styles.css === */
 /* big-number — statement.canvas.bignumber
  *
  * Authoring DOM:
@@ -958,7 +966,7 @@ section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > stron
  *   section > ul > li         the giant number (first li)
  *   section > ul > li > ul    optional caption nested below
  *
- * See lib/components/big-number/manifest.json for the component contract.
+ * See lib/components/big-number/big-number.manifest.json for the component contract.
  */
 
 
@@ -970,9 +978,9 @@ section.big-number > ul > li { font-family:var(--font-display); font-size:var(--
 section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
 section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
 
-/* === lib/components/cards-grid/styles.css === */
+/* === lib/components/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-grid/manifest.json for the component contract.
+ * See lib/components/cards-grid/cards-grid.manifest.json for the component contract.
  * Sibling cards-side rules live in lib/components/cards-side/styles.css.
  */
 
@@ -1142,7 +1150,15 @@ section.cards-grid.four .cards-grid-inner > .card:last-child:nth-child(odd) {
   grid-column: auto;
 }
 
-/* === lib/components/cards-side/styles.css === */
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/cards-side/cards-side.styles.css === */
 /* cards-side — inventory.split.cards
  *
  * Two-column card grid where the second column is a peer, not a wrap.
@@ -1279,9 +1295,16 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
 }
 
-/* === lib/components/cards-stack/styles.css === */
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-side :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/cards-stack/cards-stack.styles.css === */
 /* cards-stack — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-stack/manifest.json for the component contract.
+ * See lib/components/cards-stack/cards-stack.manifest.json for the component contract.
  */
 
 /* ── CARDS-STACK ──
@@ -1360,9 +1383,17 @@ section.cards-stack.horizontal .cards-stack-inner {
   align-items: stretch;
 }
 
-/* === lib/components/cards-wide/styles.css === */
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/cards-wide/cards-wide.styles.css === */
 /* cards-wide — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-wide/manifest.json for the component contract.
+ * See lib/components/cards-wide/cards-wide.manifest.json for the component contract.
  */
 
 /* ── CARDS-WIDE ──
@@ -1406,9 +1437,18 @@ section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inheri
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
 
-/* === lib/components/checklist/styles.css === */
+
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
- * See lib/components/checklist/manifest.json for the component contract.
+ * See lib/components/checklist/checklist.manifest.json for the component contract.
  */
 
 /* ── CHECKLIST ─────────────────────────────────────────────────────────
@@ -1538,11 +1578,11 @@ section.checklist > ol > li em {
   color:var(--text-muted);
 }
 
-/* === lib/components/citation-card/styles.css === */
+/* === lib/components/citation-card/citation-card.styles.css === */
 /* citation-card — evidence.canvas.prose
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/citation-card/manifest.json for the component contract.
+ * See lib/components/citation-card/citation-card.manifest.json for the component contract.
  *
  * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css split
  * moves component CSS EARLIER in the bundle than lib/_modifiers.css.
@@ -1740,12 +1780,20 @@ section.citation-card.triptych > :is(ul, ol) > li:has(> strong:first-child) {
   border-color:var(--accent);
 }
 
-/* === lib/components/closing/styles.css === */
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/closing/closing.styles.css === */
 /* closing — anchor.bookend.closing
  *
  * Mirror of title. Dark canvas, centered, no spectrum bar.
  *
- * See lib/components/closing/manifest.json for the component contract.
+ * See lib/components/closing/closing.manifest.json for the component contract.
  */
 
 
@@ -1757,9 +1805,9 @@ section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
 
-/* === lib/components/code/styles.css === */
+/* === lib/components/code/code.styles.css === */
 /* code — extracted from lib/_legacy.css (batch 4).
- * See lib/components/code/manifest.json for the component contract.
+ * See lib/components/code/code.manifest.json for the component contract.
  */
 
 /* ── CODE ──
@@ -1772,9 +1820,9 @@ section.code > em { font-size:var(--fs-sm); line-height:var(--lh-snug); color:va
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
-/* === lib/components/compare-code/styles.css === */
+/* === lib/components/compare-code/compare-code.styles.css === */
 /* compare-code — extracted from lib/_legacy.css (batch 5).
- * See lib/components/compare-code/manifest.json for the component contract.
+ * See lib/components/compare-code/compare-code.manifest.json for the component contract.
  */
 
 /* ── COMPARE-CODE ──
@@ -1847,9 +1895,9 @@ section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { 
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
 section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }
 
-/* === lib/components/compare-prose/styles.css === */
+/* === lib/components/compare-prose/compare-prose.styles.css === */
 /* compare-prose — extracted from lib/_legacy.css (batch 5).
- * See lib/components/compare-prose/manifest.json for the component contract.
+ * See lib/components/compare-prose/compare-prose.manifest.json for the component contract.
  */
 
 /* ── COMPARISON ──
@@ -2007,9 +2055,17 @@ section.compare-prose.vertical .compare-prose-inner .connector {
   font-size: var(--fs-2xl);
 }
 
-/* === lib/components/compare-table/styles.css === */
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/compare-table/compare-table.styles.css === */
 /* compare-table — extracted from lib/_legacy.css (batch 4).
- * See lib/components/compare-table/manifest.json for the component contract.
+ * See lib/components/compare-table/compare-table.manifest.json for the component contract.
  */
 
 /* ── COMPARE-TABLE ──
@@ -2022,10 +2078,10 @@ section.compare-table thead th { font-family:var(--font-mono); font-size:var(--f
 section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
-/* === lib/components/content/styles.css === */
+/* === lib/components/content/content.styles.css === */
 /* content — statement.canvas.content (the catch-all prose slide)
  *
- * See lib/components/content/manifest.json for the component contract.
+ * See lib/components/content/content.manifest.json for the component contract.
  */
 
 
@@ -2035,9 +2091,9 @@ section.content h2 { margin-bottom:var(--sp-sm); }
 section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed); }
 section.content { justify-content:flex-start; }
 
-/* === lib/components/decision/styles.css === */
+/* === lib/components/decision/decision.styles.css === */
 /* decision — extracted from lib/_legacy.css (batch 4).
- * See lib/components/decision/manifest.json for the component contract.
+ * See lib/components/decision/decision.manifest.json for the component contract.
  */
 
 /* ── DECISION ──────────────────────────────────────────────────────────
@@ -2112,7 +2168,14 @@ section.decision > ol > li > ul {
   padding:0;
 }
 
-/* === lib/components/diagram/styles.css === */
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/diagram/diagram.styles.css === */
 /* diagram — evidence.canvas.graph
  *
  * The slide is one big Mermaid diagram. The fenced ```mermaid block
@@ -2121,7 +2184,7 @@ section.decision > ol > li > ul {
  * heading and the size of the SVG container; per-diagram theming
  * lives in the DIAGRAM OVERRIDES section near the end of the bundle.
  *
- * See lib/components/diagram/manifest.json for the component contract.
+ * See lib/components/diagram/diagram.manifest.json for the component contract.
  */
 
 
@@ -2149,13 +2212,13 @@ section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(-
    the blockquote to fit-content; align-self:stretch overrides that. */
 section.diagram > blockquote { align-self:stretch; }
 
-/* === lib/components/divider/styles.css === */
+/* === lib/components/divider/divider.styles.css === */
 /* divider — anchor.divider
  *
  * Dark canvas with a left-edge spectrum rail instead of the top border.
  * Heading left-aligned in the lower-half of the slide.
  *
- * See lib/components/divider/manifest.json for the component contract.
+ * See lib/components/divider/divider.manifest.json for the component contract.
  */
 
 section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
@@ -2165,9 +2228,9 @@ section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs);
 section.divider h1,
 section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 
-/* === lib/components/featured/styles.css === */
+/* === lib/components/featured/featured.styles.css === */
 /* featured — extracted from lib/_legacy.css (batch 5).
- * See lib/components/featured/manifest.json for the component contract.
+ * See lib/components/featured/featured.manifest.json for the component contract.
  */
 
 /* ── FEATURED ──
@@ -2226,9 +2289,16 @@ section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul > li {
 section.featured:not(:has(.feat-layout)) > ul > li::before { display:none !important; content:none !important; }
 section.featured:not(:has(.feat-layout)) > ul > li > ul > li::before { display:none !important; content:none !important; }
 
-/* === lib/components/gantt/styles.css === */
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.featured :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/gantt/gantt.styles.css === */
 /* gantt — extracted from lib/_legacy.css (batch 7).
- * See lib/components/gantt/manifest.json for the component contract.
+ * See lib/components/gantt/gantt.manifest.json for the component contract.
  */
 
 /* ── GANTT ──────────────────────────────────────────────────────────────────
@@ -2412,9 +2482,9 @@ section.gantt.dark .gantt-bar[data-s="deferred"] {
 /* Axis / lane structural tokens use light-dark() and need no dark overrides. */
 section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
 
-/* === lib/components/glossary/styles.css === */
+/* === lib/components/glossary/glossary.styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
- * See lib/components/glossary/manifest.json for the component contract.
+ * See lib/components/glossary/glossary.manifest.json for the component contract.
  */
 
 /* ── GLOSSARY ──
@@ -2453,9 +2523,9 @@ section.glossary h2 .range-pill {
   vertical-align:middle;
 }
 
-/* === lib/components/image/styles.css === */
+/* === lib/components/image/image.styles.css === */
 /* image — extracted from lib/_legacy.css (batch 5).
- * See lib/components/image/manifest.json for the component contract.
+ * See lib/components/image/image.manifest.json for the component contract.
  */
 
 /* ── IMAGE ──────────────────────────────────────────────────────────────────
@@ -3115,11 +3185,11 @@ section.image-chamber.full.mirror p:last-of-type {
 
 /* ── END IMAGE CONCEPT PROTOTYPES ─────────────────────────────────────────── */
 
-/* === lib/components/journey/styles.css === */
+/* === lib/components/journey/journey.styles.css === */
 /* journey — progression.timeline.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/journey/manifest.json for the component contract.
+ * See lib/components/journey/journey.manifest.json for the component contract.
  */
 
 /* ── JOURNEY ───────────────────────────────────────────────────────────
@@ -3753,9 +3823,9 @@ section.journey.weighted .journey-task-actors {
   top: 4px;
 }
 
-/* === lib/components/kanban/styles.css === */
+/* === lib/components/kanban/kanban.styles.css === */
 /* kanban — extracted from lib/_legacy.css (batch 7).
- * See lib/components/kanban/manifest.json for the component contract.
+ * See lib/components/kanban/kanban.manifest.json for the component contract.
  */
 
 /* ── KANBAN ──────────────────────────────────────────────────────────────────
@@ -3995,9 +4065,9 @@ section .items .node .label-container {
   stroke: var(--c-stroke) !important;
 }
 
-/* === lib/components/kpi/styles.css === */
+/* === lib/components/kpi/kpi.styles.css === */
 /* kpi — extracted from lib/_legacy.css (batch 7).
- * See lib/components/kpi/manifest.json for the component contract.
+ * See lib/components/kpi/kpi.manifest.json for the component contract.
  */
 
 /* ── KPI ───────────────────────────────────────────────────────────────
@@ -4403,13 +4473,13 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
   font-size: 0.78125cqi;
 }
 
-/* === lib/components/list/styles.css === */
+/* === lib/components/list/list.styles.css === */
 /* list — inventory.stack.bullets
  *
  * Plain bullet list under a heading. Pill-style cards per item with
  * an accent left border. Both ul (plain) and ol (numbered) variants.
  *
- * See lib/components/list/manifest.json for the component contract.
+ * See lib/components/list/list.manifest.json for the component contract.
  */
 
 section.list h2 { margin-bottom:var(--sp-md); }
@@ -4421,9 +4491,9 @@ section.list ol { list-style:none; counter-reset:list-counter; display:flex; fle
 section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
 section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
 
-/* === lib/components/list-criteria/styles.css === */
+/* === lib/components/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
- * See lib/components/list-criteria/manifest.json for the component contract.
+ * See lib/components/list-criteria/list-criteria.manifest.json for the component contract.
  */
 
 /* ── CRITERIA ──
@@ -4526,9 +4596,9 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
 
-/* === lib/components/list-steps/styles.css === */
+/* === lib/components/list-steps/list-steps.styles.css === */
 /* list-steps — extracted from lib/_legacy.css (batch 6).
- * See lib/components/list-steps/manifest.json for the component contract.
+ * See lib/components/list-steps/list-steps.manifest.json for the component contract.
  */
 
 /* ── STEPS ──
@@ -4618,9 +4688,9 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-right: 10px solid transparent;
 }
 
-/* === lib/components/list-tabular/styles.css === */
+/* === lib/components/list-tabular/list-tabular.styles.css === */
 /* list-tabular — extracted from lib/_legacy.css (batch 6).
- * See lib/components/list-tabular/manifest.json for the component contract.
+ * See lib/components/list-tabular/list-tabular.manifest.json for the component contract.
  */
 
 /* ── LIST-TABULAR ──────────────────────────────────────────────────────────
@@ -4904,11 +4974,11 @@ section.list-tabular.register.outline ol > li > code {
 /* ── Universal modifier: compact ──────────────────────────────────────── */
 section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
-/* === lib/components/math/styles.css === */
+/* === lib/components/math/math.styles.css === */
 /* math — evidence.canvas.prose
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/math/manifest.json for the component contract.
+ * See lib/components/math/math.manifest.json for the component contract.
  */
 
 /* ── MATH ──────────────────────────────────────────────────────────────────
@@ -5572,9 +5642,9 @@ section .latticeplot-error {
   border-radius: var(--radius-sm);
 }
 
-/* === lib/components/matrix-2x2/styles.css === */
+/* === lib/components/matrix-2x2/matrix-2x2.styles.css === */
 /* matrix-2x2 — extracted from lib/_legacy.css (batch 4).
- * See lib/components/matrix-2x2/manifest.json for the component contract.
+ * See lib/components/matrix-2x2/matrix-2x2.manifest.json for the component contract.
  */
 
 /* ── MATRIX-2X2 ────────────────────────────────────────────────────────
@@ -5631,11 +5701,18 @@ section.matrix-2x2 li > ol > li {
   line-height:var(--lh-base);
 }
 
-/* === lib/components/obligation-matrix/styles.css === */
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/obligation-matrix/obligation-matrix.styles.css === */
 /* obligation-matrix — comparison.matrix.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/obligation-matrix/manifest.json for the component contract.
+ * See lib/components/obligation-matrix/obligation-matrix.manifest.json for the component contract.
  */
 
 /* ── OBLIGATION-MATRIX ────────────────────────────────────────────────
@@ -5785,9 +5862,9 @@ section.obligation-matrix.heat thead tr th:last-child {
   padding-right:var(--sp-md);
 }
 
-/* === lib/components/piechart/styles.css === */
+/* === lib/components/piechart/piechart.styles.css === */
 /* piechart — extracted from lib/_legacy.css (batch 9).
- * See lib/components/piechart/manifest.json for the component contract.
+ * See lib/components/piechart/piechart.manifest.json for the component contract.
  */
 
 /* ── PIECHART · donut ──
@@ -5890,9 +5967,9 @@ section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background
 section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--c5-dark); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--c6-dark); }
 
-/* === lib/components/principles/styles.css === */
+/* === lib/components/principles/principles.styles.css === */
 /* principles — extracted from lib/_legacy.css (batch 3).
- * See lib/components/principles/manifest.json for the component contract.
+ * See lib/components/principles/principles.manifest.json for the component contract.
  */
 
 /* ── PRINCIPLES ────────────────────────────────────────────────────────
@@ -5958,9 +6035,9 @@ section.principles.roman ol > li::before {
 /* Plain bullets — no numeric counter. */
 section.principles.bullet ol > li::before { content:'·'; }
 
-/* === lib/components/progress/styles.css === */
+/* === lib/components/progress/progress.styles.css === */
 /* progress — extracted from lib/_legacy.css (batch 9).
- * See lib/components/progress/manifest.json for the component contract.
+ * See lib/components/progress/progress.manifest.json for the component contract.
  */
 
 /* ── PROGRESS ──
@@ -6044,9 +6121,9 @@ section.progress .progress-note {
   font-style: italic;
 }
 
-/* === lib/components/quadrant/styles.css === */
+/* === lib/components/quadrant/quadrant.styles.css === */
 /* quadrant — extracted from lib/_legacy.css (batch 8).
- * See lib/components/quadrant/manifest.json for the component contract.
+ * See lib/components/quadrant/quadrant.manifest.json for the component contract.
  */
 
 /* ── QUADRANT ───────────────────────────────────────────────────────────────
@@ -6387,14 +6464,14 @@ section.quadrant.dark {
   --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
 }
 
-/* === lib/components/quote/styles.css === */
+/* === lib/components/quote/quote.styles.css === */
 /* quote — statement.canvas.quote
  *
  * Authoring DOM:
  *   section > blockquote > p   the quotation
  *   section > p                attribution line below
  *
- * See lib/components/quote/manifest.json for the component contract.
+ * See lib/components/quote/quote.manifest.json for the component contract.
  */
 
 
@@ -6413,9 +6490,9 @@ section.quote blockquote::after  { content:'\201D'; font-family:var(--font-displ
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
 section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
 
-/* === lib/components/radar/styles.css === */
+/* === lib/components/radar/radar.styles.css === */
 /* radar — extracted from lib/_legacy.css (batch 8).
- * See lib/components/radar/manifest.json for the component contract.
+ * See lib/components/radar/radar.manifest.json for the component contract.
  */
 
 /* ── RADAR ───────────────────────────────────────────────────────────────────
@@ -6727,11 +6804,11 @@ section.radar.dark {
   --radar-fill:       24%;
 }
 
-/* === lib/components/redline/styles.css === */
+/* === lib/components/redline/redline.styles.css === */
 /* redline — comparison.canvas.prose
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/redline/manifest.json for the component contract.
+ * See lib/components/redline/redline.manifest.json for the component contract.
  *
  * SPECIFICITY-BUMP HACK (transitional). Phase 4 of the _legacy.css
  * split moves component CSS EARLIER in the bundle than lib/_modifiers.css.
@@ -7009,7 +7086,7 @@ section.redline.three-col > :is(ol, ul)::before {
  * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
  * ════════════════════════════════════════════════════════════════════════ */
 
-/* === lib/components/regulatory-update/styles.css === */
+/* === lib/components/regulatory-update/regulatory-update.styles.css === */
 /* regulatory-update — progression.ledger.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 (completed via Phase 7
@@ -7252,9 +7329,9 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-chil
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }
 
-/* === lib/components/roadmap/styles.css === */
+/* === lib/components/roadmap/roadmap.styles.css === */
 /* roadmap — extracted from lib/_legacy.css (batch 7).
- * See lib/components/roadmap/manifest.json for the component contract.
+ * See lib/components/roadmap/roadmap.manifest.json for the component contract.
  */
 
 /* ── ROADMAP ───────────────────────────────────────────────────────────
@@ -7729,14 +7806,14 @@ section.roadmap.milestones tbody td:not(:first-child) {
   background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
-/* === lib/components/split-brief/styles.css === */
+/* === lib/components/split-brief/split-brief.styles.css === */
 /* split-brief — statement.split.structure
  *
  * Executive brief. Dark left anchor. Right panel: findings list via
  * left-rule chrome. Author: `eyebrow` · ## h2 · p · tight ul
  * (title / -- body). SlotLabelLift bolts the per-item title.
  *
- * See lib/components/split-brief/manifest.json for the component contract.
+ * See lib/components/split-brief/split-brief.manifest.json for the component contract.
  */
 
 section.split-brief { padding:0; flex-direction:row; }
@@ -7753,7 +7830,7 @@ section.split-brief .brief-right > ul > li > strong { display:block; font-size:v
 section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* === lib/components/split-compare/styles.css === */
+/* === lib/components/split-compare/split-compare.styles.css === */
 /* split-compare — comparison.split.structure
  *
  * Two options, one verdict. 2-column grid + spanning accent verdict row.
@@ -7761,7 +7838,7 @@ section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--f
  * / -- items) · > verdict. Second top-level list item is always the
  * preferred option. SlotLabelLift bolts the option label.
  *
- * See lib/components/split-compare/manifest.json for the component contract.
+ * See lib/components/split-compare/split-compare.manifest.json for the component contract.
  */
 
 section.split-compare { padding:0; flex-direction:row; }
@@ -7787,14 +7864,151 @@ section.split-compare .verdict::before { content:'Recommendation'; font-size:var
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
 
-/* === lib/components/split-metric/styles.css === */
+/* === lib/components/split-list/split-list.styles.css === */
+/* split-list — extracted from lib/_legacy.css (batch 5).
+ * See lib/components/split-list/split-list.manifest.json for the component contract.
+ */
+
+/* ── SPLIT-PANEL ──
+ * ## left-heading  p left-intro  - bullet list right panel
+ * ### right-eyebrow before bullets
+ */
+section.split-list { padding:0; flex-direction:row; }
+section.split-list h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
+section.split-list h5 { font-size:var(--fs-label); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
+section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
+section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
+section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+/* Code-only paragraph (eyebrow / section label) in the processed panel-left:
+ * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
+section.split-list .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
+section.split-list .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
+/* h5 eyebrow in processed panel-left: mirror the fallback grid's align-self:start. */
+section.split-list .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
+section.split-list .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
+section.split-list .panel-right h3 { margin-bottom:0.3125cqi; }
+section.split-list .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-list :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
+section.split-list ol { counter-reset:panel-counter; }
+section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-list ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
+section.split-list ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-list ol > li > strong,
+section.split-list ol > li > span,
+section.split-list ol > li > p,
+section.split-list ol > li > em { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-list ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
+section.split-list ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
+section.split-list :is(ul,ol) > li > strong { display:block; }
+section.split-list :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:0.3125cqi 0 0 0; margin-inline-start:0; width:100%; }
+section.split-list :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
+section.split-list :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+/* Trailing ul after the main list = optional metadata footer (Audience, Intent).
+ * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
+ * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
+ * no rule fires, panel renders as before. */
+section.split-list .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; padding-inline-start:0; }
+section.split-list .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-list .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+section.split-list {
+  --marp-slide-header-color: var(--on-dark-secondary);
+  --marp-slide-footer-color: var(--on-dark-secondary);
+}
+
+
+/* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
+ * Pure-CSS rendering without DOM transformation.
+ * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
+ * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
+section.split-list:not(:has(.panel-left)) {
+  display:grid;
+  grid-template-columns:34% 1fr;
+  grid-template-rows:auto auto 1fr auto;
+  padding:0; position:relative;
+}
+section.split-list:not(:has(.panel-left))::before {
+  content:''; position:absolute;
+  top:0; left:0; bottom:0; width:34%;
+  background:var(--accent); z-index:0;
+}
+section.split-list:not(:has(.panel-left)) h5 {
+  grid-column:1; grid-row:1 / -1; align-self:start;
+  padding:var(--sp-xl) var(--sp-lg) 0;
+  z-index:1; position:relative;
+  color:var(--on-accent-secondary); margin:0;
+}
+section.split-list:not(:has(.panel-left)) h2 {
+  grid-column:1; grid-row:1 / -1; align-self:end;
+  padding:0 var(--sp-lg) var(--sp-xl);
+  z-index:1; position:relative;
+  color:var(--on-accent); font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
+}
+section.split-list:not(:has(.panel-left)) h3 {
+  grid-column:2; grid-row:1;
+  padding:var(--sp-xl) var(--sp-xl) 0 var(--sp-lg); margin:0;
+}
+section.split-list:not(:has(.panel-left)) p {
+  grid-column:2; grid-row:2;
+  padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
+  font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
+}
+/* Code-only paragraph (eyebrow / section label) → left dark panel, centered.
+ * Overrides the general p rule above; color must be set explicitly on both
+ * the <p> (for inheritance by > code) and directly on > code (for cascade). */
+section.split-list:not(:has(.panel-left)) p:has(> code:only-child) {
+  grid-column:1; grid-row:1 / -1; align-self:center;
+  padding:0 var(--sp-lg);
+  z-index:1; position:relative;
+  color:var(--on-accent-secondary);
+}
+section.split-list:not(:has(.panel-left)) p:has(> code:only-child) > code {
+  color:var(--on-accent-secondary);
+  background:none; border:none; padding:0; border-radius:0;
+}
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) {
+  grid-column:2; grid-row:3;
+  padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  list-style:none; margin:0;
+}
+/* Optional metadata footer: a trailing ul placed *after* the main list in the
+ * source. Lands in row 4 of the fallback grid, pinned to the bottom of the
+ * right column with a divider above. Card styling is reset on its <li>. */
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul {
+  grid-column:2; grid-row:4;
+  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  margin:0; border-top:1px solid var(--border);
+  list-style:none; display:flex; flex-direction:column; gap:4px;
+}
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
+  display:block;
+  background:none; border:none; border-radius:0;
+  padding:0; margin:0;
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-snug);
+}
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
+  font-weight:700; color:var(--text-heading); margin-right:0.4em;
+}
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.split-list :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/split-metric/split-metric.styles.css === */
 /* split-metric — evidence.split.structure
  *
  * One number owns the room. Light left / dark right — inverted scheme
  * from split-brief. Author: `unit label` · ## number · p · tight ul
  * (title / -- body). SlotLabelLift bolts the per-item title.
  *
- * See lib/components/split-metric/manifest.json for the component contract.
+ * See lib/components/split-metric/split-metric.manifest.json for the component contract.
  */
 
 section.split-metric { padding:0; flex-direction:row; }
@@ -7811,144 +8025,14 @@ section.split-metric .metric-right > ul > li > strong { display:block; font-size
 section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
 
-/* === lib/components/split-panel/styles.css === */
-/* split-panel — extracted from lib/_legacy.css (batch 5).
- * See lib/components/split-panel/manifest.json for the component contract.
- */
-
-/* ── SPLIT-PANEL ──
- * ## left-heading  p left-intro  - bullet list right panel
- * ### right-eyebrow before bullets
- */
-section.split-panel { padding:0; flex-direction:row; }
-section.split-panel h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
-section.split-panel h5 { font-size:var(--fs-label); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
-section.split-panel .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
-section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
-section.split-panel .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
-/* Code-only paragraph (eyebrow / section label) in the processed panel-left:
- * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
-section.split-panel .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
-section.split-panel .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
-/* h5 eyebrow in processed panel-left: mirror the fallback grid's align-self:start. */
-section.split-panel .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
-section.split-panel .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
-section.split-panel .panel-right h3 { margin-bottom:0.3125cqi; }
-section.split-panel .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
-section.split-panel :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
-section.split-panel ol { counter-reset:panel-counter; }
-section.split-panel :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
-section.split-panel ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-panel ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
-section.split-panel ol > li > strong,
-section.split-panel ol > li > span,
-section.split-panel ol > li > p,
-section.split-panel ol > li > em { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
-section.split-panel ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
-section.split-panel ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
-section.split-panel :is(ul,ol) > li > strong { display:block; }
-section.split-panel :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:0.3125cqi 0 0 0; margin-inline-start:0; width:100%; }
-section.split-panel :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
-section.split-panel :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
-/* Trailing ul after the main list = optional metadata footer (Audience, Intent).
- * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
- * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
- * no rule fires, panel renders as before. */
-section.split-panel .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; padding-inline-start:0; }
-section.split-panel .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
-section.split-panel .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
-section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
-section.split-panel .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
-section.split-panel {
-  --marp-slide-header-color: var(--on-dark-secondary);
-  --marp-slide-footer-color: var(--on-dark-secondary);
-}
-
-
-/* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
- * Pure-CSS rendering without DOM transformation.
- * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
- * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
-section.split-panel:not(:has(.panel-left)) {
-  display:grid;
-  grid-template-columns:34% 1fr;
-  grid-template-rows:auto auto 1fr auto;
-  padding:0; position:relative;
-}
-section.split-panel:not(:has(.panel-left))::before {
-  content:''; position:absolute;
-  top:0; left:0; bottom:0; width:34%;
-  background:var(--accent); z-index:0;
-}
-section.split-panel:not(:has(.panel-left)) h5 {
-  grid-column:1; grid-row:1 / -1; align-self:start;
-  padding:var(--sp-xl) var(--sp-lg) 0;
-  z-index:1; position:relative;
-  color:var(--on-accent-secondary); margin:0;
-}
-section.split-panel:not(:has(.panel-left)) h2 {
-  grid-column:1; grid-row:1 / -1; align-self:end;
-  padding:0 var(--sp-lg) var(--sp-xl);
-  z-index:1; position:relative;
-  color:var(--on-accent); font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
-}
-section.split-panel:not(:has(.panel-left)) h3 {
-  grid-column:2; grid-row:1;
-  padding:var(--sp-xl) var(--sp-xl) 0 var(--sp-lg); margin:0;
-}
-section.split-panel:not(:has(.panel-left)) p {
-  grid-column:2; grid-row:2;
-  padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
-  font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
-}
-/* Code-only paragraph (eyebrow / section label) → left dark panel, centered.
- * Overrides the general p rule above; color must be set explicitly on both
- * the <p> (for inheritance by > code) and directly on > code (for cascade). */
-section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) {
-  grid-column:1; grid-row:1 / -1; align-self:center;
-  padding:0 var(--sp-lg);
-  z-index:1; position:relative;
-  color:var(--on-accent-secondary);
-}
-section.split-panel:not(:has(.panel-left)) p:has(> code:only-child) > code {
-  color:var(--on-accent-secondary);
-  background:none; border:none; padding:0; border-radius:0;
-}
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) {
-  grid-column:2; grid-row:3;
-  padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
-  list-style:none; margin:0;
-}
-/* Optional metadata footer: a trailing ul placed *after* the main list in the
- * source. Lands in row 4 of the fallback grid, pinned to the bottom of the
- * right column with a divider above. Card styling is reset on its <li>. */
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul {
-  grid-column:2; grid-row:4;
-  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) var(--sp-lg);
-  margin:0; border-top:1px solid var(--border);
-  list-style:none; display:flex; flex-direction:column; gap:4px;
-}
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
-  display:block;
-  background:none; border:none; border-radius:0;
-  padding:0; margin:0;
-  font-size:var(--fs-body); font-weight:400;
-  color:var(--text-body); line-height:var(--lh-snug);
-}
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
-  font-weight:700; color:var(--text-heading); margin-right:0.4em;
-}
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
-section.split-panel:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
-
-/* === lib/components/split-statement/styles.css === */
+/* === lib/components/split-statement/split-statement.styles.css === */
 /* split-statement — statement.split.structure
  *
  * Pull quote. Half the slide committed to one idea — no apology.
  * Author: > blockquote · `cite` · tight ul (title / -- body).
  * SlotLabelLift bolts the per-item title.
  *
- * See lib/components/split-statement/manifest.json for the component contract.
+ * See lib/components/split-statement/split-statement.manifest.json for the component contract.
  */
 
 section.split-statement { padding:0; flex-direction:row; }
@@ -7966,14 +8050,14 @@ section.split-statement .statement-right > ul > li > strong { display:block; fon
 section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* === lib/components/split-steps/styles.css === */
+/* === lib/components/split-steps/split-steps.styles.css === */
 /* split-steps — progression.split.structure
  *
  * Sequential process. CSS counter timeline with connecting line. Author:
  * `phase` · ## h2 · p · tight ol (title / -- body sub-item). SlotLabelLift
  * bolts the per-step title.
  *
- * See lib/components/split-steps/manifest.json for the component contract.
+ * See lib/components/split-steps/split-steps.manifest.json for the component contract.
  */
 
 section.split-steps { padding:0; flex-direction:row; }
@@ -7994,14 +8078,14 @@ section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; gri
 section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
 section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
-/* === lib/components/stats/styles.css === */
+/* === lib/components/stats/stats.styles.css === */
 /* stats — evidence.stack.stats
  *
  * Row of 3–5 stat tiles. Each tile = big number + uppercase label.
  * The ol list is post-processed by lib/chart-family.js (or the
  * emulator's structure pass) into .stats-row > .stat-item.
  *
- * See lib/components/stats/manifest.json for the component contract.
+ * See lib/components/stats/stats.manifest.json for the component contract.
  */
 
 section.stats { justify-content:center; align-items:center; }
@@ -8033,11 +8117,11 @@ section.stats:not(:has(.stats-row)) ol > li > strong {
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 
-/* === lib/components/statute-stack/styles.css === */
+/* === lib/components/statute-stack/statute-stack.styles.css === */
 /* statute-stack — inventory.ledger.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
- * See lib/components/statute-stack/manifest.json for the component contract.
+ * See lib/components/statute-stack/statute-stack.manifest.json for the component contract.
  */
 
 /* ── STATUTE-STACK ────────────────────────────────────────────────────
@@ -8294,13 +8378,13 @@ section.statute-stack.lane td:last-child {
   white-space:nowrap;
 }
 
-/* === lib/components/subtopic/styles.css === */
+/* === lib/components/subtopic/subtopic.styles.css === */
 /* subtopic — anchor.divider.subtopic
  *
  * Light divider — centered, no canvas reskin. Sits between a divider
  * slide and a sequence of content slides for finer orientation.
  *
- * See lib/components/subtopic/manifest.json for the component contract.
+ * See lib/components/subtopic/subtopic.manifest.json for the component contract.
  */
 
 section.subtopic { justify-content:center; align-items:center; }
@@ -8308,9 +8392,9 @@ section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
 section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
 section.subtopic p  { font-size:var(--fs-emphasis); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
-/* === lib/components/timeline/styles.css === */
+/* === lib/components/timeline/timeline.styles.css === */
 /* timeline — extracted from lib/_legacy.css (batch 7).
- * See lib/components/timeline/manifest.json for the component contract.
+ * See lib/components/timeline/timeline.manifest.json for the component contract.
  */
 
 /* ── TIMELINE ──
@@ -8423,9 +8507,9 @@ section .timeline-node.section-10 text, section .timeline-node.section-10 tspan,
  */
 section .eventWrapper { filter: none !important; }
 
-/* === lib/components/timeline-list/styles.css === */
+/* === lib/components/timeline-list/timeline-list.styles.css === */
 /* timeline-list — extracted from lib/_legacy.css (batch 9).
- * See lib/components/timeline-list/manifest.json for the component contract.
+ * See lib/components/timeline-list/timeline-list.manifest.json for the component contract.
  */
 
 /* ── TIMELINE-LIST · horizontal ──
@@ -8526,13 +8610,13 @@ section.timeline-list .timeline-body {
   max-width: 17.1875cqi;
 }
 
-/* === lib/components/title/styles.css === */
+/* === lib/components/title/title.styles.css === */
 /* title — anchor.bookend.title
  *
  * Dark canvas, centered. Inline-code paragraph after h1 becomes the
  * eyebrow (overrides the general subtitle rule).
  *
- * See lib/components/title/manifest.json for the component contract.
+ * See lib/components/title/title.manifest.json for the component contract.
  */
 
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
@@ -8558,9 +8642,9 @@ section.title h1 + p:has(> code:only-child) > code {
   border-radius: 0;
 }
 
-/* === lib/components/tldr/styles.css === */
+/* === lib/components/tldr/tldr.styles.css === */
 /* tldr — extracted from lib/_legacy.css (batch 3).
- * See lib/components/tldr/manifest.json for the component contract.
+ * See lib/components/tldr/tldr.manifest.json for the component contract.
  */
 
 /* ── TLDR ──────────────────────────────────────────────────────────────
@@ -8624,9 +8708,9 @@ section.tldr.numbered > ol > li::before {
   line-height:1;
 }
 
-/* === lib/components/verdict-grid/styles.css === */
+/* === lib/components/verdict-grid/verdict-grid.styles.css === */
 /* verdict-grid — extracted from lib/_legacy.css (batch 5).
- * See lib/components/verdict-grid/manifest.json for the component contract.
+ * See lib/components/verdict-grid/verdict-grid.manifest.json for the component contract.
  */
 
 /* ── VERDICT-GRID ──
@@ -8702,9 +8786,16 @@ section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
 section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
 
-/* === lib/components/word-cloud/styles.css === */
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.verdict-grid :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+/* === lib/components/word-cloud/word-cloud.styles.css === */
 /* word-cloud — extracted from lib/_legacy.css (batch 8).
- * See lib/components/word-cloud/manifest.json for the component contract.
+ * See lib/components/word-cloud/word-cloud.manifest.json for the component contract.
  */
 
 /* ── WORD-CLOUD ──────────────────────────────────────────────────────────────
@@ -8812,7 +8903,7 @@ section.word-cloud .wc-word[data-rotated="1"] {
   letter-spacing: -0.01em;
 }
 
-/* === lib/_modifiers.css === */
+/* === lib/base/base.modifiers.css === */
 /* _modifiers.css — cross-cutting authorial chrome.
  *
  * Extracted from lib/_legacy.css in Phase 5a of the destination map.
@@ -8900,7 +8991,7 @@ section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
  * A paragraph whose only child is an inline code span, placed immediately
  * before any heading, is promoted to an eyebrow label — same visual style as
  * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
- * rules). h5 remains available for structural use (e.g. split-panel).
+ * rules). h5 remains available for structural use (e.g. split-list).
  *
  * Declared AFTER the subtitle block — same specificity (0,1,4), so source
  * order ensures eyebrow wins when a code paragraph is sandwiched between two
@@ -9075,7 +9166,7 @@ section footer {
  * Deny list = layouts where a metadata pill does not earn its place,
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
- *   bookends/openers     title, divider, subtopic, closing, split-panel
+ *   bookends/openers     title, divider, subtopic, closing, split-list
  *   single-message       featured, big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
  *                        timeline/list-steps (counter), principles/tldr (own line),
@@ -9089,7 +9180,7 @@ section footer {
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9516,7 +9607,7 @@ section.obligation-matrix.asymmetric td:first-child {
  * Flips the asymmetric half of a layout:
  *   image          — image side flips left/right (alias of legacy `.left`)
  *   featured       — hero card moves from left col to right col
- *   split-panel    — accent panel moves from left to right
+ *   split-list    — accent panel moves from left to right
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
  * `cards-side` is symmetric (2-col grid with no left/right asymmetry) and
@@ -9543,9 +9634,9 @@ section.featured.mirror .feat-layout {
 section.featured.mirror .feat-layout .feat-card { grid-column: 2; grid-row: 1; }
 section.featured.mirror .feat-layout .sub-row    { grid-column: 1; grid-row: 1; }
 
-/* — split-panel: reverse the row so panel-left renders on the right —
+/* — split-list: reverse the row so panel-left renders on the right —
  * Watermark / eyebrow positions stay anchored to .panel-left's own box. */
-section.split-panel.mirror {
+section.split-list.mirror {
   flex-direction: row-reverse;
 }
 
@@ -9624,7 +9715,7 @@ section.overflow {
   box-shadow: inset 0 0 0 4px #d4351c;
 }
 
-/* === lib/_syntax-highlight.css === */
+/* === lib/integrations/highlight-js/highlight-js.css === */
 /* _syntax-highlight.css — highlight.js token theme.
  *
  * Extracted from lib/_legacy.css in Phase 7 of the destination map.
@@ -9780,7 +9871,7 @@ section.diagram > .mermaid svg .packetTitle,
 section.diagram .mermaid-svg svg [class$="TitleText"],
 section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 
-/* === lib/_chart-family.css === */
+/* === lib/chart-family/chart-family.css === */
 /* _chart-family.css — shared chart frame for list-and-pill chart layouts.
  *
  * Extracted from lib/_legacy.css in Phase 7 cleanup. Provides the
@@ -10099,7 +10190,7 @@ section.progress.dark .progress-fill[data-s="deferred"] {
   background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
 }
 
-/* === lib/_backgrounds.css === */
+/* === lib/base/base.decorations.css === */
 /* _backgrounds.css — peripheral atmospheric accents.
  *
  * Extracted from lib/_legacy.css in Phase 6 of the destination map.
@@ -10517,7 +10608,7 @@ section.bg-none {
   --_bg-linear: none;
 }
 
-/* === lib/_semi-universal.css === */
+/* === lib/shared/shared.styles.css === */
 /* _semi-universal.css — density and accent modifiers that compose with most layouts.
  *
  * Extracted from lib/_legacy.css in Phase 7 cleanup. Bundled in
@@ -10579,7 +10670,7 @@ section.accent.dark {
 }
 section.accent.dark h2 { color: var(--accent); }
 
-/* === lib/_universal.css === */
+/* === lib/base/base.variants.css === */
 /* Universal variants — apply to every layout.
  *
  * Three categories shipped here:
@@ -10807,7 +10898,7 @@ section.confidential::before {
   pointer-events: none;
 }
 
-/* === lib/_diagram-overrides.css === */
+/* === lib/integrations/mermaid/mermaid.css === */
 /* _diagram-overrides.css — Mermaid SVG selectors, palette-blind.
  *
  * Extracted from lib/_legacy.css in Phase 7 of the destination map.

@@ -8,8 +8,9 @@ you what kind of thing each layout, modifier, chart engine, or palette
 token *is*, and how they compose.
 
 If you read exactly one Lattice document, read this one. The other
-references (`skill.md`, `templates.md`, `theming.md`, `architecture.md`)
-become specialist references for one layer once you have this model.
+references (`skill.md`, `theming.md`, `architecture.md`,
+`lib/base/base.docs.md`, per-component `<name>.docs.md`) become
+specialist references for one layer once you have this model.
 
 ---
 
@@ -88,7 +89,7 @@ The four layers also correspond to **the four audiences** Lattice serves:
 | Function       | The audience leaves knowing…                       | Examples |
 |----------------|----------------------------------------------------|----------|
 | **Anchor**     | where they are in the deck                         | `title`, `divider`, `subtopic`, `closing` |
-| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-panel`, `content` |
+| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-list`, `content` |
 | **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `principles`, `agenda`, `tldr`, `glossary`, `list-tabular`, `checklist` |
 | **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `before-after`, `verdict-grid`, `decision`, `matrix-2x2` |
 | **Progression**| an ordered movement through stages or time        | `timeline`, `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
@@ -216,7 +217,7 @@ lib/components/cards-grid.json
   },
   "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
   "example": "examples/snippets/cards-grid.md",
-  "docs": "docs/references/templates.md#cards-grid"
+  "anatomyBlock": "T7-card-grid-2x2"
 }
 ```
 
@@ -225,7 +226,7 @@ the rendering pipeline:
 
 - the **scaffolder** (`npm run new:slide <name>`) emits the `skeleton`
 - **VS Code snippets** are generated from the skeleton + name
-- the **docs catalog** (templates.md) groups by `function`
+- the **per-component docs** (`lib/components/<name>/<name>.docs.md`) are generated from the enriched manifest fields
 - the **autocomplete data** for editor plugins reads `variants`
 - the **gallery decision-tree** uses `function` → `form` → `name`
 
@@ -236,7 +237,7 @@ integration) is unchanged. The manifest is metadata, not behavior.
 
 Variants don't all belong to one component. Some apply to every layout
 ("dark", "with-period"); some apply to most ("compact", "loose",
-"accent"); some are strictly per-layout ("mirror" for split-panel,
+"accent"); some are strictly per-layout ("mirror" for split-list,
 "four" for cards-grid). The manifest model recognises three tiers:
 
 **Tier 1 — Universal (25 variants).** Apply to every component. Added
@@ -479,9 +480,9 @@ the snippets freshness gate). If anyone modifies a per-component
 ### Migration
 
 Components are extracted from the monolithic `lattice.css` in batches
-of 5, with per-batch validation: rebuild the three baseline decks
-(`gallery.md`, `mermaid-gallery.md`, `kpi-gallery.md`) plus the
-design-system demo, then diff page-by-page (via `pdftoppm` rendering
+of 5, with per-batch validation: rebuild the two baseline decks
+(`gallery.md`, `gallery-mermaid.md`) plus the 58 per-component
+galleries, then diff page-by-page (via `pdftoppm` rendering
 to PNG) against the pre-batch baseline. Any visual change fails the
 batch.
 
@@ -494,8 +495,9 @@ which sits in `@layer components` alongside the migrated files.
 ## 11. What this document is NOT
 
 - **Not a tutorial.** That is `skill.md`.
-- **Not a layout catalog.** That is `templates.md`, which is being
-  reorganized to group by function family.
+- **Not a layout catalog.** That role moved to per-component docs at
+  `lib/components/<name>/<name>.docs.md`; this file's §3 keeps the
+  function-family index that points there.
 - **Not a palette spec.** That is `theming.md` + `design.md` §1.3–§1.6.
 - **Not an architecture deep-dive.** That is `architecture.md`.
 - **Not an authoring-grammar change.** Component names stay short.
@@ -526,7 +528,7 @@ discovery story that markdown alone can't provide.
 
 - This document — the canonical four-layer model + component contract.
 - The 7-family taxonomy + 11 forms + 4 substances vocabulary.
-- `lib/components/` — 57 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey, all promoted to first-class components during the `_legacy.css` split.)
+- `lib/components/` — 58 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey + post-Phase-5 renames, all promoted to first-class components.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
 - `examples/design-system.md` — the demo deck.

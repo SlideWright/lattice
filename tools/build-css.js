@@ -46,7 +46,12 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 const OUTPUT = path.join(ROOT, 'lattice.css');
 
-const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_scaffold.css'];
+const HEAD_SOURCES = [
+  'lib/_theme.css',
+  'lib/base/base.tokens.css',
+  'lib/base/base.elements.css',
+  'lib/integrations/marp/marp.scaffold.css',
+];
 
 // Bundle order = cascade order — later sources beat earlier ones at
 // equal specificity. The middle tier (components, modifiers, shared
@@ -64,19 +69,19 @@ const HEAD_SOURCES = ['lib/_theme.css', 'lib/_root.css', 'lib/_base.css', 'lib/_
 // pill, dark variant, below-note, annotation, mirror, numbered,
 // .overflow, .heat, KaTeX-in-non-math). Bundled AFTER per-component
 // styles so modifier defaults compose on top of components.
-const MODIFIERS_SOURCE = 'lib/_modifiers.css';
+const MODIFIERS_SOURCE = 'lib/base/base.modifiers.css';
 // highlight.js token theme — wires .hljs-* to the --hljs-* tokens.
-const SYNTAX_HIGHLIGHT_SOURCE = 'lib/_syntax-highlight.css';
+const SYNTAX_HIGHLIGHT_SOURCE = 'lib/integrations/highlight-js/highlight-js.css';
 // Shared chart-frame chrome + .chart-status pill vocabulary, shared
 // by gantt, radar, quadrant, progress, piechart, kanban, timeline-list.
-const CHART_FAMILY_SOURCE = 'lib/_chart-family.css';
+const CHART_FAMILY_SOURCE = 'lib/chart-family/chart-family.css';
 // 27 utility classes (16 gradient accents + 11 SVG accent marks) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
-const BACKGROUNDS_SOURCE = 'lib/_backgrounds.css';
+const BACKGROUNDS_SOURCE = 'lib/base/base.decorations.css';
 const TAIL_SOURCES = [
-  'lib/_semi-universal.css',
-  'lib/_universal.css',
-  'lib/_diagram-overrides.css',
+  'lib/shared/shared.styles.css',
+  'lib/base/base.variants.css',
+  'lib/integrations/mermaid/mermaid.css',
 ];
 
 const LAYER_DECLARATION =
@@ -107,9 +112,16 @@ function componentStyles() {
     .sort();
   const out = [];
   for (const name of names) {
-    const rel = path.join('lib', 'components', name, 'styles.css');
-    const text = readIfExists(rel);
-    if (text) out.push({ rel, text });
+    // Dotted convention: <name>.styles.css; tolerate legacy styles.css too.
+    const dotted = path.join('lib', 'components', name, `${name}.styles.css`);
+    const legacy = path.join('lib', 'components', name, 'styles.css');
+    const dottedText = readIfExists(dotted);
+    if (dottedText) {
+      out.push({ rel: dotted, text: dottedText });
+      continue;
+    }
+    const legacyText = readIfExists(legacy);
+    if (legacyText) out.push({ rel: legacy, text: legacyText });
   }
   return out;
 }

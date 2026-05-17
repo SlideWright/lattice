@@ -307,7 +307,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // Resolve palette name from the precedence chain (CLI > env > front
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
-const { resolvePalette } = require('./lib/resolve-palette');
+const { resolvePalette } = require('./lib/engine/resolve-palette');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -933,30 +933,30 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 
 // Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
 // directly. See that file for the fence-and-headingDivider rationale.
-const { splitSlides }    = require('./lib/split-slides');
+const { splitSlides }    = require('./lib/engine/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
-const { liftSlotLabel }  = require('./lib/slot-label-lift');
+const { liftSlotLabel }  = require('./lib/engine/slot-label-lift');
 // Roadmap modifier transforms — `roadmap status` (cell state markers) and
 // `roadmap horizons` (table → three-card transpose). Shared with the
 // Marp Core engine wrapper in marp.config.js (parity contract).
-const { transformRoadmapSection } = require('./lib/components/roadmap/transform');
+const { transformRoadmapSection } = require('./lib/components/roadmap/roadmap.transform');
 // Journey transform — nested list → .journey-board DOM. Shared with
 // marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
-const { transformJourneySection } = require('./lib/components/journey/transform');
+const { transformJourneySection } = require('./lib/components/journey/journey.transform');
 // Word-cloud layout transform — list-to-canvas rewrite for the
 // word-cloud layout (default + 4 modifier variants). Shared with
 // marp.config.js and mirrored by lattice-runtime.js.
-const { transformWordCloudSection } = require('./lib/components/word-cloud/transform');
+const { transformWordCloudSection } = require('./lib/components/word-cloud/word-cloud.transform');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/radar/transform');
+const radar = require('./lib/components/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/quadrant/transform');
+const quadrant = require('./lib/components/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;
@@ -1474,8 +1474,8 @@ function parseSlide(raw, index) {
     }
   }
 
-  // split-panel: h2+h5+code-only-p go in panel-left, everything after in panel-right
-  if (cls.includes('split-panel')) {
+  // split-list: h2+h5+code-only-p go in panel-left, everything after in panel-right
+  if (cls.includes('split-list')) {
     const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
     const h5Match = html.match(/<h5>([\s\S]*?)<\/h5>/);
     // Code-only paragraph (e.g. `Section 02`) → left panel, matching the CSS fallback
@@ -2345,7 +2345,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-panel','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-list','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

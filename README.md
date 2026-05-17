@@ -3,7 +3,7 @@
 A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
 
 Lattice produces decks where every slide is a deliberate layout — title,
-diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
+diagram, compare-prose, split-list, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
 with no manual formatting work. Mermaid diagrams render with the same
 theme. Decks read as ink-on-paper and pass WCAG AA throughout.
@@ -27,7 +27,7 @@ context renders identically.
   dark ink. Saturated red reserved for alarm states. WCAG AA verified
   across every text-bearing surface.
 - **26 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
-  quote, timeline, big-number, split-panel, verdict-grid, more.
+  quote, timeline, big-number, split-list, verdict-grid, more.
   Each layout has an authoring contract documented in [docs/skill.md](docs/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that
@@ -48,7 +48,7 @@ and Puppeteer (which downloads a matching Chromium).
 
 ```sh
 node lattice-emulator.js examples/gallery.md examples/gallery.pdf
-node lattice-emulator.js examples/mermaid-gallery.md examples/mermaid-gallery.pdf
+node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pdf
 ```
 
 The two galleries are committed to `examples/` as ground-truth fixtures
@@ -149,7 +149,7 @@ lattice/
 │
 ├── examples/
 │   ├── gallery.md / gallery.pdf                  # 71-page layout gallery
-│   ├── mermaid-gallery.md / mermaid-gallery.pdf  # 31-page diagram gallery
+│   ├── gallery-mermaid.md / gallery-mermaid.pdf  # 31-page diagram gallery
 │   └── sample-image*.svg
 │
 ├── docs/
@@ -160,14 +160,13 @@ lattice/
 │   ├── notes/                 # durable developer / agent investigation notes
 │   │                          # (also: forward-looking design proposals)
 │   └── references/            # canonical references
-│       └── design.md, templates.md, pipeline.md,
-│           mermaid.md, audit.md
+│       └── design.md, pipeline.md, mermaid.md, audit.md
 │
 ├── test/
 │   ├── unit/                  # fast (<100 ms); no child processes
 │   ├── integration/           # spawns emulator + marp-cli; rebuilds galleries
 │   ├── helpers/               # shared palette / pdf / render plumbing
-│   └── fixtures/              # expected-page-counts.json
+│   └── fixtures/              # markdown fixtures for parsing tests
 │
 └── tools/
     └── screenshot-slides.js   # dev-only audit utility
@@ -185,11 +184,13 @@ npm run test:all          # both tiers
 ```
 
 The unit tier finishes in under 100 ms and is the inner loop. The
-integration tier takes ~30 s (mostly the mermaid-gallery rebuild) and
-is what CI runs before merge. Both galleries (`examples/gallery.md`
-and `examples/mermaid-gallery.md`) are the authoritative test
-fixtures; their committed PDFs are the regression baseline. Page
-counts live in [test/fixtures/expected-page-counts.json](test/fixtures/expected-page-counts.json).
+integration tier takes ~30 s (mostly the gallery-mermaid rebuild) and
+is what CI runs before merge. Both top-level galleries
+(`examples/gallery.md` and `examples/gallery-mermaid.md`) are the
+authoritative test fixtures; their committed PDFs are the regression
+baseline. Expected page counts are inlined in each test file; the 58
+per-component galleries derive their counts from the manifest itself
+via `expectedGallerySlideCount()`.
 
 `marp-cli` is a runtime dependency, not a dev dependency — the
 integration suite asserts cross-renderer parity, and the browser

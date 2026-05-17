@@ -1,0 +1,73 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "compare-code",
+  "function": "comparison",
+  "form": "split",
+  "substance": "structure",
+  "description": "Two fenced code blocks side-by-side, each with a label.",
+  "purpose": "Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.",
+  "variants": [
+    "mirror"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the comparison."
+    },
+    "left": {
+      "selector": "section > h3:first-of-type + pre",
+      "required": true,
+      "description": "Left label (h3) and code block."
+    },
+    "right": {
+      "selector": "section > h3:nth-of-type(2) + pre",
+      "required": true,
+      "description": "Right label (h3) and code block."
+    }
+  },
+  "skeleton": "<!-- _class: compare-code -->\n\n## Heading framing the comparison.\n\n### Before\n\n```js\nfunction before() {\n  return 'old';\n}\n```\n\n### After\n\n```js\nfunction after() {\n  return 'new';\n}\n```\n",
+  "anatomyBlock": "compare-code",
+  "sample": "<!-- _class: compare-code -->\n\n`Before & after · Component manifest loading`\n\n## Flat-file lookup versus folder-shape lookup.\n\n`Before · flat file`\n\n```js\nconst fs = require('node:fs');\nconst path = require('node:path');\n\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    `${name}.json`\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n\nconst cards = loadOne('cards-grid');\n```\n\n`After · folder shape`\n\n```js\nconst fs = require('node:fs');\nconst path = require('node:path');\n\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    name, 'manifest.json'\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n\nconst cards = loadOne('cards-grid');\n```\n",
+  "whenToUse": [
+    {
+      "title": "Concrete code on both sides",
+      "body": "Both sides hold short, readable snippets — refactor before/after, two API styles, two configurations. The diff is the point of the slide."
+    },
+    {
+      "title": "Equal-length snippets",
+      "body": "Snippets render side-by-side. Wildly different lengths break the visual balance — trim aggressively or split into two slides."
+    },
+    {
+      "title": "Names the change",
+      "body": "The h3 label on each side names what the reader is looking at (Before, After, v1, v2). Without labels the audience has to infer."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "One side is prose",
+      "body": "If one column is code and the other is description, use a single fenced block with surrounding prose. compare-code is for code-versus-code."
+    },
+    {
+      "title": "Snippets longer than 14 lines",
+      "body": "The text shrinks below readability past 14 lines per side. Split into two slides or extract the key delta into a smaller diff."
+    },
+    {
+      "title": "Three-way comparison",
+      "body": "compare-code is binary. For three configurations or three implementations, use prose with successive fenced blocks or a `compare-table`."
+    }
+  ],
+  "related": [
+    { "name": "before-after", "when": "the change is state, not code" },
+    { "name": "compare-prose", "when": "the comparison is prose-versus-prose" },
+    { "name": "redline", "when": "the change is in verbatim text or legal language" },
+    { "name": "compare-table", "when": "three or more variants on shared dimensions" }
+  ],
+  "variantDocs": {
+    "mirror": {
+      "label": "Mirror — swap left and right",
+      "caption": "Flips the left and right columns. Useful when the deck's visual rhythm wants the after-state on the left, or when the natural reading order is new-then-old.",
+      "sample": "<!-- _class: compare-code mirror -->\n\n`After & before · Component manifest loading`\n\n## Folder-shape lookup, with the prior approach for reference.\n\n`After · folder shape`\n\n```js\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    name, 'manifest.json'\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n```\n\n`Before · flat file`\n\n```js\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    `${name}.json`\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n```\n"
+    }
+  }
+}

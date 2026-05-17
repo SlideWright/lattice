@@ -51,8 +51,8 @@ it is load-bearing.
   forward-looking design RFC for the authoring system: component
   model, modifier catalogue, new layout proposals (§3.1–§3.14),
   authoring DX & rollout plan. Explicitly non-canonical; ground
-  truth lives in `../references/templates.md` and
-  `examples/gallery.md`. **Status (2026-05-15):** 11/14 Part 3
+  truth lives in per-component `lib/components/<name>/<name>.docs.md`
+  and `examples/gallery.md`. **Status (2026-05-15):** 11/14 Part 3
   proposals Shipped; §3.11 / §3.13 / §3.14 Open. Each proposal
   carries an inline status tag.
 - [2026-05-07-chart-family-proposals.md](2026-05-07-chart-family-proposals.md) —
@@ -64,7 +64,8 @@ it is load-bearing.
   (§4.1 – §4.5). Each proposal carries an inline status tag.
 - [2026-05-07-ascii-preview-geometry.md](2026-05-07-ascii-preview-geometry.md) —
   canonical 43-wide / pad-2 / gap-5 geometry for every `` ```text ``
-  ASCII layout preview in `templates.md`, plus the
+  ASCII layout preview (now in per-component `<name>.docs.md` files
+  via `anatomyBlock` manifest references), plus the
   [`tools/ascii-preview.py`](../../tools/ascii-preview.py) auditor
   and builder library.
 - [2026-05-10-multi-resolution-strategy.md](2026-05-10-multi-resolution-strategy.md) —
@@ -147,8 +148,9 @@ it is load-bearing.
   framed as one boardroom question), the shared geometry kernel, and the
   finding that `--fg` is an undefined token repo-wide.
 - [2026-05-15-shipped-without-proposal.md](2026-05-15-shipped-without-proposal.md) —
-  register of layouts that landed in `templates.md` without going
-  through the May 4 / May 7 speculative-proposals catalogues. Covers
+  register of layouts that landed (in what was then `templates.md`,
+  now per-component `<name>.docs.md`) without going through the May 4
+  / May 7 speculative-proposals catalogues. Covers
   `word-cloud`, the Split family (Templates 30–34), `quadrant`,
   `radar`, the seven `math*` layouts, and the six legal-family
   layouts. Housekeeping, not history: when a layout ships outside

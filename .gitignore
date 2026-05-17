@@ -3,12 +3,14 @@ node_modules/
 tokenization/
 
 # Marp / build outputs
-# (note: examples/*.pdf are intentionally tracked as ship-with-the-package
-# demos and per-feature decks — see docs/references/workflow.md. The
-# rule below catches ad-hoc renders elsewhere in the tree.)
+# (note: examples/*.pdf and lib/components/**/*.pdf are intentionally
+# tracked as ship-with-the-package demos and per-component gallery
+# decks — see docs/references/workflow.md and CLAUDE.md. The rule below
+# catches ad-hoc renders elsewhere in the tree.)
 *.pptx
 *.pdf
 !examples/*.pdf
+!lib/components/**/*.pdf
 
 # LibreOffice lock files
 .~lock.*#
@@ -18,5 +20,7 @@ tokenization/
 
 examples/*.html
 examples/**/*.html
+lib/components/**/*.html
 !examples/*.pdf
 !examples/**/*.pdf
+!lib/components/**/*.pdf

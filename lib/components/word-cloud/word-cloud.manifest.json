@@ -1,0 +1,74 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "word-cloud",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "series",
+  "description": "Spiral-packed word cloud — items sized by weight.",
+  "purpose": "Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the cloud."
+    },
+    "words": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per word. Format: `word — weight` (weight is a number)."
+    }
+  },
+  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity — 12\n- ownership — 9\n- handoffs — 7\n- review — 6\n- testing — 5\n- onboarding — 4\n- spec — 3\n- triage — 3\n",
+  "anatomyBlock": "word-cloud-canvas",
+  "sample": "<!-- _class: word-cloud -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n- scaffolder `18`\n- bundler `14`\n",
+  "whenToUse": [
+    {
+      "title": "Qualitative themes at a glance",
+      "body": "Retrospective summaries, survey verbatims, theme extraction, sentiment scans. The cloud lands what the corpus is about; the silhouette and the biggest words are the read."
+    },
+    {
+      "title": "Weight is approximate, not exact",
+      "body": "Word size encodes relative frequency or weight, but the eye reads 'biggest' and 'second biggest' before any precise ratio. Reach for word-cloud when the rank matters more than the count."
+    },
+    {
+      "title": "Eight to twenty items",
+      "body": "Below eight the spiral looks bare and the layout wastes the canvas. Past about twenty the smallest words become unreadable. Trim the long tail or cap the cloud at a 'top 15' before authoring."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Precise comparisons",
+      "body": "If the audience needs to know that 'manifest' is 1.6× 'function', the spiral packing actively misleads. Use `progress` or a bar chart where the eye can compare lengths directly."
+    },
+    {
+      "title": "Two or three words",
+      "body": "A three-word cloud is a list with extra steps. Use `stats` for a metric row or `big-number` for a single weighted headline."
+    },
+    {
+      "title": "Multi-word phrases",
+      "body": "Each li should be a single token. Multi-word phrases blow out the layout and crowd the spiral; if your data is phrases, normalise to keywords first or use `quote` for verbatim text."
+    }
+  ],
+  "related": [
+    {
+      "name": "progress",
+      "when": "the weights need precise visual comparison"
+    },
+    {
+      "name": "stats",
+      "when": "the headline metrics are independent numbers, not a corpus"
+    },
+    {
+      "name": "piechart",
+      "when": "the items are parts of a whole, not free-form themes"
+    },
+    {
+      "name": "quote",
+      "when": "the verbatim language matters more than the frequency"
+    },
+    {
+      "name": "tldr",
+      "when": "the qualitative summary is prose, not a packed cloud"
+    }
+  ]
+}

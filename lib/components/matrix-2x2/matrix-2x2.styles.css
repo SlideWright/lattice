@@ -1,0 +1,64 @@
+/* matrix-2x2 — extracted from lib/_legacy.css (batch 4).
+ * See lib/components/matrix-2x2/matrix-2x2.manifest.json for the component contract.
+ */
+
+/* ── MATRIX-2X2 ────────────────────────────────────────────────────────
+ * ## heading
+ * `Axis-X · Axis-Y`         (eyebrow, optional — renders as inline-code label)
+ * - Top-left              \
+ * - Top-right              \  exactly four top-level items, in
+ * - Bottom-left            /  declaration order = TL · TR · BL · BR
+ * - Bottom-right          /
+ *
+ * Implementation: a 2×2 CSS grid on the bare ul/ol. Each li is a card
+ * with the body nested as an inner ul. The four quadrants share visual
+ * chrome; the bottom-right cell carries an accent ring as the conventional
+ * "high-priority" or "outcome" cell (SWOT: opportunities · Eisenhower: do).
+ * Authors who want a different accent cell can swap items in the markdown.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.matrix-2x2 { display:flex; flex-direction:column; }
+section.matrix-2x2 h2 { margin-bottom:var(--sp-sm); }
+section.matrix-2x2 > ul,
+section.matrix-2x2 > ol {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:var(--sp-md); flex:1;
+  list-style:none; padding:0; margin:0;
+}
+section.matrix-2x2 > ul > li,
+section.matrix-2x2 > ol > li {
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:var(--sp-md);
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-md);
+  position:relative; overflow:hidden;
+}
+/* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
+section.matrix-2x2 > ul > li:nth-child(4),
+section.matrix-2x2 > ol > li:nth-child(4) {
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+/* Body — nested ul/ol becomes the cell prose. */
+section.matrix-2x2 li > ul,
+section.matrix-2x2 li > ol {
+  list-style:none; padding:0; margin:0;
+}
+section.matrix-2x2 li > ul > li,
+section.matrix-2x2 li > ol > li {
+  font-size:var(--fs-body);
+  font-weight:400;
+  color:var(--text-body);
+  line-height:var(--lh-base);
+}
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
+ * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
+ * target text nodes); the manifest validator catches that case at
+ * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }

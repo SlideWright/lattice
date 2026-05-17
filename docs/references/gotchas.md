@@ -425,7 +425,7 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   with `enableHtml: true`, relative `<script src="...">` paths do not
   resolve reliably inside the webview context.
 - **Mitigation:** Structural DOM transforms (split panels, chart-family)
-  are implemented as HTML-string rewrites in `lib/split-panels.js` and
+  are implemented as HTML-string rewrites in `lib/engine/split-panels.js` and
   `lib/chart-family.js`, called from the `engine` render wrapper in
   [marp.config.js](../../marp.config.js). The wrapper runs at render time
   — before the webview CSP applies — so the HTML is baked correctly before

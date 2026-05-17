@@ -1,0 +1,26 @@
+/* split-steps — progression.split.structure
+ *
+ * Sequential process. CSS counter timeline with connecting line. Author:
+ * `phase` · ## h2 · p · tight ol (title / -- body sub-item). SlotLabelLift
+ * bolts the per-step title.
+ *
+ * See lib/components/split-steps/split-steps.manifest.json for the component contract.
+ */
+
+section.split-steps { padding:0; flex-direction:row; }
+section.split-steps .steps-left { width:30%; flex-shrink:0; background:var(--bg-alt); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-steps .phase-num { position:absolute; top:var(--sp-lg); left:var(--sp-lg); font-size:var(--fs-watermark); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; pointer-events:none; z-index:0; }
+section.split-steps .steps-left h2 { font-size:var(--fs-2xl); color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; position:relative; z-index:1; }
+section.split-steps .steps-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; position:relative; z-index:1; }
+section.split-steps .steps-right { flex:1; background:var(--bg); padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; justify-content:center; }
+section.split-steps .steps-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; }
+section.split-steps .steps-right > ol { counter-reset:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li { display:grid; grid-template-columns:3.125cqi 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
+section.split-steps .steps-right > ol > li { counter-increment:step-counter; }
+section.split-steps .steps-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
+section.split-steps .steps-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:1.484375cqi; top:3.125cqi; bottom:0; width:2px; background:var(--border); }
+section.split-steps .steps-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; position:relative; z-index:1; }
+section.split-steps .steps-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
+section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; font-size:var(--fs-md); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:3.125cqi; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
+section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }

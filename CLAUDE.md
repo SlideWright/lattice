@@ -31,8 +31,15 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`docs/theming.md`** — palette tokens, Mermaid contract.
 - **`docs/editorial.md`** — prose rules for the gallery and shipped decks.
 - **`docs/skill.md`** — deck-authoring contract.
-- **`docs/references/`** — canonical references (design, templates,
-  pipeline, mermaid, audit, gotchas, backgrounds).
+- **`docs/references/`** — canonical references (design, pipeline,
+  mermaid, audit, gotchas, backgrounds, workflow, development).
+- **`lib/base/base.docs.md`** — cross-cutting authoring contract
+  (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
+  decoration backgrounds). Was previously inside
+  `docs/references/templates.md`, retired 2026-05-17.
+- **`lib/components/<name>/<name>.docs.md`** — per-component contracts
+  (slots, variants, when/why, anti-patterns) generated from each
+  manifest's prose fields.
 - **`docs/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
 
 ## Three render paths must agree
@@ -40,7 +47,7 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 Any authoring transform needs to land in all three or the paths drift:
 
 1. **`lattice-emulator.js`** — build-time CLI; inline implementations.
-2. **`marp.config.js`** → **`lib/*.js`** — the marp-cli path.
+2. **`marp.config.js`** → **`lib/engine/*.js`** + **`lib/chart-family/chart-family.js`** + **`lib/integrations/*/`** — the marp-cli path.
 3. **`lattice-runtime.js`** — DOM transforms for marp-vscode preview.
 
 Each transform documents its sibling implementations in a header comment
@@ -60,17 +67,23 @@ tier asserts cross-renderer parity on slide count.
 Full tooling details (scopes, hooks, CI structure, cache behaviour)
 live in `docs/references/development.md`.
 
-**Two gallery sets, distinct purposes:**
+**Two regression tiers:**
 
-- **Regression baseline** (CI-asserted page counts in
-  `test/fixtures/expected-page-counts.json`): `gallery.md` (89pp),
-  `mermaid-gallery.md` (31pp), `kpi-gallery.md` (13pp). A page-count
-  drift on any of these fails the integration tier.
-- **Long-running editorial decks** (stable and shared, but not
-  page-count-asserted): `backgrounds-gallery.md`, `gallery-guide.md`,
-  `gallery-jargon.md`. Hand-curated showcases.
+- **Per-component galleries** (58 total, one per `lib/components/<name>/`)
+  — every enriched manifest's `expectedGallerySlideCount()` is asserted
+  against the rendered PDF page count. Adding a variant updates the
+  formula; a transform that drops a slide fails its component's test.
+  See `test/integration/components/component-galleries.test.js`. The
+  KPI regression signal lives in `lib/components/kpi/kpi.gallery.pdf`'s
+  per-component assertion (was the standalone `kpi-gallery.md` deck).
+- **Top-level baseline decks** (CI-asserted, page count inlined in each
+  test file): `gallery.md` (89pp) and `gallery-mermaid.md` (31pp). A
+  drift on either fails the integration tier. The cross-renderer parity
+  gate also runs on `gallery.md` only.
 
-The isolation rule applies to **all six** — see workflow.md.
+`gallery-jargon.md` is a long-running editorial showcase — stable and
+shared, but not page-count-asserted. The isolation rule applies to all
+three top-level decks — see workflow.md.
 
 ## The visual-iteration loop
 

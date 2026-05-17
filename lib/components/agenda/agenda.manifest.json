@@ -1,0 +1,98 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "agenda",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "structure",
+  "description": "Auto-numbered table of contents for the deck.",
+  "purpose": "Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.",
+  "variants": [
+    "progress-2",
+    "progress-3",
+    "progress-4",
+    "progress-5"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading — typically 'Agenda' or 'What we'll cover'."
+    },
+    "items": {
+      "selector": "ol > li",
+      "required": true,
+      "description": "Ordered list of section titles."
+    }
+  },
+  "skeleton": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. First section title\n2. Second section title\n3. Third section title\n4. Fourth section title\n",
+  "anatomyBlock": "agenda",
+  "sample": "<!-- _class: agenda -->\n\n## What this deck covers.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n",
+  "whenToUse": [
+    {
+      "title": "Second slide of the deck",
+      "body": "Right after the title, before the first section. Orients the audience and sets the cadence of what's coming."
+    },
+    {
+      "title": "Three to six sections",
+      "body": "Sweet spot is four. Past six sections the list crowds and the audience stops counting. Roll up or split the deck."
+    },
+    {
+      "title": "Reuse with progress variants",
+      "body": "Drop the same agenda between sections with `progress-N` to show how far through the deck the room is. Lightweight wayfinding."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Sub-bullets per section",
+      "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here."
+    },
+    {
+      "title": "Unnumbered list",
+      "body": "Authoring with `-` instead of `1.` loses the numbered chrome the layout depends on. Always use ordered list syntax."
+    },
+    {
+      "title": "Single-section decks",
+      "body": "If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding."
+    }
+  ],
+  "related": [
+    {
+      "name": "subtopic",
+      "when": "opening a single section mid-deck"
+    },
+    {
+      "name": "divider",
+      "when": "marking a section boundary without restating the menu"
+    },
+    {
+      "name": "tldr",
+      "when": "closing the deck with the takeaways the agenda promised"
+    },
+    {
+      "name": "title",
+      "when": "the slide immediately preceding the agenda"
+    }
+  ],
+  "variantDocs": {
+    "progress-2": {
+      "label": "Progress · section 2",
+      "caption": "The same agenda dropped between sections one and two — the second item is marked as the current position.",
+      "sample": "<!-- _class: agenda progress-2 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-3": {
+      "label": "Progress · section 3",
+      "caption": "Same wayfinding pattern, current position moved to the third item.",
+      "sample": "<!-- _class: agenda progress-3 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-4": {
+      "label": "Progress · section 4",
+      "caption": "Current position on the fourth item — three sections done, two to go.",
+      "sample": "<!-- _class: agenda progress-4 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-5": {
+      "label": "Progress · section 5",
+      "caption": "Current position on the fifth item — the last section opening, used as a final wayfinder before the closing.",
+      "sample": "<!-- _class: agenda progress-5 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    }
+  }
+}

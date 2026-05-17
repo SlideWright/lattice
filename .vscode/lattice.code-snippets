@@ -51,7 +51,7 @@
       "   - `Citation reference`",
       "   - One-line gloss naming the precedent."
     ],
-    "description": "Provenance chain — statute → regulation → guidance → case, walked in order."
+    "description": "Provenance chain — statute to regulation to guidance to case, walked in order."
   },
   "lattice: before-after": {
     "prefix": "lattice-before-after",
@@ -384,7 +384,7 @@
       "  - Standup `@team` `:3`",
       "  - Deep work `@me` `:5`"
     ],
-    "description": "Native user-journey chart — sections of tasks, each task tagged with actor(s) and a 1–5 mood. Renders as section bars + task chips + plumb lines + mood faces."
+    "description": "Native user-journey chart — sections of tasks, each tagged with actor(s) and a 1-5 mood. Renders as section bars, task chips, plumb lines, and mood faces."
   },
   "lattice: kanban": {
     "prefix": "lattice-kanban",
@@ -761,6 +761,24 @@
     ],
     "description": "Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right."
   },
+  "lattice: split-list": {
+    "prefix": "lattice-split-list",
+    "body": [
+      "<!-- _class: split-list -->",
+      "",
+      "## Panel headline that frames the side points.",
+      "",
+      "### Section rubric",
+      "",
+      "- First point",
+      "  - Supporting sentence explaining the first point.",
+      "- Second point",
+      "  - Supporting sentence explaining the second point.",
+      "- Third point",
+      "  - Supporting sentence explaining the third point."
+    ],
+    "description": "Featured left panel + supporting list on the right."
+  },
   "lattice: split-metric": {
     "prefix": "lattice-split-metric",
     "body": [
@@ -777,21 +795,6 @@
       "- **Third supporting point.** What this number unlocks or threatens."
     ],
     "description": "One number owns the room — light left with the hero metric, dark right with supporting findings."
-  },
-  "lattice: split-panel": {
-    "prefix": "lattice-split-panel",
-    "body": [
-      "<!-- _class: split-panel -->",
-      "",
-      "## Panel headline that frames the side points.",
-      "",
-      "### Section rubric",
-      "",
-      "- **First point.** Supporting sentence explaining the first point.",
-      "- **Second point.** Supporting sentence explaining the second point.",
-      "- **Third point.** Supporting sentence explaining the third point."
-    ],
-    "description": "Featured left panel + supporting list on the right."
   },
   "lattice: split-statement": {
     "prefix": "lattice-split-statement",

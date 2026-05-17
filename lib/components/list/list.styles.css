@@ -1,0 +1,16 @@
+/* list — inventory.stack.bullets
+ *
+ * Plain bullet list under a heading. Pill-style cards per item with
+ * an accent left border. Both ul (plain) and ol (numbered) variants.
+ *
+ * See lib/components/list/list.manifest.json for the component contract.
+ */
+
+section.list h2 { margin-bottom:var(--sp-md); }
+section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ul li { font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
+section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
+section.list ul li ul li { font-size:var(--fs-sm); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
+section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
+section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
+section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
