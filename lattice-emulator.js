@@ -326,8 +326,9 @@ function loadPaletteWithImports(filePath, seen = new Set(), label = null) {
   const content = readFileOrDie(filePath, label ?? `palette '${path.basename(filePath, '.css')}'`);
   // Match `@import 'name';` and `@import "name";` and `@import name;`.
   // The lattice palette convention is single-token names (cuoio, indaco)
-  // resolved relative to the themes/ directory.
-  const importRe = /@import\s+["']?([A-Za-z0-9_-]+)["']?\s*;/g;
+  // resolved relative to the themes/ directory. Dot allowed so generated
+  // sibling files like `indaco.tokens.generated` import cleanly.
+  const importRe = /@import\s+["']?([A-Za-z0-9_.-]+)["']?\s*;/g;
   let imported = '';
   let m;
   while ((m = importRe.exec(content)) !== null) {
