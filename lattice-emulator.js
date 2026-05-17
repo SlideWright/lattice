@@ -936,20 +936,9 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 const { splitSlides }    = require('./lib/engine/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
 const { liftSlotLabel }  = require('./lib/engine/slot-label-lift');
-// Roadmap modifier transforms — `roadmap status` (cell state markers) and
-// `roadmap horizons` (table → three-card transpose). Shared with the
-// Marp Core engine wrapper in marp.config.js (parity contract).
-const { transformRoadmapSection } = require('./lib/components/roadmap/roadmap.transform');
-// Journey transform — nested list → .journey-board DOM. Shared with
-// marp.config.js (engine wrapper) and mirrored in lattice-runtime.js.
-const { transformJourneySection } = require('./lib/components/journey/journey.transform');
-// Word-cloud layout transform — list-to-canvas rewrite for the
-// word-cloud layout (default + 4 modifier variants). Shared with
-// marp.config.js and mirrored by lattice-runtime.js.
-const { transformWordCloudSection } = require('./lib/components/word-cloud/word-cloud.transform');
-// Shared transformer registry — dispatches chart-family + split-panels
-// per-section via applyAllToSection. See lib/transformers/registry.js
-// for the contract.
+// Shared transformer registry — dispatches chart-family, split-panels,
+// roadmap, journey, and word-cloud per-section via applyAllToSection.
+// See lib/transformers/registry.js for the contract and order rationale.
 const sharedTransformerRegistry = require('./lib/transformers/registry');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
@@ -1348,33 +1337,9 @@ function parseSlide(raw, index) {
     });
   }
 
-  // roadmap status / horizons: state-marker tagging on <td> cells, or
-  // transpose the workstream × phase table into a horizons-card grid.
-  // Implementation lives in lib/components/roadmap/transform.js — shared with marp.config.js
-  // and mirrored by the runtime DOM transform in lattice-runtime.js so
-  // every render path produces the same DOM.
-  if (cls.includes('roadmap')) {
-    html = transformRoadmapSection(html, cls);
-  }
-
-  // journey: nested list → user-journey board (legend, section ribbon,
-  // task chips, plumb lines, mood faces, swimlanes, mood curve). One
-  // shared DOM; CSS varies the look per variant (heatmap, curve,
-  // swimlane, weighted). Shared with marp.config.js and mirrored in
-  // lattice-runtime.js for the marp-vscode preview.
-  if (cls.includes('journey')) {
-    html = transformJourneySection(html, cls);
-  }
-
-  // word-cloud: rewrite the first <ul> into a .word-cloud-canvas with
-  // weighted <span class="wc-word"> children. One source contract feeds
-  // the default and four modifier variants — all the visual difference
-  // comes from CSS, the transform output is identical across variants.
-  // Implementation lives in lib/word-cloud.js — shared with marp.config.js
-  // and mirrored by the runtime DOM transform in lattice-runtime.js.
-  if (cls.includes('word-cloud')) {
-    html = transformWordCloudSection(html, cls);
-  }
+  // roadmap, journey, word-cloud now run via the shared transformer
+  // registry call further down (sharedTransformerRegistry.applyAllToSection).
+  // Same kernel, same order as marp.config.js's render hook.
 
   // Universal state-token grammar — shared by verdict-grid, obligation-matrix,
   // checklist (and roadmap, in lib/components/roadmap/transform.js). Markdown markers map to

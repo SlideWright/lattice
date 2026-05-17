@@ -557,9 +557,6 @@ function registerMermaidHljs(marp) {
 }
 
 const { applyAllToHtml: applyTransformerRegistryToHtml } = require('./lib/transformers/registry');
-const { applyToRenderedHtml: applyRoadmapToHtml }     = require('./lib/components/roadmap/roadmap.transform');
-const { applyToRenderedHtml: applyJourneyToHtml }     = require('./lib/components/journey/journey.transform');
-const { applyToRenderedHtml: applyWordCloudToHtml }   = require('./lib/components/word-cloud/word-cloud.transform');
 
 /**
  * latticeplotFences — rewrites ```latticeplot fenced code blocks into a
@@ -630,14 +627,15 @@ module.exports = {
     marp.render = (markdown, env) => {
       const result = originalRender(markdown, env);
       if (result && typeof result.html === 'string') {
-        // Shared transformer registry — dispatches chart-family and
-        // split-panels (in order). Roadmap, journey, and word-cloud will
-        // migrate into the registry in follow-up PRs (see
-        // lib/transformers/registry.js).
+        // Shared transformer registry — dispatches chart-family,
+        // split-panels, roadmap, journey, word-cloud (in that order).
+        // See lib/transformers/registry.js for the order rationale and
+        // the per-transformer adapter contracts.
         result.html = applyTransformerRegistryToHtml(result.html);
-        result.html = applyRoadmapToHtml(result.html);
-        result.html = applyJourneyToHtml(result.html);
-        result.html = applyWordCloudToHtml(result.html);
+        // deck-logo stays separate — it operates on the rendered shell
+        // (front-matter-driven <img> injection across selected sections),
+        // not on per-section content. The shape doesn't fit the
+        // registry's per-section primitive.
         result.html = applyDeckLogoToHtml(result.html, markdown);
       }
       return result;
