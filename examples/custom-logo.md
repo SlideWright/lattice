@@ -47,8 +47,10 @@ logo-on: all | title              # optional, default `all`
 
 ## When to use which style.
 
-- **Auto (default).** A faint grayscale watermark, brightness inverted on dark-canvas layouts so the mark stays legible on every theme. Best for marks you want present but not loud — a watermark, not a statement.
-- **Brand.** Original colours preserved on a soft surface plate. Best for logos whose colours carry meaning — government insignia, university crests, marks that *are* the brand.
+- Auto · default
+  - A faint grayscale watermark, brightness inverted on dark-canvas layouts so the mark stays legible on every theme. Best for marks you want present but not loud — a watermark, not a statement.
+- Brand
+  - Original colours preserved on a soft surface plate. Best for logos whose colours carry meaning — government insignia, university crests, marks that *are* the brand.
 
 ---
 
