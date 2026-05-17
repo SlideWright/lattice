@@ -1,0 +1,32 @@
+{
+  "$comment": "Input to tools/solve-palette.js. Hand-authored hues per slot; the solver fills in OKLCH lightness to hit AA against paired ink. See docs/notes/2026-05-17-color-strategy.md (Strategy 5).",
+  "palette": "indaco",
+  "tier": {
+    "$comment": "Phase 1: targets the existing --cN-light register (recessive chameleon: pale on light canvas, deep on dark — mermaid band pattern). AA against --c-ink-light (chameleon dark/white). Later tiers (primary, chrome) layer on top.",
+    "aa": 4.5,
+    "chroma": 0.10,
+    "lightLightRange": [0.80, 0.92],
+    "darkLightRange": [0.40, 0.55]
+  },
+  "inks": {
+    "primary": {
+      "$comment": "--c-ink-light resolved per canvas mode. Light=dark ink (#0A1628), dark=white ink (#FFFFFF). Solver targets AA against these.",
+      "light": "#0A1628",
+      "dark":  "#FFFFFF"
+    }
+  },
+  "slots": [
+    { "hue": 220, "label": "blue (brand)" },
+    { "hue":  35, "label": "rust" },
+    { "hue": 115, "label": "green" },
+    { "hue": 325, "label": "magenta" },
+    { "hue": 290, "label": "purple" },
+    { "hue": 180, "label": "teal" },
+    { "hue":  60, "label": "amber" },
+    { "hue": 200, "label": "cyan" },
+    { "hue":  10, "label": "rose" },
+    { "hue":  80, "label": "olive-yellow" },
+    { "hue": 250, "label": "royal blue" },
+    { "hue":  95, "label": "olive" }
+  ]
+}
