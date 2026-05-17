@@ -25,7 +25,7 @@ A pulled quotation, centered, with attribution.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · quote" -->
 
 ## When NOT to reach for quote.

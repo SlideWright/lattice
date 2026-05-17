@@ -36,7 +36,7 @@ Options scored against criteria as a verdict matrix.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · verdict-grid" -->
 
 ## When NOT to reach for verdict-grid.

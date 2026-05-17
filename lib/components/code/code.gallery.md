@@ -34,7 +34,7 @@ for (const m of byFunction.evidence) {
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · code" -->
 
 ## When NOT to reach for code.

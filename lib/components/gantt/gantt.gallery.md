@@ -40,7 +40,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · gantt" -->
 
 ## When NOT to reach for gantt.

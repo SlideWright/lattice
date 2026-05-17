@@ -63,7 +63,7 @@ Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracki
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · redline" -->
 
 ## When NOT to reach for redline.

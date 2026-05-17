@@ -81,7 +81,7 @@ header: "Lattice · cards-grid"
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-grid" -->
 
 ## When NOT to reach for cards-grid.

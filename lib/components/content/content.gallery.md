@@ -29,7 +29,7 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · content" -->
 
 ## When NOT to reach for content.

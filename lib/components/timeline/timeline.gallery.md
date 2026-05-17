@@ -32,7 +32,7 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · timeline" -->
 
 ## When NOT to reach for timeline.

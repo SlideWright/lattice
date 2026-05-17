@@ -53,7 +53,7 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · roadmap" -->
 
 ## When NOT to reach for roadmap.

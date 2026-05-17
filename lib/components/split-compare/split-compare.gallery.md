@@ -38,7 +38,7 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-compare" -->
 
 ## When NOT to reach for split-compare.

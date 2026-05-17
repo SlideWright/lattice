@@ -39,7 +39,7 @@ Two cards side-by-side, co-equal.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-side" -->
 
 ## When NOT to reach for cards-side.

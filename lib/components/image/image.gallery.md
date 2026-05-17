@@ -75,7 +75,7 @@ Text leads from the right; image anchors from the left. Use when the surrounding
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · image" -->
 
 ## When NOT to reach for image.

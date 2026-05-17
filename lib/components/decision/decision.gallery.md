@@ -26,7 +26,7 @@ The verdict slide — one chosen path, named explicitly.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · decision" -->
 
 ## When NOT to reach for decision.

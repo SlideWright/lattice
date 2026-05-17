@@ -51,7 +51,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · piechart" -->
 
 ## When NOT to reach for piechart.

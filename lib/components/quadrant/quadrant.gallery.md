@@ -40,7 +40,7 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · quadrant" -->
 
 ## When NOT to reach for quadrant.

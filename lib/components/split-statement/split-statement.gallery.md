@@ -32,7 +32,7 @@ Pull quote — half the slide committed to one quoted idea on a dark left panel,
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-statement" -->
 
 ## When NOT to reach for split-statement.

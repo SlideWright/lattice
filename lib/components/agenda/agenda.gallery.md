@@ -85,7 +85,7 @@ Auto-numbered table of contents for the deck.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · agenda" -->
 
 ## When NOT to reach for agenda.

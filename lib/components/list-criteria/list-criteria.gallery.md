@@ -29,7 +29,7 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · list-criteria" -->
 
 ## When NOT to reach for list-criteria.

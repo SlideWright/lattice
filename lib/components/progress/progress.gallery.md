@@ -47,7 +47,7 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · progress" -->
 
 ## When NOT to reach for progress.

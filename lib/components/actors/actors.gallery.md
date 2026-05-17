@@ -29,7 +29,7 @@ Roster of responsibilities owned by named actors.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · actors" -->
 
 ## When NOT to reach for actors.

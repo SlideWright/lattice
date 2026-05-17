@@ -160,7 +160,7 @@ For every additional unit of exposure, the outcome rises by 0.42 SD — roughly 
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · math" -->
 
 ## When NOT to reach for math.

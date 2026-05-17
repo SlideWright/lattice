@@ -54,7 +54,7 @@ Parallel items stacked vertically, full-width cards.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-stack" -->
 
 ## When NOT to reach for cards-stack.

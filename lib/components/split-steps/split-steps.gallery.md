@@ -36,7 +36,7 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-steps" -->
 
 ## When NOT to reach for split-steps.

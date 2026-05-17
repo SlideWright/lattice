@@ -35,7 +35,7 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · subtopic" -->
 
 ## When NOT to reach for subtopic.

@@ -34,7 +34,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-brief" -->
 
 ## When NOT to reach for split-brief.

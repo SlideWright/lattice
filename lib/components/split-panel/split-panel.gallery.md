@@ -44,7 +44,7 @@ Featured left panel + supporting list on the right.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-panel" -->
 
 ## When NOT to reach for split-panel.

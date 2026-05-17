@@ -30,7 +30,7 @@ Multi-row comparison table with consistent columns.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-table" -->
 
 ## When NOT to reach for compare-table.

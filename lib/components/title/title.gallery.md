@@ -27,7 +27,7 @@ A decision framework for product leaders navigating market uncertainty.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · title" -->
 
 ## When NOT to reach for title.

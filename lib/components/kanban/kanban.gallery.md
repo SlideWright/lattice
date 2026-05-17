@@ -48,7 +48,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · kanban" -->
 
 ## When NOT to reach for kanban.

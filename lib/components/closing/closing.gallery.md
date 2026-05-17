@@ -35,7 +35,7 @@ Final slide. Dark canvas mirror of title.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · closing" -->
 
 ## When NOT to reach for closing.

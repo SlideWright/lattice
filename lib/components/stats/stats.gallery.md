@@ -32,7 +32,7 @@ Row of 3–5 stat tiles, each with a big number and a label.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · stats" -->
 
 ## When NOT to reach for stats.

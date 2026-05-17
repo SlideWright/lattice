@@ -36,7 +36,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · timeline-list" -->
 
 ## When NOT to reach for timeline-list.

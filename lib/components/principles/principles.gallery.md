@@ -43,7 +43,7 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · principles" -->
 
 ## When NOT to reach for principles.

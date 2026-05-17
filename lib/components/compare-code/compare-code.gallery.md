@@ -93,7 +93,7 @@ function loadOne(name) {
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-code" -->
 
 ## When NOT to reach for compare-code.

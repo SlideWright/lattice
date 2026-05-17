@@ -29,7 +29,7 @@ Plain bullet list under a heading.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · list" -->
 
 ## When NOT to reach for list.

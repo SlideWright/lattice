@@ -94,7 +94,7 @@ Vertical sequence of steps, each with full description body.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · list-steps" -->
 
 ## When NOT to reach for list-steps.

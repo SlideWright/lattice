@@ -44,7 +44,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · citation-card" -->
 
 ## When NOT to reach for citation-card.

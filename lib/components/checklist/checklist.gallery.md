@@ -31,7 +31,7 @@ Items with state markers — done, partial, todo.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · checklist" -->
 
 ## When NOT to reach for checklist.

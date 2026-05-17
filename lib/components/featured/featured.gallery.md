@@ -41,7 +41,7 @@ Featured card + sub-grid — one prominent item with supporting cards.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · featured" -->
 
 ## When NOT to reach for featured.

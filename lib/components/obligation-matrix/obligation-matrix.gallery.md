@@ -69,7 +69,7 @@ Each row promotes to a card with body-level breathing room.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · obligation-matrix" -->
 
 ## When NOT to reach for obligation-matrix.

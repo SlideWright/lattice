@@ -30,7 +30,7 @@ Three or four wide rows, each a full-width card.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · cards-wide" -->
 
 ## When NOT to reach for cards-wide.

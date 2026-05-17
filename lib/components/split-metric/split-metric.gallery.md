@@ -34,7 +34,7 @@ Measured across all customers active for 12+ months, March 31 cohort.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · split-metric" -->
 
 ## When NOT to reach for split-metric.

@@ -35,7 +35,7 @@ flowchart LR
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · diagram" -->
 
 ## When NOT to reach for diagram.

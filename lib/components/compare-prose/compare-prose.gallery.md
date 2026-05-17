@@ -80,7 +80,7 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · compare-prose" -->
 
 ## When NOT to reach for compare-prose.

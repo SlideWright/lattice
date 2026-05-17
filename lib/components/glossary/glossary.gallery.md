@@ -34,7 +34,7 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · glossary" -->
 
 ## When NOT to reach for glossary.

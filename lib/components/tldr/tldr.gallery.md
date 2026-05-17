@@ -43,7 +43,7 @@ Single-line takeaways — the deck or section's headline points.
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · tldr" -->
 
 ## When NOT to reach for tldr.

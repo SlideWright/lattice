@@ -171,7 +171,7 @@ Source · regulatory register · weekly export
 
 ---
 
-<!-- _class: cards-grid -->
+<!-- _class: list -->
 <!-- _footer: "Anti-patterns · kpi" -->
 
 ## When NOT to reach for kpi.

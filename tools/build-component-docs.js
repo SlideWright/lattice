@@ -302,13 +302,18 @@ function injectFooter(slide, footer) {
 }
 
 function renderAntiPatternsSlide(m) {
-  const cards = m.antiPatterns.map((p) => `- **${p.title}.** ${p.body}`);
-  return `<!-- _class: cards-grid -->
+  // Use `list` for the anti-patterns meta-slide, NOT `cards-grid`.
+  // cards-grid promotes inline-code spans (`literal`) to status pills,
+  // which mangles any antiPattern body that uses backticks for vocab
+  // (`On plan`, `At risk`, etc.). list renders inline code as inline code,
+  // preserving the prose. Slide count is unchanged.
+  const items = m.antiPatterns.map((p) => `- **${p.title}.** ${p.body}`);
+  return `<!-- _class: list -->
 <!-- _footer: "Anti-patterns · ${m.name}" -->
 
 ## When NOT to reach for ${m.name}.
 
-${cards.join('\n')}`;
+${items.join('\n')}`;
 }
 
 function renderClosingSlide(m) {
