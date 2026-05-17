@@ -51,7 +51,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 `Related components`
 
-- `split-panel` — the right side is a list of supporting points, not findings
+- `split-list` — the right side is a list of supporting points, not findings
 - `split-statement` — the left side carries a quote, not a thesis
 - `cards-stack` — the slide is mostly the list of findings; no executive framing needed
 - `tldr` — 5+ one-line takeaways without supporting detail

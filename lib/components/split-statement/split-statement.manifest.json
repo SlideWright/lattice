@@ -64,7 +64,7 @@
       "when": "the left carries a thesis statement, not a quote"
     },
     {
-      "name": "split-panel",
+      "name": "split-list",
       "when": "the right side is supporting points, no quoted claim on the left"
     }
   ]

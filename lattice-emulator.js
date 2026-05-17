@@ -1474,8 +1474,8 @@ function parseSlide(raw, index) {
     }
   }
 
-  // split-panel: h2+h5+code-only-p go in panel-left, everything after in panel-right
-  if (cls.includes('split-panel')) {
+  // split-list: h2+h5+code-only-p go in panel-left, everything after in panel-right
+  if (cls.includes('split-list')) {
     const h2Match = html.match(/<h2>([\s\S]*?)<\/h2>/);
     const h5Match = html.match(/<h5>([\s\S]*?)<\/h5>/);
     // Code-only paragraph (e.g. `Section 02`) → left panel, matching the CSS fallback
@@ -2345,7 +2345,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-panel','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
+  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-list','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

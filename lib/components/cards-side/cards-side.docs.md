@@ -16,7 +16,7 @@ Use for an explicit pair — two options, two phases, two artifacts presented wi
 
 - **Three or more cards.** cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four.
 - **One side is the answer.** If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided.
-- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-panel or two stacked rows of cards-wide.
+- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide.
 
 ## Authoring
 
@@ -78,7 +78,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`cards-grid`](../cards-grid/cards-grid.docs.md) — three or four parallel items, not two
 - [`cards-stack`](../cards-stack/cards-stack.docs.md) — two items that read top-to-bottom, not left-right
 - [`compare-prose`](../compare-prose/compare-prose.docs.md) — the comparison has a winner you want to declare
-- [`split-panel`](../split-panel/split-panel.docs.md) — one side is framing, the other is supporting evidence
+- [`split-list`](../split-list/split-list.docs.md) — one side is framing, the other is supporting evidence
 
 ## Demo deck
 

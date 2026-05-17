@@ -111,10 +111,10 @@ The config file at the repo root carries:
 - **Engine plugins** that wrap Marp's `render` output:
   - `deckClassPropagate` — propagates front-matter `class:` to every
     section (Marp's native semantic discards it on per-slide `_class:`).
-  - `splitPanelCounter` — adds `data-split-panel-n="01"` to split-panel
+  - `splitPanelCounter` — adds `data-split-list-n="01"` to split-list
     sections at build time (theme reads via `attr()`).
   - `applyChartFamilyToHtml` — the chart-family post-processor.
-  - `applySplitPanelsToHtml` — the split-panel post-processor.
+  - `applySplitPanelsToHtml` — the split-list post-processor.
 
 Plus the highlight.js + Mermaid registrations described in their own
 integration docs.

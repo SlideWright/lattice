@@ -3,7 +3,7 @@
 A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
 
 Lattice produces decks where every slide is a deliberate layout — title,
-diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
+diagram, compare-prose, split-list, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
 with no manual formatting work. Mermaid diagrams render with the same
 theme. Decks read as ink-on-paper and pass WCAG AA throughout.
@@ -27,7 +27,7 @@ context renders identically.
   dark ink. Saturated red reserved for alarm states. WCAG AA verified
   across every text-bearing surface.
 - **26 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
-  quote, timeline, big-number, split-panel, verdict-grid, more.
+  quote, timeline, big-number, split-list, verdict-grid, more.
   Each layout has an authoring contract documented in [docs/skill.md](docs/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that

@@ -41,9 +41,9 @@ function deckClassPropagate(markdown) {
 }
 
 /**
- * Marpit plugin: numbers each `.split-panel` slide at build time and writes
- * `data-split-panel-n="01"` onto the section. The theme reads it with
- * `content: attr(data-split-panel-n)` — same mechanism Marp uses for native
+ * Marpit plugin: numbers each `.split-list` slide at build time and writes
+ * `data-split-list-n="01"` onto the section. The theme reads it with
+ * `content: attr(data-split-list-n)` — same mechanism Marp uses for native
  * pagination (`data-marpit-pagination`), which is why it survives per-slide
  * image export while CSS counters do not.
  */
@@ -53,9 +53,9 @@ function splitPanelCounter(markdown) {
     for (const token of state.tokens) {
       if (token.type !== "marpit_slide_open") continue;
       const klass = token.attrGet("class") || "";
-      if (!/\bsplit-panel\b/.test(klass)) continue;
+      if (!/\bsplit-list\b/.test(klass)) continue;
       n += 1;
-      token.attrSet("data-split-panel-n", String(n).padStart(2, "0"));
+      token.attrSet("data-split-list-n", String(n).padStart(2, "0"));
     }
   });
 }

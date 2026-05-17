@@ -186,7 +186,7 @@ def table_row(a: str, b: str, c: str) -> tuple:
     return ('raw', '│' + _cell(a) + '│' + _cell(b) + '│' + _cell(c) + '│')
 
 
-# ----- panel primitives (T17 split-panel etc.) ------------------------------
+# ----- panel primitives (T17 split-list etc.) ------------------------------
 
 PANEL_W = 14           # left accent panel width including walls
 PANEL_GAP = 2          # space between panel and right column
@@ -388,7 +388,7 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
-    blocks['T17-split-panel'] = frame([
+    blocks['T17-split-list'] = frame([
         ('left', 'header'),
         panel_right(panel_top(), ''),
         panel_right(panel_row('EYEBROW'), 'Section heading'),

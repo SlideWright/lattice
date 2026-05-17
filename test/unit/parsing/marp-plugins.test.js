@@ -8,7 +8,7 @@
  * isolation, render fixture markdown, and assert on the HTML output.
  *
  * Why one plugin per test instance: the plugins use named ruler hooks
- * (`split_panel_counter`, `verdict_grid_badges`, etc.); applying the
+ * (`split_list_counter`, `verdict_grid_badges`, etc.); applying the
  * same plugin twice to the same Marp instance would throw, and applying
  * unrelated plugins together can hide a regression in one plugin under
  * the side effects of another. Fresh Marp per test is cheap (~5 ms).
@@ -271,27 +271,27 @@ describe('marp-plugins', () => {
 
   // ── splitPanelCounter ───────────────────────────────────────────────
 
-  test('splitPanelCounter: zero-pads sequential numbers across split-panel slides', () => {
+  test('splitPanelCounter: zero-pads sequential numbers across split-list slides', () => {
     const m = makeMarp(plugins.splitPanelCounter);
     const md = [
-      '<!-- _class: split-panel -->',
+      '<!-- _class: split-list -->',
       '## A',
       '',
       '---',
       '',
-      '<!-- _class: split-panel -->',
+      '<!-- _class: split-list -->',
       '## B',
       '',
       '---',
       '',
       '<!-- _class: content -->',
-      '## C — should NOT carry the split-panel attr',
+      '## C — should NOT carry the split-list attr',
     ].join('\n');
     const { html } = m.render(md);
-    assert.match(html, /data-split-panel-n="01"/);
-    assert.match(html, /data-split-panel-n="02"/);
-    // Slide C is not split-panel and must not get the attribute.
-    const matches = html.match(/data-split-panel-n=/g) || [];
+    assert.match(html, /data-split-list-n="01"/);
+    assert.match(html, /data-split-list-n="02"/);
+    // Slide C is not split-list and must not get the attribute.
+    const matches = html.match(/data-split-list-n=/g) || [];
     assert.equal(matches.length, 2);
   });
 
@@ -299,8 +299,8 @@ describe('marp-plugins', () => {
     // Render twice in fresh instances; both should start at 01.
     for (const _ of [1, 2]) {
       const m = makeMarp(plugins.splitPanelCounter);
-      const { html } = m.render('<!-- _class: split-panel -->\n## A');
-      assert.match(html, /data-split-panel-n="01"/);
+      const { html } = m.render('<!-- _class: split-list -->\n## A');
+      assert.match(html, /data-split-list-n="01"/);
     }
   });
 

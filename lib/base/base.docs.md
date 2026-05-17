@@ -61,7 +61,7 @@ slides the order is reversed: `h1` first (satisfies MD041), inline-code
 eyebrow immediately after. CSS on
 `section.title h1 + p:has(> code:only-child)` recognizes the swap.
 
-**Note on `split-panel`.** The inline-code eyebrow paragraph is placed
+**Note on `split-list`.** The inline-code eyebrow paragraph is placed
 **between `h2` and `h3`** in the source. The CSS grid fallback routes
 it to the left dark panel automatically.
 
@@ -183,7 +183,7 @@ problem → cause → fix, or step 1 → step 2 → step 3.
 
 **Layouts that auto-number when authored as `ol`:** `cards-grid`,
 `cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`,
-`list-criteria`, `list-steps`, `list-tabular`, `split-panel`, `timeline`,
+`list-criteria`, `list-steps`, `list-tabular`, `split-list`, `timeline`,
 `principles`.
 
 Each layout owns its own counter style (corner tag, header pill, mono
@@ -217,7 +217,7 @@ ignore it.
 |---|---|
 | `image` | image slot flips from right (default) to left. Alias of legacy `image left`. |
 | `featured` | hero card moves from the left column to the right column. |
-| `split-panel` | accent panel moves from the left to the right. |
+| `split-list` | accent panel moves from the left to the right. |
 | `split-brief`, `split-statement`, `split-metric`, `split-steps` | same panel-flip semantics. |
 | `compare-prose` | left and right cards swap; chosen/decision read from the left. |
 

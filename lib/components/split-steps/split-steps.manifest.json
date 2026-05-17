@@ -73,7 +73,7 @@
       "when": "phased grid across multiple workstreams"
     },
     {
-      "name": "split-panel",
+      "name": "split-list",
       "when": "left-anchor + right-list shape without a step sequence"
     },
     {

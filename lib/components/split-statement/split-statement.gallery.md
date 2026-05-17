@@ -51,4 +51,4 @@ Pull quote — half the slide committed to one quoted idea on a dark left panel,
 
 - `quote` — the quote IS the slide — no implications needed
 - `split-brief` — the left carries a thesis statement, not a quote
-- `split-panel` — the right side is supporting points, no quoted claim on the left
+- `split-list` — the right side is supporting points, no quoted claim on the left

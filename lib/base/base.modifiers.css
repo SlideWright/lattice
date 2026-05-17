@@ -85,7 +85,7 @@ section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
  * A paragraph whose only child is an inline code span, placed immediately
  * before any heading, is promoted to an eyebrow label — same visual style as
  * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
- * rules). h5 remains available for structural use (e.g. split-panel).
+ * rules). h5 remains available for structural use (e.g. split-list).
  *
  * Declared AFTER the subtitle block — same specificity (0,1,4), so source
  * order ensures eyebrow wins when a code paragraph is sandwiched between two
@@ -260,7 +260,7 @@ section footer {
  * Deny list = layouts where a metadata pill does not earn its place,
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
- *   bookends/openers     title, divider, subtopic, closing, split-panel
+ *   bookends/openers     title, divider, subtopic, closing, split-list
  *   single-message       featured, big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
  *                        timeline/list-steps (counter), principles/tldr (own line),
@@ -274,7 +274,7 @@ section footer {
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -701,7 +701,7 @@ section.obligation-matrix.asymmetric td:first-child {
  * Flips the asymmetric half of a layout:
  *   image          — image side flips left/right (alias of legacy `.left`)
  *   featured       — hero card moves from left col to right col
- *   split-panel    — accent panel moves from left to right
+ *   split-list    — accent panel moves from left to right
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
  * `cards-side` is symmetric (2-col grid with no left/right asymmetry) and
@@ -728,9 +728,9 @@ section.featured.mirror .feat-layout {
 section.featured.mirror .feat-layout .feat-card { grid-column: 2; grid-row: 1; }
 section.featured.mirror .feat-layout .sub-row    { grid-column: 1; grid-row: 1; }
 
-/* — split-panel: reverse the row so panel-left renders on the right —
+/* — split-list: reverse the row so panel-left renders on the right —
  * Watermark / eyebrow positions stay anchored to .panel-left's own box. */
-section.split-panel.mirror {
+section.split-list.mirror {
   flex-direction: row-reverse;
 }
 

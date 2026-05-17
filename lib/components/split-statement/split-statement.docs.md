@@ -63,7 +63,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`quote`](../quote/quote.docs.md) — the quote IS the slide — no implications needed
 - [`split-brief`](../split-brief/split-brief.docs.md) — the left carries a thesis statement, not a quote
-- [`split-panel`](../split-panel/split-panel.docs.md) — the right side is supporting points, no quoted claim on the left
+- [`split-list`](../split-list/split-list.docs.md) — the right side is supporting points, no quoted claim on the left
 
 ## Demo deck
 

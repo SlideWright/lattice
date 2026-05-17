@@ -20,7 +20,7 @@ footer: "Mermaid 11.14 · rendered with Lattice theme"
 
 ---
 
-<!-- _class: split-panel -->
+<!-- _class: split-list -->
 
 ## How this gallery is organised.
 

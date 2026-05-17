@@ -64,7 +64,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`split-panel`](../split-panel/split-panel.docs.md) — the right side is a list of supporting points, not findings
+- [`split-list`](../split-list/split-list.docs.md) — the right side is a list of supporting points, not findings
 - [`split-statement`](../split-statement/split-statement.docs.md) — the left side carries a quote, not a thesis
 - [`cards-stack`](../cards-stack/cards-stack.docs.md) — the slide is mostly the list of findings; no executive framing needed
 - [`tldr`](../tldr/tldr.docs.md) — 5+ one-line takeaways without supporting detail

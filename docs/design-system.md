@@ -89,7 +89,7 @@ The four layers also correspond to **the four audiences** Lattice serves:
 | Function       | The audience leaves knowing…                       | Examples |
 |----------------|----------------------------------------------------|----------|
 | **Anchor**     | where they are in the deck                         | `title`, `divider`, `subtopic`, `closing` |
-| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-panel`, `content` |
+| **Statement**  | one declarative claim                              | `big-number`, `quote`, `split-list`, `content` |
 | **Inventory**  | a parallel set of related items                    | `cards-grid`, `cards-stack`, `list`, `actors`, `principles`, `agenda`, `tldr`, `glossary`, `list-tabular`, `checklist` |
 | **Comparison** | how two or more options differ                    | `compare-prose`, `compare-code`, `compare-table`, `before-after`, `verdict-grid`, `decision`, `matrix-2x2` |
 | **Progression**| an ordered movement through stages or time        | `timeline`, `list-steps`, `list-criteria`, `roadmap`, `gantt`, `kanban` |
@@ -237,7 +237,7 @@ integration) is unchanged. The manifest is metadata, not behavior.
 
 Variants don't all belong to one component. Some apply to every layout
 ("dark", "with-period"); some apply to most ("compact", "loose",
-"accent"); some are strictly per-layout ("mirror" for split-panel,
+"accent"); some are strictly per-layout ("mirror" for split-list,
 "four" for cards-grid). The manifest model recognises three tiers:
 
 **Tier 1 — Universal (25 variants).** Apply to every component. Added

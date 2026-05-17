@@ -61,7 +61,7 @@
   ],
   "related": [
     {
-      "name": "split-panel",
+      "name": "split-list",
       "when": "the right side is a list of supporting points, not findings"
     },
     {
