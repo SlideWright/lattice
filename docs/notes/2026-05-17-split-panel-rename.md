@@ -1,12 +1,14 @@
-# 2026-05-17 — split-panel rename proposal
+# 2026-05-17 — split-panel → split-list rename (shipped)
 
-**Status:** Deferred — proposal captured for a future cleanup pass.
-Not blocking anything.
+**Status:** Shipped. This note captures the design decision + executed
+migration. See commit `fc65e97` for the implementation; commit
+`0d3b25b` for the follow-up marp-cli post-processor that brought
+split-list to parity with the rest of the split-* family.
 
 **Background.** During the Phase 5 lib/ reorganization, a naming
 inconsistency surfaced in the split-* component family:
 
-| Today | Right panel content |
+| Before | Right panel content |
 |---|---|
 | `split-panel` | list of supporting points |
 | `split-brief` | lede paragraph + findings list |
@@ -15,91 +17,87 @@ inconsistency surfaced in the split-* component family:
 | `split-steps` | numbered steps |
 | `split-compare` | two options + verdict |
 
-All six components have a dark left panel — they're all "split panels."
-Calling one of them `split-panel` implies it's the canonical/parent of
-the family when it's actually just one specific variant (the generic
-list-of-points version).
+All six components had a dark left panel — they were all "split panels."
+Calling one of them `split-panel` implied it was the canonical/parent
+of the family when it was actually just one specific variant (the
+generic list-of-points version).
 
-## Proposed rename
+## What changed
 
-`split-panel` → `split-list`.
+`split-panel` → `split-list`. The suffix in `split-*` now uniformly
+tells you what the **right panel contains**:
 
-Rationale: the suffix in `split-*` should tell you what the **right
-panel contains**. `split-brief` = brief content. `split-statement` =
-quote content. `split-list` would parallel them — the right panel is
-a list.
+| Name | Right panel |
+|---|---|
+| `split-list` | list of supporting points (was `split-panel`) |
+| `split-brief` | lede paragraph + findings list |
+| `split-statement` | pull quote + implications |
+| `split-metric` | big number + caption |
+| `split-steps` | numbered steps |
+| `split-compare` | two options + verdict |
 
-**Alternatives considered:**
+**Alternatives considered and rejected.** `split-points` ("list of
+supporting points") and `split-section` ("section opener with side
+points") — both accurate but break the family pattern of
+naming-by-right-panel-content.
 
-- `split-points` — also accurate ("list of supporting points"), but
-  `list` is the more general word and matches the existing `list`
-  component vocabulary.
-- `split-section` — descriptive ("section opener with side points")
-  but breaks the family pattern of naming-by-right-panel-content.
-
-Going with `split-list`.
-
-## What changes
+## What the migration touched
 
 - Component folder: `lib/components/split-panel/` → `lib/components/split-list/`
-- 5 dotted files inside: `split-panel.{manifest.json, styles.css,
-  docs.md, gallery.md, gallery.pdf}` → `split-list.*`
-- Manifest `name` field: `"split-panel"` → `"split-list"`
-- `<!-- _class: split-panel -->` slide directives everywhere → `split-list`
-- `lattice-emulator.js:1478` split-panel post-processor: selector
-  update from `cls.includes('split-panel')` to `cls.includes('split-list')`
-- CSS rules in the moved styles.css: `section.split-panel` →
-  `section.split-list` (sed-able)
-- VS Code snippets regen (driven by manifest)
-- ASCII catalog block ID: `T17-split-panel` → `T17-split-list`
-- Cross-references in CLAUDE.md, README.md, design-system.md,
-  per-component `related[]` entries pointing at split-panel
-- Examples that use the layout: `examples/gallery.md`,
-  `examples/gallery-jargon.md` — `_class:` directive update
-- All split-* per-component docs that cross-reference split-panel as
-  related — repoint to split-list
+- 5 dotted files inside renamed in transit (`split-panel.{manifest.json,
+  styles.css, docs.md, gallery.md, gallery.pdf}` → `split-list.*`)
+- Manifest `name`, `sample` `_class:` directives, and prose mentions
+  all updated
+- CSS selectors: `section.split-panel` → `section.split-list` in the
+  component CSS, plus `:is(.split-panel)` → `:is(.split-list)` and
+  similar in `lib/base/base.modifiers.css`
+- Engine code: `lattice-emulator.js:1478` post-processor selector
+  updated; `marp.config.js`'s `splitPanelCounter` plugin now matches
+  `\bsplit-list\b` and emits `data-split-list-n="01"` attributes;
+  `lib/components/index.js` `CARD_STYLE_LAYOUTS` list updated
+- Test fixtures: `test/unit/parsing/marp-plugins.test.js` selectors
+  and assertions updated
+- ASCII catalog: `T17-split-panel` → `T17-split-list` in
+  `tools/ascii-preview.py`
+- Slide directives: every `<!-- _class: split-panel -->` across
+  `examples/`, `lib/components/*/gallery.md`, etc.
+- Cross-references: `related[]` entries in `cards-side`, `split-brief`,
+  `split-statement`, `split-steps` manifests
+- Documentation: `CLAUDE.md`, `README.md`, `docs/architecture.md`,
+  `docs/design-system.md`, `docs/references/audit.md`, `lib/base/base.docs.md`
+- Snippets and per-component docs regenerated
+- All 60 gallery PDFs rebuilt
 
-## Test plan when executing
+## Verification
 
-1. Pre-flight pixel-diff baseline (top-level decks + per-component PDFs).
-2. `git mv` the folder + files in transit.
-3. Rename manifest `name` field.
-4. Sed-pass CSS selectors in the moved styles.css.
-5. Update emulator selector at `lattice-emulator.js:1478`.
-6. Update ASCII catalog block ID in `tools/ascii-preview.py`.
-7. Update every `<!-- _class: split-panel -->` directive across the
-   repo: examples/, lib/components/*/gallery.md, etc.
-8. Regenerate snippets.
-9. Regenerate all per-component docs.md + gallery.md (the affected
-   ones — split-list's own, and any with cross-references in `related[]`).
-10. Rebuild lattice.css + every gallery PDF.
-11. Pixel-diff against pre-flight baseline — every PDF must be
-    pixel-clean (rename has no visual effect; only path/identifier
-    changes).
-12. `npm test` + integration tier — all assertions still pass.
-13. Update CLAUDE.md / README.md / docs/ references.
+- 441 unit tests pass
+- 58 per-component integration tests pass
+- Pixel diff against pre-rename baseline: zero pixel changes across
+  all 60 PDFs (as expected — pure rename has no visual effect)
 
-## Cost estimate
+## What was left intentionally as historical references
 
-~1 hour mechanical work, plus pixel-diff verification. Similar shape
-to Phase 1's dotted-rename pass but smaller in scope (one component
-folder, not 58).
+- `CHANGELOG.md` — historical record of earlier commits when the
+  component was named split-panel
+- `docs/notes/2026-05-04-authoring-proposals.md` — dated snapshot from
+  before the rename; the proposals discussed there reference
+  `split-panel` because that was the name at proposal time
+- `docs/notes/2026-05-11-4k-rendering-audit.md` — dated audit snapshot
+- `lib/engine/split-panels.js` (filename) — handles 5 split-* plurals
+  (split-brief, split-statement, split-metric, split-steps,
+  split-compare); the filename's plural is accurate for the file's
+  job, not affected by the singular rename
+- `marp.config.js` / `lattice-runtime.js` / `docs/references/gotchas.md`
+  — references to `lib/engine/split-panels.js` (the file above)
 
-## Why deferred
+## Related deferred work
 
-Phase 5 is already a multi-step refactor with rendering changes the
-user wants to eyeball. Adding a component rename on top would inflate
-review surface. The current naming is a quirk, not a bug — every
-existing deck continues to work; only future readers wonder why one
-of the six split-* components has the "split-panel" name.
-
-Defer until after Phase 5 stabilizes. Then take this one as its own
-isolated commit.
-
-## Related
-
-- `docs/notes/2026-05-17-chart-family-refactor.md` — similar deferred
-  refactor for the chart-family subsystem.
-- `docs/notes/2026-05-04-authoring-proposals.md` — original split-panel
-  variant proposals (mirror shipped; chapter/metrics still open) that
-  would also land more cleanly after the rename.
+- `split-list` `chapter` and `metrics` variants from
+  `docs/notes/2026-05-04-authoring-proposals.md` (proposed but never
+  implemented; would now apply to `split-list` post-rename)
+- `lib/engine/split-panels.js` could absorb `split-list` to bring all
+  6 split-* layouts under one dispatcher — currently `split-list` runs
+  through the `lattice-emulator.js` inline path on one side and the
+  brand-new dedicated post-processor I added in commit `0d3b25b` on
+  the marp-cli side. Unifying that is a small cleanup but adds nothing
+  functionally.
