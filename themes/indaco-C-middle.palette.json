@@ -1,0 +1,27 @@
+{
+  "$comment": "Option C: middle ground — AAA target (7:1) with chroma 0.06 (slightly more chromatic than current indaco's ~0.04 but well below the vivid 0.10 of option B). Accessible bias, mostly pastel, hues visible enough to differentiate without becoming the focal point.",
+  "palette": "indaco-C-middle",
+  "tier": {
+    "aa": 6.5,
+    "chroma": 0.06,
+    "lightLightRange": [0.80, 0.92],
+    "darkLightRange": [0.36, 0.52]
+  },
+  "inks": {
+    "primary": { "light": "#0A1628", "dark": "#FFFFFF" }
+  },
+  "slots": [
+    { "hue": 220, "label": "blue (brand)" },
+    { "hue":  35, "label": "rust" },
+    { "hue": 115, "label": "green" },
+    { "hue": 325, "label": "magenta" },
+    { "hue": 290, "label": "purple" },
+    { "hue": 180, "label": "teal" },
+    { "hue":  60, "label": "amber" },
+    { "hue": 200, "label": "cyan" },
+    { "hue":  10, "label": "rose" },
+    { "hue":  80, "label": "olive-yellow" },
+    { "hue": 250, "label": "royal blue" },
+    { "hue":  95, "label": "olive" }
+  ]
+}

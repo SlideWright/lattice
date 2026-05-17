@@ -1,0 +1,27 @@
+{
+  "$comment": "Option B: solver default — WCAG AA minimum (4.5:1) at moderate chroma (0.10). Lands at the colorful end of acceptable: distinct hues that read as a boardroom-friendly modern palette with less headroom but vivid distinction. Same as the original Phase 1 output.",
+  "palette": "indaco-B-min-aa",
+  "tier": {
+    "aa": 4.5,
+    "chroma": 0.10,
+    "lightLightRange": [0.78, 0.92],
+    "darkLightRange": [0.40, 0.55]
+  },
+  "inks": {
+    "primary": { "light": "#0A1628", "dark": "#FFFFFF" }
+  },
+  "slots": [
+    { "hue": 220, "label": "blue (brand)" },
+    { "hue":  35, "label": "rust" },
+    { "hue": 115, "label": "green" },
+    { "hue": 325, "label": "magenta" },
+    { "hue": 290, "label": "purple" },
+    { "hue": 180, "label": "teal" },
+    { "hue":  60, "label": "amber" },
+    { "hue": 200, "label": "cyan" },
+    { "hue":  10, "label": "rose" },
+    { "hue":  80, "label": "olive-yellow" },
+    { "hue": 250, "label": "royal blue" },
+    { "hue":  95, "label": "olive" }
+  ]
+}

@@ -1,0 +1,13 @@
+/* @theme indaco-C-middle
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * EXPERIMENT — indaco with solver-generated --cN-light tokens (Option C-middle).
+ * See themes/indaco-C-middle.palette.json and themes/indaco-C-middle.contrast.md.
+ */
+@import 'indaco';
+@import 'indaco-C-middle.tokens.generated';
