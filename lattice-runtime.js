@@ -3400,6 +3400,73 @@
    * mirror is a complementary path for users who want `class: dark` to
    * keep working in browser-based previews of exported HTML.
    */
+  /**
+   * Convenience `logo:` front-matter directive — runtime mirror.
+   *
+   * Same shape as `applyDeckClassFromFrontMatter` above: fetch the
+   * source `.md`, parse front matter, inject `<img class="deck-logo">`
+   * as the first child of each section selected by the `logo-on`
+   * rule. Real DOM (not a `::before` pseudo) so the logo composes
+   * with `::before`-based decorations like `bg-orbit-br`.
+   *
+   * Sibling implementations:
+   *   - marp.config.js's `applyDeckLogoToHtml` (marp-cli path)
+   *   - lattice-emulator.js's HTML post-process (emulator path)
+   * All three must produce identical DOM injection so the rendered
+   * output is consistent across renderers.
+   *
+   * Same vscode-webview limitation as `applyDeckClassFromFrontMatter`
+   * — fetch can't reach workspace files in that sandbox, so this
+   * gracefully no-ops there. Works for published HTML decks served
+   * from a web origin, where the source `.md` is co-located.
+   */
+  function applyDeckLogoFromFrontMatter() {
+    if (typeof document === 'undefined' || typeof fetch === 'undefined') return;
+    if (typeof window === 'undefined' || !window.location || !window.location.href) return;
+    const url = window.location.href.replace(/[?#].*$/, '');
+    const mdUrl = url.replace(/\.html?$/i, '.md');
+    if (mdUrl === url) return;
+
+    fetch(mdUrl)
+      .then((r) => (r.ok ? r.text() : null))
+      .then((src) => {
+        if (!src) return;
+        const fmMatch = src.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+        if (!fmMatch) return;
+        const fm = fmMatch[1];
+        const logoMatch = fm.match(/^\s*logo:\s*["']?(.*?)["']?\s*$/m);
+        if (!logoMatch || !logoMatch[1].trim()) return;
+        const logo = logoMatch[1].trim();
+        const styleMatch = fm.match(/^\s*logo-style:\s*["']?(.*?)["']?\s*$/m);
+        const onMatch    = fm.match(/^\s*logo-on:\s*["']?(.*?)["']?\s*$/m);
+        const brand = styleMatch && styleMatch[1].trim().toLowerCase() === 'brand';
+        const onTitle = onMatch && onMatch[1].trim().toLowerCase() === 'title';
+
+        // Scope to Marp's real slide sections — same reason the overflow
+        // watcher does so. Literal `<section>` text inside code blocks
+        // parses as nested DOM and would otherwise get a logo injected.
+        const sections = document.querySelectorAll('section[data-marpit-slide]');
+        let firstSeen = false;
+        for (const section of sections) {
+          const cls = section.className.split(/\s+/).filter(Boolean);
+          const isTitle = cls.includes('title');
+          const isFirst = !firstSeen;
+          firstSeen = true;
+          if (onTitle && !isFirst && !isTitle) continue;
+          // Skip if already injected (idempotent — runtime may re-fire).
+          if (section.querySelector(':scope > img.deck-logo')) continue;
+          const img = document.createElement('img');
+          img.className = 'deck-logo' + (brand ? ' deck-logo-brand' : '');
+          img.src = logo;
+          img.alt = '';
+          img.setAttribute('aria-hidden', 'true');
+          img.style.setProperty('--deck-logo-src', 'url("' + logo.replace(/"/g, '\\"') + '")');
+          section.insertBefore(img, section.firstChild);
+        }
+      })
+      .catch(() => { /* fetch blocked / 404 / sandbox — no-op */ });
+  }
+
   function applyDeckClassFromFrontMatter() {
     if (typeof document === 'undefined' || typeof fetch === 'undefined') return;
     if (typeof window === 'undefined' || !window.location || !window.location.href) return;
@@ -3509,6 +3576,7 @@
       requestAnimationFrame(tick);
     };
     applyDeckClassFromFrontMatter();
+    applyDeckLogoFromFrontMatter();
     // Run all content transforms immediately so glossary, chart family, and
     // layout slides render without waiting for the Mermaid library to load.
     // tick() calls initAndRun() once Mermaid is ready, which re-runs them
@@ -3576,7 +3644,9 @@
     // (smallest real bug observed in the gallery was a 211px overshoot).
     const TOL = 12;
     const check = () => {
-      for (const s of document.querySelectorAll('section')) {
+      // Scope to Marp's real slide sections — `<section>` literals
+      // inside code blocks parse as nested DOM and would pollute the count.
+      for (const s of document.querySelectorAll('section[data-marpit-slide]')) {
         const over = s.scrollHeight > s.clientHeight + TOL
                   || s.scrollWidth  > s.clientWidth  + TOL;
         s.classList.toggle('overflow', over);

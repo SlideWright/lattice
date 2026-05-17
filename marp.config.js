@@ -76,68 +76,60 @@ function readDeckLogoFrontMatter(src) {
 }
 
 /**
- * Marpit plugin: convenience `logo:` front-matter directive.
+ * HTML-stage helper: convenience `logo:` front-matter directive.
  *
- * Appends `with-logo` (and `with-logo-brand` when `logo-style: brand`)
- * to every section's class list per the `logo-on` rule. The matching
- * CSS lives in lib/base/base.modifiers.css and paints the image as a
- * silhouette via mask-image at watermark opacity (see the "CUSTOM
- * LOGO" block there).
+ * Injects `<img class="deck-logo" src="..." alt="" aria-hidden="true">`
+ * as the first child of every `<section>` selected by the `logo-on`
+ * rule. The img carries an inline `style="--deck-logo-src:url('...')"`
+ * so the CSS rule in lib/base/base.modifiers.css can paint it as a
+ * silhouette via mask-image at watermark opacity. When `logo-style:
+ * brand` is set, the `deck-logo-brand` class is added alongside.
  *
- * The companion `--deck-logo` custom property is injected via
- * `applyDeckLogoStyleToCss` at HTML-stage time (below) so the plugin
- * itself stays a pure token transform.
+ * Real DOM injection (rather than a `::before` pseudo) is what lets
+ * the logo compose with `::before`-based decorations like
+ * `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.
+ * Each chrome rule paints on its own render layer.
  *
- * Native authoring form (Marp built-in directives) is always
- * preferred for marp-vscode preview parity — this convenience layer
- * does NOT render in the marp-vscode preview because the extension
- * doesn't load workspace marp.config.js plugins. Same constraint
+ * Sibling: lattice-emulator.js requires this same function and calls
+ * it on its assembled HTML so both renderers produce identical DOM.
+ *
+ * This is a build-time only convenience. The marp-vscode preview pane
+ * does NOT load workspace marp.config.js plugins, so the logo does
+ * not appear there. Same limitation
  * lattice-runtime.js's applyDeckClassFromFrontMatter documents at
  * lines 3399-3401. See docs/references/gotchas.md.
- *
- * Mirrored by lattice-emulator.js's front-matter parser so both render
- * paths produce identical class lists.
  */
-function deckLogo(markdown) {
-  markdown.core.ruler.after("marpit_slide_containers", "deck_logo", (state) => {
-    const src = (state.env && (state.env.markdown || state.env.source)) || state.src || "";
-    const cfg = readDeckLogoFrontMatter(src);
-    if (!cfg) return;
-    const tokensToTag = [];
-    let firstSeen = false;
-    for (const token of state.tokens) {
-      if (token.type !== "marpit_slide_open") continue;
-      const cls = (token.attrGet("class") || "").split(/\s+/).filter(Boolean);
-      const isTitle = cls.includes("title");
-      const isFirst = !firstSeen;
-      firstSeen = true;
-      if (cfg.on === "all" || isFirst || isTitle) {
-        tokensToTag.push({ token, cls });
-      }
-    }
-    for (const { token, cls } of tokensToTag) {
-      if (!cls.includes("with-logo")) cls.push("with-logo");
-      if (cfg.brand && !cls.includes("with-logo-brand")) cls.push("with-logo-brand");
-      token.attrSet("class", cls.join(" "));
-    }
-  });
-}
-
-/**
- * HTML-stage helper: when the front-matter declares a `logo:`, append
- * a `:root{--deck-logo:url("...")}` rule to the deck's CSS so the
- * mask-image rule in lib/base/base.modifiers.css can resolve. Called
- * from the `render()` wrapper below, alongside the chart-family etc.
- * HTML rewrites.
- *
- * Sibling: lattice-emulator.js appends the same custom property to its
- * `globalStyle` so the emulator path produces identical CSS output.
- */
-function applyDeckLogoStyleToCss(css, markdown) {
+function applyDeckLogoToHtml(html, markdown) {
   const cfg = readDeckLogoFrontMatter(markdown);
-  if (!cfg) return css;
-  const safePath = cfg.logo.replace(/"/g, '\\"');
-  return `${css}\n:root{--deck-logo:url("${safePath}")}\n`;
+  if (!cfg) return html;
+  const htmlEscape = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // CSS-escape for inside a `url("...")` CSS string: backslashes first,
+  // then quotes (so quote-escapes aren't doubled by the backslash pass).
+  // Then HTML-encode for the surrounding style attribute context so the
+  // raw value can't break out of the attribute.
+  const cssEscape = (s) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  const safeSrc = htmlEscape(cfg.logo);
+  const safeCssSrc = htmlEscape(cssEscape(cfg.logo));
+  const classes = `deck-logo${cfg.brand ? ' deck-logo-brand' : ''}`;
+  const img = `<img class="${classes}" src="${safeSrc}" alt="" aria-hidden="true" style="--deck-logo-src:url(&quot;${safeCssSrc}&quot;)">`;
+  let firstSeen = false;
+  // Match Marp-emitted section opens only — they all carry
+  // `data-marpit-slide="N"`. The qualifier prevents the rewriter from
+  // touching literal `<section>` text that authors write inside code
+  // blocks, where HTML parses the tag as a real nested section element.
+  return html.replace(/<section\b([^>]*\bdata-marpit-slide="[^"]*"[^>]*)>/g, (match, attrs) => {
+    const c = attrs.match(/\sclass="([^"]*)"/);
+    const cls = c ? c[1].split(/\s+/).filter(Boolean) : [];
+    const isTitle = cls.includes('title');
+    const isFirst = !firstSeen;
+    firstSeen = true;
+    if (cfg.on !== 'all' && !isFirst && !isTitle) return match;
+    return `${match}${img}`;
+  });
 }
 
 /**
@@ -624,7 +616,6 @@ module.exports = {
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
     marp.use(deckClassPropagate)
-        .use(deckLogo)
         .use(splitPanelCounter)
         .use(verdictGridBadges)
         .use(obligationMatrixBadges)
@@ -651,9 +642,7 @@ module.exports = {
         result.html = applyRoadmapToHtml(result.html);
         result.html = applyJourneyToHtml(result.html);
         result.html = applyWordCloudToHtml(result.html);
-      }
-      if (result && typeof result.css === 'string') {
-        result.css = applyDeckLogoStyleToCss(result.css, markdown);
+        result.html = applyDeckLogoToHtml(result.html, markdown);
       }
       return result;
     };
@@ -667,8 +656,7 @@ module.exports = {
 // safe; consumers should treat it as test-internal API.
 module.exports.plugins = {
   deckClassPropagate,
-  deckLogo,
-  applyDeckLogoStyleToCss,
+  applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
   splitPanelCounter,
   verdictGridBadges,

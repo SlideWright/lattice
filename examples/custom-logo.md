@@ -29,22 +29,19 @@ One rule in `lattice.css` covers SVG, PNG, and JPEG. No per-author light/dark va
 
 <!-- _class: subtopic -->
 
-## Two ways to author.
+## How it lands in the DOM.
 
-**Native form** — uses only Marp built-in directives, so it renders identically in marp-cli, lattice-emulator, and the marp-vscode preview pane.
+A small Marpit-stage rewriter injects `<img class="deck-logo" src="…">` as the first child of every selected `<section>` — same shape Marp uses for `<header>` and `<footer>`. CSS positions it absolutely top-right and applies the silhouette via `mask-image` on the img's own src.
 
-```yaml
-class: with-logo
-style: ':root{--deck-logo:url("./acme-logo.svg")}'
-```
-
-**Convenience directive** — one line, expands to the native form at build time.
+A real DOM element (rather than a `::before` pseudo) is what lets the logo compose with `::before`-based chrome like `bg-orbit-br`, `bg-grid-micro`, or `bg-asterisk-scatter`. Each decoration paints on its own layer.
 
 ```yaml
 logo: ./acme-logo.svg
+logo-style: auto | brand          # optional, default `auto`
+logo-on: all | title              # optional, default `all`
 ```
 
-Caveat: the convenience directive does **not** render in the marp-vscode preview, because the extension doesn't load workspace `marp.config.js` plugins. For live-preview parity, use the native form.
+⚠️ Build-time only — the directive does **not** render in the marp-vscode preview, because the extension doesn't load workspace `marp.config.js` plugins. The published-HTML path (`lattice-runtime.js`) restores it for any deck served from a web origin.
 
 ---
 
@@ -67,23 +64,15 @@ Same SVG. Same rule. Different tone. The mask gets recoloured by the cascade, so
 
 ---
 
-<!-- _class: bg-corner-tr -->
+<!-- _class: bg-orbit-br -->
 
-## Corner gradient + logo coexist.
+## SVG-mark background + logo coexist.
 
-`bg-corner-tr` paints a soft accent glow in the top-right corner of this slide. The logo sits on top of it without contest — the gradient is rendered via `background-image` on the section, the logo silhouette via `::before`. Two layers, no fight.
+`bg-orbit-br` draws its concentric-ring accent through `section::before`. Earlier iterations of this feature put the logo on `::before` too — and the two collided. The current implementation injects the logo as a real `<img>` element, so it sits on a different render layer and the two compose without contest.
 
-**Caveat:** SVG-mark backgrounds (`bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, etc.) draw their accents through `::before` too. On a slide with both `with-logo` and one of those marks, only one wins — the modifier declared later in the cascade.
+Every `bg-*` class — gradients (`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`) and SVG marks (`bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`, `bg-chevron-bl`, …) — composes with the logo.
 
 ---
-
-<!-- _class: with-logo-brand -->
-
-## With the `brand` modifier.
-
-Add `with-logo-brand` to a slide's class list and the silhouette flips to a full-colour rendering on a soft, theme-aware plate. The two-tone chevrons keep their hue; the plate softens contrast so the mark sits intentionally on whatever canvas it lands on.
-
-Use sparingly — `auto` is the default for a reason.
 
 ---
 

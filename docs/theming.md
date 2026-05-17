@@ -62,11 +62,11 @@ to spot during palette development.
 | `--accent-soft` | Pale brand-tinted panel fill |
 | `--code-text` | Code text on dark code surface |
 
-Custom-logo authors set `--deck-logo` to the image URL via the
-`style:` front-matter directive (or via the convenience `logo:`
-sugar). The `with-logo` chrome rule then paints the silhouette in
-`currentColor` at watermark opacity, so the mark inherits each
-slide's ink without needing a theme-specific asset. See
+Custom-logo authors point `logo:` in front matter at an image file.
+A build-stage rewriter injects `<img class="deck-logo">` as the
+first child of each section; the chrome rule then paints the
+silhouette in `currentColor` at watermark opacity, so the mark
+inherits each slide's ink without a theme-specific asset. See
 [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md) for
 the authoring contract.
 

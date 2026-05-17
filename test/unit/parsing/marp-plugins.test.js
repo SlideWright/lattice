@@ -100,136 +100,97 @@ describe('marp-plugins', () => {
     assert.ok(cls.includes('cards-grid'));
   });
 
-  // ── deckLogo ───────────────────────────────────────────────────────────
+  // ── applyDeckLogoToHtml ────────────────────────────────────────────────
 
-  test('deckLogo: `logo:` with default `logo-on: all` adds `with-logo` to every section', () => {
-    const m = makeMarp(plugins.deckLogo);
-    const md = [
-      '---',
-      'logo: ./acme.svg',
-      '---',
-      '',
-      '# Slide 1',
-      '',
-      '---',
-      '',
-      '<!-- _class: title -->',
-      '',
-      '# Slide 2',
-      '',
-      '---',
-      '',
-      '# Slide 3',
-    ].join('\n');
-    const { html } = m.render(md, { markdown: md });
-    const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(x => x[1].split(/\s+/).filter(Boolean));
-    assert.equal(sections.length, 3);
-    for (const cls of sections) {
-      assert.ok(cls.includes('with-logo'), `missing 'with-logo'; got [${cls.join(', ')}]`);
+  function logoFixture(html) {
+    // Helper: minimal Marp-shaped section list for the rewriter to walk.
+    return html;
+  }
+
+  test('applyDeckLogoToHtml: `logo:` with default `logo-on: all` injects <img class="deck-logo"> into every section', () => {
+    const html = logoFixture([
+      '<section id="1" data-marpit-slide="1"></section>',
+      '<section id="2" class="title" data-marpit-slide="2"></section>',
+      '<section id="3" data-marpit-slide="3"></section>',
+    ].join(''));
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const imgs = [...out.matchAll(/<img[^>]*class="deck-logo[^"]*"[^>]*>/g)];
+    assert.equal(imgs.length, 3, `expected 3 deck-logo imgs; got ${imgs.length}`);
+    // No brand class when style is default `auto`.
+    for (const m of imgs) {
+      assert.ok(!/deck-logo-brand/.test(m[0]),
+        `unexpected 'deck-logo-brand'; got ${m[0]}`);
     }
-    // No `with-logo-brand` when style is default `auto`.
-    for (const cls of sections) {
-      assert.ok(!cls.includes('with-logo-brand'), `unexpected 'with-logo-brand'; got [${cls.join(', ')}]`);
-    }
+    // Inline custom property must carry the src for the mask rule.
+    assert.match(out, /style="--deck-logo-src:url\(&quot;\.\/acme\.svg&quot;\)"/);
   });
 
-  test('deckLogo: `logo-on: title` tags only the first slide and any `_class: title` slide', () => {
-    const m = makeMarp(plugins.deckLogo);
-    const md = [
-      '---',
-      'logo: ./acme.svg',
-      'logo-on: title',
-      '---',
-      '',
-      '<!-- _class: title -->',
-      '# Cover',
-      '',
-      '---',
-      '',
-      '# Body',
-      '',
-      '---',
-      '',
-      '<!-- _class: title -->',
-      '# Second cover',
-    ].join('\n');
-    const { html } = m.render(md, { markdown: md });
-    // Match every <section> open tag; body slide may have no class attribute at all.
-    // Anchor the `class=` match on whitespace so we don't accidentally pick up
-    // Marpit's `data-class="..."` mirror attribute (where \b would match at the
-    // dash-to-c boundary).
-    const sections = [...html.matchAll(/<section\b[^>]*>/g)].map(x => {
-      const c = x[0].match(/\sclass="([^"]*)"/);
-      return c ? c[1].split(/\s+/).filter(Boolean) : [];
-    });
+  test('applyDeckLogoToHtml: img is the first child of each section (so absolute positioning is predictable)', () => {
+    const html = '<section id="1" data-marpit-slide="1"><h1>Title</h1></section>';
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<section id="1" data-marpit-slide="1"><img[^>]*class="deck-logo[^>]*><h1>Title<\/h1><\/section>/);
+  });
+
+  test('applyDeckLogoToHtml: ignores literal <section> text inside code blocks (no `data-marpit-slide`)', () => {
+    const html = [
+      '<section id="1" data-marpit-slide="1"><code>&lt;section&gt;</code></section>',
+      // Marp parses unescaped `<section>` in source as a real DOM element,
+      // but it won't have `data-marpit-slide`. Make sure we leave it alone.
+      '<section id="2" data-marpit-slide="2"><p>before <code><section><img></code> after</p></section>',
+    ].join('');
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const imgs = [...out.matchAll(/<img[^>]*class="deck-logo[^"]*"/g)];
+    assert.equal(imgs.length, 2, `expected exactly 2 deck-logo imgs (one per real Marp section); got ${imgs.length}`);
+  });
+
+  test('applyDeckLogoToHtml: `logo-on: title` injects only on the first slide and on `title`-classed slides', () => {
+    const html = [
+      '<section id="1" class="title" data-marpit-slide="1"></section>',
+      '<section id="2" data-marpit-slide="2"></section>',
+      '<section id="3" class="title" data-marpit-slide="3"></section>',
+    ].join('');
+    const md = '---\nlogo: ./acme.svg\nlogo-on: title\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    const sections = out.split(/(?=<section)/);
     assert.equal(sections.length, 3);
-    assert.ok(sections[0].includes('with-logo'), `cover should have 'with-logo'; got [${sections[0].join(', ')}]`);
-    assert.ok(!sections[1].includes('with-logo'), `body should NOT have 'with-logo'; got [${sections[1].join(', ')}]`);
-    assert.ok(sections[2].includes('with-logo'), `second cover should have 'with-logo'; got [${sections[2].join(', ')}]`);
+    assert.match(sections[0], /<img[^>]*class="deck-logo/,    `cover should have logo: ${sections[0]}`);
+    assert.doesNotMatch(sections[1], /<img[^>]*class="deck-logo/, `body should NOT have logo: ${sections[1]}`);
+    assert.match(sections[2], /<img[^>]*class="deck-logo/,    `second cover should have logo: ${sections[2]}`);
   });
 
-  test('deckLogo: `logo-style: brand` adds `with-logo-brand` alongside `with-logo`', () => {
-    const m = makeMarp(plugins.deckLogo);
-    const md = [
-      '---',
-      'logo: ./acme.svg',
-      'logo-style: brand',
-      '---',
-      '',
-      '# Slide',
-    ].join('\n');
-    const { html } = m.render(md, { markdown: md });
-    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
-    assert.ok(cls.includes('with-logo'),       `missing 'with-logo'; got [${cls.join(', ')}]`);
-    assert.ok(cls.includes('with-logo-brand'), `missing 'with-logo-brand'; got [${cls.join(', ')}]`);
+  test('applyDeckLogoToHtml: `logo-style: brand` adds `deck-logo-brand` class', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\nlogo-style: brand\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<img[^>]*class="deck-logo deck-logo-brand"/);
   });
 
-  test('deckLogo: no-op when front matter has no `logo:` directive', () => {
-    const m = makeMarp(plugins.deckLogo);
-    const md = [
-      '---', 'theme: indaco', '---', '',
-      '<!-- _class: title -->',
-      '# Title',
-    ].join('\n');
-    const { html } = m.render(md, { markdown: md });
-    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
-    assert.deepEqual(cls, ['title'], `expected only 'title'; got [${cls.join(', ')}]`);
+  test('applyDeckLogoToHtml: no-op when front matter has no `logo:` directive', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\ntheme: indaco\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.equal(out, html);
   });
 
-  test('deckLogo: tolerates quoted YAML value and paths with spaces', () => {
-    const m = makeMarp(plugins.deckLogo);
-    const md = [
-      '---',
-      'logo: "./assets/with space/acme.svg"',
-      '---',
-      '',
-      '# Slide',
-    ].join('\n');
-    const { html } = m.render(md, { markdown: md });
-    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
-    assert.ok(cls.includes('with-logo'), `missing 'with-logo'; got [${cls.join(', ')}]`);
+  test('applyDeckLogoToHtml: tolerates quoted YAML value and paths with spaces', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: "./assets/with space/acme.svg"\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /<img[^>]*class="deck-logo/);
+    // Path with space survives into both src and the inline custom property.
+    assert.match(out, /src="\.\/assets\/with space\/acme\.svg"/);
   });
 
-  test('deckLogo: applyDeckLogoStyleToCss appends `:root{--deck-logo:url(...)}` to the CSS', () => {
-    const baseCss = 'section { color: red; }';
-    const md = [
-      '---',
-      'logo: ./acme.svg',
-      '---',
-      '',
-      '# Slide',
-    ].join('\n');
-    const out = plugins.applyDeckLogoStyleToCss(baseCss, md);
-    assert.match(out, /:root\{--deck-logo:url\("\.\/acme\.svg"\)\}/);
-    // Original CSS must be preserved (append, not replace).
-    assert.match(out, /section \{ color: red; \}/);
-  });
-
-  test('deckLogo: applyDeckLogoStyleToCss is a no-op when `logo:` is missing', () => {
-    const baseCss = 'section { color: red; }';
-    const md = '---\ntheme: indaco\n---\n\n# Slide';
-    const out = plugins.applyDeckLogoStyleToCss(baseCss, md);
-    assert.equal(out, baseCss);
+  test('applyDeckLogoToHtml: HTML-escapes src to prevent attribute-injection', () => {
+    const html = '<section id="1" data-marpit-slide="1"></section>';
+    const md = '---\nlogo: "./acme.svg\\"><script>alert(1)</script>"\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    // The angle brackets and quote must be entity-encoded inside the src.
+    assert.doesNotMatch(out, /<script>alert\(1\)<\/script>/);
+    assert.match(out, /&quot;|&lt;|&gt;/);
   });
 
   // ── verdictGridBadges ──────────────────────────────────────────────────

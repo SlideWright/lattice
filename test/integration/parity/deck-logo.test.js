@@ -1,21 +1,17 @@
 /**
- * Integration: convenience `logo:` directive parity.
+ * Integration: convenience `logo:` directive injects `<img class="deck-logo">`
+ * as the first child of every section selected by the `logo-on` rule.
  *
- * Two authoring shapes produce the SAME rendered output:
- *   1. Native form  — `class: with-logo` + `style: ':root{--deck-logo:url("...")}'`
- *   2. Convenience  — `logo: ./acme-logo.svg`
+ * Three render paths must agree:
+ *   1. marp.config.js's `applyDeckLogoToHtml` (marp-cli path)
+ *   2. lattice-emulator.js's HTML post-process (emulator path)
+ *   3. lattice-runtime.js's `applyDeckLogoFromFrontMatter` (browser path)
  *
- * Both should result in `with-logo` on every section's class attribute
- * (default `logo-on: all`) and a `--deck-logo` CSS custom property
- * scoped to `:root` carrying the same image URL. This is what makes
- * the convenience layer trustworthy: it's literally desugared to the
- * native form.
- *
- * The marp-cli side of the directive lives in marp.config.js (the
- * `deckLogo` Marpit plugin + `applyDeckLogoStyleToCss` helper). That
- * path is exercised by test/unit/parsing/marp-plugins.test.js via the
- * @marp-team/marp-core programmatic API. This file pins the emulator
- * side and demonstrates the desugaring symmetry.
+ * The first two run at build time. The third runs at view time and
+ * gracefully no-ops in the vscode-webview sandbox per its sibling
+ * `applyDeckClassFromFrontMatter`. The unit suite covers (1) via
+ * `applyDeckLogoToHtml` directly; this integration pins (2) by
+ * rendering through the emulator and inspecting the HTML sidecar.
  *
  * Slow tier because the emulator always runs the Chromium PDF stage
  * as part of its pipeline.
@@ -33,50 +29,28 @@ function readSidecar(pdfPath) {
   return fs.readFileSync(htmlPath, 'utf8');
 }
 
-function sectionClasses(html) {
-  return [...html.matchAll(/<section[^>]*\bid="(\d+)"[^>]*\bclass="([^"]*)"/g)]
-    .map(m => ({ id: m[1], cls: m[2].split(/\s+/).filter(Boolean) }));
-}
-
 describe('deck-logo', () => {
-  const CONVENIENCE = path.join(ROOT, 'test', 'fixtures', 'deck-logo.md');
-  const NATIVE      = path.join(ROOT, 'test', 'fixtures', 'deck-logo-native.md');
+  const FIXTURE = path.join(ROOT, 'test', 'fixtures', 'deck-logo.md');
 
-  test('emulator: convenience `logo:` adds `with-logo` to every section and injects --deck-logo', { timeout: 60000 }, () => {
-    const pdf = runEmulator(CONVENIENCE, { timeout: 60000 });
+  test('emulator: `logo:` injects <img class="deck-logo"> as the first child of every section', { timeout: 60000 }, () => {
+    const pdf = runEmulator(FIXTURE, { timeout: 60000 });
     const html = readSidecar(pdf);
-    const sections = sectionClasses(html);
 
-    assert.equal(sections.length, 3, 'expected 3 sections');
-    for (const s of sections) {
-      assert.ok(s.cls.includes('with-logo'),
-        `slide ${s.id} missing 'with-logo'; got class="${s.cls.join(' ')}"`);
+    // Body of each <section>...</section>. Capture inner HTML so we can
+    // assert position (first child).
+    const bodies = [...html.matchAll(/<section\b[^>]*\bid="(\d+)"[^>]*>([\s\S]*?)<\/section>/g)]
+      .map(m => ({ id: m[1], inner: m[2] }));
+    assert.equal(bodies.length, 3, 'expected 3 sections');
+
+    for (const s of bodies) {
+      assert.match(s.inner, /^<img[^>]*\bclass="deck-logo"/,
+        `slide ${s.id} should start with <img class="deck-logo">; got inner="${s.inner.slice(0, 120)}"`);
+      assert.match(s.inner, /src="\.\/acme-logo\.svg"/,
+        `slide ${s.id} should reference the logo path`);
+      assert.match(s.inner, /aria-hidden="true"/,
+        `slide ${s.id} logo should be aria-hidden`);
+      assert.match(s.inner, /--deck-logo-src:url\(&quot;\.\/acme-logo\.svg&quot;\)/,
+        `slide ${s.id} logo should carry the inline custom property for the mask rule`);
     }
-    // Slide 1's per-slide `_class: title` must compose, not replace.
-    assert.ok(sections.find(s => s.id === '1').cls.includes('title'),
-      `slide 1 lost 'title'`);
-    // Slide 3's per-slide `_class: divider` must compose too.
-    assert.ok(sections.find(s => s.id === '3').cls.includes('divider'),
-      `slide 3 lost 'divider'`);
-
-    // The --deck-logo custom property must be injected with the
-    // author-supplied path quoted inside url(...).
-    assert.match(html, /:root\{--deck-logo:url\("\.\/acme-logo\.svg"\)\}/);
-  });
-
-  test('emulator: native form produces the same class set and the same --deck-logo as the convenience form', { timeout: 60000 }, () => {
-    const pdf = runEmulator(NATIVE, { timeout: 60000 });
-    const html = readSidecar(pdf);
-    const sections = sectionClasses(html);
-
-    assert.equal(sections.length, 3);
-    for (const s of sections) {
-      assert.ok(s.cls.includes('with-logo'),
-        `slide ${s.id} missing 'with-logo' (native path); got class="${s.cls.join(' ')}"`);
-    }
-    // The native form uses Marp's built-in `style:` directive; the
-    // resulting CSS must contain the same custom property declaration
-    // as the convenience form (modulo whitespace).
-    assert.match(html, /--deck-logo:\s*url\(\s*["']?\.\/acme-logo\.svg["']?\s*\)/);
   });
 });

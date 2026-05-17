@@ -9110,7 +9110,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote li::before {
   color:var(--accent);
   font-style:normal;
 }
-section img:not(.emoji) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
+section img:not(.emoji):not(.deck-logo) { max-width:100%; max-height:100%; border-radius:var(--radius-md); object-fit:cover; display:block; }
 
 /* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
    They must render inline at text size and not pick up the block image styling
@@ -9718,66 +9718,73 @@ section.overflow {
 /* ════════════════════════════════════════════════════════════════════════
  * CUSTOM LOGO — discreet author-supplied brand mark, top-right corner.
  * ────────────────────────────────────────────────────────────────────────
- * Two authoring shapes, same DOM contract:
- *   1. Native form (works everywhere including marp-vscode preview):
- *        ---
- *        class: with-logo
- *        style: ':root{--deck-logo:url("./logo.svg")}'
- *        ---
- *   2. Convenience directive (build-time only — won't render in
- *      marp-vscode preview because the extension doesn't load
- *      workspace marp.config.js plugins):
- *        ---
- *        logo: ./logo.svg
- *        ---
- *      Expands to the native form via the `deckLogo` plugin
- *      (marp.config.js) and the front-matter parser in
- *      lattice-emulator.js.
+ * Author contract (front-matter):
+ *   logo: ./acme-logo.svg            # required
+ *   logo-style: auto | brand         # optional, default `auto`
+ *   logo-on: all | title             # optional, default `all`
  *
- * Visual treatment: use the image as a CSS mask and paint the
- * silhouette in currentColor at watermark opacity. One rule covers
- * SVG, PNG, and JPEG — the alpha (for transparent inputs) or the
- * luma (for opaque inputs) drives the mask shape. currentColor
- * auto-adapts to each slide's ink (white on .title's --bg-dark canvas,
- * dark on body slides on light canvas), so the mark stays legible on
- * every theme without per-author light/dark variants.
+ * The directive is parsed by:
+ *   - marp.config.js's `applyDeckLogoToHtml` (marp-cli path)
+ *   - lattice-emulator.js's HTML post-process (emulator path)
+ *
+ * Both inject `<img class="deck-logo" src="..."
+ * style="--deck-logo-src:url(...)" alt="" aria-hidden="true">` as the
+ * first child of each tagged section. Real DOM (rather than a
+ * `::before` pseudo) so the logo composes with `::before`-based
+ * chrome like `bg-orbit-br`, `bg-asterisk-scatter`, `bg-grid-micro`,
+ * etc. — each layer paints independently.
+ *
+ * BUILD-TIME ONLY. The marp-vscode preview pane does NOT load
+ * workspace `marp.config.js` plugins, so the logo does not appear
+ * there. Same constraint `class: dark` has — see
+ * docs/references/gotchas.md.
+ *
+ * Visual treatment: use the img's own src as a CSS mask and paint
+ * the silhouette in currentColor at watermark opacity. One rule
+ * covers SVG, PNG, and JPEG — the alpha (for transparent inputs)
+ * or the luma (for opaque inputs) drives the mask shape.
+ * currentColor auto-adapts to each slide's ink (white on .title's
+ * --bg-dark canvas, dark on body slides on light canvas), so the
+ * mark stays legible on every theme without per-author light/dark
+ * variants.
  *
  * For authors whose mark must keep its original colours, opt into
- * `with-logo-brand` for a softly-plated, full-colour rendering.
+ * `logo-style: brand` (adds the `deck-logo-brand` class to the img)
+ * for a softly-plated, full-colour rendering.
  * ──────────────────────────────────────────────────────────────────── */
-section.with-logo::before {
-  content: "";
+img.deck-logo {
   position: absolute;
   top: 1.875cqi;
   right: 2.34375cqi;
   width: 6.25cqi;
   height: 4cqi;
-  background-color: color-mix(in srgb, currentColor 15%, transparent);
-  -webkit-mask: var(--deck-logo) center / contain no-repeat;
-          mask: var(--deck-logo) center / contain no-repeat;
+  object-fit: contain;
   pointer-events: none;
+  user-select: none;
+  /* Silhouette: use the image's own src as a mask, paint in currentColor. */
+  background-color: color-mix(in srgb, currentColor 15%, transparent);
+  -webkit-mask: var(--deck-logo-src) center / contain no-repeat;
+          mask: var(--deck-logo-src) center / contain no-repeat;
 }
 
 /* Fallback when mask isn't supported — render the image directly as
  * a faint inline mark. Loses the silhouette-recolour but keeps the
  * brand visible. */
 @supports not (mask-image: url("")) {
-  section.with-logo::before {
-    background: var(--deck-logo) center / contain no-repeat;
+  img.deck-logo {
+    background: none;
     opacity: 0.18;
     filter: grayscale(1);
   }
 }
 
-/* `with-logo-brand` — keep the logo's original colours on a soft
+/* `deck-logo-brand` — keep the logo's original colours on a soft
  * plate. The plate uses the theme's surface token so it harmonises
  * with the canvas without picking a hard hue. */
-section.with-logo.with-logo-brand::before {
+img.deck-logo.deck-logo-brand {
   -webkit-mask: none;
           mask: none;
-  background:
-    var(--deck-logo) center / contain no-repeat,
-    color-mix(in srgb, var(--bg-alt) 70%, transparent);
+  background: color-mix(in srgb, var(--bg-alt) 70%, transparent);
   backdrop-filter: blur(0.4cqi);
   border-radius: 0.6cqi;
   padding: 0.4cqi;

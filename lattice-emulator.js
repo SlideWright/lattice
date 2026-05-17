@@ -924,33 +924,6 @@ function readGlobalStyle(fmText) {
   return '';
 }
 const globalStyle = readGlobalStyle(fm);
-// Convenience `logo:` directive — expands at build time to the equivalent
-// of the native authoring form (deck-wide `class: with-logo` + a
-// `:root{--deck-logo:url(...)}` injection into globalStyle). The matching
-// CSS lives in lib/base/base.modifiers.css under "CUSTOM LOGO".
-//
-// Sibling implementations:
-//   - marp.config.js's `deckLogo` Marpit plugin + `applyDeckLogoStyleToCss`
-//     (the marp-cli path).
-// Both paths must produce identical class lists and the same --deck-logo
-// custom property value (cross-renderer parity).
-//
-// NOTE: this directive is a build-time convenience only. It does NOT render
-// in the marp-vscode preview because the extension doesn't load workspace
-// marp.config.js plugins. For full preview parity, authors should use the
-// native form: `class: with-logo` + `style: ':root{--deck-logo:url("...")}'`.
-// See docs/references/gotchas.md.
-const deckLogoPath  = (fm.match(/^\s*logo:\s*["']?(.*?)["']?\s*$/m) || [])[1] || '';
-const deckLogoStyle = ((fm.match(/^\s*logo-style:\s*["']?(.*?)["']?\s*$/m) || [])[1] || 'auto').toLowerCase();
-const deckLogoOnRaw = ((fm.match(/^\s*logo-on:\s*["']?(.*?)["']?\s*$/m) || [])[1] || 'all').toLowerCase();
-const deckLogoOn    = deckLogoOnRaw === 'title' ? 'title' : 'all';
-const deckLogoBrand = deckLogoStyle === 'brand';
-const deckLogoCss   = deckLogoPath
-  ? `:root{--deck-logo:url("${deckLogoPath.replace(/"/g, '\\"')}")}`
-  : '';
-const composedGlobalStyle = deckLogoCss
-  ? (globalStyle ? `${globalStyle}\n${deckLogoCss}` : deckLogoCss)
-  : globalStyle;
 const headingDivider = (() => {
   const m = fm.match(/^\s*headingDivider:\s*(\d+)/m);
   return m ? Math.max(1, Math.min(6, parseInt(m[1], 10))) : null;
@@ -1018,21 +991,6 @@ function parseSlide(raw, index) {
       if (!cur.includes(t)) cur.push(t);
     }
     classAttr = cur.join(' ');
-  }
-
-  // Convenience `logo:` directive — append the `with-logo` class (and
-  // `with-logo-brand` for `logo-style: brand`) to the slides that should
-  // carry the logo per the `logo-on` rule. Mirrors the marp.config.js
-  // `deckLogo` plugin so both renderers tag the same slide set.
-  if (deckLogoPath) {
-    const curCls = classAttr.split(/\s+/).filter(Boolean);
-    const isTitle = curCls.includes('title');
-    const isFirst = index === 0;
-    if (deckLogoOn === 'all' || isFirst || isTitle) {
-      if (!curCls.includes('with-logo')) curCls.push('with-logo');
-      if (deckLogoBrand && !curCls.includes('with-logo-brand')) curCls.push('with-logo-brand');
-      classAttr = curCls.join(' ');
-    }
   }
 
   if (raw.includes('_paginate: false')) paginate = false;
@@ -2535,6 +2493,23 @@ function applyHighlighting(html) {
 
 const highlightedSlides = slides.map(s => applyHighlighting(s));
 
+// Convenience `logo:` directive — inject the `<img class="deck-logo">`
+// element into each section per the `logo-on` rule. Real DOM (not a
+// ::before pseudo) so it composes with ::before-based decorations like
+// bg-orbit-br. Sibling: marp.config.js's `applyDeckLogoToHtml` — both
+// renderers must produce identical injection. See the function's
+// header comment for the build-time-only contract.
+//
+// NOTE: this directive is a build-time convenience only. It does NOT
+// render in the marp-vscode preview because the extension doesn't load
+// workspace marp.config.js plugins. See docs/references/gotchas.md.
+//
+// Called on the joined HTML rather than slide-by-slide so the
+// "first slide" check in the rewriter (used by `logo-on: title`)
+// sees the slides in source order.
+const { applyDeckLogoToHtml } = require('./marp.config').plugins;
+const slidesWithLogo = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
+
 // ── KaTeX CSS link ────────────────────────────────────────────────────────
 // KaTeX's CSS references font files via relative `url(fonts/…woff2)` paths,
 // so we link to the actual file in node_modules; the browser resolves the
@@ -2591,9 +2566,9 @@ body  { margin: 0; padding: 0; }
 ${css}
 section { width: ${slideW}px !important; height: ${slideH}px !important; }
 ${marpSystemCss}
-${composedGlobalStyle ? `\n/* Front-matter style: directive */\n${composedGlobalStyle}\n` : ''}
+${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
-${highlightedSlides.join('\n')}
+${slidesWithLogo}
 ${functionPlotScript}
 <script>
 /* Overflow watcher — tags any section whose content exceeds the slide
@@ -2602,7 +2577,7 @@ ${functionPlotScript}
 (function(){
   var TOL = 12;
   function check(){
-    document.querySelectorAll('section').forEach(function(s){
+    document.querySelectorAll('section[data-marpit-slide]').forEach(function(s){
       var over = s.scrollHeight > s.clientHeight + TOL
               || s.scrollWidth  > s.clientWidth  + TOL;
       s.classList.toggle('overflow', over);
@@ -2675,7 +2650,11 @@ const puppeteer = loadPuppeteer();
   const overflowing = await page.evaluate(() => {
     const TOL = 12; // filter sub-pixel rounding; see lattice-runtime.js
     const flagged = [];
-    document.querySelectorAll('section').forEach((s, i) => {
+    // Scope to Marp's real slide sections only — `<section>` literals
+    // authors write inside code blocks parse as nested DOM elements
+    // (HTML doesn't treat <code> as raw text), which would otherwise
+    // pollute both the count and the flagged indices.
+    document.querySelectorAll('section[data-marpit-slide]').forEach((s, i) => {
       const over = s.scrollHeight > s.clientHeight + TOL
                 || s.scrollWidth  > s.clientWidth  + TOL;
       if (over) {

@@ -462,36 +462,17 @@ palette swap = background color swap.
 Available classes: `bg-none`, `bg-corner-tl`, `bg-orbit-br`,
 `bg-vignette`, `bg-edge-right`, `bg-thread-diagonal`, plus 21 more.
 
-### Custom logo — `with-logo`, `with-logo-brand`
+### Custom logo
 
-A discreet author-supplied brand mark in the top-right corner of
-every slide. The image is used as a CSS `mask-image` and painted in
-`currentColor` at watermark opacity (~15%), so the silhouette
-auto-adapts to whatever ink the active slide uses — white on the
-dark title canvas, dark on body slides over a light theme. One CSS
-rule covers SVG, PNG, and JPEG without per-author light/dark
-variants.
-
-**Native form** — built on Marp's `class:` and `style:` directives.
-Renders in marp-cli, lattice-emulator, exported HTML, and the
-marp-vscode preview pane:
-
-```yaml
----
-class: with-logo
-style: ':root{--deck-logo:url("./acme-logo.svg")}'
----
-```
-
-For a single cover mark instead of an every-slide watermark, omit
-the deck-wide `class:` and tag the cover per-slide:
-
-```markdown
-<!-- _class: title with-logo -->
-```
-
-**Convenience directive** — one line, expands to the native form at
-build time:
+A discreet author-supplied brand mark, top-right corner of every
+slide. A build-stage rewriter injects `<img class="deck-logo"
+src="…">` as the first child of each selected `<section>` — same
+shape Marp uses for `<header>` and `<footer>`. CSS uses the img's
+own src as a `mask-image` and paints the silhouette in `currentColor`
+at watermark opacity (~15%), so the mark auto-adapts to whatever ink
+the active slide uses — white on the dark title canvas, dark on body
+slides over a light theme. One rule covers SVG, PNG, and JPEG without
+per-author light/dark variants.
 
 ```yaml
 ---
@@ -501,30 +482,34 @@ logo-on: all | title              # optional, default `all`
 ---
 ```
 
-⚠️ The convenience directive is build-time only. It does **not**
-render in the marp-vscode preview, because the extension doesn't load
-workspace `marp.config.js` plugins. For live-preview parity, use the
-native form. See `docs/references/gotchas.md`.
+A real DOM element (rather than a `::before` pseudo) is what lets
+the logo compose with every `bg-*` decoration — gradients
+(`bg-sweep`, `bg-spotlight`, `bg-corner-*`, `bg-vignette`, …) and
+SVG marks alike (`bg-orbit-br`, `bg-asterisk-scatter`,
+`bg-grid-micro`, `bg-chevron-bl`, …). Each layer paints
+independently.
 
-**Brand modifier** — `with-logo-brand` preserves the logo's original
-colours on a soft `--bg-alt` plate. Use it when the brand's colours
-carry meaning; reach for `auto` otherwise.
+**Three render paths must agree:**
 
-```markdown
-<!-- _class: content with-logo-brand -->
-```
+1. `marp.config.js` — `applyDeckLogoToHtml(html, markdown)` runs in
+   the `render()` wrapper alongside `applyChartFamilyToHtml`.
+2. `lattice-emulator.js` — `require()`s the same helper from
+   `marp.config.js` and calls it on the assembled HTML.
+3. `lattice-runtime.js` — `applyDeckLogoFromFrontMatter()` mirrors
+   the same DOM injection at view time for published HTML decks.
 
-(`with-logo` is added automatically alongside `with-logo-brand`
-when the convenience directive is used with `logo-style: brand`.)
+⚠️ **Build-time only for marp-vscode preview.** The extension doesn't
+load workspace `marp.config.js` plugins, so the logo does not appear
+there. The runtime path covers exported HTML viewed in a browser but
+gracefully no-ops in the vscode-webview sandbox (fetch can't reach
+workspace files). Same constraint `class: dark` has — see
+`docs/references/gotchas.md`.
 
-**Composition caveat:** the logo silhouette is drawn via
-`section::before`. Gradient-only `bg-*` decorations (`bg-sweep`,
-`bg-spotlight`, `bg-corner-*`, `bg-vignette`, …) paint through
-`background-image` on the section itself and compose cleanly. The
-SVG-mark `bg-*` decorations (`bg-orbit-br`, `bg-asterisk-scatter`,
-`bg-grid-micro`, `bg-thread-diagonal`, `bg-chevron-bl`, etc.) also
-use `::before`, so combining either with `with-logo` collapses to the
-modifier declared later in source order. Pick one per slide.
+**Brand style.** `logo-style: brand` adds `deck-logo-brand` to the
+injected img. The silhouette mask is removed; the logo's original
+colours render directly on a soft `--bg-alt` plate. Use when the
+brand's colours carry meaning (government insignia, university
+crests); reach for `auto` otherwise.
 
 ---
 

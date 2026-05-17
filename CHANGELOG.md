@@ -12,19 +12,30 @@ in patch versions.
 ### Added
 
 - **Custom deck logo.** Author-supplied SVG/PNG/JPEG renders as a
-  discreet top-right watermark on every slide. The image is used as
-  a CSS `mask-image` painted in `currentColor` at ~15% opacity, so
-  the silhouette auto-adapts to whatever ink the active slide uses —
-  no per-author light/dark variants required. Two authoring shapes:
-  the native form (`class: with-logo` + `style: ':root{--deck-logo:url("…")}'`)
-  works in marp-cli, lattice-emulator, exported HTML, and the
-  marp-vscode preview; the convenience `logo:` directive expands to
-  the native form at build time and is supported on the marp-cli /
-  emulator paths only (documented limitation, mirrors
-  `class: dark`). `logo-style: brand` keeps the logo's original
-  colours on a soft `--bg-alt` plate; `logo-on: title` restricts the
-  mark to the cover slide. See `lib/base/base.docs.md § Custom logo`
-  and `examples/custom-logo.md`.
+  discreet top-right watermark on every slide. A build-stage
+  rewriter injects `<img class="deck-logo">` as the first child of
+  each selected `<section>`; CSS uses the img's own src as a
+  `mask-image` and paints the silhouette in `currentColor` at ~15%
+  opacity, so the mark auto-adapts to whatever ink the active slide
+  uses — no per-author light/dark variants. Real DOM (rather than a
+  `::before` pseudo) lets the logo compose with every `bg-*`
+  decoration, gradients and SVG marks alike. Three render paths:
+  `applyDeckLogoToHtml` in `marp.config.js` (marp-cli),
+  the same helper called from `lattice-emulator.js`'s post-render
+  pass (emulator), and `applyDeckLogoFromFrontMatter` in
+  `lattice-runtime.js` (published HTML). `logo-style: brand` keeps
+  the logo's original colours on a soft `--bg-alt` plate;
+  `logo-on: title` restricts the mark to the cover slide.
+  Build-time-only — does not render in marp-vscode preview because
+  the extension doesn't load workspace `marp.config.js` plugins;
+  same constraint as `class: dark`. See
+  `lib/base/base.docs.md § Custom logo` and `examples/custom-logo.md`.
+
+- **Overflow watcher scoped to Marp sections.** The overflow detector
+  in `lattice-emulator.js` and `lattice-runtime.js` now selects
+  `section[data-marpit-slide]` instead of every `section`, so literal
+  `<section>` text inside code blocks (which HTML parses as nested
+  DOM) no longer pollutes the warning indices.
 
 - **`quadrant` chart-family member.** Native 2×2 scatter chart joining
   the existing chart-family (progress / timeline-list / piechart /

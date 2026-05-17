@@ -101,29 +101,28 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 ### Custom `logo:` front-matter directive shows nothing in marp-vscode preview
 
 - **Symptom:** A deck with `logo: ./acme-logo.svg` in front matter
-  builds a correct PDF (logo visible in the top-right corner of every
-  slide) but the marp-vscode preview pane shows no logo at all.
-- **Cause:** The convenience `logo:` directive is handled by the
-  `deckLogo` Marpit plugin in
-  [marp.config.js](../../marp.config.js#L43-L132) plus the front-matter
-  parser in
-  [lattice-emulator.js](../../lattice-emulator.js#L926-L955). Both run
-  at build time. The marp-vscode extension does **not** load workspace
-  `marp.config.js` plugins, so the directive is invisible to the
-  preview path. Same limitation `applyDeckClassFromFrontMatter`
-  documents at
-  [lattice-runtime.js:3399-3401](../../lattice-runtime.js#L3399-L3401).
-- **Mitigation:** Use the native authoring form for live-preview
-  parity. It uses only Marp built-in directives:
-  ```yaml
-  class: with-logo
-  style: ':root{--deck-logo:url("./acme-logo.svg")}'
-  ```
-  The CSS rule in
-  [lib/base/base.modifiers.css](../../lib/base/base.modifiers.css)
-  fires identically in every render path. The convenience directive
-  remains useful for authors who don't need live preview and want a
-  one-line entry.
+  builds a correct PDF (logo visible top-right of every slide) and
+  appears correctly in exported HTML viewed in a browser, but the
+  marp-vscode preview pane shows no logo at all.
+- **Cause:** The convenience `logo:` directive is handled by
+  `applyDeckLogoToHtml` in
+  [marp.config.js](../../marp.config.js) plus the post-render hook in
+  [lattice-emulator.js](../../lattice-emulator.js) and the runtime
+  mirror `applyDeckLogoFromFrontMatter` in
+  [lattice-runtime.js](../../lattice-runtime.js). The marp-cli and
+  emulator paths run at build time; the runtime path fetches the
+  source `.md` from the same origin as the rendered HTML. The
+  marp-vscode extension does **not** load workspace `marp.config.js`
+  plugins, AND the runtime's `fetch()` can't reach workspace files in
+  the `vscode-webview://` sandbox — same limitation
+  `applyDeckClassFromFrontMatter` documents at
+  [lattice-runtime.js:3463-3465](../../lattice-runtime.js#L3463-L3465).
+  Net result: no path works in the marp-vscode preview.
+- **Mitigation:** None inside marp-vscode preview today. The author
+  sees the logo only when they build the PDF or view the exported
+  HTML in a browser. Authors who need live-preview validation can
+  manually add `<img class="deck-logo" src="…" style="--deck-logo-src:url('…')">`
+  as the first child of a single slide for spot-checking.
 - **Triggered by:** Any `logo: <path>` in deck front matter when
   authoring inside marp-vscode.
 - **Removable when:** marp-vscode adds workspace-config plugin
