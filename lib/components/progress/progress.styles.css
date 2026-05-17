@@ -46,23 +46,22 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  background: var(--fill, color-mix(in oklab, var(--accent) 70%, var(--bg-alt)));
+  background: var(--fill, var(--accent));
   border-radius: 7px 0 0 7px;
   transition: none;
 }
-/* Chart-status tokens (--chart-positive/neutral/negative/inactive-fill)
- * are curated for chart context and read first. Fallback to UI-semantic
- * --pass/--warn/--fail when a theme hasn't generated the chart-status
- * namespace yet. See docs/notes/2026-05-17-color-strategy.md. */
+/* Status fills read the universal chart-status tokens directly. Defined
+ * in lib/base/base.tokens.css as solid light-dark() hex pairs — no
+ * color-mix, no opacity, no fallback chain. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive-fill, var(--pass)); }
+section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral-fill,  var(--warn)); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative-fill, var(--fail)); }
+section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative); }
 section.progress .progress-fill[data-s="deferred"] {
-  background: var(--chart-inactive-fill, color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt)));
+  background: var(--chart-inactive);
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);

@@ -182,6 +182,26 @@
   --warn: light-dark(#B45309, #F97316);
   --fail: light-dark(#991B1B, #F87171);
 
+  /* ── Chart-status tokens — universal, solid hex pairs ─────────────────
+   * Curated for chart context (progress bars, gantt bars, kanban status,
+   * radar deltas). Distinct from --pass / --warn / --fail (which serve
+   * UI semantics: form validation, alerts, inline badges).
+   *
+   * Authored as light-dark() pairs: pale tint on light canvas, deep
+   * saturated on dark — same chameleon contract as --cN-light, same
+   * lightness rung as mermaid bands and pie wedges. No color-mix, no
+   * opacity, no fallback chain to derived colours. Charts read these
+   * tokens directly.
+   *
+   * Themes may override per palette to brand-align the hues.
+   *
+   * AA against --c-ink-light (chameleon dark/white): all four pairs
+   * clear 4.5:1 in both canvas modes. */
+  --chart-positive: light-dark(#C9E3B8, #2D6A3F);  /* green  — shipped / on-track / improving */
+  --chart-neutral:  light-dark(#F0DCB8, #B45309);  /* amber  — at-risk / pending / monitoring */
+  --chart-negative: light-dark(#F2C5C5, #991B1B);  /* red    — blocked / overdue / declining */
+  --chart-inactive: light-dark(#D4D8DD, #4A5868);  /* gray   — deferred / paused / N/A */
+
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
    * split-list left rail, banner-tags, badges). Themes can override any
@@ -2445,7 +2465,7 @@ section.gantt.dark .gantt-bar {
   color: var(--bg-dark);
 }
 section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
+  background: var(--chart-inactive);
   color: var(--on-dark-secondary);
 }
 /* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
@@ -2469,14 +2489,14 @@ section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
  * --bg-dark navy text onto a deep saturated bar. */
 section.gantt .gantt-bar[data-s="on-track"],
 section.gantt .gantt-bar[data-s="done"],
-section.gantt .gantt-bar[data-s="live"]     { background: var(--chart-positive-fill, color-mix(in oklab, var(--pass) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="live"]     { background: var(--chart-positive); color: var(--c-ink-light); }
 section.gantt .gantt-bar[data-s="at-risk"],
-section.gantt .gantt-bar[data-s="warn"]     { background: var(--chart-neutral-fill,  color-mix(in oklab, var(--warn) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="warn"]     { background: var(--chart-neutral);  color: var(--c-ink-light); }
 section.gantt .gantt-bar[data-s="blocked"],
-section.gantt .gantt-bar[data-s="fail"]     { background: var(--chart-negative-fill, color-mix(in oklab, var(--fail) 70%, var(--bg-alt))); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="fail"]     { background: var(--chart-negative); color: var(--c-ink-light); }
 /* Deferred — muted grey fill; --text-body ink. */
 section.gantt .gantt-bar[data-s="deferred"] {
-  background: var(--chart-inactive-fill, color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt)));
+  background: var(--chart-inactive);
   color: var(--text-body);
 }
 
@@ -6083,23 +6103,22 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  background: var(--fill, color-mix(in oklab, var(--accent) 70%, var(--bg-alt)));
+  background: var(--fill, var(--accent));
   border-radius: 7px 0 0 7px;
   transition: none;
 }
-/* Chart-status tokens (--chart-positive/neutral/negative/inactive-fill)
- * are curated for chart context and read first. Fallback to UI-semantic
- * --pass/--warn/--fail when a theme hasn't generated the chart-status
- * namespace yet. See docs/notes/2026-05-17-color-strategy.md. */
+/* Status fills read the universal chart-status tokens directly. Defined
+ * in lib/base/base.tokens.css as solid light-dark() hex pairs — no
+ * color-mix, no opacity, no fallback chain. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive-fill, var(--pass)); }
+section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral-fill,  var(--warn)); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative-fill, var(--fail)); }
+section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative); }
 section.progress .progress-fill[data-s="deferred"] {
-  background: var(--chart-inactive-fill, color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt)));
+  background: var(--chart-inactive);
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);
