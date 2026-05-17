@@ -315,6 +315,99 @@ opacity on marks" rule. Add `docs/references/palette-authoring.md`
 explaining the YAML format and how to add a new palette. Cross-link
 from this note.
 
+## Chart-status namespace (added 2026-05-17 after Phase 1 review)
+
+Phase 1's solver output revealed a deeper inconsistency: charts have
+been reading `--pass`, `--warn`, `--fail` — but those are UI-semantic
+tokens (form validation, alerts), not chart-data-semantic. The two
+namespaces have different visual needs (alert pill vs project status
+bar), and the same token forced to serve both ends up compromised in
+either context.
+
+**Decision:** charts get their own status namespace, curated for the
+chart palette and named for chart-data semantics (not "did this form
+field pass").
+
+### Vocabulary
+
+Five statuses, sentiment-style (chosen over engineering-style and
+consulting-style for boardroom universality in BI / finance contexts):
+
+| Status | Maps from existing `data-s` vocabulary |
+|---|---|
+| `positive`    | on-track / done / live / shipped / complete / healthy |
+| `neutral`     | at-risk / warn / pending / in-progress / monitoring |
+| `negative`    | blocked / fail / critical / overdue / declining |
+| `inactive`    | deferred / paused / parked / N/A |
+| `exploratory` | pilot / decision / hypothesis / branch |
+
+### Two-register universal model
+
+Each status has TWO register variants, both universal (same hex
+everywhere each is read; the chart picks based on geometry):
+
+```
+--chart-positive-fill    /* pale recessive — large surfaces (mermaid bands, pie wedges, progress bar fills) */
+--chart-positive-mark    /* saturated prominent — narrow accents (kanban lane stripes, axis ticks, pie wedge outlines) */
+```
+
+5 statuses × 2 registers = **10 tokens total** in the chart-status
+namespace. Same naming everywhere, value picked by register.
+
+Per-chart scope override is allowed in the cascade but should be rare
+and documented (e.g., if gantt's "done" column intentionally wants a
+deeper shade than universal positive-mark). Most components just read
+the appropriate register.
+
+### Solver integration
+
+Chart-status tokens are emitted by the same solver pass as the
+categorical cycle. Status entries in the input JSON look like:
+
+```json
+"status": {
+  "positive":    { "hue": 142, "label": "green" },
+  "neutral":     { "hue":  60, "label": "amber" },
+  "negative":    { "hue":   8, "label": "red" },
+  "inactive":    { "neutral": true, "label": "gray (achromatic)" },
+  "exploratory": { "hue": 220, "label": "blue (brand accent)" }
+}
+```
+
+Each status reuses the recessive + prominent tier specs (AA targets,
+lightness ranges). Solver emits `--chart-{name}-fill` and
+`--chart-{name}-mark` per status. Verified through the same WCAG
+self-check.
+
+### Component refactor
+
+Components stop reading `--pass`, `--warn`, `--fail` and read the
+chart-status tokens. For backward-compat during the migration, each
+reference uses a fallback:
+
+```css
+section.progress .progress-fill[data-s="on-track"] {
+  background: var(--chart-positive-fill, var(--pass));
+}
+```
+
+Themes that haven't generated the chart-status namespace yet render
+unchanged (fall back to `--pass`). Themes that have generated them
+pick up the curated chart-context palette.
+
+Charts to refactor in Phase 3 of the migration:
+- `lib/components/progress/progress.styles.css` (✓ done in this branch)
+- `lib/components/gantt/gantt.styles.css`
+- `lib/components/timeline-list/timeline-list.styles.css`
+- `lib/components/kanban/kanban.styles.css` (status pill colour)
+- `lib/chart-family/chart-family.css` (the shared `.chart-status` pill)
+- `lib/components/radar/radar.styles.css` (the `--pass` / `--fail` delta indicators)
+
+`--pass` / `--warn` / `--fail` stay in `lib/base/base.tokens.css` for
+the UI use cases that genuinely need them (form validation, alerts,
+inline status badges that ARE about success/failure semantics, not
+about chart-data direction).
+
 ## Open decisions deferred
 
 1. **Tier count: 3 vs. 4.** Apple ships four (`systemFill`,
@@ -326,21 +419,21 @@ from this note.
    solver makes it cheap to drop to 8 if perceptual collisions appear
    at the high end of the cycle.
 
-3. **Status palette: separate namespace vs. reserved slots.** The note
-   keeps them separate (`--status-pass-*` vs. `--mark-*`). Strategy 4
-   from the original memo (status = reserved slots in --cN) is the
-   alternative. Defer to a later note if cohesion-vs-flexibility
-   trade-off matters.
+3. **Solver tooling:** Node script (~250 LOC currently) vs. integrate
+   a real library like `culori`. Start with raw Node (`color` package
+   or inline OKLCH math) for footprint; switch if needed.
 
-4. **Solver tooling:** Node script (~150 LOC) vs. integrate a real
-   library like `culori`. Start with raw Node (`color` package or
-   inline OKLCH math) for footprint; switch if needed.
-
-5. **The `--accent` overload.** Strategy 1 doesn't fully resolve it
+4. **The `--accent` overload.** Strategy 1 doesn't fully resolve it
    yet — `--accent` will still be read by chart-frame chrome and by
    gantt's default-bar fallback. The clean fix is to introduce
    `--chart-accent` (primary mark default) separate from `--accent`
    (brand chrome). Plan this in Phase 3.
+
+5. **Per-chart scope overrides of chart-status tokens.** Allowed but
+   discouraged. If a real per-chart aesthetic emerges that needs a
+   different register (e.g., gantt's "done" deeper than universal
+   positive-mark), document the override in this note and the relevant
+   component's docs comment.
 
 ## References
 

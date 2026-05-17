@@ -4,10 +4,10 @@
   "tiers": {
     "recessive": {
       "$comment": "--cN-light: pale on light canvas (L≈0.87 over dark ink), deep on dark canvas (L≈0.45 under white ink). Mermaid band aesthetic.",
-      "aa": 7.5,
+      "aa": 7.0,
       "chroma": { "light": 0.04, "dark": 0.13 },
       "lightLightRange": [0.82, 0.92],
-      "darkLightRange": [0.30, 0.55]
+      "darkLightRange": [0.28, 0.55]
     },
     "prominent": {
       "$comment": "--cN-dark: saturated mid-tone on light canvas (L≈0.40 under white ink), pale tint on dark canvas (L≈0.85 over dark ink). Inverted from recessive. Pie wedge / chart mark aesthetic.",
@@ -34,5 +34,13 @@
     { "hue":  80, "label": "olive-yellow" },
     { "hue": 250, "label": "royal blue" },
     { "hue":  95, "label": "olive" }
-  ]
+  ],
+  "status": {
+    "$comment": "Chart-data semantic statuses. Independent hues from the categorical cycle (above); same tier machinery emits -fill (recessive) and -mark (prominent) pairs. Charts read --chart-positive-fill etc., NOT the UI-semantic --pass/--warn/--fail. See docs/notes/2026-05-17-color-strategy.md.",
+    "positive":    { "hue": 142, "label": "green — shipped / on-track / improving / strategic" },
+    "neutral":     { "hue":  60, "label": "amber — at-risk / pending / flat / monitoring" },
+    "negative":    { "hue":   8, "label": "red — blocked / overdue / declining / critical" },
+    "inactive":    { "neutral": true, "label": "gray — deferred / paused / N/A" },
+    "exploratory": { "hue": 220, "label": "blue — pilot / decision / hypothesis (brand accent)" }
+  }
 }

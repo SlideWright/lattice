@@ -159,7 +159,7 @@ function resolveTier(spec, paired) {
 
 function generate(inputPath) {
   const input = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
-  const { palette, inks, slots, tier, tiers } = input;
+  const { palette, inks, slots, tier, tiers, status } = input;
   if (!palette || !inks?.primary || !Array.isArray(slots)) {
     throw new Error('input requires { palette, inks.primary, slots, (tier | tiers) }');
   }
@@ -218,6 +218,34 @@ function generate(inputPath) {
     report.push(row);
   });
 
+  // ── Chart-status tokens ──────────────────────────────────────────────
+  // Slot-pinned aliases for chart-data semantic statuses. Each status owns
+  // one hue (independent from the categorical cycle, but solved through
+  // the same tier machinery). Emits {name}-fill (recessive register, for
+  // large surfaces like progress bars / kanban cards) and {name}-mark
+  // (prominent register, for narrow accents like lane stripes / pie
+  // wedges of the status). Same naming contract everywhere — pie wedge
+  // in slot N and progress-bar-shipped both pull from --chart-positive-*
+  // when they encode the same semantic.
+  //
+  // Naming vocabulary: positive / neutral / negative / inactive / exploratory.
+  // See docs/notes/2026-05-17-color-strategy.md for the rationale.
+  const statusReport = [];
+  if (status && twoTier) {
+    css.push('  /* ── Chart status tokens (universal, two-register) ─────────── */');
+    for (const [name, spec] of Object.entries(status)) {
+      if (name.startsWith('$')) continue; // skip JSON metadata keys like $comment
+      const slot = { hue: spec.hue ?? 0, chroma: spec.chroma };
+      // "inactive" defaults to achromatic (gray); explicit chroma=0 if not provided.
+      if (spec.neutral && slot.chroma === undefined) slot.chroma = 0;
+      const rec = solveTierFor(slot, recessive);
+      const prom = solveTierFor(slot, prominent);
+      css.push(`  --chart-${name}-fill: light-dark(${rec.lightHex}, ${rec.darkHex});  /* ${spec.label ?? name} */`);
+      css.push(`  --chart-${name}-mark: light-dark(${prom.lightHex}, ${prom.darkHex});`);
+      statusReport.push({ name, label: spec.label, recessive: rec, prominent: prom });
+    }
+  }
+
   css.push('}');
   css.push('');
 
@@ -242,6 +270,19 @@ function generate(inputPath) {
       md.push(`| c${n} | ${label || ''} | \`--c${n}-dark\` | dark  | \`${prom.darkHex}\` | \`${inks.prominent.dark}\` | ${prom.darkRatio.toFixed(2)}:1 | ${wcagBand(prom.darkRatio)} |`);
     }
   });
+  if (statusReport.length) {
+    md.push('');
+    md.push('## Chart status tokens');
+    md.push('');
+    md.push('| Status | Label | Token | Mode | Fill | Ink | Ratio | WCAG |');
+    md.push('|--------|-------|-------|------|------|-----|-------|------|');
+    statusReport.forEach(({ name, label, recessive: rec, prominent: prom }) => {
+      md.push(`| ${name} | ${label || ''} | \`--chart-${name}-fill\` | light | \`${rec.lightHex}\` | \`${inks.primary.light}\` | ${rec.lightRatio.toFixed(2)}:1 | ${wcagBand(rec.lightRatio)} |`);
+      md.push(`| ${name} | ${label || ''} | \`--chart-${name}-fill\` | dark  | \`${rec.darkHex}\` | \`${inks.primary.dark}\` | ${rec.darkRatio.toFixed(2)}:1 | ${wcagBand(rec.darkRatio)} |`);
+      md.push(`| ${name} | ${label || ''} | \`--chart-${name}-mark\` | light | \`${prom.lightHex}\` | \`${inks.prominent.light}\` | ${prom.lightRatio.toFixed(2)}:1 | ${wcagBand(prom.lightRatio)} |`);
+      md.push(`| ${name} | ${label || ''} | \`--chart-${name}-mark\` | dark  | \`${prom.darkHex}\` | \`${inks.prominent.dark}\` | ${prom.darkRatio.toFixed(2)}:1 | ${wcagBand(prom.darkRatio)} |`);
+    });
+  }
   md.push('');
 
   const mdOut = path.join(path.dirname(inputPath), `${palette}.contrast.md`);
@@ -261,13 +302,19 @@ function generate(inputPath) {
     }
     return fails;
   });
+  for (const { name, recessive: rec, prominent: prom } of statusReport) {
+    if (rec.lightRatio < recessive.aa - EPSILON) failures.push(`chart-${name}-fill (light): ${rec.lightRatio.toFixed(2)} < ${recessive.aa}`);
+    if (rec.darkRatio  < recessive.aa - EPSILON) failures.push(`chart-${name}-fill (dark): ${rec.darkRatio.toFixed(2)} < ${recessive.aa}`);
+    if (prom.lightRatio < prominent.aa - EPSILON) failures.push(`chart-${name}-mark (light): ${prom.lightRatio.toFixed(2)} < ${prominent.aa}`);
+    if (prom.darkRatio  < prominent.aa - EPSILON) failures.push(`chart-${name}-mark (dark): ${prom.darkRatio.toFixed(2)} < ${prominent.aa}`);
+  }
   if (failures.length) {
     console.error(`AA verification failed for ${failures.length} token(s):`);
     for (const f of failures) console.error(`  ${f}`);
     process.exit(1);
   }
 
-  const verifiedCount = report.length * (twoTier ? 4 : 2);
+  const verifiedCount = report.length * (twoTier ? 4 : 2) + statusReport.length * 4;
   console.log(`wrote ${path.relative(process.cwd(), cssOut)}`);
   console.log(`wrote ${path.relative(process.cwd(), mdOut)}`);
   console.log(`verified ${verifiedCount} pairs`);
