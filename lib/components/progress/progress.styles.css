@@ -55,13 +55,13 @@ section.progress .progress-fill {
  * color-mix, no opacity, no fallback chain. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive); }
+section.progress .progress-fill[data-s="live"]     { background: var(--positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative); }
+section.progress .progress-fill[data-s="fail"]    { background: var(--negative); }
 section.progress .progress-fill[data-s="deferred"] {
-  background: var(--chart-inactive);
+  background: var(--inactive);
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);

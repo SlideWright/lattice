@@ -182,25 +182,26 @@
   --warn: light-dark(#B45309, #F97316);
   --fail: light-dark(#991B1B, #F87171);
 
-  /* ── Chart-status tokens — universal, solid hex pairs ─────────────────
-   * Curated for chart context (progress bars, gantt bars, kanban status,
-   * radar deltas). Distinct from --pass / --warn / --fail (which serve
-   * UI semantics: form validation, alerts, inline badges).
+  /* ── Universal status tokens — solid hex pairs ───────────────────────
+   * Four semantic statuses readable by any consumer (chart bars, status
+   * pills, badges, callouts, table cells, anything). Distinct from
+   * --pass / --warn / --fail (UI-semantic, full-saturation always —
+   * tuned for form validation, alerts, inline error states).
    *
    * Authored as light-dark() pairs: pale tint on light canvas, deep
    * saturated on dark — same chameleon contract as --cN-light, same
    * lightness rung as mermaid bands and pie wedges. No color-mix, no
-   * opacity, no fallback chain to derived colours. Charts read these
-   * tokens directly.
+   * opacity, no fallback chain to derived colours. Consumers read
+   * these tokens directly.
    *
    * Themes may override per palette to brand-align the hues.
    *
    * AA against --c-ink-light (chameleon dark/white): all four pairs
    * clear 4.5:1 in both canvas modes. */
-  --chart-positive: light-dark(#C9E3B8, #2D6A3F);  /* green  — shipped / on-track / improving */
-  --chart-neutral:  light-dark(#F0DCB8, #B45309);  /* amber  — at-risk / pending / monitoring */
-  --chart-negative: light-dark(#F2C5C5, #991B1B);  /* red    — blocked / overdue / declining */
-  --chart-inactive: light-dark(#D4D8DD, #4A5868);  /* gray   — deferred / paused / N/A */
+  --positive: light-dark(#C9E3B8, #2D6A3F);  /* green — shipped / on-track / improving */
+  --neutral:  light-dark(#F0DCB8, #B45309);  /* amber — at-risk / pending / monitoring */
+  --negative: light-dark(#F2C5C5, #991B1B);  /* red   — blocked / overdue / declining */
+  --inactive: light-dark(#D4D8DD, #4A5868);  /* gray  — deferred / paused / N/A */
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
@@ -2465,7 +2466,7 @@ section.gantt.dark .gantt-bar {
   color: var(--bg-dark);
 }
 section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: var(--chart-inactive);
+  background: var(--inactive);
   color: var(--on-dark-secondary);
 }
 /* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
@@ -2489,14 +2490,14 @@ section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
  * --bg-dark navy text onto a deep saturated bar. */
 section.gantt .gantt-bar[data-s="on-track"],
 section.gantt .gantt-bar[data-s="done"],
-section.gantt .gantt-bar[data-s="live"]     { background: var(--chart-positive); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="live"]     { background: var(--positive); color: var(--c-ink-light); }
 section.gantt .gantt-bar[data-s="at-risk"],
-section.gantt .gantt-bar[data-s="warn"]     { background: var(--chart-neutral);  color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="warn"]     { background: var(--neutral);  color: var(--c-ink-light); }
 section.gantt .gantt-bar[data-s="blocked"],
-section.gantt .gantt-bar[data-s="fail"]     { background: var(--chart-negative); color: var(--c-ink-light); }
+section.gantt .gantt-bar[data-s="fail"]     { background: var(--negative); color: var(--c-ink-light); }
 /* Deferred — muted grey fill; --text-body ink. */
 section.gantt .gantt-bar[data-s="deferred"] {
-  background: var(--chart-inactive);
+  background: var(--inactive);
   color: var(--text-body);
 }
 
@@ -6112,13 +6113,13 @@ section.progress .progress-fill {
  * color-mix, no opacity, no fallback chain. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"]     { background: var(--chart-positive); }
+section.progress .progress-fill[data-s="live"]     { background: var(--positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]    { background: var(--chart-neutral); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]    { background: var(--chart-negative); }
+section.progress .progress-fill[data-s="fail"]    { background: var(--negative); }
 section.progress .progress-fill[data-s="deferred"] {
-  background: var(--chart-inactive);
+  background: var(--inactive);
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);
