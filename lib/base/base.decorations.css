@@ -324,17 +324,32 @@ section.bg-micro-tr::before {
           mask: var(--m) center / contain no-repeat;
 }
 
-/* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537. */
+/* bg-tick-right — 5 horizontal ticks, far-right margin. y 197–537.
+ * Painted as one ::before sized to a single tick + 4 box-shadow copies
+ * offset vertically — no SVG mask. Apple PDFKit renders stroke-based
+ * mask SVGs unreliably even at small ::before sizes (fill-based masks
+ * like <rect> in bg-pills-right are fine; stroke-based <line> drops).
+ * box-shadow is a paint operator, not a mask, so it renders
+ * identically in every PDF viewer. The trade-off: uniform tick width
+ * (the original SVG had 14–18px variations) and a single x-anchor
+ * (the original had ±4px scatter). Both differences are imperceptible
+ * at this size. Per-tick opacity grading from the original (1.0, 0.85,
+ * 0.95, 0.8, 0.9) is preserved as accent-mix percentages.
+ */
 section.bg-tick-right::before {
   content: '';
   position: absolute;
-  top: 15.2cqi; right: 0.4cqi;
-  width: 2cqi; height: 27cqi;
+  top: 15.33cqi;       /* tick 1 y (196.25 / 12.8) */
+  right: 0.625cqi;     /* 8px from right edge */
+  width: 1.4cqi;       /* ~18px — average tick width */
+  height: 0.15cqi;     /* ~1.9px — slightly bumped from 1.5 for crisp PDF */
   pointer-events: none;
   background: color-mix(in srgb, var(--accent) 28%, transparent);
-  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='1250 195 25 345'><line x1='1254' y1='197' x2='1272' y2='197' stroke='white' stroke-width='1.5' stroke-opacity='1'/><line x1='1258' y1='282' x2='1272' y2='282' stroke='white' stroke-width='1' stroke-opacity='0.85'/><line x1='1253' y1='367' x2='1270' y2='367' stroke='white' stroke-width='1.5' stroke-opacity='0.95'/><line x1='1257' y1='452' x2='1272' y2='452' stroke='white' stroke-width='1' stroke-opacity='0.8'/><line x1='1254' y1='537' x2='1271' y2='537' stroke='white' stroke-width='1.5' stroke-opacity='0.9'/></svg>");
-  -webkit-mask: var(--m) center / contain no-repeat;
-          mask: var(--m) center / contain no-repeat;
+  box-shadow:
+    0  6.64cqi 0 0 color-mix(in srgb, var(--accent) 24%, transparent),
+    0 13.28cqi 0 0 color-mix(in srgb, var(--accent) 27%, transparent),
+    0 19.92cqi 0 0 color-mix(in srgb, var(--accent) 22%, transparent),
+    0 26.56cqi 0 0 color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 /* bg-orbit-br — concentric rings + center dot + 3 satellites, bottom-right.
