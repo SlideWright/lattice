@@ -24,7 +24,7 @@
   },
   "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first stacked card, two short sentences max.\n- **Second card title.** Body text for the second stacked card.\n- **Third card title.** Body text for the third stacked card.\n",
   "anatomyBlock": "cards-stack",
-  "sample": "<!-- _class: cards-stack -->\n\n## When to reach for cards-stack.\n\n- **Vertical reading order matters.** The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.\n- **Each card has more body than a grid card.** Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.\n- **Two to three items, not four-plus.** Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.\n",
+  "sample": "<!-- _class: cards-stack -->\n\n## When to reach for cards-stack.\n\n- Vertical reading order matters.\n  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.\n- Each card has more body than a grid card.\n  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.\n- Two to three items, not four-plus.\n  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.\n",
   "whenToUse": [
     {
       "title": "Vertical reading order",
@@ -75,7 +75,7 @@
     "horizontal": {
       "label": "Horizontal cards",
       "caption": "Stacked rows pivot to a left-aligned title column with the body to its right — useful when the card titles are short labels and the body carries the weight.",
-      "sample": "<!-- _class: cards-stack horizontal -->\n\n## Three patterns, each with its own pull.\n\n- **Inventory.** Equal-weight items the audience scans without ordering. The cards-grid family lives here — grid, stack, wide, side.\n- **Comparison.** Two or more items weighed against shared criteria. The verdict and compare families live here — they take sides.\n- **Progression.** Items that carry an explicit sequence. The list-steps and timeline families live here — order is load-bearing.\n"
+      "sample": "<!-- _class: cards-stack horizontal -->\n\n## Three patterns, each with its own pull.\n\n- Inventory.\n  - Equal-weight items the audience scans without ordering. The cards-grid family lives here — grid, stack, wide, side.\n- Comparison.\n  - Two or more items weighed against shared criteria. The verdict and compare families live here — they take sides.\n- Progression.\n  - Items that carry an explicit sequence. The list-steps and timeline families live here — order is load-bearing.\n"
     },
     "numbered": {
       "label": "Numbered stack",

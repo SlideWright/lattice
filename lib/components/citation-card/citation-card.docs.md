@@ -73,7 +73,8 @@ Promotes the blockquote to a pull-quote scale — the verbatim language reads as
 
 > Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
-- **What we must do.** Audit pixel inventory; treat household IDs as PI in DSAR workflows.
+- What we must do.
+  - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 ```
 
 ## Universal modifiers

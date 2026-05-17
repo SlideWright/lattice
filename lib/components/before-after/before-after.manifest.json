@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
   "anatomyBlock": "before-after",
-  "sample": "<!-- _class: before-after -->\n\n## What the manifest refactor produced.\n\n- **Before.** 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.\n- **After.** 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.\n",
+  "sample": "<!-- _class: before-after -->\n\n## What the manifest refactor produced.\n\n- Before.\n  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.\n- After.\n  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.\n",
   "whenToUse": [
     {
       "title": "Story of a change",
@@ -50,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "compare-prose", "when": "two alternatives being weighed, not a transformation" },
-    { "name": "split-compare", "when": "binary decision with a verdict bar" },
-    { "name": "redline", "when": "the change is in verbatim text, not structural state" },
-    { "name": "list-steps", "when": "the change has more than two phases" }
+    {
+      "name": "compare-prose",
+      "when": "two alternatives being weighed, not a transformation"
+    },
+    {
+      "name": "split-compare",
+      "when": "binary decision with a verdict bar"
+    },
+    {
+      "name": "redline",
+      "when": "the change is in verbatim text, not structural state"
+    },
+    {
+      "name": "list-steps",
+      "when": "the change has more than two phases"
+    }
   ]
 }

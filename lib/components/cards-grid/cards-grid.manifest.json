@@ -30,7 +30,7 @@
     }
   },
   "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
-  "sample": "<!-- _class: cards-grid -->\n\n## The framework has four components.\n\n- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.\n- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.\n- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.\n- **Calibration Loop.** Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.\n",
+  "sample": "<!-- _class: cards-grid -->\n\n## The framework has four components.\n\n- Signal Intake.\n  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.\n- Scoring Model.\n  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.\n- Decision Log.\n  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.\n- Calibration Loop.\n  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.\n",
   "anatomyBlock": "T7-card-grid-2x2",
   "whenToUse": [
     {
@@ -69,22 +69,37 @@
     }
   ],
   "related": [
-    { "name": "list-steps", "when": "items carry an explicit sequence" },
-    { "name": "cards-stack", "when": "items stack vertically as full-width rows" },
-    { "name": "cards-side", "when": "two-card horizontal comparison" },
-    { "name": "cards-wide", "when": "three full-width rows for longer prose per item" },
-    { "name": "verdict-grid", "when": "comparing options against shared criteria" }
+    {
+      "name": "list-steps",
+      "when": "items carry an explicit sequence"
+    },
+    {
+      "name": "cards-stack",
+      "when": "items stack vertically as full-width rows"
+    },
+    {
+      "name": "cards-side",
+      "when": "two-card horizontal comparison"
+    },
+    {
+      "name": "cards-wide",
+      "when": "three full-width rows for longer prose per item"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "comparing options against shared criteria"
+    }
   ],
   "variantDocs": {
     "three": {
       "label": "Three columns",
       "caption": "Three equal columns instead of the default two. The 2+1 last-child span rule is reset to `auto`.",
-      "sample": "<!-- _class: cards-grid three -->\n\n## The framework has three components.\n\n- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.\n- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.\n- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied.\n"
+      "sample": "<!-- _class: cards-grid three -->\n\n## The framework has three components.\n\n- Signal Intake.\n  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.\n- Scoring Model.\n  - Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.\n- Decision Log.\n  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied.\n"
     },
     "four": {
       "label": "Four columns",
       "caption": "Four equal columns instead of two. Pair with `compact` so the cards retain breathing room.",
-      "sample": "<!-- _class: cards-grid four compact -->\n\n## Four phases, four owners.\n\n- **Intake.** PM. Collect raw signals.\n- **Score.** Analyst. Apply weights.\n- **Decide.** Lead. Pick the call.\n- **Calibrate.** Team. Compare to actuals.\n"
+      "sample": "<!-- _class: cards-grid four compact -->\n\n## Four phases, four owners.\n\n- Intake.\n  - PM. Collect raw signals.\n- Score.\n  - Analyst. Apply weights.\n- Decide.\n  - Lead. Pick the call.\n- Calibrate.\n  - Team. Compare to actuals.\n"
     },
     "numbered": {
       "label": "Numbered cards",
@@ -94,7 +109,7 @@
     "mirror": {
       "label": "Mirror (no-op on symmetric grids)",
       "caption": "The universal `mirror` modifier is declared for completeness but has no visible effect — cards-grid is a symmetric layout with no inherent left/right asymmetry to flip.",
-      "sample": "<!-- _class: cards-grid mirror -->\n\n## Mirror is a no-op here.\n\n- **First card.** Same position with or without `mirror`.\n- **Second card.** Same position with or without `mirror`.\n- **Third card.** Symmetric grids have nothing to flip.\n- **Fourth card.** This slide renders identically to the default.\n"
+      "sample": "<!-- _class: cards-grid mirror -->\n\n## Mirror is a no-op here.\n\n- First card.\n  - Same position with or without `mirror`.\n- Second card.\n  - Same position with or without `mirror`.\n- Third card.\n  - Symmetric grids have nothing to flip.\n- Fourth card.\n  - This slide renders identically to the default.\n"
     }
   }
 }

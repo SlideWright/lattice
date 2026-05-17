@@ -33,7 +33,7 @@
   },
   "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- **What we must do.** The concrete action this citation argues for.\n",
   "anatomyBlock": "citation-card",
-  "sample": "<!-- _class: citation-card -->\n\n## What counts as \"personal information\" under CCPA.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> \"Personal information\" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.\n- **What we must do.** Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.\n",
+  "sample": "<!-- _class: citation-card -->\n\n## What counts as \"personal information\" under CCPA.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> \"Personal information\" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.\n- What we must do.\n  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.\n",
   "whenToUse": [
     {
       "title": "One citation carries the slide",
@@ -84,7 +84,7 @@
     "pull-quote": {
       "label": "Pull-quote treatment",
       "caption": "Promotes the blockquote to a pull-quote scale — the verbatim language reads as the headline; the gloss compresses to the actionable item.",
-      "sample": "<!-- _class: citation-card pull-quote -->\n\n## \"Personal information\" includes the household, not just the person.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- **What we must do.** Audit pixel inventory; treat household IDs as PI in DSAR workflows.\n"
+      "sample": "<!-- _class: citation-card pull-quote -->\n\n## \"Personal information\" includes the household, not just the person.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- What we must do.\n  - Audit pixel inventory; treat household IDs as PI in DSAR workflows.\n"
     }
   }
 }

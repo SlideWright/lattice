@@ -66,9 +66,12 @@ Stacked rows pivot to a left-aligned title column with the body to its right —
 
 ## Three patterns, each with its own pull.
 
-- **Inventory.** Equal-weight items the audience scans without ordering. The cards-grid family lives here — grid, stack, wide, side.
-- **Comparison.** Two or more items weighed against shared criteria. The verdict and compare families live here — they take sides.
-- **Progression.** Items that carry an explicit sequence. The list-steps and timeline families live here — order is load-bearing.
+- Inventory.
+  - Equal-weight items the audience scans without ordering. The cards-grid family lives here — grid, stack, wide, side.
+- Comparison.
+  - Two or more items weighed against shared criteria. The verdict and compare families live here — they take sides.
+- Progression.
+  - Items that carry an explicit sequence. The list-steps and timeline families live here — order is load-bearing.
 ```
 
 ### `numbered` — Numbered stack

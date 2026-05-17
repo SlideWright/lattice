@@ -20,10 +20,14 @@ header: "Lattice · cards-grid"
 
 ## The framework has four components.
 
-- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
-- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
-- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
-- **Calibration Loop.** Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
+- Calibration Loop.
+  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.
 
 
 ---
@@ -33,10 +37,14 @@ header: "Lattice · cards-grid"
 
 ## Four phases, four owners.
 
-- **Intake.** PM. Collect raw signals.
-- **Score.** Analyst. Apply weights.
-- **Decide.** Lead. Pick the call.
-- **Calibrate.** Team. Compare to actuals.
+- Intake.
+  - PM. Collect raw signals.
+- Score.
+  - Analyst. Apply weights.
+- Decide.
+  - Lead. Pick the call.
+- Calibrate.
+  - Team. Compare to actuals.
 
 
 ---
@@ -46,9 +54,12 @@ header: "Lattice · cards-grid"
 
 ## The framework has three components.
 
-- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.
-- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.
-- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied.
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied.
 
 
 ---
@@ -73,10 +84,14 @@ header: "Lattice · cards-grid"
 
 ## Mirror is a no-op here.
 
-- **First card.** Same position with or without `mirror`.
-- **Second card.** Same position with or without `mirror`.
-- **Third card.** Symmetric grids have nothing to flip.
-- **Fourth card.** This slide renders identically to the default.
+- First card.
+  - Same position with or without `mirror`.
+- Second card.
+  - Same position with or without `mirror`.
+- Third card.
+  - Symmetric grids have nothing to flip.
+- Fourth card.
+  - This slide renders identically to the default.
 
 
 ---

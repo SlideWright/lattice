@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",
   "anatomyBlock": "decision",
-  "sample": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.\n- **Rejected option.** Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.\n",
+  "sample": "<!-- _class: decision -->\n\n## What we are doing.\n\n- Chosen path.\n  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.\n- Rejected option.\n  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.\n",
   "whenToUse": [
     {
       "title": "Land the verdict",
@@ -50,9 +50,21 @@
     }
   ],
   "related": [
-    { "name": "compare-prose", "when": "the comparison slide that should precede decision" },
-    { "name": "split-compare", "when": "comparison and verdict on one slide instead of two" },
-    { "name": "closing", "when": "the deck ends without a single-call verdict" },
-    { "name": "big-number", "when": "the decision is a quantitative commitment" }
+    {
+      "name": "compare-prose",
+      "when": "the comparison slide that should precede decision"
+    },
+    {
+      "name": "split-compare",
+      "when": "comparison and verdict on one slide instead of two"
+    },
+    {
+      "name": "closing",
+      "when": "the deck ends without a single-call verdict"
+    },
+    {
+      "name": "big-number",
+      "when": "the decision is a quantitative commitment"
+    }
   ]
 }

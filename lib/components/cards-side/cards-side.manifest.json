@@ -23,7 +23,7 @@
   },
   "skeleton": "<!-- _class: cards-side -->\n\n## Slide heading.\n\n- **Left card title.** Body text for the left card, two short sentences.\n- **Right card title.** Body text for the right card, two short sentences.\n",
   "anatomyBlock": "cards-side",
-  "sample": "<!-- _class: cards-side -->\n\n## Two cards, equal weight, side-by-side.\n\n- **An explicit pair.** Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.\n- **Different from compare-prose.** compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.\n",
+  "sample": "<!-- _class: cards-side -->\n\n## Two cards, equal weight, side-by-side.\n\n- An explicit pair.\n  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.\n- Different from compare-prose.\n  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.\n",
   "whenToUse": [
     {
       "title": "An explicit pair",

@@ -72,10 +72,14 @@ Four equal columns instead of two. Pair with `compact` so the cards retain breat
 
 ## Four phases, four owners.
 
-- **Intake.** PM. Collect raw signals.
-- **Score.** Analyst. Apply weights.
-- **Decide.** Lead. Pick the call.
-- **Calibrate.** Team. Compare to actuals.
+- Intake.
+  - PM. Collect raw signals.
+- Score.
+  - Analyst. Apply weights.
+- Decide.
+  - Lead. Pick the call.
+- Calibrate.
+  - Team. Compare to actuals.
 ```
 
 ### `three` — Three columns
@@ -87,9 +91,12 @@ Three equal columns instead of the default two. The 2+1 last-child span rule is 
 
 ## The framework has three components.
 
-- **Signal Intake.** Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.
-- **Scoring Model.** Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.
-- **Decision Log.** Every decision recorded with the signals that informed it, the options considered, and the criteria applied.
+- Signal Intake.
+  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema.
+- Scoring Model.
+  - Each signal scored on three dimensions — confidence, recency, strategic relevance. Weights are reviewed quarterly.
+- Decision Log.
+  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied.
 ```
 
 ### `numbered` — Numbered cards
@@ -118,10 +125,14 @@ The universal `mirror` modifier is declared for completeness but has no visible 
 
 ## Mirror is a no-op here.
 
-- **First card.** Same position with or without `mirror`.
-- **Second card.** Same position with or without `mirror`.
-- **Third card.** Symmetric grids have nothing to flip.
-- **Fourth card.** This slide renders identically to the default.
+- First card.
+  - Same position with or without `mirror`.
+- Second card.
+  - Same position with or without `mirror`.
+- Third card.
+  - Symmetric grids have nothing to flip.
+- Fourth card.
+  - This slide renders identically to the default.
 ```
 
 ## Universal modifiers
