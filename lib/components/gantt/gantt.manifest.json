@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "gantt",
   "function": "progression",
+  "bucket": "chart",
   "form": "timeline",
   "substance": "series",
   "description": "Gantt chart — task bars across a date axis.",

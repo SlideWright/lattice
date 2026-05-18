@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "progress",
   "function": "evidence",
+  "bucket": "chart",
   "form": "canvas",
   "substance": "series",
   "description": "Horizontal progress bars — one row per item, percentage filled.",

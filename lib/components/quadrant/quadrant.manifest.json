@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "quadrant",
   "function": "evidence",
+  "bucket": "chart",
   "form": "scatter",
   "substance": "series",
   "description": "Native 2×2 scatter chart — items plotted on two continuous axes.",

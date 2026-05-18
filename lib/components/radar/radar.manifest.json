@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "radar",
   "function": "evidence",
+  "bucket": "chart",
   "form": "scatter",
   "substance": "series",
   "description": "Native radar / spider chart — items rated across multiple axes.",

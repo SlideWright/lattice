@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "kanban",
   "function": "progression",
+  "bucket": "chart",
   "form": "timeline",
   "substance": "series",
   "description": "Kanban board — columns of cards by stage.",

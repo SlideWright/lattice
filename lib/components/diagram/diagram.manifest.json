@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "diagram",
   "function": "evidence",
+  "bucket": "diagram",
   "form": "canvas",
   "substance": "graph",
   "description": "Mermaid diagram as the slide's centerpiece.",

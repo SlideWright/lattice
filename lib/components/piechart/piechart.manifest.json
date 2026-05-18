@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "piechart",
   "function": "evidence",
+  "bucket": "chart",
   "form": "canvas",
   "substance": "series",
   "description": "Pie or donut chart with legend — proportional wedges.",

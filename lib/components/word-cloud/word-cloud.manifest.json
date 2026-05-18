@@ -2,6 +2,7 @@
   "$schema": "../manifest.schema.json",
   "name": "word-cloud",
   "function": "evidence",
+  "bucket": "chart",
   "form": "canvas",
   "substance": "series",
   "description": "Spiral-packed word cloud — items sized by weight.",
