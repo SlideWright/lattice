@@ -247,6 +247,86 @@
   --warn-bg: var(--neutral-soft);
   --fail-bg: var(--negative-soft);
 
+  /* ── CHART SEMANTIC SUB-PALETTES — explicit roles ──────────────────
+   * Named tokens for every specialised chart use. All route back to
+   * --chart-N so retuning the Heritage palette ripples through every
+   * chart at once. Themes override --chart-N; nothing else needs to
+   * change unless a theme wants to remap the semantic-to-slot binding.
+   *
+   * Naming is explicit:
+   *   --chart-state-*    intent vocabulary  (positive / negative / neutral / inactive)
+   *   --chart-mood-*     5-stop sentiment ramp (pain → delight); journey
+   *   --chart-trend-*    delta direction (up / down / flat); kpi sparklines
+   *   --chart-diff-*     change kind (add / remove / modify / unchanged); redline
+   *   --chart-scale-*    10-stop sequential ramp; heatmap intensity
+   *   --chart-axis       axis line
+   *   --chart-grid       gridline
+   *   --chart-grid-soft  faint gridline */
+
+  --chart-state-positive:      var(--chart-4);
+  --chart-state-positive-soft: var(--chart-4-soft);
+  --chart-state-positive-text: var(--chart-4-text);
+  --chart-state-negative:      var(--chart-5);
+  --chart-state-negative-soft: var(--chart-5-soft);
+  --chart-state-negative-text: var(--chart-5-text);
+  --chart-state-neutral:       var(--chart-3);
+  --chart-state-neutral-soft:  var(--chart-3-soft);
+  --chart-state-neutral-text:  var(--chart-3-text);
+  --chart-state-inactive:      var(--chart-2);
+  --chart-state-inactive-soft: var(--chart-2-soft);
+  --chart-state-inactive-text: var(--chart-2-text);
+
+  /* Mood ramp — journey. Five semantic stops with two bridge
+   * interpolations. The bridges use color-mix on Heritage slots
+   * (a gradient transition is not a state-token reference, so the
+   * "no color-mix on state tokens" rule doesn't apply here). */
+  --chart-mood-1: var(--chart-5);
+  --chart-mood-2: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
+  --chart-mood-3: var(--chart-3);
+  --chart-mood-4: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
+  --chart-mood-5: var(--chart-4);
+  --chart-mood-1-text: var(--chart-5-text);
+  --chart-mood-3-text: var(--chart-3-text);
+  --chart-mood-5-text: var(--chart-4-text);
+
+  /* Trend — kpi delta, sparkline. Three directions. */
+  --chart-trend-up:   var(--chart-4);
+  --chart-trend-down: var(--chart-5);
+  --chart-trend-flat: var(--chart-2);
+
+  /* Diff — redline, regulatory diff. Four kinds. */
+  --chart-diff-add:       var(--chart-4);
+  --chart-diff-add-soft:  var(--chart-4-soft);
+  --chart-diff-remove:    var(--chart-5);
+  --chart-diff-remove-soft:var(--chart-5-soft);
+  --chart-diff-modify:    var(--chart-3);
+  --chart-diff-modify-soft:var(--chart-3-soft);
+  --chart-diff-unchanged: var(--chart-2);
+  --chart-diff-unchanged-soft: var(--chart-2-soft);
+
+  /* Sequential scale — heatmap intensity, ordered data. Ten stops in
+   * the chart-1 (navy / sky) hue family, pre-baked light-dark pairs.
+   * Anchor (-500) IS --chart-1; the ramp interpolates toward canvas
+   * on each end. Light canvas: 50 = lightest, 900 = darkest.
+   * Dark canvas: 50 = darkest (near bg), 900 = lightest (highest ink). */
+  --chart-scale-50:  light-dark(#F0F5FA, #001A2C);
+  --chart-scale-100: light-dark(#DDE7F0, #00263F);
+  --chart-scale-200: light-dark(#B6C8D9, #003355);
+  --chart-scale-300: light-dark(#82A0BD, #00466F);
+  --chart-scale-400: light-dark(#4F7AA0, #005A8C);
+  --chart-scale-500: var(--chart-1);
+  --chart-scale-600: light-dark(#163A55, #ADD5EC);
+  --chart-scale-700: light-dark(#0E2B40, #C8E2F2);
+  --chart-scale-800: light-dark(#061E2D, #E0EEF8);
+  --chart-scale-900: light-dark(#00121F, #F2F8FC);
+
+  /* Chrome — axis, gridline, faint gridline. Pre-baked tints in the
+   * slate family; replaces color-mix on --text-muted throughout the
+   * chart-family chrome (radar, quadrant, gantt axis rules). */
+  --chart-axis:      light-dark(#6B7F9A, #95A8BC);
+  --chart-grid:      light-dark(#D6DDE6, #1F2A3A);
+  --chart-grid-soft: light-dark(#EEF1F5, #131C2A);
+
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
    * split-list left rail, banner-tags, badges). Themes can override any
@@ -3260,22 +3340,19 @@ section.image-chamber.full.mirror p:last-of-type {
  * ──────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Mood ramp — 5 (delight, forest) → 3 (neutral, slate) → 1 (pain, burgundy).
-   * Heritage chart-N slots carry the ramp; the mid-stops bridge via
-   * color-mix on chart tokens (the gradient is a transition, not a
-   * state token reference). */
-  --journey-mood-5: var(--chart-4);
-  --journey-mood-4: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
-  --journey-mood-3: var(--chart-3);
-  --journey-mood-2: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
-  --journey-mood-1: var(--chart-5);
+  /* Mood ramp — alias the base chart-mood-N tokens. The ramp lives in
+   * base.tokens.css so a theme retunes one place and journey follows. */
+  --journey-mood-5: var(--chart-mood-5);
+  --journey-mood-4: var(--chart-mood-4);
+  --journey-mood-3: var(--chart-mood-3);
+  --journey-mood-2: var(--chart-mood-2);
+  --journey-mood-1: var(--chart-mood-1);
 
-  /* Deep variants — used for filled chips that carry white text. */
-  --journey-mood-5-deep: var(--chart-4);
-  --journey-mood-4-deep: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
-  --journey-mood-3-deep: var(--chart-3);
-  --journey-mood-2-deep: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
-  --journey-mood-1-deep: var(--chart-5);
+  --journey-mood-5-deep: var(--chart-mood-5);
+  --journey-mood-4-deep: var(--chart-mood-4);
+  --journey-mood-3-deep: var(--chart-mood-3);
+  --journey-mood-2-deep: var(--chart-mood-2);
+  --journey-mood-1-deep: var(--chart-mood-1);
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
@@ -6227,9 +6304,9 @@ section.progress .progress-note {
  * categorical and don't carry a positive/negative axis. Hull strokes
  * stay saturated via cN-dark so cluster outlines remain visible. */
 section.quadrant {
-  --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+  --quadrant-frame:   var(--chart-axis);
+  --quadrant-split:   var(--chart-grid);
+  --quadrant-target:  var(--chart-axis);
 }
 
 /* Default routing — state-token aligned (reading-order → Mermaid Q). */
@@ -6506,8 +6583,8 @@ section.quadrant.minimal .quadrant-tint {
   fill: none;
 }
 section.quadrant.minimal {
-  --quadrant-frame: color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-split: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  --quadrant-frame: var(--chart-grid);
+  --quadrant-split: var(--chart-grid-soft);
 }
 section.quadrant.minimal .quadrant-bubble {
   fill: none;
@@ -6518,9 +6595,9 @@ section.quadrant.minimal .quadrant-hull {
 
 /* ── dark: lift frame + split for dark surfaces (composable) ──────────── */
 section.quadrant.dark {
-  --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
-  --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
+  --quadrant-frame:  var(--chart-axis);
+  --quadrant-split:  var(--chart-grid);
+  --quadrant-target: var(--chart-axis);
 }
 
 /* === lib/components/quote/quote.styles.css === */
@@ -6591,9 +6668,9 @@ section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-heigh
  */
 
 section.radar {
-  --radar-grid:       color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 20%, transparent);
-  --radar-spoke:      color-mix(in srgb, var(--text-muted) 34%, transparent);
+  --radar-grid:       var(--chart-grid);
+  --radar-grid-soft:  var(--chart-grid-soft);
+  --radar-spoke:      var(--chart-axis);
   --radar-fill:       18%;   /* series-colour share in the polygon fill */
 }
 
@@ -6849,8 +6926,8 @@ section.radar.minimal .radar-poly--hero {
   fill: none;
 }
 section.radar.minimal {
-  --radar-grid:      color-mix(in srgb, var(--text-muted) 26%, transparent);
-  --radar-grid-soft: color-mix(in srgb, var(--text-muted) 13%, transparent);
+  --radar-grid:      var(--chart-grid-soft);
+  --radar-grid-soft: var(--chart-grid-soft);
 }
 section.radar.minimal .radar-band {
   fill: none;
@@ -6861,9 +6938,9 @@ section.radar.minimal .radar-band {
  * legend ink and the dot halo flip on their own — only the grid tokens
  * (built on the fixed --text-muted) need a nudge for dark-surface contrast. */
 section.radar.dark {
-  --radar-grid:       color-mix(in srgb, var(--text-muted) 62%, transparent);
-  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 32%, transparent);
-  --radar-spoke:      color-mix(in srgb, var(--text-muted) 52%, transparent);
+  --radar-grid:       var(--chart-grid);
+  --radar-grid-soft:  var(--chart-grid-soft);
+  --radar-spoke:      var(--chart-axis);
   --radar-fill:       24%;
 }
 

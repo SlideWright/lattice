@@ -63,9 +63,9 @@
  * categorical and don't carry a positive/negative axis. Hull strokes
  * stay saturated via cN-dark so cluster outlines remain visible. */
 section.quadrant {
-  --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+  --quadrant-frame:   var(--chart-axis);
+  --quadrant-split:   var(--chart-grid);
+  --quadrant-target:  var(--chart-axis);
 }
 
 /* Default routing — state-token aligned (reading-order → Mermaid Q). */
@@ -342,8 +342,8 @@ section.quadrant.minimal .quadrant-tint {
   fill: none;
 }
 section.quadrant.minimal {
-  --quadrant-frame: color-mix(in srgb, var(--text-muted) 28%, transparent);
-  --quadrant-split: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  --quadrant-frame: var(--chart-grid);
+  --quadrant-split: var(--chart-grid-soft);
 }
 section.quadrant.minimal .quadrant-bubble {
   fill: none;
@@ -354,9 +354,9 @@ section.quadrant.minimal .quadrant-hull {
 
 /* ── dark: lift frame + split for dark surfaces (composable) ──────────── */
 section.quadrant.dark {
-  --quadrant-frame:  color-mix(in srgb, var(--text-muted) 58%, transparent);
-  --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
+  --quadrant-frame:  var(--chart-axis);
+  --quadrant-split:  var(--chart-grid);
+  --quadrant-target: var(--chart-axis);
 }
 
 

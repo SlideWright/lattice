@@ -39,9 +39,9 @@
  */
 
 section.radar {
-  --radar-grid:       color-mix(in srgb, var(--text-muted) 42%, transparent);
-  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 20%, transparent);
-  --radar-spoke:      color-mix(in srgb, var(--text-muted) 34%, transparent);
+  --radar-grid:       var(--chart-grid);
+  --radar-grid-soft:  var(--chart-grid-soft);
+  --radar-spoke:      var(--chart-axis);
   --radar-fill:       18%;   /* series-colour share in the polygon fill */
 }
 
@@ -297,8 +297,8 @@ section.radar.minimal .radar-poly--hero {
   fill: none;
 }
 section.radar.minimal {
-  --radar-grid:      color-mix(in srgb, var(--text-muted) 26%, transparent);
-  --radar-grid-soft: color-mix(in srgb, var(--text-muted) 13%, transparent);
+  --radar-grid:      var(--chart-grid-soft);
+  --radar-grid-soft: var(--chart-grid-soft);
 }
 section.radar.minimal .radar-band {
   fill: none;
@@ -309,9 +309,9 @@ section.radar.minimal .radar-band {
  * legend ink and the dot halo flip on their own — only the grid tokens
  * (built on the fixed --text-muted) need a nudge for dark-surface contrast. */
 section.radar.dark {
-  --radar-grid:       color-mix(in srgb, var(--text-muted) 62%, transparent);
-  --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 32%, transparent);
-  --radar-spoke:      color-mix(in srgb, var(--text-muted) 52%, transparent);
+  --radar-grid:       var(--chart-grid);
+  --radar-grid-soft:  var(--chart-grid-soft);
+  --radar-spoke:      var(--chart-axis);
   --radar-fill:       24%;
 }
 
