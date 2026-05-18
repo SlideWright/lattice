@@ -245,37 +245,21 @@ but it doesn't catch every authoring bug — only that pattern. The
 visual spot-check is the general-purpose defense; the test is the
 specific one.
 
-## Cap rasterized image dimensions at 1600px
-
-When rasterizing PDFs for visual review (Read tool on a PNG,
-SendUserFile of a rendered slide, or any inline image in
-conversation), **the longest dimension must stay under 2000px** —
-the conversation API rejects oversized images when a session
-accumulates many. Target 1600px to leave headroom.
-
-For HD decks (960×540 PDF points), 100dpi rasterization produces
-~1333×750 — under the limit. For 4K decks (3840×2160 PDF points),
-100dpi produces ~5333×3000 — over the limit, and one such image is
-enough to break the session.
-
-Two safe patterns:
+**Rasterize PDFs through `tools/rasterize-for-review.sh`.** The
+conversation API caps inline images at 2000px on the longest side
+and rejects oversized images mid-session. 4K decks (`gallery.md`,
+`gallery-jargon.md`) rasterized via raw `pdftoppm -r 100` produce
+~5000×3000 PNGs — over the limit and one is enough to break the
+session. The wrapper does pdftoppm + `mogrify -resize '1600x1600>'`
+in one shot so output stays under 1600px regardless of source
+canvas:
 
 ```bash
-# Pattern A — let mogrify clamp anything over 1600px (preferred:
-# works for HD or 4K without per-deck math)
-pdftoppm -r 100 deck.pdf /tmp/p -png
-mogrify -resize '1600x1600>' /tmp/p-*.png
-
-# Pattern B — compute the DPI per deck (when you know the size):
-#   target_dpi = 1600 * 72 / max(pdf_pt_width, pdf_pt_height)
-# HD:    1600 * 72 / 960  = 120dpi (cap)
-# 4K:    1600 * 72 / 3840 = 30dpi
-pdftoppm -r 30 deck-4k.pdf /tmp/p -png
+tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38
+# writes /tmp/gallery/p-38.png at 1600×900 (was 4000×2250 raw)
 ```
 
-Pattern A is the right default. Always run the resize even when you
-think the deck is HD — `mogrify -resize '1600x1600>'` is idempotent
-for already-small images and cheap to run.
-
-The `>` suffix on the geometry is critical: it means "only shrink
-when over." Without it, mogrify upscales small images, blurring them.
+The codebase's automated pipelines (`tools/pixel-check.js`,
+`tools/preview.js`) rasterize at 72dpi and don't need this wrapper.
+Use it for ad-hoc one-off renders meant for human review via the
+Read tool or SendUserFile.
