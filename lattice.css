@@ -117,7 +117,7 @@
    * pale fills) and --c-ink-dark (white-ish text on deep fills, default
    * #FFFFFF, themes can override). All --cN-light/--c-ink-light pairs are
    * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
-   * sourced from the Brand-triad rank-1 proposal in examples/palette-audit.md. */
+   * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,

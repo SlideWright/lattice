@@ -17,6 +17,8 @@ tokenization/
 !lib/base/**/*.pdf
 !lib/integrations/**/*.pdf
 !test/integration/baseline-decks/*.pdf
+!docs/*.pdf
+!themes/*.pdf
 
 # esbuild check tempfile — produced next to lattice-runtime.js by
 # `npm run runtime:check`. The script cleans up on success/failure;

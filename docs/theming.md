@@ -166,7 +166,7 @@ trajectory).
   Mermaid cScale feeds.
 
 Each pair is generated via the Brand-triad strategy in
-`examples/palette-audit.md` (rank-1 proposal per theme). The audit
+`themes/palette-audit.md` (rank-1 proposal per theme). The audit
 deck scores five strategies × 13 themes and shows the resolved hex
 swatches; copy the rank-1 values into your new palette for a
 known-good starting point.
@@ -275,7 +275,7 @@ signals:
   `--c-ink-dark` (default `#FFFFFF`) reads on these with 5:1+ contrast.
 
 A new palette should respect the same tier split. Each rank-1 proposal
-in `examples/palette-audit.md` lands its pale tier at L≈87 and its
+in `themes/palette-audit.md` lands its pale tier at L≈87 and its
 deep tier at L≈32, anchored to AA against the paired ink — if you copy
 the proposal values, you inherit the contract for free.
 
@@ -391,7 +391,7 @@ Then, in order of impact:
    `--accent-soft`.
 5. **Categorical cycle** (`--c1-light` / `--c1-dark` through
    `--c12-light` / `--c12-dark`, plus `--c-ink-light` / `--c-ink-dark`).
-   Copy the rank-1 Brand-triad proposal from `examples/palette-audit.md`
+   Copy the rank-1 Brand-triad proposal from `themes/palette-audit.md`
    as a known-good starting point; AA against the paired ink is checked
    by the contrast suite.
 6. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`,

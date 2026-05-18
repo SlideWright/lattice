@@ -54,14 +54,15 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 // pattern `examples/<name>.md` is a candidate; this list is the closed
 // set we'll actually build. Update when a new deck is added.
 // Decks under examples/ that npm run preview can rebuild + diff. The
-// CI baseline deck (gallery.md → test/integration/baseline-decks/) and
-// the mermaid integration showcase (mermaid.gallery.md → lib/integrations/
-// mermaid/) are intentionally NOT here — both live with their owners,
-// and their integration tests rebuild them directly.
+// CI baseline deck (gallery.md → test/integration/baseline-decks/),
+// the mermaid integration showcase (mermaid.gallery.md →
+// lib/integrations/mermaid/), the design-system slide demo
+// (design-system.gallery.md → docs/), and the palette-audit theme-
+// designer's deck (palette-audit.md → themes/) are intentionally
+// NOT here — each lives with its owner, and its integration test
+// or documentation reference picks it up directly.
 const ALL_DECKS = Object.freeze([
   'gallery-jargon',
-  'design-system',
-  'palette-audit',
 ]);
 
 // Page-counted baselines — the two canonical top-level galleries CI

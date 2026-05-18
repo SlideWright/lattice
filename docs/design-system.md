@@ -601,7 +601,7 @@ discovery story that markdown alone can't provide.
 - `lib/components/` — 58 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey + post-Phase-5 renames, all promoted to first-class components.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
-- `examples/design-system.md` — the demo deck.
+- `docs/design-system.gallery.md` — the slide-rendered demo of this doc.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
 - `cards-side` CSS extraction — split out of `cards-grid/styles.css` into its own `lib/components/cards-side/styles.css`. Validated by same-sandbox before/after PDF byte-compare on all five decks using either component (0–1 byte drift = pixel-identical).
 - Per-component transform location — every component whose transform exists is now at `lib/components/<bucket>/<name>/<name>.transform.js`. The chart-family dispatcher itself lives at `lib/components/chart/_chart-family/chart-family.js` (underscore-prefixed so the component loader and bucket-wide CSS walker both skip it) — bucket-scoped shared infrastructure colocated with the bucket it serves.
