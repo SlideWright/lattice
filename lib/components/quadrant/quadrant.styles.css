@@ -74,13 +74,14 @@ section.quadrant [data-cell="1"] { --cell-fill: var(--positive); --cell-ink: var
 section.quadrant [data-cell="2"] { --cell-fill: var(--inactive); --cell-ink: var(--text-heading); }
 section.quadrant [data-cell="3"] { --cell-fill: var(--negative); --cell-ink: var(--text-heading); }
 
-/* Cohort override — sequential c1…c4 brand slots; cell-ink stays
- * saturated (--cN-dark) so the hull stroke reads as a cluster outline.
- * The cohort label TEXT pulls --text-heading directly (see below). */
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
+/* Cohort override — sequential Heritage chart-N slots. Hull stroke
+ * uses the saturated chart-N (so cluster outlines stay readable),
+ * fill uses chart-N-soft (pale tint so dots inside are visible).
+ * The cohort label TEXT pulls --text-heading directly. */
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--chart-1-soft); --cell-ink: var(--chart-1); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--chart-2-soft); --cell-ink: var(--chart-2); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--chart-3-soft); --cell-ink: var(--chart-3); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--chart-4-soft); --cell-ink: var(--chart-4); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
@@ -178,11 +179,11 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
-/* Text inside the chart uses --text-heading (canvas-aware) — never the
- * per-cell ink — so the label register matches the H2 above and the
- * caption below. Same rule chart-family pills follow. */
+/* Cell fills are saturated state slots, so the corner label uses
+ * --text-on-saturated (white on light, dark navy on dark) to clear AA.
+ * Same rule the gantt bar labels use. */
 section.quadrant .quadrant-label {
-  fill: var(--text-heading);
+  fill: var(--text-on-saturated);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -201,8 +202,9 @@ section.quadrant .quadrant-label--zone {
 }
 
 /* ── Scatter dots + per-dot labels ────────────────────────────────────── */
+/* Dot sits on the saturated cell fill — --text-on-saturated for visibility. */
 section.quadrant .quadrant-dot {
-  fill: var(--cell-ink);
+  fill: var(--text-on-saturated);
   stroke: var(--bg);
   stroke-width: 1.5;
 }
@@ -228,11 +230,11 @@ section.quadrant .quadrant-bubble-value {
   font-size: 8.5px;
   font-weight: 700;
 }
-/* Bubble values are TEXT — pull --text-heading directly so the readout
- * register matches the H2 / labels / caption (same rule as corner
- * labels above). Was per-cell ink before the state-token migration. */
+/* Bubble values inside the bubble sit on the saturated cell fill —
+ * use --text-on-saturated. Values floating above the bubble are on
+ * canvas, so they use --text-heading. */
 section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--text-heading);
+  fill: var(--text-on-saturated);
 }
 section.quadrant .quadrant-bubble-value[data-pos="above"] {
   fill: var(--text-heading);

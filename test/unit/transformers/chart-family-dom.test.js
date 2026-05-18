@@ -58,7 +58,7 @@ describe('chart-family.applyToDom', () => {
       'three legend entries');
   });
 
-  test('radar: builds polygons with per-series colors from the unified --c{N}-dark scale', () => {
+  test('radar: builds polygons with per-series colors from the Heritage --chart-N scale', () => {
     const doc = makeDoc(`
       <section class="radar">
         <h2>Skills</h2>
@@ -85,11 +85,11 @@ describe('chart-family.applyToDom', () => {
     assert.ok(sec.classList.contains('chart-frame'));
     const polys = sec.querySelectorAll('polygon.radar-poly');
     assert.equal(polys.length, 2, 'two series → two polygons');
-    // Regression guard for the radar --cat-* bug (now fixed).
+    // Regression guard — series colors resolve via Heritage --chart-N.
     const styles = [...polys].map(p => p.getAttribute('style') || '');
     for (const s of styles) {
-      assert.match(s, /--series-color:\s*var\(--c\d-dark\)/,
-        `series-color resolves through --c{N}-dark, not --cat-*; got "${s}"`);
+      assert.match(s, /--series-color:\s*var\(--chart-\d\)/,
+        `series-color resolves through --chart-N (Heritage); got "${s}"`);
     }
   });
 

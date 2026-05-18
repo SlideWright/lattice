@@ -139,44 +139,74 @@
    *
    * Background soft-tints (--pass-bg, --warn-bg, --fail-bg) live in
    * each theme and derive from these via color-mix with 10% alpha. */
-  --pass: light-dark(#2D6A3F, #4ADE80);
-  --warn: light-dark(#B45309, #F97316);
-  --fail: light-dark(#991B1B, #F87171);
-
-  /* ── Universal data-signal tokens — positive / negative / neutral / inactive ─
-   * Four-way semantic axis for chart series, KPI deltas, journey moods,
-   * matrix cells — anywhere a data point needs to read as good / bad /
-   * steady / unused at a glance. Distinct from --pass / --warn / --fail
-   * which mark INTENT (test passing, task warned, obligation failed); the
-   * positive/negative/neutral/inactive axis marks OBSERVATIONS about data
-   * (gain, loss, no-change, no-data).
+  /* ── CHART TOKENS — Heritage palette as the source of truth ─────────
+   * Five hand-curated boardroom hues: navy, slate, amber, forest,
+   * burgundy. Each slot is a light-dark() pair plus a paired text
+   * colour. AA-verified per text-on-fill pair in both canvas modes
+   * (≥ 6:1 across the board).
    *
-   * Contrast philosophy — matches the cN-light family:
-   *   light canvas:  pale tint    (L≈0.88, low contrast with --bg)
-   *   dark  canvas:  deep hue     (L≈0.32, low contrast with --bg)
-   * Same hue family in both modes. Text on top is ALWAYS the canvas's
-   * standard --text-body / --text-heading — never state-colored. The
-   * fill flips with the canvas; the text stays canvas-default. This
-   * keeps text consistent inside and outside the chart, with zero
-   * per-element exceptions.
+   * Naming intent — chart-N is the canonical chart slot. Themes
+   * override --chart-N hexes for brand-specific curation; the universal
+   * default below is the indaco-derived Heritage palette (boardroom-
+   * restrained, magazine-grade, brand-coherent in both light and dark).
    *
-   * Tailwind 200 / 700 anchor the universal default; themes override
-   * with brand-toned hex pairs in the same envelope. */
-  --positive: light-dark(#A7F3D0, #047857);
-  --negative: light-dark(#FECACA, #B91C1C);
-  --neutral:  light-dark(#FED7AA, #C2410C);
-  --inactive: light-dark(#E2E8F0, #475569);
+   * Legacy state tokens (--positive / --negative / --neutral /
+   * --inactive / --pass / --warn / --fail) and the categorical cycle
+   * (--cN-light / --cN-dark) alias these slots so unmigrated callers
+   * keep working. The chart-N axis is the system; everything else is
+   * a label on it.
+   *
+   * Soft variants (--chart-N-soft) are pre-baked pale tints for pill
+   * backgrounds, decorative borders, and any surface where a label
+   * sits on top in --text-body / --text-heading.
+   *
+   * --text-on-saturated is the INVERSE of --text-heading: white on
+   * light canvas, dark navy on dark canvas. Use it for any text that
+   * sits ON a chart fill (gantt bar labels, quadrant corner labels,
+   * dot labels). Without it, --text-heading would invert wrong on
+   * saturated fills (dark text on dark forest = AA fail). */
+  --chart-1:      light-dark(#1F4A6E, #82C8E5);  /* navy */
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-1-soft: light-dark(#DCE5F0, #0E2C44);
+  --chart-2:      light-dark(#4A5C73, #A8B5C5);  /* slate */
+  --chart-2-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2-soft: light-dark(#E0E4EA, #1A2330);
+  --chart-3:      light-dark(#91450E, #E89F45);  /* amber */
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-3-soft: light-dark(#F5E2D0, #2A1808);
+  --chart-4:      light-dark(#2D6B3A, #6FB57F);  /* forest */
+  --chart-4-text: light-dark(#FFFFFF, #0A1628);
+  --chart-4-soft: light-dark(#DDEEDF, #0E2814);
+  --chart-5:      light-dark(#8A2E33, #D87277);  /* burgundy */
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-5-soft: light-dark(#F0DDDE, #2A1014);
 
-  /* Paired soft fills — even softer than the main token. Used for pill
-   * backgrounds, chip backdrops, and decorative borders where a barely-
-   * there state tint is appropriate AND the consumer pairs it with a
-   * canvas-aware text colour (never with state-coloured text). NO
-   * color-mix() anywhere: every value here is a standalone hex.
-   * Tailwind 50 / 950 — L≈0.97 light, L≈0.10 dark. */
-  --positive-soft: light-dark(#F0FDF4, #052E16);
-  --negative-soft: light-dark(#FEF2F2, #450A0A);
-  --neutral-soft:  light-dark(#FFF7ED, #431407);
-  --inactive-soft: light-dark(#F1F5F9, #0F172A);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+
+  /* ── Legacy state-token aliases — point at chart slots ──────────────
+   * State semantics map onto Heritage slots: forest = positive,
+   * burgundy = negative, amber = neutral (caution), slate = inactive.
+   * Consumers can use either --positive or --chart-4 interchangeably;
+   * the chart-N axis is the source of truth. */
+  --positive:      var(--chart-4);
+  --positive-soft: var(--chart-4-soft);
+  --negative:      var(--chart-5);
+  --negative-soft: var(--chart-5-soft);
+  --neutral:       var(--chart-3);
+  --neutral-soft:  var(--chart-3-soft);
+  --inactive:      var(--chart-2);
+  --inactive-soft: var(--chart-2-soft);
+
+  /* Older state-vocabulary aliases — --pass / --warn / --fail point at
+   * the same chart slots so kpi / checklist / redline / verdict-grid
+   * etc. inherit the Heritage palette without source changes. */
+  --pass: var(--positive);
+  --warn: var(--neutral);
+  --fail: var(--negative);
+  --pass-bg: var(--positive-soft);
+  --warn-bg: var(--neutral-soft);
+  --fail-bg: var(--negative-soft);
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,

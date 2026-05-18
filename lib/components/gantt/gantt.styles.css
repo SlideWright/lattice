@@ -114,8 +114,12 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  background: var(--accent-soft);
-  color: var(--text-heading);
+  /* Default bar (no data-s): chart-2 slate — saturated mid-tone in
+   * both canvas modes so the bar reads, paired with --text-on-saturated
+   * for AA-clean labels. State bars below override fill to chart-N
+   * via state aliases; same text token applies. */
+  background: var(--chart-2);
+  color: var(--text-on-saturated);
   font-family: var(--font-body);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -128,8 +132,10 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status fills — state tokens carry the colour, --text-heading carries
- * the text. Same canvas-aware recipe in both modes via light-dark(). */
+/* Status fills — chart-N slots via state aliases. Saturated fills, so
+ * the in-bar label flips to --text-on-saturated (white on light, dark
+ * on dark) to clear AA on every state. */
+.gantt-bar[data-s] { color: var(--text-on-saturated); }
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
 .gantt-bar[data-s="live"]     { background: var(--positive); }

@@ -178,44 +178,74 @@
    *
    * Background soft-tints (--pass-bg, --warn-bg, --fail-bg) live in
    * each theme and derive from these via color-mix with 10% alpha. */
-  --pass: light-dark(#2D6A3F, #4ADE80);
-  --warn: light-dark(#B45309, #F97316);
-  --fail: light-dark(#991B1B, #F87171);
-
-  /* ── Universal data-signal tokens — positive / negative / neutral / inactive ─
-   * Four-way semantic axis for chart series, KPI deltas, journey moods,
-   * matrix cells — anywhere a data point needs to read as good / bad /
-   * steady / unused at a glance. Distinct from --pass / --warn / --fail
-   * which mark INTENT (test passing, task warned, obligation failed); the
-   * positive/negative/neutral/inactive axis marks OBSERVATIONS about data
-   * (gain, loss, no-change, no-data).
+  /* ── CHART TOKENS — Heritage palette as the source of truth ─────────
+   * Five hand-curated boardroom hues: navy, slate, amber, forest,
+   * burgundy. Each slot is a light-dark() pair plus a paired text
+   * colour. AA-verified per text-on-fill pair in both canvas modes
+   * (≥ 6:1 across the board).
    *
-   * Contrast philosophy — matches the cN-light family:
-   *   light canvas:  pale tint    (L≈0.88, low contrast with --bg)
-   *   dark  canvas:  deep hue     (L≈0.32, low contrast with --bg)
-   * Same hue family in both modes. Text on top is ALWAYS the canvas's
-   * standard --text-body / --text-heading — never state-colored. The
-   * fill flips with the canvas; the text stays canvas-default. This
-   * keeps text consistent inside and outside the chart, with zero
-   * per-element exceptions.
+   * Naming intent — chart-N is the canonical chart slot. Themes
+   * override --chart-N hexes for brand-specific curation; the universal
+   * default below is the indaco-derived Heritage palette (boardroom-
+   * restrained, magazine-grade, brand-coherent in both light and dark).
    *
-   * Tailwind 200 / 700 anchor the universal default; themes override
-   * with brand-toned hex pairs in the same envelope. */
-  --positive: light-dark(#A7F3D0, #047857);
-  --negative: light-dark(#FECACA, #B91C1C);
-  --neutral:  light-dark(#FED7AA, #C2410C);
-  --inactive: light-dark(#E2E8F0, #475569);
+   * Legacy state tokens (--positive / --negative / --neutral /
+   * --inactive / --pass / --warn / --fail) and the categorical cycle
+   * (--cN-light / --cN-dark) alias these slots so unmigrated callers
+   * keep working. The chart-N axis is the system; everything else is
+   * a label on it.
+   *
+   * Soft variants (--chart-N-soft) are pre-baked pale tints for pill
+   * backgrounds, decorative borders, and any surface where a label
+   * sits on top in --text-body / --text-heading.
+   *
+   * --text-on-saturated is the INVERSE of --text-heading: white on
+   * light canvas, dark navy on dark canvas. Use it for any text that
+   * sits ON a chart fill (gantt bar labels, quadrant corner labels,
+   * dot labels). Without it, --text-heading would invert wrong on
+   * saturated fills (dark text on dark forest = AA fail). */
+  --chart-1:      light-dark(#1F4A6E, #82C8E5);  /* navy */
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-1-soft: light-dark(#DCE5F0, #0E2C44);
+  --chart-2:      light-dark(#4A5C73, #A8B5C5);  /* slate */
+  --chart-2-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2-soft: light-dark(#E0E4EA, #1A2330);
+  --chart-3:      light-dark(#91450E, #E89F45);  /* amber */
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-3-soft: light-dark(#F5E2D0, #2A1808);
+  --chart-4:      light-dark(#2D6B3A, #6FB57F);  /* forest */
+  --chart-4-text: light-dark(#FFFFFF, #0A1628);
+  --chart-4-soft: light-dark(#DDEEDF, #0E2814);
+  --chart-5:      light-dark(#8A2E33, #D87277);  /* burgundy */
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-5-soft: light-dark(#F0DDDE, #2A1014);
 
-  /* Paired soft fills — even softer than the main token. Used for pill
-   * backgrounds, chip backdrops, and decorative borders where a barely-
-   * there state tint is appropriate AND the consumer pairs it with a
-   * canvas-aware text colour (never with state-coloured text). NO
-   * color-mix() anywhere: every value here is a standalone hex.
-   * Tailwind 50 / 950 — L≈0.97 light, L≈0.10 dark. */
-  --positive-soft: light-dark(#F0FDF4, #052E16);
-  --negative-soft: light-dark(#FEF2F2, #450A0A);
-  --neutral-soft:  light-dark(#FFF7ED, #431407);
-  --inactive-soft: light-dark(#F1F5F9, #0F172A);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+
+  /* ── Legacy state-token aliases — point at chart slots ──────────────
+   * State semantics map onto Heritage slots: forest = positive,
+   * burgundy = negative, amber = neutral (caution), slate = inactive.
+   * Consumers can use either --positive or --chart-4 interchangeably;
+   * the chart-N axis is the source of truth. */
+  --positive:      var(--chart-4);
+  --positive-soft: var(--chart-4-soft);
+  --negative:      var(--chart-5);
+  --negative-soft: var(--chart-5-soft);
+  --neutral:       var(--chart-3);
+  --neutral-soft:  var(--chart-3-soft);
+  --inactive:      var(--chart-2);
+  --inactive-soft: var(--chart-2-soft);
+
+  /* Older state-vocabulary aliases — --pass / --warn / --fail point at
+   * the same chart slots so kpi / checklist / redline / verdict-grid
+   * etc. inherit the Heritage palette without source changes. */
+  --pass: var(--positive);
+  --warn: var(--neutral);
+  --fail: var(--negative);
+  --pass-bg: var(--positive-soft);
+  --warn-bg: var(--neutral-soft);
+  --fail-bg: var(--negative-soft);
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
@@ -2448,8 +2478,12 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  background: var(--accent-soft);
-  color: var(--text-heading);
+  /* Default bar (no data-s): chart-2 slate — saturated mid-tone in
+   * both canvas modes so the bar reads, paired with --text-on-saturated
+   * for AA-clean labels. State bars below override fill to chart-N
+   * via state aliases; same text token applies. */
+  background: var(--chart-2);
+  color: var(--text-on-saturated);
   font-family: var(--font-body);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -2462,8 +2496,10 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status fills — state tokens carry the colour, --text-heading carries
- * the text. Same canvas-aware recipe in both modes via light-dark(). */
+/* Status fills — chart-N slots via state aliases. Saturated fills, so
+ * the in-bar label flips to --text-on-saturated (white on light, dark
+ * on dark) to clear AA on every state. */
+.gantt-bar[data-s] { color: var(--text-on-saturated); }
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
 .gantt-bar[data-s="live"]     { background: var(--positive); }
@@ -3224,19 +3260,22 @@ section.image-chamber.full.mirror p:last-of-type {
  * ──────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Mood ramp — 5 (delight, green) → 3 (neutral, orange) → 1 (pain, rose). */
-  --journey-mood-5: var(--c2-dark);
-  --journey-mood-4: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3: var(--c4-dark);
-  --journey-mood-2: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1: var(--c6-dark);
+  /* Mood ramp — 5 (delight, forest) → 3 (neutral, slate) → 1 (pain, burgundy).
+   * Heritage chart-N slots carry the ramp; the mid-stops bridge via
+   * color-mix on chart tokens (the gradient is a transition, not a
+   * state token reference). */
+  --journey-mood-5: var(--chart-4);
+  --journey-mood-4: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
+  --journey-mood-3: var(--chart-3);
+  --journey-mood-2: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
+  --journey-mood-1: var(--chart-5);
 
   /* Deep variants — used for filled chips that carry white text. */
-  --journey-mood-5-deep: var(--c2-dark);
-  --journey-mood-4-deep: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3-deep: var(--c4-dark);
-  --journey-mood-2-deep: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1-deep: var(--c6-dark);
+  --journey-mood-5-deep: var(--chart-4);
+  --journey-mood-4-deep: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
+  --journey-mood-3-deep: var(--chart-3);
+  --journey-mood-2-deep: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
+  --journey-mood-1-deep: var(--chart-5);
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
@@ -3953,19 +3992,20 @@ section.kanban.chart-frame .chart-body {
   flex: 0 0 auto;
 }
 
-/* Lane tag — small pill tinted with the lane's cN-dark cycle colour.
- * Categorical exception to the chart-family "no selective text" rule:
- * lane identity is the entire point of the pill, so a soft tint of the
- * lane colour as background + the lane colour as text gives the cue
- * its identity. Same pattern as gantt's pilot/decision treatment. */
+/* Lane tag — small pill on the lane's chart-N-soft tint (pale on light,
+ * deep on dark — set inline as --lane-soft alongside --lane-color).
+ * Border picks up the saturated --lane-color so the lane identity reads
+ * even though the text is canvas-aware. Same Heritage chart-N cycle the
+ * card stripe uses, kept visually coherent with the rest of chart-family. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
   border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
-  color: var(--lane-color, var(--accent));
+  background: var(--lane-soft, var(--chart-1-soft));
+  border: 1px solid var(--lane-color, var(--chart-accent));
+  color: var(--text-body);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -6198,13 +6238,14 @@ section.quadrant [data-cell="1"] { --cell-fill: var(--positive); --cell-ink: var
 section.quadrant [data-cell="2"] { --cell-fill: var(--inactive); --cell-ink: var(--text-heading); }
 section.quadrant [data-cell="3"] { --cell-fill: var(--negative); --cell-ink: var(--text-heading); }
 
-/* Cohort override — sequential c1…c4 brand slots; cell-ink stays
- * saturated (--cN-dark) so the hull stroke reads as a cluster outline.
- * The cohort label TEXT pulls --text-heading directly (see below). */
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
+/* Cohort override — sequential Heritage chart-N slots. Hull stroke
+ * uses the saturated chart-N (so cluster outlines stay readable),
+ * fill uses chart-N-soft (pale tint so dots inside are visible).
+ * The cohort label TEXT pulls --text-heading directly. */
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--chart-1-soft); --cell-ink: var(--chart-1); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--chart-2-soft); --cell-ink: var(--chart-2); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--chart-3-soft); --cell-ink: var(--chart-3); }
+section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--chart-4-soft); --cell-ink: var(--chart-4); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
@@ -6302,11 +6343,11 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
-/* Text inside the chart uses --text-heading (canvas-aware) — never the
- * per-cell ink — so the label register matches the H2 above and the
- * caption below. Same rule chart-family pills follow. */
+/* Cell fills are saturated state slots, so the corner label uses
+ * --text-on-saturated (white on light, dark navy on dark) to clear AA.
+ * Same rule the gantt bar labels use. */
 section.quadrant .quadrant-label {
-  fill: var(--text-heading);
+  fill: var(--text-on-saturated);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -6325,8 +6366,9 @@ section.quadrant .quadrant-label--zone {
 }
 
 /* ── Scatter dots + per-dot labels ────────────────────────────────────── */
+/* Dot sits on the saturated cell fill — --text-on-saturated for visibility. */
 section.quadrant .quadrant-dot {
-  fill: var(--cell-ink);
+  fill: var(--text-on-saturated);
   stroke: var(--bg);
   stroke-width: 1.5;
 }
@@ -6352,11 +6394,11 @@ section.quadrant .quadrant-bubble-value {
   font-size: 8.5px;
   font-weight: 700;
 }
-/* Bubble values are TEXT — pull --text-heading directly so the readout
- * register matches the H2 / labels / caption (same rule as corner
- * labels above). Was per-cell ink before the state-token migration. */
+/* Bubble values inside the bubble sit on the saturated cell fill —
+ * use --text-on-saturated. Values floating above the bubble are on
+ * canvas, so they use --text-heading. */
 section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--text-heading);
+  fill: var(--text-on-saturated);
 }
 section.quadrant .quadrant-bubble-value[data-pos="above"] {
   fill: var(--text-heading);

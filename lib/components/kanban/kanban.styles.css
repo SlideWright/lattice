@@ -128,19 +128,20 @@ section.kanban.chart-frame .chart-body {
   flex: 0 0 auto;
 }
 
-/* Lane tag — small pill tinted with the lane's cN-dark cycle colour.
- * Categorical exception to the chart-family "no selective text" rule:
- * lane identity is the entire point of the pill, so a soft tint of the
- * lane colour as background + the lane colour as text gives the cue
- * its identity. Same pattern as gantt's pilot/decision treatment. */
+/* Lane tag — small pill on the lane's chart-N-soft tint (pale on light,
+ * deep on dark — set inline as --lane-soft alongside --lane-color).
+ * Border picks up the saturated --lane-color so the lane identity reads
+ * even though the text is canvas-aware. Same Heritage chart-N cycle the
+ * card stripe uses, kept visually coherent with the rest of chart-family. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
   border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
-  color: var(--lane-color, var(--accent));
+  background: var(--lane-soft, var(--chart-1-soft));
+  border: 1px solid var(--lane-color, var(--chart-accent));
+  color: var(--text-body);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;

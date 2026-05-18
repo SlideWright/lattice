@@ -37,19 +37,22 @@
  * ──────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Mood ramp — 5 (delight, green) → 3 (neutral, orange) → 1 (pain, rose). */
-  --journey-mood-5: var(--c2-dark);
-  --journey-mood-4: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3: var(--c4-dark);
-  --journey-mood-2: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1: var(--c6-dark);
+  /* Mood ramp — 5 (delight, forest) → 3 (neutral, slate) → 1 (pain, burgundy).
+   * Heritage chart-N slots carry the ramp; the mid-stops bridge via
+   * color-mix on chart tokens (the gradient is a transition, not a
+   * state token reference). */
+  --journey-mood-5: var(--chart-4);
+  --journey-mood-4: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
+  --journey-mood-3: var(--chart-3);
+  --journey-mood-2: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
+  --journey-mood-1: var(--chart-5);
 
   /* Deep variants — used for filled chips that carry white text. */
-  --journey-mood-5-deep: var(--c2-dark);
-  --journey-mood-4-deep: color-mix(in oklab, var(--c2-dark) 55%, var(--c4-dark));
-  --journey-mood-3-deep: var(--c4-dark);
-  --journey-mood-2-deep: color-mix(in oklab, var(--c4-dark) 55%, var(--c6-dark));
-  --journey-mood-1-deep: var(--c6-dark);
+  --journey-mood-5-deep: var(--chart-4);
+  --journey-mood-4-deep: color-mix(in oklab, var(--chart-4) 55%, var(--chart-3));
+  --journey-mood-3-deep: var(--chart-3);
+  --journey-mood-2-deep: color-mix(in oklab, var(--chart-3) 55%, var(--chart-5));
+  --journey-mood-1-deep: var(--chart-5);
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));

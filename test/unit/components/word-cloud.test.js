@@ -173,13 +173,13 @@ describe('word-cloud', () => {
     }
   });
 
-  test('colorForWord: mid tier rotates through 6 categorical tokens', () => {
+  test('colorForWord: mid tier rotates through the Heritage 5-slot cycle', () => {
     const opts = VARIANT_OPTS.default;
     const colors = new Set();
-    for (let r = 1; r <= 6; r++) {
+    for (let r = 1; r <= 5; r++) {
       colors.add(colorForWord(r, 3, opts));
     }
-    assert.equal(colors.size, 6, 'six consecutive ranks at weight 3 should yield 6 distinct hues');
+    assert.equal(colors.size, 5, 'five consecutive ranks at weight 3 should yield 5 distinct hues');
   });
 
   test('colorForWord: heat-ramp maps weight bands to scale-N', () => {
