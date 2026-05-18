@@ -82,7 +82,7 @@ coherence. The long-running decks pick up the new layout in a separate
 ### Authoring
 
 1. Create `examples/<feature-slug>.md`. The slug matches the branch noun
-   (e.g. branch `feat/roadmap-redesign` → `examples/roadmap.md`,
+   (e.g. branch `feat/custom-logo` → `examples/custom-logo.md`,
    branch `fix/mermaid-catdeep` → `examples/mermaid-catdeep.md`).
 2. Keep the deck small — title slide, one slide per surface the work
    changes, closing. Six to ten slides is the comfortable cap.

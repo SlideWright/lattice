@@ -61,22 +61,10 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const ALL_DECKS = Object.freeze([
   'gallery-jargon',
   'design-system',
-  'chart-family-experiment',
   'custom-logo',
-  'diagram-tokens',
-  'image-concepts',
   'legal-layouts',
   'legal-layouts-finalists',
-  'list-tabular-gallery',
-  'math',
   'palette-audit',
-  'quadrant',
-  'radar',
-  'roadmap',
-  'route2-preview',
-  'state-tokens',
-  'user-journey',
-  'word-cloud',
 ]);
 
 // Page-counted baselines — the two canonical top-level galleries CI
