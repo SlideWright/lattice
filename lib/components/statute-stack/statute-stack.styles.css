@@ -54,9 +54,9 @@ section.statute-stack > ul > li::marker,
 section.statute-stack > ol > li::marker { content:''; }
 /* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
  * sienna, Local = warm slate. Cycles after three. */
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--c4-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--c6-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--c1-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--chart-4); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--chart-1); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--chart-1); }
 /* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
 section.statute-stack > ul > li > strong:first-child,
 section.statute-stack > ol > li > strong:first-child {
@@ -242,9 +242,9 @@ section.statute-stack.lane td:nth-child(2) {
   color:var(--text-heading);
   white-space:nowrap;
 }
-section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--c4-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--c6-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--c1-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--chart-4); }
+section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--chart-1); }
+section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--chart-1); }
 section.statute-stack.lane tbody tr > td:first-child {
   border-left:3px solid var(--lane-jur, var(--accent));
   padding-left:var(--sp-md);

@@ -63,10 +63,10 @@ section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
   background:var(--accent);
 }
 /* Tier hue rotation — Statute / Regulation / Guidance / Case. */
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--c4-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--c1-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--c6-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--chart-4); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--chart-1); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--chart-1); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--chart-3); }
 section.authority-chain > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);

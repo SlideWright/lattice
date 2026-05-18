@@ -111,7 +111,7 @@ section.math .math-error {
   color: var(--warn);
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  background: var(--warn-bg);
   padding: 0.1em 0.4em;
   border-radius: var(--radius-sm);
 }
@@ -302,16 +302,16 @@ section.math.theorem blockquote strong:first-child {
  * tokens that every Lattice theme defines; falls back to --accent if a
  * future palette ever drops them. */
 section.math.theorem blockquote:nth-of-type(3n+1) {
-  border-left-color: var(--c4-dark, var(--accent));
+  border-left-color: var(--chart-4);
 }
 section.math.theorem blockquote:nth-of-type(3n+1) strong:first-child {
-  color: var(--c4-dark, var(--accent));
+  color: var(--chart-4);
 }
 section.math.theorem blockquote:nth-of-type(3n+2) {
-  border-left-color: var(--c7-dark, var(--accent));
+  border-left-color: var(--chart-3);
 }
 section.math.theorem blockquote:nth-of-type(3n+2) strong:first-child {
-  color: var(--c7-dark, var(--accent));
+  color: var(--chart-3);
 }
 section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
@@ -640,11 +640,11 @@ section .latticeplot .function-plot .line-0 {
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot .line-1 {
-  stroke: var(--c4-dark, var(--text-heading)) !important;
+  stroke: var(--chart-4) !important;
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot .line-2 {
-  stroke: var(--c7-dark, var(--text-muted)) !important;
+  stroke: var(--chart-3) !important;
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot :is(.line-3, .line-4, .line-5) {

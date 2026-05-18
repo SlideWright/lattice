@@ -74,29 +74,29 @@ section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-label); col
  * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
  * their existing mappings.
  */
-section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
 
 /* ── TIMELINE EVENT WRAPPER ──

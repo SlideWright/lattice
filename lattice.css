@@ -607,14 +607,14 @@ section.actors > ol > li > code {
  * Sets --pill-border on the <li>; both the universal pill rule
  * (border on the <code>) and the actors row marker (border-left on
  * the <li>) consume the same variable. */
-section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--c1-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--c2-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--c3-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--c4-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--c5-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--c6-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--c7-dark); }
-section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--c8-dark); }
+section.actors > :is(ul, ol) > li:nth-child(8n+1) { --pill-border:var(--chart-1); }
+section.actors > :is(ul, ol) > li:nth-child(8n+2) { --pill-border:var(--chart-2); }
+section.actors > :is(ul, ol) > li:nth-child(8n+3) { --pill-border:var(--chart-3); }
+section.actors > :is(ul, ol) > li:nth-child(8n+4) { --pill-border:var(--chart-4); }
+section.actors > :is(ul, ol) > li:nth-child(8n+5) { --pill-border:var(--chart-5); }
+section.actors > :is(ul, ol) > li:nth-child(8n+6) { --pill-border:var(--chart-1); }
+section.actors > :is(ul, ol) > li:nth-child(8n+7) { --pill-border:var(--chart-2); }
+section.actors > :is(ul, ol) > li:nth-child(8n)   { --pill-border:var(--chart-3); }
 /* The accent left-border picks up the same hue as the chip. */
 section.actors > :is(ul, ol) > li {
   border-left-color:var(--pill-border, var(--accent));
@@ -780,10 +780,10 @@ section.authority-chain > :is(ol, ul) > li:not(:last-child)::after {
   background:var(--accent);
 }
 /* Tier hue rotation — Statute / Regulation / Guidance / Case. */
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--c4-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--c1-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--c6-dark); }
-section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3-dark); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+1) { --tier-hue:var(--chart-4); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+2) { --tier-hue:var(--chart-1); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+3) { --tier-hue:var(--chart-1); }
+section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--chart-3); }
 section.authority-chain > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);
@@ -2282,14 +2282,14 @@ section.decision > ol > li {
  * mirrors the KPI palette so the two layouts read as siblings (KPI = top
  * accent, decision = bottom accent). Each card's corner-tag fill follows
  * the same variable so the card reads as one colour. */
-section.decision > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--c1-dark);   --decision-accent-deep:var(--c1-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--c2-dark);  --decision-accent-deep:var(--c2-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--c3-dark); --decision-accent-deep:var(--c3-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--c4-dark); --decision-accent-deep:var(--c4-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--c5-dark);   --decision-accent-deep:var(--c5-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--c6-dark);   --decision-accent-deep:var(--c6-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--c7-dark);  --decision-accent-deep:var(--c7-dark); }
-section.decision > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--c8-dark);  --decision-accent-deep:var(--c8-dark); }
+section.decision > :is(ul, ol) > li:nth-child(8n+1) { --decision-accent:var(--chart-1);   --decision-accent-deep:var(--chart-1); }
+section.decision > :is(ul, ol) > li:nth-child(8n+2) { --decision-accent:var(--chart-2);  --decision-accent-deep:var(--chart-2); }
+section.decision > :is(ul, ol) > li:nth-child(8n+3) { --decision-accent:var(--chart-3); --decision-accent-deep:var(--chart-3); }
+section.decision > :is(ul, ol) > li:nth-child(8n+4) { --decision-accent:var(--chart-4); --decision-accent-deep:var(--chart-4); }
+section.decision > :is(ul, ol) > li:nth-child(8n+5) { --decision-accent:var(--chart-5);   --decision-accent-deep:var(--chart-5); }
+section.decision > :is(ul, ol) > li:nth-child(8n+6) { --decision-accent:var(--chart-1);   --decision-accent-deep:var(--chart-1); }
+section.decision > :is(ul, ol) > li:nth-child(8n+7) { --decision-accent:var(--chart-2);  --decision-accent-deep:var(--chart-2); }
+section.decision > :is(ul, ol) > li:nth-child(8n)   { --decision-accent:var(--chart-3);  --decision-accent-deep:var(--chart-3); }
 section.decision > ul > li > strong,
 section.decision > ol > li > strong {
   display:block;
@@ -3514,14 +3514,14 @@ section.journey .journey-section {
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
-section.journey .journey-section[data-section="0"] { --section-accent: var(--c1-dark); }
-section.journey .journey-section[data-section="1"] { --section-accent: var(--c2-dark); }
-section.journey .journey-section[data-section="2"] { --section-accent: var(--c3-dark); }
-section.journey .journey-section[data-section="3"] { --section-accent: var(--c4-dark); }
-section.journey .journey-section[data-section="4"] { --section-accent: var(--c5-dark); }
-section.journey .journey-section[data-section="5"] { --section-accent: var(--c6-dark); }
-section.journey .journey-section[data-section="6"] { --section-accent: var(--c7-dark); }
-section.journey .journey-section[data-section="7"] { --section-accent: var(--c8-dark); }
+section.journey .journey-section[data-section="0"] { --section-accent: var(--chart-1); }
+section.journey .journey-section[data-section="1"] { --section-accent: var(--chart-2); }
+section.journey .journey-section[data-section="2"] { --section-accent: var(--chart-3); }
+section.journey .journey-section[data-section="3"] { --section-accent: var(--chart-4); }
+section.journey .journey-section[data-section="4"] { --section-accent: var(--chart-5); }
+section.journey .journey-section[data-section="5"] { --section-accent: var(--chart-1); }
+section.journey .journey-section[data-section="6"] { --section-accent: var(--chart-2); }
+section.journey .journey-section[data-section="7"] { --section-accent: var(--chart-3); }
 section.journey .journey-section::before {
   content: "";
   position: absolute;
@@ -4138,27 +4138,27 @@ section.kanban.dark .kanban-size {
  * keep their own scoped mappings; this rule only catches `<g class="cluster section-N">`
  * which is unique to kanban among shipped diagram types.
  */
-section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
 
 /* ── KANBAN TICKETS ──
@@ -4499,10 +4499,10 @@ section.kpi.trajectory > ol > li {
   position: relative;
   border-top: 4px solid var(--accent);
 }
-section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--c1-dark); }
-section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--c2-dark); }
-section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--c3-dark); }
-section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--c4-dark); }
+section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--chart-1); }
+section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--chart-2); }
+section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--chart-3); }
+section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--chart-4); }
 section.kpi.trajectory > ol > li > strong {
   font-size: var(--fs-stat);
   line-height: 1;
@@ -5207,7 +5207,7 @@ section.math .math-error {
   color: var(--warn);
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  background: var(--warn-bg);
   padding: 0.1em 0.4em;
   border-radius: var(--radius-sm);
 }
@@ -5398,16 +5398,16 @@ section.math.theorem blockquote strong:first-child {
  * tokens that every Lattice theme defines; falls back to --accent if a
  * future palette ever drops them. */
 section.math.theorem blockquote:nth-of-type(3n+1) {
-  border-left-color: var(--c4-dark, var(--accent));
+  border-left-color: var(--chart-4);
 }
 section.math.theorem blockquote:nth-of-type(3n+1) strong:first-child {
-  color: var(--c4-dark, var(--accent));
+  color: var(--chart-4);
 }
 section.math.theorem blockquote:nth-of-type(3n+2) {
-  border-left-color: var(--c7-dark, var(--accent));
+  border-left-color: var(--chart-3);
 }
 section.math.theorem blockquote:nth-of-type(3n+2) strong:first-child {
-  color: var(--c7-dark, var(--accent));
+  color: var(--chart-3);
 }
 section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
@@ -5736,11 +5736,11 @@ section .latticeplot .function-plot .line-0 {
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot .line-1 {
-  stroke: var(--c4-dark, var(--text-heading)) !important;
+  stroke: var(--chart-4) !important;
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot .line-2 {
-  stroke: var(--c7-dark, var(--text-muted)) !important;
+  stroke: var(--chart-3) !important;
   stroke-width: 2.5 !important;
 }
 section .latticeplot .function-plot :is(.line-3, .line-4, .line-5) {
@@ -5949,13 +5949,13 @@ section.obligation-matrix td .state.state-slashed { background-image:var(--state
  * makes the table read as a heat map at a glance. */
 section.obligation-matrix.heat tbody tr td:not(:first-child) { background:none; }
 section.obligation-matrix.heat td:has(> .state.pass) {
-  background:color-mix(in srgb, var(--fail) 14%, var(--bg));
+  background:var(--fail-bg));
 }
 section.obligation-matrix.heat td:has(> .state.warn) {
-  background:color-mix(in srgb, var(--warn) 14%, var(--bg));
+  background:var(--warn-bg));
 }
 section.obligation-matrix.heat td:has(> .state.fail) {
-  background:color-mix(in srgb, var(--pass) 10%, var(--bg));
+  background:var(--pass-bg));
 }
 section.obligation-matrix.heat td:has(> .state.skip) {
   background:color-mix(in srgb, var(--text-muted) 6%, var(--bg));
@@ -6066,25 +6066,25 @@ section.piechart .piechart-legend .legend-pct {
  * perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon);
  * pies that need >6 categories should consolidate "Other" or split. */
 section.piechart .wedge:nth-child(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--c1-light); background: var(--c1-light); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-1-soft); background: var(--chart-1-soft); }
 section.piechart .wedge:nth-child(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--c2-light); background: var(--c2-light); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-2-soft); background: var(--chart-2-soft); }
 section.piechart .wedge:nth-child(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--c3-light); background: var(--c3-light); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-3-soft); background: var(--chart-3-soft); }
 section.piechart .wedge:nth-child(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--c4-light); background: var(--c4-light); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-4-soft); background: var(--chart-4-soft); }
 section.piechart .wedge:nth-child(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--c5-light); background: var(--c5-light); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-5-soft); background: var(--chart-5-soft); }
 section.piechart .wedge:nth-child(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--c6-light); background: var(--c6-light); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-1-soft); background: var(--chart-1-soft); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--c1-light); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--c2-light); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--c3-light); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--c4-light); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--c5-light); }
-section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--c6-light); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-1-soft); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-2-soft); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-3-soft); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-4-soft); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5-soft); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--chart-1-soft); }
 
 /* === lib/components/principles/principles.styles.css === */
 /* principles — extracted from lib/_legacy.css (batch 3).
@@ -6703,10 +6703,10 @@ section.radar .radar-svg {
  * brand tint so the chrome matches the rest of the deck.
  */
 section .radarGraticule {
-  fill: var(--c1-light) !important;
-  fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
-  stroke-opacity: 0.20 !important;
+  fill: var(--chart-1-soft) !important;
+  fill-opacity: 0.4 !important;
+  stroke: var(--chart-axis) !important;
+  stroke-opacity: 0.5 !important;
   stroke-width: 1 !important;
 }
 section .radarAxisLine {
@@ -7057,7 +7057,7 @@ section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.split.split > blockquote:nth-of-type(1) {
   grid-column:1; grid-row:3;
   border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  background:var(--fail-bg));
 }
 section.redline.split.split > blockquote:nth-of-type(1)::before {
   content:'OLD';
@@ -7072,7 +7072,7 @@ section.redline.split.split > blockquote:nth-of-type(1)::before {
 section.redline.split.split > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
   border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  background:var(--pass-bg));
 }
 section.redline.split.split > blockquote:nth-of-type(2)::before {
   content:'NEW';
@@ -7123,10 +7123,10 @@ section.redline.annotated > :is(ol, ul) > li::before {
 
 /* .stacked — two blockquotes vertically: old on top (struck), new below. */
 section.redline.stacked.stacked > blockquote:nth-of-type(1) {
-  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
+  background:var(--fail-bg));
   border-left-color:var(--fail);
   text-decoration:line-through;
-  text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
+  text-decoration-color:var(--fail-bg);
   opacity:0.78;
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
@@ -7141,7 +7141,7 @@ section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
   margin-bottom:var(--sp-xs);
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(2) {
-  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
+  background:var(--pass-bg));
   border-left-color:var(--pass);
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
@@ -7163,7 +7163,7 @@ section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {
   grid-column:1; grid-row:3;
   border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  background:var(--fail-bg));
   font-size:var(--fs-body);
 }
 section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
@@ -7178,7 +7178,7 @@ section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
 section.redline.three-col.three-col > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
   border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  background:var(--pass-bg));
   font-size:var(--fs-body);
 }
 section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {
@@ -7559,21 +7559,21 @@ section.roadmap thead th:not(:first-child) > code {
    per row; phase columns read it for their leading column-accent
    stripe per column. */
 section.roadmap thead th:nth-child(8n+2),
-section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--c1-dark); }
+section.roadmap tbody tr:nth-child(8n+1) > td:first-child { --phase-accent:var(--chart-1); }
 section.roadmap thead th:nth-child(8n+3),
-section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--c2-dark); }
+section.roadmap tbody tr:nth-child(8n+2) > td:first-child { --phase-accent:var(--chart-2); }
 section.roadmap thead th:nth-child(8n+4),
-section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--c3-dark); }
+section.roadmap tbody tr:nth-child(8n+3) > td:first-child { --phase-accent:var(--chart-3); }
 section.roadmap thead th:nth-child(8n+5),
-section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--c4-dark); }
+section.roadmap tbody tr:nth-child(8n+4) > td:first-child { --phase-accent:var(--chart-4); }
 section.roadmap thead th:nth-child(8n+6),
-section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--c5-dark); }
+section.roadmap tbody tr:nth-child(8n+5) > td:first-child { --phase-accent:var(--chart-5); }
 section.roadmap thead th:nth-child(8n+7),
-section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--c6-dark); }
+section.roadmap tbody tr:nth-child(8n+6) > td:first-child { --phase-accent:var(--chart-1); }
 section.roadmap thead th:nth-child(8n),
-section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--c7-dark); }
+section.roadmap tbody tr:nth-child(8n+7) > td:first-child { --phase-accent:var(--chart-2); }
 section.roadmap thead th:nth-child(8n+1),
-section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--c8-dark); }
+section.roadmap tbody tr:nth-child(8n)   > td:first-child { --phase-accent:var(--chart-3); }
 
 section.roadmap td {
   padding:var(--sp-sm) var(--sp-md);
@@ -7626,12 +7626,12 @@ section.roadmap > p {
 section.roadmap td.cell-state.state-shipped,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-shipped {
   --state-color:var(--pass);
-  --cell-state-bg:color-mix(in srgb, var(--pass) 8%, transparent);
+  --cell-state-bg:var(--pass-bg);
 }
 section.roadmap td.cell-state.state-wip,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-wip {
   --state-color:var(--warn);
-  --cell-state-bg:color-mix(in srgb, var(--warn) 9%, transparent);
+  --cell-state-bg:var(--warn-bg);
 }
 section.roadmap td.cell-state.state-planned,
 section.roadmap.horizons .horizon-rows > li.cell-state.state-planned {
@@ -8314,9 +8314,9 @@ section.statute-stack > ul > li::marker,
 section.statute-stack > ol > li::marker { content:''; }
 /* Three-jurisdiction hue rotation. Federal = warm cobalt, State = warm
  * sienna, Local = warm slate. Cycles after three. */
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--c4-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--c6-dark); }
-section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--c1-dark); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+1) { --jur-accent:var(--chart-4); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n+2) { --jur-accent:var(--chart-1); }
+section.statute-stack > :is(ul, ol) > li:nth-child(3n)   { --jur-accent:var(--chart-1); }
 /* Jurisdiction label — eyebrow chrome (auto-bolded by slotLabelLift). */
 section.statute-stack > ul > li > strong:first-child,
 section.statute-stack > ol > li > strong:first-child {
@@ -8502,9 +8502,9 @@ section.statute-stack.lane td:nth-child(2) {
   color:var(--text-heading);
   white-space:nowrap;
 }
-section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--c4-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--c6-dark); }
-section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--c1-dark); }
+section.statute-stack.lane tbody tr:nth-child(3n+1) { --lane-jur:var(--chart-4); }
+section.statute-stack.lane tbody tr:nth-child(3n+2) { --lane-jur:var(--chart-1); }
+section.statute-stack.lane tbody tr:nth-child(3n)   { --lane-jur:var(--chart-1); }
 section.statute-stack.lane tbody tr > td:first-child {
   border-left:3px solid var(--lane-jur, var(--accent));
   padding-left:var(--sp-md);
@@ -8609,29 +8609,29 @@ section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-label); col
  * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
  * their existing mappings.
  */
-section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
 
 /* ── TIMELINE EVENT WRAPPER ──

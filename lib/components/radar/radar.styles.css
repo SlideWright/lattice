@@ -74,10 +74,10 @@ section.radar .radar-svg {
  * brand tint so the chrome matches the rest of the deck.
  */
 section .radarGraticule {
-  fill: var(--c1-light) !important;
-  fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
-  stroke-opacity: 0.20 !important;
+  fill: var(--chart-1-soft) !important;
+  fill-opacity: 0.4 !important;
+  stroke: var(--chart-axis) !important;
+  stroke-opacity: 0.5 !important;
   stroke-width: 1 !important;
 }
 section .radarAxisLine {

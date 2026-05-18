@@ -110,7 +110,7 @@ section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.split.split > blockquote:nth-of-type(1) {
   grid-column:1; grid-row:3;
   border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  background:var(--fail-bg));
 }
 section.redline.split.split > blockquote:nth-of-type(1)::before {
   content:'OLD';
@@ -125,7 +125,7 @@ section.redline.split.split > blockquote:nth-of-type(1)::before {
 section.redline.split.split > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
   border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  background:var(--pass-bg));
 }
 section.redline.split.split > blockquote:nth-of-type(2)::before {
   content:'NEW';
@@ -176,10 +176,10 @@ section.redline.annotated > :is(ol, ul) > li::before {
 
 /* .stacked — two blockquotes vertically: old on top (struck), new below. */
 section.redline.stacked.stacked > blockquote:nth-of-type(1) {
-  background:color-mix(in srgb, var(--fail) 5%, var(--bg-alt));
+  background:var(--fail-bg));
   border-left-color:var(--fail);
   text-decoration:line-through;
-  text-decoration-color:color-mix(in srgb, var(--fail) 40%, transparent);
+  text-decoration-color:var(--fail-bg);
   opacity:0.78;
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
@@ -194,7 +194,7 @@ section.redline.stacked.stacked > blockquote:nth-of-type(1)::before {
   margin-bottom:var(--sp-xs);
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(2) {
-  background:color-mix(in srgb, var(--pass) 5%, var(--bg-alt));
+  background:var(--pass-bg));
   border-left-color:var(--pass);
 }
 section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
@@ -216,7 +216,7 @@ section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {
   grid-column:1; grid-row:3;
   border-left-color:var(--fail);
-  background:color-mix(in srgb, var(--fail) 4%, var(--bg-alt));
+  background:var(--fail-bg));
   font-size:var(--fs-body);
 }
 section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
@@ -231,7 +231,7 @@ section.redline.three-col.three-col > blockquote:nth-of-type(1)::before {
 section.redline.three-col.three-col > blockquote:nth-of-type(2) {
   grid-column:2; grid-row:3;
   border-left-color:var(--pass);
-  background:color-mix(in srgb, var(--pass) 4%, var(--bg-alt));
+  background:var(--pass-bg));
   font-size:var(--fs-body);
 }
 section.redline.three-col.three-col > blockquote:nth-of-type(2)::before {

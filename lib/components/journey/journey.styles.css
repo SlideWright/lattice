@@ -211,14 +211,14 @@ section.journey .journey-section {
 }
 /* Categorical accent rotation across sections — same 8-step palette
  * used by roadmap and chart-family for cross-deck consistency. */
-section.journey .journey-section[data-section="0"] { --section-accent: var(--c1-dark); }
-section.journey .journey-section[data-section="1"] { --section-accent: var(--c2-dark); }
-section.journey .journey-section[data-section="2"] { --section-accent: var(--c3-dark); }
-section.journey .journey-section[data-section="3"] { --section-accent: var(--c4-dark); }
-section.journey .journey-section[data-section="4"] { --section-accent: var(--c5-dark); }
-section.journey .journey-section[data-section="5"] { --section-accent: var(--c6-dark); }
-section.journey .journey-section[data-section="6"] { --section-accent: var(--c7-dark); }
-section.journey .journey-section[data-section="7"] { --section-accent: var(--c8-dark); }
+section.journey .journey-section[data-section="0"] { --section-accent: var(--chart-1); }
+section.journey .journey-section[data-section="1"] { --section-accent: var(--chart-2); }
+section.journey .journey-section[data-section="2"] { --section-accent: var(--chart-3); }
+section.journey .journey-section[data-section="3"] { --section-accent: var(--chart-4); }
+section.journey .journey-section[data-section="4"] { --section-accent: var(--chart-5); }
+section.journey .journey-section[data-section="5"] { --section-accent: var(--chart-1); }
+section.journey .journey-section[data-section="6"] { --section-accent: var(--chart-2); }
+section.journey .journey-section[data-section="7"] { --section-accent: var(--chart-3); }
 section.journey .journey-section::before {
   content: "";
   position: absolute;

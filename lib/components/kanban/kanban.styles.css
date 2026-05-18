@@ -197,27 +197,27 @@ section.kanban.dark .kanban-size {
  * keep their own scoped mappings; this rule only catches `<g class="cluster section-N">`
  * which is unique to kanban among shipped diagram types.
  */
-section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-1 rect, section .cluster.section-1 path, section .cluster.section-1 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-1 text, section .cluster.section-1 tspan, section .cluster.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-2 rect, section .cluster.section-2 path, section .cluster.section-2 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-2 text, section .cluster.section-2 tspan, section .cluster.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-3 rect, section .cluster.section-3 path, section .cluster.section-3 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-3 text, section .cluster.section-3 tspan, section .cluster.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-4 rect, section .cluster.section-4 path, section .cluster.section-4 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-4 text, section .cluster.section-4 tspan, section .cluster.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-5 rect, section .cluster.section-5 path, section .cluster.section-5 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-5 text, section .cluster.section-5 tspan, section .cluster.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-6 rect, section .cluster.section-6 path, section .cluster.section-6 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-6 text, section .cluster.section-6 tspan, section .cluster.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-7 rect, section .cluster.section-7 path, section .cluster.section-7 circle { fill: var(--chart-2-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-7 text, section .cluster.section-7 tspan, section .cluster.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-8 rect, section .cluster.section-8 path, section .cluster.section-8 circle { fill: var(--chart-3-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-8 text, section .cluster.section-8 tspan, section .cluster.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-9 rect, section .cluster.section-9 path, section .cluster.section-9 circle { fill: var(--chart-4-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-9 text, section .cluster.section-9 tspan, section .cluster.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-10 rect, section .cluster.section-10 path, section .cluster.section-10 circle { fill: var(--chart-5-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-10 text, section .cluster.section-10 tspan, section .cluster.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .cluster.section-11 rect, section .cluster.section-11 path, section .cluster.section-11 circle { fill: var(--chart-1-soft) !important; stroke: var(--c-stroke) !important; }
 section .cluster.section-11 text, section .cluster.section-11 tspan, section .cluster.section-11 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
 
 /* ── KANBAN TICKETS ──

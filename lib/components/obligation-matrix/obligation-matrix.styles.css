@@ -119,13 +119,13 @@ section.obligation-matrix td .state.state-slashed { background-image:var(--state
  * makes the table read as a heat map at a glance. */
 section.obligation-matrix.heat tbody tr td:not(:first-child) { background:none; }
 section.obligation-matrix.heat td:has(> .state.pass) {
-  background:color-mix(in srgb, var(--fail) 14%, var(--bg));
+  background:var(--fail-bg));
 }
 section.obligation-matrix.heat td:has(> .state.warn) {
-  background:color-mix(in srgb, var(--warn) 14%, var(--bg));
+  background:var(--warn-bg));
 }
 section.obligation-matrix.heat td:has(> .state.fail) {
-  background:color-mix(in srgb, var(--pass) 10%, var(--bg));
+  background:var(--pass-bg));
 }
 section.obligation-matrix.heat td:has(> .state.skip) {
   background:color-mix(in srgb, var(--text-muted) 6%, var(--bg));
