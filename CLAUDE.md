@@ -245,21 +245,30 @@ but it doesn't catch every authoring bug — only that pattern. The
 visual spot-check is the general-purpose defense; the test is the
 specific one.
 
-**Rasterize PDFs through `tools/rasterize-for-review.sh`.** The
-conversation API caps inline images at 2000px on the longest side
-and rejects oversized images mid-session. 4K decks (`gallery.md`,
-`gallery-jargon.md`) rasterized via raw `pdftoppm -r 100` produce
-~5000×3000 PNGs — over the limit and one is enough to break the
-session. The wrapper does pdftoppm + `mogrify -resize '1600x1600>'`
-in one shot so output stays under 1600px regardless of source
-canvas:
+**Rasterize PDFs through `tools/rasterize-for-review.sh`.** Lattice is
+a design system; **visual fidelity is what we're checking**, so
+downscaling a rasterized slide to fit a session image limit defeats
+the purpose. The wrapper rasterizes at full quality (no downscaling)
+and supports cropping to a specific region when a whole slide
+exceeds the 2000px-per-image session limit. Crop discipline: identify
+what specifically you're verifying (text size, gradient stop, image
+edge) and render only that region.
 
 ```bash
-tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38
-# writes /tmp/gallery/p-38.png at 1600×900 (was 4000×2250 raw)
+# HD deck: whole slide fits naturally
+tools/rasterize-for-review.sh lib/components/diagram/diagram/diagram.gallery.light.pdf -f 5 -l 5 --check
+
+# 4K deck: crop to a region, never downscale
+tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --region top-right --check
+
+# Custom crop in ImageMagick geometry (WxH+X+Y)
+tools/rasterize-for-review.sh ... --crop "2000x1125+1000+500"
 ```
 
-The codebase's automated pipelines (`tools/pixel-check.js`,
-`tools/preview.js`) rasterize at 72dpi and don't need this wrapper.
-Use it for ad-hoc one-off renders meant for human review via the
-Read tool or SendUserFile.
+`--check` makes the tool refuse to succeed if any output exceeds
+2000px on the longest side, so you know before sending whether the
+image is safe for inline review. Region shortcuts: `top`, `bottom`,
+`left`, `right`, `center`, `top-left`, `top-right`, `bottom-left`,
+`bottom-right`. The codebase's automated diff pipelines
+(`tools/pixel-check.js`, `tools/preview.js`) rasterize at 72dpi for
+their own use and don't need this wrapper.
