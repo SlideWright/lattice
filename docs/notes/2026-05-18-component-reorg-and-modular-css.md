@@ -266,7 +266,105 @@ Ordered top-down by severity.
 
 Each commit pixel-validates against `refactor-baseline-2026-05-18`.
 
-## Open questions
+## Phase 7 — PDF sprawl cleanup (added 2026-05-18 after Phases 0-6 landed)
+
+The 134 newly-generated per-component + bucket gallery PDFs do their
+job — every component is self-documenting in both moods. That makes
+many of the legacy `examples/*.md` decks redundant. This phase routes
+each PDF by its primary purpose and retires the duplicates.
+
+### Three roles, three homes
+
+| Role | Primary purpose | Home |
+|---|---|---|
+| Regression test | Asserted by CI; failure = bug | `test/integration/baseline-decks/` |
+| Self-documenting catalog | Reviewer opens the folder, sees what the thing does | Lives with the thing |
+| Real-world example | Human reads it to learn; not asserted | `examples/` |
+
+### What's where today (and where it ends up)
+
+| File | Currently | Asserted? | Verdict | New home |
+|---|---|---|---|---|
+| `gallery.md` (89pp) | examples | ✓ emulator + marp + parity tests | Test baseline | `test/integration/baseline-decks/gallery.md` |
+| `gallery-mermaid.md` (31pp) | examples | ✓ emulator test | Integration catalog | `lib/integrations/mermaid/mermaid.gallery.md` + .light/.dark.pdf |
+| `palette-audit.md` | examples | ✗ but ref'd 4× from `docs/theming.md` | Palette infra tool | `test/integration/baseline-decks/palette-audit.md` (update theming.md refs) |
+| `gallery-jargon.md` | examples | ✗ | Editorial showcase | `examples/` (stay) |
+| `design-system.md` | examples | ✗ | Pedagogical demo | `examples/` (stay) |
+| `legal-layouts.md` + `-finalists.md` | examples | ✗ | Domain composition demo | `examples/` (stay) |
+| `custom-logo.md` | examples | ✗ | Branding feature demo | `examples/` (stay) |
+| `palette-demos/` | examples | ✗ | Palette demo collection | `examples/` (stay; subdirectory) |
+| `chart-family-experiment.md` | examples | ✗ | Redundant with chart bucket gallery | **Retire** |
+| `diagram-tokens.md` | examples | ✗ | Redundant with diagram gallery | **Retire** |
+| `image-concepts.md` | examples | ✗ | Redundant with image gallery | **Retire** |
+| `list-tabular-gallery.md` | examples | ✗ | Redundant with list-tabular gallery | **Retire** |
+| `math.md` | examples | ✗ | Redundant with math gallery | **Retire** |
+| `quadrant.md` | examples | ✗ | Redundant with quadrant gallery | **Retire** |
+| `radar.md` | examples | ✗ | Redundant with radar gallery | **Retire** |
+| `word-cloud.md` | examples | ✗ | Redundant with word-cloud gallery | **Retire** |
+| `roadmap.md` | examples | ✗ | Redundant with roadmap gallery | **Retire** |
+| `user-journey.md` | examples | ✗ | Redundant with journey gallery | **Retire** |
+| `state-tokens.md` | examples | ✗ | Redundant with state-variant coverage | **Retire** (verify content first) |
+| `treatments-catalog.md` | examples | ✗ | Redundant with treatments coverage | **Retire** (verify content first) |
+| `route2-preview.md` | examples | ✗ | Stale experiment | **Retire** |
+
+**Retire count: 13 decks × 2 files (md + pdf) = 26 files removed.**
+
+The dual-role question (per-component galleries are BOTH asserted AND
+self-documenting) is resolved in favor of self-documentation as the
+primary purpose: they stay with their component. The page-count
+assertion is a safety net on top of the catalog, not the other way
+around. Same logic that places `<name>.docs.md` in the component
+folder rather than in `test/`.
+
+### The principle going forward
+
+**`examples/` is for humans to read.** If a deck's primary purpose is
+"assert page count = N" it doesn't belong there — it's a regression
+test. If a deck is "showcase a feature in context" or "domain
+composition demo," it stays.
+
+### Reference updates needed
+
+Beyond moving the files, the following references need a sweep:
+
+| Reference | File | Update |
+|---|---|---|
+| `examples/gallery.md` paths | `docs/skill.md` (4 places), `docs/architecture.md` (1) | Update to `test/integration/baseline-decks/gallery.md` if moved, OR keep `gallery.md` filename and update path. Skill.md uses it as a CLI example — consider whether to redirect to a kept example instead |
+| `examples/palette-audit.md` references | `docs/theming.md` (4 places) | Update path to new location |
+| `examples/design-system.md` reference | `docs/design-system.md:583` | Stays — design-system.md is staying in examples |
+| `ALL_DECKS` array | `tools/preview.js` (19 entries) | Remove retired entries; reorder remaining; add mermaid integration gallery if it should be previewable |
+| `runEmulator('gallery.md')` calls | `test/helpers/render.js` resolves against EXAMPLES | Update EXAMPLES base path OR pass the new location explicitly |
+| Top-level deck assertions | `test/integration/galleries/emulator.gallery*.test.js` | Update path resolution |
+| Mermaid gallery test | `test/integration/galleries/emulator.gallery-mermaid.test.js` | Move alongside mermaid integration gallery, or keep here pointing to new location |
+| CLAUDE.md baseline-deck rule | `CLAUDE.md` | Update path; rename "isolation rule applies to all three top-level decks" since list changes |
+
+### Generator extensions
+
+- `tools/build-galleries.js`: no change (already generic — component-driven)
+- New: `tools/build-integration-galleries.js` (or extend build-galleries.js with `--scope=integrations`) — walks `lib/integrations/*/` and renders `<integration>.gallery.{light,dark}.pdf` from a hand-authored `<integration>.gallery.md` source
+- `tools/build-bucket-galleries.js`: no change (already bucket-driven)
+
+### Order of operations
+
+1. **Move CI baselines first.** Update test paths, verify suite still green. Commit per file: `gallery.md → test/`, `gallery-mermaid.md → lib/integrations/mermaid/`, `palette-audit.md → test/`. Update docs references in same commits.
+2. **Build mermaid dark gallery.** Generate `mermaid.gallery.dark.pdf` once the source is in its new home; assertion = same as light page count.
+3. **Retire the 13 redundant decks.** Single commit. Delete .md + .pdf. Strip from `tools/preview.js` ALL_DECKS. Verify integration test still names only existing decks.
+4. **Update docs.** CLAUDE.md baseline-deck rule, design-system.md §9 if it lists decks, workflow.md if any rules name retired decks.
+
+### Risks
+
+- **Stale reference in a deck someone authored against an example.** Mitigated by `grep -rn "examples/<retired-deck>"` before removal.
+- **Mermaid dark gallery surfaces new visual bugs.** Same risk as Phase 2 — treat as polish backlog, not blocker.
+- **`palette-demos/` subdirectory** — is anything in there asserted? Need to verify before deciding stay-vs-move.
+
+### Open questions (resolved per `let's go` directive in chat)
+
+1. ~~Per-component galleries — stay with components?~~ **Yes.** Primary purpose is self-documentation; page-count assertion is the safety net on top.
+2. ~~`design-system.md` — testing or examples?~~ **Examples.** Not CI-asserted; it's pedagogical.
+3. ~~`palette-demos/` — stays or moves?~~ **Stays in examples** pending verification of contents.
+4. ~~`gallery.md` rename?~~ **Keep the name** for git-history-blame continuity. Path changes; filename doesn't.
+
+## Original-plan open questions
 
 1. **Phase 3.5 — confirmed in scope?** Design-system.md §13 deferred
    it; this refactor exposes the source-order dependency. Folding it
@@ -290,6 +388,7 @@ Each commit pixel-validates against `refactor-baseline-2026-05-18`.
 | 4  Modular CSS migration | **Deferred** | Depends on Phase 3.5. The disk reorg has localized component sources so this is mechanically straightforward when it lands |
 | 5  Bucket survey galleries | Shipped | 9 generated `.gallery.md` + 18 PDFs (9 × light/dark); integration test asserts membership |
 | 6  Documentation | Shipped | design-system.md §3, §9, §13 updated; CLAUDE.md updated for the new paths and gallery rules |
+| 7  PDF sprawl cleanup | **Planned** | Routes each PDF by primary purpose: test baselines → `test/`, integration showcases → `lib/integrations/<i>/`, real-world examples → `examples/`. Retires 13 redundant single-component demo decks now covered by per-component galleries. See §"Phase 7" above |
 
 Deferred work is captured here, in design-system.md §13's "Still
 deferred" section, and is independent of the disk-reorganization
