@@ -10,6 +10,7 @@
       "!node_modules",
       "!**/*.min.js",
       "!mermaid-v11.min.js",
+      "!lattice-runtime.js",
       "!examples/**/*.json",
       "!.scratch",
       "!package-lock.json",

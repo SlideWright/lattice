@@ -151,35 +151,32 @@
    * positive/negative/neutral/inactive axis marks OBSERVATIONS about data
    * (gain, loss, no-change, no-data).
    *
-   * Values are copied (not aliased) from the existing status palette so
-   * the two axes ship visually aligned during the transition. The chart
-   * cleanup that follows will retune these without churning the
-   * --pass / --warn / --fail call-sites.
+   * Contrast philosophy — matches the cN-light family:
+   *   light canvas:  pale tint    (L≈0.88, low contrast with --bg)
+   *   dark  canvas:  deep hue     (L≈0.32, low contrast with --bg)
+   * Same hue family in both modes. Text on top is ALWAYS the canvas's
+   * standard --text-body / --text-heading — never state-colored. The
+   * fill flips with the canvas; the text stays canvas-default. This
+   * keeps text consistent inside and outside the chart, with zero
+   * per-element exceptions.
    *
-   *   positive  forest green (light) / emerald-400 (dark)  — gain, up, good
-   *   negative  alarm red    (light) / red-400     (dark)  — loss, down, bad
-   *   neutral   amber-700    (light) / orange-500  (dark)  — flat, no change
-   *   inactive  slate-600    (light) / slate-400   (dark)  — no data, dimmed
-   *
-   * Each is a light-dark() pair so dark canvases lift to AA contrast
-   * automatically. Themes can override any of these with brand-toned
-   * variants; the override SHOULD stay a light-dark() pair. */
-  --positive: light-dark(#2D6A3F, #4ADE80);
-  --negative: light-dark(#991B1B, #F87171);
-  --neutral:  light-dark(#B45309, #F97316);
-  --inactive: light-dark(#475569, #94A3B8);
+   * Tailwind 200 / 700 anchor the universal default; themes override
+   * with brand-toned hex pairs in the same envelope. */
+  --positive: light-dark(#A7F3D0, #047857);
+  --negative: light-dark(#FECACA, #B91C1C);
+  --neutral:  light-dark(#FED7AA, #C2410C);
+  --inactive: light-dark(#E2E8F0, #475569);
 
-  /* Paired soft fills — pre-baked tints for pill backgrounds and any
-   * soft-surface use of a state color. NO color-mix() at the consumer:
-   * downstream callers always use a direct var(--*-soft) reference, so
-   * every value here is a standalone hex. Tailwind 100 / 950 on light /
-   * dark canvas — same hue family as the solid token, ~L 0.93 light and
-   * ~L 0.10 dark. Themes override these in pairs with their solid
-   * sibling so the (solid, soft) duet stays visually coherent. */
-  --positive-soft: light-dark(#DCFCE7, #052E16);
-  --negative-soft: light-dark(#FEE2E2, #450A0A);
-  --neutral-soft:  light-dark(#FFEDD5, #431407);
-  --inactive-soft: light-dark(#E2E8F0, #0F172A);
+  /* Paired soft fills — even softer than the main token. Used for pill
+   * backgrounds, chip backdrops, and decorative borders where a barely-
+   * there state tint is appropriate AND the consumer pairs it with a
+   * canvas-aware text colour (never with state-coloured text). NO
+   * color-mix() anywhere: every value here is a standalone hex.
+   * Tailwind 50 / 950 — L≈0.97 light, L≈0.10 dark. */
+  --positive-soft: light-dark(#F0FDF4, #052E16);
+  --negative-soft: light-dark(#FEF2F2, #450A0A);
+  --neutral-soft:  light-dark(#FFF7ED, #431407);
+  --inactive-soft: light-dark(#F1F5F9, #0F172A);
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,

@@ -128,29 +128,25 @@
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
   /* ── Universal data-signal tokens — indaco curation ──────────────────
-   * Independent of the cN categorical cycle: each value is a curated
-   * indaco-toned hex, tuned to sit in the same perceptual envelope as
-   * cN-dark (light canvas L≈0.42–0.50, restrained chroma ≈0.08–0.13)
-   * and cN-dark dark-side (dark canvas L≈0.68–0.75). So a progress bar
-   * drawn in --positive reads as a sibling of a pie wedge drawn in any
-   * cN slot, without being a literal cN sample.
+   * Follows the cN-light philosophy: pale tint on light canvas, deep
+   * hue on dark canvas, same hue family both modes. Text on top is
+   * always --text-body / --text-heading — never state-coloured. The
+   * fill flips with canvas; the text stays canvas-default.
    *
-   * Soft variants are pre-baked tints (light L≈0.94, dark L≈0.15) —
-   * no color-mix at any consumer; downstream rules use direct var()
-   * references only.
+   * Luminance envelope matches cN-light: L≈0.88 light side, L≈0.32–0.42
+   * dark side. Chroma restrained to indaco's brand-quiet register.
    *
-   * Restraint trade-off: indaco's quiet ink-on-paper aesthetic prefers
-   * a tasteful brick-red over an alarm red. State signals here are
-   * deliberately softer than Tailwind 400/700 defaults — the bar is
-   * still the wrong colour, it just doesn't shout. */
-  --positive:      light-dark(#3D7548, #7FA887);
-  --positive-soft: light-dark(#E5EFE7, #1A3325);
-  --negative:      light-dark(#9C3838, #C88787);
-  --negative-soft: light-dark(#F5E5E5, #3A1A1A);
-  --neutral:       light-dark(#A06530, #CFA070);
-  --neutral-soft:  light-dark(#F4ECE0, #332518);
-  --inactive:      light-dark(#5A6F89, #95A8BC);
-  --inactive-soft: light-dark(#EBEEF2, #222933);
+   * Soft variants are even paler / deeper still — for pill backgrounds,
+   * decorative borders, and barely-there state washes. NEVER paired
+   * with state-coloured text; consumers use --text-body on top. */
+  --positive:      light-dark(#D7E4D9, #3F6845);
+  --positive-soft: light-dark(#ECF3ED, #1A2F22);
+  --negative:      light-dark(#E7D5D2, #863236);
+  --negative-soft: light-dark(#F4E8E6, #2A1416);
+  --neutral:       light-dark(#EBE2B8, #993D00);
+  --neutral-soft:  light-dark(#F6F0D9, #2A1408);
+  --inactive:      light-dark(#D8DEE5, #475569);
+  --inactive-soft: light-dark(#EEF1F4, #1A2330);
 
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
