@@ -161,8 +161,9 @@ caught by the hook instead of by reviewer eyeballs.
 - **Consult component docs before authoring slides.** Before writing
   any slide that uses `<!-- _class: X -->`, locate the component's
   bucket-nested folder (use `find lib/components -name X -type d`) and
-  open `lib/components/<bucket>/X/X.docs.md` AND grep `examples/gallery.md`
-  for a working example **in the same turn**. Same rule for base modifiers
+  open `lib/components/<bucket>/X/X.docs.md` AND grep
+  `test/integration/baseline-decks/gallery.md` for a working example
+  **in the same turn**. Same rule for base modifiers
   (`tint-*`, `mark-*`, `with-*`, `dark`, `numbered`, …): open
   `lib/base/base.docs.md` first. Do not author from memory of docs
   read earlier in the session. The docs name the slot syntax, the

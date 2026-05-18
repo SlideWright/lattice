@@ -53,8 +53,11 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 // Per-deck PDF outputs we track. Anything in examples/ following the
 // pattern `examples/<name>.md` is a candidate; this list is the closed
 // set we'll actually build. Update when a new deck is added.
+// Decks under examples/ that npm run preview can rebuild + diff. The
+// CI baseline deck (gallery.md, lives at test/integration/baseline-
+// decks/) is intentionally NOT here — authors don't iterate on it
+// from the preview loop; its integration tests rebuild it directly.
 const ALL_DECKS = Object.freeze([
-  'gallery',
   'gallery-mermaid',
   'gallery-jargon',
   'design-system',

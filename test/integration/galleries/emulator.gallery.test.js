@@ -13,14 +13,16 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
+const path = require('node:path');
 const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');
 
+const GALLERY = path.join(__dirname, '..', 'baseline-decks', 'gallery.md');
 const EXPECTED_PAGES = 89;
 
 describe('emulator.gallery', () => {
   test('emulator: gallery.md builds and produces expected page count', { timeout: 180000 }, () => {
-    const pdf = runEmulator('gallery.md');
+    const pdf = runEmulator(GALLERY);
     assert.equal(pageCount(pdf), EXPECTED_PAGES, 'gallery.md page count drifted');
   });
 });

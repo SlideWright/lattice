@@ -51,7 +51,7 @@ describe('preview scope detector', () => {
     const s = detectScope(['lib/components/cards-grid/cards-grid.styles.css']);
     assert.equal(s.level, 'L2');
     assert.deepEqual(s.components, ['cards-grid']);
-    assert.ok(s.decks.includes('gallery'), 'gallery uses cards-grid');
+    assert.ok(s.decks.includes('gallery-jargon'), 'gallery-jargon uses cards-grid');
   });
 
   test('component transform.js → L2', () => {
@@ -127,7 +127,7 @@ describe('preview scope detector', () => {
 describe('decksUsingComponent', () => {
   test('returns the decks whose source mentions the component class', () => {
     const decks = decksUsingComponent('cards-grid');
-    assert.ok(decks.includes('gallery'), 'gallery uses cards-grid');
+    assert.ok(decks.includes('gallery-jargon'), 'gallery-jargon uses cards-grid');
   });
 
   test('returns empty array for an unused component', () => {
