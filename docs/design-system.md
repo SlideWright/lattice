@@ -144,7 +144,7 @@ the engine's only plugin point.
 |---------------|---------------------------------------------|-----------------------------------------------------|-----------|
 | **prose**     | Headings, paragraphs, inline emphasis       | Marp markdown → semantic HTML; CSS does everything  | DOM       |
 | **structure** | Headings + nested lists with conventions    | `lib/*.js` post-processor rewrites lists into purpose-built DOM | DOM       |
-| **series**    | Tabular DSL (axes + datapoints as bullets)  | `lib/chart-family.js` + per-chart kernel            | SVG       |
+| **series**    | Tabular DSL (axes + datapoints as bullets)  | `lib/components/chart/_chart-family/chart-family.js` + per-chart kernel            | SVG       |
 | **graph**     | External graph language (Mermaid today)     | External tool (mmdc) → SVG, palette injected        | SVG       |
 
 **The unification this gives us.** "Chart" and "diagram" are no longer
@@ -365,7 +365,7 @@ The engine has exactly four plugin points, one per substance.
 **Adding a new chart kind (substance = series).** Add a kernel module
 `lib/<name>.js` exporting a function that takes the parsed list and
 returns SVG sized to the chart-frame. Register the kind in
-`CHART_LAYOUTS` in `lib/chart-family.js`. Add CSS, manifest, demo
+`CHART_LAYOUTS` in `lib/components/chart/_chart-family/chart-family.js`. Add CSS, manifest, demo
 deck.
 
 **Adding a new graph language (substance = graph).** Detect the fence
@@ -583,7 +583,7 @@ discovery story that markdown alone can't provide.
 - `examples/design-system.md` — the demo deck.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
 - `cards-side` CSS extraction — split out of `cards-grid/styles.css` into its own `lib/components/cards-side/styles.css`. Validated by same-sandbox before/after PDF byte-compare on all five decks using either component (0–1 byte drift = pixel-identical).
-- Per-component transform location — every component whose transform exists is now at `lib/components/<name>/transform.js` (word-cloud, quadrant, radar, roadmap, journey). Top-level `lib/chart-family.js` is genuinely shared infrastructure (dispatches to several chart-family components) and stays at `lib/` root.
+- Per-component transform location — every component whose transform exists is now at `lib/components/<bucket>/<name>/<name>.transform.js`. The chart-family dispatcher itself lives at `lib/components/chart/_chart-family/chart-family.js` (underscore-prefixed so the component loader and bucket-wide CSS walker both skip it) — bucket-scoped shared infrastructure colocated with the bucket it serves.
 - **`lib/_legacy.css` fully retired.** The 5,938-line monolith was split across 7 phases into 8 new source files (`_root.css`, `_base.css`, `_modifiers.css`, `_syntax-highlight.css`, `_chart-family.css`, `_backgrounds.css`, `_semi-universal.css`, `_diagram-overrides.css`) + 17 component folders. Bundle position of every block preserved to maintain cascade outcomes. See `docs/notes/2026-05-16-post-foundation-followups.md` for the open follow-ups (specificity-bump hacks introduced during extraction, @layer activation as the principled retirement path).
 - **`tools/pixel-check.js`** — same-sandbox before/after PDF byte-compare with pdftoppm + ImageMagick pixel-diff fallback for mmdc non-determinism. Built mid-branch; got us through the 30+ extraction commits without a single false-positive regression slipping through.
 

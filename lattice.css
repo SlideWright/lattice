@@ -8085,7 +8085,7 @@ section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size
 /* stats — evidence.stack.stats
  *
  * Row of 3–5 stat tiles. Each tile = big number + uppercase label.
- * The ol list is post-processed by lib/chart-family.js (or the
+ * The ol list is post-processed by lib/components/chart/_chart-family/chart-family.js (or the
  * emulator's structure pass) into .stats-row > .stat-item.
  *
  * See lib/components/stats/stats.manifest.json for the component contract.
@@ -9949,7 +9949,7 @@ section.diagram > .mermaid svg .packetTitle,
 section.diagram .mermaid-svg svg [class$="TitleText"],
 section.diagram > .mermaid svg [class$="TitleText"] { display:none; }
 
-/* === lib/chart-family/chart-family.css === */
+/* === lib/components/chart/_chart-family/chart-family.css === */
 /* _chart-family.css — shared chart frame for list-and-pill chart layouts.
  *
  * Extracted from lib/_legacy.css in Phase 7 cleanup. Provides the

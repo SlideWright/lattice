@@ -85,9 +85,10 @@ themes/indaco.css   declares @theme indaco; imports 'lattice' (which is register
                                                   ↓
 lattice.css         (bundled output) declares @theme lattice via lib/_theme.css
                                                   ↓
-                    contains all of: lib/base/, lib/shared/, lib/chart-family/,
+                    contains all of: lib/base/, lib/shared/,
                                      lib/integrations/{mermaid,highlight-js,marp}/,
-                                     and every lib/components/<name>/<name>.styles.css
+                                     lib/components/chart/_chart-family/chart-family.css,
+                                     and every lib/components/<bucket>/<name>/<name>.styles.css
 ```
 
 Marp registers `lattice.css` and all the palette themes via

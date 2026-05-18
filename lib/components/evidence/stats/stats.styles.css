@@ -1,7 +1,7 @@
 /* stats — evidence.stack.stats
  *
  * Row of 3–5 stat tiles. Each tile = big number + uppercase label.
- * The ol list is post-processed by lib/chart-family.js (or the
+ * The ol list is post-processed by lib/components/chart/_chart-family/chart-family.js (or the
  * emulator's structure pass) into .stats-row > .stat-item.
  *
  * See lib/components/stats/stats.manifest.json for the component contract.

@@ -74,7 +74,9 @@ const MODIFIERS_SOURCE = 'lib/base/base.modifiers.css';
 const SYNTAX_HIGHLIGHT_SOURCE = 'lib/integrations/highlight-js/highlight-js.css';
 // Shared chart-frame chrome + .chart-status pill vocabulary, shared
 // by gantt, radar, quadrant, progress, piechart, kanban, timeline-list.
-const CHART_FAMILY_SOURCE = 'lib/chart-family/chart-family.css';
+// Lives in the chart bucket under an underscore-prefixed folder
+// (skipped by the component loader and the bucket-wide CSS walker).
+const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css';
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
