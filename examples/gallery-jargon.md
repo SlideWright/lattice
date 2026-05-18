@@ -1,7 +1,7 @@
 ---
 marp: true
-theme: crepuscolo
 size: 4K
+theme: crepuscolo
 paginate: true
 header: "Lattice · Decision Framework Gallery"
 ---
