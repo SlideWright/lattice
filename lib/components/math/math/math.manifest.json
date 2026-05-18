@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "math",
   "function": "evidence",
+  "bucket": "math",
   "form": "canvas",
   "substance": "prose",
   "description": "Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround.",

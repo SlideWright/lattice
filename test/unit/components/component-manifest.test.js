@@ -431,10 +431,10 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
-    test('BUCKETS is FUNCTIONS plus chart, diagram, and legal', () => {
+    test('BUCKETS is FUNCTIONS plus chart, diagram, math, and legal', () => {
       assert.deepEqual([...BUCKETS].sort(), [
         'anchor', 'chart', 'comparison', 'diagram', 'evidence',
-        'imagery', 'inventory', 'legal', 'progression', 'statement',
+        'imagery', 'inventory', 'legal', 'math', 'progression', 'statement',
       ]);
       for (const fn of FUNCTIONS) assert.ok(BUCKETS.includes(fn));
     });
@@ -486,7 +486,7 @@ describe('component-manifest', () => {
       }
     });
 
-    test('shipped manifests partition the 14 known bucket-divergent components correctly', () => {
+    test('shipped manifests partition the 15 known bucket-divergent components correctly', () => {
       const ms = loadAll();
       const g = groupByBucket(ms);
       // chart = 8: gantt, kanban, piechart, progress, quadrant, radar, timeline-list, word-cloud
@@ -498,6 +498,9 @@ describe('component-manifest', () => {
       // diagram = 1: diagram
       assert.equal(g.diagram.length, 1, 'diagram bucket has 1 component');
       assert.equal(g.diagram[0].name, 'diagram');
+      // math = 1: math (KaTeX-typeset content; separate substance-rendering pipeline)
+      assert.equal(g.math.length, 1, 'math bucket has 1 component');
+      assert.equal(g.math[0].name, 'math');
       // legal = 5: statute-stack, regulatory-update, authority-chain, citation-card, obligation-matrix
       assert.equal(g.legal.length, 5, 'legal bucket has 5 components');
       assert.deepEqual(
@@ -506,14 +509,15 @@ describe('component-manifest', () => {
       );
     });
 
-    test('the 14 bucket-divergent components keep their function field unchanged', () => {
+    test('the 15 bucket-divergent components keep their function field unchanged', () => {
       const ms = loadAll();
       const byName = Object.fromEntries(ms.map((m) => [m.name, m]));
-      // Substance divergence (chart + diagram buckets):
-      const evidenceChartDiagram = [
-        'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud', 'diagram',
+      // Substance divergence — chart + diagram + math buckets, all
+      // function = evidence (or progression for gantt/kanban):
+      const evidenceChartDiagramMath = [
+        'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud', 'diagram', 'math',
       ];
-      for (const n of evidenceChartDiagram) {
+      for (const n of evidenceChartDiagramMath) {
         assert.equal(byName[n].function, 'evidence', `${n}.function stays "evidence"`);
       }
       assert.equal(byName.gantt.function, 'progression');

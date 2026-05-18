@@ -39,9 +39,9 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
   `docs/references/templates.md`, retired 2026-05-17.
 - **`lib/components/<bucket>/<name>/<name>.docs.md`** — per-component
   contracts (slots, variants, when/why, anti-patterns) generated from
-  each manifest's prose fields. `<bucket>` is one of 10: anchor,
+  each manifest's prose fields. `<bucket>` is one of 11: anchor,
   statement, inventory, comparison, progression, evidence, imagery,
-  chart, diagram, legal. See `design-system.md` §9.
+  chart, diagram, math, legal. See `design-system.md` §9.
 - **`docs/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
 
 ## Three render paths must agree

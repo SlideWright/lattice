@@ -4974,7 +4974,7 @@ section.list-tabular.register.outline ol > li > code {
 /* ── Universal modifier: compact ──────────────────────────────────────── */
 section.list-tabular.compact ol > li { padding:var(--sp-xs) 0; }
 
-/* === lib/components/evidence/math/math.styles.css === */
+/* === lib/components/math/math/math.styles.css === */
 /* math — evidence.canvas.prose
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.

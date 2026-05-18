@@ -410,21 +410,26 @@ introduced for maintenance colocation:
 | `inventory`  | 12    | function = inventory (statute-stack moved to legal) |
 | `comparison` | 9     | function = comparison (obligation-matrix moved to legal) |
 | `progression`| 6     | function = progression (authority-chain, regulatory-update moved to legal) |
-| `evidence`   | 5     | function = evidence (citation-card moved to legal) |
+| `evidence`   | 4     | function = evidence (citation-card moved to legal, math moved to math) |
 | `imagery`    | 2     | function = imagery |
 | `chart`      | 8     | substance = series (function stays evidence/progression) |
 | `diagram`    | 1     | substance = graph (function stays evidence) |
+| `math`       | 1     | substance-rendering = KaTeX (function stays evidence) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 44 of the 58 components `bucket === function`. The 14 divergent
+For 43 of the 58 components `bucket === function`. The 15 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:
 
-- **Substance** — `chart` and `diagram` colocate components sharing a
-  renderer kernel (chart: SVG kernel for gantt, kanban, piechart,
-  progress, quadrant, radar, timeline-list, word-cloud; diagram:
-  Mermaid for diagram).
+- **Substance** — `chart`, `diagram`, and `math` colocate components
+  built around a specific rendering pipeline. chart: internal SVG
+  series kernel for gantt, kanban, piechart, progress, quadrant,
+  radar, timeline-list, word-cloud. diagram: Mermaid (external graph
+  language). math: KaTeX (external math typesetter). Each has its
+  own !important overrides for the library's inline styles, so
+  colocating the component with its substance-specific surface aids
+  maintenance.
 - **Domain** — `legal` colocates components sharing authoring
   vocabulary, citation conventions, and audience use case
   (statute-stack from inventory; regulatory-update + authority-chain
