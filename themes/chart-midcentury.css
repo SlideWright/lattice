@@ -1,0 +1,31 @@
+/* @theme chart-midcentury
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Palette iteration: midcentury — 1960s annual report — petrol blue, mustard, sage, brick, taupe */
+
+@import 'indaco';
+
+:root {
+  --chart-1:      light-dark(#1F4A6E, #7BBED9);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#6B5C4F, #BFB3A5);
+  --chart-2-text: light-dark(#FFFFFF, #1A1308);
+  --chart-3:      light-dark(#946718, #E3B65A);
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-4:      light-dark(#5C7B5A, #A5C3A2);
+  --chart-4-text: light-dark(#FFFFFF, #0A1810);
+  --chart-5:      light-dark(#963338, #D27277);
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-1-soft: light-dark(#E0E6EB, #1B4058);
+  --chart-2-soft: light-dark(#EAE8E6, #2A3E4C);
+  --chart-3-soft: light-dark(#F0EADF, #323F3C);
+  --chart-4-soft: light-dark(#E8EDE8, #24424B);
+  --chart-5-soft: light-dark(#F0E2E3, #2E3042);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}

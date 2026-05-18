@@ -1,0 +1,31 @@
+/* @theme chart-restrained
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Palette iteration: restrained — Dusty magazine palette — every hue muted to the same finish */
+
+@import 'indaco';
+
+:root {
+  --chart-1:      light-dark(#2A4566, #8FB6D4);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#6B6258, #BFB4A8);
+  --chart-2-text: light-dark(#FFFFFF, #1A1308);
+  --chart-3:      light-dark(#9C6620, #E0A858);
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-4:      light-dark(#5F7140, #A8BC85);
+  --chart-4-text: light-dark(#FFFFFF, #0A1810);
+  --chart-5:      light-dark(#8E3F44, #D08488);
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-1-soft: light-dark(#E1E5EA, #1F3F56);
+  --chart-2-soft: light-dark(#EAE9E8, #2A3E4D);
+  --chart-3-soft: light-dark(#F1EAE0, #313C3B);
+  --chart-4-soft: light-dark(#E9EBE4, #254045);
+  --chart-5-soft: light-dark(#EFE4E5, #2E3446);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}

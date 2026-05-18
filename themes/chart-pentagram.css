@@ -1,0 +1,31 @@
+/* @theme chart-pentagram
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Palette iteration: pentagram — Pentagram Classics — bold edition-design colour identities */
+
+@import 'indaco';
+
+:root {
+  --chart-1:      light-dark(#16385C, #6FB0D4);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#3F4244, #9FA6AB);
+  --chart-2-text: light-dark(#FFFFFF, #1A1A1F);
+  --chart-3:      light-dark(#AD560E, #F0A04A);
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-4:      light-dark(#1F6D2F, #5BB276);
+  --chart-4-text: light-dark(#FFFFFF, #0A1810);
+  --chart-5:      light-dark(#9A2027, #D86A70);
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-1-soft: light-dark(#DEE3E8, #183D56);
+  --chart-2-soft: light-dark(#E4E5E5, #233B4D);
+  --chart-3-soft: light-dark(#F4E7DD, #353A38);
+  --chart-4-soft: light-dark(#E0EBE2, #143E42);
+  --chart-5-soft: light-dark(#F1E0E1, #302E40);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}

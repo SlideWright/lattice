@@ -1,0 +1,31 @@
+/* @theme chart-heritage-v2
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Palette iteration: heritage-v2 — Heritage refined — slate warmed to taupe, chroma tightened */
+
+@import 'indaco';
+
+:root {
+  --chart-1:      light-dark(#1F4A6E, #82C8E5);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#5E5547, #B5AC9F);
+  --chart-2-text: light-dark(#FFFFFF, #1A1308);
+  --chart-3:      light-dark(#8C4A14, #E89A45);
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-4:      light-dark(#3D6B3A, #7AB57F);
+  --chart-4-text: light-dark(#FFFFFF, #0A1810);
+  --chart-5:      light-dark(#8A2E33, #D87277);
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-1-soft: light-dark(#E0E6EB, #1D435A);
+  --chart-2-soft: light-dark(#E8E7E5, #283C4B);
+  --chart-3-soft: light-dark(#EFE6DE, #333837);
+  --chart-4-soft: light-dark(#E4EAE3, #1B3E44);
+  --chart-5-soft: light-dark(#EFE2E2, #303042);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}

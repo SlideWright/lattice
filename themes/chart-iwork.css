@@ -1,0 +1,31 @@
+/* @theme chart-iwork
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Palette iteration: iwork — Apple iWork-style — vivid harmonized accents */
+
+@import 'indaco';
+
+:root {
+  --chart-1:      light-dark(#1C5489, #5FA8DD);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#6E6E73, #B8B8BD);
+  --chart-2-text: light-dark(#FFFFFF, #1A1A1F);
+  --chart-3:      light-dark(#A55812, #F0A050);
+  --chart-3-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-4:      light-dark(#2D8050, #62C788);
+  --chart-4-text: light-dark(#FFFFFF, #0A1810);
+  --chart-5:      light-dark(#A8333D, #E07178);
+  --chart-5-text: light-dark(#FFFFFF, #1A0608);
+  --chart-1-soft: light-dark(#DFE7EE, #153C58);
+  --chart-2-soft: light-dark(#EBEBEB, #283F51);
+  --chart-3-soft: light-dark(#F2E8DE, #353A39);
+  --chart-4-soft: light-dark(#E2EDE6, #164246);
+  --chart-5-soft: light-dark(#F3E2E4, #312F42);
+  --chart-accent: var(--chart-1);
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}
