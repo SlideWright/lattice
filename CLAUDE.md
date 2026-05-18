@@ -84,14 +84,16 @@ live in `docs/references/development.md`.
   `lib/components/<bucket>/<bucket>.gallery.{light,dark}.pdf`).
   Generated from `manifest.sample` via `npm run build:bucket-galleries`;
   see `test/integration/components/bucket-galleries.test.js`.
-- **Top-level baseline decks** (CI-asserted, page count inlined in each
-  test file): `gallery.md` (89pp) and `gallery-mermaid.md` (31pp). A
-  drift on either fails the integration tier. The cross-renderer parity
-  gate also runs on `gallery.md` only.
+- **CI baseline decks** (page count inlined in each test file):
+  `test/integration/baseline-decks/gallery.md` (89pp) and
+  `lib/integrations/mermaid/mermaid.gallery.md` (31pp). A drift on
+  either fails the integration tier. The cross-renderer parity gate
+  also runs on `gallery.md` only. These live with their owners
+  (test infrastructure / the mermaid integration), not in `examples/`.
 
-`gallery-jargon.md` is a long-running editorial showcase — stable and
-shared, but not page-count-asserted. The isolation rule applies to all
-three top-level decks — see workflow.md.
+`examples/gallery-jargon.md` is a long-running editorial showcase —
+stable and shared, but not page-count-asserted. The isolation rule
+applies to all three baseline-tier decks — see workflow.md.
 
 ## The visual-iteration loop
 

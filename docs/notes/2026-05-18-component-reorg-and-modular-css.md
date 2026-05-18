@@ -388,7 +388,10 @@ Beyond moving the files, the following references need a sweep:
 | 4  Modular CSS migration | **Deferred** | Depends on Phase 3.5. The disk reorg has localized component sources so this is mechanically straightforward when it lands |
 | 5  Bucket survey galleries | Shipped | 9 generated `.gallery.md` + 18 PDFs (9 × light/dark); integration test asserts membership |
 | 6  Documentation | Shipped | design-system.md §3, §9, §13 updated; CLAUDE.md updated for the new paths and gallery rules |
-| 7  PDF sprawl cleanup | **Planned** | Routes each PDF by primary purpose: test baselines → `test/`, integration showcases → `lib/integrations/<i>/`, real-world examples → `examples/`. Retires 13 redundant single-component demo decks now covered by per-component galleries. See §"Phase 7" above |
+| 7a PDF sprawl — move CI baseline | Shipped | `examples/gallery.md` → `test/integration/baseline-decks/`. palette-audit.md considered but reverted (not asserted; it's a theme-designer resource). |
+| 7b PDF sprawl — mermaid integration shelf | Shipped | `examples/gallery-mermaid.md` → `lib/integrations/mermaid/mermaid.gallery.md` + generated `mermaid.gallery.dark.pdf` sibling. |
+| 7c PDF sprawl — retire redundant decks | Shipped | Deleted 13 single-component demo decks (26 files) now covered by per-component galleries. Also deleted orphan `examples/preview-G/` (23 stale theme-comparison PDFs with no .md sources). `examples/` now holds 6 human-facing decks. |
+| 7d PDF sprawl — docs | Shipped | CLAUDE.md baseline-deck rule updated; workflow.md feature-deck example switched to a surviving deck; this note's status table reflects what landed. |
 
 Deferred work is captured here, in design-system.md §13's "Still
 deferred" section, and is independent of the disk-reorganization
