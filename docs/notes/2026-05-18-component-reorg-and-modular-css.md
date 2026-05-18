@@ -384,8 +384,11 @@ Beyond moving the files, the following references need a sweep:
 | 1  `bucket` field on manifests | Shipped | 9 manifests carry explicit bucket; loader + tests extended |
 | 2  Light/dark component galleries | Shipped | 58 light renamed, 58 dark built; integration test asserts both |
 | 3  Disk reorganization | Shipped | 58 components moved into 9 buckets; 311 files changed; pixel-diff zero across all 89 pages of gallery.md |
-| 3.5  `@layer` activation | **Deferred** | Audit revealed only `regulatory-update` carries `@layer` today; full activation needs layer-order declaration in `lib/_theme.css` + every component + every shared file. Tractable but invasive — benefits from human design pass before execution |
-| 4  Modular CSS migration | **Deferred** | Depends on Phase 3.5. The disk reorg has localized component sources so this is mechanically straightforward when it lands |
+| 3.5a  pixel-diff baseline harness | Shipped | Established that diffing against committed PDFs is misleading (Chromium-version drift); in-sandbox baselines are the only safe reference. |
+| 3.5b  component-only `@layer` wrap | **Reverted** | Wrapping ONLY components in `@layer components` broke 100% of canary pages: the CSS spec rule "unlayered beats layered regardless of specificity" means component rules lost to whatever generic rule existed in shared files. Approach is not viable. |
+| 3.5c  retire 7 cascade-workaround `!important` | Shipped | All 7 component-level cascade-workaround `!important` declarations removed; natural selector specificity already wins. Zero pixel drift across 35 affected pages. The 14 in `base.variants.css` stay locked-in (scaffold-vs-variants competition). |
+| 3.5d  cascade docs | Shipped | `docs/references/cascade.md` captures the investigation: why `@layer` is declared-but-inert, the rule-3 trap that broke 3.5b, what a safe full activation would require. Future contributors don't redo 3.5b. |
+| 4  Modular CSS migration | **Deferred indefinitely** | Originally depended on Phase 3.5's `@layer` activation succeeding. Since broader activation is blocked on the `!important` competition (see cascade.md), modular migration is blocked too. Reopens only if the scaffold-vs-variants `!important` strategy gets rewritten. |
 | 5  Bucket survey galleries | Shipped | 9 generated `.gallery.md` + 18 PDFs (9 × light/dark); integration test asserts membership |
 | 6  Documentation | Shipped | design-system.md §3, §9, §13 updated; CLAUDE.md updated for the new paths and gallery rules |
 | 7a PDF sprawl — move CI baseline | Shipped | `examples/gallery.md` → `test/integration/baseline-decks/`. palette-audit.md considered but reverted (not asserted; it's a theme-designer resource). |

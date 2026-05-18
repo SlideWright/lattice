@@ -643,20 +643,33 @@ discovery story that markdown alone can't provide.
 
 - State / Tone / Chrome universal-variant CSS — the metadata shipped
   in §6.5 but the actual CSS rules for these tiers haven't landed.
-- **`@layer` activation across component CSS files (Phase 3.5).** The
-  audit during the bucketed-layout refactor surfaced that only one
-  component file (`regulatory-update`) currently carries an explicit
-  `@layer` wrapper; the rest are unlayered. Full activation requires
-  declaring layer order in `lib/_theme.css` AND wrapping every
-  component + shared CSS file, which is a tractable but invasive
-  follow-up that benefits from a human-reviewed design pass.
+- **Broad `@layer` activation — blocked, not deferred.** The Phase 3.5
+  investigation attempted to activate `@layer components` across all
+  component CSS and discovered that a partial activation breaks the
+  cascade: per the CSS spec, unlayered declarations beat layered ones
+  regardless of specificity, so wrapping components but not shared
+  files makes components silently lose to whatever generic shared
+  rule exists. The full coordinated activation is blocked by the
+  `!important` competition between `lib/integrations/marp/marp.scaffold.css`
+  and `lib/base/base.variants.css`. Both must stay unlayered for the
+  source-order cascade to keep working. See `docs/references/cascade.md`
+  for the full investigation and what would unblock it.
 - **Modular CSS migration (Phase 4)** — moving component-specific
   universal-variant rules out of `lib/base/base.modifiers.css` and
-  into each component's `<name>.styles.css`. Depends on the @layer
-  activation above and on the per-rule token-set-vs-property-set
-  audit. The disk-reorg phase has localized component sources so
-  this is now mechanically straightforward; the design pass is still
-  open.
+  into each component's `<name>.styles.css`. Originally depended on
+  `@layer` activation; now blocked indefinitely until the
+  scaffold-vs-variants `!important` strategy is rewritten.
+
+**Shipped from Phase 3.5 (May 2026 investigation):**
+
+- 7 component-level cascade-workaround `!important` declarations
+  retired (in `anchor/title`, `comparison/verdict-grid`,
+  `progression/list-criteria` ×2, `progression/list-steps`). Natural
+  selector specificity already wins; the `!important` was defensive
+  overkill. Pixel-diffed: 0 deltas across 35 affected pages.
+- `docs/references/cascade.md` captures the cascade architecture
+  and the `@layer` constraints so future contributors don't redo
+  the partial-activation attempt that broke.
 
 **Ratified on this branch:**
 

@@ -32,7 +32,14 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`docs/editorial.md`** — prose rules for the gallery and shipped decks.
 - **`docs/skill.md`** — deck-authoring contract.
 - **`docs/references/`** — canonical references (design, pipeline,
-  mermaid, audit, gotchas, treatments, workflow, development).
+  mermaid, audit, gotchas, treatments, workflow, development,
+  cascade).
+- **`docs/references/cascade.md`** — read before touching the CSS
+  cascade or `@layer` declarations. Captures why `@layer` is
+  declared-but-inert (the `!important` interactions between
+  marp.scaffold and base.variants), the trap that broke an earlier
+  partial activation attempt, and the conditions required for a
+  safe full activation.
 - **`lib/base/base.docs.md`** — cross-cutting authoring contract
   (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
   treatments). Was previously inside
