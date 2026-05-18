@@ -38,7 +38,7 @@ section.list-criteria .crit-body ul li {
   font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base);
   counter-increment:none;
 }
-section.list-criteria .crit-body ul li::before { display:none !important; content:none !important; }
+section.list-criteria .crit-body ul li::before { display:none; content:none; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * UNIVERSAL STATE TOKEN — the contract shared by every state-bearing
@@ -100,4 +100,4 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
   font-size:var(--fs-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none; content:none; }

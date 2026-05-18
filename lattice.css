@@ -4532,7 +4532,7 @@ section.list-criteria .crit-body ul li {
   font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base);
   counter-increment:none;
 }
-section.list-criteria .crit-body ul li::before { display:none !important; content:none !important; }
+section.list-criteria .crit-body ul li::before { display:none; content:none; }
 
 /* ════════════════════════════════════════════════════════════════════════
  * UNIVERSAL STATE TOKEN — the contract shared by every state-bearing
@@ -4594,7 +4594,7 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
   font-size:var(--fs-body); font-weight:400; color:var(--text-body);
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
-section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none !important; content:none !important; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none; content:none; }
 
 /* === lib/components/progression/list-steps/list-steps.styles.css === */
 /* list-steps — extracted from lib/_legacy.css (batch 6).
@@ -4625,7 +4625,7 @@ section.list-steps ol > li:not(:has(> ul)) > p { flex:1; }
 /* Nested list format: - body text under each step */
 section.list-steps ol > li > ul { list-style:none; padding:0; margin:0; flex:1; }
 section.list-steps ol > li > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.list-steps ol > li > ul > li::before { display:none !important; content:none !important; }
+section.list-steps ol > li > ul > li::before { display:none; content:none; }
 
 
 
@@ -8625,7 +8625,7 @@ section.timeline-list .timeline-body {
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.title { border-top: none; }
 section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
-section.title h1 { font-size:var(--fs-display); color:var(--text-display) !important; margin-bottom:var(--sp-xs); text-align:center; }
+section.title h1 { font-size:var(--fs-display); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
 section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
 /* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
@@ -8787,7 +8787,7 @@ section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { backgrou
 /* Body text (last nested li) — reset inherited card-title styles */
 section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
-section.verdict-grid > ul > li > ul > li::before { display:none !important; content:none !important; }
+section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
