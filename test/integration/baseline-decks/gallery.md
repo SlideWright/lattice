@@ -7,6 +7,7 @@ header: "Lattice · Layout Gallery"
 ---
 
 <!-- _class: title -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Title slide · title" -->
 
@@ -19,6 +20,7 @@ A decision framework for product leaders navigating market uncertainty
 ---
 
 <!-- _class: divider -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Section break · divider" -->
 
@@ -29,6 +31,7 @@ A decision framework for product leaders navigating market uncertainty
 ---
 
 <!-- _class: subtopic -->
+<!-- _header: '' -->
 <!-- _footer: "Centered orientation · subtopic" -->
 
 `Module 02`
@@ -253,6 +256,7 @@ The scoring model is the most configurable component. This section covers the th
 ---
 
 <!-- _class: closing -->
+<!-- _header: '' -->
 <!-- _footer: "Dark closing bookend · closing" -->
 <!-- _paginate: false -->
 
@@ -591,7 +595,7 @@ token = kms.encrypt(
 
 The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo.
 
-![bg right](sample-image-landscape.svg)
+![bg right](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
@@ -604,7 +608,7 @@ The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join
 
 `mirror` is the cross-cutting orientation modifier; `image left` is preserved as a deprecated alias for one release.
 
-![bg left](sample-image-landscape.svg)
+![bg left](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
@@ -617,7 +621,7 @@ The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join
 
 The image is centred at native aspect on a clean `--bg-alt` matte — an editorial plate, not a placeholder. Use this for diagrams, schematics, and any asset where cropping would destroy meaning.
 
-![bg right](sample-image-portrait.svg)
+![bg right](../../../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -629,7 +633,7 @@ The image is centred at native aspect on a clean `--bg-alt` matte — an editori
 
 Weekly Signal Brief — the primary output of the intake pipeline, distributed every Monday
 
-![bg](sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
@@ -642,7 +646,7 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 Add `museum` alongside `image`. The image panel gets a `--bg-alt` matte, 20px inset on three sides, and a 1px border. Flush at the split line, framed like a mounted print.
 
-![bg right](sample-image-landscape.svg)
+![bg right](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
@@ -654,11 +658,12 @@ Add `museum` alongside `image`. The image panel gets a `--bg-alt` matte, 20px in
 
 Full-bleed museum centres the asset on a generous `--bg-alt` matte with uniform 40px inset on all four sides. The border frames it as an object, not a wallpaper. No text overlaid on the image.
 
-![bg](sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
 <!-- _class: divider dark -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
 
@@ -689,7 +694,7 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 
 A tall asset on a wide canvas — `contain` replaces the lattice pattern with a quiet `--bg-alt` matte, so the image reads as a museum plate rather than a placeholder.
 
-![bg](sample-image-portrait.svg)
+![bg](../../../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -868,7 +873,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
 
-![bg left](sample-image-landscape.svg)
+![bg left](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
@@ -921,6 +926,7 @@ The below-note still appears under both cards after the hairline rule.
 ---
 
 <!-- _class: divider numbered -->
+<!-- _header: '' -->
 <!-- _footer: "Modifier — divider numbered · divider numbered" -->
 
 `Modifier · divider numbered`
@@ -932,6 +938,7 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 ---
 
 <!-- _class: subtopic numbered -->
+<!-- _header: '' -->
 <!-- _footer: "Modifier — subtopic numbered · subtopic numbered" -->
 
 `Modifier · subtopic numbered`
@@ -943,6 +950,7 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 ---
 
 <!-- _class: closing numbered -->
+<!-- _header: '' -->
 <!-- _footer: "Modifier — closing numbered · closing numbered" -->
 <!-- _paginate: false -->
 
@@ -1157,6 +1165,7 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 ---
 
 <!-- _class: divider -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Treatment Library — section break · divider" -->
 
@@ -1209,6 +1218,7 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 ---
 
 <!-- _class: divider -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Chart — gantt + kanban · divider" -->
 
@@ -1261,6 +1271,7 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 ---
 
 <!-- _class: divider -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Split Layouts · split-brief + split-metric + split-steps + split-compare + split-statement" -->
 
@@ -1365,6 +1376,7 @@ Both paths are viable. The difference is where we spend the next 18 months.
 ---
 
 <!-- _class: closing accent -->
+<!-- _header: '' -->
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->
 

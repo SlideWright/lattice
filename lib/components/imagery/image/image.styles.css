@@ -28,6 +28,12 @@ section.image:not(.full) {
   padding-right: calc(50% + var(--sp-2xl));
   padding-left: var(--sp-2xl);
   background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
+  /* Vertically center the text slot so short content doesn't read as
+   * orphaned in the top-left corner. The section is a flex column
+   * (from base.elements.css); without justify-content, h2+p stack at
+   * top with vast empty space below the image fill. Centering balances
+   * the visual weight between text and image halves. */
+  justify-content: center;
 }
 section.image:not(.full) h2 { font-size: var(--fs-xl); margin-bottom: var(--sp-sm); }
 section.image:not(.full) p  { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
