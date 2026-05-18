@@ -1,0 +1,103 @@
+/* @theme chart-warm-quintet
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Design 6: warm-quintet — Navy anchor + four warm-leaning hues — amber / burgundy / forest / khaki
+ *
+ * Extends indaco with a chart-specific token vocabulary. AA-verified
+ * text-on-fill pairs per slot per canvas mode. Scratch theme for
+ * design exploration — not for production.
+ */
+
+@import 'indaco';
+
+:root {
+  /* ── CHART FILL SLOTS — 5 colours, hand-paired text ─────────── */
+  --chart-1:      light-dark(#1F4A6E, #82C8E5);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#91450E, #E89F45);
+  --chart-2-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-3:      light-dark(#8A2E33, #D87277);
+  --chart-3-text: light-dark(#FFFFFF, #1A0608);
+  --chart-4:      light-dark(#2D6B3A, #6FB57F);
+  --chart-4-text: light-dark(#FFFFFF, #0A1628);
+  --chart-5:      light-dark(#6B5318, #D5BD75);
+  --chart-5-text: light-dark(#FFFFFF, #1A0F00);
+
+  /* ── ACCENT (single brand highlight) ──────────────────────────────── */
+  --chart-accent:      light-dark(#1F4A6E, #82C8E5);
+
+  /* ── COMPATIBILITY ALIASES — route legacy state + cN tokens at the
+   * chart palette so unmigrated layouts render under this design
+   * without source changes. */
+  --positive:      var(--chart-4);
+  --negative:      var(--chart-3);
+  --neutral:       var(--chart-2);
+  --inactive:      var(--chart-5);
+  --positive-soft: light-dark(#E0E9E1, #1C4346);
+  --negative-soft: light-dark(#EDE0E0, #363244);
+  --neutral-soft:  light-dark(#EEE3DB, #3A3E38);
+  --inactive-soft: light-dark(#E9E5DC, #354544);
+
+  --pass: var(--positive);
+  --warn: var(--neutral);
+  --fail: var(--negative);
+  --pass-bg: var(--positive-soft);
+  --warn-bg: var(--neutral-soft);
+  --fail-bg: var(--negative-soft);
+
+  /* Categorical cycle — pie/kanban/radar consume cN-light/cN-dark.
+   * Cycle through the chart slots (wrapping). cN-light → fill (pale
+   * tint per design); cN-dark → fill (saturated per design). */
+  --c1-light: var(--chart-1);
+  --c1-dark:  var(--chart-1);
+  --c2-light: var(--chart-2);
+  --c2-dark:  var(--chart-2);
+  --c3-light: var(--chart-3);
+  --c3-dark:  var(--chart-3);
+  --c4-light: var(--chart-4);
+  --c4-dark:  var(--chart-4);
+  --c5-light: var(--chart-5);
+  --c5-dark:  var(--chart-5);
+  --c6-light: var(--chart-1);
+  --c6-dark:  var(--chart-1);
+  --c7-light: var(--chart-2);
+  --c7-dark:  var(--chart-2);
+  --c8-light: var(--chart-3);
+  --c8-dark:  var(--chart-3);
+
+  /* Quadrant cell aliases — map TL/TR/BL/BR onto state aliases. */
+  --c-quadrant-1-fill: var(--positive);
+  --c-quadrant-2-fill: var(--neutral);
+  --c-quadrant-3-fill: var(--inactive);
+  --c-quadrant-4-fill: var(--negative);
+  --c-quadrant-1-text: var(--chart-4-text);
+  --c-quadrant-2-text: var(--chart-2-text);
+  --c-quadrant-3-text: var(--chart-5-text);
+  --c-quadrant-4-text: var(--chart-3-text);
+
+  --accent:      var(--chart-accent);
+  --accent-soft: light-dark(#DDE4E9, #204860);
+
+  /* Text-on-saturated — INVERSE of --text-heading. Used wherever a
+   * label sits ON TOP of a saturated chart fill: gantt bar labels,
+   * quadrant corner labels, dot labels, scatter-point text.
+   * On light canvas → white (reads on the saturated mid-tone fills).
+   * On dark canvas → dark navy (reads on the lifted dark-mode fills). */
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}
+
+/* ── Text-on-saturated overrides — point every chart text element that
+ * sits ON TOP of a chart fill at --text-on-saturated. Without this,
+ * existing chart CSS would use --text-heading which inverts wrong
+ * direction (dark text on dark fill on light canvas = AA fail). */
+section.gantt .gantt-bar[data-s] { color: var(--text-on-saturated); }
+section.quadrant .quadrant-label,
+section.quadrant .quadrant-dot,
+section.quadrant .quadrant-bubble-value[data-pos="inside"] {
+  fill: var(--text-on-saturated);
+}

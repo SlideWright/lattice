@@ -1,0 +1,103 @@
+/* @theme chart-saturated-mid
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Design 8: saturated-mid — Vivid mid-tones both modes — product-grade, more dashboard than boardroom
+ *
+ * Extends indaco with a chart-specific token vocabulary. AA-verified
+ * text-on-fill pairs per slot per canvas mode. Scratch theme for
+ * design exploration — not for production.
+ */
+
+@import 'indaco';
+
+:root {
+  /* ── CHART FILL SLOTS — 5 colours, hand-paired text ─────────── */
+  --chart-1:      light-dark(#1D4ED8, #60A5FA);
+  --chart-1-text: light-dark(#FFFFFF, #0A1628);
+  --chart-2:      light-dark(#B45309, #FBBF24);
+  --chart-2-text: light-dark(#FFFFFF, #1A0F00);
+  --chart-3:      light-dark(#047857, #34D399);
+  --chart-3-text: light-dark(#FFFFFF, #0A1628);
+  --chart-4:      light-dark(#B91C1C, #F87171);
+  --chart-4-text: light-dark(#FFFFFF, #1A0608);
+  --chart-5:      light-dark(#6D28D9, #A78BFA);
+  --chart-5-text: light-dark(#FFFFFF, #0A1628);
+
+  /* ── ACCENT (single brand highlight) ──────────────────────────────── */
+  --chart-accent:      light-dark(#1D4ED8, #60A5FA);
+
+  /* ── COMPATIBILITY ALIASES — route legacy state + cN tokens at the
+   * chart palette so unmigrated layouts render under this design
+   * without source changes. */
+  --positive:      var(--chart-3);
+  --negative:      var(--chart-4);
+  --neutral:       var(--chart-2);
+  --inactive:      var(--chart-1);
+  --positive-soft: light-dark(#D9EBE6, #0D4A4C);
+  --negative-soft: light-dark(#F4DDDD, #3E3242);
+  --neutral-soft:  light-dark(#F4E5DA, #3F462F);
+  --inactive-soft: light-dark(#DDE4F9, #183F65);
+
+  --pass: var(--positive);
+  --warn: var(--neutral);
+  --fail: var(--negative);
+  --pass-bg: var(--positive-soft);
+  --warn-bg: var(--neutral-soft);
+  --fail-bg: var(--negative-soft);
+
+  /* Categorical cycle — pie/kanban/radar consume cN-light/cN-dark.
+   * Cycle through the chart slots (wrapping). cN-light → fill (pale
+   * tint per design); cN-dark → fill (saturated per design). */
+  --c1-light: var(--chart-1);
+  --c1-dark:  var(--chart-1);
+  --c2-light: var(--chart-2);
+  --c2-dark:  var(--chart-2);
+  --c3-light: var(--chart-3);
+  --c3-dark:  var(--chart-3);
+  --c4-light: var(--chart-4);
+  --c4-dark:  var(--chart-4);
+  --c5-light: var(--chart-5);
+  --c5-dark:  var(--chart-5);
+  --c6-light: var(--chart-1);
+  --c6-dark:  var(--chart-1);
+  --c7-light: var(--chart-2);
+  --c7-dark:  var(--chart-2);
+  --c8-light: var(--chart-3);
+  --c8-dark:  var(--chart-3);
+
+  /* Quadrant cell aliases — map TL/TR/BL/BR onto state aliases. */
+  --c-quadrant-1-fill: var(--positive);
+  --c-quadrant-2-fill: var(--neutral);
+  --c-quadrant-3-fill: var(--inactive);
+  --c-quadrant-4-fill: var(--negative);
+  --c-quadrant-1-text: var(--chart-3-text);
+  --c-quadrant-2-text: var(--chart-2-text);
+  --c-quadrant-3-text: var(--chart-1-text);
+  --c-quadrant-4-text: var(--chart-4-text);
+
+  --accent:      var(--chart-accent);
+  --accent-soft: light-dark(#DDE4F9, #183F65);
+
+  /* Text-on-saturated — INVERSE of --text-heading. Used wherever a
+   * label sits ON TOP of a saturated chart fill: gantt bar labels,
+   * quadrant corner labels, dot labels, scatter-point text.
+   * On light canvas → white (reads on the saturated mid-tone fills).
+   * On dark canvas → dark navy (reads on the lifted dark-mode fills). */
+  --text-on-saturated: light-dark(#FFFFFF, #0A1628);
+}
+
+/* ── Text-on-saturated overrides — point every chart text element that
+ * sits ON TOP of a chart fill at --text-on-saturated. Without this,
+ * existing chart CSS would use --text-heading which inverts wrong
+ * direction (dark text on dark fill on light canvas = AA fail). */
+section.gantt .gantt-bar[data-s] { color: var(--text-on-saturated); }
+section.quadrant .quadrant-label,
+section.quadrant .quadrant-dot,
+section.quadrant .quadrant-bubble-value[data-pos="inside"] {
+  fill: var(--text-on-saturated);
+}
