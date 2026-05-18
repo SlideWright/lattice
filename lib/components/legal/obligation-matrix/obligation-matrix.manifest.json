@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "obligation-matrix",
   "function": "comparison",
+  "bucket": "legal",
   "form": "matrix",
   "substance": "structure",
   "description": "Regulation × obligation grid — state-marker cells encode applies / partial / exempt at a glance.",

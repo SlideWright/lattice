@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "citation-card",
   "function": "evidence",
+  "bucket": "legal",
   "form": "canvas",
   "substance": "prose",
   "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss.",

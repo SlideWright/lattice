@@ -31,6 +31,7 @@ const {
   composeBucketGallery,
   bucketGalleryMarkdownPath,
   bucketGalleryPdfPath,
+  isBucketGalleryAuthored,
 } = require('../../../tools/build-bucket-galleries');
 const { pageCount } = require('../../helpers/pdf');
 
@@ -39,10 +40,16 @@ describe('bucket-galleries', () => {
 
   for (const bucket of BUCKETS) {
     const manifests = groups[bucket] || [];
+    const authored = isBucketGalleryAuthored(bucket);
 
     test(
       `${bucket}: source .md matches manifests`,
-      { timeout: 30000 },
+      {
+        timeout: 30000,
+        skip: authored
+          ? `${bucket} bucket gallery is hand-authored (galleryAuthored marker)`
+          : false,
+      },
       () => {
         if (manifests.length === 0) return;
         const mdPath = bucketGalleryMarkdownPath(bucket);
@@ -63,7 +70,16 @@ describe('bucket-galleries', () => {
     for (const theme of ['light', 'dark']) {
       test(
         `${bucket}: ${theme} PDF page count = members + 1 (title slide)`,
-        { timeout: 30000 },
+        {
+          timeout: 30000,
+          // Hand-authored galleries don't follow the
+          // members+1 formula — their slide count is whatever the
+          // author chose. The light/dark parity assertion below
+          // still catches transforms that drop slides under dark.
+          skip: authored
+            ? `${bucket} bucket gallery is hand-authored (page count not derived from manifest)`
+            : false,
+        },
         () => {
           if (manifests.length === 0) return;
           const pdfPath = bucketGalleryPdfPath(bucket, theme);
@@ -78,6 +94,24 @@ describe('bucket-galleries', () => {
             pageCount(pdfPath),
             expectedPages,
             `${bucket}.gallery.${theme}.pdf page count diverged from manifest membership`,
+          );
+        },
+      );
+    }
+
+    if (authored && manifests.length > 0) {
+      test(
+        `${bucket}: hand-authored dark page count matches light`,
+        { timeout: 30000 },
+        () => {
+          const lightPath = bucketGalleryPdfPath(bucket, 'light');
+          const darkPath = bucketGalleryPdfPath(bucket, 'dark');
+          assert.ok(fs.existsSync(lightPath), `missing: ${lightPath}`);
+          assert.ok(fs.existsSync(darkPath), `missing: ${darkPath}`);
+          assert.equal(
+            pageCount(darkPath),
+            pageCount(lightPath),
+            `${bucket}.gallery.dark.pdf diverged from light page count — a transform may be dropping a slide`,
           );
         },
       );

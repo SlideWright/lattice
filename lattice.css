@@ -569,7 +569,7 @@ section.agenda.progress-9 ol > li:nth-child(-n+8) {
   opacity:0.4;
 }
 
-/* === lib/components/progression/authority-chain/authority-chain.styles.css === */
+/* === lib/components/legal/authority-chain/authority-chain.styles.css === */
 /* authority-chain — progression.timeline.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
@@ -1578,7 +1578,7 @@ section.checklist > ol > li em {
   color:var(--text-muted);
 }
 
-/* === lib/components/evidence/citation-card/citation-card.styles.css === */
+/* === lib/components/legal/citation-card/citation-card.styles.css === */
 /* citation-card — evidence.canvas.prose
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
@@ -5708,7 +5708,7 @@ section.matrix-2x2 li > ol > li {
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.matrix-2x2 :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
-/* === lib/components/comparison/obligation-matrix/obligation-matrix.styles.css === */
+/* === lib/components/legal/obligation-matrix/obligation-matrix.styles.css === */
 /* obligation-matrix — comparison.matrix.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.
@@ -7089,7 +7089,7 @@ section.redline.three-col > :is(ol, ul)::before {
  * Reference: references/proposals.md §2 (modifier catalogue), §4.5 (rollout).
  * ════════════════════════════════════════════════════════════════════════ */
 
-/* === lib/components/progression/regulatory-update/regulatory-update.styles.css === */
+/* === lib/components/legal/regulatory-update/regulatory-update.styles.css === */
 /* regulatory-update — progression.ledger.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 (completed via Phase 7
@@ -8120,7 +8120,7 @@ section.stats:not(:has(.stats-row)) ol > li > strong {
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
 
-/* === lib/components/inventory/statute-stack/statute-stack.styles.css === */
+/* === lib/components/legal/statute-stack/statute-stack.styles.css === */
 /* statute-stack — inventory.ledger.structure
  *
  * Extracted from lib/_legacy.css in Phase 4 of the destination map.

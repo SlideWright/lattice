@@ -431,10 +431,10 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
-    test('BUCKETS is FUNCTIONS plus chart and diagram', () => {
+    test('BUCKETS is FUNCTIONS plus chart, diagram, and legal', () => {
       assert.deepEqual([...BUCKETS].sort(), [
         'anchor', 'chart', 'comparison', 'diagram', 'evidence',
-        'imagery', 'inventory', 'progression', 'statement',
+        'imagery', 'inventory', 'legal', 'progression', 'statement',
       ]);
       for (const fn of FUNCTIONS) assert.ok(BUCKETS.includes(fn));
     });
@@ -486,7 +486,7 @@ describe('component-manifest', () => {
       }
     });
 
-    test('shipped manifests partition the 9 known chart/diagram exceptions correctly', () => {
+    test('shipped manifests partition the 14 known bucket-divergent components correctly', () => {
       const ms = loadAll();
       const g = groupByBucket(ms);
       // chart = 8: gantt, kanban, piechart, progress, quadrant, radar, timeline-list, word-cloud
@@ -498,11 +498,18 @@ describe('component-manifest', () => {
       // diagram = 1: diagram
       assert.equal(g.diagram.length, 1, 'diagram bucket has 1 component');
       assert.equal(g.diagram[0].name, 'diagram');
+      // legal = 5: statute-stack, regulatory-update, authority-chain, citation-card, obligation-matrix
+      assert.equal(g.legal.length, 5, 'legal bucket has 5 components');
+      assert.deepEqual(
+        g.legal.map((m) => m.name).sort(),
+        ['authority-chain', 'citation-card', 'obligation-matrix', 'regulatory-update', 'statute-stack'],
+      );
     });
 
-    test('the 9 substance-bucketed components keep their function field unchanged', () => {
+    test('the 14 bucket-divergent components keep their function field unchanged', () => {
       const ms = loadAll();
       const byName = Object.fromEntries(ms.map((m) => [m.name, m]));
+      // Substance divergence (chart + diagram buckets):
       const evidenceChartDiagram = [
         'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud', 'diagram',
       ];
@@ -511,6 +518,13 @@ describe('component-manifest', () => {
       }
       assert.equal(byName.gantt.function, 'progression');
       assert.equal(byName.kanban.function, 'progression');
+      // Domain divergence (legal bucket — components span 4 different
+      // function families, all kept):
+      assert.equal(byName['statute-stack'].function, 'inventory');
+      assert.equal(byName['regulatory-update'].function, 'progression');
+      assert.equal(byName['authority-chain'].function, 'progression');
+      assert.equal(byName['citation-card'].function, 'evidence');
+      assert.equal(byName['obligation-matrix'].function, 'comparison');
     });
   });
 

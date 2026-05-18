@@ -7,6 +7,8 @@ header: "Lattice · Legal & regulatory layouts"
 footer: "Six anchors · five variants each · candidate deck"
 ---
 
+<!-- galleryAuthored: legal-family domain composition; tools/build-bucket-galleries.js will not overwrite -->
+
 <!-- _class: title -->
 <!-- _paginate: false -->
 <!-- _header: '' -->

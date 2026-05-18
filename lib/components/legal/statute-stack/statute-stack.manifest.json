@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "statute-stack",
   "function": "inventory",
+  "bucket": "legal",
   "form": "ledger",
   "substance": "structure",
   "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status.",

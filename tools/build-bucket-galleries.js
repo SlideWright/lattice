@@ -59,6 +59,20 @@ function bucketGalleryMarkdownPath(bucket) {
   return path.join(COMPONENTS_DIR, bucket, `${bucket}.gallery.md`);
 }
 
+// Hand-authored bucket galleries opt out of generation by embedding
+// the marker comment `<!-- galleryAuthored ... -->` in the top of the
+// .md source. Same pattern as the per-component `galleryAuthored: true`
+// manifest flag, scaled up to a bucket whose composition is curated
+// (e.g. `legal` — the legal-family domain story is richer than one
+// slide per component).
+const GALLERY_AUTHORED_MARKER = /<!--\s*galleryAuthored\b/;
+function isBucketGalleryAuthored(bucket) {
+  const mdPath = bucketGalleryMarkdownPath(bucket);
+  if (!fs.existsSync(mdPath)) return false;
+  const head = fs.readFileSync(mdPath, 'utf8').slice(0, 2000);
+  return GALLERY_AUTHORED_MARKER.test(head);
+}
+
 function bucketGalleryPdfPath(bucket, theme) {
   return path.join(COMPONENTS_DIR, bucket, `${bucket}.gallery.${theme}.pdf`);
 }
@@ -114,17 +128,21 @@ function buildOne(bucket, manifests, theme) {
   if (!manifests.length) {
     return { bucket, theme, skipped: true, reason: 'empty bucket' };
   }
-  const md = composeBucketGallery(bucket, manifests);
-  const mdSource = theme === 'dark' ? injectDark(md) : md;
   const mdPath = bucketGalleryMarkdownPath(bucket);
+  const authored = isBucketGalleryAuthored(bucket);
+  // Hand-authored bucket: read the curated .md as the build source.
+  // Generated bucket: compose it fresh from manifest.sample and persist.
+  const md = authored
+    ? fs.readFileSync(mdPath, 'utf8')
+    : composeBucketGallery(bucket, manifests);
+  const mdSource = theme === 'dark' ? injectDark(md) : md;
   const tmpPath = mdPath.replace(/\.gallery\.md$/, `.gallery.${theme}.tmp.md`);
   const outPdf = bucketGalleryPdfPath(bucket, theme);
 
   // Persist the light-theme markdown as the canonical bucket-gallery
-  // source (so reviewers can see exactly what was rendered). The dark
-  // variant is a transient transformation; we never commit a dark .md
-  // alongside it.
-  if (theme === 'light') {
+  // source ONLY when we're the source of truth (generated buckets).
+  // Hand-authored buckets keep their existing .md untouched.
+  if (theme === 'light' && !authored) {
     fs.writeFileSync(mdPath, md);
   }
 
@@ -159,10 +177,14 @@ function checkOne(bucket, manifests, theme) {
   const outPdf = bucketGalleryPdfPath(bucket, theme);
   if (!fs.existsSync(outPdf)) return { bucket, theme, stale: true, reason: 'missing' };
   if (!fs.existsSync(mdPath)) return { bucket, theme, stale: true, reason: 'no source .md' };
-  const expected = composeBucketGallery(bucket, manifests);
-  const actual = fs.readFileSync(mdPath, 'utf8');
-  if (expected !== actual) {
-    return { bucket, theme, stale: true, reason: 'source .md drifted from manifests' };
+  // Hand-authored buckets: the .md is the source of truth, not a
+  // composition of manifest.sample — skip the drift check.
+  if (!isBucketGalleryAuthored(bucket)) {
+    const expected = composeBucketGallery(bucket, manifests);
+    const actual = fs.readFileSync(mdPath, 'utf8');
+    if (expected !== actual) {
+      return { bucket, theme, stale: true, reason: 'source .md drifted from manifests' };
+    }
   }
   const pdfStat = fs.statSync(outPdf);
   const mdStat = fs.statSync(mdPath);
@@ -254,5 +276,6 @@ module.exports = {
   composeBucketGallery,
   bucketGalleryMarkdownPath,
   bucketGalleryPdfPath,
+  isBucketGalleryAuthored,
   BUCKET_BLURBS,
 };

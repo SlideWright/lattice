@@ -407,21 +407,33 @@ introduced for maintenance colocation:
 |--------------|-------|--------|
 | `anchor`     | 4     | function = anchor |
 | `statement`  | 6     | function = statement |
-| `inventory`  | 13    | function = inventory |
-| `comparison` | 10    | function = comparison |
-| `progression`| 8     | function = progression |
-| `evidence`   | 6     | function = evidence |
+| `inventory`  | 12    | function = inventory (statute-stack moved to legal) |
+| `comparison` | 9     | function = comparison (obligation-matrix moved to legal) |
+| `progression`| 6     | function = progression (authority-chain, regulatory-update moved to legal) |
+| `evidence`   | 5     | function = evidence (citation-card moved to legal) |
 | `imagery`    | 2     | function = imagery |
 | `chart`      | 8     | substance = series (function stays evidence/progression) |
 | `diagram`    | 1     | substance = graph (function stays evidence) |
+| `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 49 of the 58 components `bucket === function`. The 9 chart/diagram
-components (gantt, kanban, piechart, progress, quadrant, radar,
-timeline-list, word-cloud → chart; diagram → diagram) declare their
-`bucket` explicitly in the manifest; their `function` field is
-unchanged. The audience-facing taxonomy in §3 is what authors use to
-pick a component; the disk bucket is what engine maintainers use to
-navigate the renderer-kernel-sharing code.
+For 44 of the 58 components `bucket === function`. The 14 divergent
+components declare their `bucket` explicitly in the manifest; their
+`function` field is unchanged in every case. Three reasons for
+divergence:
+
+- **Substance** — `chart` and `diagram` colocate components sharing a
+  renderer kernel (chart: SVG kernel for gantt, kanban, piechart,
+  progress, quadrant, radar, timeline-list, word-cloud; diagram:
+  Mermaid for diagram).
+- **Domain** — `legal` colocates components sharing authoring
+  vocabulary, citation conventions, and audience use case
+  (statute-stack from inventory; regulatory-update + authority-chain
+  from progression; citation-card from evidence; obligation-matrix
+  from comparison).
+
+The audience-facing taxonomy in §3 is what authors use to pick a
+component; the disk bucket is what maintainers use to navigate the
+shared-context code.
 
 The bucket layout is reflected in three places only:
 - the manifest's optional `bucket` field
