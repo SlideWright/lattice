@@ -37,6 +37,23 @@ pre-commit:
         - 'lib/engine/**/*.js'
         - 'lib/chart-family/**/*.js'
       run: npm run runtime:check --silent
+    - name: component-docs-freshness
+      # Catches the "edited a manifest, forgot to regenerate the
+      # <name>.docs.md and <name>.gallery.md siblings" failure mode.
+      # Compares generated output against the committed files; fails
+      # if any drift. Skippable via --no-verify only as last resort.
+      glob:
+        - 'lib/components/**/*.manifest.json'
+        - 'lib/components/index.js'
+      run: npm run docs:components:check --silent
+
+pre-push-disabled:
+  # The per-component / bucket-gallery PDF freshness checks live here
+  # rather than pre-commit because rebuilding all 58 + 18 PDFs takes
+  # ~30 minutes and would block every component-CSS commit. They run
+  # in CI instead. Lefthook keys this stage with `-disabled` so it
+  # never fires automatically; documented here as the migration path
+  # if the team wants the gate on push.
 
 pre-push:
   jobs:
