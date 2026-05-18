@@ -61,7 +61,6 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 const ALL_DECKS = Object.freeze([
   'gallery-jargon',
   'design-system',
-  'custom-logo',
   'legal-layouts',
   'legal-layouts-finalists',
   'palette-audit',

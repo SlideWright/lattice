@@ -14,6 +14,7 @@ tokenization/
 *.pdf
 !examples/*.pdf
 !lib/components/**/*.pdf
+!lib/base/**/*.pdf
 !lib/integrations/**/*.pdf
 !test/integration/baseline-decks/*.pdf
 
@@ -34,3 +35,4 @@ lib/components/**/*.html
 !examples/*.pdf
 !examples/**/*.pdf
 !lib/components/**/*.pdf
+!lib/base/**/*.pdf

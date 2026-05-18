@@ -3,11 +3,11 @@ marp: true
 theme: indaco
 size: hd
 paginate: true
+header: "Lattice · custom logo"
 logo: ./acme-logo.svg
 ---
 
-<!-- _class: title -->
-<!-- _paginate: false -->
+<!-- _class: title silent -->
 
 # Custom Logo
 

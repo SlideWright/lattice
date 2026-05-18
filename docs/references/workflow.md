@@ -82,8 +82,12 @@ coherence. The long-running decks pick up the new layout in a separate
 ### Authoring
 
 1. Create `examples/<feature-slug>.md`. The slug matches the branch noun
-   (e.g. branch `feat/custom-logo` → `examples/custom-logo.md`,
+   (e.g. branch `feat/legal-layouts` → `examples/legal-layouts.md`,
    branch `fix/mermaid-catdeep` → `examples/mermaid-catdeep.md`).
+   Features whose primary purpose is "demonstrate a code-level feature"
+   (rather than "showcase a real-world deck") should instead live with
+   the feature implementation — see `lib/base/_logo/` for an example
+   of a feature demo colocated with its docs and sample asset.
 2. Keep the deck small — title slide, one slide per surface the work
    changes, closing. Six to ten slides is the comfortable cap.
 3. Use the same front matter as the galleries (`marp: true`, `theme:
