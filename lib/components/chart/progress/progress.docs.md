@@ -60,24 +60,6 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 └─────────────────────────────────────────┘
 ```
 
-## Variants (layout-specific)
-
-### `minimal` — Minimal — bars only, no chrome
-
-Strips the eyebrow, subtitle, and pill colour tinting back to plain bars + percentages. Use when the bars are the whole story and the surrounding text would just repeat them.
-
-```markdown
-<!-- _class: progress minimal -->
-
-## Quarter readiness, no commentary.
-
-- Codebook platform `92%`
-- Operations runbook `68%`
-- Compliance audit pack `81%`
-- SDK polyglot parity `34%`
-- Dependency dashboard `12%`
-```
-
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.

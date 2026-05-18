@@ -116,6 +116,9 @@ function buildOne(bucket, manifests, theme) {
     );
   } finally {
     try { fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+    // Strip the emulator's .html sidecars from the component folder.
+    try { fs.unlinkSync(outPdf.replace(/\.pdf$/, '.html')); } catch { /* ignore */ }
+    try { fs.unlinkSync(tmpPath.replace(/\.md$/, '.html')); } catch { /* ignore */ }
   }
 
   const ok = fs.existsSync(outPdf) && fs.statSync(outPdf).size > 10000;

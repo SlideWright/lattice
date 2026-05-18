@@ -70,40 +70,29 @@ section.chart-frame {
 }
 
 section.chart-frame .chart-header {
-  /* Lucent strip — accent-tinted gradient that fades into the canvas.
-   * Sits at the top of the section; eyebrow + h2 + subtitle are
-   * vertically + horizontally centred inside it. */
+  /* Plain header — eyebrow + h2 + subtitle on the section background.
+   * Decoration is opt-in via the universal `tint-*` / `mark-*`
+   * treatments, not baked in here. A short hairline below the header
+   * keeps the chart body visually separated; that is the only chrome. */
   flex: 0 0 auto;
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  padding: var(--sp-xl) var(--sp-2xl) var(--sp-lg);
+  padding: var(--sp-2xl) var(--sp-2xl) var(--sp-md);
   text-align: center;
-  background:
-    linear-gradient(
-      to bottom,
-      color-mix(in oklab, var(--accent) 14%, var(--bg)) 0%,
-      color-mix(in oklab, var(--accent) 7%, var(--bg)) 55%,
-      transparent 100%
-    );
+  background: none;
 }
 
 section.chart-frame .chart-header::after {
-  /* Hairline rule under the strip — reads as a soft frame edge. */
+  /* Short hairline — soft frame edge between header and chart body. */
   content: '';
   position: absolute;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: calc(100% - 2 * var(--sp-2xl));
+  width: 7.5cqi;
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    color-mix(in oklab, var(--accent) 30%, transparent) 20%,
-    color-mix(in oklab, var(--accent) 30%, transparent) 80%,
-    transparent 100%
-  );
+  background: color-mix(in oklab, var(--accent) 50%, transparent);
 }
 
 section.chart-frame .chart-eyebrow {
@@ -174,46 +163,22 @@ section.chart-frame .chart-caption {
   letter-spacing: 0.06em;
   color: var(--text-muted);
 }
-/* Hairline above caption — reads as a soft separator between chart and chrome. */
+/* Short hairline above the caption — soft separator between chart and
+ * chrome. Matches the header hairline's shape (short + solid); the
+ * earlier gradient-fade variant was retired with the lucent-strip
+ * header for the same reason: decoration belongs in treatments. */
 section.chart-frame .chart-caption::before {
   content: '';
   display: block;
-  width: 18.75cqi;
-  height: 1px;
-  margin: 0 auto var(--sp-sm);
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    color-mix(in oklab, var(--border) 90%, transparent) 50%,
-    transparent 100%
-  );
-}
-
-/* Dark variant — strip darkens proportionally. */
-section.chart-frame.dark .chart-header {
-  background:
-    linear-gradient(
-      to bottom,
-      color-mix(in oklab, var(--accent) 22%, var(--bg)) 0%,
-      color-mix(in oklab, var(--accent) 10%, var(--bg)) 55%,
-      transparent 100%
-    );
-}
-
-/* ── Treatment B: .minimal modifier ──
- * Drops the lucent gradient strip in favour of a quieter centred header
- * with a short accent hairline. Same content; less chrome — the chart
- * dominates more. Kept as a deliberate variant so the experiment can
- * compare the two treatments side by side. */
-section.chart-frame.minimal .chart-header {
-  background: none;
-  padding: var(--sp-2xl) var(--sp-2xl) var(--sp-md);
-}
-section.chart-frame.minimal .chart-header::after {
   width: 7.5cqi;
   height: 1px;
-  background: color-mix(in oklab, var(--accent) 50%, transparent);
+  margin: 0 auto var(--sp-sm);
+  background: color-mix(in oklab, var(--border) 90%, transparent);
 }
+
+/* The earlier `.minimal` modifier (no gradient, short hairline) is
+ * now the default; the lucent-strip variant is retired. Decoration
+ * is opt-in via the universal `tint-*` / `mark-*` treatments. */
 
 /* Shared status pill vocabulary — used by progress, timeline-list, kanban.
  * Reads as `[s]` data attribute on a chip element so the markup is small

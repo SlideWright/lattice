@@ -7,9 +7,6 @@
   "substance": "series",
   "description": "Horizontal progress bars — one row per item, percentage filled.",
   "purpose": "Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.",
-  "variants": [
-    "minimal"
-  ],
   "slots": {
     "title": {
       "selector": "h2",
@@ -84,12 +81,5 @@
       "name": "timeline-list",
       "when": "the workstreams resolve in sequence, not in parallel"
     }
-  ],
-  "variantDocs": {
-    "minimal": {
-      "label": "Minimal — bars only, no chrome",
-      "caption": "Strips the eyebrow, subtitle, and pill colour tinting back to plain bars + percentages. Use when the bars are the whole story and the surrounding text would just repeat them.",
-      "sample": "<!-- _class: progress minimal -->\n\n## Quarter readiness, no commentary.\n\n- Codebook platform `92%`\n- Operations runbook `68%`\n- Compliance audit pack `81%`\n- SDK polyglot parity `34%`\n- Dependency dashboard `12%`\n"
-    }
-  }
+  ]
 }

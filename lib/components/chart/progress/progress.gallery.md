@@ -33,20 +33,6 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ---
 
-<!-- _class: progress minimal -->
-<!-- _footer: "Minimal — bars only, no chrome · progress minimal" -->
-
-## Quarter readiness, no commentary.
-
-- Codebook platform `92%`
-- Operations runbook `68%`
-- Compliance audit pack `81%`
-- SDK polyglot parity `34%`
-- Dependency dashboard `12%`
-
-
----
-
 <!-- _class: progress dark -->
 <!-- _footer: "Composition: dark · progress dark" -->
 
