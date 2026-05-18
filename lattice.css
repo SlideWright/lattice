@@ -208,6 +208,18 @@
   --neutral:  light-dark(#B45309, #F97316);
   --inactive: light-dark(#475569, #94A3B8);
 
+  /* Paired soft fills — pre-baked tints for pill backgrounds and any
+   * soft-surface use of a state color. NO color-mix() at the consumer:
+   * downstream callers always use a direct var(--*-soft) reference, so
+   * every value here is a standalone hex. Tailwind 100 / 950 on light /
+   * dark canvas — same hue family as the solid token, ~L 0.93 light and
+   * ~L 0.10 dark. Themes override these in pairs with their solid
+   * sibling so the (solid, soft) duet stays visually coherent. */
+  --positive-soft: light-dark(#DCFCE7, #052E16);
+  --negative-soft: light-dark(#FEE2E2, #450A0A);
+  --neutral-soft:  light-dark(#FFEDD5, #431407);
+  --inactive-soft: light-dark(#E2E8F0, #0F172A);
+
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
    * split-list left rail, banner-tags, badges). Themes can override any
