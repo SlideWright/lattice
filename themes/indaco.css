@@ -139,14 +139,14 @@
    * Soft variants are even paler / deeper still — for pill backgrounds,
    * decorative borders, and barely-there state washes. NEVER paired
    * with state-coloured text; consumers use --text-body on top. */
-  --positive:      light-dark(#D7E4D9, #3F6845);
-  --positive-soft: light-dark(#ECF3ED, #1A2F22);
-  --negative:      light-dark(#E7D5D2, #863236);
-  --negative-soft: light-dark(#F4E8E6, #2A1416);
+  --positive:      light-dark(#C1E4D5, #3F6845);
+  --positive-soft: light-dark(#E3F2EB, #1A2F22);
+  --negative:      light-dark(#E7BEBE, #863236);
+  --negative-soft: light-dark(#F4DEDE, #2A1416);
   --neutral:       light-dark(#EBE2B8, #993D00);
   --neutral-soft:  light-dark(#F6F0D9, #2A1408);
-  --inactive:      light-dark(#D8DEE5, #475569);
-  --inactive-soft: light-dark(#EEF1F4, #1A2330);
+  --inactive:      light-dark(#C8CFDA, #475569);
+  --inactive-soft: light-dark(#E6E9ED, #1A2330);
 
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
