@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rasterize a region of a PDF for inline review at FULL QUALITY.
+# Rasterize a PDF for inline review at FULL QUALITY.
 #
 # Lattice is a design system. Visual fidelity matters: font edges,
 # gradient stops, palette accuracy, image rendering. Downscaling a
@@ -7,42 +7,49 @@
 # of looking — you'd be reviewing a blurred approximation of the
 # very thing you're trying to verify.
 #
-# This wrapper rasterizes at NATIVE DPI and supports cropping to a
-# region. The 2000px API limit on session inline images forces
-# discipline: if a whole slide doesn't fit, identify the specific
-# region you're checking and render only that, at full quality.
+# IMPORTANT distinction: low-DPI rasterization is NOT downscaling.
+# A vector PDF rendered at 30dpi produces a small image whose text
+# shapes are still computed at full mathematical precision — they're
+# just sampled to a coarser pixel grid. Edges are aliased, shapes
+# are correct. This is the right approach for OVERVIEW renders that
+# need to fit the API's 2000px-per-image limit on a 4K canvas.
+# Downscaling (rasterize high, then mogrify -resize) is different:
+# information is lost because the high-resolution sampling gets
+# averaged into fewer pixels.
 #
-# Two modes:
+# Three modes:
 #
-# 1. WHOLE SLIDE — for HD decks (≤2000px at any sensible DPI). Use
-#    --check to verify the output fits before sending. If it doesn't,
-#    use mode 2.
+# 1. DEFAULT (--check) — render at user-specified DPI (default 100),
+#    no resize. For HD decks this fits naturally. For 4K decks, use
+#    --check to confirm before sending; it fails loudly if output
+#    exceeds 2000px on longest side.
 #
-# 2. CROPPED REGION — for 4K decks or any time you want to inspect
-#    a specific area. Specify the crop via --crop "WxH+X+Y" using
-#    standard ImageMagick geometry, or use a shortcut like
-#    --region top|bottom|left|right|center|top-left|...
+# 2. OVERVIEW (--overview) — auto-compute a DPI so the whole slide
+#    fits under 2000px. Output is the full layout at the right
+#    resolution to be inline-reviewable. Use to see big picture
+#    before drilling into a region.
 #
-# Output goes to /tmp/<pdf-basename>/ by default; pass an explicit
-# directory as the second positional arg to override.
+# 3. CROPPED REGION (--region or --crop) — render at full --dpi,
+#    then crop to a specific area. Use for detail inspection after
+#    overview identifies where to look.
 #
 # Usage:
 #   tools/rasterize-for-review.sh <pdf> [output-dir] [options]
 #
 # Options:
-#   -r, --dpi <n>          rasterize at <n> DPI (default 100)
+#   -r, --dpi <n>          rasterize at <n> DPI (default 100; ignored
+#                          when --overview is set)
 #   -f, --first <n>        first page to render (default: all)
 #   -l, --last <n>         last page to render
+#   --overview             auto-pick DPI so whole slide fits under
+#                          2000px on longest side. Best for "show me
+#                          the big picture" inspection.
 #   --crop <WxH+X+Y>       crop each page to this ImageMagick geometry
-#                          (e.g. --crop "1500x900+0+0" for top-left)
-#   --region <name>        shorthand crop — one of:
+#   --region <name>        shorthand crop, always clamped to <=2000px
+#                          on longest side. One of:
 #                            top, bottom, left, right, center,
 #                            top-left, top-right, bottom-left, bottom-right
-#                          (each carves a ~half-slide region)
-#   --check                rasterize, check dimensions, ERROR if any
-#                          page exceeds 2000px on longest side
-#                          (use this before sending without --crop
-#                          so you know the output is safe)
+#   --check                verify output fits under 2000px; exit 3 if not
 #   -h, --help             show this help
 #
 # Exit codes:
@@ -51,7 +58,8 @@
 #   2  PDF doesn't exist
 #   3  --check failed (output exceeds 2000px)
 #
-# Requires: pdftoppm (poppler-utils), mogrify + identify (ImageMagick).
+# Requires: pdftoppm (poppler-utils), mogrify + identify (ImageMagick),
+#           pdfinfo (for --overview).
 #
 # See CLAUDE.md "Rasterize PDFs through tools/rasterize-for-review.sh".
 
@@ -70,6 +78,7 @@ last=""
 crop=""
 region=""
 check=0
+overview=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -79,6 +88,7 @@ while [[ $# -gt 0 ]]; do
     --crop)      crop="$2";   shift 2 ;;
     --region)    region="$2"; shift 2 ;;
     --check)     check=1;     shift   ;;
+    --overview)  overview=1;  shift   ;;
     -h|--help)   usage ;;
     -*)          echo "unknown flag: $1" >&2; usage ;;
     *)
@@ -97,10 +107,17 @@ done
 [[ -z "$pdf" ]] && usage
 [[ -f "$pdf" ]] || { echo "error: $pdf not found" >&2; exit 2; }
 [[ -n "$crop" && -n "$region" ]] && { echo "error: pass --crop OR --region, not both" >&2; exit 1; }
+[[ $overview -eq 1 && (-n "$crop" || -n "$region") ]] && {
+  echo "error: --overview is incompatible with --crop / --region (overview shows the whole slide)" >&2
+  exit 1
+}
 
 command -v pdftoppm >/dev/null || { echo "error: pdftoppm not installed (poppler-utils)" >&2; exit 1; }
 command -v mogrify  >/dev/null || { echo "error: mogrify not installed (ImageMagick)"     >&2; exit 1; }
 command -v identify >/dev/null || { echo "error: identify not installed (ImageMagick)"    >&2; exit 1; }
+[[ $overview -eq 1 ]] && {
+  command -v pdfinfo >/dev/null || { echo "error: pdfinfo not installed (poppler-utils)" >&2; exit 1; }
+}
 
 if [[ -z "$out_dir" ]]; then
   base="$(basename "$pdf" .pdf)"
@@ -108,7 +125,23 @@ if [[ -z "$out_dir" ]]; then
 fi
 mkdir -p "$out_dir"
 
-# Rasterize at native DPI, no downsampling.
+# --overview: compute a DPI such that the rendered raster fits under
+# 2000px on the longest side. PDF page dimensions are in points
+# (1pt = 1/72in), so target_dpi = 2000 * 72 / max(width_pt, height_pt).
+# Use 1900 as the target (under 2000) for a safety margin.
+if [[ $overview -eq 1 ]]; then
+  page_info="$(pdfinfo "$pdf" | awk -F': +' '/^Page size:/ {print $2}' | head -1)"
+  # Format: "960 x 540 pts" — parse the two numbers.
+  W_pt="${page_info%% x*}"
+  rest="${page_info#* x }"
+  H_pt="${rest%% *}"
+  # max dimension
+  if [[ $W_pt -gt $H_pt ]]; then MAX_PT=$W_pt; else MAX_PT=$H_pt; fi
+  dpi=$(( 1900 * 72 / MAX_PT ))
+  [[ $dpi -lt 1 ]] && dpi=1
+fi
+
+# Rasterize at chosen DPI.
 page_args=()
 [[ -n "$first" ]] && page_args+=( -f "$first" )
 [[ -n "$last"  ]] && page_args+=( -l "$last"  )
@@ -117,23 +150,16 @@ pdftoppm -r "$dpi" -png "${page_args[@]}" "$pdf" "$out_dir/p" >&2
 # Resolve --region shorthand into an ImageMagick geometry.
 # Each region carves a portion of the slide and clamps both
 # dimensions to <=2000px so the output always passes --check.
-# For a 4K slide (e.g. 4000x2250), the "left half" is naively
-# 2000x2250 — height exceeds the limit. So we clamp dimensions
-# and align the crop to the requested edge.
 if [[ -n "$region" ]]; then
   first_png="$(ls "$out_dir"/p-*.png | head -1)"
   dims="$(identify -format "%w %h" "$first_png")"
   W="${dims% *}"
   H="${dims#* }"
-  # Cap each dimension at 2000 (the API limit) when computing crops.
   MAX=2000
-  # Half dimensions, clamped to MAX
   HW=$((W / 2)); [[ $HW -gt $MAX ]] && HW=$MAX
   HH=$((H / 2)); [[ $HH -gt $MAX ]] && HH=$MAX
-  # Full dimensions, clamped to MAX (for "top" / "bottom" which want full width)
   CW=$W; [[ $CW -gt $MAX ]] && CW=$MAX
   CH=$H; [[ $CH -gt $MAX ]] && CH=$MAX
-  # Center offsets — for "center" the crop is HWxHH centred on the slide.
   CX=$(( (W - HW) / 2 )); [[ $CX -lt 0 ]] && CX=0
   CY=$(( (H - HH) / 2 )); [[ $CY -lt 0 ]] && CY=0
   case "$region" in
@@ -156,8 +182,6 @@ if [[ -n "$crop" ]]; then
 fi
 
 # --check: every output must fit under 2000px on the longest side.
-# Refuses to succeed if any page is too large (forces you to crop
-# or lower DPI rather than blindly sending oversized images).
 if [[ $check -eq 1 ]]; then
   bad=0
   for f in "$out_dir"/p-*.png; do
@@ -171,9 +195,9 @@ if [[ $check -eq 1 ]]; then
   done
   if [[ $bad -eq 1 ]]; then
     echo "" >&2
-    echo "Use --crop or --region to extract a specific area, OR" >&2
-    echo "lower --dpi so the rasterized output fits. NEVER" >&2
-    echo "downscale — this is a design system, visual fidelity" >&2
+    echo "Use --overview for a fit-to-limit big-picture render, OR" >&2
+    echo "--crop / --region for a full-DPI detail of a specific area." >&2
+    echo "NEVER downscale — this is a design system, visual fidelity" >&2
     echo "is what we're checking." >&2
     exit 3
   fi
@@ -181,3 +205,4 @@ fi
 
 # Print written paths (one per line) for shell composition.
 ls "$out_dir"/p-*.png
+

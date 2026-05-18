@@ -248,27 +248,35 @@ specific one.
 **Rasterize PDFs through `tools/rasterize-for-review.sh`.** Lattice is
 a design system; **visual fidelity is what we're checking**, so
 downscaling a rasterized slide to fit a session image limit defeats
-the purpose. The wrapper rasterizes at full quality (no downscaling)
-and supports cropping to a specific region when a whole slide
-exceeds the 2000px-per-image session limit. Crop discipline: identify
-what specifically you're verifying (text size, gradient stop, image
-edge) and render only that region.
+the purpose. The wrapper renders at full quality and gives you two
+complementary modes so you never fragment the diagnosis:
+
+- **`--overview`** — auto-picks a DPI so the WHOLE slide fits under
+  2000px. Low-DPI rasterization of a vector PDF is NOT downscaling;
+  text shapes are still computed at full mathematical precision,
+  just sampled to a coarser pixel grid. Use this first to see the
+  big picture.
+- **`--region <name>` / `--crop "WxH+X+Y"`** — full DPI, partial
+  slide. Use after overview identifies a specific area to inspect
+  in detail (font edges, gradient stops, etc.).
 
 ```bash
-# HD deck: whole slide fits naturally
-tools/rasterize-for-review.sh lib/components/diagram/diagram/diagram.gallery.light.pdf -f 5 -l 5 --check
+# Big picture of a 4K slide — full layout visible
+tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --overview --check
 
-# 4K deck: crop to a region, never downscale
-tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --region top-right --check
+# Detail of one region at full DPI
+tools/rasterize-for-review.sh test/integration/baseline-decks/gallery.pdf -f 38 -l 38 --region left --check
 
-# Custom crop in ImageMagick geometry (WxH+X+Y)
-tools/rasterize-for-review.sh ... --crop "2000x1125+1000+500"
+# Custom geometry crop
+tools/rasterize-for-review.sh ... --crop "1500x900+1000+500"
 ```
 
-`--check` makes the tool refuse to succeed if any output exceeds
-2000px on the longest side, so you know before sending whether the
-image is safe for inline review. Region shortcuts: `top`, `bottom`,
-`left`, `right`, `center`, `top-left`, `top-right`, `bottom-left`,
-`bottom-right`. The codebase's automated diff pipelines
+`--check` is the universal safety gate — refuses to succeed if any
+output exceeds 2000px on longest side (the conversation API's
+inline-image limit). Region shortcuts clamp dimensions automatically
+so they always pass `--check`. The codebase's automated pipelines
 (`tools/pixel-check.js`, `tools/preview.js`) rasterize at 72dpi for
 their own use and don't need this wrapper.
+
+**Workflow**: `--overview` to see the big picture → identify suspect
+area → `--region` for full-quality detail. No more guess-and-check.
