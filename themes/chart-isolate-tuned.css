@@ -6,48 +6,41 @@
  * @size standard 960px  720px
  * @size 16:9     1280px 720px
  *
- * Isolation pilot — step 1 of 3.
+ * Isolation pilot — step 1 of 3. Lattice-native charts only.
+ *
+ * Mermaid chart-family is out of scope — handled via themeVariables
+ * in lattice-emulator.js, separate path.
  *
  * Same per-chart token namespaces as chart-isolate-grey.css, but
- * each chart's identity tokens are HAND-TUNED to its specific job:
+ * tuned to each chart's specific job:
  *
- *   timeline   sequential — bands progress in luminance + warmth
- *              from cool deep navy at section 1 to warm sand at
- *              section 5. The eye reads the order, not just the
- *              distinction.
+ *   timeline (HTML)   sequential spine + bold node. Currently reads
+ *                     --spectrum / --accent (already structural), so
+ *                     overriding with per-chart tokens is mostly a
+ *                     refinement exercise — the namespace exists for
+ *                     authors who want a non-default look.
  *
- *   roadmap    categorical-with-order — phase pills use the
- *              navy → teal → amber spectrum gradient (Q2 to Q4
- *              should feel like time passing), with each pill
- *              maximally distinguishable from its neighbours.
+ *   roadmap           categorical-with-order — phase pills use the
+ *                     navy → teal → green spectrum (Q2 → Q4 should
+ *                     feel like time passing), with each pill
+ *                     maximally distinguishable from its neighbours.
  *
- * The same five chart-N slots have to satisfy BOTH jobs today;
- * isolation lets us tune for each independently.
+ * The same five chart-N slots have to satisfy both jobs in the
+ * shared cycle today; isolation lets each chart tune independently.
  */
 
 @import 'indaco';
 
 :root {
-  /* ── TIMELINE identity tokens ──────────────────────────────────── */
-  /* Spine as two color stops — gradient assembled at the selector site.
+  /* ── TIMELINE identity tokens (HTML) ───────────────────────────────
+     Spine as two color stops — gradient assembled at the selector site.
      (CSS light-dark() only accepts <color>, not <image>, so storing a
-     gradient inside the token fails silently.) */
+     gradient inside a single token fails silently.) */
   --timeline-spine-from:   light-dark(#1F4A6E, #82C8E5);
   --timeline-spine-to:     light-dark(#82C8E5, #1F4A6E);
-  /* Node: navy on light, light-blue on dark — matches spine endpoints. */
   --timeline-node:         light-dark(#1F4A6E, #82C8E5);
   --timeline-node-ink:     light-dark(#FFFFFF, #0A1628);
   --timeline-node-ring:    light-dark(#FFFFFF, #0A1628);
-
-  /* Sequential bands: light → deep, cool → warm. Five steps that
-     read as ORDER, not as five unrelated categories. */
-  --timeline-band-1:       light-dark(#E1ECF4, #1F3447);  /* cool pale */
-  --timeline-band-2:       light-dark(#D2DCC9, #2C3A2A);  /* sage */
-  --timeline-band-3:       light-dark(#F0D89B, #4A3920);  /* warm gold */
-  --timeline-band-4:       light-dark(#E8B888, #5A3618);  /* terracotta */
-  --timeline-band-5:       light-dark(#D88A78, #5A1E18);  /* warm brick */
-  --timeline-band-ink:     light-dark(#1A1C1E, #F3F4F5);
-  --timeline-band-stroke:  light-dark(#9DA0A3, #6E7176);
 
   /* ── ROADMAP identity tokens ───────────────────────────────────── */
   /* Spine as three color stops — navy → teal → green spectrum. */
@@ -58,7 +51,7 @@
 
   /* Categorical-with-order phase pills: heritage cycle picked for
      max separation between adjacent pills AND a perceptible
-     left-to-right narrative (navy → taupe → amber → forest → burgundy). */
+     left-to-right narrative. */
   --roadmap-phase-1:       light-dark(#1F4A6E, #82C8E5);  /* navy   — Foundation */
   --roadmap-phase-2:       light-dark(#5E5547, #B5AC9F);  /* taupe  */
   --roadmap-phase-3:       light-dark(#8C4A14, #E89A45);  /* amber  — Hardening */
@@ -78,26 +71,6 @@ section.timeline > ul > li::before {
   background: var(--timeline-node) !important;
   border-color: var(--timeline-node-ring) !important;
 }
-
-/* ── Remap timeline (Mermaid section bands) to read --timeline-band-N ─ */
-section .timeline-node.section--1 rect,
-section .timeline-node.section--1 path,
-section .timeline-node.section--1 circle { fill: var(--timeline-band-1) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-0  rect,
-section .timeline-node.section-0  path,
-section .timeline-node.section-0  circle { fill: var(--timeline-band-2) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-1  rect,
-section .timeline-node.section-1  path,
-section .timeline-node.section-1  circle { fill: var(--timeline-band-3) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-2  rect,
-section .timeline-node.section-2  path,
-section .timeline-node.section-2  circle { fill: var(--timeline-band-4) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-3  rect,
-section .timeline-node.section-3  path,
-section .timeline-node.section-3  circle { fill: var(--timeline-band-5) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node text,
-section .timeline-node tspan,
-section .timeline-node span { fill: var(--timeline-band-ink) !important; color: var(--timeline-band-ink) !important; }
 
 /* ── Remap roadmap to read its own tokens ──────────────────────────── */
 section.roadmap thead tr {

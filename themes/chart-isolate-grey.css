@@ -6,33 +6,31 @@
  * @size standard 960px  720px
  * @size 16:9     1280px 720px
  *
- * Isolation pilot — step 1 of 3.
+ * Isolation pilot — step 1 of 3. Lattice-native charts only.
  *
- * Declares the per-chart token namespaces (--timeline-* and
- * --roadmap-*) but leaves every identity surface at greyscale.
- * Then remaps the chart selectors to read the new tokens instead
- * of pulling from the global --chart-N cycle.
+ * Mermaid chart-family is out of scope — it has its own theming
+ * path via Mermaid themeVariables, plumbed in lattice-emulator.js.
  *
- * Purpose: make visible what each chart loses when it doesn't
- * have an identity palette of its own. Compare to chart-isolate-tuned.css.
+ * This theme declares per-chart token namespaces and leaves every
+ * identity surface at greyscale. It also REPLACES the chart's
+ * default reads (var(--chart-N), var(--spectrum), var(--accent))
+ * with the per-chart tokens so we see what each chart loses when
+ * it has no identity palette of its own. Compare to chart-isolate-tuned.css.
  */
 
 @import 'indaco';
 
 :root {
-  /* ── TIMELINE identity tokens ──────────────────────────────────── */
+  /* ── TIMELINE identity tokens (HTML) ───────────────────────────────
+     Even though timeline currently reads only semantic tokens
+     (--spectrum spine, --accent node), the isolation experiment
+     overrides them with per-chart tokens. This proves whether
+     timeline gains anything from a chart-local palette. */
   --timeline-spine-from:   light-dark(#8A8E93, #6E7176);
   --timeline-spine-to:     light-dark(#8A8E93, #6E7176);
   --timeline-node:         light-dark(#3A3D40, #C8CACC);
   --timeline-node-ink:     light-dark(#FFFFFF, #0A0B0C);
   --timeline-node-ring:    light-dark(#FFFFFF, #0A0B0C);
-  --timeline-band-1:       light-dark(#EEEEEF, #2A2C2E);
-  --timeline-band-2:       light-dark(#E2E3E4, #34373A);
-  --timeline-band-3:       light-dark(#D6D7D8, #3E4145);
-  --timeline-band-4:       light-dark(#CACBCC, #484C50);
-  --timeline-band-5:       light-dark(#BEBFC0, #52565B);
-  --timeline-band-ink:     light-dark(#1A1C1E, #F3F4F5);
-  --timeline-band-stroke:  light-dark(#9DA0A3, #6E7176);
 
   /* ── ROADMAP identity tokens ───────────────────────────────────── */
   --roadmap-spine-from:    light-dark(#8A8E93, #6E7176);
@@ -58,26 +56,6 @@ section.timeline > ul > li::before {
   background: var(--timeline-node) !important;
   border-color: var(--timeline-node-ring) !important;
 }
-
-/* ── Remap timeline (Mermaid section bands) to read --timeline-band-N ─ */
-section .timeline-node.section--1 rect,
-section .timeline-node.section--1 path,
-section .timeline-node.section--1 circle { fill: var(--timeline-band-1) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-0  rect,
-section .timeline-node.section-0  path,
-section .timeline-node.section-0  circle { fill: var(--timeline-band-2) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-1  rect,
-section .timeline-node.section-1  path,
-section .timeline-node.section-1  circle { fill: var(--timeline-band-3) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-2  rect,
-section .timeline-node.section-2  path,
-section .timeline-node.section-2  circle { fill: var(--timeline-band-4) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node.section-3  rect,
-section .timeline-node.section-3  path,
-section .timeline-node.section-3  circle { fill: var(--timeline-band-5) !important; stroke: var(--timeline-band-stroke) !important; }
-section .timeline-node text,
-section .timeline-node tspan,
-section .timeline-node span { fill: var(--timeline-band-ink) !important; color: var(--timeline-band-ink) !important; }
 
 /* ── Remap roadmap to read its own tokens ──────────────────────────── */
 section.roadmap thead tr {
