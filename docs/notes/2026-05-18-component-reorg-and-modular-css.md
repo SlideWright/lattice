@@ -278,6 +278,26 @@ Each commit pixel-validates against `refactor-baseline-2026-05-18`.
 3. **Dark mode coverage.** Phase 2 surfaces components that have never
    rendered dark. Treat fixes as a follow-up, not Phase 2 blockers?
 
+## Execution status (2026-05-18)
+
+| Phase | Status | Commit / notes |
+|---|---|---|
+| 0  Baseline snapshot | Shipped | `refactor-baseline-2026-05-18` tag at `00da89f` |
+| 1  `bucket` field on manifests | Shipped | 9 manifests carry explicit bucket; loader + tests extended |
+| 2  Light/dark component galleries | Shipped | 58 light renamed, 58 dark built; integration test asserts both |
+| 3  Disk reorganization | Shipped | 58 components moved into 9 buckets; 311 files changed; pixel-diff zero across all 89 pages of gallery.md |
+| 3.5  `@layer` activation | **Deferred** | Audit revealed only `regulatory-update` carries `@layer` today; full activation needs layer-order declaration in `lib/_theme.css` + every component + every shared file. Tractable but invasive — benefits from human design pass before execution |
+| 4  Modular CSS migration | **Deferred** | Depends on Phase 3.5. The disk reorg has localized component sources so this is mechanically straightforward when it lands |
+| 5  Bucket survey galleries | Shipped | 9 generated `.gallery.md` + 18 PDFs (9 × light/dark); integration test asserts membership |
+| 6  Documentation | Shipped | design-system.md §3, §9, §13 updated; CLAUDE.md updated for the new paths and gallery rules |
+
+Deferred work is captured here, in design-system.md §13's "Still
+deferred" section, and is independent of the disk-reorganization
+goals. No regressions blocked: integration assertions on light + dark
+page counts catch transform-level slide drops; bucket-gallery
+integration asserts composition stays in sync with manifests; pixel-
+diff at the gallery-source level verified zero visual drift.
+
 ## What this plan is NOT
 
 - Not an authoring-grammar change. `<!-- _class: cards-grid -->` is

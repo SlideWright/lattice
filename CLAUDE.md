@@ -37,9 +37,11 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
   (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
   treatments). Was previously inside
   `docs/references/templates.md`, retired 2026-05-17.
-- **`lib/components/<name>/<name>.docs.md`** — per-component contracts
-  (slots, variants, when/why, anti-patterns) generated from each
-  manifest's prose fields.
+- **`lib/components/<bucket>/<name>/<name>.docs.md`** — per-component
+  contracts (slots, variants, when/why, anti-patterns) generated from
+  each manifest's prose fields. `<bucket>` is one of 9: anchor,
+  statement, inventory, comparison, progression, evidence, imagery,
+  chart, diagram. See `design-system.md` §9.
 - **`docs/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
 
 ## Three render paths must agree
@@ -69,13 +71,19 @@ live in `docs/references/development.md`.
 
 **Two regression tiers:**
 
-- **Per-component galleries** (58 total, one per `lib/components/<name>/`)
-  — every enriched manifest's `expectedGallerySlideCount()` is asserted
-  against the rendered PDF page count. Adding a variant updates the
-  formula; a transform that drops a slide fails its component's test.
-  See `test/integration/components/component-galleries.test.js`. The
-  KPI regression signal lives in `lib/components/kpi/kpi.gallery.pdf`'s
-  per-component assertion (was the standalone `kpi-gallery.md` deck).
+- **Per-component galleries** (58 components × 2 themes = 116 PDFs,
+  one pair per `lib/components/<bucket>/<name>/`). Every enriched
+  manifest's `expectedGallerySlideCount()` is asserted against the
+  light PDF page count, and the dark PDF must match the light count
+  (catches transforms that drop slides under the dark variant). See
+  `test/integration/components/component-galleries.test.js`. The KPI
+  regression signal lives in
+  `lib/components/evidence/kpi/kpi.gallery.light.pdf` (was the
+  standalone `kpi-gallery.md` deck).
+- **Per-bucket survey galleries** (9 buckets × 2 themes = 18 PDFs at
+  `lib/components/<bucket>/<bucket>.gallery.{light,dark}.pdf`).
+  Generated from `manifest.sample` via `npm run build:bucket-galleries`;
+  see `test/integration/components/bucket-galleries.test.js`.
 - **Top-level baseline decks** (CI-asserted, page count inlined in each
   test file): `gallery.md` (89pp) and `gallery-mermaid.md` (31pp). A
   drift on either fails the integration tier. The cross-renderer parity
@@ -151,9 +159,10 @@ caught by the hook instead of by reviewer eyeballs.
   before editing CSS or transforms. Bundle adjacent decisions in one
   `AskUserQuestion`. Kills the ship → critique → re-ship churn.
 - **Consult component docs before authoring slides.** Before writing
-  any slide that uses `<!-- _class: X -->`, open
-  `lib/components/X/X.docs.md` AND grep `examples/gallery.md` for a
-  working example **in the same turn**. Same rule for base modifiers
+  any slide that uses `<!-- _class: X -->`, locate the component's
+  bucket-nested folder (use `find lib/components -name X -type d`) and
+  open `lib/components/<bucket>/X/X.docs.md` AND grep `examples/gallery.md`
+  for a working example **in the same turn**. Same rule for base modifiers
   (`tint-*`, `mark-*`, `with-*`, `dark`, `numbered`, …): open
   `lib/base/base.docs.md` first. Do not author from memory of docs
   read earlier in the session. The docs name the slot syntax, the
