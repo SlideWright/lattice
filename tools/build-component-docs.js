@@ -37,7 +37,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { loadAll } = require('../lib/components');
+const { loadAll, manifestBucket } = require('../lib/components');
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
@@ -405,8 +405,26 @@ function expectedGallerySlideCount(m) {
   return n;
 }
 
+// Resolve the on-disk directory for a component. Tolerates three shapes
+// during the Phase 3 migration: bucket-nested (preferred), flat per-
+// component, and the rare diagram-like collision where the component
+// name matches a bucket name. The first existing path wins; if none
+// exist (a brand-new component being scaffolded), fall back to the
+// bucket-nested shape.
+function componentDir(m) {
+  const bucket = manifestBucket(m);
+  const candidates = [
+    bucket ? path.join(COMPONENTS_DIR, bucket, m.name) : null,
+    path.join(COMPONENTS_DIR, m.name),
+  ].filter(Boolean);
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return candidates[0];
+}
+
 function targetPaths(m) {
-  const dir = path.join(COMPONENTS_DIR, m.name);
+  const dir = componentDir(m);
   return {
     docs: path.join(dir, `${m.name}.docs.md`),
     gallery: path.join(dir, `${m.name}.gallery.md`),

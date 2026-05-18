@@ -107,8 +107,8 @@ const PATTERNS = Object.freeze({
     // Component metadata only affects scaffolder/snippets, not rendering.
     /^lib\/components\/index\.js$/,
     /^lib\/components\/manifest\.schema\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.manifest\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
+    /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.manifest\.json$/,
+    /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
   ],
   // Full diff triggers — shared CSS, theme, three-renderer paths.
   fullDiff: [
@@ -127,11 +127,14 @@ const PATTERNS = Object.freeze({
     /^lattice\.css$/,
   ],
   // Component-scoped triggers — affect that component's per-component
-  // gallery + every top-level deck that uses the component.
-  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.styles\.css$/,
-  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.transform\.js$/,
+  // gallery + every top-level deck that uses the component. The
+  // (?:[a-z][a-z0-9-]*\/)? prefix tolerates the bucket-nested layout
+  // (`lib/components/<bucket>/<name>/...`) without losing match in
+  // the flat layout (`lib/components/<name>/...`).
+  componentCss: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.styles\.css$/,
+  componentTransform: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.transform\.js$/,
   // Per-component gallery.md change — rebuild that component's gallery only.
-  componentGallery: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
+  componentGallery: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
   // Deck source — that deck only.
   deckSource: /^examples\/([a-z][a-z0-9-]*)\.md$/,
 });

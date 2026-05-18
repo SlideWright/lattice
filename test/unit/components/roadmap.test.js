@@ -1,5 +1,5 @@
 /**
- * Unit: lib/components/roadmap/roadmap.transform.js — roadmap modifier transforms.
+ * Unit: lib/components/progression/roadmap/roadmap.transform.js — roadmap modifier transforms.
  *
  * Two transforms keyed off the roadmap layout class:
  *   - roadmap status   : tag <td> cells with state marker → state class
@@ -16,7 +16,7 @@ const {
   applyHorizons,
   applyToRenderedHtml,
   markerToState,
-} = require('../../../lib/components/roadmap/roadmap.transform');
+} = require('../../../lib/components/progression/roadmap/roadmap.transform');
 
 describe('roadmap', () => {
   // ── markerToState ──────────────────────────────────────────────────────

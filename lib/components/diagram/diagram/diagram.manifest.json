@@ -1,0 +1,80 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "diagram",
+  "function": "evidence",
+  "bucket": "diagram",
+  "form": "canvas",
+  "substance": "graph",
+  "description": "Mermaid diagram as the slide's centerpiece.",
+  "purpose": "Use for relational or topological visuals — flowcharts, sequence diagrams, state machines, ER diagrams. The diagram should occupy at least half the slide.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing what the diagram shows."
+    },
+    "subtitle": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional eyebrow caption."
+    },
+    "mermaid": {
+      "selector": "div.mermaid, svg",
+      "required": true,
+      "description": "Fenced ```mermaid block, pre-rendered to SVG at build time."
+    }
+  },
+  "skeleton": "<!-- _class: diagram -->\n\n## How signals move from input to decision.\n\n```mermaid\nflowchart LR\n  A[Input] --> B[Process]\n  B --> C{Decision}\n  C -->|yes| D[Path A]\n  C -->|no| E[Path B]\n```\n",
+  "anatomyBlock": "diagram-canvas",
+  "sample": "<!-- _class: diagram -->\n\n## How a Lattice slide goes from markdown to PDF.\n\n```mermaid\nflowchart LR\n  A[deck.md] --> B[lattice-emulator.js]\n  B --> C{has mermaid?}\n  C -->|yes| D[mmdc → inline SVG]\n  C -->|no| E[parse + process]\n  D --> E\n  E --> F[HTML]\n  F --> G[Puppeteer print]\n  G --> H[deck.pdf]\n```\n",
+  "whenToUse": [
+    {
+      "title": "Relational structure is the message",
+      "body": "Flowcharts, sequence diagrams, state machines, ER diagrams, journey maps. The relationships between nodes carry meaning the audience needs to see at a glance."
+    },
+    {
+      "title": "Diagram occupies at least half the canvas",
+      "body": "If the heading and prose dominate and the diagram is a sidebar, it is a content slide that happens to have a diagram. Reach for diagram when the graph IS the slide."
+    },
+    {
+      "title": "Palette tokens render automatically",
+      "body": "Mermaid blocks are pre-rendered to SVG with palette tokens injected via `%%{init}%%`. Don't hand-set colors — the diagram inherits the active theme so dark / accent variants work without re-authoring."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Tabular data on axes",
+      "body": "Quantitative datapoints across two axes are not flowchart material. Use quadrant, radar, progress, piechart, or timeline-list — the series-substance components are designed for plotted data."
+    },
+    {
+      "title": "Twenty-node spaghetti",
+      "body": "Past a dozen nodes the diagram stops being scannable. Split into two slides, hide leaf nodes behind a summary node, or move to a multi-page diagram-doc reference."
+    },
+    {
+      "title": "Inline color overrides",
+      "body": "Hand-set node colors break the theme contract. Let palette tokens drive everything; if you need to highlight one node, use mermaid's `class` mechanism so the highlight survives theme remapping."
+    }
+  ],
+  "related": [
+    {
+      "name": "code",
+      "when": "the implementation, not the topology, is the argument"
+    },
+    {
+      "name": "quadrant",
+      "when": "items positioned by two numeric attributes"
+    },
+    {
+      "name": "radar",
+      "when": "options rated across several criteria"
+    },
+    {
+      "name": "timeline-list",
+      "when": "the graph is a sequence in time, not a topology"
+    },
+    {
+      "name": "content",
+      "when": "the diagram is one element in a prose slide"
+    }
+  ]
+}

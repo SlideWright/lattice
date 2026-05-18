@@ -1,0 +1,74 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "timeline",
+  "function": "progression",
+  "form": "timeline",
+  "substance": "structure",
+  "description": "Horizontal ordered steps along a single axis, each a labeled dot.",
+  "purpose": "Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the process."
+    },
+    "steps": {
+      "selector": "ol > li, ul > li",
+      "required": true,
+      "description": "One li per step. Lead each with **Step label** then a nested bullet for the description."
+    }
+  },
+  "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
+  "anatomyBlock": "timeline",
+  "sample": "<!-- _class: timeline -->\n\n## How a deck moves from draft to share.\n\n1. **Draft**\n   - *Author writes markdown with the appropriate `_class` directives.*\n2. **Build**\n   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*\n3. **Review**\n   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*\n4. **Ship**\n   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*\n",
+  "whenToUse": [
+    {
+      "title": "Short labels on a horizontal axis",
+      "body": "When each stage is a short label plus a sentence — the audience reads the whole sequence as a single arc. Richer per-step bodies belong in `list-steps`."
+    },
+    {
+      "title": "Three to six stages",
+      "body": "Below three the axis feels under-furnished; above six the dots crowd and the labels collide. Group adjacent stages or split into two slides."
+    },
+    {
+      "title": "Ordered or unordered",
+      "body": "Use `ol` for numbered circles (sequence is the point); use `ul` for plain dots (the stages are a journey rather than a ranked sequence)."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Long body per step",
+      "body": "If each stage needs a paragraph, lift to `list-steps` where the cards have body room. Prose crammed into a timeline label crowds the axis."
+    },
+    {
+      "title": "Parallel options, not sequence",
+      "body": "If the items are alternatives rather than ordered stages, use `cards-grid`. The horizontal axis here reads as time."
+    },
+    {
+      "title": "Past six stages",
+      "body": "More than six dots compresses the axis and the labels collide. Split into two slides or roll up adjacent stages."
+    }
+  ],
+  "related": [
+    {
+      "name": "list-steps",
+      "when": "each step needs body-paragraph room, not just a label"
+    },
+    {
+      "name": "split-steps",
+      "when": "a phase anchor + heading reads on the left, steps on the right"
+    },
+    {
+      "name": "journey",
+      "when": "each step carries actors and mood, not just a label"
+    },
+    {
+      "name": "gantt",
+      "when": "tasks have duration and overlap across multiple workstreams"
+    },
+    {
+      "name": "roadmap",
+      "when": "phased grid across multiple workstreams rather than a single axis"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "glossary",
+  "function": "inventory",
+  "form": "ledger",
+  "substance": "structure",
+  "description": "Two-column term/definition table with auto-derived alphabetic range pill.",
+  "purpose": "Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading — typically 'Glossary'."
+    },
+    "entries": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Nested bullets: outer li is the term, inner li is the definition."
+    }
+  },
+  "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
+  "anatomyBlock": "glossary",
+  "sample": "<!-- _class: glossary -->\n\n## Glossary\n\n- Component\n  - A self-contained unit at lib/components, one folder per component, with manifest plus styles plus example plus optional transform plus README.\n- Function\n  - The communication purpose a slide serves; one of seven families (Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery).\n- Form\n  - The spatial composition of a slide; one of eleven shapes (bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split).\n- Manifest\n  - The JSON description of a component, consumed by the scaffolder, snippets, docs catalog, and autocomplete.\n- Substance\n  - The kind of data that fills the form; one of four (prose, structure, series, graph).\n",
+  "whenToUse": [
+    {
+      "title": "Jargon-heavy decks",
+      "body": "When the audience needs a reference page they can flip back to. Acronyms, domain terms, internal names — anything the speaker won't define inline."
+    },
+    {
+      "title": "Five to eight entries per slide",
+      "body": "The ledger is sized for a short page. For longer glossaries, split alphabetically across multiple slides — the runtime stamps each with its range pill."
+    },
+    {
+      "title": "Short definitions",
+      "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Multi-sentence definitions",
+      "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading."
+    },
+    {
+      "title": "Mixed term lengths",
+      "body": "If some terms are single words and others are full phrases, the left column gets ragged. Trim long terms to their canonical short form."
+    },
+    {
+      "title": "Hand-written range pill",
+      "body": "The runtime derives the range pill (e.g. \"A – G\") from the entries. Authoring it into the heading double-stamps it."
+    }
+  ],
+  "related": [
+    {
+      "name": "list-tabular",
+      "when": "rows are key/value reference, not term/definition"
+    },
+    {
+      "name": "subtopic",
+      "when": "one term needs a full slide of explanation"
+    },
+    {
+      "name": "actors",
+      "when": "the left column is a named person, not a term"
+    },
+    {
+      "name": "principles",
+      "when": "the entries are stated rules, not defined terms"
+    }
+  ]
+}

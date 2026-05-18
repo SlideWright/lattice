@@ -1,0 +1,74 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "content",
+  "function": "statement",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Generic prose slide — heading plus paragraphs or a short list.",
+  "purpose": "The catch-all for explanatory content that doesn't fit a more structured layout. Resist using it when a more specific component (cards-grid, stats, compare-prose) would shape the content better.",
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "body": {
+      "selector": "section > p, section > ul",
+      "required": true,
+      "description": "Paragraphs or a short bullet list under the heading. Keep under ~40 words."
+    }
+  },
+  "skeleton": "<!-- _class: content -->\n\n## Slide heading.\n\nThe explanatory paragraph that develops the heading goes here. Keep the slide under forty words.\n\n- Optional supporting point one.\n- Optional supporting point two.\n",
+  "anatomyBlock": "content-canvas",
+  "sample": "<!-- _class: content -->\n\n## The catch-all prose slide.\n\nUse `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.\n\n- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.\n- For comparisons, prefer `compare-prose` or `compare-table`.\n- For single metrics, prefer `big-number` or `stats`.\n",
+  "whenToUse": [
+    {
+      "title": "Explanatory prose that doesn't shape",
+      "body": "A paragraph that develops one idea. No comparisons to spell out, no inventory to grid, no metric to highlight — just prose with a heading. The catch-all when shape would be forced."
+    },
+    {
+      "title": "Under forty words",
+      "body": "Content slides earn their place when they're brief. Past 40 words the slide becomes a wall of text and the audience stops reading. Trim or split into two slides."
+    },
+    {
+      "title": "Optional short bullet list",
+      "body": "If the paragraph wants two or three loose qualifications, a bullet list below the prose is fine. For more than that, the content is really structured — move to a `list` or `cards-stack` slide."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Forced shape into prose",
+      "body": "If the content is a comparison, use compare-prose. If it's a list of options, use cards-grid. If it's a sequence, use list-steps. Reaching for content when shape exists wastes the slide."
+    },
+    {
+      "title": "Wall of text",
+      "body": "More than 40 words and the audience tunes out. The layout doesn't fight back — it'll happily render a 200-word paragraph that nobody reads. Split or trim."
+    },
+    {
+      "title": "Multiple headings",
+      "body": "Content carries one heading and one idea. Two h2s on one slide reads as two slides crammed together. Split into two content slides or use a structured layout."
+    }
+  ],
+  "related": [
+    {
+      "name": "quote",
+      "when": "the prose IS a quote — let the quotation chrome carry it"
+    },
+    {
+      "name": "big-number",
+      "when": "the prose IS a metric — let the number carry it"
+    },
+    {
+      "name": "cards-grid",
+      "when": "the prose IS a parallel list of items"
+    },
+    {
+      "name": "compare-prose",
+      "when": "the prose IS a two-way comparison"
+    },
+    {
+      "name": "list-steps",
+      "when": "the prose IS an ordered sequence"
+    }
+  ]
+}

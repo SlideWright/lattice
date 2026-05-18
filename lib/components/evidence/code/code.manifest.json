@@ -1,0 +1,70 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "code",
+  "function": "evidence",
+  "form": "canvas",
+  "substance": "prose",
+  "description": "Single fenced code block as the slide's centerpiece.",
+  "purpose": "Use when the code IS the slide — an API snippet, a config example, a migration. For comparing two versions, use compare-code.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing what the code shows."
+    },
+    "code": {
+      "selector": "pre > code",
+      "required": true,
+      "description": "Fenced code block — language tag drives syntax highlighting."
+    }
+  },
+  "skeleton": "<!-- _class: code -->\n\n## What the new endpoint looks like.\n\n```js\napp.post('/api/v2/auth', async (req, res) => {\n  const session = await issueSession(req.body);\n  res.json({ session });\n});\n```\n",
+  "anatomyBlock": "code-canvas",
+  "sample": "<!-- _class: code -->\n\n## What loading a manifest looks like.\n\n```js\nconst { loadAll, groupByFunction } = require(\"./lib/components\");\n\nconst manifests = loadAll();           // 58 components, validated\nconst byFunction = groupByFunction(manifests);\n\nfor (const m of byFunction.evidence) {\n  console.log(m.name, m.form, m.substance);\n}\n```\n",
+  "whenToUse": [
+    {
+      "title": "The code is the argument",
+      "body": "When a single snippet answers the question on the slide — the shape of an API call, the surface of a config, the body of a migration. Authoring follows the snippet, not the other way around."
+    },
+    {
+      "title": "Language hint earns the highlight",
+      "body": "Always include the language tag on the fence (```js, ```python, ```sql). The highlighter only triggers when the language is named; without it the slide reads as undifferentiated mono."
+    },
+    {
+      "title": "Twenty lines or fewer",
+      "body": "Past about twenty lines the type shrinks below boardroom legibility. Trim ruthlessly — keep imports out, elide bodies with `// ...`, and let the rest of the deck carry the surrounding context."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Comparing two versions",
+      "body": "If you need before/after, use compare-code — it gives both snippets parallel framing. code is for a single snippet doing one job."
+    },
+    {
+      "title": "Code-as-decoration",
+      "body": "A screenshot of an IDE or a snippet the audience cannot read defeats the layout. If the code is too long to legibly fit, the slide isn't a code slide — it's a content slide that talks about code."
+    },
+    {
+      "title": "No language hint",
+      "body": "A bare fence renders as undifferentiated mono. Always tag the language so the highlighter and the reviewer both know what they are looking at."
+    }
+  ],
+  "related": [
+    {
+      "name": "compare-code",
+      "when": "before/after snippet comparison"
+    },
+    {
+      "name": "diagram",
+      "when": "the architecture matters more than the code"
+    },
+    {
+      "name": "math",
+      "when": "the equation is the argument, not the implementation"
+    },
+    {
+      "name": "content",
+      "when": "code is one piece of a longer prose explanation"
+    }
+  ]
+}

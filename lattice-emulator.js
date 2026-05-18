@@ -945,11 +945,11 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/radar/radar.transform');
+const radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/quadrant/quadrant.transform');
+const quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;
