@@ -52,14 +52,12 @@ section.progress .progress-fill {
 }
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { background: var(--pass); }
+section.progress .progress-fill[data-s="live"]    { background: var(--positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { background: var(--warn); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { background: var(--fail); }
-section.progress .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt));
-}
+section.progress .progress-fill[data-s="fail"]    { background: var(--negative); }
+section.progress .progress-fill[data-s="deferred"] { background: var(--inactive); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-sm);

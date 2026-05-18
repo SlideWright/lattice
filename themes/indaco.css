@@ -127,6 +127,31 @@
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
 
+  /* ── Universal data-signal tokens — indaco curation ──────────────────
+   * Independent of the cN categorical cycle: each value is a curated
+   * indaco-toned hex, tuned to sit in the same perceptual envelope as
+   * cN-dark (light canvas L≈0.42–0.50, restrained chroma ≈0.08–0.13)
+   * and cN-dark dark-side (dark canvas L≈0.68–0.75). So a progress bar
+   * drawn in --positive reads as a sibling of a pie wedge drawn in any
+   * cN slot, without being a literal cN sample.
+   *
+   * Soft variants are pre-baked tints (light L≈0.94, dark L≈0.15) —
+   * no color-mix at any consumer; downstream rules use direct var()
+   * references only.
+   *
+   * Restraint trade-off: indaco's quiet ink-on-paper aesthetic prefers
+   * a tasteful brick-red over an alarm red. State signals here are
+   * deliberately softer than Tailwind 400/700 defaults — the bar is
+   * still the wrong colour, it just doesn't shout. */
+  --positive:      light-dark(#3D7548, #7FA887);
+  --positive-soft: light-dark(#E5EFE7, #1A3325);
+  --negative:      light-dark(#9C3838, #C88787);
+  --negative-soft: light-dark(#F5E5E5, #3A1A1A);
+  --neutral:       light-dark(#A06530, #CFA070);
+  --neutral-soft:  light-dark(#F4ECE0, #332518);
+  --inactive:      light-dark(#5A6F89, #95A8BC);
+  --inactive-soft: light-dark(#EBEEF2, #222933);
+
   /* Sequential ramp anchor — indaco's brand mid-blue. The 9 derivative
    * stops auto-derive in lattice.css :root via OKLab color-mix. */
   --scale-500: var(--brand-accent);

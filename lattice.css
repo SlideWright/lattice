@@ -6128,14 +6128,12 @@ section.progress .progress-fill {
 }
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { background: var(--pass); }
+section.progress .progress-fill[data-s="live"]    { background: var(--positive); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { background: var(--warn); }
+section.progress .progress-fill[data-s="warn"]    { background: var(--neutral); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { background: var(--fail); }
-section.progress .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt));
-}
+section.progress .progress-fill[data-s="fail"]    { background: var(--negative); }
+section.progress .progress-fill[data-s="deferred"] { background: var(--inactive); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
@@ -10286,25 +10284,9 @@ section.chart-frame.dark .chart-status[data-s="deferred"] {
   border-color: color-mix(in oklab, var(--text-muted) 38%, transparent);
 }
 
-/* Dark-canvas progress fill — the same brand greens/ambers/reds read
- * darker on a dark canvas; lift them with a partial white mix so the
- * fill ratio is visually obvious. */
-section.progress.dark .progress-fill[data-s="on-track"],
-section.progress.dark .progress-fill[data-s="done"],
-section.progress.dark .progress-fill[data-s="live"] {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="at-risk"],
-section.progress.dark .progress-fill[data-s="warn"] {
-  background: color-mix(in oklab, var(--warn) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="blocked"],
-section.progress.dark .progress-fill[data-s="fail"] {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-}
-section.progress.dark .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
-}
+/* Dark-canvas progress fills are handled by the light-dark() pairs in
+ * --positive / --negative / --neutral / --inactive — no manual lift
+ * needed at this surface. */
 
 /* === lib/base/base.treatments.css === */
 /* base.treatments.css — peripheral atmospheric accents.
