@@ -2437,19 +2437,18 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  * A 3px inset gives visible air between adjacent bars that share a column
  * boundary (e.g. "Q1→Q2" and "Q2→Q3").
  *
- * Fill approach mirrors the progress chart default:
- *   color-mix(in oklab, var(--semantic) 70%, var(--bg-alt))
- * — a tinted fill, not the raw semantic colour. This keeps bars visually
- * proportional to the progress fill (which is 14px, no text) even though
- * gantt bars are 34px tall and carry a label. Dark ink (--text-heading)
- * sits on every tinted fill at ≥ 5.3:1. */
+ * Fills follow the chart-family principle: pale tint on light canvas,
+ * deep hue on dark canvas, same hue family both modes. State bars use
+ * --positive/--neutral/--negative/--inactive (light-dark() pairs); the
+ * default bar uses --accent-soft for a brand-quiet "no status" tint.
+ * Text is always --text-heading — canvas-aware, no selective ink. */
 .gantt-bar {
   position: absolute;
   top: 5px; bottom: 5px;
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
+  background: var(--accent-soft);
   color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-xs);
@@ -2463,59 +2462,24 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status fills — tinted with the same formula as the default bar.
- * All use --text-heading (dark ink) inherited from .gantt-bar. */
+/* Status fills — state tokens carry the colour, --text-heading carries
+ * the text. Same canvas-aware recipe in both modes via light-dark(). */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="live"]     { background: var(--positive); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="warn"]     { background: var(--neutral); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
-/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
- * on this surface while still conveying the "inactive" register). */
-.gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
-  color: var(--text-body);
-}
-/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
- * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
+.gantt-bar[data-s="fail"]     { background: var(--negative); }
+.gantt-bar[data-s="deferred"] { background: var(--inactive); }
+/* Pilot / decision — kept on --accent-soft + accent text as a
+ * deliberate "experimental" treatment outside the state axis. */
 .gantt-bar[data-s="pilot"],
 .gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
 
-/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
- * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
- * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
-section.gantt.dark .gantt-bar {
-  background: var(--accent);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="on-track"],
-section.gantt.dark .gantt-bar[data-s="done"],
-section.gantt.dark .gantt-bar[data-s="live"]     {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="at-risk"],
-section.gantt.dark .gantt-bar[data-s="warn"]     {
-  background: color-mix(in oklab, var(--warn) 45%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="blocked"],
-section.gantt.dark .gantt-bar[data-s="fail"]     {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-  color: var(--bg-dark);
-}
-/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
-section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
-  color: var(--on-dark-secondary);
-}
-/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
- * by light-dark() on those tokens; no explicit override needed. */
-
-/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
-section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
+/* Dark-canvas bar fills are handled by light-dark() in --positive /
+ * --neutral / --negative / --inactive / --accent-soft — no manual
+ * lift needed at this surface. */
 
 /* === lib/components/glossary/glossary.styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
@@ -3913,10 +3877,11 @@ section.kanban.chart-frame .chart-body {
   text-overflow: ellipsis;
 }
 
-/* "Done" column: header turns pass-green, cards dim to signal completion */
+/* "Done" column: header keeps --text-label (canvas-aware, no selective
+ * text); state signal moves entirely to the underline in --positive.
+ * Cards dim to signal completion. */
 .kanban-column[data-done] .kanban-column-header {
-  color: var(--pass);
-  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+  border-bottom-color: var(--positive);
 }
 .kanban-column[data-done] .kanban-card { opacity: 0.52; }
 
@@ -3988,15 +3953,18 @@ section.kanban.chart-frame .chart-body {
   flex: 0 0 auto;
 }
 
-/* Lane tag — small pill tinted with the lane colour */
+/* Lane tag — small pill on the lane's cN-light tint (pale on light,
+ * deep on dark, set inline as --lane-color). Text follows the canvas
+ * via --text-body; same "no selective text" rule chart-family pills
+ * and progress bars use. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
   border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
-  color: var(--lane-color, var(--accent));
+  background: var(--lane-color, var(--accent-soft));
+  color: var(--text-body);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -4025,12 +3993,10 @@ section.kanban.chart-frame .chart-body {
   text-overflow: ellipsis;
 }
 
-/* Dark canvas — --text-label uses light-dark() so column headers adapt
- * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
- * explicit because --pass doesn't use light-dark(). */
-section.kanban.dark .kanban-column[data-done] .kanban-column-header {
-  color: color-mix(in oklab, var(--pass) 35%, white);
-}
+/* Dark canvas — column headers and the done-state underline both
+ * resolve correctly via light-dark() on --text-label and --positive;
+ * the only thing that needs an explicit dark nudge is the size-badge
+ * background (chip on the card surface). */
 section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }
@@ -6741,14 +6707,15 @@ section.radar .radar-gap {
   stroke-width: 3;
   stroke-linecap: round;
 }
-/* Semantic state tokens — --pass / --fail come from lattice.css :root,
- * tuned per theme. Was --cat-green / --cat-rose before the 2026-05-15
- * themes refactor (commit 552e84a) removed the named-cat tokens. */
+/* State-token strokes: gap and delta variants signal data-vs-target
+ * with --positive (gain, over, up) / --negative (loss, under, down) /
+ * --inactive (flat). Direct token references — no alpha mix on state
+ * colours per the chart-colour philosophy. */
 section.radar .radar-gap[data-dir="under"] {
-  stroke: var(--fail);
+  stroke: var(--negative);
 }
 section.radar .radar-gap[data-dir="over"] {
-  stroke: color-mix(in srgb, var(--pass) 60%, transparent);
+  stroke: var(--positive);
   stroke-width: 2;
 }
 
@@ -6763,9 +6730,9 @@ section.radar .radar-delta-seg {
   stroke-width: 3;
   stroke-linecap: round;
 }
-section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--pass); }
-section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--fail); }
-section.radar .radar-delta-seg[data-dir="flat"] { stroke: var(--radar-spoke); }
+section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--positive); }
+section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--negative); }
+section.radar .radar-delta-seg[data-dir="flat"] { stroke: var(--inactive); }
 
 /* ── benchmark: hero series over a min–max envelope band ──────────────── */
 section.radar .radar-band {

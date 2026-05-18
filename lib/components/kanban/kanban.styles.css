@@ -52,10 +52,11 @@ section.kanban.chart-frame .chart-body {
   text-overflow: ellipsis;
 }
 
-/* "Done" column: header turns pass-green, cards dim to signal completion */
+/* "Done" column: header keeps --text-label (canvas-aware, no selective
+ * text); state signal moves entirely to the underline in --positive.
+ * Cards dim to signal completion. */
 .kanban-column[data-done] .kanban-column-header {
-  color: var(--pass);
-  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+  border-bottom-color: var(--positive);
 }
 .kanban-column[data-done] .kanban-card { opacity: 0.52; }
 
@@ -127,15 +128,18 @@ section.kanban.chart-frame .chart-body {
   flex: 0 0 auto;
 }
 
-/* Lane tag — small pill tinted with the lane colour */
+/* Lane tag — small pill on the lane's cN-light tint (pale on light,
+ * deep on dark, set inline as --lane-color). Text follows the canvas
+ * via --text-body; same "no selective text" rule chart-family pills
+ * and progress bars use. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
   border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
-  color: var(--lane-color, var(--accent));
+  background: var(--lane-color, var(--accent-soft));
+  color: var(--text-body);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -164,12 +168,10 @@ section.kanban.chart-frame .chart-body {
   text-overflow: ellipsis;
 }
 
-/* Dark canvas — --text-label uses light-dark() so column headers adapt
- * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
- * explicit because --pass doesn't use light-dark(). */
-section.kanban.dark .kanban-column[data-done] .kanban-column-header {
-  color: color-mix(in oklab, var(--pass) 35%, white);
-}
+/* Dark canvas — column headers and the done-state underline both
+ * resolve correctly via light-dark() on --text-label and --positive;
+ * the only thing that needs an explicit dark nudge is the size-badge
+ * background (chip on the card surface). */
 section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }

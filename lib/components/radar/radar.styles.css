@@ -198,14 +198,15 @@ section.radar .radar-gap {
   stroke-width: 3;
   stroke-linecap: round;
 }
-/* Semantic state tokens — --pass / --fail come from lattice.css :root,
- * tuned per theme. Was --cat-green / --cat-rose before the 2026-05-15
- * themes refactor (commit 552e84a) removed the named-cat tokens. */
+/* State-token strokes: gap and delta variants signal data-vs-target
+ * with --positive (gain, over, up) / --negative (loss, under, down) /
+ * --inactive (flat). Direct token references — no alpha mix on state
+ * colours per the chart-colour philosophy. */
 section.radar .radar-gap[data-dir="under"] {
-  stroke: var(--fail);
+  stroke: var(--negative);
 }
 section.radar .radar-gap[data-dir="over"] {
-  stroke: color-mix(in srgb, var(--pass) 60%, transparent);
+  stroke: var(--positive);
   stroke-width: 2;
 }
 
@@ -220,9 +221,9 @@ section.radar .radar-delta-seg {
   stroke-width: 3;
   stroke-linecap: round;
 }
-section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--pass); }
-section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--fail); }
-section.radar .radar-delta-seg[data-dir="flat"] { stroke: var(--radar-spoke); }
+section.radar .radar-delta-seg[data-dir="up"]   { stroke: var(--positive); }
+section.radar .radar-delta-seg[data-dir="down"] { stroke: var(--negative); }
+section.radar .radar-delta-seg[data-dir="flat"] { stroke: var(--inactive); }
 
 /* ── benchmark: hero series over a min–max envelope band ──────────────── */
 section.radar .radar-band {
