@@ -77,8 +77,8 @@ Some types accept both. The rendered CSS class is determined by diagram type, no
 
 **Diagnostic recipe (when Mermaid adds a new diagram type).**
 
-1. Add a `title` directive to the diagram in `examples/mermaid-gallery.md`.
-2. Build to HTML via `node lattice-emulator.js examples/mermaid-gallery.md ...`.
+1. Add a `title` directive to the diagram in `examples/gallery-mermaid.md`.
+2. Build to HTML via `node lattice-emulator.js examples/gallery-mermaid.md ...`.
 3. Open the HTML in a browser so Mermaid renders the SVG client-side.
 4. Save the post-render DOM (DevTools → Elements → copy outerHTML on the `<svg>`).
 5. Grep for the title text string. Inspect the surrounding `<text>` element's `class` attribute.

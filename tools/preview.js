@@ -59,6 +59,7 @@ const ALL_DECKS = Object.freeze([
   'gallery-jargon',
   'design-system',
   'chart-family-experiment',
+  'custom-logo',
   'diagram-tokens',
   'image-concepts',
   'legal-layouts',
