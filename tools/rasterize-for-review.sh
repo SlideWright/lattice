@@ -115,28 +115,37 @@ page_args=()
 pdftoppm -r "$dpi" -png "${page_args[@]}" "$pdf" "$out_dir/p" >&2
 
 # Resolve --region shorthand into an ImageMagick geometry.
-# Each region carves out roughly half the slide (or a quadrant).
+# Each region carves a portion of the slide and clamps both
+# dimensions to <=2000px so the output always passes --check.
+# For a 4K slide (e.g. 4000x2250), the "left half" is naively
+# 2000x2250 — height exceeds the limit. So we clamp dimensions
+# and align the crop to the requested edge.
 if [[ -n "$region" ]]; then
-  # Need image dimensions from the first rendered page. Use a
-  # subshell to capture identify's output — `read` with a here-string
-  # avoids the no-trailing-newline issue that process substitution
-  # of `identify -format` hits.
   first_png="$(ls "$out_dir"/p-*.png | head -1)"
   dims="$(identify -format "%w %h" "$first_png")"
   W="${dims% *}"
   H="${dims#* }"
-  HW=$((W / 2))
-  HH=$((H / 2))
+  # Cap each dimension at 2000 (the API limit) when computing crops.
+  MAX=2000
+  # Half dimensions, clamped to MAX
+  HW=$((W / 2)); [[ $HW -gt $MAX ]] && HW=$MAX
+  HH=$((H / 2)); [[ $HH -gt $MAX ]] && HH=$MAX
+  # Full dimensions, clamped to MAX (for "top" / "bottom" which want full width)
+  CW=$W; [[ $CW -gt $MAX ]] && CW=$MAX
+  CH=$H; [[ $CH -gt $MAX ]] && CH=$MAX
+  # Center offsets — for "center" the crop is HWxHH centred on the slide.
+  CX=$(( (W - HW) / 2 )); [[ $CX -lt 0 ]] && CX=0
+  CY=$(( (H - HH) / 2 )); [[ $CY -lt 0 ]] && CY=0
   case "$region" in
-    top)          crop="${W}x${HH}+0+0"           ;;
-    bottom)       crop="${W}x${HH}+0+${HH}"       ;;
-    left)         crop="${HW}x${H}+0+0"           ;;
-    right)        crop="${HW}x${H}+${HW}+0"       ;;
-    center)       crop="${HW}x${HH}+$((W/4))+$((H/4))" ;;
-    top-left)     crop="${HW}x${HH}+0+0"          ;;
-    top-right)    crop="${HW}x${HH}+${HW}+0"      ;;
-    bottom-left)  crop="${HW}x${HH}+0+${HH}"      ;;
-    bottom-right) crop="${HW}x${HH}+${HW}+${HH}"  ;;
+    top)          crop="${CW}x${HH}+0+0"           ;;
+    bottom)       crop="${CW}x${HH}+0+$((H - HH))"  ;;
+    left)         crop="${HW}x${CH}+0+0"           ;;
+    right)        crop="${HW}x${CH}+$((W - HW))+0"  ;;
+    center)       crop="${HW}x${HH}+${CX}+${CY}"   ;;
+    top-left)     crop="${HW}x${HH}+0+0"           ;;
+    top-right)    crop="${HW}x${HH}+$((W - HW))+0"  ;;
+    bottom-left)  crop="${HW}x${HH}+0+$((H - HH))"  ;;
+    bottom-right) crop="${HW}x${HH}+$((W - HW))+$((H - HH))" ;;
     *) echo "error: unknown --region '$region'" >&2; exit 1 ;;
   esac
 fi
