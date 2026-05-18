@@ -6194,34 +6194,46 @@ section.progress .progress-note {
 
 /* Palette routing — two contexts, one custom-property pair:
  *
- *   --cell-fill   pale L≈85 background tint (region rect, hull, bubble)
- *   --cell-ink    deep AA-paired ink (dot, label, stroke, text)
+ *   --cell-fill   region-tint / bubble / hull background colour
+ *   --cell-ink    stroke + dot fill for the same cell (NOT text — text
+ *                 elements pull --text-heading directly to keep the
+ *                 chart's text register consistent inside and outside
+ *                 the plot, same rule as chart-family pills)
  *
- * Positional variants (default/bubble/trail/threshold/magic) pull the
- * theme's `--c-quadrant-N-fill` / `--c-quadrant-N-text` aliases — these
- * are hue-tuned per the theme's boardroom semantics (e.g. brand blue
- * in the top-right "strategic" zone). My kernel uses reading-order
- * indices (cell 0=TL, 1=TR, 2=BL, 3=BR) while the theme's aliases use
- * Mermaid math convention (Q1=TR, Q2=TL, Q3=BL, Q4=BR) — the mapping
- * below translates.
+ * Default + bubble/trail/threshold/magic — state-token aligned. The
+ * Mermaid quadrant numbering carries an editorial verdict: Q1 (top-
+ * right) is the "do these" zone, Q4 (bottom-right) is "avoid these,"
+ * Q3 is "defer," Q2 is "secondary action." Mapping cell tints to the
+ * universal state axis (positive / neutral / inactive / negative)
+ * makes the chart self-document instead of relying on memorised
+ * cell-position semantics.
  *
- * Cohort variant cycles c1…c4 instead: cohort groups have no semantic
- * quadrant position, so a vanilla categorical sequence is correct.
+ *   cell 0  TL  (Q2 — Quick Wins)        --neutral
+ *   cell 1  TR  (Q1 — Strategic Bets)    --positive
+ *   cell 2  BL  (Q3 — Defer)             --inactive
+ *   cell 3  BR  (Q4 — Time Sinks)        --negative
  *
- * Themes can override either set without touching the kernel. */
+ * --cell-ink defaults to --text-heading so dots / strokes inside the
+ * default variant ride the canvas text colour (no per-state ink).
+ *
+ * Cohort variant cycles c1…c4 instead — cohort groups are intentionally
+ * categorical and don't carry a positive/negative axis. Hull strokes
+ * stay saturated via cN-dark so cluster outlines remain visible. */
 section.quadrant {
   --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
   --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
 }
 
-/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
+/* Default routing — state-token aligned (reading-order → Mermaid Q). */
+section.quadrant [data-cell="0"] { --cell-fill: var(--neutral);  --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--positive); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--inactive); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--negative); --cell-ink: var(--text-heading); }
 
-/* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
+/* Cohort override — sequential c1…c4 brand slots; cell-ink stays
+ * saturated (--cN-dark) so the hull stroke reads as a cluster outline.
+ * The cohort label TEXT pulls --text-heading directly (see below). */
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
@@ -6323,8 +6335,11 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
+/* Text inside the chart uses --text-heading (canvas-aware) — never the
+ * per-cell ink — so the label register matches the H2 above and the
+ * caption below. Same rule chart-family pills follow. */
 section.quadrant .quadrant-label {
-  fill: var(--cell-ink);
+  fill: var(--text-heading);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -6370,12 +6385,14 @@ section.quadrant .quadrant-bubble-value {
   font-size: 8.5px;
   font-weight: 700;
 }
-/* Inside a pale bubble fill, dark ink is the AA pairing. */
+/* Bubble values are TEXT — pull --text-heading directly so the readout
+ * register matches the H2 / labels / caption (same rule as corner
+ * labels above). Was per-cell ink before the state-token migration. */
 section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--cell-ink);
+  fill: var(--text-heading);
 }
 section.quadrant .quadrant-bubble-value[data-pos="above"] {
-  fill: var(--cell-ink);
+  fill: var(--text-heading);
 }
 section.quadrant .quadrant-bubble-label {
   fill: var(--text-heading);
@@ -6423,7 +6440,7 @@ section.quadrant .quadrant-hull-line {
   opacity: 0.65;
 }
 section.quadrant .quadrant-cohort-label {
-  fill: var(--cell-ink);
+  fill: var(--text-heading);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
