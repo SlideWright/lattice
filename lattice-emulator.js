@@ -345,7 +345,14 @@ function loadPaletteWithImports(filePath, seen = new Set(), label = null) {
 
 const paletteCSS = loadPaletteWithImports(palettePath);
 const layoutCSS  = loadPaletteWithImports(cssFile, new Set(), 'layout CSS');
-const css = paletteCSS + '\n' + layoutCSS;
+// Cascade order: layout (lattice.css) first, palette last — same as the
+// JS-side parser at the parsePaletteVars call below. Themes must win
+// over base :root tokens; the earlier paletteCSS-first ordering silently
+// let base tokens override every theme's curated values because CSS
+// `last declaration wins` at equal specificity. The bug hid for as long
+// as every theme override happened to be visually near-identical to the
+// base value it "overrode."
+const css = layoutCSS + '\n' + paletteCSS;
 
 // ── Mermaid renderer ─────────────────────────────────────────────────────────
 // Two surfaces wire the rendered SVG to the active palette:
