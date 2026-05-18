@@ -504,6 +504,38 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** We vendor the fonts.
 - **Commits:** Observed in dev; not yet addressed.
 
+### VS Code's built-in PDF preview hue-shifts our gradients (pink/magenta)
+
+- **Symptom:** A chart-frame's accent-tinted gradient header (or any
+  CSS gradient using `color-mix(in oklab, …)` and `transparent` stops)
+  reads pink/magenta in VS Code's built-in PDF preview, in both light
+  and dark mode. Same PDF in Chrome / Firefox / macOS Preview /
+  Acrobat looks correct (blue-tinted).
+- **Cause:** VS Code's built-in preview is PDF.js. PDFs don't carry
+  CSS — Chromium resolves gradients at print time to PDF shading
+  objects (Type 2/3 axial-radial, plus soft-mask groups when stops
+  are transparent). PDF.js implements those operators in pure
+  JavaScript with no native color management. Wide-gamut color spaces
+  (oklab, p3) and alpha across shading boundaries hit known gaps —
+  the bytes get sRGB-misread and produce hue shifts. We're not doing
+  anything wrong; we're using standards-compliant CSS that produces
+  a standards-compliant PDF a behind-the-spec viewer can't render.
+- **Mitigation:** Don't review in VS Code's built-in preview. Open
+  the PDF in Chrome, install the "vscode-pdf" extension (different
+  renderer), or use the marp-vscode preview pane for visual checks
+  (CLAUDE.md's documented inner loop). The chart-frame's lucent-strip
+  gradient was retired for design reasons (treatments are opt-in via
+  the universal `tint-*` / `mark-*` modifiers); that incidentally
+  removed one source of the symptom, but other gradients in the
+  codebase (`--spectrum`, `.below-note::before`, the `tint-*`
+  treatments themselves) keep exercising the same PDF.js gap.
+- **Triggered by:** Any CSS gradient that uses `color-mix(in oklab,
+  …)` or `transparent` stops. Affects only PDF.js-based viewers.
+- **Removable when:** PDF.js gains real color-management and improves
+  shading + transparency rendering. Don't hold your breath.
+- **Commits:** `39e3351` (chart-header refactor that incidentally
+  removed one source).
+
 ---
 
 ## Browser engine (Chromium quirks observed in Marp Preview / Puppeteer)
