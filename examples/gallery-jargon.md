@@ -951,7 +951,7 @@ Set `header:` and `footer:` in frontmatter for deck-level labels. The header alw
 
 A tall asset on a wide canvas, dark canvas variant. The lattice pattern fills the space on either side. This slide is in every gallery. It has never been used in a real deck. It is here to prove that it works.
 
-![bg fit](sample-image-portrait.svg)
+![bg fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -989,7 +989,7 @@ A tall asset on a wide canvas, dark canvas variant. The lattice pattern fills th
 
 This is the pattern for slides where the visual is the supporting material, not the argument. The image preserves its native aspect ratio; the lattice pattern frames whatever bands remain. No cropping, ever. Authors see the image they dropped in, which has historically been a stock photo of a lighthouse described as "a metaphor for signal."
 
-![bg right fit](sample-image.svg)
+![bg right fit](../lib/components/imagery/image/sample-image.svg)
 
 ---
 
@@ -1002,7 +1002,7 @@ This is the pattern for slides where the visual is the supporting material, not 
 
 Use `image left` when the visual earns the left-column position — when it is the premise, not the evidence. In practice this layout appears most often when someone wants the image on the left and discovers after the fact that there is a modifier for it.
 
-![bg left fit](sample-image-portrait.svg)
+![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -1015,7 +1015,7 @@ Use `image left` when the visual earns the left-column position — when it is t
 
 The `mirror` modifier is the canonical cross-cutting orientation flag. The `left` alias is preserved for backwards compatibility, which is the polite way of saying there are 40 existing decks that use `image left` and nobody wants to find them.
 
-![bg left fit](sample-image-portrait.svg)
+![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -1027,7 +1027,7 @@ The `mirror` modifier is the canonical cross-cutting orientation flag. The `left
 
 Weekly Signal Brief — the primary deliverable of the intake pipeline, distributed every Monday, opened by an estimated 3 of the 14 eligible PMs
 
-![bg fit](sample-image.svg)
+![bg fit](../lib/components/imagery/image/sample-image.svg)
 
 ---
 

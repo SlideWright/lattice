@@ -87,9 +87,24 @@ function composeBucketGallery(bucket, manifests) {
     '',
   ].join('\n');
 
+  // Manifest samples reference assets with bare filenames relative to
+  // the component's own directory (e.g. `![bg](sample-image.svg)`).
+  // When composed into a bucket-level gallery at
+  // lib/components/<bucket>/<bucket>.gallery.md, those bare paths
+  // would resolve to the bucket directory, not the component directory.
+  // Prefix any markdown image reference whose URL is a bare filename
+  // (no slash, no protocol) with `<component>/` so it resolves to the
+  // component's actual asset.
+  function prefixAssetPaths(sample, componentName) {
+    return sample.replace(
+      /(!\[[^\]]*\]\()([^)\/:]+\.(?:svg|png|jpg|jpeg|gif|webp))(\))/gi,
+      `$1${componentName}/$2$3`,
+    );
+  }
+
   const componentSlides = manifests
     .filter((m) => typeof m.sample === 'string' && m.sample.trim())
-    .map((m) => m.sample.trim());
+    .map((m) => prefixAssetPaths(m.sample.trim(), m.name));
 
   const slides = [titleSlide, ...componentSlides];
   return slides.join('\n\n---\n\n') + '\n';

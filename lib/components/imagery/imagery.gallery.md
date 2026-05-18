@@ -30,4 +30,4 @@ Imagery — visuals that carry their own meaning.
 
 The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.
 
-![bg right](sample-image-landscape.svg)
+![bg right](image/sample-image-landscape.svg)
