@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "compare-code",
   "function": "comparison",
+  "bucket": "code",
   "form": "split",
   "substance": "structure",
   "description": "Two fenced code blocks side-by-side, each with a label.",

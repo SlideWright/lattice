@@ -20,8 +20,8 @@
       "description": "Audience-function family the component belongs to (what the viewer leaves knowing). One of the seven taxonomies in docs/design-system.md §3."
     },
     "bucket": {
-      "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery", "chart", "diagram", "math", "legal"],
-      "description": "Disk-layout bucket the component lives in under lib/components/<bucket>/<name>/. Defaults to the value of `function` when absent. Three substance-defined buckets (`chart` for series substance, `diagram` for graph substance, `math` for KaTeX-typeset content) and one domain-defined bucket (`legal` for legal-family components) override the function value when colocation aids maintenance. See docs/design-system.md §9."
+      "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery", "chart", "diagram", "math", "code", "legal"],
+      "description": "Disk-layout bucket the component lives in under lib/components/<bucket>/<name>/. Defaults to the value of `function` when absent. Four substance-defined buckets (`chart` for data visualizations, `diagram` for topological visuals, `math` for typeset equations, `code` for syntax-highlighted source) and one domain-defined bucket (`legal` for legal-family components) override the function value when colocation aids maintenance — each substance bucket describes a category of rendered content, not the library that happens to render it today. See docs/design-system.md §9."
     },
     "galleryAuthored": {
       "type": "boolean",

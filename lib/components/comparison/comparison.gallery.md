@@ -2,7 +2,7 @@
 
 # comparison
 
-`9 components`
+`8 components`
 
 Comparison — how two or more options differ.
 
@@ -17,48 +17,6 @@ Comparison — how two or more options differ.
   - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
 - After.
   - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
-
----
-
-<!-- _class: compare-code -->
-
-`Before & after · Component manifest loading`
-
-## Flat-file lookup versus folder-shape lookup.
-
-`Before · flat file`
-
-```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
-```
-
-`After · folder shape`
-
-```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
-```
 
 ---
 

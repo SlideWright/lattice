@@ -1805,7 +1805,7 @@ section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
 
-/* === lib/components/evidence/code/code.styles.css === */
+/* === lib/components/code/code/code.styles.css === */
 /* code — extracted from lib/_legacy.css (batch 4).
  * See lib/components/code/code.manifest.json for the component contract.
  */
@@ -1820,7 +1820,7 @@ section.code > em { font-size:var(--fs-sm); line-height:var(--lh-snug); color:va
 section.code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
 section.code pre > code { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 
-/* === lib/components/comparison/compare-code/compare-code.styles.css === */
+/* === lib/components/code/compare-code/compare-code.styles.css === */
 /* compare-code — extracted from lib/_legacy.css (batch 5).
  * See lib/components/compare-code/compare-code.manifest.json for the component contract.
  */

@@ -408,28 +408,32 @@ introduced for maintenance colocation:
 | `anchor`     | 4     | function = anchor |
 | `statement`  | 6     | function = statement |
 | `inventory`  | 12    | function = inventory (statute-stack moved to legal) |
-| `comparison` | 9     | function = comparison (obligation-matrix moved to legal) |
+| `comparison` | 8     | function = comparison (obligation-matrix → legal, compare-code → code) |
 | `progression`| 6     | function = progression (authority-chain, regulatory-update moved to legal) |
-| `evidence`   | 4     | function = evidence (citation-card moved to legal, math moved to math) |
+| `evidence`   | 3     | function = evidence (citation-card → legal, math → math, code → code) |
 | `imagery`    | 2     | function = imagery |
-| `chart`      | 8     | substance = series (function stays evidence/progression) |
-| `diagram`    | 1     | substance = graph (function stays evidence) |
-| `math`       | 1     | substance-rendering = KaTeX (function stays evidence) |
+| `chart`      | 8     | substance = data visualizations (function stays evidence/progression) |
+| `diagram`    | 1     | substance = topological visuals (function stays evidence) |
+| `math`       | 1     | substance = typeset equations (function stays evidence) |
+| `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
 | `legal`      | 5     | domain = legal (function spans 4 families) |
 
-For 43 of the 58 components `bucket === function`. The 15 divergent
+For 41 of the 58 components `bucket === function`. The 17 divergent
 components declare their `bucket` explicitly in the manifest; their
 `function` field is unchanged in every case. Three reasons for
 divergence:
 
-- **Substance** — `chart`, `diagram`, and `math` colocate components
-  built around a specific rendering pipeline. chart: internal SVG
-  series kernel for gantt, kanban, piechart, progress, quadrant,
-  radar, timeline-list, word-cloud. diagram: Mermaid (external graph
-  language). math: KaTeX (external math typesetter). Each has its
-  own !important overrides for the library's inline styles, so
-  colocating the component with its substance-specific surface aids
-  maintenance.
+- **Substance** — `chart`, `diagram`, `math`, and `code` each colocate
+  components built around a specific KIND of rendered content. Each
+  describes the category, not the library that happens to render it
+  today (today's implementation may not be tomorrow's):
+  chart = data visualizations (today: internal SVG kernel);
+  diagram = topological visuals (today: Mermaid);
+  math = typeset equations (today: KaTeX);
+  code = syntax-highlighted source (today: highlight.js).
+  Each has its own !important overrides for the current renderer's
+  inline styles, so colocating the component with its substance-
+  specific surface aids maintenance when the renderer changes.
 - **Domain** — `legal` colocates components sharing authoring
   vocabulary, citation conventions, and audience use case
   (statute-stack from inventory; regulatory-update + authority-chain

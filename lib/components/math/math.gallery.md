@@ -4,7 +4,7 @@
 
 `1 component`
 
-Math — KaTeX-typeset equations and proofs.
+Math — typeset equations and proofs.
 
 
 ---

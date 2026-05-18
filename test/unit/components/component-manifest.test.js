@@ -431,9 +431,9 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
-    test('BUCKETS is FUNCTIONS plus chart, diagram, math, and legal', () => {
+    test('BUCKETS is FUNCTIONS plus chart, diagram, math, code, and legal', () => {
       assert.deepEqual([...BUCKETS].sort(), [
-        'anchor', 'chart', 'comparison', 'diagram', 'evidence',
+        'anchor', 'chart', 'code', 'comparison', 'diagram', 'evidence',
         'imagery', 'inventory', 'legal', 'math', 'progression', 'statement',
       ]);
       for (const fn of FUNCTIONS) assert.ok(BUCKETS.includes(fn));
@@ -486,7 +486,7 @@ describe('component-manifest', () => {
       }
     });
 
-    test('shipped manifests partition the 15 known bucket-divergent components correctly', () => {
+    test('shipped manifests partition the 17 known bucket-divergent components correctly', () => {
       const ms = loadAll();
       const g = groupByBucket(ms);
       // chart = 8: gantt, kanban, piechart, progress, quadrant, radar, timeline-list, word-cloud
@@ -498,9 +498,12 @@ describe('component-manifest', () => {
       // diagram = 1: diagram
       assert.equal(g.diagram.length, 1, 'diagram bucket has 1 component');
       assert.equal(g.diagram[0].name, 'diagram');
-      // math = 1: math (KaTeX-typeset content; separate substance-rendering pipeline)
+      // math = 1: math (KaTeX-typeset content; substance-rendering pipeline)
       assert.equal(g.math.length, 1, 'math bucket has 1 component');
       assert.equal(g.math[0].name, 'math');
+      // code = 2: code, compare-code (anything that uses syntax highlighting)
+      assert.equal(g.code.length, 2, 'code bucket has 2 components');
+      assert.deepEqual(g.code.map((m) => m.name).sort(), ['code', 'compare-code']);
       // legal = 5: statute-stack, regulatory-update, authority-chain, citation-card, obligation-matrix
       assert.equal(g.legal.length, 5, 'legal bucket has 5 components');
       assert.deepEqual(
@@ -509,19 +512,23 @@ describe('component-manifest', () => {
       );
     });
 
-    test('the 15 bucket-divergent components keep their function field unchanged', () => {
+    test('the 17 bucket-divergent components keep their function field unchanged', () => {
       const ms = loadAll();
       const byName = Object.fromEntries(ms.map((m) => [m.name, m]));
-      // Substance divergence — chart + diagram + math buckets, all
-      // function = evidence (or progression for gantt/kanban):
-      const evidenceChartDiagramMath = [
-        'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud', 'diagram', 'math',
+      // Substance divergence — chart + diagram + math + code buckets,
+      // all function = evidence (or progression for gantt/kanban, or
+      // comparison for compare-code):
+      const evidenceSubstanceBuckets = [
+        'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud',
+        'diagram', 'math', 'code',
       ];
-      for (const n of evidenceChartDiagramMath) {
+      for (const n of evidenceSubstanceBuckets) {
         assert.equal(byName[n].function, 'evidence', `${n}.function stays "evidence"`);
       }
       assert.equal(byName.gantt.function, 'progression');
       assert.equal(byName.kanban.function, 'progression');
+      assert.equal(byName['compare-code'].function, 'comparison',
+        'compare-code keeps comparison function despite living in code bucket');
       // Domain divergence (legal bucket — components span 4 different
       // function families, all kept):
       assert.equal(byName['statute-stack'].function, 'inventory');

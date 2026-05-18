@@ -2,6 +2,7 @@
   "$schema": "../../manifest.schema.json",
   "name": "code",
   "function": "evidence",
+  "bucket": "code",
   "form": "canvas",
   "substance": "prose",
   "description": "Single fenced code block as the slide's centerpiece.",
