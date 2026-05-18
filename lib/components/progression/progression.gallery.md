@@ -2,29 +2,10 @@
 
 # progression
 
-`8 components`
+`6 components`
 
 Progression — ordered movement through stages or time.
 
-
----
-
-<!-- _class: authority-chain -->
-
-## COPPA — the chain, tier by tier.
-
-1. Statute
-   - `15 U.S.C. §6501`
-   - Congress, 1998 — verifiable parental consent for under-13 data.
-2. Regulation
-   - `16 C.F.R. Part 312`
-   - FTC implementing rule; 2013 rewrite expanded covered identifiers.
-3. Guidance
-   - `FTC Six-Step Compliance Plan`
-   - Staff guidance — non-binding, but cited in every consent order.
-4. Case
-   - `In re Epic Games · 2022`
-   - $245M consent order — operationalised "actual knowledge" standard.
 
 ---
 
@@ -69,31 +50,6 @@ Progression — ordered movement through stages or time.
    - Substance `structure` or `series` ships a transform module wired into all three render paths.
 4. Demo and document
    - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
-
----
-
-<!-- _class: regulatory-update -->
-
-## Privacy and AI motion — Q1 2026.
-
-`Federal · State · International`
-
-1. EU AI Act
-   - `Title III`
-   - Conformity-assessment pre-market obligation took effect.
-   - `Effective Feb 2026`
-2. Colorado AI Act
-   - `SB 24-205`
-   - Developer and deployer duties for consequential-decision systems.
-   - `Effective Feb 2026`
-3. FTC v. Avast
-   - `§5 unfairness`
-   - $16.5M consent order; clarifies the deception standard for privacy branding.
-   - `Final Mar 2026`
-4. Texas DPSA
-   - `§541.151`
-   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
-   - `Effective Mar 2026`
 
 ---
 

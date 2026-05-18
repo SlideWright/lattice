@@ -2,24 +2,10 @@
 
 # evidence
 
-`6 components`
+`4 components`
 
 Evidence — data that supports the argument.
 
-
----
-
-<!-- _class: citation-card -->
-
-## What counts as "personal information" under CCPA.
-
-`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`
-
-> "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
-
-- In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- What we must do.
-  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 ---
 
@@ -57,21 +43,6 @@ for (const m of byFunction.evidence) {
 4. **+18%**
    - YoY revenue growth
    - vs 14% prior year `Ahead` `Board`
-
----
-
-<!-- _class: math -->
-
-### Linear regression · OLS
-
-## The closed-form estimator.
-
-$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
-
-- $\hat\beta$ — OLS coefficient vector
-- $X$ — design matrix, $n \times p$
-- $y$ — response vector, length $n$
-- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
 
 ---
 

@@ -2,7 +2,7 @@
 
 # comparison
 
-`10 components`
+`9 components`
 
 Comparison — how two or more options differ.
 
@@ -111,23 +111,6 @@ const cards = loadOne('cards-grid');
   - (Lattice does not target this cell)
 - **Data-driven · SVG output.**
   - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
-
----
-
-<!-- _class: obligation-matrix -->
-
-## Privacy obligations across regimes — neutral grid.
-
-| Regulation | Notice | Consent | Retention | Breach | DSAR  |
-| ---------- | :----: | :-----: | :-------: | :----: | :---: |
-| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
-| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
-| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
-| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
-| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
-| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
-
-Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 
 ---
 

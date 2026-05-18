@@ -53,6 +53,8 @@ const BUCKET_BLURBS = Object.freeze({
   imagery:     'Imagery — visuals that carry their own meaning.',
   chart:       'Chart — series-substance data visualizations (SVG kernel).',
   diagram:     'Diagram — graph-substance network visuals (external renderer).',
+  math:        'Math — KaTeX-typeset equations and proofs.',
+  legal:       'Legal — citation-aware layouts for statutes, obligations, and regulatory change.',
 });
 
 function bucketGalleryMarkdownPath(bucket) {
