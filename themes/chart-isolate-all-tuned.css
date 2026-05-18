@@ -1,0 +1,250 @@
+/* @theme chart-isolate-all-tuned
+ * @size hd       1280px 720px
+ * @size HD       1280px 720px
+ * @size 4K       3840px 2160px
+ * @size 4k       3840px 2160px
+ * @size standard 960px  720px
+ * @size 16:9     1280px 720px
+ *
+ * Step 1 of 3 — tuned counterpart to chart-isolate-all-grey.css.
+ *
+ * Same per-chart namespaces, but each chart's tokens are hand-set
+ * to its specific job:
+ *
+ *   sequential charts  — gradient that reads as order
+ *                        (journey, piechart, kpi-trajectory)
+ *
+ *   categorical charts — max separation between adjacent slots
+ *                        (actors, decision, roadmap, kanban)
+ *
+ *   tier charts        — semantic hierarchy
+ *                        (authority-chain: statute > regulation > guidance)
+ *                        (statute-stack: federal > state > local)
+ *
+ *   plot/structural    — single accent that doesn't compete
+ *                        (gantt bar, radar grid)
+ *
+ * Same component CSS in both themes — only token values differ.
+ * Mermaid chart-family is out of scope (themeVariables path).
+ */
+
+@import 'indaco';
+
+:root {
+  /* ── actors — categorical 5 (max-separation cycle) ──────────────── */
+  --actors-pill-1:           light-dark(#1F4A6E, #82C8E5);  /* navy */
+  --actors-pill-2:           light-dark(#5E5547, #B5AC9F);  /* taupe */
+  --actors-pill-3:           light-dark(#8C4A14, #E89A45);  /* amber */
+  --actors-pill-4:           light-dark(#3D6B3A, #7AB57F);  /* forest */
+  --actors-pill-5:           light-dark(#8A2E33, #D87277);  /* brick */
+
+  /* ── authority-chain — semantic tier hierarchy ───────────────────── */
+  /* Statute (highest) → navy gravitas; Regulation → forest; Guidance → amber */
+  --authority-chain-tier-1:  light-dark(#1F4A6E, #82C8E5);  /* highest authority */
+  --authority-chain-tier-3:  light-dark(#8C4A14, #E89A45);  /* mid - guidance */
+  --authority-chain-tier-4:  light-dark(#3D6B3A, #7AB57F);  /* regulation */
+
+  /* ── decision — categorical 5 (used for OPTIONS comparison) ─────── */
+  /* Same max-separation cycle as actors. */
+  --decision-card-1:         light-dark(#1F4A6E, #82C8E5);
+  --decision-card-2:         light-dark(#5E5547, #B5AC9F);
+  --decision-card-3:         light-dark(#8C4A14, #E89A45);
+  --decision-card-4:         light-dark(#3D6B3A, #7AB57F);
+  --decision-card-5:         light-dark(#8A2E33, #D87277);
+
+  /* ── gantt — single bar fill, restrained ──────────────────────────── */
+  /* Gantt bars carry status colour separately; the default fill just
+     needs to be a neutral chart accent that reads on white. */
+  --gantt-bar:               light-dark(#4A5C73, #A8B5C5);  /* indigo-slate */
+
+  /* ── journey — SEQUENTIAL section ramp (mood-coloured progression) ─ */
+  /* Onboarding pain → delight: burgundy → amber → forest. */
+  --journey-section-1:       light-dark(#8A2E33, #D87277);  /* pain start */
+  --journey-section-2:       light-dark(#8C4A14, #E89A45);  /* warming */
+  --journey-section-3:       light-dark(#5E5547, #B5AC9F);  /* neutral middle */
+  --journey-section-4:       light-dark(#3D6B3A, #7AB57F);  /* growing delight */
+  --journey-section-5:       light-dark(#1F4A6E, #82C8E5);  /* arrival */
+
+  /* ── kanban — soft lane fills with matching accent ──────────────── */
+  --kanban-lane-1:           light-dark(#DCE5F0, #0E2C44);  /* navy soft */
+  --kanban-lane-2:           light-dark(#E0E4EA, #1A2330);  /* slate soft */
+  --kanban-lane-3:           light-dark(#F5E2D0, #2A1808);  /* amber soft */
+  --kanban-lane-4:           light-dark(#DDEEDF, #0E2814);  /* forest soft */
+  --kanban-lane-5:           light-dark(#F0DDDE, #2A1014);  /* burgundy soft */
+  --kanban-lane-accent:      light-dark(#1F4A6E, #82C8E5);
+
+  /* ── kpi — SEQUENTIAL trajectory (quarter-over-quarter progress) ── */
+  /* Bands progress in luminance + warmth so Q1 → Q4 reads as time. */
+  --kpi-trajectory-1:        light-dark(#1F4A6E, #82C8E5);  /* Q1 - cool start */
+  --kpi-trajectory-2:        light-dark(#3D6B3A, #7AB57F);  /* Q2 */
+  --kpi-trajectory-3:        light-dark(#8C4A14, #E89A45);  /* Q3 */
+  --kpi-trajectory-4:        light-dark(#8A2E33, #D87277);  /* Q4 - warm finish */
+
+  /* ── math — two contrasting traces ──────────────────────────────── */
+  /* Theorem/definition stripes and plot line traces both need two
+     readable hues that don't read as state. Cool blue + warm rust. */
+  --math-stripe-3:           light-dark(#8C4A14, #E89A45);  /* amber line 2 */
+  --math-stripe-4:           light-dark(#1F4A6E, #82C8E5);  /* navy line 1 */
+
+  /* ── piechart — categorical wedges (transform emits inline chart-N) ─
+     Tuned: strong heritage cycle so wedges read on white at any size.
+     Soft variants used for adjacent surfaces (legend hovers, etc.). */
+  --piechart-wedge-1:        light-dark(#1F4A6E, #82C8E5);  /* navy */
+  --piechart-wedge-2:        light-dark(#4A5C73, #A8B5C5);  /* slate */
+  --piechart-wedge-3:        light-dark(#91450E, #E89F45);  /* amber */
+  --piechart-wedge-4:        light-dark(#2D6B3A, #6FB57F);  /* forest */
+  --piechart-wedge-5:        light-dark(#8A2E33, #D87277);  /* burgundy */
+
+  /* ── radar — 3 series + grid (graticule subtle, series readable) ── */
+  --radar-series-1:          light-dark(#1F4A6E, #82C8E5);  /* navy primary */
+  --radar-series-2:          light-dark(#91450E, #E89F45);  /* amber compare */
+  --radar-series-3:          light-dark(#2D6B3A, #6FB57F);  /* forest baseline */
+
+  /* ── word-cloud — 5 word colors (heritage cycle, full strength) ── */
+  --wordcloud-word-1:        light-dark(#1F4A6E, #82C8E5);
+  --wordcloud-word-2:        light-dark(#4A5C73, #A8B5C5);
+  --wordcloud-word-3:        light-dark(#91450E, #E89F45);
+  --wordcloud-word-4:        light-dark(#2D6B3A, #6FB57F);
+  --wordcloud-word-5:        light-dark(#8A2E33, #D87277);
+
+  /* ── quadrant — 4 cohort cell fills (soft, paired by quadrant) ── */
+  /* Tuned so adjacent quadrants are perceptually distinct. */
+  --quadrant-cohort-1:       light-dark(#DCE5F0, #0E2C44);  /* navy */
+  --quadrant-cohort-2:       light-dark(#F5E2D0, #2A1808);  /* amber */
+  --quadrant-cohort-3:       light-dark(#DDEEDF, #0E2814);  /* forest */
+  --quadrant-cohort-4:       light-dark(#F0DDDE, #2A1014);  /* burgundy */
+
+  /* ── radar — graticule grid (subtle, doesn't compete with series) ─ */
+  --radar-grid:              light-dark(#E0E4EA, #1A2330);  /* neutral slate soft */
+
+  /* ── roadmap — spine + 5 phase pills + phase-on ─────────────────── */
+  --roadmap-spine-from:      light-dark(#1F4A6E, #82C8E5);
+  --roadmap-spine-via:       light-dark(#1F6B6B, #5FB5B5);
+  --roadmap-spine-to:        light-dark(#3D6B3A, #7AB57F);
+  --roadmap-phase-on:        light-dark(#FFFFFF, #0A1628);
+  --roadmap-phase-1:         light-dark(#1F4A6E, #82C8E5);  /* Foundation */
+  --roadmap-phase-2:         light-dark(#5E5547, #B5AC9F);  /* taupe */
+  --roadmap-phase-3:         light-dark(#8C4A14, #E89A45);  /* Hardening */
+  --roadmap-phase-4:         light-dark(#3D6B3A, #7AB57F);  /* Scale */
+  --roadmap-phase-5:         light-dark(#8A2E33, #D87277);
+
+  /* ── statute-stack — semantic jurisdiction hierarchy ─────────────── */
+  /* Federal → navy gravitas; State → forest; Local → amber (it inherits
+     chart-1 for two of its three slots today, so we use the same accent). */
+  --statute-stack-jur-1:     light-dark(#1F4A6E, #82C8E5);  /* federal */
+  --statute-stack-jur-4:     light-dark(#3D6B3A, #7AB57F);  /* state */
+}
+
+/* ── Per-chart scoping ─────────────────────────────────────────────── */
+
+section.actors {
+  --chart-1: var(--actors-pill-1);
+  --chart-2: var(--actors-pill-2);
+  --chart-3: var(--actors-pill-3);
+  --chart-4: var(--actors-pill-4);
+  --chart-5: var(--actors-pill-5);
+}
+
+section.authority-chain {
+  --chart-1: var(--authority-chain-tier-1);
+  --chart-3: var(--authority-chain-tier-3);
+  --chart-4: var(--authority-chain-tier-4);
+}
+
+section.decision {
+  --chart-1: var(--decision-card-1);
+  --chart-2: var(--decision-card-2);
+  --chart-3: var(--decision-card-3);
+  --chart-4: var(--decision-card-4);
+  --chart-5: var(--decision-card-5);
+}
+
+section.gantt {
+  --chart-2: var(--gantt-bar);
+}
+
+section.journey {
+  --chart-1: var(--journey-section-1);
+  --chart-2: var(--journey-section-2);
+  --chart-3: var(--journey-section-3);
+  --chart-4: var(--journey-section-4);
+  --chart-5: var(--journey-section-5);
+}
+
+section.kanban {
+  --chart-1-soft: var(--kanban-lane-1);
+  --chart-2-soft: var(--kanban-lane-2);
+  --chart-3-soft: var(--kanban-lane-3);
+  --chart-4-soft: var(--kanban-lane-4);
+  --chart-5-soft: var(--kanban-lane-5);
+  --chart-accent: var(--kanban-lane-accent);
+}
+
+section.kpi {
+  --chart-1: var(--kpi-trajectory-1);
+  --chart-2: var(--kpi-trajectory-2);
+  --chart-3: var(--kpi-trajectory-3);
+  --chart-4: var(--kpi-trajectory-4);
+}
+
+section.math {
+  --chart-3: var(--math-stripe-3);
+  --chart-4: var(--math-stripe-4);
+}
+
+section.piechart {
+  --chart-1: var(--piechart-wedge-1);
+  --chart-2: var(--piechart-wedge-2);
+  --chart-3: var(--piechart-wedge-3);
+  --chart-4: var(--piechart-wedge-4);
+  --chart-5: var(--piechart-wedge-5);
+  --chart-1-soft: var(--piechart-wedge-1);
+  --chart-2-soft: var(--piechart-wedge-2);
+  --chart-3-soft: var(--piechart-wedge-3);
+  --chart-4-soft: var(--piechart-wedge-4);
+  --chart-5-soft: var(--piechart-wedge-5);
+}
+
+section.quadrant {
+  --chart-1-soft: var(--quadrant-cohort-1);
+  --chart-2-soft: var(--quadrant-cohort-2);
+  --chart-3-soft: var(--quadrant-cohort-3);
+  --chart-4-soft: var(--quadrant-cohort-4);
+}
+
+section.radar {
+  --chart-1: var(--radar-series-1);
+  --chart-2: var(--radar-series-2);
+  --chart-3: var(--radar-series-3);
+  --chart-1-soft: var(--radar-grid);
+}
+
+section.word-cloud {
+  --chart-1: var(--wordcloud-word-1);
+  --chart-2: var(--wordcloud-word-2);
+  --chart-3: var(--wordcloud-word-3);
+  --chart-4: var(--wordcloud-word-4);
+  --chart-5: var(--wordcloud-word-5);
+}
+
+section.roadmap {
+  --chart-1: var(--roadmap-phase-1);
+  --chart-2: var(--roadmap-phase-2);
+  --chart-3: var(--roadmap-phase-3);
+  --chart-4: var(--roadmap-phase-4);
+  --chart-5: var(--roadmap-phase-5);
+}
+section.roadmap thead tr {
+  background: linear-gradient(90deg,
+              var(--roadmap-spine-from),
+              var(--roadmap-spine-via),
+              var(--roadmap-spine-to)) bottom / 100% 2px no-repeat !important;
+}
+section.roadmap thead th:not(:first-child) > code {
+  color: var(--roadmap-phase-on) !important;
+}
+
+section.statute-stack {
+  --chart-1: var(--statute-stack-jur-1);
+  --chart-4: var(--statute-stack-jur-4);
+}
