@@ -218,3 +218,22 @@ For visual changes (CSS, layouts, themes, gallery), tests verify code
 correctness, not visual correctness. If you cannot rebuild and inspect
 the PDF, **say so explicitly** rather than claim success. Hand off to
 the desktop session for the visual check.
+
+## Visually spot-check any PDF you rebuild as a side effect
+
+A CSS or theme change that cascades into `examples/` or galleries
+forces rebuilds across many decks. **Build success is not enough.**
+The rebuilt PDFs reflect both your CSS change AND whatever latent
+source bugs were there before — environmental drift (Chromium
+version, fonts) and authoring bugs in the source surface identically
+in a rebuild. Open at least one representative page per rebuilt deck
+via `SendUserFile` before committing, or run
+`node tools/pixel-check.js diff <label>` against a pre-change
+snapshot so unexpected drift surfaces as a failed gate rather than
+as committed broken output.
+
+The `deck-authoring.test.js` gate catches the specific
+inline-format-on-card-style-layouts violation at `npm test` time,
+but it doesn't catch every authoring bug — only that pattern. The
+visual spot-check is the general-purpose defense; the test is the
+specific one.
