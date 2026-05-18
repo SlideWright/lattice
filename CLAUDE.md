@@ -84,16 +84,20 @@ live in `docs/references/development.md`.
   `lib/components/<bucket>/<bucket>.gallery.{light,dark}.pdf`).
   Generated from `manifest.sample` via `npm run build:bucket-galleries`;
   see `test/integration/components/bucket-galleries.test.js`.
-- **CI baseline decks** (page count inlined in each test file):
-  `test/integration/baseline-decks/gallery.md` (89pp) and
-  `lib/integrations/mermaid/mermaid.gallery.md` (31pp). A drift on
-  either fails the integration tier. The cross-renderer parity gate
-  also runs on `gallery.md` only. These live with their owners
-  (test infrastructure / the mermaid integration), not in `examples/`.
+- **CI baseline deck** (page count inlined in the test file):
+  `test/integration/baseline-decks/gallery.md` (89pp). A drift fails
+  the integration tier; the cross-renderer parity gate also runs on
+  it. Lives with the test infrastructure, not in `examples/`.
+- **Mermaid showcase** (~31pp): now the `diagram` component's own
+  hand-authored gallery at
+  `lib/components/diagram/diagram/diagram.gallery.md` (marked
+  `galleryAuthored: true` in the manifest). One slide per Mermaid
+  diagram type — covers what the standalone `gallery-mermaid` deck
+  used to cover, but lives with the component it documents.
 
 `examples/gallery-jargon.md` is a long-running editorial showcase —
 stable and shared, but not page-count-asserted. The isolation rule
-applies to all three baseline-tier decks — see workflow.md.
+applies to all baseline-tier decks — see workflow.md.
 
 ## The visual-iteration loop
 

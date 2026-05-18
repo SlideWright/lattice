@@ -3,6 +3,7 @@
   "name": "diagram",
   "function": "evidence",
   "bucket": "diagram",
+  "galleryAuthored": true,
   "form": "canvas",
   "substance": "graph",
   "description": "Mermaid diagram as the slide's centerpiece.",

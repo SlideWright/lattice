@@ -442,14 +442,22 @@ function buildOne(m) {
   if (!isEnriched(m)) return { skipped: true, name: m.name };
   const paths = targetPaths(m);
   const docs = renderDocs(m);
-  const gallery = renderGallery(m);
   const a = writeIfChanged(paths.docs, docs);
-  const b = writeIfChanged(paths.gallery, gallery);
+  // Hand-authored gallery (galleryAuthored: true) — generator emits
+  // docs.md but leaves gallery.md alone. Used for components where
+  // variation lives in slide content, not modifier classes (e.g.
+  // `diagram`'s per-Mermaid-type showcase).
+  let b = { wrote: false, file: paths.gallery };
+  if (!m.galleryAuthored) {
+    const gallery = renderGallery(m);
+    b = writeIfChanged(paths.gallery, gallery);
+  }
   return {
     name: m.name,
     docsWrote: a.wrote,
     galleryWrote: b.wrote,
-    expectedPages: expectedGallerySlideCount(m),
+    galleryAuthored: !!m.galleryAuthored,
+    expectedPages: m.galleryAuthored ? null : expectedGallerySlideCount(m),
     paths,
   };
 }
@@ -458,9 +466,16 @@ function checkOne(m) {
   if (!isEnriched(m)) return { name: m.name, skipped: true, stale: false };
   const paths = targetPaths(m);
   const docs = renderDocs(m);
-  const gallery = renderGallery(m);
   const docsStale = !fs.existsSync(paths.docs) || fs.readFileSync(paths.docs, 'utf8') !== docs;
-  const galleryStale = !fs.existsSync(paths.gallery) || fs.readFileSync(paths.gallery, 'utf8') !== gallery;
+  // Hand-authored galleries are never "stale relative to generator
+  // output" — by definition the source is the canonical content.
+  let galleryStale = false;
+  if (!m.galleryAuthored) {
+    const gallery = renderGallery(m);
+    galleryStale = !fs.existsSync(paths.gallery) || fs.readFileSync(paths.gallery, 'utf8') !== gallery;
+  } else {
+    galleryStale = !fs.existsSync(paths.gallery);
+  }
   return { name: m.name, stale: docsStale || galleryStale, docsStale, galleryStale };
 }
 

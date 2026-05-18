@@ -23,6 +23,10 @@
       "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery", "chart", "diagram"],
       "description": "Disk-layout bucket the component lives in under lib/components/<bucket>/<name>/. Defaults to the value of `function` when absent. The two substance-defined buckets (`chart` for series substance, `diagram` for graph substance) override the function value for components whose maintenance lives or dies together. See docs/design-system.md §9."
     },
+    "galleryAuthored": {
+      "type": "boolean",
+      "description": "When true, the build-component-docs.js generator skips writing <name>.gallery.md (the file is hand-authored). Use this for components where variation lives in slide CONTENT, not in modifier classes — e.g. `diagram` (every Mermaid diagram type is the same _class) or future `code`/`math` if their galleries need a richer showcase than the manifest's variantDocs can express. <name>.docs.md is still generated from the manifest. The integration test continues to assert light/dark page-count parity for the PDFs but no longer derives the expected count from the manifest formula."
+    },
     "form": {
       "enum": ["bookend", "divider", "canvas", "grid", "stack", "ledger", "panel", "matrix", "scatter", "timeline", "split"]
     },

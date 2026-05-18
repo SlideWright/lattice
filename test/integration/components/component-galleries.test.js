@@ -37,9 +37,15 @@ describe('component-galleries', () => {
   const manifests = loadAll();
   for (const m of manifests) {
     const enriched = isEnriched(m);
+    // Hand-authored galleries (manifest.galleryAuthored: true) skip the
+    // manifest-formula page-count assertion — the source isn't generator
+    // output. They still get the light/dark parity check below.
+    const skipFormula = enriched && !m.galleryAuthored ? false :
+      (!enriched ? 'not yet migrated (no enriched prose fields)' :
+       'gallery is hand-authored (manifest.galleryAuthored: true)');
     test(
       `${m.name}: light gallery page count matches manifest formula`,
-      { timeout: 180000, skip: enriched ? false : 'not yet migrated (no enriched prose fields)' },
+      { timeout: 180000, skip: skipFormula },
       () => {
         const galleryPath = targetPaths(m).gallery;
         assert.ok(

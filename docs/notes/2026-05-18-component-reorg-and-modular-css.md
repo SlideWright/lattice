@@ -392,6 +392,8 @@ Beyond moving the files, the following references need a sweep:
 | 7b PDF sprawl — mermaid integration shelf | Shipped | `examples/gallery-mermaid.md` → `lib/integrations/mermaid/mermaid.gallery.md` + generated `mermaid.gallery.dark.pdf` sibling. |
 | 7c PDF sprawl — retire redundant decks | Shipped | Deleted 13 single-component demo decks (26 files) now covered by per-component galleries. Also deleted orphan `examples/preview-G/` (23 stale theme-comparison PDFs with no .md sources). `examples/` now holds 6 human-facing decks. |
 | 7d PDF sprawl — docs | Shipped | CLAUDE.md baseline-deck rule updated; workflow.md feature-deck example switched to a surviving deck; this note's status table reflects what landed. |
+| 8 chart-family colocation | Shipped | `lib/chart-family/` → `lib/components/chart/_chart-family/`. Bucket-scoped infrastructure now lives with the bucket. Establishes the leading-underscore convention for "not-a-component" subdirs under a bucket. |
+| 9 diagram = mermaid showcase | Shipped | `lib/integrations/mermaid/mermaid.gallery.md` (31pp) → `lib/components/diagram/diagram/diagram.gallery.md`. New `manifest.galleryAuthored: true` flag opts a component out of the manifest-formula-driven gallery (for components like `diagram` where variation lives in slide CONTENT not modifier classes). Mermaid integration shelf is now just `mermaid.css` + `mermaid.docs.md` + `mermaid.hljs.js`; the standalone showcase deck is retired. |
 
 Deferred work is captured here, in design-system.md §13's "Still
 deferred" section, and is independent of the disk-reorganization
