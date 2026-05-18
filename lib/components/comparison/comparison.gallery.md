@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # comparison
 
-Comparison — how two or more options differ.
+`10 components`
 
-10 components: `before-after` · `compare-code` · `compare-prose` · `compare-table` · `decision` · `matrix-2x2` · `obligation-matrix` · `redline` · `split-compare` · `verdict-grid`
+Comparison — how two or more options differ.
 
 
 ---

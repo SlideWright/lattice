@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # chart
 
-Chart — series-substance data visualizations (SVG kernel).
+`8 components`
 
-8 components: `gantt` · `kanban` · `piechart` · `progress` · `quadrant` · `radar` · `timeline-list` · `word-cloud`
+Chart — series-substance data visualizations (SVG kernel).
 
 
 ---

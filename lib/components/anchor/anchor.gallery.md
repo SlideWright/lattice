@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # anchor
 
-Anchor — where you are in the deck.
+`4 components`
 
-4 components: `closing` · `divider` · `subtopic` · `title`
+Anchor — where you are in the deck.
 
 
 ---

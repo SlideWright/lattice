@@ -47,10 +47,14 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ## Each slide is a stack of four orthogonal decisions.
 
-- **Function.** What the slide does for the audience. Seven families: Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery.
-- **Form.** The spatial composition that holds the content. Ten shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-- **Substance.** What fills the form. Four sources: prose, structure, series, graph — the engine's only plugin point.
-- **Finish.** Palette tokens plus cross-cutting modifiers — dark, compact, mirror, accent, numbered, background flourishes.
+- Function.
+  - What the slide does for the audience. Seven families: Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery.
+- Form.
+  - The spatial composition that holds the content. Ten shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+- Substance.
+  - What fills the form. Four sources: prose, structure, series, graph — the engine's only plugin point.
+- Finish.
+  - Palette tokens plus cross-cutting modifiers — dark, compact, mirror, accent, numbered, background flourishes.
 
 ---
 
@@ -94,8 +98,10 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ## Why dotted names lost the rethink.
 
-- **Dotted (rejected).** `<!-- _class: inventory.grid.cards compact -->` is 35 characters. Authors learn ~70 path combinations instead of 35 names. Implementation surfaces leak into invocation — `evidence.canvas.chart.progress` for what used to be `progress`.
-- **Short (kept).** `<!-- _class: cards-grid compact -->` is 32 characters and what authors already know. Same pattern as shadcn, Chakra, Mantine, Lit, Slidev, Notion blocks. Discovery happens via tooling, not in the directive name.
+- Dotted (rejected).
+  - `<!-- _class: inventory.grid.cards compact -->` is 35 characters. Authors learn ~70 path combinations instead of 35 names. Implementation surfaces leak into invocation — `evidence.canvas.chart.progress` for what used to be `progress`.
+- Short (kept).
+  - `<!-- _class: cards-grid compact -->` is 32 characters and what authors already know. Same pattern as shadcn, Chakra, Mantine, Lit, Slidev, Notion blocks. Discovery happens via tooling, not in the directive name.
 
 ---
 
@@ -114,9 +120,12 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ## Each layout ships a manifest at `lib/components/<name>.json`.
 
-- **Single source of truth.** name, function, form, substance, description, purpose, variants, slots, skeleton. The rendering pipeline is unchanged — manifests are metadata.
-- **Consumed everywhere.** Scaffolder reads `skeleton`. Snippets read `skeleton` + `name`. The catalog groups by `function`. Editor autocomplete reads `variants`. Docs link from `docs`.
-- **45 components shipped.** Every layout currently used in the galleries (or supported by chart-family) has one. Validation gate keeps them well-formed.
+- Single source of truth.
+  - name, function, form, substance, description, purpose, variants, slots, skeleton. The rendering pipeline is unchanged — manifests are metadata.
+- Consumed everywhere.
+  - Scaffolder reads `skeleton`. Snippets read `skeleton` + `name`. The catalog groups by `function`. Editor autocomplete reads `variants`. Docs link from `docs`.
+- 45 components shipped.
+  - Every layout currently used in the galleries (or supported by chart-family) has one. Validation gate keeps them well-formed.
 
 ---
 
@@ -135,8 +144,10 @@ Function · Form · Substance · Finish. Authored in short names, organized in f
 
 ## Two paths from blank deck to a slide skeleton.
 
-- **CLI scaffolder.** `npm run new:slide -- --list` prints the catalog grouped by function. `npm run new:slide -- cards-grid` emits the skeleton. Exit codes: 0 success, 1 unknown, 2 usage.
-- **VS Code snippets.** Type `lattice-` in any .md file. Autocomplete shows all 45 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
+- CLI scaffolder.
+  - `npm run new:slide -- --list` prints the catalog grouped by function. `npm run new:slide -- cards-grid` emits the skeleton. Exit codes: 0 success, 1 unknown, 2 usage.
+- VS Code snippets.
+  - Type `lattice-` in any .md file. Autocomplete shows all 45 components by name and description. Tab inserts the canonical skeleton. Generated from manifests; freshness enforced by `npm run snippets:check`.
 
 ---
 

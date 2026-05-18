@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # imagery
 
-Imagery — visuals that carry their own meaning.
+`2 components`
 
-2 components: `featured` · `image`
+Imagery — visuals that carry their own meaning.
 
 
 ---

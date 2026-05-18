@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # inventory
 
-Inventory — parallel sets of related items.
+`13 components`
 
-13 components: `actors` · `agenda` · `cards-grid` · `cards-side` · `cards-stack` · `cards-wide` · `checklist` · `glossary` · `list` · `list-tabular` · `principles` · `statute-stack` · `tldr`
+Inventory — parallel sets of related items.
 
 
 ---

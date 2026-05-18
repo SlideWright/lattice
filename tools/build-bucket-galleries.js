@@ -66,18 +66,24 @@ function bucketGalleryPdfPath(bucket, theme) {
 // Compose the bucket-survey markdown. Opens with a title slide (bucket
 // name + member list), then one slide per component using its
 // `manifest.sample` (which already includes the _class directive).
+//
+// Title slide follows the title.docs.md contract: `title silent` for
+// chrome suppression in one token, ` `inline-code` ` eyebrow slot, and
+// a single plain-paragraph subtitle. The member list moves into the
+// subtitle as a single sentence so the title-slot shape is honored.
 function composeBucketGallery(bucket, manifests) {
   const blurb = BUCKET_BLURBS[bucket] || bucket;
-  const members = manifests.map((m) => `\`${m.name}\``).join(' · ');
+  const count = manifests.length;
+  const eyebrow = `\`${count} component${count === 1 ? '' : 's'}\``;
 
   const titleSlide = [
-    '<!-- _class: title -->',
+    '<!-- _class: title silent -->',
     '',
     `# ${bucket}`,
     '',
-    `${blurb}`,
+    eyebrow,
     '',
-    `${manifests.length} component${manifests.length === 1 ? '' : 's'}: ${members}`,
+    blurb,
     '',
   ].join('\n');
 

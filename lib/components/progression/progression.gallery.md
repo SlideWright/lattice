@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # progression
 
-Progression — ordered movement through stages or time.
+`8 components`
 
-8 components: `authority-chain` · `journey` · `list-criteria` · `list-steps` · `regulatory-update` · `roadmap` · `split-steps` · `timeline`
+Progression — ordered movement through stages or time.
 
 
 ---

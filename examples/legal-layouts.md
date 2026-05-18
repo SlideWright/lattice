@@ -161,7 +161,8 @@ Pick this when the audience wants to scan many obligations at once.
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.
-- **What we must do** Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
+- What we must do
+  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
 
 ---
 
@@ -175,7 +176,8 @@ Pick this when the audience wants to scan many obligations at once.
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - In plain English: any data tied to a household or device, not just a named person.
-- **What we must do** Treat household-level identifiers as PI in notice, retention, and DSAR workflows.
+- What we must do
+  - Treat household-level identifiers as PI in notice, retention, and DSAR workflows.
 
 ---
 
@@ -188,7 +190,8 @@ Pick this when the audience wants to scan many obligations at once.
 
 > Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
-- **What we must do** Audit pixel inventory; treat household IDs as PI in DSAR workflows.
+- What we must do
+  - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 
 ---
 
@@ -203,7 +206,8 @@ Pick this when the audience wants to scan many obligations at once.
 
 - Household IDs count.
 - Device fingerprints count.
-- **Action** Audit pixels next quarter.
+- Action
+  - Audit pixels next quarter.
 
 ---
 
@@ -217,7 +221,8 @@ Pick this when the audience wants to scan many obligations at once.
 > Information that identifies, relates to, describes, or could reasonably be linked with a particular consumer or household.
 
 - Plain English: household-level data is in scope, not just data tied to a named person. Device IDs, cookies, IP addresses all qualify.
-- **Action** Audit pixel inventory and update DSAR workflow to handle household-level identifiers within 45 days.
+- Action
+  - Audit pixel inventory and update DSAR workflow to handle household-level identifiers within 45 days.
 
 ---
 

@@ -169,8 +169,10 @@ flowchart LR
 
 ## Two failure modes the framework is designed to prevent
 
-- **False signal amplification.** A single loud voice — one enterprise customer, one analyst report, one VP who "has a feeling" — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight. Unless that source is the CEO, in which case the weight cap is a guideline.
-- **Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change. This rule was printed on a poster and placed in the meeting room. The poster has been replaced by a free-pizza flyer.
+- False signal amplification.
+  - A single loud voice — one enterprise customer, one analyst report, one VP who "has a feeling" — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight. Unless that source is the CEO, in which case the weight cap is a guideline.
+- Signal hoarding.
+  - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change. This rule was printed on a poster and placed in the meeting room. The poster has been replaced by a free-pizza flyer.
 
 ---
 

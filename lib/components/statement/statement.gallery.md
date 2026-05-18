@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # statement
 
-Statement — one declarative claim per slide.
+`6 components`
 
-6 components: `big-number` · `content` · `quote` · `split-brief` · `split-list` · `split-statement`
+Statement — one declarative claim per slide.
 
 
 ---

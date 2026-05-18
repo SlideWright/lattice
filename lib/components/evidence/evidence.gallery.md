@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # evidence
 
-Evidence — data that supports the argument.
+`6 components`
 
-6 components: `citation-card` · `code` · `kpi` · `math` · `split-metric` · `stats`
+Evidence — data that supports the argument.
 
 
 ---

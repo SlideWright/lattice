@@ -1,10 +1,10 @@
-<!-- _class: title -->
+<!-- _class: title silent -->
 
 # diagram
 
-Diagram — graph-substance network visuals (external renderer).
+`1 component`
 
-1 component: `diagram`
+Diagram — graph-substance network visuals (external renderer).
 
 
 ---

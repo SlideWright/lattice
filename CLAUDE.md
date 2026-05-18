@@ -179,6 +179,31 @@ caught by the hook instead of by reviewer eyeballs.
   decks ship with `**Label.** body` when the layout actually wants
   `- Label\n  - body`, or with prose describing an abandoned
   implementation, or with `tint-<em>` leaking into rendered output.
+- **Card-style layouts forbid inline `- **Title.** body`.** The
+  CARD_STYLE_LAYOUTS set in `lib/components/index.js` lists 12
+  layouts (cards-grid, cards-side, cards-stack, cards-wide, featured,
+  split-list, compare-prose, matrix-2x2, verdict-grid, before-after,
+  decision, citation-card) whose autobold li rule makes body text
+  after `<strong>` inherit `font-weight:700`. The contract on every
+  card-style slide is the nested format:
+  ```
+  - Title
+    - body text continues here
+  ```
+  Not `- **Title.** body text`. The validator
+  (`findInlineTitleBodyLine` + `test/unit/components/deck-authoring.test.js`)
+  catches this across every `.md` deck in the repo at commit time —
+  if a test fails with "inline `- **Title.** body` on card-style
+  slides," apply the nested format.
+- **Title slides use `title silent` + `\`eyebrow\`` + plain subtitle.**
+  Per `lib/components/anchor/title/title.docs.md`: the `silent`
+  modifier suppresses pagination, header, footer in one token. The
+  eyebrow goes in backtick-wrapped inline code. The subtitle is a
+  plain paragraph. Don't pile prose into a second paragraph —
+  the title slot is a single tight composition: eyebrow → h1 →
+  subtitle. Look at `lib/components/inventory/inventory.gallery.md`
+  for the bucket-survey reference and any per-component gallery for
+  the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
