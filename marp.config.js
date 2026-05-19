@@ -591,6 +591,8 @@ module.exports = {
     "themes/indaco-dark.css",
     "themes/cuoio.css",
     "themes/cuoio-dark.css",
+    "themes/mustard.css",
+    "themes/mustard-dark.css",
   ],
   html: true,
   allowLocalFiles: true,
