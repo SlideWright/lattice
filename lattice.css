@@ -2572,13 +2572,17 @@ section.image:not(.full):not(.contain):not(.museum) {
    * in the top-left corner. */
   justify-content: center;
 }
+/* Canvas-proportional sizing — same tokens as base section typography
+ * so image-slide reading scale matches the rest of the deck at every
+ * size (HD / 4K / etc). At fit-window view the proportions read the
+ * same. */
 section.image:not(.full):not(.contain):not(.museum) h2 {
-  font-size: 36px;
+  font-size: var(--fs-2xl);
   margin-bottom: var(--sp-md);
 }
 section.image:not(.full):not(.contain):not(.museum) p {
-  font-size: 22px;
-  line-height: 1.55;
+  font-size: var(--fs-content);
+  line-height: var(--lh-relaxed);
 }
 
 /* Accent border on the text-side edge */
@@ -2733,7 +2737,7 @@ section.image.full .image-scrim,
 section.image.contain .image-scrim {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 220px;
+  height: 17.1875cqi;
   background: var(--image-scrim);
   z-index: 0;
   pointer-events: none;
@@ -2742,47 +2746,52 @@ section.image.contain .image-scrim {
 /* Text overlay — title sits just above body with a tight 4px gap.
  * Body is clipped to ~2 lines (max-height) so a long caption can't
  * push into or under the title. */
+/* Full-bleed text overlay — canvas-proportional sizes match base
+ * typography. Positioning (left/right/bottom insets, scrim height,
+ * max-height clamp) uses cqi so the layout scales as a unit with the
+ * canvas; switching from px → cqi was the last seesaw correction. */
 section.image.full h2,
 section.image.contain h2 {
   position: absolute;
-  left: 80px; right: 80px;
-  bottom: 92px; margin: 0;
+  left: 6.25cqi; right: 6.25cqi;
+  bottom: 7.1875cqi; margin: 0;
   color: rgba(255, 255, 255, 0.98);
   font-family: var(--font-display);
-  font-size: 40px;
+  font-size: var(--fs-xl);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: var(--lh-tight);
   z-index: 2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
 }
 section.image.full p:last-of-type,
 section.image.contain p:last-of-type {
   position: absolute;
-  left: 80px; right: 80px;
-  bottom: 28px; margin: 0;
-  max-height: 60px;
+  left: 6.25cqi; right: 6.25cqi;
+  bottom: 2.1875cqi; margin: 0;
+  max-height: 4.6875cqi;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.92);
-  font-size: 22px;
-  line-height: 1.4;
+  font-size: var(--fs-body);
+  line-height: var(--lh-snug);
   z-index: 2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
 }
 
-/* Museum — image inset leaves a 100px-tall matte plate at the
- * bottom for the editorial label + caption (tighter than the
- * scrim'd variants since the matte itself provides contrast). */
+/* Museum — image inset leaves a matte plate at the bottom for the
+ * editorial label + caption (tighter than the scrim'd variants since
+ * the matte itself provides contrast). All offsets in cqi so the plate
+ * scales with the canvas. */
 section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
-  inset: 40px 40px 100px 40px;
+  inset: 3.125cqi 3.125cqi 7.8125cqi 3.125cqi;
 }
 section.image.museum h2 {
   position: absolute;
-  left: 80px; right: 80px;
-  bottom: 60px; margin: 0;
+  left: 6.25cqi; right: 6.25cqi;
+  bottom: 4.6875cqi; margin: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2790,13 +2799,13 @@ section.image.museum h2 {
 }
 section.image.museum p:last-of-type {
   position: absolute;
-  left: 80px; right: 80px;
-  bottom: 24px; margin: 0;
-  max-height: 28px;
+  left: 6.25cqi; right: 6.25cqi;
+  bottom: 1.875cqi; margin: 0;
+  max-height: 2.1875cqi;
   overflow: hidden;
   color: var(--text-body);
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
   z-index: 2;
 }
 
