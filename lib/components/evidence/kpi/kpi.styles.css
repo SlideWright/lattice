@@ -177,7 +177,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
 }
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: var(--fs-emphasis);
+  font-size: var(--fs-h1);
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -255,7 +255,7 @@ section.kpi.compliance > ol > li:last-child {
 }
 section.kpi.compliance > ol > li > strong {
   grid-column: 1; grid-row: 1 / 3;
-  font-size: var(--fs-hero);
+  font-size: var(--fs-h1);
   min-width: 4ch;
   text-align: right;
   align-self: center;
@@ -317,7 +317,7 @@ section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--c2-dark)
 section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--c3-dark); }
 section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--c4-dark); }
 section.kpi.trajectory > ol > li > strong {
-  font-size: var(--fs-hero);
+  font-size: var(--fs-h1);
   line-height: 1;
 }
 section.kpi.trajectory > ol > li {
