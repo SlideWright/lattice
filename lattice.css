@@ -116,7 +116,7 @@
   --fs-meta:     1.36cqi;     /* 13pt @ HD — chrome */
   --fs-body:     1.875cqi;    /* 18pt @ HD — container default */
   --fs-message:  2.5cqi;      /* 24pt @ HD — slide-level statement; projection floor */
-  --fs-emphasis: 3.125cqi;    /* 30pt @ HD — lead callout (1.25× message) */
+  --fs-emphasis: 3.75cqi;     /* 36pt @ HD — lead callout (1.5× message) */
   --fs-h1:       5.625cqi;    /* 54pt @ HD — dominant slide title */
   --fs-h2:       3.75cqi;     /* 36pt @ HD — standard slide title */
   --fs-h3:       2.8125cqi;   /* 27pt @ HD — subheading / column header */
@@ -7714,7 +7714,7 @@ section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:var(--fs-h3); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:var(--fs-h2); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }

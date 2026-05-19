@@ -77,7 +77,7 @@
   --fs-meta:     1.36cqi;     /* 13pt @ HD — chrome */
   --fs-body:     1.875cqi;    /* 18pt @ HD — container default */
   --fs-message:  2.5cqi;      /* 24pt @ HD — slide-level statement; projection floor */
-  --fs-emphasis: 3.125cqi;    /* 30pt @ HD — lead callout (1.25× message) */
+  --fs-emphasis: 3.75cqi;     /* 36pt @ HD — lead callout (1.5× message) */
   --fs-h1:       5.625cqi;    /* 54pt @ HD — dominant slide title */
   --fs-h2:       3.75cqi;     /* 36pt @ HD — standard slide title */
   --fs-h3:       2.8125cqi;   /* 27pt @ HD — subheading / column header */
