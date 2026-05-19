@@ -16,7 +16,7 @@
  * ──────────────────────────────────────────────────────────────────────── */
 section.decision { display:flex; flex-direction:column; }
 section.decision h2 {
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   margin-bottom:var(--sp-md);
   line-height:var(--lh-tight);
   max-width:70.3125cqi;
@@ -55,7 +55,7 @@ section.decision > ul > li > strong,
 section.decision > ol > li > strong {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.12em;
   text-transform:uppercase;
@@ -65,7 +65,7 @@ section.decision > ul > li > p,
 section.decision > ol > li > p,
 section.decision > ul > li > ul,
 section.decision > ol > li > ul {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   line-height:var(--lh-base);
   color:var(--text-body);
   font-weight:400;
