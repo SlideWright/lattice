@@ -10,8 +10,13 @@
 section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
+/* Half-canvas pull-quote: explicit 4.6875cqi (= legacy 45pt) sits between
+ * --fs-h2 (36pt) and --fs-h1 (54pt). Pull-quotes occupying a half-canvas
+ * panel earn more authority than a standard slide title (h2) without
+ * commanding like the dominant title (h1). No existing token captures
+ * this tier; the size is layout-specific. */
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:var(--fs-h2); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:4.6875cqi; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }

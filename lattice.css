@@ -7553,7 +7553,12 @@ section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display);
 section.split-list h5 { font-size:var(--fs-meta); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
-section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+/* Decorative letterform watermark: explicit 12.66cqi (= legacy 122pt). Sized
+ * larger than --fs-hero (96pt) because the watermark serves a purely
+ * editorial / decorative role on this layout — it tints the panel like a
+ * letterpress imprint and never competes with the content for reading
+ * attention. Editorial signal, not legibility. */
+section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:12.66cqi; font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
 /* Code-only paragraph (eyebrow / section label) in the processed panel-left:
  * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
 section.split-list .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
@@ -7713,8 +7718,13 @@ section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(-
 section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
+/* Half-canvas pull-quote: explicit 4.6875cqi (= legacy 45pt) sits between
+ * --fs-h2 (36pt) and --fs-h1 (54pt). Pull-quotes occupying a half-canvas
+ * panel earn more authority than a standard slide title (h2) without
+ * commanding like the dominant title (h1). No existing token captures
+ * this tier; the size is layout-specific. */
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:var(--fs-h2); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:4.6875cqi; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
