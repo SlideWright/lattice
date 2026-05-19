@@ -11,7 +11,7 @@ section.title { border-top: none; }
 section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
-section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-weight:300; margin:0; text-align:center; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-weight:300; margin:0; text-align:center; }
 /* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
  * Overrides the general subtitle rule (italic, body font) for section.title only. */
 section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }

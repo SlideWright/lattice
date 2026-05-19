@@ -122,7 +122,7 @@ section.chart-frame .chart-header h2 {
 section.chart-frame .chart-subtitle {
   margin: 0 auto;
   max-width: 68.75cqi;
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   font-style: italic;
   color: var(--text-muted);
   line-height: var(--lh-relaxed);

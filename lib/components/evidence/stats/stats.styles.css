@@ -10,7 +10,7 @@
 section.stats { justify-content:center; align-items:center; }
 section.stats h2 { margin-bottom:var(--sp-xs); text-align:center; }
 section.stats h3 { margin-bottom:0.3125cqi; }
-section.stats > p, section.stats > em { font-size:var(--fs-body-compact); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
+section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
 section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
 section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }

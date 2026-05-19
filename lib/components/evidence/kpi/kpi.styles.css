@@ -99,7 +99,7 @@ section.kpi > :where(ol, ul) > li > strong {
   display: block;
 }
 section.kpi > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-heading);
   margin-top: var(--sp-sm);
@@ -363,7 +363,7 @@ section.kpi.spotlight > ol > li:nth-child(1) > ul > li:first-child {
 section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   color: var(--text-muted);
   letter-spacing: 0;
   text-transform: none;
@@ -394,7 +394,7 @@ section.kpi.spotlight > ol > li:not(:first-child) > strong {
 }
 section.kpi.spotlight > ol > li:not(:first-child) > ul > li:first-child {
   margin-top: 0.15625cqi;
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
 }
 section.kpi.spotlight > ol > li:not(:first-child) > ul > li + li {
   font-size: 0.859375cqi;

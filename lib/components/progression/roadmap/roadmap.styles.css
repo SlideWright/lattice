@@ -36,7 +36,7 @@ section.roadmap { display:flex; flex-direction:column; }
 section.roadmap h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.roadmap table {
   width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
-  font-size:var(--fs-body-compact); flex:1;
+  font-size:var(--fs-body); flex:1;
 }
 section.roadmap thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.roadmap thead th {
@@ -369,7 +369,7 @@ section.roadmap.horizons .horizon-eyebrow {
 }
 section.roadmap.horizons .horizon-title {
   font-family:var(--font-display);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -398,7 +398,7 @@ section.roadmap.horizons .row-label {
   color:var(--text-label);
 }
 section.roadmap.horizons .row-text {
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   color:var(--text-body);
   line-height:var(--lh-snug);
 }
@@ -427,7 +427,7 @@ section.roadmap.swimlane tbody tr > td:first-child {
   font-family:var(--font-display);
   font-weight:700;
   color:var(--text-heading);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   padding:var(--sp-sm) var(--sp-md);
 }
 section.roadmap.swimlane tbody td:not(:first-child) {

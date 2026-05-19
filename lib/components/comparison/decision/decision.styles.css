@@ -65,7 +65,7 @@ section.decision > ul > li > p,
 section.decision > ol > li > p,
 section.decision > ul > li > ul,
 section.decision > ol > li > ul {
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   line-height:var(--lh-base);
   color:var(--text-body);
   font-weight:400;

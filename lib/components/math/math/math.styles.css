@@ -209,7 +209,7 @@ section.math.derivation tbody tr:last-child {
 section.math.derivation td {
   padding: var(--sp-sm) var(--sp-md);
   vertical-align: middle;
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
 }
 section.math.derivation td:first-child {
   width: 62%;
@@ -600,7 +600,7 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
   max-width: 60cqi;
   margin: 0;
   color: var(--text-body);
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   line-height: var(--lh-base);
 }
 

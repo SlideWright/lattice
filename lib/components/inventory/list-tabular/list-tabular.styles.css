@@ -53,7 +53,7 @@ section.list-tabular ol > li {
   padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
   font-family:var(--font-display);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -63,7 +63,7 @@ section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
 section.list-tabular ol > li::before {
   content:counter(tabular-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--accent);
   letter-spacing:0.06em;
@@ -74,7 +74,7 @@ section.list-tabular ol > li > ul > li::marker { content:''; }
 section.list-tabular ol > li > ul > li:first-child {
   grid-column:3; grid-row:1;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:400;
   color:var(--text-body);
   letter-spacing:0;
@@ -164,7 +164,7 @@ section.list-tabular.def ol > li > code {
 section.list-tabular.def ol > li > ul > li {
   grid-column:3; grid-row:1 / span 2;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -182,7 +182,7 @@ section.list-tabular.def.rule ol {
 section.list-tabular.metric ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -193,7 +193,7 @@ section.list-tabular.metric ol > li > code {
   border-radius:var(--radius-md);
   padding:0.46875cqi 1.09375cqi;
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--accent);
   letter-spacing:-0.01em;
@@ -215,7 +215,7 @@ section.list-tabular.metric.solid ol > li > code {
 section.list-tabular.spec ol > li {
   grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:0;
@@ -230,7 +230,7 @@ section.list-tabular.spec.stacked ol > li {
   grid-template-columns:3.4375cqi 1fr auto;
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
 }
 section.list-tabular.spec.stacked ol > li::before {
   grid-row:1 / span 2;
@@ -252,7 +252,7 @@ section.list-tabular.spec.stacked ol > li > code {
 section.list-tabular.register ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:600;
   color:var(--text-heading);
 }

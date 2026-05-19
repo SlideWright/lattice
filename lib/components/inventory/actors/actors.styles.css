@@ -45,7 +45,7 @@ section.actors > ol > li::marker { content:''; }
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
   grid-column:1; grid-row:1;
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -94,7 +94,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   color:var(--text-body);
   line-height:var(--lh-base);
 }

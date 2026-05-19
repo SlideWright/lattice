@@ -35,7 +35,7 @@ section.principles ol > li {
   column-gap:var(--sp-lg);
   align-items:center;
   font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-body-compact), 11cqh, var(--fs-h2));
+  font-size:clamp(var(--fs-body), 11cqh, var(--fs-h2));
   font-weight:500;
   line-height:var(--lh-snug);
   letter-spacing:-0.01em;

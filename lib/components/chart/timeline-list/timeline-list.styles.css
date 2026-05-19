@@ -81,7 +81,7 @@ section.timeline-list .timeline-pill--empty {
   visibility: hidden;
 }
 section.timeline-list .timeline-title {
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text-heading);
   text-align: center;

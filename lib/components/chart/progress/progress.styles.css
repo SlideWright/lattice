@@ -29,7 +29,7 @@ section.progress .progress-row {
   column-gap: var(--sp-md);
 }
 section.progress .progress-label {
-  font-size: var(--fs-body-compact);
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-heading);
   text-align: right;

@@ -46,7 +46,7 @@ section.statute-stack > ol > li {
   display:flex; flex-direction:column;
   gap:var(--sp-xs);
   color:var(--text-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   line-height:var(--lh-base);
   font-weight:400;
 }
@@ -79,7 +79,7 @@ section.statute-stack > ol > li > ol {
 }
 section.statute-stack > ul > li > :is(ul, ol) > li,
 section.statute-stack > ol > li > :is(ul, ol) > li {
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
 }
@@ -150,7 +150,7 @@ section.statute-stack.bands > ol > li {
 }
 section.statute-stack.bands > :is(ul, ol) > li > strong:first-child {
   grid-column:1;
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   letter-spacing:0.08em;
   align-self:center;
 }
@@ -206,7 +206,7 @@ section.statute-stack.lane > ul,
 section.statute-stack.lane > ol { display:none; }
 section.statute-stack.lane table {
   width:100%; border-collapse:collapse;
-  flex:1; font-size:var(--fs-body-compact);
+  flex:1; font-size:var(--fs-body);
   table-layout:auto;
 }
 section.statute-stack.lane thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }

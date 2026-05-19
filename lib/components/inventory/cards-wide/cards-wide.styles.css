@@ -8,15 +8,15 @@
  */
 section.cards-wide h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.cards-wide .three-stack { display:flex; flex-direction:column; gap:0.9375cqi; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body-compact); color:var(--text-body); }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
 section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
 section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
 section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
 section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
 
 
 
@@ -34,11 +34,11 @@ section.cards-wide:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
-  font-size:var(--fs-body-compact); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
 section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
 section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
 section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }

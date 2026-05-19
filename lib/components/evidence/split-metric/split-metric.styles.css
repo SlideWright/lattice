@@ -17,6 +17,6 @@ section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:
 section.split-metric .metric-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
 section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
-section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
+section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
 section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
+section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }

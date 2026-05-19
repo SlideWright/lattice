@@ -60,36 +60,31 @@
    * The 11-token typography contract. Three scales — content (4),
    * heading (6), display (1). Every size in cqi (container-query
    * inline-size) so visual proportions hold across HD, 4K, and any
-   * custom slide size. Body anchors at 2.5cqi = 24pt @ HD, the
-   * projected-slide readability floor. Headings are sized independently
-   * per-level (not derived from a modular ratio). Full contract:
-   * docs/references/typography.md; solver + audit:
-   * docs/notes/2026-05-19-typography-token-refactor.md.
+   * custom slide size. Container body anchors at 1.875cqi = 18pt @ HD
+   * (the default for cards / lists / tables / inline prose); slide-
+   * level statement bodies use --fs-message = 2.5cqi = 24pt @ HD, the
+   * long-distance projection floor. Headings h4/h5/h6 are deliberately
+   * tied to message/body/meta tiers (same size, weight-differentiated).
+   * Full contract: docs/references/typography.md.
    *
    * Author's mental model — every decision in five rules:
    *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
-   *   Slide-level body              → --fs-body          (statement, quote, lead prose)
-   *   Card / table / dense surface  → --fs-body-compact  (consumer's choice; layouts wire it)
+   *   Card / list / table / inline  → --fs-body          (default; 18pt projection)
+   *   Slide-level statement body    → --fs-message       (statement, quote, lead, divider sub)
+   *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
-   *   Lead / key-insight            → --fs-emphasis      (one block per slide)
-   *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*)
-   *
-   * --fs-body-compact is the proposal's Risk #1 mitigation (c) — added
-   * because card-style and table layouts (cards-grid, list-steps,
-   * list-tabular, compare-table, legal grids, etc.) overflow when their
-   * inner paragraphs render at the 24pt projection-floor anchor. Slide-
-   * level prose (statement, quote, divider) still reads --fs-body. */
-  --fs-meta:         1.67cqi;
-  --fs-body-compact: 1.875cqi;
-  --fs-body:         2.5cqi;
-  --fs-emphasis:     3.75cqi;
-  --fs-h1:           7.5cqi;
-  --fs-h2:           4.6875cqi;
-  --fs-h3:           3.125cqi;
-  --fs-h4:           2.5cqi;
-  --fs-h5:           1.875cqi;
-  --fs-h6:           1.5625cqi;
-  --fs-hero:         12.66cqi;
+   *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
+  --fs-meta:     1.36cqi;     /* 13pt @ HD — chrome */
+  --fs-body:     1.875cqi;    /* 18pt @ HD — container default */
+  --fs-message:  2.5cqi;      /* 24pt @ HD — slide-level statement; projection floor */
+  --fs-emphasis: 3.125cqi;    /* 30pt @ HD — lead callout (1.25× message) */
+  --fs-h1:       5.625cqi;    /* 54pt @ HD — dominant slide title */
+  --fs-h2:       3.75cqi;     /* 36pt @ HD — standard slide title */
+  --fs-h3:       2.8125cqi;   /* 27pt @ HD — subheading / column header */
+  --fs-h4:       2.5cqi;      /* 24pt @ HD — = --fs-message; inline bold at message tier */
+  --fs-h5:       1.875cqi;    /* 18pt @ HD — = --fs-body; inline bold at body tier */
+  --fs-h6:       1.36cqi;     /* 13pt @ HD — = --fs-meta; chrome-sized heading */
+  --fs-hero:     10cqi;       /* 96pt @ HD — KPI / watermark; class-driven */
 
   /* ── Radii / line-heights ─────────────────────────────────────────── */
   --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;

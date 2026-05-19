@@ -52,7 +52,7 @@ section h3 + p:has(> code:only-child),
 section h4 + p:has(> code:only-child),
 section h5 + p:has(> code:only-child) {
   color: var(--text-muted);
-  font-size: var(--fs-body);
+  font-size: var(--fs-message);
 }
 section h1 + p:has(> code:only-child) > code,
 section h2 + p:has(> code:only-child) > code,
@@ -180,7 +180,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote::before {
 }
 section:not(.quote):not(.featured):not(.math) > blockquote p {
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
@@ -192,7 +192,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote ul {
 }
 section:not(.quote):not(.featured):not(.math) > blockquote li {
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   padding-left:var(--sp-md);
@@ -341,7 +341,7 @@ section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
-  position:relative; font-size:var(--fs-body); color:var(--text-body);
+  position:relative; font-size:var(--fs-message); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,

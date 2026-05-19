@@ -35,7 +35,7 @@ section.before-after > ol > li {
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   color:var(--text-body);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:400;
 }
 section.before-after > ul > li:first-child,

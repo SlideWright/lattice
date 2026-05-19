@@ -47,7 +47,7 @@ section.authority-chain > :is(ol, ul) > li {
   border:1px solid var(--border);
   border-left:4px solid var(--tier-hue, var(--accent));
   border-radius:var(--radius-md);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   line-height:var(--lh-snug);
   color:var(--text-body);
   margin-bottom:var(--sp-md);
@@ -70,7 +70,7 @@ section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3
 section.authority-chain > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.14em;
   text-transform:uppercase;

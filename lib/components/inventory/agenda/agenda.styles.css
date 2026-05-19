@@ -30,7 +30,7 @@ section.agenda ol > li {
   grid-template-columns:auto 1fr;
   column-gap:var(--sp-md);
   align-items:baseline;
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:500;
   line-height:var(--lh-relaxed);
   color:var(--text-heading);
@@ -40,7 +40,7 @@ section.agenda ol > li {
 section.agenda ol > li::before {
   content:counter(agenda-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-body-compact);
+  font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--accent);
