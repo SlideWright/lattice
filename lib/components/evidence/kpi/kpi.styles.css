@@ -34,6 +34,12 @@
 section.kpi {
   display: flex; flex-direction: column;
   padding-top: var(--sp-md);
+  /* Trim the base 6.875cqi bottom padding — that much is pure reserved
+   * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
+   * KPI is the densest layout (hero + 3 metric rows + title); the extra
+   * ~3cqi lets the briefing supports breathe at metric size without the
+   * third row clipping the slide edge. */
+  padding-bottom: var(--sp-xl);
 }
 section.kpi h3 {
   font-family: var(--font-mono);
@@ -157,7 +163,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
   grid-column: 2;
   display: flex; flex-direction: column;
   justify-content: center;
-  padding: var(--sp-sm) 0;
+  padding: var(--sp-xs) 0;
 }
 section.kpi.briefing > ol > li:nth-child(2),
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(2) {
@@ -175,9 +181,13 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
   border-top: 1px solid var(--border);
   border-bottom: 1.5px solid var(--text-heading);
 }
+/* Briefing supports: 4.6875cqi (= 45pt) sits between --fs-h2 (36pt, reads
+ * as a heading, too quiet next to the hero) and --fs-h1 (54pt, which makes
+ * 3 stacked supports overflow the right column). Layout-specific metric
+ * tier — the briefing grid can't fit three 54pt rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: var(--fs-h1);
+  font-size: 4.6875cqi;
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
