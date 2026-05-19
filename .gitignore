@@ -34,6 +34,7 @@ lattice-runtime.js.check.tmp
 examples/*.html
 examples/**/*.html
 lib/components/**/*.html
+test/integration/**/*.html
 !examples/*.pdf
 !examples/**/*.pdf
 !lib/components/**/*.pdf
