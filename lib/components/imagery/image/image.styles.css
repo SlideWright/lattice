@@ -35,8 +35,12 @@ section.image:not(.full) {
    * the visual weight between text and image halves. */
   justify-content: center;
 }
-section.image:not(.full) h2 { font-size: var(--fs-2xl); margin-bottom: var(--sp-md); }
-section.image:not(.full) p  { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
+/* Absolute font sizes — image text reads at a consistent physical
+ * size regardless of canvas dimensions. Canvas-scaled (--fs-*) tokens
+ * shrink the readable area at 4K relative to the slide; absolute
+ * units keep reading size stable across HD/4K. */
+section.image:not(.full) h2 { font-size: 36px; margin-bottom: var(--sp-md); }
+section.image:not(.full) p  { font-size: 22px; line-height: 1.55; }
 
 /* Anchor decoration — guarded so museum slides never inherit the border */
 section.image:not(.full):not(.museum) {
