@@ -621,7 +621,7 @@ The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join
 
 The image is centred at native aspect on a clean `--bg-alt` matte — an editorial plate, not a placeholder. Use this for diagrams, schematics, and any asset where cropping would destroy meaning.
 
-![bg right](../../../lib/components/imagery/image/sample-image-portrait.svg)
+![bg](../../../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -644,9 +644,9 @@ Weekly Signal Brief — the primary output of the intake pipeline, distributed e
 
 ## Museum modifier — editorial plate
 
-Add `museum` alongside `image`. The image panel gets a `--bg-alt` matte, 20px inset on three sides, and a 1px border. Flush at the split line, framed like a mounted print.
+Add `museum` alongside `image`. The image gets a `--bg-alt` matte border with a 1px hairline frame; a 100px matte plate at the bottom carries the editorial label + caption. Framed like a mounted print.
 
-![bg right](../../../lib/components/imagery/image/sample-image-landscape.svg)
+![bg](../../../lib/components/imagery/image/sample-image-landscape.svg)
 
 ---
 
