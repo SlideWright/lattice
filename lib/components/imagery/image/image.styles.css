@@ -190,21 +190,20 @@ section.image.contain::before {
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 320px;
+  height: 220px;
   background: var(--image-scrim);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Text overlay — title above body, both bottom-anchored, with
- * enough vertical room for the body to wrap to 2-3 lines without
- * crashing into the title. Absolute font sizes for consistency
- * with the half-canvas variants. */
+/* Text overlay — title sits just above body with a tight 4px gap.
+ * Body is clipped to ~2 lines (max-height) so a long caption can't
+ * push into or under the title. */
 section.image.full h2,
 section.image.contain h2 {
   position: absolute;
   left: 48px; right: 48px;
-  bottom: 140px; margin: 0;
+  bottom: 92px; margin: 0;
   color: rgba(255, 255, 255, 0.98);
   font-family: var(--font-display);
   font-size: 40px;
@@ -217,26 +216,27 @@ section.image.full p:last-of-type,
 section.image.contain p:last-of-type {
   position: absolute;
   left: 48px; right: 48px;
-  bottom: 40px; margin: 0;
-  max-height: 86px;
+  bottom: 28px; margin: 0;
+  max-height: 60px;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.92);
   font-size: 22px;
-  line-height: 1.45;
+  line-height: 1.4;
   z-index: 2;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* Museum — image inset leaves a 120px-tall matte plate at the
- * bottom for the editorial label + caption. */
+/* Museum — image inset leaves a 100px-tall matte plate at the
+ * bottom for the editorial label + caption (tighter than the
+ * scrim'd variants since the matte itself provides contrast). */
 section.image.museum [data-marpit-advanced-background-container],
 section.image.museum .lattice-bg-full {
-  inset: 40px 40px 140px 40px;
+  inset: 40px 40px 100px 40px;
 }
 section.image.museum h2 {
   position: absolute;
   left: 48px; right: 48px;
-  bottom: 80px; margin: 0;
+  bottom: 60px; margin: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
   font-size: 14px;
@@ -248,8 +248,8 @@ section.image.museum h2 {
 section.image.museum p:last-of-type {
   position: absolute;
   left: 48px; right: 48px;
-  bottom: 32px; margin: 0;
-  max-height: 50px;
+  bottom: 24px; margin: 0;
+  max-height: 28px;
   overflow: hidden;
   color: var(--text-body);
   font-size: 18px;
