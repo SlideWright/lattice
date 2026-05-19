@@ -213,6 +213,13 @@ caught by the hook instead of by reviewer eyeballs.
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
+- **Typography uses the 10-token system.** Three scales: `--fs-meta`
+  / `--fs-body` / `--fs-emphasis` (content), `--fs-h1` … `--fs-h6`
+  (heading, per-level independent), `--fs-hero` (display, class-driven).
+  All HTML headings auto-resolve via `base.elements.css`. Body text is
+  `--fs-body` everywhere — paragraphs, lists, tables, cards, captions.
+  Picking by "feel" or t-shirt size (`fs-md` / `fs-lg`) is the legacy
+  pattern; those names are retired. See `docs/references/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
   Silently broken in the Marp preview Chromium build. See
   `docs/references/gotchas.md`.
