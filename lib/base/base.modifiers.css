@@ -52,7 +52,7 @@ section h3 + p:has(> code:only-child),
 section h4 + p:has(> code:only-child),
 section h5 + p:has(> code:only-child) {
   color: var(--text-muted);
-  font-size: var(--fs-md);
+  font-size: var(--fs-body);
 }
 section h1 + p:has(> code:only-child) > code,
 section h2 + p:has(> code:only-child) > code,
@@ -123,7 +123,7 @@ section p:has(> code:only-child):has(+ ul) > code,
 section p:has(> code:only-child):has(+ ol) > code,
 section p:has(> code:only-child):has(+ pre) > code {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -170,7 +170,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote {
 section:not(.quote):not(.featured):not(.math) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.12em;
   text-transform:uppercase;
@@ -220,13 +220,13 @@ section img.emoji {
 }
 section header {
   position:absolute; top:1.875cqi; left:2.34375cqi; right:2.34375cqi;
-  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
   letter-spacing:0.10em; text-transform:uppercase; text-align:left;
   color:var(--marp-slide-header-color, var(--text-muted));
 }
 section footer {
   position:absolute; bottom:1.875cqi; left:2.34375cqi; right:6.25cqi;
-  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:500;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:500;
   line-height:1; letter-spacing:0.06em; text-align:left;
   color:var(--marp-slide-footer-color, var(--text-muted));
 }
@@ -279,7 +279,7 @@ section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split
   margin-left:auto;
   align-self:center;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   border:1px solid var(--pill-border, var(--text-muted));
   background:var(--pill-bg, var(--bg));
@@ -449,7 +449,7 @@ section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   color:var(--text-muted);
   line-height:var(--lh-snug);
 }
@@ -633,7 +633,7 @@ section.obligation-matrix.pills td:not(:first-child) {
 section.obligation-matrix.pills td:not(:first-child) code,
 section.obligation-matrix.pills td:not(:first-child) strong {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.04em;
   padding:0.234375cqi 0.78125cqi;
@@ -659,7 +659,7 @@ section.obligation-matrix.lanes tbody tr > td:first-child {
   color:var(--lane-hue, var(--text-heading));
 }
 section.obligation-matrix.lanes tbody tr:nth-child(odd) td:not(:first-child) { background:none; }
-section.obligation-matrix.lanes td:not(:first-child) { font-family:var(--font-mono); font-size:var(--fs-sm); }
+section.obligation-matrix.lanes td:not(:first-child) { font-family:var(--font-mono); font-size:var(--fs-meta); }
 
 /* .asymmetric — sticky reg column + cards. The markdown is still a
  * table; we re-style the cells as card-feel boxes. */
@@ -676,7 +676,7 @@ section.obligation-matrix.asymmetric td {
   border-radius:var(--radius-md);
   padding:var(--sp-sm) var(--sp-md);
   text-align:left;
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   line-height:var(--lh-snug);
 }
 section.obligation-matrix.asymmetric tbody tr:nth-child(odd) td { background:var(--bg-alt); }
@@ -774,7 +774,7 @@ section.closing.numbered::after {
   top: var(--sp-xl);
   right: var(--sp-xl);
   font-family: var(--font-display);
-  font-size: var(--fs-3xl);
+  font-size: var(--fs-h1);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.04em;

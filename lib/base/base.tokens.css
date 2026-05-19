@@ -122,7 +122,7 @@
 
   /* ── Marp chrome mappings ── */
   --marp-slide-pagination-color:     var(--text-muted);
-  --marp-slide-pagination-font-size: var(--fs-label);
+  --marp-slide-pagination-font-size: var(--fs-meta);
   --marp-slide-header-color:  var(--text-muted);
   --marp-slide-footer-color:  var(--text-muted);
 

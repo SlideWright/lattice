@@ -14,7 +14,7 @@
 /* ── Syntax highlight (highlight.js) ──────────────────────────────────────
  * Palette-blind rule structure — tokens are theme-defined, defaults above. */
 section pre.hljs { background:var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-dark); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 3px); box-sizing:border-box; border-radius:var(--radius-md); overflow-x:auto; margin:0; }
-section code.hljs { font-family:var(--font-mono); font-size:var(--fs-sm); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
+section code.hljs { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
 /* Diagram source <pre> — override Marp's bundled section pre/code defaults */
 section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
 section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
@@ -101,7 +101,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code [
   background:color-mix(in srgb, var(--fail) 8%, var(--bg-alt));
   border:1px solid var(--fail);
   border-radius:var(--radius-md);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   line-height:var(--lh-snug);
   color:var(--text-body);
   display:flex; flex-direction:column; gap:0.3125cqi;
@@ -115,7 +115,7 @@ section.diagram > .mermaid-error {
 section.diagram > .mermaid-error-label,
 .mermaid-error-label {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
@@ -128,7 +128,7 @@ section.diagram > .mermaid-error-label,
   border:1px solid var(--border);
   border-radius:var(--radius-sm);
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   line-height:var(--lh-snug);
   color:var(--text-muted);
   white-space:pre-wrap; overflow:auto;
