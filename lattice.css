@@ -2708,12 +2708,14 @@ section.image.museum .lattice-bg-full img {
   box-shadow: 0 0 0 1px var(--border);
 }
 
-/* Bottom scrim — dark gradient that fades to transparent.
- * Pseudo-element so we don't need a wrapper div in the DOM.
- * Museum: skip the scrim, text reads on the matte directly. */
-section.image.full::before,
-section.image.contain::before {
-  content: '';
+/* Bottom scrim — dark gradient that fades to transparent. Real DOM
+ * element (injected by lib/transformers/image-scrim.js across all
+ * three render paths) because marpit core hides `::before` on its
+ * advanced-background content sections with `display: none !important`,
+ * which would kill any pseudo-element scrim under marp-cli + runtime.
+ * Museum skips the scrim — its matte plate provides text contrast. */
+section.image.full .image-scrim,
+section.image.contain .image-scrim {
   position: absolute;
   left: 0; right: 0; bottom: 0;
   height: 220px;
