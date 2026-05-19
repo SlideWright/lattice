@@ -72,32 +72,40 @@
    *   Lead / key-insight  → --fs-emphasis  (one block per slide)
    *   KPI / watermark     → --fs-hero      (class-driven, never on h*)
    *
-   * Phase 1 declares the 7 non-colliding new tokens (--fs-meta,
-   * --fs-h1 … --fs-h6) alongside the original 16 legacy tokens at
-   * their pre-refactor sizes — zero visual change. The 3 colliding
-   * new tokens (--fs-body, --fs-emphasis, --fs-hero) land in Phase 2
-   * with the base.elements.css heading wiring. Phase 3 sed-replaces
-   * component CSS bucket-by-bucket per the migration map; Phase 4
-   * deletes the legacy declarations. */
+   * Phase 2 (current): all 10 new tokens declared at new values. The 3
+   * collision names (--fs-body, --fs-emphasis, --fs-hero) override
+   * their legacy values via CSS last-wins, so existing component CSS
+   * that consumes those names resolves to the new sizes immediately.
+   * The 10 legacy --fs-emphasis sites overshoot to 36 pt (intended
+   * migration target is 24 pt) until Phase 3 renames them to
+   * --fs-body. Phase 3 sed-replaces component CSS bucket-by-bucket
+   * per the migration map; Phase 4 deletes the legacy declarations. */
 
-  /* New non-colliding tokens (Phase 1). */
-  --fs-meta:     1.67cqi;
-  --fs-h1:       7.5cqi;
-  --fs-h2:       4.6875cqi;
-  --fs-h3:       3.125cqi;
-  --fs-h4:       2.5cqi;
-  --fs-h5:       1.875cqi;
-  --fs-h6:       1.5625cqi;
+  /* Active 11-token system. Body anchors at 2.5cqi = 24pt @ HD, the
+   * projected-slide readability floor. Card-style and table layouts
+   * (cards-grid, list-steps, list-tabular, compare-table, legal tables,
+   * etc.) opt into --fs-body-compact (1.875cqi = 18pt @ HD = 24px) so
+   * paragraph-dense slides don't overflow. Compact is the proposal's
+   * Risk #1 mitigation (c) — only consumed by components that need
+   * tight body, never by slide-level prose. */
+  --fs-meta:         1.67cqi;
+  --fs-body-compact: 1.875cqi;
+  --fs-body:         2.5cqi;
+  --fs-emphasis:     3.75cqi;
+  --fs-h1:           7.5cqi;
+  --fs-h2:           4.6875cqi;
+  --fs-h3:           3.125cqi;
+  --fs-h4:           2.5cqi;
+  --fs-h5:           1.875cqi;
+  --fs-h6:           1.5625cqi;
+  --fs-hero:         12.66cqi;
 
   /* Legacy tokens at original sizes — preserved through Phase 3, deleted
-   * in Phase 4. --fs-body, --fs-emphasis, --fs-hero stay at legacy values
-   * here; Phase 2 redeclares them at the new values. */
+   * in Phase 4. */
   --fs-label:     1.015625cqi;
   --fs-xs:        0.9375cqi;
   --fs-sm:        1.171875cqi;
-  --fs-body:      1.25cqi;
   --fs-md:        1.40625cqi;
-  --fs-emphasis:  1.328125cqi;
   --fs-content:   1.484375cqi;
   --fs-lg:        1.71875cqi;
   --fs-xl:        2.34375cqi;
@@ -106,7 +114,6 @@
   --fs-display:   4.6875cqi;
   --fs-stat:      4.0625cqi;
   --fs-quote:     6.25cqi;
-  --fs-hero:      8.59375cqi;
   --fs-watermark: 14.0625cqi;
 
   /* ── Radii / line-heights ─────────────────────────────────────────── */

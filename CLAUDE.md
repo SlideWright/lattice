@@ -213,13 +213,16 @@ caught by the hook instead of by reviewer eyeballs.
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
-- **Typography uses the 10-token system.** Three scales: `--fs-meta`
-  / `--fs-body` / `--fs-emphasis` (content), `--fs-h1` … `--fs-h6`
-  (heading, per-level independent), `--fs-hero` (display, class-driven).
-  All HTML headings auto-resolve via `base.elements.css`. Body text is
-  `--fs-body` everywhere — paragraphs, lists, tables, cards, captions.
-  Picking by "feel" or t-shirt size (`fs-md` / `fs-lg`) is the legacy
-  pattern; those names are retired. See `docs/references/typography.md`.
+- **Typography uses the 11-token system.** Three scales: content
+  (`--fs-meta` / `--fs-body-compact` / `--fs-body` / `--fs-emphasis`),
+  heading (`--fs-h1` … `--fs-h6`, per-level independent), display
+  (`--fs-hero`, class-driven). All HTML headings auto-resolve via
+  `base.elements.css`. Slide-level body prose is `--fs-body` (24 pt @
+  HD = projection floor); card-style and table layouts use
+  `--fs-body-compact` (18 pt) for their inner prose so dense surfaces
+  don't overflow. Picking by "feel" or t-shirt size (`fs-md` / `fs-lg`)
+  is the legacy pattern; those names are retired. See
+  `docs/references/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
   Silently broken in the Marp preview Chromium build. See
   `docs/references/gotchas.md`.
