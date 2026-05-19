@@ -280,3 +280,23 @@ their own use and don't need this wrapper.
 
 **Workflow**: `--overview` to see the big picture → identify suspect
 area → `--region` for full-quality detail. No more guess-and-check.
+
+**`marp-cli` works in the cloud sandbox — set `CHROME_PATH` first.**
+The puppeteer-cached chromium binary isn't on the system PATH, so
+`npx marp` exits with "no suitable browser found" until you point it
+at the cached binary. The integration test helper at
+`test/helpers/render.js` inherits `process.env`, so the same env var
+covers tests too.
+
+```bash
+CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
+  npx marp <deck>.md --config-file marp.config.js \
+    --allow-local-files --pdf -o <deck>.pdf
+```
+
+See `docs/references/gotchas.md` "marp-cli works in the cloud sandbox
+— set `CHROME_PATH`" for the full entry. Same file documents the
+matching `themeSet` requirement: any deck whose front-matter `theme:`
+directive names a theme not listed in `marp.config.js` `themeSet`
+renders without a palette (white bg, no tokens) — every theme under
+`themes/` is registered there as of `6aad1e6`.

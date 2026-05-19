@@ -214,6 +214,61 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   engine. Tracked separately.
 - **Commits:** `6276665`.
 
+### marp-cli works in the cloud sandbox — set `CHROME_PATH`
+
+- **Symptom:** Running `npx marp` in a Claude Code on Web session
+  fails with "No suitable browser found. Please ensure one of the
+  following browsers is installed: chrome, edge, firefox." A new
+  session might conclude marp-cli isn't available and skip the
+  marp-cli render path entirely.
+- **Cause:** marp-cli's browser auto-detection looks in the standard
+  system locations (`/usr/bin/google-chrome`, etc.) and doesn't know
+  about the puppeteer-cached chromium binary that the sandbox ships
+  with. The binary IS present at
+  `/root/.cache/puppeteer/chrome/linux-<version>/chrome-linux64/chrome`
+  — marp-cli just can't find it on its own.
+- **Mitigation:** Set `CHROME_PATH` in the env before invoking
+  `npx marp`. The integration test helper at
+  [test/helpers/render.js](../../test/helpers/render.js) inherits
+  `process.env`, so the same env var works for tests too.
+
+  ```bash
+  CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
+    npx marp <deck>.md --config-file marp.config.js \
+      --allow-local-files --pdf -o <deck>.pdf
+  ```
+
+- **Triggered by:** Any ad-hoc marp-cli invocation in a fresh
+  cloud-sandbox session.
+- **Removable when:** marp-cli adds puppeteer-cache discovery, or the
+  sandbox ships chromium at one of the canonical system paths.
+- **Commits:** documentation-only — captured here so future sessions
+  don't conclude the tool is missing.
+
+### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
+
+- **Symptom:** A deck specifies `theme: mustard` (or any other named
+  theme), but the marp-cli PDF render comes out with white background,
+  black text, and no palette tokens — looks like dark mode is broken,
+  or like the theme silently failed. Same deck rendered through
+  `lattice-emulator.js` looks fine.
+- **Cause:** marp-cli only resolves theme names to files listed in
+  `themeSet` (in `marp.config.js`) or passed via `--theme-set`. If the
+  theme file isn't registered, marp-cli falls back to no theme — every
+  color token (`--bg`, `--text-body`, etc.) is undefined and the
+  defaults render as browser defaults. The emulator path doesn't have
+  this problem because it loads `lattice.css` (which `@import`s the
+  theme via the palette positional argument) directly.
+- **Mitigation:** Every theme under `themes/` is now listed in
+  `marp.config.js` `themeSet` (see commit `6aad1e6`).  Any new theme
+  added to the directory must also be added there or marp-cli renders
+  won't find it.
+- **Triggered by:** Any deck whose front-matter `theme:` directive
+  names a theme not in `themeSet`.
+- **Removable when:** marp-cli supports `themeSet` auto-discovery
+  from a directory glob.
+- **Commits:** `3fa0462`, `6aad1e6`.
+
 ---
 
 ## Mermaid
