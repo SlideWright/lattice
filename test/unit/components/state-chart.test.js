@@ -349,24 +349,35 @@ describe('buildStateChart', () => {
     assert.match(html, /data-transitions="8"/);
   });
 
-  test('emits an ol of state-nodes with correct count and data-kind for start/terminal', () => {
+  test('emits SVG canvas with one <rect> per state and data-kind for start/terminal', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'default');
-    const nodeCount = (html.match(/class="state-node"/g) || []).length;
-    assert.equal(nodeCount, 6);
+    assert.match(html, /<svg class="state-chart-canvas"/);
+    const nodeGroupCount = (html.match(/<g class="state-node"/g) || []).length;
+    assert.equal(nodeGroupCount, 6);
+    const rectCount = (html.match(/class="state-rect"/g) || []).length;
+    assert.equal(rectCount, 6);
     assert.match(html, /data-kind="start"/);
     assert.match(html, /data-kind="terminal"/);
   });
 
-  test('renders SVG edges for every non-self transition + self-loop path', () => {
+  test('renders SVG path for every transition (forward + back + self)', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'default');
     const edgeCount = (html.match(/class="state-edge"/g) || []).length;
-    assert.equal(edgeCount, 8);   // one path element per transition (incl. self)
+    assert.equal(edgeCount, 8);
     assert.match(html, /data-dir="forward"/);
     assert.match(html, /data-dir="back"/);
     assert.match(html, /data-dir="self"/);
     assert.match(html, /data-self="true"/);
+  });
+
+  test('every transition path has an accompanying arrowhead polygon', () => {
+    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
+    const html = buildStateChart(model, 'default');
+    const arrowCount = (html.match(/class="state-edge-arrow"/g) || []).length;
+    // 8 transitions + start marker arrow + terminal marker arrow = 10
+    assert.equal(arrowCount, 10);
   });
 
   test('event labels render as state-edge-label text', () => {
@@ -377,27 +388,27 @@ describe('buildStateChart', () => {
     assert.match(html, /class="state-edge-label"[^>]*>revise</);
   });
 
-  test('status pills emit chart-status with data-s', () => {
+  test('status renders as in-node status chip with data-s', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'default');
-    assert.match(html, /class="chart-status" data-s="on-track"/);
-    assert.match(html, /class="chart-status" data-s="done"/);
-    assert.match(html, /class="chart-status" data-s="live"/);
+    assert.match(html, /class="state-status" data-s="on-track"/);
+    assert.match(html, /class="state-status" data-s="done"/);
+    assert.match(html, /class="state-status" data-s="live"/);
   });
 
-  test('inline variant drops the SVG layer and emits state-chip chips', () => {
+  test('inline variant emits HTML rows with chips, no SVG canvas', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'inline');
     assert.match(html, /data-variant="inline"/);
-    assert.doesNotMatch(html, /<svg /);
+    assert.doesNotMatch(html, /state-chart-canvas/);
     assert.match(html, /class="state-chip"/);
   });
 
-  test('horizontal variant preserves SVG layer', () => {
+  test('horizontal variant uses the same HTML fallback as inline', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'horizontal');
-    assert.match(html, /data-variant="horizontal"/);
-    assert.match(html, /<svg /);
+    assert.match(html, /class="state-chip"/);
+    assert.doesNotMatch(html, /state-chart-canvas/);
   });
 });
 
@@ -434,24 +445,25 @@ describe('start / terminal markers', () => {
   test('worked example emits one start marker and one terminal marker', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'default');
-    const startCount = (html.match(/state-marker"[^>]*data-kind="start"/g) || []).length;
-    const terminalCount = (html.match(/state-marker"[^>]*data-kind="terminal"/g) || []).length;
+    const startCount = (html.match(/class="state-marker" data-kind="start"/g) || []).length;
+    const terminalCount = (html.match(/class="state-marker" data-kind="terminal"/g) || []).length;
     assert.equal(startCount, 1);
     assert.equal(terminalCount, 1);
   });
 
-  test('start marker is a filled disc; terminal marker is a ring', () => {
+  test('start marker is a filled disc; terminal marker is a ring + inner disc', () => {
     const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
     const html = buildStateChart(model, 'default');
     assert.match(html, /class="state-marker-disc"/);
     assert.match(html, /class="state-marker-ring"/);
+    assert.match(html, /class="state-marker-line"/);
   });
 
   test('implicit start (no explicit `start`) still renders a start marker', () => {
     const ol = '<li>A<ul><li><code>=&gt; 2</code></li></ul></li><li>B</li>';
     const model = parseStateChart(ol);
     const html = buildStateChart(model, 'default');
-    assert.match(html, /data-kind="start"/);
+    assert.match(html, /class="state-marker" data-kind="start"/);
   });
 
   test('multiple terminals render multiple terminal markers', () => {
@@ -461,9 +473,8 @@ describe('start / terminal markers', () => {
       '<li>C <code>end</code></li>';
     const model = parseStateChart(ol);
     const html = buildStateChart(model, 'default');
-    const terminalCount = (html.match(/data-kind="terminal"/g) || []).length;
-    // 2 marker groups + 2 state-node data-kind attributes
-    assert.ok(terminalCount >= 2);
+    const markerTerminals = (html.match(/class="state-marker" data-kind="terminal"/g) || []).length;
+    assert.equal(markerTerminals, 2);
   });
 });
 
