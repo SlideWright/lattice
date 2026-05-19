@@ -1,255 +1,258 @@
-/* image — extracted from lib/_legacy.css (batch 5).
- * See lib/components/image/image.manifest.json for the component contract.
- */
-
-/* ── IMAGE ──────────────────────────────────────────────────────────────────
- * One class (`image`) covers all half-canvas and full-bleed image layouts.
- * Default visual style: the Anchor — 6px --accent border, solid text panel.
+/* image — half-canvas and full-bleed image layouts.
+ * See lib/components/imagery/image/image.manifest.json for the contract.
  *
- * Composable modifiers:
- *   image             text left, image right (6px --accent left border)
- *   image mirror      image left, text right (border moves to right edge)
- *   image contain     letterbox on --bg-alt matte (no crop)
- *   image full        full-bleed: solid --bg column 42% + accent border
- *   image museum      editorial plate: 20px inset on --bg-alt matte
+ * Modifier model:
+ *   image             half-canvas: text left, image right (anchor border)
+ *   image mirror      half-canvas mirrored: image left, text right
+ *   image full        full-bleed: image fills the slide (cover)
+ *   image contain     full-bleed: image fills the slide (contain, matte)
+ *   image museum      full-bleed: image inset on matte with hairline frame
  *   image dark        dark color-scheme (token cascade)
+ *
+ * full / contain / museum are image-treatment modifiers — they all use
+ * the same full-bleed text-overlay-on-scrim pattern; the modifier picks
+ * how the image renders (cover / letterbox / matted). Per docs.
  *
  * Render paths:
  *   Marp CLI: [data-marpit-advanced-background-container] figure
  *   Emulator: .lattice-bg, .lattice-bg-right / -left / -full
- * ───────────────────────────────────────────────────────────────────────── */
+ *
+ * Text sizes are absolute (px). Canvas-scaled (--fs-*) tokens shrink
+ * reading area at 4K relative to the slide; absolute units keep
+ * reading size stable across canvas variants. */
+
 section.image {
   isolation: isolate;
   --image-matte: var(--bg-alt);
+  --image-scrim: linear-gradient(to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.65) 50%,
+    rgba(0, 0, 0, 0.00) 100%);
 }
 
-/* ─ HALF-CANVAS: image right ─ */
-section.image:not(.full) {
+/* ════════════════════════════════════════════════════════════════════
+ * HALF-CANVAS (default `image`, with mirror)
+ *
+ * Text in the solid left half, image in the right half. The `.contain`
+ * and `.museum` modifiers do NOT belong to this layout — they switch
+ * the slide into the full-bleed pattern below.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image:not(.full):not(.contain):not(.museum) {
   padding-right: calc(50% + var(--sp-2xl));
   padding-left: var(--sp-2xl);
   background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
-  /* Vertically center the text slot so short content doesn't read as
-   * orphaned in the top-left corner. The section is a flex column
-   * (from base.elements.css); without justify-content, h2+p stack at
-   * top with vast empty space below the image fill. Centering balances
-   * the visual weight between text and image halves. */
+  /* Vertically center text so short content doesn't read as orphaned
+   * in the top-left corner. */
   justify-content: center;
 }
-/* Absolute font sizes — image text reads at a consistent physical
- * size regardless of canvas dimensions. Canvas-scaled (--fs-*) tokens
- * shrink the readable area at 4K relative to the slide; absolute
- * units keep reading size stable across HD/4K. */
-section.image:not(.full) h2 { font-size: 36px; margin-bottom: var(--sp-md); }
-section.image:not(.full) p  { font-size: 22px; line-height: 1.55; }
-
-/* Anchor decoration — guarded so museum slides never inherit the border */
-section.image:not(.full):not(.museum) {
-  border-left: 0.46875cqi solid var(--accent);
-  padding-left: calc(var(--sp-2xl) + 0.46875cqi);
+section.image:not(.full):not(.contain):not(.museum) h2 {
+  font-size: 36px;
+  margin-bottom: var(--sp-md);
+}
+section.image:not(.full):not(.contain):not(.museum) p {
+  font-size: 22px;
+  line-height: 1.55;
 }
 
-/* Mirror: border and text slot move to right */
-section.image:not(.full):not(.museum).mirror,
-section.image:not(.full):not(.museum).left {
+/* Accent border on the text-side edge */
+section.image:not(.full):not(.contain):not(.museum) {
+  border-left: 6px solid var(--accent);
+  padding-left: calc(var(--sp-2xl) + 6px);
+}
+section.image:not(.full):not(.contain):not(.museum).mirror,
+section.image:not(.full):not(.contain):not(.museum).left {
   border-left: none;
-  border-right: 0.46875cqi solid var(--accent);
+  border-right: 6px solid var(--accent);
   padding-left: calc(50% + var(--sp-2xl));
-  padding-right: calc(var(--sp-2xl) + 0.46875cqi);
+  padding-right: calc(var(--sp-2xl) + 6px);
   background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
 }
 
-/* Contain: --bg-alt matte fills the image slot */
-section.image:not(.full).contain {
-  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
-}
-section.image:not(.full).contain.mirror,
-section.image:not(.full).contain.left {
-  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
-}
+/* Emulator wrapper — positions the .lattice-bg div as the half-canvas
+ * image slot. Marp CLI uses [data-marpit-advanced-background-container]
+ * which marpit positions natively. */
+section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
+section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
+section.image:not(.full):not(.contain):not(.museum) .lattice-bg-right { right: 0; top: 0; bottom: 0; width: 50%; }
+section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0; top: 0; bottom: 0; width: 50%; }
+section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
+section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* ─ COVER (default) — both render paths ─ */
-section.image [data-marpit-advanced-background-container] figure,
-section.image .lattice-bg img {
+/* Image overlay — cover, with hairline at the split */
+section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
+section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;
   background-position: center !important;
   object-fit: cover !important;
   object-position: center !important;
+  box-shadow: -1px 0 0 var(--border) !important;
 }
-/* ─ CONTAIN (opt-in) ─ */
+section.image:not(.full):not(.contain):not(.museum).mirror [data-marpit-advanced-background-container] figure,
+section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg img,
+section.image:not(.full):not(.contain):not(.museum).left   [data-marpit-advanced-background-container] figure,
+section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg img {
+  box-shadow: 1px 0 0 var(--border) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * FULL-BLEED (image full / image contain / image museum)
+ *
+ * Image fills the slide; text overlays the lower portion on a dark
+ * scrim for readability. The modifier picks the image treatment:
+ *
+ *   full     — cover (image crops to fill)
+ *   contain  — letterbox (preserves aspect, matte fills around)
+ *   museum   — inset 40px on matte with 1px hairline frame
+ *
+ * Heading + body sit on a bottom gradient scrim that fades to
+ * transparent at the top, so the image stays the visual subject
+ * while the text remains readable over any tone.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+section.image.full,
+section.image.contain,
+section.image.museum {
+  position: relative;
+  padding: 0;
+  background: var(--image-matte);
+  box-sizing: border-box;
+  border: none;
+}
+section.image.full header,
+section.image.full footer,
+section.image.contain header,
+section.image.contain footer,
+section.image.museum header,
+section.image.museum footer {
+  display: none;
+}
+
+/* Image container fills the slide (overlay behind text) */
+section.image.full [data-marpit-advanced-background-container],
+section.image.contain [data-marpit-advanced-background-container],
+section.image.museum [data-marpit-advanced-background-container],
+section.image.full .lattice-bg-full,
+section.image.contain .lattice-bg-full,
+section.image.museum .lattice-bg-full {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+/* Cover (default for `.full`) — image fills, cropped */
+section.image.full [data-marpit-advanced-background-container] figure,
+section.image.full .lattice-bg-full img {
+  width: 100%; height: 100%;
+  background-size: cover !important;
+  background-position: center !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block;
+}
+
+/* Contain — letterbox; matte fills around */
 section.image.contain [data-marpit-advanced-background-container] figure,
-section.image.contain .lattice-bg img {
+section.image.contain .lattice-bg-full img {
+  width: 100%; height: 100%;
   background-size: contain !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
+  background-color: var(--image-matte) !important;
   object-fit: contain !important;
   object-position: center !important;
+  display: block;
 }
 
-/* Split-line hairline — 6px border is on the outer slide edge; this 1px
- * mark at the split ensures the boundary reads regardless of image tone. */
-section.image:not(.full) [data-marpit-advanced-background-container] figure,
-section.image:not(.full) .lattice-bg img {
-  box-shadow: -1px 0 0 var(--border) !important;
+/* Museum — image inset 40px with 1px hairline frame */
+section.image.museum [data-marpit-advanced-background-container],
+section.image.museum .lattice-bg-full {
+  inset: 40px;
 }
-section.image:not(.full).mirror [data-marpit-advanced-background-container] figure,
-section.image:not(.full).mirror .lattice-bg img,
-section.image:not(.full).left   [data-marpit-advanced-background-container] figure,
-section.image:not(.full).left   .lattice-bg img {
-  box-shadow: 1px 0 0 var(--border) !important;
-}
-section.image:not(.full).contain [data-marpit-advanced-background-container] figure,
-section.image:not(.full).contain .lattice-bg img {
-  box-shadow: 0 0 0 1px var(--border) !important;
-}
-
-/* ─ EMULATOR WRAPPER ─ */
-section.image .lattice-bg { position: absolute; z-index: -1; overflow: hidden; }
-section.image .lattice-bg img { width: 100%; height: 100%; display: block; }
-section.image .lattice-bg-right { right: 0; top: 0; bottom: 0; width: 50%; }
-section.image .lattice-bg-left  { left: 0; top: 0; bottom: 0; width: 50%; }
-section.image .lattice-bg-full  { inset: 0; }
-section.image.mirror .lattice-bg-right,
-section.image.left   .lattice-bg-right { right: auto; left: 0; }
-
-/* ─ FULL BLEED: solid --bg column 42%, 6px --accent border ─ */
-section.image.full {
-  padding: 0;
-  border-top: none;
-  border-left: 6px solid var(--accent);
-  background: none;
-  box-sizing: border-box;
-}
-section.image.full header,
-section.image.full footer { display: none; }
-section.image.full h2 {
-  position: absolute; top: 0; left: 0.46875cqi; bottom: 0; margin: 0;
-  width: 42%;
-  display: flex; align-items: flex-end;
-  padding: var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
-  background: var(--bg);
-  color: var(--text-heading);
-  font-size: var(--fs-xl);
-  box-sizing: border-box;
-  z-index: 1;
-}
-section.image.full p:last-of-type {
-  position: absolute; top: 0; left: 0.46875cqi; bottom: 0; margin: 0;
-  width: 42%;
-  display: flex; align-items: flex-start;
-  padding: var(--sp-2xl) var(--sp-xl) var(--sp-xl) var(--sp-xl);
-  background: transparent;
-  color: var(--text-body);
-  font-size: var(--fs-body); line-height: var(--lh-relaxed);
-  box-sizing: border-box;
-  z-index: 1;
-}
-section.image.full.mirror {
-  border-left: none;
-  border-right: 0.46875cqi solid var(--accent);
-}
-section.image.full.mirror h2 {
-  left: auto; right: 0.46875cqi;
-  padding-left: var(--sp-xl); padding-right: var(--sp-xl);
-}
-section.image.full.mirror p:last-of-type {
-  left: auto; right: 0.46875cqi;
-  padding-left: var(--sp-xl); padding-right: var(--sp-xl);
-}
-
-/* ─ MUSEUM MODIFIER — editorial plate, layered over anchor base ─
- * Removes the accent border; mounts the image on --bg-alt matte with
- * 20px inset (flush at the split) and a 1px frame. Full-bleed museum
- * centres the image on the matte with uniform 40px inset. */
-
-/* Half-canvas museum: --bg-alt matte on image side, inset image */
-section.image:not(.full).museum {
-  padding-left: var(--sp-2xl);
-  padding-right: calc(50% + var(--sp-2xl));
-  background: linear-gradient(to right, var(--bg) 50%, var(--image-matte) 50%);
-}
-section.image:not(.full).museum.mirror,
-section.image:not(.full).museum.left {
-  padding-left: calc(50% + var(--sp-2xl));
-  padding-right: var(--sp-2xl);
-  background: linear-gradient(to left, var(--bg) 50%, var(--image-matte) 50%);
-}
-
-/* Marp CLI — inset figure: flush at split, 20px on outer three sides */
-section.image:not(.full).museum [data-marpit-advanced-background-container] figure {
-  top: 1.5625cqi !important; right: 1.5625cqi !important; bottom: 1.5625cqi !important; left: 0 !important;
-  background-size: cover !important; background-position: center !important;
-  box-shadow: 0 0 0 1px var(--border) !important;
-}
-section.image:not(.full).museum.contain [data-marpit-advanced-background-container] figure {
-  background-size: contain !important; background-position: center !important;
+section.image.museum [data-marpit-advanced-background-container] figure,
+section.image.museum .lattice-bg-full img {
+  width: 100%; height: 100%;
+  background-size: contain !important;
+  background-position: center !important;
   background-repeat: no-repeat !important;
-}
-section.image:not(.full).museum.mirror [data-marpit-advanced-background-container] figure,
-section.image:not(.full).museum.left   [data-marpit-advanced-background-container] figure {
-  top: 1.5625cqi !important; right: 0 !important; bottom: 1.5625cqi !important; left: 1.5625cqi !important;
-  background-size: cover !important; background-position: center !important;
-  box-shadow: 0 0 0 1px var(--border) !important;
-}
-
-/* Emulator — right slot with matte padding */
-section.image:not(.full).museum .lattice-bg-right {
-  background: var(--image-matte);
-  padding: 1.5625cqi 1.5625cqi 1.5625cqi 0;
-  box-sizing: border-box;
-  right: 0; top: 0; bottom: 0; width: 50%;
-}
-section.image:not(.full).museum .lattice-bg-right img {
-  width: 100%; height: 100%; display: block;
-  object-fit: cover; object-position: center;
-  box-shadow: 0 0 0 1px var(--border) !important;
-}
-section.image:not(.full).museum.contain .lattice-bg-right img { object-fit: contain; }
-section.image:not(.full).museum.mirror .lattice-bg-right,
-section.image:not(.full).museum.left   .lattice-bg-right {
-  background: var(--image-matte);
-  padding: 1.5625cqi 0 1.5625cqi 1.5625cqi;
-  box-sizing: border-box;
-  right: auto; left: 0; top: 0; bottom: 0; width: 50%;
-}
-
-/* Full-bleed museum: image centred on --bg-alt matte, framed as an object */
-section.image.full.museum {
-  border: none;
-  padding: 3.125cqi;
-  background: var(--image-matte);
-  box-sizing: border-box;
-}
-section.image.full.museum [data-marpit-advanced-background-container] figure {
-  top: 3.125cqi !important; right: 3.125cqi !important; bottom: 3.125cqi !important; left: 3.125cqi !important;
-  background-size: contain !important; background-position: center !important;
-  background-repeat: no-repeat !important;
-  box-shadow: 0 0 0 1px var(--border) !important;
-}
-section.image.full.museum .lattice-bg-full {
-  background: var(--image-matte);
-  padding: 3.125cqi;
-  box-sizing: border-box;
-}
-section.image.full.museum .lattice-bg-full img {
-  width: 100%; height: 100%; display: block;
-  object-fit: contain; object-position: center;
+  background-color: var(--image-matte) !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block;
   box-shadow: 0 0 0 1px var(--border);
 }
-/* Museum full text: label + caption in normal flow on the matte */
-section.image.full.museum h2 {
-  position: relative; top: unset; left: unset; right: unset; bottom: unset;
-  width: auto; display: block;
-  padding: 0; background: none;
-  color: var(--text-label);
-  font-size: var(--fs-label); font-family: var(--font-mono); font-weight: 400;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  margin: 0 0 var(--sp-xs) 0; z-index: 1;
+
+/* Bottom scrim — dark gradient that fades to transparent.
+ * Pseudo-element so we don't need a wrapper div in the DOM.
+ * Museum: skip the scrim, text reads on the matte directly. */
+section.image.full::before,
+section.image.contain::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 320px;
+  background: var(--image-scrim);
+  z-index: 0;
+  pointer-events: none;
 }
-section.image.full.museum p:last-of-type {
-  position: relative; top: unset; left: unset; right: unset; bottom: unset;
-  width: auto; display: block;
-  padding: 0; background: transparent;
+
+/* Text overlay — title above body, both bottom-anchored, with
+ * enough vertical room for the body to wrap to 2-3 lines without
+ * crashing into the title. Absolute font sizes for consistency
+ * with the half-canvas variants. */
+section.image.full h2,
+section.image.contain h2 {
+  position: absolute;
+  left: 48px; right: 48px;
+  bottom: 140px; margin: 0;
+  color: rgba(255, 255, 255, 0.98);
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.15;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+section.image.full p:last-of-type,
+section.image.contain p:last-of-type {
+  position: absolute;
+  left: 48px; right: 48px;
+  bottom: 40px; margin: 0;
+  max-height: 86px;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 22px;
+  line-height: 1.45;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Museum — image inset leaves a 120px-tall matte plate at the
+ * bottom for the editorial label + caption. */
+section.image.museum [data-marpit-advanced-background-container],
+section.image.museum .lattice-bg-full {
+  inset: 40px 40px 140px 40px;
+}
+section.image.museum h2 {
+  position: absolute;
+  left: 48px; right: 48px;
+  bottom: 80px; margin: 0;
   color: var(--text-label);
-  font-size: var(--fs-sm); line-height: var(--lh-base);
-  margin: 0; text-align: center; z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 2;
+}
+section.image.museum p:last-of-type {
+  position: absolute;
+  left: 48px; right: 48px;
+  bottom: 32px; margin: 0;
+  max-height: 50px;
+  overflow: hidden;
+  color: var(--text-body);
+  font-size: 18px;
+  line-height: 1.4;
+  z-index: 2;
 }
