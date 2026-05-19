@@ -2629,7 +2629,7 @@ section.image:not(.full):not(.contain):not(.museum) > .image-text {
  * resolves correctly now that the section is no longer using
  * percentage padding. */
 section.image:not(.full):not(.contain):not(.museum) .image-text h2 {
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h3);
   margin-bottom: var(--sp-md);
 }
 section.image:not(.full):not(.contain):not(.museum) .image-text p {
@@ -3917,7 +3917,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
 }
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: var(--fs-h1);
+  font-size: var(--fs-emphasis);
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -3956,7 +3956,7 @@ section.kpi.ops > ol > li {
   min-width: 0;
 }
 section.kpi.ops > ol > li > strong {
-  font-size: var(--fs-hero);
+  font-size: var(--fs-h1);
   line-height: 0.92;
 }
 section.kpi.ops > ol > li:nth-child(1),
@@ -6159,7 +6159,7 @@ section.quote blockquote {
 }
 section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
-section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-h2); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
+section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-message); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
 section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
 
 /* === lib/components/chart/radar/radar.styles.css === */
@@ -7714,7 +7714,7 @@ section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:var(--fs-h2); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:var(--fs-h3); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
@@ -7769,7 +7769,7 @@ section.stats h3 { margin-bottom:0.3125cqi; }
 section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
 section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
-section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
+section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-h1); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
 /* ── Fallback path: raw ol > li(<strong>num</strong> label) ──
@@ -7787,7 +7787,7 @@ section.stats:not(:has(.stats-row)) ol > li {
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
 section.stats:not(:has(.stats-row)) ol > li > strong {
-  font-family:var(--font-body); font-size:var(--fs-hero); font-weight:700;
+  font-family:var(--font-body); font-size:var(--fs-h1); font-weight:700;
   color:var(--accent); line-height:1; display:block;
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
@@ -8333,7 +8333,7 @@ section.title h1 + p:has(> code:only-child) > code {
  * Modifier `numbered` adds a 01., 02. counter prefix.
  * ──────────────────────────────────────────────────────────────────────── */
 section.tldr { display:flex; flex-direction:column; }
-section.tldr h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+section.tldr h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-md); }
 section.tldr > ul,
 section.tldr > ol {
   list-style:none; padding:0; margin:0;
@@ -8344,16 +8344,13 @@ section.tldr > ol {
 }
 section.tldr > ul > li,
 section.tldr > ol > li {
-  flex:1;
-  container-type:size;
   display:flex; align-items:center;
-  font-size:clamp(var(--fs-body), 13cqh, var(--fs-emphasis));
+  font-size:var(--fs-message);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
-  padding:var(--sp-xs) 0;
+  padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
-  overflow:hidden;
 }
 section.tldr > ul > li::marker,
 section.tldr > ol > li::marker { content:''; }
@@ -8376,7 +8373,7 @@ section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:clamp(var(--fs-body), 22cqh, var(--fs-h2));
+  font-size:var(--fs-h2);
   font-weight:700;
   letter-spacing:0.04em;
   color:var(--accent);

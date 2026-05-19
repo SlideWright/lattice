@@ -318,13 +318,13 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## Four requirements every decision system must meet
 
-- Speed
+- **Speed**
   - Decisions must close within the window they are relevant to. A framework that takes six months to calibrate before its first useful output is not fast. We are not going to address this directly on this slide.
-- Auditability
+- **Auditability**
   - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment, compliance, and for reconstructing what happened after the launch goes badly.
-- Adoption
+- **Adoption**
   - If the team won't use it weekly, calibration never runs. Ninety minutes per PM is the ceiling we put in the deck. The actual usage data suggests the ceiling is closer to 11 minutes and one skipped retrospective per month.
-- Calibration
+- **Calibration**
   - The system must improve over time. A static scoring model is a spreadsheet with extra steps and a dashboard nobody checks.
 
 ---

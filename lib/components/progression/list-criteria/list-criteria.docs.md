@@ -25,10 +25,14 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 ## What every decision must satisfy.
 
-1. **First criterion.** Short rationale for why this matters.
-2. **Second criterion.** Short rationale.
-3. **Third criterion.** Short rationale.
-4. **Fourth criterion.** Short rationale.
+1. **First criterion**
+   - Short rationale for why this matters.
+2. **Second criterion**
+   - Short rationale.
+3. **Third criterion**
+   - Short rationale.
+4. **Fourth criterion**
+   - Short rationale.
 ```
 
 ## Slots
@@ -36,7 +40,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the framework. |
-| `criteria` | `ol > li` | yes | One li per criterion. Lead each with **Criterion name.** then the rationale. |
+| `criteria` | `ol > li` | yes | One li per criterion. Author as `**Criterion name**` then a nested `- rationale` bullet (card-style nested format, not the forbidden inline `**Title.** body`). |
 
 ## Anatomy
 

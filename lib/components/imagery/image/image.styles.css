@@ -74,7 +74,7 @@ section.image:not(.full):not(.contain):not(.museum) > .image-text {
  * resolves correctly now that the section is no longer using
  * percentage padding. */
 section.image:not(.full):not(.contain):not(.museum) .image-text h2 {
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h3);
   margin-bottom: var(--sp-md);
 }
 section.image:not(.full):not(.contain):not(.museum) .image-text p {

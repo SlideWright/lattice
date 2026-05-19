@@ -177,7 +177,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
 }
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: var(--fs-h1);
+  font-size: var(--fs-emphasis);
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -216,7 +216,7 @@ section.kpi.ops > ol > li {
   min-width: 0;
 }
 section.kpi.ops > ol > li > strong {
-  font-size: var(--fs-hero);
+  font-size: var(--fs-h1);
   line-height: 0.92;
 }
 section.kpi.ops > ol > li:nth-child(1),
