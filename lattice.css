@@ -96,37 +96,28 @@
   --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
   /* ── Font sizes ────────────────────────────────────────────────────
-   * The 10-token contract. Three independent scales — content (3),
+   * The 11-token typography contract. Three scales — content (4),
    * heading (6), display (1). Every size in cqi (container-query
    * inline-size) so visual proportions hold across HD, 4K, and any
-   * custom slide size. Body anchors at 2.5cqi = 24pt @ HD, the projected
-   * slide readability floor. Headings sized independently per-level
-   * (not a modular ratio). Full contract: docs/references/typography.md;
-   * solver + audit: docs/notes/2026-05-19-typography-token-refactor.md.
+   * custom slide size. Body anchors at 2.5cqi = 24pt @ HD, the
+   * projected-slide readability floor. Headings are sized independently
+   * per-level (not derived from a modular ratio). Full contract:
+   * docs/references/typography.md; solver + audit:
+   * docs/notes/2026-05-19-typography-token-refactor.md.
    *
    * Author's mental model — every decision in five rules:
-   *   HTML heading        → --fs-h<level>  (auto via base.elements.css)
-   *   Body text           → --fs-body      (paragraphs, lists, cells)
-   *   Chrome and labels   → --fs-meta      (pagination, footer, eyebrow)
-   *   Lead / key-insight  → --fs-emphasis  (one block per slide)
-   *   KPI / watermark     → --fs-hero      (class-driven, never on h*)
+   *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
+   *   Slide-level body              → --fs-body          (statement, quote, lead prose)
+   *   Card / table / dense surface  → --fs-body-compact  (consumer's choice; layouts wire it)
+   *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
+   *   Lead / key-insight            → --fs-emphasis      (one block per slide)
+   *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*)
    *
-   * Phase 2 (current): all 10 new tokens declared at new values. The 3
-   * collision names (--fs-body, --fs-emphasis, --fs-hero) override
-   * their legacy values via CSS last-wins, so existing component CSS
-   * that consumes those names resolves to the new sizes immediately.
-   * The 10 legacy --fs-emphasis sites overshoot to 36 pt (intended
-   * migration target is 24 pt) until Phase 3 renames them to
-   * --fs-body. Phase 3 sed-replaces component CSS bucket-by-bucket
-   * per the migration map; Phase 4 deletes the legacy declarations. */
-
-  /* Active 11-token system. Body anchors at 2.5cqi = 24pt @ HD, the
-   * projected-slide readability floor. Card-style and table layouts
-   * (cards-grid, list-steps, list-tabular, compare-table, legal tables,
-   * etc.) opt into --fs-body-compact (1.875cqi = 18pt @ HD = 24px) so
-   * paragraph-dense slides don't overflow. Compact is the proposal's
-   * Risk #1 mitigation (c) — only consumed by components that need
-   * tight body, never by slide-level prose. */
+   * --fs-body-compact is the proposal's Risk #1 mitigation (c) — added
+   * because card-style and table layouts (cards-grid, list-steps,
+   * list-tabular, compare-table, legal grids, etc.) overflow when their
+   * inner paragraphs render at the 24pt projection-floor anchor. Slide-
+   * level prose (statement, quote, divider) still reads --fs-body. */
   --fs-meta:         1.67cqi;
   --fs-body-compact: 1.875cqi;
   --fs-body:         2.5cqi;
@@ -138,22 +129,6 @@
   --fs-h5:           1.875cqi;
   --fs-h6:           1.5625cqi;
   --fs-hero:         12.66cqi;
-
-  /* Legacy tokens at original sizes — preserved through Phase 3, deleted
-   * in Phase 4. */
-  --fs-label:     1.015625cqi;
-  --fs-xs:        0.9375cqi;
-  --fs-sm:        1.171875cqi;
-  --fs-md:        1.40625cqi;
-  --fs-content:   1.484375cqi;
-  --fs-lg:        1.71875cqi;
-  --fs-xl:        2.34375cqi;
-  --fs-2xl:       2.65625cqi;
-  --fs-3xl:       3.75cqi;
-  --fs-display:   4.6875cqi;
-  --fs-stat:      4.0625cqi;
-  --fs-quote:     6.25cqi;
-  --fs-watermark: 14.0625cqi;
 
   /* ── Radii / line-heights ─────────────────────────────────────────── */
   --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
