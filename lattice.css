@@ -2564,39 +2564,58 @@ section.image {
  * the slide into the full-bleed pattern below.
  * ═══════════════════════════════════════════════════════════════════ */
 
+/* Half-canvas image uses the canonical split-* pattern: section is a
+ * flex row with normal padding, and a child `.image-text` panel sits
+ * at 50% width holding the heading + body. This keeps cqi resolving
+ * correctly inside the section (container-type: size measures the
+ * content-box, so percentage padding on the section warps every cqi
+ * unit beneath it — see lib/transformers/image-text-panel.js).
+ *
+ * Mirror flips the flex order so the text panel sits on the right.
+ * Background gradient marks the split at 50% in either direction. */
 section.image:not(.full):not(.contain):not(.museum) {
-  padding-right: calc(50% + var(--sp-2xl));
-  padding-left: var(--sp-2xl);
+  padding: 0;
+  flex-direction: row;
   background: linear-gradient(to right, var(--bg) 50%, transparent 50%);
-  /* Vertically center text so short content doesn't read as orphaned
-   * in the top-left corner. */
-  justify-content: center;
 }
-/* Canvas-proportional sizing — same tokens as base section typography
- * so image-slide reading scale matches the rest of the deck at every
- * size (HD / 4K / etc). At fit-window view the proportions read the
- * same. */
-section.image:not(.full):not(.contain):not(.museum) h2 {
+section.image:not(.full):not(.contain):not(.museum).mirror,
+section.image:not(.full):not(.contain):not(.museum).left {
+  flex-direction: row-reverse;
+  background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
+}
+
+/* The text panel: 50% width, flex column, padding from the slide edge
+ * and from the split centerline so the text never crashes into either. */
+section.image:not(.full):not(.contain):not(.museum) > .image-text {
+  width: 50%;
+  flex-shrink: 0;
+  padding: var(--sp-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Canvas-proportional typography — same tokens as base section. cqi
+ * resolves correctly now that the section is no longer using
+ * percentage padding. */
+section.image:not(.full):not(.contain):not(.museum) .image-text h2 {
   font-size: var(--fs-2xl);
   margin-bottom: var(--sp-md);
 }
-section.image:not(.full):not(.contain):not(.museum) p {
+section.image:not(.full):not(.contain):not(.museum) .image-text p {
   font-size: var(--fs-content);
   line-height: var(--lh-relaxed);
 }
 
-/* Accent border on the text-side edge */
+/* Accent border on the slide's text-side edge. */
 section.image:not(.full):not(.contain):not(.museum) {
   border-left: 6px solid var(--accent);
-  padding-left: calc(var(--sp-2xl) + 6px);
 }
 section.image:not(.full):not(.contain):not(.museum).mirror,
 section.image:not(.full):not(.contain):not(.museum).left {
   border-left: none;
   border-right: 6px solid var(--accent);
-  padding-left: calc(50% + var(--sp-2xl));
-  padding-right: calc(var(--sp-2xl) + 6px);
-  background: linear-gradient(to left, var(--bg) 50%, transparent 50%);
 }
 
 /* Emulator wrapper — positions the .lattice-bg div as the half-canvas

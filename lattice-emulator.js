@@ -1692,12 +1692,24 @@ function parseSlide(raw, index) {
   const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
   const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
 
+  // Half-canvas image slides wrap their text content in `.image-text` so the
+  // section can use the canonical split-* pattern (flex row, panels with
+  // explicit width) instead of the percentage-padding anti-pattern that
+  // would shrink `container-type: size`'s reported content-box and warp
+  // every cqi unit inside the section. Mirrored by the image-text-panel
+  // transformer for the marp-cli + runtime paths.
+  const _isHalfCanvasImage =
+    /\bimage\b/.test(classAttr) && !/\b(?:full|contain|museum)\b/.test(classAttr);
+  const bodyHtml = _isHalfCanvasImage
+    ? `<div class="image-text">${html}</div>`
+    : html;
+
   return restoreMath([
     `<section id="${slideNum}" class="${classAttr}"`,
     ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
     headerEl,
     bgImageHtml,
-    html,
+    bodyHtml,
     footerEl,
     `</section>`
   ].join(''));
