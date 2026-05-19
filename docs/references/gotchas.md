@@ -221,10 +221,17 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   following browsers is installed: chrome, edge, firefox." A new
   session might conclude marp-cli isn't available and skip the
   marp-cli render path entirely.
-- **Cause:** marp-cli's browser auto-detection looks in the standard
-  system locations (`/usr/bin/google-chrome`, etc.) and doesn't know
-  about the puppeteer-cached chromium binary that the sandbox ships
-  with. The binary IS present at
+- **Cause (install side):** `@marp-team/marp-cli` is a regular
+  `dependencies` entry in `package.json` (see the `^4.3.1` line). A
+  normal `npm install` puts the `marp` binary in `node_modules/.bin/`
+  — no extra install step. `npx marp` resolves to that binary. If
+  `npx` is reaching for the network instead, `npm install` hasn't
+  been run yet.
+- **Cause (browser side):** Once marp-cli launches, its own browser
+  auto-detection looks in the standard system locations
+  (`/usr/bin/google-chrome`, etc.) and doesn't know about the
+  puppeteer-cached chromium binary that the sandbox ships with. The
+  binary IS present at
   `/root/.cache/puppeteer/chrome/linux-<version>/chrome-linux64/chrome`
   — marp-cli just can't find it on its own.
 - **Mitigation:** Set `CHROME_PATH` in the env before invoking
