@@ -202,7 +202,7 @@ section.image.contain::before {
 section.image.full h2,
 section.image.contain h2 {
   position: absolute;
-  left: 48px; right: 48px;
+  left: 80px; right: 80px;
   bottom: 92px; margin: 0;
   color: rgba(255, 255, 255, 0.98);
   font-family: var(--font-display);
@@ -215,7 +215,7 @@ section.image.contain h2 {
 section.image.full p:last-of-type,
 section.image.contain p:last-of-type {
   position: absolute;
-  left: 48px; right: 48px;
+  left: 80px; right: 80px;
   bottom: 28px; margin: 0;
   max-height: 60px;
   overflow: hidden;
@@ -235,7 +235,7 @@ section.image.museum .lattice-bg-full {
 }
 section.image.museum h2 {
   position: absolute;
-  left: 48px; right: 48px;
+  left: 80px; right: 80px;
   bottom: 60px; margin: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
@@ -247,7 +247,7 @@ section.image.museum h2 {
 }
 section.image.museum p:last-of-type {
   position: absolute;
-  left: 48px; right: 48px;
+  left: 80px; right: 80px;
   bottom: 24px; margin: 0;
   max-height: 28px;
   overflow: hidden;
