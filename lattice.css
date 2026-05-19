@@ -1035,7 +1035,7 @@ section.big-number h5 { margin-bottom:var(--sp-sm); }
 section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
 section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
 section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
-section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-md); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
+section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-relaxed); max-width:43.75cqi; margin:0 auto; }
 
 /* === lib/components/inventory/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
@@ -2147,7 +2147,7 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
 
 section.content h3 { margin-bottom:0.3125cqi; }
 section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed); }
+section.content p  { font-size:var(--fs-body); line-height:var(--lh-relaxed); }
 section.content { justify-content:flex-start; }
 
 /* === lib/components/comparison/decision/decision.styles.css === */
@@ -6187,10 +6187,10 @@ section.quote blockquote {
   padding:var(--sp-lg) var(--sp-xl);
   max-width:64.0625cqi; width:100%;
 }
-section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
-section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-3xl); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
-section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-xl); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
-section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-sm); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
+section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
+section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
+section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-h2); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
+section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
 
 /* === lib/components/chart/radar/radar.styles.css === */
 /* radar — extracted from lib/_legacy.css (batch 8).
@@ -7524,16 +7524,16 @@ section.roadmap.milestones tbody td:not(:first-child) {
 section.split-brief { padding:0; flex-direction:row; }
 section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-brief .brief-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
-section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
-section.split-brief .brief-left h2 { font-size:var(--fs-3xl); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-brief .brief-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
 section.split-brief .brief-left p { font-size:var(--fs-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-brief .brief-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-brief .brief-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
-section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
 section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* === lib/components/comparison/split-compare/split-compare.styles.css === */
 /* split-compare — comparison.split.structure
@@ -7579,11 +7579,11 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
  * ### right-eyebrow before bullets
  */
 section.split-list { padding:0; flex-direction:row; }
-section.split-list h2 { font-size:var(--fs-lg); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
-section.split-list h5 { font-size:var(--fs-label); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
+section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
+section.split-list h5 { font-size:var(--fs-meta); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
-section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-watermark); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
 /* Code-only paragraph (eyebrow / section label) in the processed panel-left:
  * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
 section.split-list .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
@@ -7595,25 +7595,25 @@ section.split-list .panel-right h3 { margin-bottom:0.3125cqi; }
 section.split-list .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
 section.split-list :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
 section.split-list ol { counter-reset:panel-counter; }
-section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body-compact); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-list ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
 section.split-list ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
 section.split-list ol > li > strong,
 section.split-list ol > li > span,
 section.split-list ol > li > p,
-section.split-list ol > li > em { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-md); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-list ol > li > em { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body-compact); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-list ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
 section.split-list ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
 section.split-list :is(ul,ol) > li > strong { display:block; }
 section.split-list :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:0.3125cqi 0 0 0; margin-inline-start:0; width:100%; }
-section.split-list :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
+section.split-list :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
 section.split-list :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
 /* Trailing ul after the main list = optional metadata footer (Audience, Intent).
  * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
  * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
  * no rule fires, panel renders as before. */
 section.split-list .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; padding-inline-start:0; }
-section.split-list .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-list .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body-compact); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
 section.split-list .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
@@ -7648,7 +7648,7 @@ section.split-list:not(:has(.panel-left)) h2 {
   grid-column:1; grid-row:1 / -1; align-self:end;
   padding:0 var(--sp-lg) var(--sp-xl);
   z-index:1; position:relative;
-  color:var(--on-accent); font-size:var(--fs-lg); line-height:var(--lh-tight); margin:0;
+  color:var(--on-accent); font-size:var(--fs-emphasis); line-height:var(--lh-tight); margin:0;
 }
 section.split-list:not(:has(.panel-left)) h3 {
   grid-column:2; grid-row:1;
@@ -7690,7 +7690,7 @@ section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
   display:block;
   background:none; border:none; border-radius:0;
   padding:0; margin:0;
-  font-size:var(--fs-body); font-weight:400;
+  font-size:var(--fs-body-compact); font-weight:400;
   color:var(--text-body); line-height:var(--lh-snug);
 }
 section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
@@ -7744,16 +7744,16 @@ section.split-statement { padding:0; flex-direction:row; }
 section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
 section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:var(--fs-xl); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:var(--fs-h2); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-body); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
 section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-statement .statement-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-statement .statement-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
-section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
+section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
 section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body-compact); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
 /* === lib/components/progression/split-steps/split-steps.styles.css === */
 /* split-steps — progression.split.structure
