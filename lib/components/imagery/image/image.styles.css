@@ -36,7 +36,7 @@ section.image:not(.full) {
   justify-content: center;
 }
 section.image:not(.full) h2 { font-size: var(--fs-2xl); margin-bottom: var(--sp-md); }
-section.image:not(.full) p  { font-size: var(--fs-content); line-height: var(--lh-relaxed); }
+section.image:not(.full) p  { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
 
 /* Anchor decoration — guarded so museum slides never inherit the border */
 section.image:not(.full):not(.museum) {
