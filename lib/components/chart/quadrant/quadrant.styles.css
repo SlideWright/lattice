@@ -294,7 +294,7 @@ section.quadrant .quadrant-legend li {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
 }
 section.quadrant .quadrant-legend .quadrant-swatch {
@@ -306,7 +306,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
 }
 

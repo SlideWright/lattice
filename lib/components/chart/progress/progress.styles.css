@@ -29,7 +29,7 @@ section.progress .progress-row {
   column-gap: var(--sp-md);
 }
 section.progress .progress-label {
-  font-size: var(--fs-md);
+  font-size: var(--fs-body-compact);
   font-weight: 500;
   color: var(--text-heading);
   text-align: right;
@@ -62,7 +62,7 @@ section.progress .progress-fill[data-s="deferred"] {
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   min-width: 3.75cqi;
@@ -78,7 +78,7 @@ section.progress .progress-row > .chart-status-empty {
 section.progress .progress-note {
   grid-column: 2 / 4;
   margin-top: -0.3125cqi;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   font-style: italic;
 }

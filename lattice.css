@@ -2418,7 +2418,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
 .gantt-tick {
   text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-label);
@@ -2438,7 +2438,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   flex: 0 0 14.0625cqi;
   width: 14.0625cqi;
   padding-right: var(--sp-sm);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   text-align: right;
@@ -2476,7 +2476,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
   color: var(--text-heading);
   font-family: var(--font-body);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -3567,7 +3567,7 @@ section.kanban.chart-frame .chart-body {
  * with card titles. 5.47:1 on light bg (AA), 6.95:1 on dark bg (AA). */
 .kanban-column-header {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -3615,7 +3615,7 @@ section.kanban.chart-frame .chart-body {
   display: flex;
   align-items: flex-start;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   line-height: var(--lh-tight);
@@ -3649,7 +3649,7 @@ section.kanban.chart-frame .chart-body {
   border: 1px solid var(--border);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 700;
   color: var(--text-muted);
   flex: 0 0 auto;
@@ -3665,7 +3665,7 @@ section.kanban.chart-frame .chart-body {
   background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
   color: var(--lane-color, var(--accent));
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -3676,14 +3676,14 @@ section.kanban.chart-frame .chart-body {
 .kanban-card-meta .chart-status {
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   flex: 0 0 auto;
   margin-left: auto;
 }
 
 /* Optional card body (from a third-level sub-bullet) */
 .kanban-card-body {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   line-height: var(--lh-snug);
   font-style: italic;
@@ -5599,7 +5599,7 @@ section.piechart .piechart-svg .donut-hole {
 }
 section.piechart .piechart-total {
   font-family: var(--font-display);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-h3);
   font-weight: 700;
   fill: var(--text-heading);
 }
@@ -5626,7 +5626,7 @@ section.piechart .piechart-legend li {
   grid-template-columns: 1.09375cqi 1fr auto;
   align-items: center;
   gap: var(--sp-sm);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
   padding: 0;
 }
@@ -5637,7 +5637,7 @@ section.piechart .piechart-legend .legend-swatch {
 }
 section.piechart .piechart-legend .legend-pct {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   font-variant-numeric: tabular-nums;
@@ -5769,7 +5769,7 @@ section.progress .progress-row {
   column-gap: var(--sp-md);
 }
 section.progress .progress-label {
-  font-size: var(--fs-md);
+  font-size: var(--fs-body-compact);
   font-weight: 500;
   color: var(--text-heading);
   text-align: right;
@@ -5802,7 +5802,7 @@ section.progress .progress-fill[data-s="deferred"] {
 }
 section.progress .progress-pct {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   min-width: 3.75cqi;
@@ -5818,7 +5818,7 @@ section.progress .progress-row > .chart-status-empty {
 section.progress .progress-note {
   grid-column: 2 / 4;
   margin-top: -0.3125cqi;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   font-style: italic;
 }
@@ -6120,7 +6120,7 @@ section.quadrant .quadrant-legend li {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
 }
 section.quadrant .quadrant-legend .quadrant-swatch {
@@ -6132,7 +6132,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
 }
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
 }
 
@@ -6362,7 +6362,7 @@ section.radar .radar-legend li {
   display: flex;
   align-items: center;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
 }
 section.radar .radar-legend .radar-swatch {
@@ -6478,7 +6478,7 @@ section.radar .radar-svg--mini .radar-axis-label {
   font-size: 11px;   /* viewBox is unchanged, so scale label units up */
 }
 section.radar .radar-mini-label {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--series-color);
 }
@@ -8286,7 +8286,7 @@ section.timeline-list .timeline-pill {
   border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border));
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -8296,7 +8296,7 @@ section.timeline-list .timeline-pill--empty {
   visibility: hidden;
 }
 section.timeline-list .timeline-title {
-  font-size: var(--fs-md);
+  font-size: var(--fs-body-compact);
   font-weight: 600;
   color: var(--text-heading);
   text-align: center;
@@ -8308,7 +8308,7 @@ section.timeline-list .timeline-item .chart-status {
   margin-bottom: var(--sp-xs);
 }
 section.timeline-list .timeline-body {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   text-align: center;
   line-height: var(--lh-relaxed);
@@ -8550,7 +8550,7 @@ section.word-cloud {
 }
 
 section.word-cloud > h2 {
-  font-size: var(--fs-lg);
+  font-size: var(--fs-emphasis);
   margin-bottom: var(--sp-sm);
 }
 
@@ -9720,7 +9720,7 @@ section.chart-frame .chart-header::after {
 
 section.chart-frame .chart-eyebrow {
   margin: 0 0 var(--sp-xs);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   line-height: 1;
 }
 section.chart-frame .chart-eyebrow > code {
@@ -9729,7 +9729,7 @@ section.chart-frame .chart-eyebrow > code {
   padding: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -9737,7 +9737,7 @@ section.chart-frame .chart-eyebrow > code {
 section.chart-frame .chart-header h2 {
   margin: 0 auto var(--sp-xs);
   max-width: 70.3125cqi;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-h2);
   line-height: var(--lh-tight);
   text-align: center;
 }
@@ -9745,7 +9745,7 @@ section.chart-frame .chart-header h2 {
 section.chart-frame .chart-subtitle {
   margin: 0 auto;
   max-width: 68.75cqi;
-  font-size: var(--fs-body);
+  font-size: var(--fs-body-compact);
   font-style: italic;
   color: var(--text-muted);
   line-height: var(--lh-relaxed);
@@ -9781,7 +9781,7 @@ section.chart-frame .chart-caption {
   padding: var(--sp-sm) var(--sp-2xl);
   text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--text-muted);
@@ -9813,7 +9813,7 @@ section.chart-frame .chart-status {
   padding: 0 0.78125cqi;
   border-radius: 0.859375cqi;
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
