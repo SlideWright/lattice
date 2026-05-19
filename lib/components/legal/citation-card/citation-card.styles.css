@@ -36,7 +36,7 @@ section.citation-card h2 { margin-bottom:var(--sp-xs); }
 section.citation-card > p:has(> code:only-child) {
   margin:0;
   font-family:var(--font-mono);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   font-weight:600;
   letter-spacing:0.04em;
   color:var(--accent);
@@ -54,7 +54,7 @@ section.citation-card > blockquote {
   border-left:4px solid var(--accent);
   border-radius:0 var(--radius-md) var(--radius-md) 0;
   font-family:var(--font-display);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-style:italic;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -69,7 +69,7 @@ section.citation-card > ol {
   flex:1;
 }
 section.citation-card > :is(ul, ol) > li {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   line-height:var(--lh-relaxed);
   color:var(--text-body);
 }
@@ -86,7 +86,7 @@ section.citation-card > :is(ul, ol) > li:has(> strong:first-child) {
 section.citation-card > :is(ul, ol) > li > strong:first-child {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.16em;
   text-transform:uppercase;
@@ -103,7 +103,7 @@ section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
 
 /* .pull-quote — hero quote dominant. */
 section.citation-card.pull-quote > blockquote {
-  font-size:var(--fs-xl);
+  font-size:var(--fs-h3);
   line-height:var(--lh-snug);
   padding:var(--sp-lg) var(--sp-xl);
   background:none;
@@ -135,7 +135,7 @@ section.citation-card.margin > p:has(> code:only-child) {
   grid-column:1; grid-row:2;
   align-self:start;
   text-align:right;
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   padding-top:var(--sp-md);
 }
 section.citation-card.margin > blockquote {
@@ -145,7 +145,7 @@ section.citation-card.margin > blockquote {
   border-top:1px solid var(--accent);
   border-bottom:1px solid var(--accent);
   text-align:center; align-self:center;
-  font-size:var(--fs-lg);
+  font-size:var(--fs-emphasis);
 }
 section.citation-card.margin > :is(ul, ol) {
   grid-column:3; grid-row:2;
@@ -157,7 +157,7 @@ section.citation-card.margin > :is(ul, ol) > li {
   background:none;
   border-left:3px solid var(--accent);
   padding-left:var(--sp-md);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
 }
 section.citation-card.margin > :is(ul, ol) > li:has(> strong:first-child) {
   background:none; padding-left:var(--sp-md);
@@ -177,7 +177,7 @@ section.citation-card.triptych h2 { grid-column:1 / -1; }
 section.citation-card.triptych > p:has(> code:only-child) { grid-column:1 / -1; }
 section.citation-card.triptych > blockquote {
   grid-column:1; grid-row:3;
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   background:var(--bg-alt);
   border-left:4px solid var(--accent);
   border-radius:var(--radius-md);
