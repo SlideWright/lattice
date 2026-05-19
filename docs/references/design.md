@@ -57,10 +57,10 @@ Accent colors for categories, levels, or themes extend this palette — they don
 - Display/heading font: serif or distinctive sans
 - Body font: clean sans-serif
 - Mono font (optional): for labels, code, badges
-- Minimum body content: 16px
-- Minimum eyebrow/caption: 11px
-- Page number: 13px — same size as footer/eyebrow labels (`--fs-label`)
-- No text below 9px for any purpose
+- Slide-level body anchors at 24 pt (the projection-floor minimum)
+- Card / table / dense-list body is the compact tier (18 pt = 24 px)
+- Eyebrow / pagination / footer chrome is the meta tier (16 pt = ~21 px)
+- See `docs/references/typography.md` for the full 11-token contract
 
 ### Font Pairing Suggestions
 
@@ -176,7 +176,7 @@ section header {
   left: 30px;
   right: 30px;
   font-family: var(--font-mono);
-  font-size: var(--fs-label); /* 13px */
+  font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -189,7 +189,7 @@ section footer {
   left: 30px;
   right: 80px;
   font-family: var(--font-mono);
-  font-size: var(--fs-label); /* 13px */
+  font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--text-muted);
@@ -212,7 +212,7 @@ section::after {
                                        the number ~88px above its anchor) */
   margin: 0 !important;
   font-family: var(--font-mono) !important;
-  font-size: var(--fs-label) !important;   /* 13px — same as footer */
+  font-size: var(--fs-meta) !important;
   font-weight: 500 !important;
   line-height: 1 !important;
   letter-spacing: 0.06em !important;

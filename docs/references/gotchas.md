@@ -871,6 +871,32 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## Lattice internals
 
+### Legacy `--fs-*` token names retired
+
+- **Symptom:** Component CSS or theme using `var(--fs-md)`,
+  `var(--fs-2xl)`, `var(--fs-3xl)`, `var(--fs-display)`,
+  `var(--fs-stat)`, `var(--fs-watermark)`, `var(--fs-quote)`,
+  `var(--fs-label)`, `var(--fs-xs)`, `var(--fs-sm)`,
+  `var(--fs-lg)`, `var(--fs-xl)`, or `var(--fs-content)` resolves
+  to `0` (or inherited size) because the variable is undeclared.
+- **Cause:** The typography token system was rewritten on
+  `claude/typography-redact-proposal-V4Ocx` (May 2026). The
+  legacy 16-token t-shirt-named scale was retired in favour of
+  11 role-named tokens: `--fs-meta`, `--fs-body-compact`,
+  `--fs-body`, `--fs-emphasis`, `--fs-h1` … `--fs-h6`, `--fs-hero`.
+- **Mitigation:** Replace per the migration map in
+  `docs/notes/2026-05-19-typography-token-refactor.md` §6 and the
+  one-line summary in `CLAUDE.md`. Slide-level prose →
+  `--fs-body`; card-style / table / dense-list inner prose →
+  `--fs-body-compact`; chrome and labels → `--fs-meta`. HTML
+  headings auto-resolve via `base.elements.css` so authors don't
+  pick the heading size.
+- **Triggered by:** Reading any code older than the refactor that
+  still uses the legacy names, or grabbing a snippet from
+  archived notes / old PRs.
+- **Commits:** Phase 1–4 of the refactor land in the branch
+  above; the final cleanup commit removed the alias declarations.
+
 ### Three render paths, three transform implementations
 
 - **Symptom:** A new authoring transform (e.g., chart-family layouts,
@@ -1040,7 +1066,7 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   etc.) looks optically tight or loose even though no explicit line-height is
   set. The issue is proportionally the same at every resolution because `cqi`
   scaling preserves the relative value.
-- **Cause:** `section` sets `font-size: var(--fs-md); line-height: var(--lh-base)`
+- **Cause:** `section` sets `font-size: var(--fs-body); line-height: var(--lh-base)`
   as a body default. Any component that sets a custom `font-size` but omits
   `line-height` silently inherits `--lh-base (1.6)`, which is the right value
   for paragraph body text but wrong for heading-weight card titles (`--lh-snug`),
