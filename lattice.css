@@ -96,24 +96,29 @@
   --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
   /* ── Font sizes ────────────────────────────────────────────────────
-   * The 11-token typography contract. Three scales — content (4),
+   * The 12-token typography contract. Three scales — content (5),
    * heading (6), display (1). Every size in cqi (container-query
    * inline-size) so visual proportions hold across HD, 4K, and any
    * custom slide size. Container body anchors at 1.875cqi = 18pt @ HD
-   * (the default for cards / lists / tables / inline prose); slide-
-   * level statement bodies use --fs-message = 2.5cqi = 24pt @ HD, the
-   * long-distance projection floor. Headings h4/h5/h6 are deliberately
-   * tied to message/body/meta tiers (same size, weight-differentiated).
-   * Full contract: docs/references/typography.md.
+   * (the default for cards / lists / inline prose); slide-level
+   * statement bodies use --fs-message = 2.5cqi = 24pt @ HD, the
+   * long-distance projection floor. Dense reference surfaces (tables,
+   * grids, glossary cells) drop to --fs-body-compact = 16pt: they're
+   * scanned, not read linearly, and pack many cells in a fixed box.
+   * Headings h4/h5/h6 are deliberately tied to message/body/meta tiers
+   * (same size, weight-differentiated). Full contract:
+   * docs/references/typography.md.
    *
-   * Author's mental model — every decision in five rules:
+   * Author's mental model — every decision in six rules:
    *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
-   *   Card / list / table / inline  → --fs-body          (default; 18pt projection)
+   *   Card / list / inline prose    → --fs-body          (default; 18pt projection)
+   *   Dense table / grid cell       → --fs-body-compact  (tables, glossary, matrix; 16pt)
    *   Slide-level statement body    → --fs-message       (statement, quote, lead, divider sub)
    *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
    *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
   --fs-meta:     1.36cqi;     /* 13pt @ HD — chrome */
+  --fs-body-compact: 1.67cqi; /* 16pt @ HD — dense reference cells (tables, grids, glossary) */
   --fs-body:     1.875cqi;    /* 18pt @ HD — container default */
   --fs-message:  2.5cqi;      /* 24pt @ HD — slide-level statement; projection floor */
   --fs-emphasis: 3.75cqi;     /* 36pt @ HD — lead callout (1.5× message) */
@@ -515,7 +520,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
 }
@@ -2104,7 +2109,7 @@ section.compare-table h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-
 section.compare-table table { width:100%; table-layout:auto; border-collapse:collapse; font-size:var(--fs-meta); flex:1; }
 section.compare-table thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.compare-table thead th { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label); padding:0.625cqi var(--sp-xs) 0.78125cqi; text-align:left; word-wrap:break-word; overflow-wrap:break-word; }
-section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; }
+section.compare-table td { padding:0.625cqi var(--sp-xs); border-bottom:1px solid var(--border); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; }
 section.compare-table td:first-child { font-weight:600; color:var(--text-heading); white-space:nowrap; }
 
 /* === lib/components/statement/content/content.styles.css === */
@@ -2533,7 +2538,7 @@ section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
 section.glossary table { width:100%; border-collapse:collapse; table-layout:auto; font-feature-settings:'tnum' 1; }
 section.glossary thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-muted); font-size:var(--fs-meta); letter-spacing:0.08em; text-transform:uppercase; }
-section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
+section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
 section.glossary tbody tr:nth-child(odd) { background:var(--bg-alt); }
 section.glossary td:first-child,
 section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
@@ -4420,13 +4425,15 @@ section.list-tabular ol {
 section.list-tabular ol > li {
   counter-increment:tabular-counter;
   display:grid;
-  grid-template-columns:3.4375cqi 15.625cqi 1fr auto;
+  /* col 4 (metadata) is bounded minmax, not auto: long legacy metadata
+   * must wrap within its share, never expand the track off the slide edge. */
+  grid-template-columns:3.4375cqi 15.625cqi 1fr minmax(0, 0.9fr);
   align-items:baseline;
   column-gap:var(--sp-md);
   padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
   font-family:var(--font-display);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -4436,7 +4443,7 @@ section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
 section.list-tabular ol > li::before {
   content:counter(tabular-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:0.06em;
@@ -4447,7 +4454,7 @@ section.list-tabular ol > li > ul > li::marker { content:''; }
 section.list-tabular ol > li > ul > li:first-child {
   grid-column:3; grid-row:1;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   letter-spacing:0;
@@ -4465,7 +4472,7 @@ section.list-tabular ol > li > ul > li:nth-child(2) {
   letter-spacing:0.08em;
   text-transform:uppercase;
   text-align:right;
-  white-space:nowrap;
+  overflow-wrap:break-word;
 }
 section.list-tabular ol > li > ul > li:nth-child(2) em { font-style:normal; }
 section.list-tabular ol > li > code {
@@ -4481,7 +4488,7 @@ section.list-tabular ol > li > code {
   letter-spacing:0.08em;
   text-transform:uppercase;
   text-align:right;
-  white-space:nowrap;
+  overflow-wrap:break-word;
 }
 
 /* ── Variant: def (editorial) ─────────────────────────────────────────── */
@@ -4537,7 +4544,7 @@ section.list-tabular.def ol > li > code {
 section.list-tabular.def ol > li > ul > li {
   grid-column:3; grid-row:1 / span 2;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -4555,7 +4562,7 @@ section.list-tabular.def.rule ol {
 section.list-tabular.metric ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -4566,7 +4573,7 @@ section.list-tabular.metric ol > li > code {
   border-radius:var(--radius-md);
   padding:0.46875cqi 1.09375cqi;
   font-family:var(--font-mono);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:-0.01em;
@@ -4588,7 +4595,7 @@ section.list-tabular.metric.solid ol > li > code {
 section.list-tabular.spec ol > li {
   grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
   font-family:var(--font-mono);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:0;
@@ -4603,7 +4610,7 @@ section.list-tabular.spec.stacked ol > li {
   grid-template-columns:3.4375cqi 1fr auto;
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
 }
 section.list-tabular.spec.stacked ol > li::before {
   grid-row:1 / span 2;
@@ -4625,7 +4632,7 @@ section.list-tabular.spec.stacked ol > li > code {
 section.list-tabular.register ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
 }
@@ -5377,7 +5384,7 @@ section.matrix-2x2 li > ol {
 }
 section.matrix-2x2 li > ul > li,
 section.matrix-2x2 li > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -5414,7 +5421,7 @@ section.obligation-matrix table {
   width:100%;
   border-collapse:separate;
   border-spacing:0;
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   flex:1;
   table-layout:auto;
 }
@@ -7577,7 +7584,7 @@ section.split-list .panel-left > p:has(> code:only-child) > code { color:var(--o
 section.split-list .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
 section.split-list .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
 section.split-list .panel-right h3 { margin-bottom:0.3125cqi; }
-section.split-list .panel-right p { font-size:var(--fs-message); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-list .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
 section.split-list :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
 section.split-list ol { counter-reset:panel-counter; }
 section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
@@ -7642,7 +7649,7 @@ section.split-list:not(:has(.panel-left)) h3 {
 section.split-list:not(:has(.panel-left)) p {
   grid-column:2; grid-row:2;
   padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
-  font-size:var(--fs-message); line-height:var(--lh-relaxed); margin:0; align-self:start;
+  font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
 }
 /* Code-only paragraph (eyebrow / section label) → left dark panel, centered.
  * Overrides the general p rule above; color must be set explicitly on both
@@ -8365,7 +8372,7 @@ section.tldr > ol {
 section.tldr > ul > li,
 section.tldr > ol > li {
   display:flex; align-items:center;
-  font-size:var(--fs-message);
+  font-size:var(--fs-body);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -8474,7 +8481,7 @@ section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex;
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
 section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */
-section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body-compact); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
 section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
 

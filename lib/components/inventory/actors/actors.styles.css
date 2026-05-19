@@ -94,7 +94,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
 }

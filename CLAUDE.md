@@ -213,16 +213,22 @@ caught by the hook instead of by reviewer eyeballs.
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
-- **Typography uses the 11-token system.** Three scales: content
-  (`--fs-meta` / `--fs-body-compact` / `--fs-body` / `--fs-emphasis`),
-  heading (`--fs-h1` … `--fs-h6`, per-level independent), display
-  (`--fs-hero`, class-driven). All HTML headings auto-resolve via
-  `base.elements.css`. Slide-level body prose is `--fs-body` (24 pt @
-  HD = projection floor); card-style and table layouts use
-  `--fs-body-compact` (18 pt) for their inner prose so dense surfaces
-  don't overflow. Picking by "feel" or t-shirt size (`fs-md` / `fs-lg`)
-  is the legacy pattern; those names are retired. See
-  `docs/references/typography.md`.
+- **Typography uses the 12-token system.** Three scales: content
+  (`--fs-meta` 13 / `--fs-body-compact` 16 / `--fs-body` 18 /
+  `--fs-message` 24 / `--fs-emphasis` 36 pt), heading (`--fs-h1` … `--fs-h6`,
+  per-level independent; h4/h5/h6 tied to message/body/meta), display
+  (`--fs-hero` 96 pt, class-driven). All HTML headings auto-resolve via
+  `base.elements.css`. The cascade default is `--fs-body` (18 pt) for
+  cards / lists / inline prose; slide-level statement prose opts UP to
+  `--fs-message` (24 pt = projection floor); dense table/grid cells
+  (list-tabular, glossary, compare-table, matrix-2x2, verdict-grid,
+  obligation-matrix, actors) opt DOWN to `--fs-body-compact` (16 pt).
+  `--fs-hero` is the ONE big number on a slide; rows of comparable
+  metrics use `--fs-h1` (54 pt). A few layouts use documented explicit
+  cqi sizes between tokens (split-statement / kpi.briefing supports at
+  45 pt, split-list watermark at 122 pt). Picking by "feel" or t-shirt
+  size (`fs-md` / `fs-lg`) is the legacy pattern; those names are
+  retired. See `docs/references/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
   Silently broken in the Marp preview Chromium build. See
   `docs/references/gotchas.md`.

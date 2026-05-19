@@ -57,24 +57,29 @@
   --sp-3xs:0.15625cqi; --sp-2xs:0.3125cqi; --sp-xs:0.625cqi; --sp-sm:1.25cqi; --sp-md:1.875cqi; --sp-lg:2.5cqi; --sp-xl:3.75cqi; --sp-2xl:5cqi;
 
   /* ── Font sizes ────────────────────────────────────────────────────
-   * The 11-token typography contract. Three scales — content (4),
+   * The 12-token typography contract. Three scales — content (5),
    * heading (6), display (1). Every size in cqi (container-query
    * inline-size) so visual proportions hold across HD, 4K, and any
    * custom slide size. Container body anchors at 1.875cqi = 18pt @ HD
-   * (the default for cards / lists / tables / inline prose); slide-
-   * level statement bodies use --fs-message = 2.5cqi = 24pt @ HD, the
-   * long-distance projection floor. Headings h4/h5/h6 are deliberately
-   * tied to message/body/meta tiers (same size, weight-differentiated).
-   * Full contract: docs/references/typography.md.
+   * (the default for cards / lists / inline prose); slide-level
+   * statement bodies use --fs-message = 2.5cqi = 24pt @ HD, the
+   * long-distance projection floor. Dense reference surfaces (tables,
+   * grids, glossary cells) drop to --fs-body-compact = 16pt: they're
+   * scanned, not read linearly, and pack many cells in a fixed box.
+   * Headings h4/h5/h6 are deliberately tied to message/body/meta tiers
+   * (same size, weight-differentiated). Full contract:
+   * docs/references/typography.md.
    *
-   * Author's mental model — every decision in five rules:
+   * Author's mental model — every decision in six rules:
    *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
-   *   Card / list / table / inline  → --fs-body          (default; 18pt projection)
+   *   Card / list / inline prose    → --fs-body          (default; 18pt projection)
+   *   Dense table / grid cell       → --fs-body-compact  (tables, glossary, matrix; 16pt)
    *   Slide-level statement body    → --fs-message       (statement, quote, lead, divider sub)
    *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
    *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
   --fs-meta:     1.36cqi;     /* 13pt @ HD — chrome */
+  --fs-body-compact: 1.67cqi; /* 16pt @ HD — dense reference cells (tables, grids, glossary) */
   --fs-body:     1.875cqi;    /* 18pt @ HD — container default */
   --fs-message:  2.5cqi;      /* 24pt @ HD — slide-level statement; projection floor */
   --fs-emphasis: 3.75cqi;     /* 36pt @ HD — lead callout (1.5× message) */

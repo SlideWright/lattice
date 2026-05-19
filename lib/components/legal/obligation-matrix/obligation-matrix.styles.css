@@ -21,7 +21,7 @@ section.obligation-matrix table {
   width:100%;
   border-collapse:separate;
   border-spacing:0;
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   flex:1;
   table-layout:auto;
 }
