@@ -1,0 +1,96 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "state-chart",
+  "function": "progression",
+  "form": "timeline",
+  "substance": "graph",
+  "description": "Native state machine diagram — states as a numbered list, transitions as nested inline-code refs.",
+  "purpose": "Use to show a finite-state machine — the discrete states a system can be in and the events that move between them. Authors write a numbered list; each state's index becomes its stable ref so transitions cite numbers, not names. The numbering is the layout: state i renders at row i, so there is no auto-layout problem to solve.",
+  "variants": ["inline", "horizontal"],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the state machine."
+    },
+    "eyebrow": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional eyebrow naming the machine or domain."
+    },
+    "states": {
+      "selector": "ol > li",
+      "required": true,
+      "description": "One li per state. Index is the stable ref. Trailing inline code is a closed metadata vocabulary: `start`, `end`, or one of the chart-status keywords (on-track, at-risk, blocked, done, live, decision, deferred, warn, pilot, fail). Multiple metadata tokens allowed; order is irrelevant. Unknown trailing codes are left in the rendered label."
+    },
+    "transitions": {
+      "selector": "ol > li > ul > li",
+      "required": false,
+      "description": "Outgoing transitions from a state — one per nested bullet. Each carries a single inline-code arrow `event=>N` or `=>N` (event optional). Target is a state index or the literal `self` for self-loops. Whitespace inside the inline code is insignificant."
+    }
+  },
+  "skeleton": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to archive.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 6`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `live`\n   - `archive => 6`\n6. Archived `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
+  "sample": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to archive.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 6`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `live`\n   - `archive => 6`\n6. Archived `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
+  "whenToUse": [
+    {
+      "title": "Finite, named states with discrete events",
+      "body": "When the slide is about a system with a small set of named places it can be in (Draft / Submitted / Approved / Archived) and the events that move between them (submit, approve, reject). The numbered authoring forces you to enumerate every state up front; the inline refs force you to be explicit about every transition."
+    },
+    {
+      "title": "Sequential authoring as a forcing function",
+      "body": "Numbering the states makes the author commit to an order. Reading the list top-to-bottom is reading the machine from start to terminal. This is the same forcing function that `list-steps` and `agenda` apply — a sequence the reader can scan in one pass."
+    },
+    {
+      "title": "Native theming without Mermaid overhead",
+      "body": "Mermaid's `stateDiagram-v2` works but requires a CSS override cascade with `!important` to theme cleanly (see `docs/theming.md`). A native state chart uses palette tokens directly — no overrides, no mmdc subprocess, no version-coupled SVG class names."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "More than ~8 states",
+      "body": "Vertical stacks of ten or more states stop reading as a machine and start reading as a list. If the system has many states, group them into phases and show one phase at a time, or step back to a higher-level abstraction. The chart's job is to make the topology obvious in one glance."
+    },
+    {
+      "title": "Hierarchical or parallel states",
+      "body": "v1 grammar is one flat list of states with one outgoing arrow per nested bullet. Composite states, orthogonal regions, history nodes — anything Mermaid's `stateDiagram-v2` does and this layout doesn't — belong in a Mermaid fence via the `diagram` component."
+    },
+    {
+      "title": "Continuous processes",
+      "body": "If the diagram is really a workflow with stages that overlap or block (queue depth, throughput, capacity), a `gantt` or `kanban` chart reads better. State charts are for discrete, mutually-exclusive states the system flips between."
+    }
+  ],
+  "related": [
+    {
+      "name": "diagram",
+      "when": "the machine has hierarchical states, parallel regions, or guards that need Mermaid's full state-diagram grammar"
+    },
+    {
+      "name": "journey",
+      "when": "the sequence is a user's path through tasks with mood / affect, not a system's discrete states"
+    },
+    {
+      "name": "timeline-list",
+      "when": "events are points in time rather than transitions between named states"
+    },
+    {
+      "name": "list-steps",
+      "when": "a linear procedure with no branching — state-chart is overkill if there are no choices to make"
+    },
+    {
+      "name": "roadmap",
+      "when": "parallel workstreams across phases, not a single machine's transitions"
+    }
+  ],
+  "variantDocs": {
+    "inline": {
+      "label": "Inline",
+      "caption": "Drops the SVG edge layer; transitions render inline as chips inside each state node. Pure HTML — graceful fallback if the SVG layer is undesirable, or for very dense decks.",
+      "sample": "<!-- _class: state-chart inline -->\n\n## Connection retry.\n\n1. Connecting `start`\n   - `retry => self`\n   - `ok => 2`\n   - `fail => 3`\n2. Connected `live`\n   - `disconnect => 1`\n3. Failed `end`\n"
+    },
+    "horizontal": {
+      "label": "Horizontal",
+      "caption": "States lay left-to-right; forward edges arc above, back-edges arc below. Same lane algorithm, rotated 90°.",
+      "sample": "<!-- _class: state-chart horizontal -->\n\n## Build pipeline.\n\n1. Source `start`\n   - `compile => 2`\n2. Compiled\n   - `test => 3`\n3. Tested\n   - `deploy => 4`\n   - `fail => 1`\n4. Deployed `end`\n"
+    }
+  }
+}
