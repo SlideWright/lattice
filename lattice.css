@@ -468,7 +468,7 @@ section::after {
  * metadata chip. Same convention as everywhere else in Lattice.
  * ──────────────────────────────────────────────────────────────────────── */
 section.actors { display:flex; flex-direction:column; }
-section.actors h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.actors h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.actors > ul,
 section.actors > ol {
   list-style:none; padding:0; margin:0;
@@ -496,7 +496,7 @@ section.actors > ol > li::marker { content:''; }
 section.actors > ul > li > strong,
 section.actors > ol > li > strong {
   grid-column:1; grid-row:1;
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -545,7 +545,7 @@ section.actors > ul > li > ul > li,
 section.actors > ol > li > ul > li,
 section.actors > ul > li > ol > li,
 section.actors > ol > li > ol > li {
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   color:var(--text-body);
   line-height:var(--lh-base);
 }
@@ -569,7 +569,7 @@ section.actors > ol > li > ol > li {
  * "you are here." Past rows render muted; future rows render normal.
  * ──────────────────────────────────────────────────────────────────────── */
 section.agenda { display:flex; flex-direction:column; }
-section.agenda h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-lg); }
+section.agenda h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-lg); }
 section.agenda ol {
   list-style:none; padding:0; margin:0;
   counter-reset:agenda-counter;
@@ -583,7 +583,7 @@ section.agenda ol > li {
   grid-template-columns:auto 1fr;
   column-gap:var(--sp-md);
   align-items:baseline;
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:500;
   line-height:var(--lh-relaxed);
   color:var(--text-heading);
@@ -593,7 +593,7 @@ section.agenda ol > li {
 section.agenda ol > li::before {
   content:counter(agenda-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--accent);
@@ -1062,7 +1062,7 @@ section.cards-grid > ul > li, section.cards-grid > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body-compact); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid > ul > li:last-child:nth-child(odd),
 section.cards-grid > ol > li:last-child:nth-child(odd) { grid-column:1 / -1; }
@@ -1075,13 +1075,13 @@ section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-grid > ul > li > code,
 section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
 section.cards-grid > ol > li > ul, section.cards-grid > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid > ul > li > ul > li, section.cards-grid > ul > li > ol > li,
-section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid > ol > li > ul > li, section.cards-grid > ol > li > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — lattice.js post-processed path — */
 section.cards-grid .cards-grid-inner,
 section.cards-grid .cards-grid-inner--ordered {
@@ -1092,15 +1092,15 @@ section.cards-grid .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body-compact); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
 section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
 section.cards-grid > ol { counter-reset:card; }
 section.cards-grid > ol > li {
@@ -1146,7 +1146,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(o
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -1155,7 +1155,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
 section.cards-grid:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li {
@@ -1245,7 +1245,7 @@ section.cards-side > ul > li, section.cards-side > ol > li {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body-compact); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 /* — strong: backwards-compat shim (**Title** in existing slides renders identically) — */
 section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
@@ -1256,13 +1256,13 @@ section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
 section.cards-side > ol > li > ul, section.cards-side > ol > li > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-side > ul > li > ul > li, section.cards-side > ul > li > ol > li,
-section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-side > ol > li > ul > li, section.cards-side > ol > li > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* — lattice.js post-processed path — */
 section.cards-side .cards-grid-inner,
@@ -1274,14 +1274,14 @@ section.cards-side .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:grid; grid-template-columns:1fr auto; align-content:start;
-  font-size:var(--fs-md); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body-compact); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-side .card > strong { display:block; grid-column:1 / -1; }
 section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
-section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 
 /* — numbered cards (ol): flush corner tag via absolute ::before — */
 section.cards-side > ol { counter-reset:card; }
@@ -1330,7 +1330,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(o
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -1339,7 +1339,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol { list-style:none
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul > li,
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol > li,
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ul > li,
-section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.cards-side:not(:has(.cards-grid-inner)) > ol > li > ol > li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* — numbered cards (ol source, VS Code fallback) — */
 section.cards-side:not(:has(.cards-grid-inner)) > ol { counter-reset:card; }
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li {
@@ -1388,7 +1388,7 @@ section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   margin:0; flex:1; list-style:none;
-  font-size:var(--fs-content); line-height:var(--lh-relaxed); color:var(--text-body);
+  font-size:var(--fs-body-compact); line-height:var(--lh-relaxed); color:var(--text-body);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
 
@@ -1459,17 +1459,17 @@ section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * ## heading  then 3× pairs: ### eyebrow·heading  p body
  * CSS stacks them vertically, each full width
  */
-section.cards-wide h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-sm); }
+section.cards-wide h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.cards-wide .three-stack { display:flex; flex-direction:column; gap:0.9375cqi; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
+section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body-compact); color:var(--text-body); }
 section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
+section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
 section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
 section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
 section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
 
 
 
@@ -1487,14 +1487,14 @@ section.cards-wide:not(:has(.three-stack)) ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body-compact); font-weight:700; color:var(--text-heading);
 }
 section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
 section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
 section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
 section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-sm); line-height:var(--lh-base); }
+section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
 
 
 
@@ -1534,7 +1534,7 @@ section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
 section.checklist { display:flex; flex-direction:column; }
-section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.checklist h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.checklist > ul,
 section.checklist > ol {
   list-style:none; padding:0; margin:0;
@@ -1553,7 +1553,7 @@ section.checklist > ol > li {
   background:var(--bg-alt);
   border-left:3px solid var(--border);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -2562,8 +2562,8 @@ section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
  */
 section.glossary table { width:100%; border-collapse:collapse; table-layout:auto; font-feature-settings:'tnum' 1; }
 section.glossary thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
-section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-muted); font-size:var(--fs-label); letter-spacing:0.08em; text-transform:uppercase; }
-section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
+section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-muted); font-size:var(--fs-meta); letter-spacing:0.08em; text-transform:uppercase; }
+section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
 section.glossary tbody tr:nth-child(odd) { background:var(--bg-alt); }
 section.glossary td:first-child,
 section.glossary td:first-child strong { color:var(--accent); padding-right:var(--sp-md); white-space:nowrap; font-weight:600; }
@@ -2574,7 +2574,7 @@ section.glossary h2 { display:flex; align-items:baseline; justify-content:space-
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {
   display:inline-flex; align-items:center;
-  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
   letter-spacing:0.06em;
   border-radius:999px; padding:3px 12px; margin-left:auto;
   background:var(--accent-soft); border:1px solid var(--accent);
@@ -4186,12 +4186,12 @@ section.kpi.spotlight > ol > li:not(:first-child) code {
 
 section.list h2 { margin-bottom:var(--sp-md); }
 section.list ul { list-style:none; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ul li { font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
+section.list ul li { font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); }
 section.list ul li ul { list-style:none; margin:4px 0 0 0; padding:0; background:none; border:none; }
-section.list ul li ul li { font-size:var(--fs-sm); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
+section.list ul li ul li { font-size:var(--fs-meta); color:var(--text-label); line-height:var(--lh-snug); background:none; border:none; padding:0; border-radius:0; }
 section.list ol { list-style:none; counter-reset:list-counter; display:flex; flex-direction:column; gap:var(--sp-xs); padding:0; margin:0; flex:1; justify-content:center; }
-section.list ol li { counter-increment:list-counter; font-size:var(--fs-md); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
-section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; color:var(--accent); }
+section.list ol li { counter-increment:list-counter; font-size:var(--fs-body-compact); color:var(--text-body); line-height:var(--lh-base); background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-xs) var(--sp-md); display:grid; grid-template-columns:var(--sp-xl) 1fr; align-items:center; gap:var(--sp-sm); }
+section.list ol li::before { content:counter(list-counter, decimal-leading-zero); font-family:var(--font-mono); font-size:var(--fs-body-compact); font-weight:700; color:var(--accent); }
 
 /* === lib/components/progression/list-criteria/list-criteria.styles.css === */
 /* list-criteria — extracted from lib/_legacy.css (batch 4).
@@ -4446,7 +4446,7 @@ section.list-tabular ol > li {
   padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
   font-family:var(--font-display);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -4456,7 +4456,7 @@ section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
 section.list-tabular ol > li::before {
   content:counter(tabular-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:0.06em;
@@ -4467,7 +4467,7 @@ section.list-tabular ol > li > ul > li::marker { content:''; }
 section.list-tabular ol > li > ul > li:first-child {
   grid-column:3; grid-row:1;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   letter-spacing:0;
@@ -4479,7 +4479,7 @@ section.list-tabular ol > li > ul > li:first-child {
 section.list-tabular ol > li > ul > li:nth-child(2) {
   grid-column:4; grid-row:1;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-label);
   letter-spacing:0.08em;
@@ -4495,7 +4495,7 @@ section.list-tabular ol > li > code {
   padding:0;
   border-radius:0;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-label);
   letter-spacing:0.08em;
@@ -4516,7 +4516,7 @@ section.list-tabular.def ol > li {
   padding:0;
   border:none;
   font-family:var(--font-display);
-  font-size:var(--fs-lg);
+  font-size:var(--fs-emphasis);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -4526,7 +4526,7 @@ section.list-tabular.def ol > li:first-child { border-top:none; }
 section.list-tabular.def ol > li::before {
   grid-column:1; grid-row:1 / span 2;
   font-family:var(--font-display);
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   font-weight:700;
   color:var(--accent);
   line-height:1;
@@ -4544,7 +4544,7 @@ section.list-tabular.def ol > li > code {
   border:none;
   border-radius:0;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-muted);
   letter-spacing:0.1em;
@@ -4557,7 +4557,7 @@ section.list-tabular.def ol > li > code {
 section.list-tabular.def ol > li > ul > li {
   grid-column:3; grid-row:1 / span 2;
   font-family:var(--font-body);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -4575,7 +4575,7 @@ section.list-tabular.def.rule ol {
 section.list-tabular.metric ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -4586,7 +4586,7 @@ section.list-tabular.metric ol > li > code {
   border-radius:var(--radius-md);
   padding:0.46875cqi 1.09375cqi;
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:-0.01em;
@@ -4608,7 +4608,7 @@ section.list-tabular.metric.solid ol > li > code {
 section.list-tabular.spec ol > li {
   grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
   font-family:var(--font-mono);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:0;
@@ -4623,12 +4623,12 @@ section.list-tabular.spec.stacked ol > li {
   grid-template-columns:3.4375cqi 1fr auto;
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
 }
 section.list-tabular.spec.stacked ol > li::before {
   grid-row:1 / span 2;
   align-self:center;
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   line-height:1;
   letter-spacing:-0.02em;
 }
@@ -4645,7 +4645,7 @@ section.list-tabular.spec.stacked ol > li > code {
 section.list-tabular.register ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
 }
@@ -4656,7 +4656,7 @@ section.list-tabular.register ol > li > code {
   padding:0.3125cqi 1.09375cqi;
   border-radius:9999px;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.1em;
   text-transform:uppercase;
@@ -5707,7 +5707,7 @@ section.principles ol > li {
   column-gap:var(--sp-lg);
   align-items:center;
   font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-md), 11cqh, var(--fs-2xl));
+  font-size:clamp(var(--fs-body-compact), 11cqh, var(--fs-h2));
   font-weight:500;
   line-height:var(--lh-snug);
   letter-spacing:-0.01em;
@@ -5720,7 +5720,7 @@ section.principles ol > li:last-child { border-bottom:none; }
 section.principles ol > li::before {
   content:counter(principle-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:clamp(var(--fs-lg), 28cqh, var(--fs-3xl));
+  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
   font-weight:700;
   letter-spacing:0.04em;
   color:var(--accent);
@@ -8363,7 +8363,7 @@ section.title h1 + p:has(> code:only-child) > code {
  * Modifier `numbered` adds a 01., 02. counter prefix.
  * ──────────────────────────────────────────────────────────────────────── */
 section.tldr { display:flex; flex-direction:column; }
-section.tldr h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.tldr h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.tldr > ul,
 section.tldr > ol {
   list-style:none; padding:0; margin:0;
@@ -8377,7 +8377,7 @@ section.tldr > ol > li {
   flex:1;
   container-type:size;
   display:flex; align-items:center;
-  font-size:clamp(var(--fs-md), 13cqh, var(--fs-lg));
+  font-size:clamp(var(--fs-body-compact), 13cqh, var(--fs-emphasis));
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -8406,7 +8406,7 @@ section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:clamp(var(--fs-md), 22cqh, var(--fs-2xl));
+  font-size:clamp(var(--fs-body-compact), 22cqh, var(--fs-h2));
   font-weight:700;
   letter-spacing:0.04em;
   color:var(--accent);

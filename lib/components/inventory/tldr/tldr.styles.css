@@ -13,7 +13,7 @@
  * Modifier `numbered` adds a 01., 02. counter prefix.
  * ──────────────────────────────────────────────────────────────────────── */
 section.tldr { display:flex; flex-direction:column; }
-section.tldr h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.tldr h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.tldr > ul,
 section.tldr > ol {
   list-style:none; padding:0; margin:0;
@@ -27,7 +27,7 @@ section.tldr > ol > li {
   flex:1;
   container-type:size;
   display:flex; align-items:center;
-  font-size:clamp(var(--fs-md), 13cqh, var(--fs-lg));
+  font-size:clamp(var(--fs-body-compact), 13cqh, var(--fs-emphasis));
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);
@@ -56,7 +56,7 @@ section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:clamp(var(--fs-md), 22cqh, var(--fs-2xl));
+  font-size:clamp(var(--fs-body-compact), 22cqh, var(--fs-h2));
   font-weight:700;
   letter-spacing:0.04em;
   color:var(--accent);

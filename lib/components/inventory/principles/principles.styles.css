@@ -35,7 +35,7 @@ section.principles ol > li {
   column-gap:var(--sp-lg);
   align-items:center;
   font-family:var(--font-display, var(--font-body));
-  font-size:clamp(var(--fs-md), 11cqh, var(--fs-2xl));
+  font-size:clamp(var(--fs-body-compact), 11cqh, var(--fs-h2));
   font-weight:500;
   line-height:var(--lh-snug);
   letter-spacing:-0.01em;
@@ -48,7 +48,7 @@ section.principles ol > li:last-child { border-bottom:none; }
 section.principles ol > li::before {
   content:counter(principle-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:clamp(var(--fs-lg), 28cqh, var(--fs-3xl));
+  font-size:clamp(var(--fs-emphasis), 28cqh, var(--fs-h1));
   font-weight:700;
   letter-spacing:0.04em;
   color:var(--accent);

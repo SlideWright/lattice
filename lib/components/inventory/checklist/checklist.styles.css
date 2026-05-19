@@ -26,7 +26,7 @@
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
 section.checklist { display:flex; flex-direction:column; }
-section.checklist h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.checklist h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.checklist > ul,
 section.checklist > ol {
   list-style:none; padding:0; margin:0;
@@ -45,7 +45,7 @@ section.checklist > ol > li {
   background:var(--bg-alt);
   border-left:3px solid var(--border);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:500;
   line-height:var(--lh-snug);
   color:var(--text-heading);

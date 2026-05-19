@@ -24,7 +24,7 @@ section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   margin:0; flex:1; list-style:none;
-  font-size:var(--fs-content); line-height:var(--lh-relaxed); color:var(--text-body);
+  font-size:var(--fs-body-compact); line-height:var(--lh-relaxed); color:var(--text-body);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
 
