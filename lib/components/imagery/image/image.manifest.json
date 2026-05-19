@@ -85,17 +85,17 @@
   "variantDocs": {
     "full": {
       "label": "Full — image fills the canvas edge to edge",
-      "caption": "The image covers the entire slide. Optional heading and body text overlay the lower portion of the canvas with a contrast scrim. Use for high-impact opener or closer slides where the photograph is the message.",
-      "sample": "<!-- _class: image full -->\n\n## Full bleed makes the photo the slide.\n\nText overlays the lower third on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.\n\n![bg](sample-image-landscape.svg)\n"
+      "caption": "The image covers the entire slide. Heading and body text overlay the lower portion on a dark contrast scrim (full slide width, content padded inside). Use for high-impact opener or closer slides where the photograph is the message.",
+      "sample": "<!-- _class: image full -->\n\n## Full bleed makes the photo the slide.\n\nText overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.\n\n![bg](sample-image-landscape.svg)\n"
     },
     "contain": {
       "label": "Contain — letterboxed for plots and screenshots",
-      "caption": "Letterboxes the image inside the canvas with surrounding background colour, so plots, screenshots, and assets with whitespace render at full fidelity without cropping. Default pick for any non-photographic visual.",
+      "caption": "Full-bleed variant: the image preserves its aspect inside the slide and the surrounding area fills with the matte token. Text overlay uses the same bottom-scrim treatment as `full`. Default pick for plots, screenshots, and any non-photographic asset where every pixel of the image matters.",
       "sample": "<!-- _class: image contain -->\n\n## Contain preserves the asset's own framing.\n\nLetterboxed against the slide background — useful for plots, dashboards, and screenshots where every pixel of the image matters.\n\n![bg](sample-image-landscape.svg)\n"
     },
     "museum": {
       "label": "Museum — matted and framed",
-      "caption": "Adds a matte border and a thin frame around the image, gallery-style. Use for the one hero image in a deck that deserves a wall-piece treatment — case-study openers, brand moments, archive material.",
+      "caption": "Full-bleed variant: image inset on a `--bg-alt` matte (40px top/sides, 100px at the bottom) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.",
       "sample": "<!-- _class: image museum -->\n\n## Museum framing gives one image the wall.\n\nMatte border plus a hairline frame. Reserve for case-study openers, brand moments, archival material — the image that the deck remembers.\n\n![bg](sample-image-landscape.svg)\n"
     },
     "mirror": {

@@ -58,21 +58,21 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 
 ### `full` — Full — image fills the canvas edge to edge
 
-The image covers the entire slide. Optional heading and body text overlay the lower portion of the canvas with a contrast scrim. Use for high-impact opener or closer slides where the photograph is the message.
+The image covers the entire slide. Heading and body text overlay the lower portion on a dark contrast scrim (full slide width, content padded inside). Use for high-impact opener or closer slides where the photograph is the message.
 
 ```markdown
 <!-- _class: image full -->
 
 ## Full bleed makes the photo the slide.
 
-Text overlays the lower third on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
+Text overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
 
 ![bg](sample-image-landscape.svg)
 ```
 
 ### `contain` — Contain — letterboxed for plots and screenshots
 
-Letterboxes the image inside the canvas with surrounding background colour, so plots, screenshots, and assets with whitespace render at full fidelity without cropping. Default pick for any non-photographic visual.
+Full-bleed variant: the image preserves its aspect inside the slide and the surrounding area fills with the matte token. Text overlay uses the same bottom-scrim treatment as `full`. Default pick for plots, screenshots, and any non-photographic asset where every pixel of the image matters.
 
 ```markdown
 <!-- _class: image contain -->
@@ -86,7 +86,7 @@ Letterboxed against the slide background — useful for plots, dashboards, and s
 
 ### `museum` — Museum — matted and framed
 
-Adds a matte border and a thin frame around the image, gallery-style. Use for the one hero image in a deck that deserves a wall-piece treatment — case-study openers, brand moments, archive material.
+Full-bleed variant: image inset on a `--bg-alt` matte (40px top/sides, 100px at the bottom) with a 1px hairline frame. Text reads on the matte at the bottom as a mono eyebrow label + body caption — editorial placard, no scrim. Use for the one hero image in a deck that deserves a wall-piece treatment.
 
 ```markdown
 <!-- _class: image museum -->

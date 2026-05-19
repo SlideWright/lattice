@@ -32,7 +32,7 @@ The image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join
 
 ## Full bleed makes the photo the slide.
 
-Text overlays the lower third on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
+Text overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
 
 ![bg](sample-image-landscape.svg)
 
