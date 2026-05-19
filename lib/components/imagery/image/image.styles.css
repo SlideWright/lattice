@@ -79,7 +79,22 @@ section.image:not(.full):not(.contain):not(.museum) .lattice-bg-left  { left: 0;
 section.image:not(.full):not(.contain):not(.museum).mirror .lattice-bg-right,
 section.image:not(.full):not(.contain):not(.museum).left   .lattice-bg-right { right: auto; left: 0; }
 
-/* Image overlay — cover, with hairline at the split */
+/* Canonical .image-asset element (img inside marpit container or
+ * .lattice-bg). Object-fit: cover is the default; .contain modifier
+ * overrides below. The hairline at the slide-half split is on the
+ * image element so it follows the image wherever marpit / emulator
+ * positions it. */
+section.image:not(.full):not(.contain):not(.museum) .image-asset {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  box-shadow: -1px 0 0 var(--border);
+}
+
+/* Legacy selectors still in place for parity until iteration 2 of the
+ * Marp Adapter refactor — see docs/notes/2026-05-19-marp-adapter.md. */
 section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;

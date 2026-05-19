@@ -1032,10 +1032,12 @@ function parseSlide(raw, index) {
     const side = /\bright\b/.test(kw) ? 'right'
                : /\bleft\b/.test(kw)  ? 'left'
                : 'full';
-    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns all positioning,
-    // fit, and the hairline divider. The img has no inline styles — the
-    // cover/contain rule on section.image controls object-fit.
-    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img src="${url}" alt=""/></div>`;
+    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns wrapper
+    // positioning. `class="image-asset"` on the img matches the
+    // canonical class the image-asset transformer rewrites marpit's
+    // figure to, so both render paths share the same CSS selector for
+    // object-fit / object-position / box-shadow on the image element.
+    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img class="image-asset" src="${url}" alt=""/></div>`;
     return '';
   });
 
