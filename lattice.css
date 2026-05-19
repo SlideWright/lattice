@@ -8084,20 +8084,26 @@ section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size
 /* === lib/components/state-chart/state-chart.styles.css === */
 /* state-chart — native state machine diagram (palette-blind).
  *
- * Source contract: a numbered list (ol > li) where each li is a state;
+ * Source contract: an ordered list (ol > li) where each li is a state;
  * nested <ul> <li>s carry one inline-code arrow token each. The kernel
  * at lib/components/state-chart/state-chart.transform.js parses the list,
- * resolves state metadata + transitions, and emits:
+ * resolves state metadata + transitions, and emits a single-column
+ * figure: state nodes stacked on the centre axis, plus an SVG overlay
+ * that draws start (●) and terminal (◎) markers and routes transition
+ * edges around the column — adjacent forward edges straight down through
+ * the centre, forward skips bowing right, back-edges bowing left,
+ * self-loops as small bumps on the right.
  *
- *   <div class="state-chart-figure" data-variant="default|compact|horizontal">
+ *   <div class="state-chart-figure" data-variant="default|inline|horizontal">
  *     <ol class="state-nodes">
  *       <li class="state-node" data-index="N" [data-kind="start|terminal"]>
- *         <span class="state-index">N</span>
  *         <span class="state-label">…</span>
  *         <span class="chart-status" data-s="…">…</span>
+ *         <span class="state-index">N</span>
  *       </li>
  *     </ol>
  *     <svg class="state-chart-edges" viewBox="…">
+ *       <g class="state-marker" data-kind="start|terminal">…</g>
  *       <g class="state-edge-group" data-dir="forward|back|self">
  *         <path class="state-edge"/>
  *         <polygon class="state-edge-arrow"/>
@@ -8106,121 +8112,138 @@ section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size
  *     </svg>
  *   </div>
  *
- * The kernel is palette-blind — every stroke, fill, and label colour comes
- * from a palette token here (var(--c1-light), var(--c-stroke), var(--c-line),
- * var(--c-ink-light), …). No hex literals, no !important, no :has() chains.
+ * Palette-blind — every stroke, fill, and label colour comes from a
+ * token (var(--c1-light), var(--c-stroke), var(--c-line), var(--c-ink-light)).
+ * No hex literals, no !important, no :has() chains.
+ *
+ * The kernel emits inline custom properties on .state-chart-figure
+ * (--state-figure-w / --state-node-w / --state-node-h / --state-row-gap
+ * / --state-pad-top / --state-pad-bottom) so HTML node positions match
+ * the SVG overlay's viewBox geometry pixel-for-pixel.
  *
  * Sibling implementations (three-renderer parity):
  *   - lib/components/state-chart/state-chart.transform.js  canonical kernel
- *   - lattice-emulator.js                                  inline build-path
- *   - marp.config.js                                       marp-cli engine hook
- *   - src/runtime/index.js → lattice-runtime.js            DOM transform for marp-vscode
+ *   - lattice-emulator.js                                  build-path
+ *   - marp.config.js                                       marp-cli hook
+ *   - src/runtime/index.js → lattice-runtime.js            marp-vscode preview
  */
 
 section.state-chart {
-  --state-row-h: 56px;
-  --state-gutter: 28px;
   --state-node-bg: var(--c1-light);
   --state-node-ink: var(--c-ink-light);
   --state-node-stroke: var(--c-stroke);
   --state-edge: var(--c-line);
-  --state-edge-back: color-mix(in srgb, var(--c-line) 70%, transparent);
-  --state-index-ink: color-mix(in srgb, var(--c-ink-light) 60%, transparent);
+  --state-edge-back: color-mix(in srgb, var(--c-line) 75%, transparent);
+  --state-index-ink: color-mix(in srgb, var(--c-ink-light) 50%, transparent);
+  --state-marker: var(--c-stroke);
 }
 
-/* state-chart is a chart-family member — section layout, header/body/caption
- * skeleton and h2 styling all come from section.chart-frame. The figure is
- * a positioned shell that anchors both the HTML node column and the SVG
- * edge overlay. */
 section.state-chart.chart-frame .chart-body {
   width: 100%;
   padding: var(--sp-md) var(--sp-2xl);
 }
 
+/* Figure shell — a positioned column. The SVG overlay covers the same
+ * box as the node column so geometry stays aligned pixel-for-pixel. */
 section.state-chart .state-chart-figure {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(220px, 360px) 1fr;
-  align-items: start;
-  gap: var(--sp-lg);
+  width: var(--state-figure-w, 480px);
   margin: 0 auto;
-  max-width: 880px;
 }
 
-/* The node column — ordered list reset, custom row heights. */
+/* Node column — centred, fixed-width nodes with fixed row gap.
+ * Padding matches the kernel's GEOM.padTop / GEOM.padBottom so the SVG
+ * markers above the first node and below the last terminal node have
+ * room to land. */
 section.state-chart .state-nodes {
   list-style: none;
   margin: 0;
-  padding: 0;
-  counter-reset: state-row;
-  display: grid;
-  grid-auto-rows: var(--state-row-h);
-  align-content: start;
+  padding: var(--state-pad-top, 56px) 0 var(--state-pad-bottom, 56px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--state-row-gap, 18px);
+  position: relative;
+  z-index: 1;
 }
 
 section.state-chart .state-node {
+  position: relative;
+  width: var(--state-node-w, 200px);
+  height: var(--state-node-h, 48px);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--sp-sm);
   padding: 0 var(--sp-md);
-  margin: 4px 0;
-  height: calc(var(--state-row-h) - 8px);
   background: var(--state-node-bg);
   color: var(--state-node-ink);
   border: 1px solid var(--state-node-stroke);
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
-}
-
-section.state-chart .state-node .state-index {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.4em;
-  height: 1.4em;
-  font-variant-numeric: tabular-nums;
-  font-size: 0.78em;
-  color: var(--state-index-ink);
-  border-right: 1px solid var(--state-node-stroke);
-  padding-right: var(--sp-sm);
-  margin-right: var(--sp-xs);
+  box-sizing: border-box;
 }
 
 section.state-chart .state-node .state-label {
   flex: 1 1 auto;
-  min-width: 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The index is a subtle corner badge — not the visual emphasis. It
+ * exists so authors can see what number to cite when writing a
+ * transition like `=> 4`. Hidden in the inline variant where it would
+ * collide with the chip row. */
+section.state-chart .state-node .state-index {
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--state-index-ink);
+  pointer-events: none;
 }
 
 section.state-chart .state-node .chart-status {
   flex: 0 0 auto;
+  font-size: 0.72em;
 }
 
-/* State-kind decorations: heavier left border for start, double-ring for
- * terminal. Both compose cleanly with status pills. */
+/* Start state: heavier left edge as a redundancy cue (the SVG ●
+ * marker is the primary signal). Terminal: outline ring as a
+ * redundancy cue alongside the SVG ◎ marker. */
 section.state-chart .state-node[data-kind="start"] {
-  border-left-width: 4px;
+  border-left-width: 3px;
   border-left-color: var(--c-stroke);
 }
 
 section.state-chart .state-node[data-kind="terminal"] {
-  outline: 2px solid var(--state-node-stroke);
+  outline: 1.5px solid var(--state-node-stroke);
   outline-offset: 2px;
 }
 
-/* The SVG edge overlay sits to the right of the node column. Its viewBox
- * is sized in the kernel so SVG y-units == HTML row y-positions. */
+/* SVG overlay — covers the full figure. The viewBox is set in the
+ * kernel so SVG y-units == HTML row y-positions. preserveAspectRatio
+ * keeps the geometry centred when the figure is wider than its
+ * viewBox-content (e.g. lanes don't claim space). */
 section.state-chart .state-chart-edges {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  align-self: stretch;
-  overflow: visible;
   pointer-events: none;
+  overflow: visible;
 }
 
+/* Edges — palette-token strokes with arrowhead heads. Back edges are
+ * dashed and slightly lighter so they read as the "return" direction. */
 section.state-chart .state-edge {
   fill: none;
   stroke: var(--state-edge);
   stroke-width: 1.4;
+  stroke-linecap: round;
 }
 
 section.state-chart .state-edge[data-dir="back"] {
@@ -8250,26 +8273,58 @@ section.state-chart .state-edge-label {
   stroke-linejoin: round;
 }
 
+/* Markers — start (●) and terminal (◎). The arrow segment uses the
+ * same .state-edge stroke as transitions so the visual vocabulary
+ * stays coherent. */
+section.state-chart .state-marker-disc {
+  fill: var(--state-marker);
+}
+
+section.state-chart .state-marker-ring {
+  fill: none;
+  stroke: var(--state-marker);
+  stroke-width: 1.4;
+}
+
+section.state-chart .state-marker-line {
+  fill: none;
+  stroke: var(--state-edge);
+  stroke-width: 1.4;
+}
+
 /* ── Inline variant ────────────────────────────────────────────────────
- * Drops the SVG edge layer. Transitions render as chips inline inside
- * each state-node. Pure HTML — graceful fallback for dense decks, or
- * when an SVG overlay is undesirable. Composes with the semi-universal
- * `compact` modifier for even denser rendering. */
+ * Drops the SVG edge layer entirely. Transitions render as chips inline
+ * inside each state-node. Pure HTML — graceful fallback for dense
+ * decks, or when an SVG overlay is undesirable. Composes with the
+ * semi-universal `compact` modifier for even denser rendering. */
 section.state-chart.inline .state-chart-figure {
   display: block;
   max-width: 720px;
+  width: auto;
 }
 
 section.state-chart.inline .state-nodes {
   display: block;
-  grid-auto-rows: auto;
+  padding: 0;
 }
 
 section.state-chart.inline .state-node {
   flex-wrap: wrap;
   height: auto;
-  min-height: calc(var(--state-row-h) - 8px);
+  width: 100%;
+  min-height: 44px;
   padding: var(--sp-sm) var(--sp-md);
+  margin: 4px 0;
+  justify-content: flex-start;
+}
+
+section.state-chart.inline .state-node .state-label {
+  text-align: left;
+  flex: 0 0 auto;
+}
+
+section.state-chart.inline .state-node .state-index {
+  display: none;
 }
 
 section.state-chart.inline .state-chart-edges {
@@ -8309,16 +8364,14 @@ section.state-chart.inline .state-chip-arrow {
 }
 
 /* ── Horizontal variant ────────────────────────────────────────────────
- * States lay left-to-right. Edges arc above (forward) and below (back).
- * v1 ships a CSS-rotated overlay: the kernel emits the same vertical SVG
- * geometry, then a 90° rotation flips it. Trade-off: arrowheads inherit
- * the rotation cleanly; labels need an inverse rotation so text stays
- * readable. */
+ * States lay left-to-right. v1 ships an inline-chip presentation since
+ * the SVG edge geometry would need a separate horizontal kernel; the
+ * trade-off is acceptable for v1 — visually clean, semantically
+ * complete. A future v2 can add native horizontal SVG routing. */
 section.state-chart.horizontal .state-chart-figure {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  display: block;
   max-width: 100%;
+  width: auto;
 }
 
 section.state-chart.horizontal .state-nodes {
@@ -8328,30 +8381,26 @@ section.state-chart.horizontal .state-nodes {
   overflow-x: auto;
   align-items: center;
   gap: var(--sp-md);
-  grid-auto-rows: initial;
+  padding: var(--sp-md) 0;
 }
 
 section.state-chart.horizontal .state-node {
   flex: 0 0 auto;
   min-width: 140px;
-  height: calc(var(--state-row-h) - 8px);
 }
 
 section.state-chart.horizontal .state-chart-edges {
-  position: relative;
-  height: 80px;
-  margin-top: var(--sp-sm);
-  transform: rotate(-90deg) scaleX(-1);
-  transform-origin: top left;
+  display: none;
 }
 
 /* ── Dark modifier ─────────────────────────────────────────────────────
- * Composable cross-cutting modifier. Re-paints node fill / ink to the
- * dark palette pair; edge tokens already use light-dark() where needed. */
+ * Composable cross-cutting modifier. Re-paints node fill / ink and edge
+ * markers to the dark palette pair. */
 section.state-chart.dark {
   --state-node-bg: var(--c1-dark);
   --state-node-ink: var(--c-ink-dark);
   --state-node-stroke: color-mix(in srgb, var(--c-stroke) 80%, transparent);
+  --state-marker: color-mix(in srgb, var(--c-stroke) 80%, transparent);
 }
 
 /* === lib/components/stats/stats.styles.css === */

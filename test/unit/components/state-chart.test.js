@@ -264,45 +264,53 @@ describe('parseStateChart', () => {
 // ── Lane assignment ─────────────────────────────────────────────────────
 
 describe('assignEdgeLanes', () => {
-  test('non-overlapping edges share lane 0', () => {
-    // 1→2 and 3→4: spans don't overlap on the row axis
+  test('non-overlapping forward skips share lane 0', () => {
+    // 1→3 and 4→6: forward skips with non-overlapping row spans.
     const edges = [
-      { from: 1, to: 2, isSelf: false },
-      { from: 3, to: 4, isSelf: false },
+      { from: 1, to: 3, isSelf: false },
+      { from: 4, to: 6, isSelf: false },
     ];
     const lanes = assignEdgeLanes(edges);
     assert.equal(lanes.get(0), 0);
     assert.equal(lanes.get(1), 0);
   });
 
-  test('overlapping forward edges go to different lanes', () => {
-    // 1→3 and 2→4: spans overlap [1,3] ∩ [2,4]
+  test('overlapping forward skips go to different lanes', () => {
+    // 1→4 and 2→5: forward skips whose spans overlap.
     const edges = [
-      { from: 1, to: 3, isSelf: false },
-      { from: 2, to: 4, isSelf: false },
+      { from: 1, to: 4, isSelf: false },
+      { from: 2, to: 5, isSelf: false },
     ];
     const lanes = assignEdgeLanes(edges);
-    // Shorter span gets lane 0, longer span gets lane 1 (greedy by span asc).
-    // Both spans here are |2|, so tie order is preserved.
     const used = new Set([lanes.get(0), lanes.get(1)]);
     assert.equal(used.size, 2);
   });
 
-  test('forward and back edges use independent lane pools', () => {
+  test('forward skips and back edges use independent lane pools', () => {
     const edges = [
-      { from: 1, to: 5, isSelf: false },   // forward, long
+      { from: 1, to: 5, isSelf: false },   // forward skip, long
       { from: 5, to: 1, isSelf: false },   // back, long — same row interval
     ];
     const lanes = assignEdgeLanes(edges);
-    // Independent pools means both can have lane 0
+    // Independent pools (right vs left side) — both can have lane 0.
     assert.equal(lanes.get(0), 0);
     assert.equal(lanes.get(1), 0);
   });
 
-  test('self-loops are skipped (handled separately in render)', () => {
+  test('adjacent-forward edges (j = i+1) need no lane', () => {
+    // Adjacent edges render as a straight centre line — no lane required.
     const edges = [
       { from: 1, to: 2, isSelf: false },
-      { from: 2, to: 2, isSelf: true },
+      { from: 2, to: 3, isSelf: false },
+    ];
+    const lanes = assignEdgeLanes(edges);
+    assert.equal(lanes.size, 0);
+  });
+
+  test('self-loops are skipped (rendered as a fixed shape, no lane)', () => {
+    const edges = [
+      { from: 1, to: 3, isSelf: false },   // forward skip → lane 0
+      { from: 2, to: 2, isSelf: true },    // self-loop → no lane
     ];
     const lanes = assignEdgeLanes(edges);
     assert.equal(lanes.size, 1);
@@ -415,7 +423,47 @@ describe('rowCentreY', () => {
     const c = rowCentreY(3);
     assert.ok(b > a);
     assert.ok(c > b);
-    assert.equal(b - a, GEOM.rowHeight);
+    // Row step is nodeHeight + rowGap; row centres are exactly one step apart.
+    assert.equal(b - a, GEOM.nodeHeight + GEOM.rowGap);
+  });
+});
+
+// ── Start / terminal markers ────────────────────────────────────────────
+
+describe('start / terminal markers', () => {
+  test('worked example emits one start marker and one terminal marker', () => {
+    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
+    const html = buildStateChart(model, 'default');
+    const startCount = (html.match(/state-marker"[^>]*data-kind="start"/g) || []).length;
+    const terminalCount = (html.match(/state-marker"[^>]*data-kind="terminal"/g) || []).length;
+    assert.equal(startCount, 1);
+    assert.equal(terminalCount, 1);
+  });
+
+  test('start marker is a filled disc; terminal marker is a ring', () => {
+    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
+    const html = buildStateChart(model, 'default');
+    assert.match(html, /class="state-marker-disc"/);
+    assert.match(html, /class="state-marker-ring"/);
+  });
+
+  test('implicit start (no explicit `start`) still renders a start marker', () => {
+    const ol = '<li>A<ul><li><code>=&gt; 2</code></li></ul></li><li>B</li>';
+    const model = parseStateChart(ol);
+    const html = buildStateChart(model, 'default');
+    assert.match(html, /data-kind="start"/);
+  });
+
+  test('multiple terminals render multiple terminal markers', () => {
+    const ol =
+      '<li>A<ul><li><code>=&gt; 2</code></li><li><code>=&gt; 3</code></li></ul></li>' +
+      '<li>B <code>end</code></li>' +
+      '<li>C <code>end</code></li>';
+    const model = parseStateChart(ol);
+    const html = buildStateChart(model, 'default');
+    const terminalCount = (html.match(/data-kind="terminal"/g) || []).length;
+    // 2 marker groups + 2 state-node data-kind attributes
+    assert.ok(terminalCount >= 2);
   });
 });
 
