@@ -11,7 +11,7 @@ section.closing { justify-content:center; align-items:center; background:var(--b
 section.closing { border-top: none; }
 section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
 section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
 
 

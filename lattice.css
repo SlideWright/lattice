@@ -1861,7 +1861,7 @@ section.closing { justify-content:center; align-items:center; background:var(--b
 section.closing { border-top: none; }
 section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
 section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
 
 /* === lib/components/code/code/code.styles.css === */
@@ -2284,8 +2284,8 @@ section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
 section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
-section.divider h1,
-section.divider h2 { font-size:var(--fs-3xl); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
+section.divider h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
+section.divider h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 
 /* === lib/components/imagery/featured/featured.styles.css === */
 /* featured — extracted from lib/_legacy.css (batch 5).
@@ -8094,8 +8094,8 @@ section.statute-stack.lane td:last-child {
 
 section.subtopic { justify-content:center; align-items:center; }
 section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
-section.subtopic h2 { font-size:var(--fs-3xl); margin-bottom:var(--sp-sm); text-align:center; }
-section.subtopic p  { font-size:var(--fs-emphasis); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
+section.subtopic h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-sm); text-align:center; }
+section.subtopic p  { font-size:var(--fs-body); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
 /* === lib/components/progression/timeline/timeline.styles.css === */
 /* timeline — extracted from lib/_legacy.css (batch 7).
@@ -8327,15 +8327,15 @@ section.timeline-list .timeline-body {
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.title { border-top: none; }
 section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
-section.title h1 { font-size:var(--fs-display); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
+section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
-section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-body); font-weight:300; margin:0; text-align:center; }
 /* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
  * Overrides the general subtitle rule (italic, body font) for section.title only. */
 section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
 section.title h1 + p:has(> code:only-child) > code {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-style: normal;
   font-weight: 600;
   letter-spacing: 0.18em;
