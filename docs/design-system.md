@@ -101,6 +101,15 @@ Test: an author opens a blank slide. The question "what is this slide
 slide is hard to place, the families are wrong. The current ~35
 layouts mapped cleanly into seven.
 
+The audience-function taxonomy organizes the catalog and the docs. On
+**disk**, components are grouped slightly differently: seven function
+buckets plus two substance-defined buckets (`chart`, `diagram`) that
+colocate components sharing a renderer kernel and palette-injection
+pipeline. The `function` field on every manifest is unchanged; the
+disk grouping is reflected in an optional `bucket` field. For 49
+components `bucket === function`; for the 9 chart/diagram components
+the bucket diverges to keep maintenance localized. See §9.
+
 ---
 
 ## 4. The 10 forms
@@ -135,7 +144,7 @@ the engine's only plugin point.
 |---------------|---------------------------------------------|-----------------------------------------------------|-----------|
 | **prose**     | Headings, paragraphs, inline emphasis       | Marp markdown → semantic HTML; CSS does everything  | DOM       |
 | **structure** | Headings + nested lists with conventions    | `lib/*.js` post-processor rewrites lists into purpose-built DOM | DOM       |
-| **series**    | Tabular DSL (axes + datapoints as bullets)  | `lib/chart-family.js` + per-chart kernel            | SVG       |
+| **series**    | Tabular DSL (axes + datapoints as bullets)  | `lib/components/chart/_chart-family/chart-family.js` + per-chart kernel            | SVG       |
 | **graph**     | External graph language (Mermaid today)     | External tool (mmdc) → SVG, palette injected        | SVG       |
 
 **The unification this gives us.** "Chart" and "diagram" are no longer
@@ -356,7 +365,7 @@ The engine has exactly four plugin points, one per substance.
 **Adding a new chart kind (substance = series).** Add a kernel module
 `lib/<name>.js` exporting a function that takes the parsed list and
 returns SVG sized to the chart-frame. Register the kind in
-`CHART_LAYOUTS` in `lib/chart-family.js`. Add CSS, manifest, demo
+`CHART_LAYOUTS` in `lib/components/chart/_chart-family/chart-family.js`. Add CSS, manifest, demo
 deck.
 
 **Adding a new graph language (substance = graph).** Detect the fence
@@ -375,48 +384,109 @@ render paths. Write the CSS. Manifest + demo deck.
 
 ## 9. Component folder layout on disk
 
-Each component is self-contained in a single folder:
+Each component is self-contained in a folder under its **bucket**:
 
 ```text
-lib/components/cards-grid/
-  manifest.json     ← was lib/components/cards-grid.json
-  styles.css        ← extracted from lattice.css; @layer components
-  transform.js      ← post-processor (only for structure/series substance)
-  example.md        ← canonical demo (also referenced from manifest.skeleton)
-  README.md         ← per-component author guide
+lib/components/inventory/cards-grid/
+  cards-grid.manifest.json   ← schema-validated; declares bucket
+  cards-grid.styles.css      ← extracted from lattice.css
+  cards-grid.transform.js    ← post-processor (only for structure/series)
+  cards-grid.docs.md         ← generated from manifest prose fields
+  cards-grid.gallery.md      ← generated; the variant catalog source
+  cards-grid.gallery.light.pdf  ← rendered light-theme gallery
+  cards-grid.gallery.dark.pdf   ← rendered dark-theme gallery
 ```
 
-Tests live at `test/unit/components/<name>.test.js` — the directory
-mirrors the component path. (The previous `test/unit/layouts/` scope
-is renamed to `components` as part of the migration.)
+### Buckets — the disk grouping
 
-This is the same shape every mature component library uses (Lit, MUI,
-Chakra, Mantine, shadcn). Everything a component "owns" lives in its
-folder; touching the component means opening one directory.
+Components live under one of nine buckets. Seven match the audience-
+function families from §3; two are substance-defined exceptions
+introduced for maintenance colocation:
 
-Shared infrastructure (the renderer plugins, the chart-family
-dispatch, the universal-variant module) lives at the top level of
-`lib/`:
+| Bucket       | Count | Origin |
+|--------------|-------|--------|
+| `anchor`     | 4     | function = anchor |
+| `statement`  | 6     | function = statement |
+| `inventory`  | 12    | function = inventory (statute-stack moved to legal) |
+| `comparison` | 8     | function = comparison (obligation-matrix → legal, compare-code → code) |
+| `progression`| 6     | function = progression (authority-chain, regulatory-update moved to legal) |
+| `evidence`   | 3     | function = evidence (citation-card → legal, math → math, code → code) |
+| `imagery`    | 2     | function = imagery |
+| `chart`      | 8     | substance = data visualizations (function stays evidence/progression) |
+| `diagram`    | 1     | substance = topological visuals (function stays evidence) |
+| `math`       | 1     | substance = typeset equations (function stays evidence) |
+| `code`       | 2     | substance = syntax-highlighted source (function stays evidence for code, comparison for compare-code) |
+| `legal`      | 5     | domain = legal (function spans 4 families) |
+
+For 41 of the 58 components `bucket === function`. The 17 divergent
+components declare their `bucket` explicitly in the manifest; their
+`function` field is unchanged in every case. Three reasons for
+divergence:
+
+- **Substance** — `chart`, `diagram`, `math`, and `code` each colocate
+  components built around a specific KIND of rendered content. Each
+  describes the category, not the library that happens to render it
+  today (today's implementation may not be tomorrow's):
+  chart = data visualizations (today: internal SVG kernel);
+  diagram = topological visuals (today: Mermaid);
+  math = typeset equations (today: KaTeX);
+  code = syntax-highlighted source (today: highlight.js).
+  Each has its own !important overrides for the current renderer's
+  inline styles, so colocating the component with its substance-
+  specific surface aids maintenance when the renderer changes.
+- **Domain** — `legal` colocates components sharing authoring
+  vocabulary, citation conventions, and audience use case
+  (statute-stack from inventory; regulatory-update + authority-chain
+  from progression; citation-card from evidence; obligation-matrix
+  from comparison).
+
+The audience-facing taxonomy in §3 is what authors use to pick a
+component; the disk bucket is what maintainers use to navigate the
+shared-context code.
+
+The bucket layout is reflected in three places only:
+- the manifest's optional `bucket` field
+- the filesystem path
+- `groupByBucket()` in `lib/components/index.js`
+
+Everything else — including the `<!-- _class: name -->` invocation —
+is unchanged. Authors never type a bucket name.
+
+### Per-bucket survey galleries
+
+Each bucket has its own generated survey PDF:
+
+```text
+lib/components/inventory/
+  inventory.gallery.md          ← generated from manifest.sample[…]
+  inventory.gallery.light.pdf
+  inventory.gallery.dark.pdf
+```
+
+The survey is one slide per bucket member (drawn from
+`manifest.sample`) plus an opening title slide. Generated by
+`npm run build:bucket-galleries`; never hand-edited.
+
+### Shared infrastructure
+
+Lives in flat subdirectories of `lib/`:
 
 ```text
 lib/
-  components/
-    index.js                   ← manifest loader, validator,
-                                  effectiveVariants(), vocabularies
-    cards-grid/...             ← per-component folders
-    quote/...
-    ...
-  chart-family.js              ← shared dispatch for series substance
-  match-section.js             ← shared cross-component helper
-  mermaid-hljs.js              ← shared highlight definition
-  resolve-palette.js           ← shared palette utility
-  _base.css / _root.css /      ← shared CSS, see §10
-  _scaffold.css / _universal.css /
-  _semi-universal.css / _diagram-overrides.css
+  base/         ← tokens, elements, modifiers, variants, treatments
+  chart-family/ ← shared dispatch for series substance
+  engine/       ← match-section, resolve-palette, slot-label-lift, …
+  helpers/      ← cross-cutting utilities
+  shared/       ← shared.styles.css
+  transformers/ ← registry.js + per-adapter shims
+  components/   ← bucketed per-component folders
+  _theme.css    ← top-level theme entry
 ```
 
 The split is: per-component things go in the component folder;
-genuinely shared things stay at `lib/` root.
+catalog-shaped collections (components, integrations) nest per item;
+flat infrastructure (base, engine, helpers, shared, transformers)
+stays flat.
 
 ---
 
@@ -531,17 +601,75 @@ discovery story that markdown alone can't provide.
 - `lib/components/` — 58 manifests + loader + validator + universal-variant tiers. (Original 45 + 5 SPLIT-* + 6 legal-family + journey + post-Phase-5 renames, all promoted to first-class components.)
 - `tools/new-slide.js` — the scaffolder.
 - `.vscode/lattice.code-snippets` — generated from manifests.
-- `examples/design-system.md` — the demo deck.
+- `docs/design-system.gallery.md` — the slide-rendered demo of this doc.
 - Test scope rename — `test/unit/layouts/` → `test/unit/components/`, with `tools/affected-tests.js` updated to route changes under `lib/components/<name>/` to `test:components`.
 - `cards-side` CSS extraction — split out of `cards-grid/styles.css` into its own `lib/components/cards-side/styles.css`. Validated by same-sandbox before/after PDF byte-compare on all five decks using either component (0–1 byte drift = pixel-identical).
-- Per-component transform location — every component whose transform exists is now at `lib/components/<name>/transform.js` (word-cloud, quadrant, radar, roadmap, journey). Top-level `lib/chart-family.js` is genuinely shared infrastructure (dispatches to several chart-family components) and stays at `lib/` root.
+- Per-component transform location — every component whose transform exists is now at `lib/components/<bucket>/<name>/<name>.transform.js`. The chart-family dispatcher itself lives at `lib/components/chart/_chart-family/chart-family.js` (underscore-prefixed so the component loader and bucket-wide CSS walker both skip it) — bucket-scoped shared infrastructure colocated with the bucket it serves.
 - **`lib/_legacy.css` fully retired.** The 5,938-line monolith was split across 7 phases into 8 new source files (`_root.css`, `_base.css`, `_modifiers.css`, `_syntax-highlight.css`, `_chart-family.css`, `_backgrounds.css`, `_semi-universal.css`, `_diagram-overrides.css`) + 17 component folders. Bundle position of every block preserved to maintain cascade outcomes. See `docs/notes/2026-05-16-post-foundation-followups.md` for the open follow-ups (specificity-bump hacks introduced during extraction, @layer activation as the principled retirement path).
 - **`tools/pixel-check.js`** — same-sandbox before/after PDF byte-compare with pdftoppm + ImageMagick pixel-diff fallback for mmdc non-determinism. Built mid-branch; got us through the 30+ extraction commits without a single false-positive regression slipping through.
 
-**Deferred to a follow-up branch (see `docs/notes/2026-05-16-post-foundation-followups.md`):**
+**Shipped on the bucketed-layout branch (2026-05-18):**
 
-- State / Tone / Chrome universal-variant CSS — the metadata shipped in §6.5 but the actual CSS rules for these tiers haven't landed. (Tier 2.3 in the follow-ups note.)
-- `@layer` activation + retirement of the duplicate-class specificity-bump hacks in `citation-card` / `redline` / `regulatory-update` / `split-*`. Blocked on a `!important` audit. (Tier 2.1 + 2.2.)
+- **Disk reorg into 9 buckets** (anchor, statement, inventory,
+  comparison, progression, evidence, imagery + chart, diagram).
+  58 components moved from flat `lib/components/<name>/` to
+  bucket-nested `lib/components/<bucket>/<name>/`. Pixel-validated
+  zero drift across all 89 pages of gallery.md against pre-move
+  baseline in the same sandbox.
+- **`bucket` field on the manifest schema**, with `BUCKETS`,
+  `groupByBucket()`, `manifestBucket()` added to `lib/components/`.
+  `loadAll()` learned the bucket-nested layout; backwards-compatible
+  with the flat shape during migration.
+- **Light/dark per-component galleries.** Every `<name>.gallery.pdf`
+  renamed to `<name>.gallery.light.pdf`, and a sibling
+  `<name>.gallery.dark.pdf` generated for all 58 components via
+  `tools/build-galleries.js` (idempotent `dark` injection into every
+  `_class` directive of the gallery source).
+- **Per-bucket survey galleries.** 9 generated `<bucket>.gallery.md`
+  sources composed from each bucket's `manifest.sample` set, rendered
+  to `<bucket>.gallery.{light,dark}.pdf` via
+  `tools/build-bucket-galleries.js`.
+- **Discovery tools bucket-aware.** `tools/build-css.js`,
+  `tools/build-component-docs.js`, `tools/preview.js`, and
+  `tools/affected-tests.js` all tolerate both shapes during the
+  migration; new collisions (the `diagram` component-name-equals-
+  bucket-name case) handled explicitly.
+- **Integration tests.** Each component now asserts BOTH light page
+  count (= manifest formula) AND dark page count (must match light);
+  each bucket asserts source-md-matches-manifests AND PDF page count
+  = members + 1.
+
+**Still deferred (see `docs/notes/2026-05-18-component-reorg-and-modular-css.md`):**
+
+- State / Tone / Chrome universal-variant CSS — the metadata shipped
+  in §6.5 but the actual CSS rules for these tiers haven't landed.
+- **Broad `@layer` activation — blocked, not deferred.** The Phase 3.5
+  investigation attempted to activate `@layer components` across all
+  component CSS and discovered that a partial activation breaks the
+  cascade: per the CSS spec, unlayered declarations beat layered ones
+  regardless of specificity, so wrapping components but not shared
+  files makes components silently lose to whatever generic shared
+  rule exists. The full coordinated activation is blocked by the
+  `!important` competition between `lib/integrations/marp/marp.scaffold.css`
+  and `lib/base/base.variants.css`. Both must stay unlayered for the
+  source-order cascade to keep working. See `docs/references/cascade.md`
+  for the full investigation and what would unblock it.
+- **Modular CSS migration (Phase 4)** — moving component-specific
+  universal-variant rules out of `lib/base/base.modifiers.css` and
+  into each component's `<name>.styles.css`. Originally depended on
+  `@layer` activation; now blocked indefinitely until the
+  scaffold-vs-variants `!important` strategy is rewritten.
+
+**Shipped from Phase 3.5 (May 2026 investigation):**
+
+- 7 component-level cascade-workaround `!important` declarations
+  retired (in `anchor/title`, `comparison/verdict-grid`,
+  `progression/list-criteria` ×2, `progression/list-steps`). Natural
+  selector specificity already wins; the `!important` was defensive
+  overkill. Pixel-diffed: 0 deltas across 35 affected pages.
+- `docs/references/cascade.md` captures the cascade architecture
+  and the `@layer` constraints so future contributors don't redo
+  the partial-activation attempt that broke.
 
 **Ratified on this branch:**
 

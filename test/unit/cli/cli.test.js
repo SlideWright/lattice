@@ -103,13 +103,13 @@ describe('cli', { concurrency: true }, () => {
   });
 
   test('emulator: missing custom CSS exits 1 with friendly message', async () => {
-    const r = await run(EMULATOR, ['examples/gallery.md', 'does-not-exist.css', 'out.pdf']);
+    const r = await run(EMULATOR, ['examples/gallery-jargon.md', 'does-not-exist.css', 'out.pdf']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /layout CSS not found/);
   });
 
   test('emulator: bad palette exits 1 and lists available palettes', async () => {
-    const r = await run(EMULATOR, ['examples/gallery.md', 'out.pdf', 'nonesuch']);
+    const r = await run(EMULATOR, ['examples/gallery-jargon.md', 'out.pdf', 'nonesuch']);
     assert.equal(r.status, 1);
     assert.match(r.stderr, /palette not found: nonesuch/);
     assert.match(r.stderr, /available palettes:.*indaco/);

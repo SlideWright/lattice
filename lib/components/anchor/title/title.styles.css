@@ -1,0 +1,30 @@
+/* title — anchor.bookend.title
+ *
+ * Dark canvas, centered. Inline-code paragraph after h1 becomes the
+ * eyebrow (overrides the general subtitle rule).
+ *
+ * See lib/components/title/title.manifest.json for the component contract.
+ */
+
+section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.title { border-top: none; }
+section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
+section.title h1 { font-size:var(--fs-display); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
+section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
+section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-emphasis); font-weight:300; margin:0; text-align:center; }
+/* Title layout: inline-code after h1 = eyebrow, rendered visually above h1 via flex order.
+ * Overrides the general subtitle rule (italic, body font) for section.title only. */
+section.title h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.title h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}

@@ -11,16 +11,18 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs     = require('fs');
+const path   = require('node:path');
 const { runMarp }   = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
 
+const GALLERY = path.join(__dirname, '..', 'baseline-decks', 'gallery.md');
 const EXPECTED_PAGES = 89;
 
 describe('marp.gallery', () => {
   test('marp-cli: gallery.md builds and produces expected page count',
     { timeout: 180000 },
     () => {
-      const pdf = runMarp('gallery.md');
+      const pdf = runMarp(GALLERY);
       try {
         // Marp/Chromium adds one blank trailing page; allow gallery ± 1.
         const actual = pageCount(pdf);

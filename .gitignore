@@ -3,14 +3,22 @@ node_modules/
 tokenization/
 
 # Marp / build outputs
-# (note: examples/*.pdf and lib/components/**/*.pdf are intentionally
-# tracked as ship-with-the-package demos and per-component gallery
-# decks — see docs/references/workflow.md and CLAUDE.md. The rule below
-# catches ad-hoc renders elsewhere in the tree.)
+# (note: the four allow-listed locations below are intentionally
+# tracked: examples/ ship-with-the-package demos, per-component +
+# per-bucket galleries under lib/components/, per-integration
+# galleries under lib/integrations/, and the CI baseline regression
+# decks under test/integration/baseline-decks/. See
+# docs/references/workflow.md and CLAUDE.md. The rule below catches
+# ad-hoc renders elsewhere in the tree.)
 *.pptx
 *.pdf
 !examples/*.pdf
 !lib/components/**/*.pdf
+!lib/base/**/*.pdf
+!lib/integrations/**/*.pdf
+!test/integration/baseline-decks/*.pdf
+!docs/*.pdf
+!themes/*.pdf
 
 # esbuild check tempfile — produced next to lattice-runtime.js by
 # `npm run runtime:check`. The script cleans up on success/failure;
@@ -29,3 +37,4 @@ lib/components/**/*.html
 !examples/*.pdf
 !examples/**/*.pdf
 !lib/components/**/*.pdf
+!lib/base/**/*.pdf

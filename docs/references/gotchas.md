@@ -214,6 +214,68 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   engine. Tracked separately.
 - **Commits:** `6276665`.
 
+### marp-cli works in the cloud sandbox — set `CHROME_PATH`
+
+- **Symptom:** Running `npx marp` in a Claude Code on Web session
+  fails with "No suitable browser found. Please ensure one of the
+  following browsers is installed: chrome, edge, firefox." A new
+  session might conclude marp-cli isn't available and skip the
+  marp-cli render path entirely.
+- **Cause (install side):** `@marp-team/marp-cli` is a regular
+  `dependencies` entry in `package.json` (see the `^4.3.1` line). A
+  normal `npm install` puts the `marp` binary in `node_modules/.bin/`
+  — no extra install step. `npx marp` resolves to that binary. If
+  `npx` is reaching for the network instead, `npm install` hasn't
+  been run yet.
+- **Cause (browser side):** Once marp-cli launches, its own browser
+  auto-detection looks in the standard system locations
+  (`/usr/bin/google-chrome`, etc.) and doesn't know about the
+  puppeteer-cached chromium binary that the sandbox ships with. The
+  binary IS present at
+  `/root/.cache/puppeteer/chrome/linux-<version>/chrome-linux64/chrome`
+  — marp-cli just can't find it on its own.
+- **Mitigation:** Set `CHROME_PATH` in the env before invoking
+  `npx marp`. The integration test helper at
+  [test/helpers/render.js](../../test/helpers/render.js) inherits
+  `process.env`, so the same env var works for tests too.
+
+  ```bash
+  CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | head -1) \
+    npx marp <deck>.md --config-file marp.config.js \
+      --allow-local-files --pdf -o <deck>.pdf
+  ```
+
+- **Triggered by:** Any ad-hoc marp-cli invocation in a fresh
+  cloud-sandbox session.
+- **Removable when:** marp-cli adds puppeteer-cache discovery, or the
+  sandbox ships chromium at one of the canonical system paths.
+- **Commits:** documentation-only — captured here so future sessions
+  don't conclude the tool is missing.
+
+### marp-cli ignores `theme:` front matter unless the theme is in `themeSet`
+
+- **Symptom:** A deck specifies `theme: mustard` (or any other named
+  theme), but the marp-cli PDF render comes out with white background,
+  black text, and no palette tokens — looks like dark mode is broken,
+  or like the theme silently failed. Same deck rendered through
+  `lattice-emulator.js` looks fine.
+- **Cause:** marp-cli only resolves theme names to files listed in
+  `themeSet` (in `marp.config.js`) or passed via `--theme-set`. If the
+  theme file isn't registered, marp-cli falls back to no theme — every
+  color token (`--bg`, `--text-body`, etc.) is undefined and the
+  defaults render as browser defaults. The emulator path doesn't have
+  this problem because it loads `lattice.css` (which `@import`s the
+  theme via the palette positional argument) directly.
+- **Mitigation:** Every theme under `themes/` is now listed in
+  `marp.config.js` `themeSet` (see commit `6aad1e6`).  Any new theme
+  added to the directory must also be added there or marp-cli renders
+  won't find it.
+- **Triggered by:** Any deck whose front-matter `theme:` directive
+  names a theme not in `themeSet`.
+- **Removable when:** marp-cli supports `themeSet` auto-discovery
+  from a directory glob.
+- **Commits:** `3fa0462`, `6aad1e6`.
+
 ---
 
 ## Mermaid
@@ -478,7 +540,7 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   resolve reliably inside the webview context.
 - **Mitigation:** Structural DOM transforms (split panels, chart-family)
   are implemented as HTML-string rewrites in `lib/engine/split-panels.js` and
-  `lib/chart-family.js`, called from the `engine` render wrapper in
+  `lib/components/chart/_chart-family/chart-family.js`, called from the `engine` render wrapper in
   [marp.config.js](../../marp.config.js). The wrapper runs at render time
   — before the webview CSP applies — so the HTML is baked correctly before
   the preview displays it. `lattice-runtime.js` DOM transforms remain as a
@@ -503,6 +565,38 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
 - **Triggered by:** Cold marp-cli runs, slow networks.
 - **Removable when:** We vendor the fonts.
 - **Commits:** Observed in dev; not yet addressed.
+
+### VS Code's built-in PDF preview hue-shifts our gradients (pink/magenta)
+
+- **Symptom:** A chart-frame's accent-tinted gradient header (or any
+  CSS gradient using `color-mix(in oklab, …)` and `transparent` stops)
+  reads pink/magenta in VS Code's built-in PDF preview, in both light
+  and dark mode. Same PDF in Chrome / Firefox / macOS Preview /
+  Acrobat looks correct (blue-tinted).
+- **Cause:** VS Code's built-in preview is PDF.js. PDFs don't carry
+  CSS — Chromium resolves gradients at print time to PDF shading
+  objects (Type 2/3 axial-radial, plus soft-mask groups when stops
+  are transparent). PDF.js implements those operators in pure
+  JavaScript with no native color management. Wide-gamut color spaces
+  (oklab, p3) and alpha across shading boundaries hit known gaps —
+  the bytes get sRGB-misread and produce hue shifts. We're not doing
+  anything wrong; we're using standards-compliant CSS that produces
+  a standards-compliant PDF a behind-the-spec viewer can't render.
+- **Mitigation:** Don't review in VS Code's built-in preview. Open
+  the PDF in Chrome, install the "vscode-pdf" extension (different
+  renderer), or use the marp-vscode preview pane for visual checks
+  (CLAUDE.md's documented inner loop). The chart-frame's lucent-strip
+  gradient was retired for design reasons (treatments are opt-in via
+  the universal `tint-*` / `mark-*` modifiers); that incidentally
+  removed one source of the symptom, but other gradients in the
+  codebase (`--spectrum`, `.below-note::before`, the `tint-*`
+  treatments themselves) keep exercising the same PDF.js gap.
+- **Triggered by:** Any CSS gradient that uses `color-mix(in oklab,
+  …)` or `transparent` stops. Affects only PDF.js-based viewers.
+- **Removable when:** PDF.js gains real color-management and improves
+  shading + transparency rendering. Don't hold your breath.
+- **Commits:** `39e3351` (chart-header refactor that incidentally
+  removed one source).
 
 ---
 
@@ -784,7 +878,7 @@ spin out a `docs/notes/YYYY-MM-DD-topic.md` and link to it from here.
   missing in marp-cli output, or vice versa.
 - **Cause:** Lattice runs in three render contexts:
   1. **lattice-emulator** (build path) — own inline implementation
-  2. **marp.config.js engine wrapper** → `lib/chart-family.js` (marp-cli export)
+  2. **marp.config.js engine wrapper** → `lib/components/chart/_chart-family/chart-family.js` (marp-cli export)
   3. **lattice-runtime.js** (marp-vscode preview, web export)
   Adding a transform requires touching all three for full coverage.
 - **Mitigation:** Each transform documents its sibling implementations

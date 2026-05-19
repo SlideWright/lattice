@@ -69,13 +69,13 @@ npx @marp-team/marp-cli deck.md \
 
 **Mode 3 — lattice-emulator.js:** `lattice.css` is auto-resolved (always included); the deck's `theme:` front matter selects the palette; explicit CLI arg only when overriding.
 ```bash
-node lattice-emulator.js examples/gallery.md output.pdf
+node lattice-emulator.js examples/gallery-jargon.md output.pdf
 # produces output.html alongside the PDF; uses bundled lattice.css; palette from front matter
-node lattice-emulator.js examples/gallery.md output.pdf cuoio
+node lattice-emulator.js examples/gallery-jargon.md output.pdf cuoio
 # explicit palette override (CLI arg has highest precedence)
-node lattice-emulator.js examples/gallery.md custom-layouts.css output.pdf
+node lattice-emulator.js examples/gallery-jargon.md custom-layouts.css output.pdf
 # pass-through for an alternate layout CSS (rare — only for layout-engine dev work)
-node lattice-emulator.js -o output.pdf -p cuoio examples/gallery.md
+node lattice-emulator.js -o output.pdf -p cuoio examples/gallery-jargon.md
 # named flags: -o/--output, -p/--palette, -c/--css, -q/--quiet (positional still works)
 ```
 

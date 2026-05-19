@@ -127,7 +127,8 @@ structured slide looks wrong, check the source list shape first.
 `lattice-emulator.js` and `marp-cli` are most likely to diverge — see
 [references/audit.md §11.4](references/audit.md#114-comparison-workflow).
 The three-renderer parity gate in the integration tier (running on
-`examples/gallery.md`) catches structural drift before merge.
+`test/integration/baseline-decks/gallery.md`) catches structural drift
+before merge.
 
 ## The runtime path
 

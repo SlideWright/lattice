@@ -53,26 +53,16 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 // Per-deck PDF outputs we track. Anything in examples/ following the
 // pattern `examples/<name>.md` is a candidate; this list is the closed
 // set we'll actually build. Update when a new deck is added.
+// Decks under examples/ that npm run preview can rebuild + diff. The
+// CI baseline deck (gallery.md → test/integration/baseline-decks/),
+// the mermaid integration showcase (mermaid.gallery.md →
+// lib/integrations/mermaid/), the design-system slide demo
+// (design-system.gallery.md → docs/), and the palette-audit theme-
+// designer's deck (palette-audit.md → themes/) are intentionally
+// NOT here — each lives with its owner, and its integration test
+// or documentation reference picks it up directly.
 const ALL_DECKS = Object.freeze([
-  'gallery',
-  'gallery-mermaid',
   'gallery-jargon',
-  'design-system',
-  'chart-family-experiment',
-  'diagram-tokens',
-  'image-concepts',
-  'legal-layouts',
-  'legal-layouts-finalists',
-  'list-tabular-gallery',
-  'math',
-  'palette-audit',
-  'quadrant',
-  'radar',
-  'roadmap',
-  'route2-preview',
-  'state-tokens',
-  'user-journey',
-  'word-cloud',
 ]);
 
 // Page-counted baselines — the two canonical top-level galleries CI
@@ -107,8 +97,8 @@ const PATTERNS = Object.freeze({
     // Component metadata only affects scaffolder/snippets, not rendering.
     /^lib\/components\/index\.js$/,
     /^lib\/components\/manifest\.schema\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.manifest\.json$/,
-    /^lib\/components\/[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
+    /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.manifest\.json$/,
+    /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*\.docs\.md$/,
   ],
   // Full diff triggers — shared CSS, theme, three-renderer paths.
   fullDiff: [
@@ -117,7 +107,7 @@ const PATTERNS = Object.freeze({
     /^lattice-emulator\.js$/,
     /^lattice-runtime\.js$/,
     /^marp\.config\.js$/,
-    /^lib\/chart-family\.js$/,
+    /^lib\/components\/chart\/_chart-family\/chart-family\.js$/,
     /^lib\/match-section\.js$/,
     /^lib\/slot-label-lift\.js$/,
     /^lib\/split-(panels|slides)\.js$/,
@@ -127,11 +117,14 @@ const PATTERNS = Object.freeze({
     /^lattice\.css$/,
   ],
   // Component-scoped triggers — affect that component's per-component
-  // gallery + every top-level deck that uses the component.
-  componentCss: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.styles\.css$/,
-  componentTransform: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.transform\.js$/,
+  // gallery + every top-level deck that uses the component. The
+  // (?:[a-z][a-z0-9-]*\/)? prefix tolerates the bucket-nested layout
+  // (`lib/components/<bucket>/<name>/...`) without losing match in
+  // the flat layout (`lib/components/<name>/...`).
+  componentCss: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.styles\.css$/,
+  componentTransform: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.transform\.js$/,
   // Per-component gallery.md change — rebuild that component's gallery only.
-  componentGallery: /^lib\/components\/([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
+  componentGallery: /^lib\/components\/(?:[a-z][a-z0-9-]*\/)?([a-z][a-z0-9-]*)\/\1\.gallery\.md$/,
   // Deck source — that deck only.
   deckSource: /^examples\/([a-z][a-z0-9-]*)\.md$/,
 });

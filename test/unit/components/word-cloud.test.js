@@ -29,7 +29,7 @@ const {
   VARIANT_OPTS,
   CANVAS_W,
   CANVAS_H,
-} = require('../../../lib/components/word-cloud/word-cloud.transform');
+} = require('../../../lib/components/chart/word-cloud/word-cloud.transform');
 
 describe('word-cloud', () => {
   // ── clampWeight ─────────────────────────────────────────────────────────

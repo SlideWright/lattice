@@ -37,7 +37,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { loadAll } = require('../lib/components');
+const { loadAll, manifestBucket } = require('../lib/components');
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
@@ -405,8 +405,26 @@ function expectedGallerySlideCount(m) {
   return n;
 }
 
+// Resolve the on-disk directory for a component. Tolerates three shapes
+// during the Phase 3 migration: bucket-nested (preferred), flat per-
+// component, and the rare diagram-like collision where the component
+// name matches a bucket name. The first existing path wins; if none
+// exist (a brand-new component being scaffolded), fall back to the
+// bucket-nested shape.
+function componentDir(m) {
+  const bucket = manifestBucket(m);
+  const candidates = [
+    bucket ? path.join(COMPONENTS_DIR, bucket, m.name) : null,
+    path.join(COMPONENTS_DIR, m.name),
+  ].filter(Boolean);
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return candidates[0];
+}
+
 function targetPaths(m) {
-  const dir = path.join(COMPONENTS_DIR, m.name);
+  const dir = componentDir(m);
   return {
     docs: path.join(dir, `${m.name}.docs.md`),
     gallery: path.join(dir, `${m.name}.gallery.md`),
@@ -424,14 +442,22 @@ function buildOne(m) {
   if (!isEnriched(m)) return { skipped: true, name: m.name };
   const paths = targetPaths(m);
   const docs = renderDocs(m);
-  const gallery = renderGallery(m);
   const a = writeIfChanged(paths.docs, docs);
-  const b = writeIfChanged(paths.gallery, gallery);
+  // Hand-authored gallery (galleryAuthored: true) — generator emits
+  // docs.md but leaves gallery.md alone. Used for components where
+  // variation lives in slide content, not modifier classes (e.g.
+  // `diagram`'s per-Mermaid-type showcase).
+  let b = { wrote: false, file: paths.gallery };
+  if (!m.galleryAuthored) {
+    const gallery = renderGallery(m);
+    b = writeIfChanged(paths.gallery, gallery);
+  }
   return {
     name: m.name,
     docsWrote: a.wrote,
     galleryWrote: b.wrote,
-    expectedPages: expectedGallerySlideCount(m),
+    galleryAuthored: !!m.galleryAuthored,
+    expectedPages: m.galleryAuthored ? null : expectedGallerySlideCount(m),
     paths,
   };
 }
@@ -440,9 +466,16 @@ function checkOne(m) {
   if (!isEnriched(m)) return { name: m.name, skipped: true, stale: false };
   const paths = targetPaths(m);
   const docs = renderDocs(m);
-  const gallery = renderGallery(m);
   const docsStale = !fs.existsSync(paths.docs) || fs.readFileSync(paths.docs, 'utf8') !== docs;
-  const galleryStale = !fs.existsSync(paths.gallery) || fs.readFileSync(paths.gallery, 'utf8') !== gallery;
+  // Hand-authored galleries are never "stale relative to generator
+  // output" — by definition the source is the canonical content.
+  let galleryStale = false;
+  if (!m.galleryAuthored) {
+    const gallery = renderGallery(m);
+    galleryStale = !fs.existsSync(paths.gallery) || fs.readFileSync(paths.gallery, 'utf8') !== gallery;
+  } else {
+    galleryStale = !fs.existsSync(paths.gallery);
+  }
   return { name: m.name, stale: docsStale || galleryStale, docsStale, galleryStale };
 }
 

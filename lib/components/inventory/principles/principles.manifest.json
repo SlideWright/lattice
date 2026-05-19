@@ -1,0 +1,80 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "principles",
+  "function": "inventory",
+  "form": "stack",
+  "substance": "structure",
+  "description": "Declared statements — short stated principles, each with a one-line justification.",
+  "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
+  "variants": [
+    "numbered"
+  ],
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading."
+    },
+    "principles": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One li per principle. Lead each with **The principle.** then a justification sentence."
+    }
+  },
+  "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
+  "anatomyBlock": "principles",
+  "sample": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.\n- **Name the actor, never the system.** \"The PM decides\" lands; \"the process decides\" hides accountability.\n- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.\n- **Form follows function.** Let the audience's need shape the layout, not the other way around.\n- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.\n",
+  "whenToUse": [
+    {
+      "title": "Working agreements",
+      "body": "Team tenets, design principles, decision rules. Use when the slide's job is to declare how the room makes calls, not to show data."
+    },
+    {
+      "title": "Stated as commands",
+      "body": "Each principle is a short imperative sentence — \"Default to X\", \"Name the actor\". Statements with hedging language lose the principle's bite."
+    },
+    {
+      "title": "Three to six items",
+      "body": "More than six principles and the audience stops remembering them. If you have more, prioritize: the principles slide carries the load-bearing few."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Aspirations, not principles",
+      "body": "\"Be empathetic\" is a value, not a principle. Principles are decision rules — they say what to do when two options conflict. Reach for content if it's a values statement."
+    },
+    {
+      "title": "Long per-principle prose",
+      "body": "Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
+    },
+    {
+      "title": "Hedged statements",
+      "body": "\"We try to default to X\" reads as a wish. Drop the hedge — principles are declared, not negotiated. \"Default to X\" lands harder."
+    }
+  ],
+  "related": [
+    {
+      "name": "actors",
+      "when": "rules attach to named owners, not shared tenets"
+    },
+    {
+      "name": "tldr",
+      "when": "single-line takeaways without justification body"
+    },
+    {
+      "name": "list",
+      "when": "items are short bullets without title + body shape"
+    },
+    {
+      "name": "cards-stack",
+      "when": "each principle needs two sentences of body"
+    }
+  ],
+  "variantDocs": {
+    "numbered": {
+      "label": "Numbered principles",
+      "caption": "Authored as `ol` (`1.` source). Useful when the principles are ordered by priority — the first principle wins when two conflict.",
+      "sample": "<!-- _class: principles -->\n\n## How we resolve conflicts — top wins.\n\n1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.\n2. **Name the actor, never the system.** Anonymous accountability is no accountability.\n3. **Write down the bet on the same slide as the choice.** Calibration depends on it.\n4. **Form follows function.** Let audience need shape the layout.\n5. **One main idea per slide.** If you can't summarise it, split it.\n"
+    }
+  }
+}

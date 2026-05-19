@@ -1,0 +1,286 @@
+/* _chart-family.css — shared chart frame for list-and-pill chart layouts.
+ *
+ * Extracted from lib/_legacy.css in Phase 7 cleanup. Provides the
+ * .chart-frame skeleton used by gantt, radar, quadrant, progress,
+ * piechart, kanban, and timeline-list:
+ *
+ *   <section class="<layout> chart-frame">
+ *     <div class="chart-header">       ← eyebrow + h2 + subtitle
+ *       <p class="chart-eyebrow"><code>…</code></p>
+ *       <h2>Title.</h2>
+ *       <p class="chart-subtitle">Optional subtitle.</p>
+ *     </div>
+ *     <div class="chart-body chart-body--<layout>">
+ *       …chart-specific markup…
+ *     </div>
+ *     <p class="chart-caption">Optional bottom caption.</p>
+ *   </section>
+ *
+ * Includes the .chart-status status-pill vocabulary (on-track / done /
+ * live / at-risk / warn / pilot / blocked / fail / decision / deferred)
+ * shared across progress / timeline-list / kanban, plus the .dark and
+ * .minimal treatment variants.
+ *
+ * Bundle position: AFTER components (so chart-frame chrome composes on
+ * top of component base rules), BEFORE _legacy.css residual.
+ */
+
+/* ════════════════════════════════════════════════════════════════════════
+ * CHART FAMILY (experimental — 2026-05-07)
+ * ────────────────────────────────────────────────────────────────────────
+ * Shared frame for list-and-pill chart layouts. All chart layouts adopt
+ * the same skeleton:
+ *
+ *   <section class="<layout> chart-frame">
+ *     <div class="chart-header">       ← lucent strip, eyebrow + h2 + subtitle
+ *       <p class="chart-eyebrow"><code>…</code></p>
+ *       <h2>Title.</h2>
+ *       <p class="chart-subtitle">Optional subtitle.</p>
+ *     </div>
+ *     <div class="chart-body chart-body--<layout>">
+ *       …chart-specific markup…
+ *     </div>
+ *     <p class="chart-caption">Optional bottom caption.</p>
+ *   </section>
+ *
+ * The lucent strip is a soft accent-tinted gradient that fades into the
+ * canvas, with a hairline rule beneath. Eyebrow + h2 + subtitle are all
+ * centred. The chart area dominates the lower 60% of the slide.
+ *
+ * Status pill vocabulary (shared across progress / timeline-list / kanban):
+ *   on-track, done, live  → --pass family
+ *   at-risk, warn         → --warn family
+ *   blocked, fail         → --fail family
+ *   pilot, decision       → --accent family
+ *   deferred              → --text-muted family
+ *
+ * Dark variant works automatically — every colour goes through tokens
+ * that the .dark rule remaps.
+ * ──────────────────────────────────────────────────────────────────── */
+
+section.chart-frame {
+  /* Reset section base — chart frame manages its own internal layout.
+   * The native border-top spectrum is removed; the lucent strip is the
+   * top chrome instead. Bottom padding leaves a clean band for the
+   * footer chrome (absolute, bottom:24px) so chart-caption never
+   * collides with footer/page-number text. */
+  padding: 0 0 4.375cqi;
+  border-top: none;
+  background: var(--bg);
+}
+
+section.chart-frame .chart-header {
+  /* Plain header — eyebrow + h2 + subtitle on the section background.
+   * Decoration is opt-in via the universal `tint-*` / `mark-*`
+   * treatments, not baked in here. A short hairline below the header
+   * keeps the chart body visually separated; that is the only chrome. */
+  flex: 0 0 auto;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--sp-2xl) var(--sp-2xl) var(--sp-md);
+  text-align: center;
+  background: none;
+}
+
+section.chart-frame .chart-header::after {
+  /* Short hairline — soft frame edge between header and chart body. */
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 7.5cqi;
+  height: 1px;
+  background: color-mix(in oklab, var(--accent) 50%, transparent);
+}
+
+section.chart-frame .chart-eyebrow {
+  margin: 0 0 var(--sp-xs);
+  font-size: var(--fs-label);
+  line-height: 1;
+}
+section.chart-frame .chart-eyebrow > code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-label);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+section.chart-frame .chart-header h2 {
+  margin: 0 auto var(--sp-xs);
+  max-width: 70.3125cqi;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  text-align: center;
+}
+
+section.chart-frame .chart-subtitle {
+  margin: 0 auto;
+  max-width: 68.75cqi;
+  font-size: var(--fs-body);
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: var(--lh-relaxed);
+}
+
+section.chart-frame .chart-body {
+  /* Pin to slide-internal width (1280 − 2× horizontal padding), same
+   * technique as the mermaid container in section.diagram. Without the
+   * absolute width, VS Code Marp preview's webview can resolve `100%`
+   * against an indeterminate ancestor and let the chart-body grow
+   * unbounded; the flex parent measures intrinsic content first and
+   * the chart blows past the slide. The calc() pins the box to the
+   * slide's authoritative width regardless of viewport scale. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: calc(100cqi - 2 * var(--sp-2xl));
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--sp-lg) var(--sp-2xl);
+  min-height: 0;
+  overflow: hidden;
+}
+
+section.chart-frame .chart-caption {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--sp-sm) var(--sp-2xl);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+/* Short hairline above the caption — soft separator between chart and
+ * chrome. Matches the header hairline's shape (short + solid); the
+ * earlier gradient-fade variant was retired with the lucent-strip
+ * header for the same reason: decoration belongs in treatments. */
+section.chart-frame .chart-caption::before {
+  content: '';
+  display: block;
+  width: 7.5cqi;
+  height: 1px;
+  margin: 0 auto var(--sp-sm);
+  background: color-mix(in oklab, var(--border) 90%, transparent);
+}
+
+/* The earlier `.minimal` modifier (no gradient, short hairline) is
+ * now the default; the lucent-strip variant is retired. Decoration
+ * is opt-in via the universal `tint-*` / `mark-*` treatments. */
+
+/* Shared status pill vocabulary — used by progress, timeline-list, kanban.
+ * Reads as `[s]` data attribute on a chip element so the markup is small
+ * and the colour mapping lives in one place. */
+section.chart-frame .chart-status {
+  display: inline-flex;
+  align-items: center;
+  height: 1.71875cqi;
+  padding: 0 0.78125cqi;
+  border-radius: 0.859375cqi;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+section.chart-frame .chart-status[data-s="on-track"],
+section.chart-frame .chart-status[data-s="done"],
+section.chart-frame .chart-status[data-s="live"] {
+  color: var(--pass);
+  background: var(--pass-bg);
+  border-color: color-mix(in oklab, var(--pass) 30%, transparent);
+}
+section.chart-frame .chart-status[data-s="at-risk"],
+section.chart-frame .chart-status[data-s="warn"],
+section.chart-frame .chart-status[data-s="pilot"] {
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-color: color-mix(in oklab, var(--warn) 30%, transparent);
+}
+section.chart-frame .chart-status[data-s="blocked"],
+section.chart-frame .chart-status[data-s="fail"] {
+  color: var(--fail);
+  background: var(--fail-bg);
+  border-color: color-mix(in oklab, var(--fail) 30%, transparent);
+}
+section.chart-frame .chart-status[data-s="decision"] {
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+section.chart-frame .chart-status[data-s="deferred"] {
+  color: var(--text-muted);
+  background: color-mix(in oklab, var(--text-muted) 10%, transparent);
+  border-color: color-mix(in oklab, var(--text-muted) 25%, transparent);
+}
+
+/* Dark-canvas status overrides — the dark version uses brighter chip
+ * colours and white-ish text so the pill reads against a dark backdrop.
+ * The same data-s vocabulary; only the colour stops change. */
+section.chart-frame.dark .chart-status[data-s="on-track"],
+section.chart-frame.dark .chart-status[data-s="done"],
+section.chart-frame.dark .chart-status[data-s="live"] {
+  color: color-mix(in oklab, var(--pass) 30%, white);
+  background: color-mix(in oklab, var(--pass) 38%, transparent);
+  border-color: color-mix(in oklab, var(--pass) 60%, transparent);
+}
+section.chart-frame.dark .chart-status[data-s="at-risk"],
+section.chart-frame.dark .chart-status[data-s="warn"],
+section.chart-frame.dark .chart-status[data-s="pilot"] {
+  color: color-mix(in oklab, var(--warn) 30%, white);
+  background: color-mix(in oklab, var(--warn) 40%, transparent);
+  border-color: color-mix(in oklab, var(--warn) 60%, transparent);
+}
+section.chart-frame.dark .chart-status[data-s="blocked"],
+section.chart-frame.dark .chart-status[data-s="fail"] {
+  color: color-mix(in oklab, var(--fail) 35%, white);
+  background: color-mix(in oklab, var(--fail) 40%, transparent);
+  border-color: color-mix(in oklab, var(--fail) 65%, transparent);
+}
+section.chart-frame.dark .chart-status[data-s="decision"] {
+  color: color-mix(in oklab, var(--accent) 25%, white);
+  background: color-mix(in oklab, var(--accent) 25%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+section.chart-frame.dark .chart-status[data-s="deferred"] {
+  color: var(--text-muted);
+  background: color-mix(in oklab, var(--text-muted) 18%, transparent);
+  border-color: color-mix(in oklab, var(--text-muted) 38%, transparent);
+}
+
+/* Dark-canvas progress fill — the same brand greens/ambers/reds read
+ * darker on a dark canvas; lift them with a partial white mix so the
+ * fill ratio is visually obvious. */
+section.progress.dark .progress-fill[data-s="on-track"],
+section.progress.dark .progress-fill[data-s="done"],
+section.progress.dark .progress-fill[data-s="live"] {
+  background: color-mix(in oklab, var(--pass) 40%, white);
+}
+section.progress.dark .progress-fill[data-s="at-risk"],
+section.progress.dark .progress-fill[data-s="warn"] {
+  background: color-mix(in oklab, var(--warn) 40%, white);
+}
+section.progress.dark .progress-fill[data-s="blocked"],
+section.progress.dark .progress-fill[data-s="fail"] {
+  background: color-mix(in oklab, var(--fail) 45%, white);
+}
+section.progress.dark .progress-fill[data-s="deferred"] {
+  background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
+}
+
+
+
+
