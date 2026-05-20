@@ -16,7 +16,7 @@
  * "you are here." Past rows render muted; future rows render normal.
  * ──────────────────────────────────────────────────────────────────────── */
 section.agenda { display:flex; flex-direction:column; }
-section.agenda h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-lg); }
+section.agenda h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-lg); }
 section.agenda ol {
   list-style:none; padding:0; margin:0;
   counter-reset:agenda-counter;
@@ -30,7 +30,7 @@ section.agenda ol > li {
   grid-template-columns:auto 1fr;
   column-gap:var(--sp-md);
   align-items:baseline;
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body);
   font-weight:500;
   line-height:var(--lh-relaxed);
   color:var(--text-heading);
@@ -40,7 +40,7 @@ section.agenda ol > li {
 section.agenda ol > li::before {
   content:counter(agenda-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.12em;
   color:var(--accent);

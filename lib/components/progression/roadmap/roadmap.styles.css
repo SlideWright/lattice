@@ -33,7 +33,7 @@
  *                  runs under the phase columns.
  * ──────────────────────────────────────────────────────────────────────── */
 section.roadmap { display:flex; flex-direction:column; }
-section.roadmap h2 { font-size:var(--fs-lg); margin-bottom:var(--sp-md); }
+section.roadmap h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
 section.roadmap table {
   width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0;
   font-size:var(--fs-body); flex:1;
@@ -41,7 +41,7 @@ section.roadmap table {
 section.roadmap thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.roadmap thead th {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   letter-spacing:0.10em;
   text-transform:uppercase;
@@ -124,7 +124,7 @@ section.roadmap td:empty::before {
   font-family:var(--font-mono);
 }
 section.roadmap > p {
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-style:italic;
   color:var(--text-muted);
   margin-top:var(--sp-md);
@@ -252,7 +252,7 @@ section.roadmap.status td.cell-state {
 section.roadmap.status td.cell-state .cell-state-label {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   letter-spacing:0.10em;
   text-transform:uppercase;
@@ -361,7 +361,7 @@ section.roadmap.horizons .horizon-meta {
 }
 section.roadmap.horizons .horizon-eyebrow {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.14em;
   text-transform:uppercase;
@@ -369,7 +369,7 @@ section.roadmap.horizons .horizon-eyebrow {
 }
 section.roadmap.horizons .horizon-title {
   font-family:var(--font-display);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   font-weight:700;
   color:var(--text-heading);
   line-height:var(--lh-snug);
@@ -391,7 +391,7 @@ section.roadmap.horizons .horizon-rows > li {
 }
 section.roadmap.horizons .row-label {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   letter-spacing:0.08em;
   text-transform:uppercase;
@@ -427,7 +427,7 @@ section.roadmap.swimlane tbody tr > td:first-child {
   font-family:var(--font-display);
   font-weight:700;
   color:var(--text-heading);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   padding:var(--sp-sm) var(--sp-md);
 }
 section.roadmap.swimlane tbody td:not(:first-child) {

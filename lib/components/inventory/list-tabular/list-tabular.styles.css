@@ -47,13 +47,15 @@ section.list-tabular ol {
 section.list-tabular ol > li {
   counter-increment:tabular-counter;
   display:grid;
-  grid-template-columns:3.4375cqi 15.625cqi 1fr auto;
+  /* col 4 (metadata) is bounded minmax, not auto: long legacy metadata
+   * must wrap within its share, never expand the track off the slide edge. */
+  grid-template-columns:3.4375cqi 15.625cqi 1fr minmax(0, 0.9fr);
   align-items:baseline;
   column-gap:var(--sp-md);
   padding:var(--sp-sm) 0;
   border-bottom:1px solid var(--border);
   font-family:var(--font-display);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -63,7 +65,7 @@ section.list-tabular ol > li:first-child { border-top:1px solid var(--border); }
 section.list-tabular ol > li::before {
   content:counter(tabular-counter, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:0.06em;
@@ -74,7 +76,7 @@ section.list-tabular ol > li > ul > li::marker { content:''; }
 section.list-tabular ol > li > ul > li:first-child {
   grid-column:3; grid-row:1;
   font-family:var(--font-body);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   letter-spacing:0;
@@ -86,13 +88,13 @@ section.list-tabular ol > li > ul > li:first-child {
 section.list-tabular ol > li > ul > li:nth-child(2) {
   grid-column:4; grid-row:1;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-label);
   letter-spacing:0.08em;
   text-transform:uppercase;
   text-align:right;
-  white-space:nowrap;
+  overflow-wrap:break-word;
 }
 section.list-tabular ol > li > ul > li:nth-child(2) em { font-style:normal; }
 section.list-tabular ol > li > code {
@@ -102,13 +104,13 @@ section.list-tabular ol > li > code {
   padding:0;
   border-radius:0;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-label);
   letter-spacing:0.08em;
   text-transform:uppercase;
   text-align:right;
-  white-space:nowrap;
+  overflow-wrap:break-word;
 }
 
 /* ── Variant: def (editorial) ─────────────────────────────────────────── */
@@ -123,7 +125,7 @@ section.list-tabular.def ol > li {
   padding:0;
   border:none;
   font-family:var(--font-display);
-  font-size:var(--fs-lg);
+  font-size:var(--fs-emphasis);
   font-weight:700;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -133,7 +135,7 @@ section.list-tabular.def ol > li:first-child { border-top:none; }
 section.list-tabular.def ol > li::before {
   grid-column:1; grid-row:1 / span 2;
   font-family:var(--font-display);
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   font-weight:700;
   color:var(--accent);
   line-height:1;
@@ -151,7 +153,7 @@ section.list-tabular.def ol > li > code {
   border:none;
   border-radius:0;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-muted);
   letter-spacing:0.1em;
@@ -164,7 +166,7 @@ section.list-tabular.def ol > li > code {
 section.list-tabular.def ol > li > ul > li {
   grid-column:3; grid-row:1 / span 2;
   font-family:var(--font-body);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:400;
   color:var(--text-body);
   line-height:var(--lh-base);
@@ -182,7 +184,7 @@ section.list-tabular.def.rule ol {
 section.list-tabular.metric ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:-0.01em;
@@ -193,7 +195,7 @@ section.list-tabular.metric ol > li > code {
   border-radius:var(--radius-md);
   padding:0.46875cqi 1.09375cqi;
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
   font-weight:700;
   color:var(--accent);
   letter-spacing:-0.01em;
@@ -215,7 +217,7 @@ section.list-tabular.metric.solid ol > li > code {
 section.list-tabular.spec ol > li {
   grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
   font-family:var(--font-mono);
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
   letter-spacing:0;
@@ -230,12 +232,12 @@ section.list-tabular.spec.stacked ol > li {
   grid-template-columns:3.4375cqi 1fr auto;
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body-compact);
 }
 section.list-tabular.spec.stacked ol > li::before {
   grid-row:1 / span 2;
   align-self:center;
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   line-height:1;
   letter-spacing:-0.02em;
 }
@@ -252,7 +254,7 @@ section.list-tabular.spec.stacked ol > li > code {
 section.list-tabular.register ol > li {
   align-items:center;
   font-family:var(--font-body);
-  font-size:var(--fs-emphasis);
+  font-size:var(--fs-body-compact);
   font-weight:600;
   color:var(--text-heading);
 }
@@ -263,7 +265,7 @@ section.list-tabular.register ol > li > code {
   padding:0.3125cqi 1.09375cqi;
   border-radius:9999px;
   font-family:var(--font-mono);
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.1em;
   text-transform:uppercase;

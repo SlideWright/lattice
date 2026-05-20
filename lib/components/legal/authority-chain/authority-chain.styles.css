@@ -70,7 +70,7 @@ section.authority-chain > :is(ol, ul) > li:nth-child(8n+4) { --tier-hue:var(--c3
 section.authority-chain > :is(ol, ul) > li > strong:first-child {
   grid-column:1;
   font-family:var(--font-mono);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   font-weight:700;
   letter-spacing:0.14em;
   text-transform:uppercase;
@@ -84,7 +84,7 @@ section.authority-chain > :is(ol, ul) > li > :is(ul, ol) {
 section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li::marker { content:''; }
 section.authority-chain > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   font-family:var(--font-mono);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-heading);
   background:none; border:none; padding:0;
@@ -118,7 +118,7 @@ section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li {
   background:var(--bg);
   border:1px solid var(--border);
   border-radius:var(--radius-sm);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   position:relative;
 }
 section.authority-chain.branching > :is(ol, ul) > li > :is(ul, ol) > li::before {
@@ -165,22 +165,22 @@ section.authority-chain.trail > :is(ol, ul) > li::after {
   transform:translateY(-50%);
   background:none;
   width:auto; height:auto;
-  font-size:var(--fs-xl);
+  font-size:var(--fs-h3);
   color:var(--accent);
   z-index:1;
 }
 section.authority-chain.trail > :is(ol, ul) > li:last-child::after { display:none; }
 section.authority-chain.trail > :is(ol, ul) > li > strong:first-child {
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   letter-spacing:0.10em;
 }
 section.authority-chain.trail > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
-  font-size:var(--fs-xs);
+  font-size:var(--fs-meta);
 }
 section.authority-chain.trail > :is(ol, ul) > li::before {
   content:counter(auth, decimal-leading-zero);
   font-family:var(--font-mono);
-  font-size:var(--fs-2xl);
+  font-size:var(--fs-h2);
   font-weight:700;
   color:var(--tier-hue, var(--accent));
   line-height:1;

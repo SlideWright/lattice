@@ -7,7 +7,7 @@
 
 section.content h3 { margin-bottom:0.3125cqi; }
 section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-content); line-height:var(--lh-relaxed); }
+section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
 section.content { justify-content:flex-start; }
 
 

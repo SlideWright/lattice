@@ -60,7 +60,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
 .gantt-tick {
   text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-label);
@@ -80,7 +80,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   flex: 0 0 14.0625cqi;
   width: 14.0625cqi;
   padding-right: var(--sp-sm);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   text-align: right;
@@ -118,7 +118,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
   color: var(--text-heading);
   font-family: var(--font-body);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   display: flex;
   align-items: center;

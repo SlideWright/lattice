@@ -32,7 +32,7 @@ section.piechart .piechart-svg .donut-hole {
 }
 section.piechart .piechart-total {
   font-family: var(--font-display);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-h3);
   font-weight: 700;
   fill: var(--text-heading);
 }
@@ -59,7 +59,7 @@ section.piechart .piechart-legend li {
   grid-template-columns: 1.09375cqi 1fr auto;
   align-items: center;
   gap: var(--sp-sm);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
   padding: 0;
 }
@@ -70,7 +70,7 @@ section.piechart .piechart-legend .legend-swatch {
 }
 section.piechart .piechart-legend .legend-pct {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   font-variant-numeric: tabular-nums;

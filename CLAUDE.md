@@ -213,6 +213,25 @@ caught by the hook instead of by reviewer eyeballs.
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
 - **No hex literals in layout rules.** Always `var(--token)`.
+- **Typography uses the 12-token system.** Three scales: content
+  (`--fs-meta` 11.25 / `--fs-body-compact` 13.5 / `--fs-body` 16 /
+  `--fs-message` 21 / `--fs-emphasis` 30 pt), heading (`--fs-h1` 48 …
+  `--fs-h6` 11.25, per-level independent; h4/h5/h6 tied to
+  message/body/meta), display (`--fs-hero` 86 pt, class-driven). Values
+  are normalized to the proven legacy footprint (a touch above it), NOT
+  the projection-floor inflation the first rethink shipped — Lattice
+  makes boardroom PDFs read at desk distance, not projected at 20ft. All
+  HTML headings auto-resolve via `base.elements.css`. The cascade default
+  is `--fs-body` (16 pt) for cards / lists / inline prose; slide-level
+  statement prose opts UP to `--fs-message` (21 pt); dense table/grid
+  cells (list-tabular, glossary, compare-table, matrix-2x2, verdict-grid,
+  obligation-matrix, actors) opt DOWN to `--fs-body-compact` (13.5 pt).
+  `--fs-hero` is the ONE big number on a slide; rows of comparable
+  metrics use `--fs-h1` (48 pt). A few layouts use documented explicit
+  cqi sizes between tokens (split-statement / kpi.briefing supports at
+  38 pt, split-list watermark at 110 pt). Picking by "feel" or t-shirt
+  size (`fs-md` / `fs-lg`) is the legacy pattern; those names are
+  retired. See `docs/references/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
   Silently broken in the Marp preview Chromium build. See
   `docs/references/gotchas.md`.

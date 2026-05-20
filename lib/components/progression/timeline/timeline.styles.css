@@ -23,7 +23,7 @@ section.timeline > :is(ol,ul)::before {
 section.timeline > :is(ol,ul) > li {
   display:flex; flex-direction:column; align-items:center;
   width:14.0625cqi; text-align:center; position:relative; z-index:1;
-  font-size:var(--fs-sm); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.timeline > ol { counter-reset:timeline-counter; }
 section.timeline > ol > li::before {
@@ -32,7 +32,7 @@ section.timeline > ol > li::before {
   display:flex; align-items:center; justify-content:center;
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
   background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff));
-  font-family:var(--font-mono); font-size:var(--fs-label); font-weight:700; line-height:1;
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }
 section.timeline > ul > li::before {
@@ -43,7 +43,7 @@ section.timeline > ul > li::before {
 section.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
 section.timeline > :is(ol,ul) > li > ul { list-style:none; padding:0; margin:0; }
 section.timeline > :is(ol,ul) > li > ul > li { font-weight:400; }
-section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-label); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
+section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
 
 
 

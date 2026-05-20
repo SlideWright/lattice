@@ -104,7 +104,7 @@ section.journey .journey-legend {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-muted, var(--text-body));
 }
 section.journey .journey-actor {
@@ -150,7 +150,7 @@ section.journey .journey-mood-legend {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted, var(--text-body));
   letter-spacing: 0.02em;
 }
@@ -201,7 +201,7 @@ section.journey .journey-section {
   padding: var(--sp-sm) var(--sp-md);
   border-radius: var(--radius-sm);
   font-weight: 600;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   letter-spacing: 0.02em;
   display: flex;
   align-items: center;
@@ -248,7 +248,7 @@ section.journey .journey-task {
   flex-direction: column;
   justify-content: flex-end;
   min-height: 4.375cqi;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   text-align: center;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-body) 8%, transparent);
 }
@@ -413,7 +413,7 @@ section.journey.heatmap .journey-task::after {
   position: absolute;
   top: var(--sp-xs);
   right: var(--sp-xs);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 700;
   color: var(--mood-bg);
   background: var(--bg);
@@ -438,7 +438,7 @@ section.journey.curve .journey-task {
   box-shadow: none;
   padding: var(--sp-xs) 0.3125cqi;
   min-height: 0;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
 }
 section.journey.curve .journey-task-actors {
   position: static;
@@ -489,7 +489,7 @@ section.journey.swimlane .journey-task {
   padding: var(--sp-xs) 0.3125cqi;
   background: transparent;
   box-shadow: none;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 500;
 }
 section.journey.swimlane .journey-timeline,
@@ -511,7 +511,7 @@ section.journey .journey-lane {
 section.journey .journey-lane-label {
   grid-column: 1;
   grid-row: var(--row);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   padding: 0 var(--sp-md) 0 0;
   display: flex;
@@ -615,7 +615,7 @@ section.journey.weighted .journey-task::after {
   left: 0;
   right: 0;
   text-align: center;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 700;
   color: var(--mood-bg);
   letter-spacing: 0.02em;
@@ -625,7 +625,7 @@ section.journey.weighted .journey-task::after {
  * legible. */
 section.journey.weighted .journey-task-label {
   margin-top: auto;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
 }
 section.journey.weighted .journey-task-actors {
   /* Move actor dots from top-left to top-right corner so they don't

@@ -74,11 +74,11 @@ section.image:not(.full):not(.contain):not(.museum) > .image-text {
  * resolves correctly now that the section is no longer using
  * percentage padding. */
 section.image:not(.full):not(.contain):not(.museum) .image-text h2 {
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-h3);
   margin-bottom: var(--sp-md);
 }
 section.image:not(.full):not(.contain):not(.museum) .image-text p {
-  font-size: var(--fs-content);
+  font-size: var(--fs-body);
   line-height: var(--lh-relaxed);
 }
 
@@ -250,7 +250,7 @@ section.image.contain h2 {
   bottom: 7.1875cqi; margin: 0;
   color: rgba(255, 255, 255, 0.98);
   font-family: var(--font-display);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-h2);
   font-weight: 700;
   line-height: var(--lh-tight);
   z-index: 2;
@@ -264,7 +264,7 @@ section.image.contain p:last-of-type {
   max-height: 4.6875cqi;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.92);
-  font-size: var(--fs-body);
+  font-size: var(--fs-message);
   line-height: var(--lh-snug);
   z-index: 2;
   text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
@@ -284,7 +284,7 @@ section.image.museum h2 {
   bottom: 4.6875cqi; margin: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -297,7 +297,7 @@ section.image.museum p:last-of-type {
   max-height: 2.1875cqi;
   overflow: hidden;
   color: var(--text-body);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   line-height: var(--lh-snug);
   z-index: 2;
 }

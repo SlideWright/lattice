@@ -97,7 +97,7 @@ section.chart-frame .chart-header::after {
 
 section.chart-frame .chart-eyebrow {
   margin: 0 0 var(--sp-xs);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   line-height: 1;
 }
 section.chart-frame .chart-eyebrow > code {
@@ -106,7 +106,7 @@ section.chart-frame .chart-eyebrow > code {
   padding: 0;
   color: var(--text-label);
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -114,7 +114,7 @@ section.chart-frame .chart-eyebrow > code {
 section.chart-frame .chart-header h2 {
   margin: 0 auto var(--sp-xs);
   max-width: 70.3125cqi;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-h2);
   line-height: var(--lh-tight);
   text-align: center;
 }
@@ -158,7 +158,7 @@ section.chart-frame .chart-caption {
   padding: var(--sp-sm) var(--sp-2xl);
   text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--text-muted);
@@ -190,7 +190,7 @@ section.chart-frame .chart-status {
   padding: 0 0.78125cqi;
   border-radius: 0.859375cqi;
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;

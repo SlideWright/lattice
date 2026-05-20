@@ -39,7 +39,7 @@ section.kanban.chart-frame .chart-body {
  * with card titles. 5.47:1 on light bg (AA), 6.95:1 on dark bg (AA). */
 .kanban-column-header {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -87,7 +87,7 @@ section.kanban.chart-frame .chart-body {
   display: flex;
   align-items: flex-start;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--text-heading);
   line-height: var(--lh-tight);
@@ -121,7 +121,7 @@ section.kanban.chart-frame .chart-body {
   border: 1px solid var(--border);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 700;
   color: var(--text-muted);
   flex: 0 0 auto;
@@ -137,7 +137,7 @@ section.kanban.chart-frame .chart-body {
   background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
   color: var(--lane-color, var(--accent));
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -148,14 +148,14 @@ section.kanban.chart-frame .chart-body {
 .kanban-card-meta .chart-status {
   height: 1.5625cqi;
   padding: 0 0.546875cqi;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   flex: 0 0 auto;
   margin-left: auto;
 }
 
 /* Optional card body (from a third-level sub-bullet) */
 .kanban-card-body {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   line-height: var(--lh-snug);
   font-style: italic;

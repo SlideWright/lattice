@@ -20,11 +20,16 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate.** One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate.** One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate.** One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample.** Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **Stable name**
+   - Kebab-case, matching the `_class` directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
+5. **Skeleton plus sample**
+   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
 
 
 ---
@@ -34,11 +39,16 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate.** One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate.** One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate.** One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample.** Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **Stable name**
+   - Kebab-case, matching the `_class` directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
+5. **Skeleton plus sample**
+   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
 
 
 ---
@@ -48,11 +58,16 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate.** One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate.** One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate.** One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample.** Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **Stable name**
+   - Kebab-case, matching the `_class` directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
+5. **Skeleton plus sample**
+   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
 
 
 ---
@@ -62,11 +77,16 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What every component manifest must satisfy.
 
-1. **Stable name.** Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate.** One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate.** One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate.** One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample.** Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **Stable name**
+   - Kebab-case, matching the `_class` directive authors type when invoking the component.
+2. **Function coordinate**
+   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
+3. **Form coordinate**
+   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
+4. **Substance coordinate**
+   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
+5. **Skeleton plus sample**
+   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
 
 
 ---

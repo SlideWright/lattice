@@ -11,7 +11,7 @@
  * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
  * font-independent SVG-mask recipe. */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-.badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
 .badge.fail { --state-color:var(--fail); }
@@ -67,11 +67,11 @@ section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
 section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill */
-section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-label); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
 section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */
-section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
+section.verdict-grid > ul > li > ul > li:last-child { width:100%; font-size:var(--fs-body-compact); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); background:none; border:none; border-radius:0; padding:0; display:block; }
 section.verdict-grid > ul > li:last-child > ul > li:last-child { padding-right:3.125cqi; }
 section.verdict-grid > ul > li > ul > li::before { display:none; content:none; }
 

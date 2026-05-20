@@ -9,14 +9,14 @@
 
 section.split-metric { padding:0; flex-direction:row; }
 section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
-section.split-metric .unit-label { display:block; font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
+section.split-metric .unit-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
 section.split-metric .metric-left h2 { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
-section.split-metric .metric-left h2 em { font-size:var(--fs-3xl); font-weight:700; font-style:normal; color:var(--text-muted); }
-section.split-metric .metric-context { display:block; font-size:var(--fs-sm); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.split-metric .metric-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-muted); }
+section.split-metric .metric-context { display:block; font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-metric .metric-right h3 { font-size:var(--fs-label); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
+section.split-metric .metric-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
 section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
-section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-content); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
+section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
 section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
 section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }

@@ -21,14 +21,14 @@ section.obligation-matrix table {
   width:100%;
   border-collapse:separate;
   border-spacing:0;
-  font-size:var(--fs-body);
+  font-size:var(--fs-body-compact);
   flex:1;
   table-layout:auto;
 }
 section.obligation-matrix thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.obligation-matrix thead th {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;

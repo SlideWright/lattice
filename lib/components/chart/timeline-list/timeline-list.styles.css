@@ -71,7 +71,7 @@ section.timeline-list .timeline-pill {
   border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border));
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -81,7 +81,7 @@ section.timeline-list .timeline-pill--empty {
   visibility: hidden;
 }
 section.timeline-list .timeline-title {
-  font-size: var(--fs-md);
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text-heading);
   text-align: center;
@@ -93,7 +93,7 @@ section.timeline-list .timeline-item .chart-status {
   margin-bottom: var(--sp-xs);
 }
 section.timeline-list .timeline-body {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-meta);
   color: var(--text-muted);
   text-align: center;
   line-height: var(--lh-relaxed);

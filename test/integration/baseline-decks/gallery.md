@@ -343,13 +343,13 @@ _Source: pilot retrospective, six months across four product teams._
 
 ## Four requirements every decision system must meet.
 
-- Speed
+- **Speed**
   - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
-- Auditability
+- **Auditability**
   - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
-- Adoption
+- **Adoption**
   - If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
-- Calibration
+- **Calibration**
   - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
 
 ---

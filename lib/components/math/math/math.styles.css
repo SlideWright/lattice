@@ -42,7 +42,7 @@ section.math h3:first-child {
   grid-row: 1;
   grid-column: 1 / -1;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -53,7 +53,7 @@ section.math > h2 {
   grid-row: 2;
   grid-column: 1 / -1;
   font-family: var(--font-display);
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-h2);
   color: var(--text-heading);
   margin: 0;
 }
@@ -66,7 +66,7 @@ section.math > :not(h2):not(h3) {
 }
 section.math h3 {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -160,7 +160,7 @@ section.math.feature > :is(ul, ol)::before {
   content: 'where';
   display: block;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -209,7 +209,7 @@ section.math.derivation tbody tr:last-child {
 section.math.derivation td {
   padding: var(--sp-sm) var(--sp-md);
   vertical-align: middle;
-  font-size: var(--fs-md);
+  font-size: var(--fs-body);
 }
 section.math.derivation td:first-child {
   width: 62%;
@@ -290,7 +290,7 @@ section.math.theorem blockquote p + p {
 }
 section.math.theorem blockquote strong:first-child {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 700;
@@ -366,7 +366,7 @@ section.math.compare > h3 {
   border-bottom: 2px solid var(--accent);
   margin: 0 0 var(--sp-sm) 0;
   color: var(--text-heading);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
 }
 section.math.compare > h3:first-of-type { break-before: avoid; }
 section.math.compare > p:has(> .katex-display) {
@@ -492,7 +492,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   display: inline-block;
   min-width: 4em;
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--text-muted);
@@ -588,7 +588,7 @@ section.math.stats > blockquote {
   font-style: normal;
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   letter-spacing: 0.12em;
 }
 section.math.stats > blockquote p {
@@ -600,7 +600,7 @@ section.math.stats > p:not(:has(> .katex-display)):not(:first-of-type) {
   max-width: 60cqi;
   margin: 0;
   color: var(--text-body);
-  font-size: var(--fs-md);
+  font-size: var(--fs-body);
   line-height: var(--lh-base);
 }
 
@@ -625,14 +625,14 @@ section .latticeplot .function-plot .tick line {
 }
 section .latticeplot .function-plot .tick text {
   fill: var(--text-muted) !important;
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
 }
 section .latticeplot .function-plot .axis-label,
 section .latticeplot .function-plot .x.axis-label,
 section .latticeplot .function-plot .y.axis-label {
   fill: var(--text-heading) !important;
   font-family: var(--font-body);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 600;
 }
 section .latticeplot .function-plot .line-0 {
@@ -659,7 +659,7 @@ section .latticeplot .function-plot .annotations text {
 section .latticeplot-error {
   color: var(--warn);
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   padding: var(--sp-sm);
   border: 1px dashed var(--warn);
   border-radius: var(--radius-sm);

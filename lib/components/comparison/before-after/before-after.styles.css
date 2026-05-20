@@ -35,7 +35,7 @@ section.before-after > ol > li {
   padding:var(--sp-md);
   display:flex; flex-direction:column; gap:var(--sp-xs);
   color:var(--text-body);
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   font-weight:400;
 }
 section.before-after > ul > li:first-child,
@@ -52,7 +52,7 @@ section.before-after > ul > li > strong,
 section.before-after > ol > li > strong {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.18em;
   text-transform:uppercase;
@@ -70,7 +70,7 @@ section.before-after > ol::before {
   grid-column:2;
   grid-row:1;
   align-self:center;
-  font-size:var(--fs-3xl);
+  font-size:var(--fs-h1);
   color:var(--accent);
   font-weight:400;
   line-height:1;

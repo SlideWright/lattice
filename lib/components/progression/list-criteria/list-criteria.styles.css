@@ -27,7 +27,7 @@ section.list-criteria > :is(ol, ul) > li::before {
 }
 section.list-criteria .crit-body {
   flex:1; display:flex; flex-direction:column; justify-content:center;
-  font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
 section.list-criteria .crit-body > strong { font-weight:inherit; color:inherit; }
 section.list-criteria .crit-body ul {
@@ -89,7 +89,7 @@ section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
-  font-size:var(--fs-emphasis); font-weight:700; color:var(--text-heading);
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
 section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
   grid-column:2; grid-row:1; display:block;

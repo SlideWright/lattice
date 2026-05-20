@@ -19,13 +19,21 @@ pre-commit:
       # (lattice-emulator.js, lattice.css, package.json, …). The full
       # suite still runs in pre-push as a safety net.
       run: node tools/affected-tests.js {staged_files}
-    - name: pdf-freshness
-      # Catches the "edited examples/<X>.md, forgot to rebuild .pdf"
-      # failure mode. Cheap check + rebuild verification. Skippable
-      # via `git commit --no-verify` only as a last resort. See
-      # docs/references/workflow.md.
-      glob: 'examples/*.md'
-      run: tools/check-pdf-freshness.sh {staged_files}
+    - name: pdf-rebuild
+      # Auto-rebuilds + re-stages the PDF for every staged deck markdown,
+      # incrementally — only the decks whose source changed. Supersedes
+      # the old check-pdf-freshness.sh *gate* (which failed on stale and
+      # made you rebuild by hand): the PDF is a derived artifact, so the
+      # hook regenerates it for you. Scope is markdown-only; component
+      # CSS / shared CSS / engine changes affect many decks at once and
+      # stay in CI (build:galleries:check). The tool queries the git
+      # index directly, so the glob only decides whether it runs.
+      # Skippable via `git commit --no-verify` only as a last resort.
+      glob:
+        - 'examples/*.md'
+        - 'test/integration/baseline-decks/*.md'
+        - 'lib/components/**/*.gallery.md'
+      run: node tools/build-staged-pdfs.js
     - name: runtime-bundle-freshness
       # Catches the "edited src/runtime/** or lib/transformers/**,
       # forgot to rebuild lattice-runtime.js" failure mode. Cheap

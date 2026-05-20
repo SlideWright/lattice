@@ -167,7 +167,7 @@ section.radar .radar-legend li {
   display: flex;
   align-items: center;
   gap: var(--sp-xs);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   color: var(--text-body);
 }
 section.radar .radar-legend .radar-swatch {
@@ -283,7 +283,7 @@ section.radar .radar-svg--mini .radar-axis-label {
   font-size: 11px;   /* viewBox is unchanged, so scale label units up */
 }
 section.radar .radar-mini-label {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--series-color);
 }

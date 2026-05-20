@@ -39,10 +39,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build:gallery": "node lattice-emulator.js examples/gallery.md examples/gallery.pdf",
-    "build:gallery-mermaid": "node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pdf",
     "build:gallery-jargon": "node lattice-emulator.js examples/gallery-jargon.md examples/gallery-jargon.pdf",
-    "build": "npm run build:gallery && npm run build:gallery-mermaid && npm run build:gallery-jargon",
+    "build": "npm run build:gallery-jargon",
     "new:theme": "node tools/new-theme.js",
     "new:slide": "node tools/new-slide.js",
     "snippets:build": "node tools/build-snippets.js",

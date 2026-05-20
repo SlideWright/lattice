@@ -15,7 +15,7 @@
 section header > p,
 section footer > p {
   font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-meta);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0.06em;
@@ -38,7 +38,7 @@ section::after {
   padding: 0 !important;
   margin: 0 !important;
   font-family: var(--font-mono) !important;
-  font-size: var(--fs-label) !important;
+  font-size: var(--fs-meta) !important;
   font-weight: 500 !important;
   line-height: 1 !important;
   letter-spacing: 0.06em !important;

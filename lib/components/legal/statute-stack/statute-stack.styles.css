@@ -62,7 +62,7 @@ section.statute-stack > ul > li > strong:first-child,
 section.statute-stack > ol > li > strong:first-child {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.16em;
   text-transform:uppercase;
@@ -91,7 +91,7 @@ section.statute-stack > ul > li > :is(ul, ol) > li:first-child:has(> code:only-c
 section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
   display:block;
   font-family:var(--font-mono);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   font-weight:600;
   color:var(--text-heading);
   background:none; border:none; padding:0;
@@ -103,7 +103,7 @@ section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-ch
 section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
   display:inline-block;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.04em;
   padding:0.156cqi 0.625cqi;
@@ -150,7 +150,7 @@ section.statute-stack.bands > ol > li {
 }
 section.statute-stack.bands > :is(ul, ol) > li > strong:first-child {
   grid-column:1;
-  font-size:var(--fs-md);
+  font-size:var(--fs-body);
   letter-spacing:0.08em;
   align-self:center;
 }
@@ -184,7 +184,7 @@ section.statute-stack.preemption > :is(ul, ol) > li:not(:last-child)::after {
   position:absolute;
   left:50%; bottom:calc(-1 * var(--sp-lg));
   transform:translate(-50%, 50%);
-  font-size:var(--fs-xl);
+  font-size:var(--fs-h3);
   font-weight:300;
   color:var(--accent);
   line-height:1;
@@ -212,7 +212,7 @@ section.statute-stack.lane table {
 section.statute-stack.lane thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
 section.statute-stack.lane thead th {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
@@ -229,7 +229,7 @@ section.statute-stack.lane td {
 }
 section.statute-stack.lane td:first-child {
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
@@ -238,7 +238,7 @@ section.statute-stack.lane td:first-child {
 }
 section.statute-stack.lane td:nth-child(2) {
   font-family:var(--font-mono);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   color:var(--text-heading);
   white-space:nowrap;
 }
@@ -252,7 +252,7 @@ section.statute-stack.lane tbody tr > td:first-child {
 section.statute-stack.lane td:last-child {
   text-align:right;
   font-family:var(--font-mono);
-  font-size:var(--fs-label);
+  font-size:var(--fs-meta);
   letter-spacing:0.04em;
   color:var(--text-muted);
   white-space:nowrap;
