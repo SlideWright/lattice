@@ -158,9 +158,17 @@ that rebuilds on save and opens the PDF in the default viewer (which
 auto-reloads). For VS Code users, the marp-vscode preview pane is the
 fastest inner loop — no preview tool needed.
 
-**Pre-commit gate.** Lefthook's `pdf-freshness` job catches the
-"staged `.md` without `.pdf`" and "stale `.pdf` relative to source"
-cases. Bypassable via `git commit --no-verify` only as last resort.
+**Pre-commit auto-rebuild.** Lefthook's `pdf-rebuild` job
+(`tools/build-staged-pdfs.js`) regenerates and re-stages the PDF for
+every staged deck markdown — incrementally, only the decks whose source
+changed (examples decks, the baseline deck, per-component and bucket
+gallery markdown). It supersedes the old `check-pdf-freshness.sh` gate:
+rather than failing when a PDF is stale and making you rebuild by hand,
+it rebuilds for you. Scope is markdown-only — component CSS, shared CSS,
+themes, and the engine affect many decks at once (a full rebuild is
+~30 min), so those stay in CI via the integration page-count tests and
+`build:galleries:check`. Bypassable via `git commit --no-verify` only
+as last resort.
 
 **At PR end, paste the raw URL** on its own line, plain text, last
 paragraph of the reply — for external reviewers who don't have the
