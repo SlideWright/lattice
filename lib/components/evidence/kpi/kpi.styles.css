@@ -181,13 +181,13 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
   border-top: 1px solid var(--border);
   border-bottom: 1.5px solid var(--text-heading);
 }
-/* Briefing supports: 4.6875cqi (= 45pt) sits between --fs-h2 (36pt, reads
- * as a heading, too quiet next to the hero) and --fs-h1 (54pt, which makes
+/* Briefing supports: 3.9583cqi (= 38pt) sits between --fs-h2 (28pt, reads
+ * as a heading, too quiet next to the hero) and --fs-h1 (48pt, which makes
  * 3 stacked supports overflow the right column). Layout-specific metric
- * tier — the briefing grid can't fit three 54pt rows beside the hero. */
+ * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: 4.6875cqi;
+  font-size: 3.9583cqi;
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
