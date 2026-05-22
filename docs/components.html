@@ -6594,41 +6594,57 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     });
   }
 
-  // Scroll-spy: highlight the nav link for the component in view.
+  // Scroll-spy: the active component is the last one whose top has scrolled
+  // past a threshold line near the viewport top. Deterministic under both
+  // gradual scrolling and big anchor jumps.
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-bucket li a[data-target]'));
   var byId = {};
   links.forEach(function (a) { byId[a.getAttribute('data-target')] = a; });
+  var articles = Array.prototype.slice.call(document.querySelectorAll('article.component'));
   var current = null;
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        var id = entry.target.id;
-        if (current && byId[current]) byId[current].classList.remove('active');
-        if (byId[id]) {
-          byId[id].classList.add('active');
-          current = id;
-          var nav = document.querySelector('.nav');
-          var link = byId[id];
-          if (link.offsetTop < nav.scrollTop || link.offsetTop > nav.scrollTop + nav.clientHeight) {
-            link.scrollIntoView({ block: 'nearest' });
-          }
-        }
-      }
-    });
-  }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
-  document.querySelectorAll('article.component').forEach(function (el) { observer.observe(el); });
+  var THRESHOLD = 120;
 
-  // Filter components by name / content.
+  function updateSpy() {
+    var activeId = articles.length ? articles[0].id : null;
+    for (var i = 0; i < articles.length; i++) {
+      if (articles[i].getBoundingClientRect().top <= THRESHOLD) activeId = articles[i].id;
+      else break;
+    }
+    if (!activeId || activeId === current) return;
+    if (current && byId[current]) byId[current].classList.remove('active');
+    var link = byId[activeId];
+    if (link) {
+      link.classList.add('active');
+      var nav = document.querySelector('.nav');
+      if (link.offsetTop < nav.scrollTop || link.offsetTop > nav.scrollTop + nav.clientHeight) {
+        link.scrollIntoView({ block: 'nearest' });
+      }
+    }
+    current = activeId;
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { updateSpy(); ticking = false; });
+  }, { passive: true });
+  updateSpy();
+
+  // Filter components by name or description. Nav links and article
+  // panels share the same match so the two stay in sync.
   var filter = document.getElementById('filter');
   if (filter) {
     filter.addEventListener('input', function () {
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
         var name = art.id.replace(/^c-/, '');
-        var match = !q || name.indexOf(q) !== -1 || art.textContent.toLowerCase().indexOf(q) !== -1;
+        var lead = art.querySelector('.lead');
+        var desc = lead ? lead.textContent.toLowerCase() : '';
+        var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
         art.classList.toggle('hidden', !match);
         var navLi = byId['c-' + name] ? byId['c-' + name].parentElement : null;
-        if (navLi) navLi.classList.toggle('hidden', !(!q || name.indexOf(q) !== -1));
+        if (navLi) navLi.classList.toggle('hidden', !match);
       });
       document.querySelectorAll('.nav-bucket').forEach(function (b) {
         var anyVisible = Array.prototype.some.call(b.querySelectorAll('li'), function (li) { return !li.classList.contains('hidden'); });
