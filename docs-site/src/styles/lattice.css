@@ -1,0 +1,40 @@
+/* Lattice branding for Starlight — indaco accent ramp + the engine's
+ * own type pairing (Playfair Display headings, Outfit body, JetBrains
+ * Mono code). Mirrors lattice.css / themes/indaco.css. */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+	--sl-font: 'Outfit', system-ui, sans-serif;
+	--sl-font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* Dark theme accent (indaco on dark canvas). */
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #002847;
+	--sl-color-accent: #006fa8;
+	--sl-color-accent-high: #82c8e5;
+	--sl-color-text-accent: #82c8e5;
+}
+
+/* Light theme accent (indaco on paper). */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #eff6fc;
+	--sl-color-accent: #006fa8;
+	--sl-color-accent-high: #003d66;
+	--sl-color-text-accent: #006fa8;
+}
+
+/* Display face on the big headings, matching deck titles. */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.hero h1,
+h1#_top {
+	font-family: 'Playfair Display', Georgia, serif;
+	letter-spacing: -0.015em;
+}
+
+/* Splash hero title gets the full display treatment. */
+.hero h1 {
+	font-weight: 700;
+}

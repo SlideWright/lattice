@@ -1,0 +1,18 @@
+{
+  "name": "docs-site",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "sync:portal": "node scripts/sync-portal.mjs",
+    "dev": "npm run sync:portal && astro dev",
+    "start": "npm run sync:portal && astro dev",
+    "build": "npm run sync:portal && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.39.2",
+    "astro": "^6.3.1",
+    "sharp": "^0.34.5"
+  }
+}
