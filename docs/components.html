@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-palette="indaco" data-mode="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lattice · Component Reference</title>
-<meta name="description" content="Canonical reference for every Lattice slide component, generated from the component manifests.">
+<meta name="description" content="Canonical, themable reference for every Lattice slide component, generated from the component manifests.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -13,42 +13,63 @@
   --font-body: 'Outfit', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 
+  /* Fallback palette (indaco light) — overridden by the palette blocks. */
   --bg: #FFFFFF;
   --bg-alt: #F2F5FA;
-  --bg-sidebar: #F7F9FC;
   --border: #E4EAF2;
   --text-heading: #0A1628;
   --text-body: #1E3A5F;
   --text-muted: #6B7F9A;
   --accent: #006FA8;
   --accent-soft: #EFF6FC;
-  --canvas: #003D66;
-  --pass: #2E7D32;
-  --fail: #C20000;
+  --bg-dark: #003D66;
+
   --sidebar-w: 300px;
-  --shadow: 0 1px 2px rgba(10, 22, 40, 0.04), 0 8px 24px rgba(10, 22, 40, 0.06);
 }
 
-html[data-theme="dark"] {
-  --bg: #001D33;
-  --bg-alt: #002847;
-  --bg-sidebar: #00253f;
-  --border: #0F3A5F;
-  --text-heading: #FFFFFF;
-  --text-body: #CBD9E8;
-  --text-muted: #A0B8D0;
-  --accent: #82C8E5;
-  --accent-soft: #002847;
-  --canvas: #001220;
+/* Derived + mode-level (palette-agnostic) tokens. */
+:root, html[data-mode="light"] {
+  --bg-sidebar: var(--bg-alt);
+  --pass: #2E7D32;
+  --fail: #C20000;
+  --shadow: 0 1px 2px rgba(10, 22, 40, 0.04), 0 8px 24px rgba(10, 22, 40, 0.06);
+}
+html[data-mode="dark"] {
+  --bg-sidebar: var(--bg-alt);
   --pass: #6FCF7E;
   --fail: #FF8A8A;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
+html[data-palette="indaco"][data-mode="light"]{--bg:#FFFFFF;--bg-alt:#F2F5FA;--border:#E4EAF2;--text-heading:#0A1628;--text-body:#1E3A5F;--text-muted:#6B7F9A;--accent:#006FA8;--accent-soft:#EFF6FC;--bg-dark:#003D66;}
+html[data-palette="indaco"][data-mode="dark"]{--bg:#001D33;--bg-alt:#002847;--border:#0F3A5F;--text-heading:#FFFFFF;--text-body:#CBD9E8;--text-muted:#6B7F9A;--accent:#82C8E5;--accent-soft:#002847;--bg-dark:#003D66;}
+html[data-palette="cuoio"][data-mode="light"]{--bg:#FAF7F2;--bg-alt:#F3EDE4;--border:#E0D8CC;--text-heading:#1E1A15;--text-body:#6B5D4F;--text-muted:#A69882;--accent:#7A5A10;--accent-soft:#F5EFE0;--bg-dark:#1E1A15;}
+html[data-palette="cuoio"][data-mode="dark"]{--bg:#15110D;--bg-alt:#1E1A15;--border:#3A2E20;--text-heading:#FAF7F2;--text-body:#D6C4A8;--text-muted:#A69882;--accent:#C8A040;--accent-soft:#3A2E20;--bg-dark:#1E1A15;}
+html[data-palette="ardesia"][data-mode="light"]{--bg:#FAFAF9;--bg-alt:#ECECEB;--border:#DCDCDB;--text-heading:#0A0A0A;--text-body:#2A2A2A;--text-muted:#757572;--accent:#1F1F1F;--accent-soft:#E8E8E7;--bg-dark:#1A1A1A;}
+html[data-palette="ardesia"][data-mode="dark"]{--bg:#0F0F0F;--bg-alt:#2A2A2A;--border:#3D3D3D;--text-heading:#FFFFFF;--text-body:#C8C8C5;--text-muted:#757572;--accent:#E0E0DE;--accent-soft:#0F0F0F;--bg-dark:#1A1A1A;}
+html[data-palette="atelier"][data-mode="light"]{--bg:#F0EDE6;--bg-alt:#E5E0D2;--border:#C8C0A8;--text-heading:#1A1A18;--text-body:#42403A;--text-muted:#75705F;--accent:#1A1A18;--accent-soft:#DBD5C0;--bg-dark:#0F0E0C;}
+html[data-palette="atelier"][data-mode="dark"]{--bg:#0F0E0C;--bg-alt:#28241D;--border:#38332A;--text-heading:#F0EDE6;--text-body:#BFB8A8;--text-muted:#75705F;--accent:#DBD5C0;--accent-soft:#0F0E0C;--bg-dark:#0F0E0C;}
+html[data-palette="brina"][data-mode="light"]{--bg:#F2F5F7;--bg-alt:#E8EDF1;--border:#D2DBE2;--text-heading:#1A2330;--text-body:#475260;--text-muted:#7A848F;--accent:#3D6A82;--accent-soft:#DAE6EE;--bg-dark:#0C141C;}
+html[data-palette="brina"][data-mode="dark"]{--bg:#0C141C;--bg-alt:#1E2A38;--border:#2C3B4D;--text-heading:#E6EDF4;--text-body:#A5B3C2;--text-muted:#7A848F;--accent:#9CC0D2;--accent-soft:#0C141C;--bg-dark:#0C141C;}
+html[data-palette="burgundy"][data-mode="light"]{--bg:#F8F2E5;--bg-alt:#F1E8D2;--border:#DBCEAE;--text-heading:#2A1015;--text-body:#523A40;--text-muted:#7C6A6F;--accent:#742532;--accent-soft:#EAD4D8;--bg-dark:#180609;}
+html[data-palette="burgundy"][data-mode="dark"]{--bg:#180609;--bg-alt:#2F141B;--border:#48202A;--text-heading:#F0E2CE;--text-body:#BFA9A6;--text-muted:#7C6A6F;--accent:#C36B78;--accent-soft:#180609;--bg-dark:#180609;}
+html[data-palette="carbone"][data-mode="light"]{--bg:#1A1A1C;--bg-alt:#26262A;--border:#3A3A3F;--text-heading:#F5F5F2;--text-body:#DCDCD7;--text-muted:#757A82;--accent:#7DE38A;--accent-soft:#2C3D2F;--bg-dark:#0E0E10;}
+html[data-palette="carbone"][data-mode="dark"]{--bg:#1A1A1C;--bg-alt:#26262A;--border:#3A3A3F;--text-heading:#F5F5F2;--text-body:#DCDCD7;--text-muted:#757A82;--accent:#7DE38A;--accent-soft:#2C3D2F;--bg-dark:#0E0E10;}
+html[data-palette="concrete"][data-mode="light"]{--bg:#B8B8B5;--bg-alt:#D5D5D2;--border:#80807C;--text-heading:#0F0F0E;--text-body:#2A2A28;--text-muted:#4F4F4C;--accent:#0F0F0E;--accent-soft:#D5D5D2;--bg-dark:#1A1A18;}
+html[data-palette="concrete"][data-mode="dark"]{--bg:#1A1A18;--bg-alt:#38383A;--border:#5A5A58;--text-heading:#ECECE8;--text-body:#B8B8B5;--text-muted:#4F4F4C;--accent:#ECECE8;--accent-soft:#28282A;--bg-dark:#1A1A18;}
+html[data-palette="crepuscolo"][data-mode="light"]{--bg:#FAF8FC;--bg-alt:#EFEBF5;--border:#DCD4E8;--text-heading:#150F22;--text-body:#2E2542;--text-muted:#8E83A8;--accent:#5B3D8C;--accent-soft:#ECE5F5;--bg-dark:#2A1B45;}
+html[data-palette="crepuscolo"][data-mode="dark"]{--bg:#1A0F2D;--bg-alt:#2A1B45;--border:#3F2A5C;--text-heading:#FFFFFF;--text-body:#C8BFE0;--text-muted:#8E83A8;--accent:#B59ADC;--accent-soft:#1A0F2D;--bg-dark:#2A1B45;}
+html[data-palette="laguna"][data-mode="light"]{--bg:#F8F2E5;--bg-alt:#F1E9D4;--border:#DBCFB2;--text-heading:#0E2F33;--text-body:#3D5559;--text-muted:#6F7C7F;--accent:#006D77;--accent-soft:#D2E8EA;--bg-dark:#04181B;}
+html[data-palette="laguna"][data-mode="dark"]{--bg:#04181B;--bg-alt:#0F2D31;--border:#1C3F44;--text-heading:#EFE8D7;--text-body:#A9B7B9;--text-muted:#6F7C7F;--accent:#5BBDC4;--accent-soft:#04181B;--bg-dark:#04181B;}
+html[data-palette="magnolia"][data-mode="light"]{--bg:#FCF8F5;--bg-alt:#F4E4E0;--border:#E8D2CD;--text-heading:#1F0A0F;--text-body:#3F1A22;--text-muted:#B79A93;--accent:#A04A55;--accent-soft:#F5DDD8;--bg-dark:#1F0A0F;}
+html[data-palette="magnolia"][data-mode="dark"]{--bg:#14060A;--bg-alt:#3F1A22;--border:#5A2530;--text-heading:#FFFFFF;--text-body:#DBB8B8;--text-muted:#B79A93;--accent:#E8A8B5;--accent-soft:#14060A;--bg-dark:#1F0A0F;}
+html[data-palette="mustard"][data-mode="light"]{--bg:#F5EFD8;--bg-alt:#ECE3C0;--border:#D5C896;--text-heading:#2A1A06;--text-body:#4F3D1C;--text-muted:#80704A;--accent:#8C6A18;--accent-soft:#E8D580;--bg-dark:#0F0A03;}
+html[data-palette="mustard"][data-mode="dark"]{--bg:#0F0A03;--bg-alt:#2A1F0E;--border:#3D2D14;--text-heading:#F0E5C8;--text-body:#BDAC78;--text-muted:#80704A;--accent:#D4A848;--accent-soft:#0F0A03;--bg-dark:#0F0A03;}
+html[data-palette="onyx"][data-mode="light"]{--bg:#FFFFFF;--bg-alt:#F5F5F5;--border:#1A1A1A;--text-heading:#000000;--text-body:#3A3A3A;--text-muted:#6E6E6E;--accent:#000000;--accent-soft:#F0F0F0;--bg-dark:#000000;}
+html[data-palette="onyx"][data-mode="dark"]{--bg:#000000;--bg-alt:#1A1A1A;--border:#FFFFFF;--text-heading:#FFFFFF;--text-body:#BFBFBF;--text-muted:#6E6E6E;--accent:#FFFFFF;--accent-soft:#1F1F1F;--bg-dark:#000000;}
+
 * { box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -58,7 +79,6 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
-
 code { font-family: var(--font-mono); font-size: 0.88em; }
 
 .layout { display: flex; align-items: flex-start; }
@@ -78,7 +98,7 @@ code { font-family: var(--font-mono); font-size: 0.88em; }
   flex-direction: column;
 }
 
-.brand { position: relative; margin-bottom: 18px; }
+.brand { margin-bottom: 16px; }
 .brand-mark {
   font-family: var(--font-display);
   font-size: 26px;
@@ -94,24 +114,48 @@ code { font-family: var(--font-mono); font-size: 0.88em; }
   letter-spacing: 0.14em;
   color: var(--text-muted);
 }
+
+.controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.palette-field { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.palette-field span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+.palette-field select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+}
+.palette-field select:focus { outline: none; border-color: var(--accent); }
 .theme-toggle {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-body);
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .theme-toggle::before { content: '☾'; }
-html[data-theme="dark"] .theme-toggle::before { content: '☀'; }
+html[data-mode="dark"] .theme-toggle::before { content: '☀'; }
 
 .filter {
   width: 100%;
@@ -143,7 +187,8 @@ html[data-theme="dark"] .theme-toggle::before { content: '☀'; }
 }
 .nav-bucket-head .count {
   font-size: 10px;
-  background: var(--bg-alt);
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1px 7px;
   letter-spacing: 0;
@@ -207,7 +252,7 @@ html[data-theme="dark"] .theme-toggle::before { content: '☀'; }
   color: var(--text-heading);
   margin: 0 0 16px;
 }
-.hero-lead { font-size: 18px; max-width: 60ch; color: var(--text-body); margin: 0; }
+.hero-lead { font-size: 18px; max-width: 62ch; color: var(--text-body); margin: 0; }
 
 .bucket { margin-bottom: 24px; scroll-margin-top: 20px; }
 .bucket-head {
@@ -300,11 +345,7 @@ pre.code, pre.ascii {
 pre.code code, pre.ascii code { font-size: inherit; white-space: pre; }
 pre.ascii { font-size: 11px; line-height: 1.35; }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-}
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 thead th {
   text-align: left;
   font-size: 11px;
@@ -343,12 +384,7 @@ tbody tr:last-child td { border-bottom: none; }
 .related-list span { color: var(--text-muted); }
 
 .demo { margin-top: 22px; }
-.gallery-link {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--accent);
-  text-decoration: none;
-}
+.gallery-link { font-size: 13px; font-weight: 500; color: var(--accent); text-decoration: none; }
 .gallery-link:hover { text-decoration: underline; }
 
 .content-foot {
@@ -399,7 +435,27 @@ tbody tr:last-child td { border-bottom: none; }
     <div class="brand">
       <a href="#top" class="brand-mark">Lattice</a>
       <p class="brand-sub">Component Reference</p>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode"></button>
+    </div>
+    <div class="controls">
+      <label class="palette-field">
+        <span>Palette</span>
+        <select id="palette" aria-label="Palette">
+        <option value="indaco">Indaco</option>
+        <option value="cuoio">Cuoio</option>
+        <option value="ardesia">Ardesia</option>
+        <option value="atelier">Atelier</option>
+        <option value="brina">Brina</option>
+        <option value="burgundy">Burgundy</option>
+        <option value="carbone">Carbone (dark)</option>
+        <option value="concrete">Concrete</option>
+        <option value="crepuscolo">Crepuscolo</option>
+        <option value="laguna">Laguna</option>
+        <option value="magnolia">Magnolia</option>
+        <option value="mustard">Mustard</option>
+        <option value="onyx">Onyx</option>
+        </select>
+      </label>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
     </div>
     <input type="search" class="filter" id="filter" placeholder="Filter components…" aria-label="Filter components">
     <nav class="nav">
@@ -531,7 +587,7 @@ tbody tr:last-child td { border-bottom: none; }
     <header class="hero">
       <p class="eyebrow">Boardroom-quality slides from Markdown</p>
       <h1>Component Reference</h1>
-      <p class="hero-lead">Every Lattice layout, modifier, and substance contract — when to reach for it, how to author it, and what it composes with. Generated from the component manifests, the single source of truth.</p>
+      <p class="hero-lead">Every Lattice layout, modifier, and substance contract — when to reach for it, how to author it, and what it composes with. Generated from the component manifests, the single source of truth. Pick any Lattice palette above to preview the reference in its own tokens.</p>
     </header>
     <section class="bucket" id="b-anchor">
       <header class="bucket-head">
@@ -6495,29 +6551,46 @@ Each row promotes to a card with body-level breathing room.</code></pre>
 </article>
     </section>
     <footer class="content-foot">
-      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>docs/design-system.md</code> for the Function · Form · Substance · Finish model.</p>
+      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>docs/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>docs/components.md</code> for the plain-Markdown edition of this reference.</p>
     </footer>
   </main>
 </div>
 <script>
 (function () {
   var root = document.documentElement;
-  var KEY = 'lattice-docs-theme';
+  var MODE_KEY = 'lattice-docs-mode';
+  var PALETTE_KEY = 'lattice-docs-palette';
+  var palettes = Array.prototype.map.call(document.querySelectorAll('#palette option'), function (o) { return o.value; });
 
-  // Theme: stored choice wins, else follow OS preference.
-  var stored = null;
-  try { stored = localStorage.getItem(KEY); } catch (e) {}
-  if (stored === 'light' || stored === 'dark') {
-    root.setAttribute('data-theme', stored);
+  // Palette: stored choice wins, else the default baked into the markup.
+  var storedPalette = null;
+  try { storedPalette = localStorage.getItem(PALETTE_KEY); } catch (e) {}
+  if (storedPalette && palettes.indexOf(storedPalette) !== -1) {
+    root.setAttribute('data-palette', storedPalette);
+  }
+  var select = document.getElementById('palette');
+  if (select) {
+    select.value = root.getAttribute('data-palette');
+    select.addEventListener('change', function () {
+      root.setAttribute('data-palette', select.value);
+      try { localStorage.setItem(PALETTE_KEY, select.value); } catch (e) {}
+    });
+  }
+
+  // Mode: stored choice wins, else follow OS preference.
+  var storedMode = null;
+  try { storedMode = localStorage.getItem(MODE_KEY); } catch (e) {}
+  if (storedMode === 'light' || storedMode === 'dark') {
+    root.setAttribute('data-mode', storedMode);
   } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    root.setAttribute('data-theme', 'dark');
+    root.setAttribute('data-mode', 'dark');
   }
   var toggle = document.getElementById('theme-toggle');
   if (toggle) {
     toggle.addEventListener('click', function () {
-      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem(KEY, next); } catch (e) {}
+      var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-mode', next);
+      try { localStorage.setItem(MODE_KEY, next); } catch (e) {}
     });
   }
 
@@ -6545,15 +6618,14 @@ Each row promotes to a card with body-level breathing room.</code></pre>
   }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
   document.querySelectorAll('article.component').forEach(function (el) { observer.observe(el); });
 
-  // Filter components by name / description.
+  // Filter components by name / content.
   var filter = document.getElementById('filter');
   if (filter) {
     filter.addEventListener('input', function () {
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
         var name = art.id.replace(/^c-/, '');
-        var text = art.textContent.toLowerCase();
-        var match = !q || name.indexOf(q) !== -1 || text.indexOf(q) !== -1;
+        var match = !q || name.indexOf(q) !== -1 || art.textContent.toLowerCase().indexOf(q) !== -1;
         art.classList.toggle('hidden', !match);
         var navLi = byId['c-' + name] ? byId['c-' + name].parentElement : null;
         if (navLi) navLi.classList.toggle('hidden', !(!q || name.indexOf(q) !== -1));
