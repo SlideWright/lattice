@@ -15,7 +15,7 @@
  * regardless of when it was added. Adding a component to a bucket
  * automatically widens the next rebuild's gallery.
  *
- * See docs/notes/2026-05-18-component-reorg-and-modular-css.md (Phase 5).
+ * See reference/notes/2026-05-18-component-reorg-and-modular-css.md (Phase 5).
  *
  * Usage:
  *   node tools/build-bucket-galleries.js                 # all buckets, both themes
@@ -42,7 +42,7 @@ const THEME_CSS = path.join(ROOT, 'lattice.css');
 
 // Human-facing copy for the bucket title slides. Keep terse — the
 // title slide is a wayfinder, not a tutorial. The audience-facing
-// rationale lives in docs/design-system.md §3.
+// rationale lives in reference/design-system.md §3.
 const BUCKET_BLURBS = Object.freeze({
   anchor:      'Anchor — where you are in the deck.',
   statement:   'Statement — one declarative claim per slide.',

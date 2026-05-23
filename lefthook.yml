@@ -56,7 +56,7 @@ pre-commit:
       run: npm run docs:components:check --silent
     - name: docs-portal-freshness
       # Catches the "edited a manifest, forgot to regenerate the
-      # aggregated docs/components.html reference portal" failure mode.
+      # aggregated reference/components.html reference portal" failure mode.
       # Same source of truth as component-docs; fails if the portal
       # drifts. Skippable via --no-verify only as last resort.
       glob:

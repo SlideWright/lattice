@@ -97,7 +97,7 @@ function readDeckLogoFrontMatter(src) {
  * does NOT load workspace marp.config.js plugins, so the logo does
  * not appear there. Same limitation
  * lattice-runtime.js's applyDeckClassFromFrontMatter documents at
- * lines 3399-3401. See docs/references/gotchas.md.
+ * lines 3399-3401. See reference/engineering/gotchas.md.
  */
 function applyDeckLogoToHtml(html, markdown) {
   const cfg = readDeckLogoFrontMatter(markdown);

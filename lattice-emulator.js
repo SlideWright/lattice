@@ -364,7 +364,7 @@ const css = paletteCSS + '\n' + layoutCSS;
 //      onto it at PDF-rasterize time — same mechanism the runtime preview
 //      already uses. No Mermaid `themeCSS` init parameter is used.
 //
-// See docs/notes/2026-05-12-diagram-tokens.md for the architecture.
+// See reference/notes/2026-05-12-diagram-tokens.md for the architecture.
 
 // ── Mermaid theme variables — structural map only ───────────────────────
 // The mapping below names which Mermaid theme variable corresponds to which
@@ -1829,7 +1829,7 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 //
 // NOTE: this directive is a build-time convenience only. It does NOT
 // render in the marp-vscode preview because the extension doesn't load
-// workspace marp.config.js plugins. See docs/references/gotchas.md.
+// workspace marp.config.js plugins. See reference/engineering/gotchas.md.
 //
 // Called on the joined HTML rather than slide-by-slide so the
 // "first slide" check in the rewriter (used by `logo-on: title`)

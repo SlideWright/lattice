@@ -37,7 +37,7 @@
  *   node tools/build-css.js --check  # exit 1 if stale (CI gate)
  *   npm run css:build / css:check
  *
- * See docs/design-system.md §10.
+ * See reference/design-system.md §10.
  */
 
 const fs = require('node:fs');

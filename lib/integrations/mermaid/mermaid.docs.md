@@ -55,7 +55,7 @@ Mermaid's themeVariables don't cover everything. 9 diagram types
 (notably journey, mindmap, treemap, c4, venn, sankey, packet, block,
 xychart) ignore the variables and use hard-coded SVG colors. Lattice
 overrides those with palette-blind CSS in `mermaid.css`. See
-`docs/theming.md` for the full per-diagram override surface.
+`reference/theming.md` for the full per-diagram override surface.
 
 ---
 
@@ -102,9 +102,9 @@ visual parity.
 
 - `lib/components/diagram/diagram.docs.md` — the `diagram` layout that
   hosts Mermaid in a slide container.
-- `docs/theming.md` — palette token contract + Mermaid `themeVariables`
+- `reference/theming.md` — palette token contract + Mermaid `themeVariables`
   mapping + per-diagram-type override catalog.
-- `docs/references/mermaid.md` — Mermaid-specific authoring conventions
+- `reference/engineering/mermaid.md` — Mermaid-specific authoring conventions
   used in shipped decks.
 - `lib/integrations/highlight-js/highlight-js.docs.md` — the hljs
   integration that registers `mermaid.hljs.js` as a custom language.

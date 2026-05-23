@@ -70,7 +70,7 @@
    * --fs-body-compact = 13.5pt: scanned, not read linearly.
    * Headings h4/h5/h6 are deliberately tied to message/body/meta tiers
    * (same size, weight-differentiated). Full contract:
-   * docs/references/typography.md.
+   * reference/engineering/typography.md.
    *
    * Author's mental model — every decision in six rules:
    *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
@@ -150,7 +150,7 @@
    * `color-scheme: dark` (indaco-dark, cuoio-dark, …) pick up the dark
    * variant automatically.
    *
-   * Tuning rationale (see docs/notes/2026-05-15-state-token-palette.md):
+   * Tuning rationale (see reference/notes/2026-05-15-state-token-palette.md):
    *   - Warn moved from #92400E (H22, L31, burnt brown-amber) to
    *     #B45309 (H32 amber-700) in light mode and #F97316 (orange-500)
    *     in dark mode. Bumps hue 10° clear of red and lifts luminance

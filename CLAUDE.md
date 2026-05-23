@@ -10,31 +10,31 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 
 ## Read these before non-trivial work
 
-- **`docs/design-system.md`** — Function · Form · Substance · Finish.
+- **`reference/design-system.md`** — Function · Form · Substance · Finish.
   The canonical four-layer model. Tells you what kind of thing each
   layout, modifier, chart engine, or palette token *is*, and how they
   compose. Authors keep using short names like `cards-grid`; the model
   organizes the catalog, docs, and engine. If you read exactly one
   Lattice document, read this one.
-- **`docs/references/workflow.md`** — branching, feature decks, commit
+- **`reference/engineering/workflow.md`** — branching, feature decks, commit
   discipline, the share-the-PDF rule, three-renderer gate. Canonical
   for all workflow conventions; this file is a thin pointer.
-- **`docs/references/development.md`** — Node versions, npm scripts,
+- **`reference/engineering/development.md`** — Node versions, npm scripts,
   test layout, lint, hooks, coverage, CI, integration cache, editor
   setup. Read before changing any tooling, lint config, hook, CI
   workflow, or test infrastructure. Includes the "when you do X, also
   do Y" rules for adding lib files, themes, and scripts.
-- **`docs/references/gotchas.md`** — when something behaves strangely,
+- **`reference/engineering/gotchas.md`** — when something behaves strangely,
   check here FIRST. Symptoms in headings are searchable. Add an entry
   BEFORE committing any non-obvious fix; the commit can then link to it.
-- **`docs/architecture.md`** — engine internals.
-- **`docs/theming.md`** — palette tokens, Mermaid contract.
-- **`docs/editorial.md`** — prose rules for the gallery and shipped decks.
-- **`docs/skill.md`** — deck-authoring contract.
-- **`docs/references/`** — canonical references (design, pipeline,
+- **`reference/architecture.md`** — engine internals.
+- **`reference/theming.md`** — palette tokens, Mermaid contract.
+- **`reference/editorial.md`** — prose rules for the gallery and shipped decks.
+- **`reference/skill.md`** — deck-authoring contract.
+- **`reference/engineering/`** — canonical references (design, pipeline,
   mermaid, audit, gotchas, treatments, workflow, development,
   cascade).
-- **`docs/references/cascade.md`** — read before touching the CSS
+- **`reference/engineering/cascade.md`** — read before touching the CSS
   cascade or `@layer` declarations. Captures why `@layer` is
   declared-but-inert (the `!important` interactions between
   marp.scaffold and base.variants), the trap that broke an earlier
@@ -43,13 +43,13 @@ every colour goes through `var(--token)`. Themes (`themes/indaco.css`,
 - **`lib/base/base.docs.md`** — cross-cutting authoring contract
   (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered,
   treatments). Was previously inside
-  `docs/references/templates.md`, retired 2026-05-17.
+  `reference/engineering/templates.md`, retired 2026-05-17.
 - **`lib/components/<bucket>/<name>/<name>.docs.md`** — per-component
   contracts (slots, variants, when/why, anti-patterns) generated from
   each manifest's prose fields. `<bucket>` is one of 12: anchor,
   statement, inventory, comparison, progression, evidence, imagery,
   chart, diagram, math, code, legal. See `design-system.md` §9.
-- **`docs/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
+- **`reference/notes/YYYY-MM-DD-topic.md`** — durable investigation notes.
 
 ## Three render paths must agree
 
@@ -74,7 +74,7 @@ tier asserts cross-renderer parity on slide count.
 - `npm run test:all` — both tiers.
 
 Full tooling details (scopes, hooks, CI structure, cache behaviour)
-live in `docs/references/development.md`.
+live in `reference/engineering/development.md`.
 
 **Two regression tiers:**
 
@@ -231,10 +231,10 @@ caught by the hook instead of by reviewer eyeballs.
   cqi sizes between tokens (split-statement / kpi.briefing supports at
   38 pt, split-list watermark at 110 pt). Picking by "feel" or t-shirt
   size (`fs-md` / `fs-lg`) is the legacy pattern; those names are
-  retired. See `docs/references/typography.md`.
+  retired. See `reference/engineering/typography.md`.
 - **Avoid `:not(:has(...))` / `:is(:has(...), :has(...))` in theme CSS.**
   Silently broken in the Marp preview Chromium build. See
-  `docs/references/gotchas.md`.
+  `reference/engineering/gotchas.md`.
 - **`.scratch/` has a 14-day lifecycle** (`npm run clean:scratch`). Use
   it for throwaway experiments.
 
@@ -313,7 +313,7 @@ CHROME_PATH=$(ls /root/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome | h
     --allow-local-files --pdf -o <deck>.pdf
 ```
 
-See `docs/references/gotchas.md` "marp-cli works in the cloud sandbox
+See `reference/engineering/gotchas.md` "marp-cli works in the cloud sandbox
 — set `CHROME_PATH`" for the full entry. Same file documents the
 matching `themeSet` requirement: any deck whose front-matter `theme:`
 directive names a theme not listed in `marp.config.js` `themeSet`

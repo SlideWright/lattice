@@ -17,8 +17,8 @@ context renders identically.
 > **Documentation:** <https://slidewright.github.io/lattice/> — intro,
 > getting started, authoring and theming guides, and the interactive
 > [component reference](https://slidewright.github.io/lattice/components.html)
-> (every layout, themable in any palette). Built from `docs-site/`; see
-> [`docs-site/README.md`](docs-site/README.md).
+> (every layout, themable in any palette). Built from `docs/`; see
+> [`docs/README.md`](docs/README.md).
 
 ## What you get
 
@@ -34,10 +34,10 @@ context renders identically.
   across every text-bearing surface.
 - **26 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline, big-number, split-list, verdict-grid, more.
-  Each layout has an authoring contract documented in [docs/skill.md](docs/skill.md).
+  Each layout has an authoring contract documented in [reference/skill.md](reference/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that
-  ignore `themeVariables`. Documented in [docs/theming.md](docs/theming.md).
+  ignore `themeVariables`. Documented in [reference/theming.md](reference/theming.md).
 
 ## Install
 
@@ -85,7 +85,7 @@ npx @marp-team/marp-cli deck.md \
 ```
 
 The full pipeline (Mermaid pre-rendering, image conversion, PPTX
-assembly) lives in [docs/references/pipeline.md](docs/references/pipeline.md).
+assembly) lives in [reference/engineering/pipeline.md](reference/engineering/pipeline.md).
 
 ## Use a different palette
 
@@ -114,7 +114,7 @@ node lattice-emulator.js deck.md out.pdf <palette-name>
 The third positional argument names a file in `themes/`. The default is
 `indaco`. To author a new palette, copy `themes/indaco.css`, change its
 `@theme` directive to your name, and edit the tokens. See
-[docs/theming.md](docs/theming.md) for the variable contract and the per-diagram
+[reference/theming.md](reference/theming.md) for the variable contract and the per-diagram
 Mermaid override surface.
 
 ## Embed in a browser
@@ -163,15 +163,19 @@ lattice/
 │   ├── gallery-mermaid.md / gallery-mermaid.pdf  # 31-page diagram gallery
 │   └── sample-image*.svg
 │
-├── docs/
+├── docs/                      # public documentation site (Astro Starlight)
+│
+├── reference/                 # internal engineering & design references
+│   ├── design-system.md       # the canonical Function·Form·Substance model
 │   ├── architecture.md        # engine internals
 │   ├── theming.md             # palette + Mermaid theming
 │   ├── editorial.md           # prose rules
 │   ├── skill.md               # deck authoring contract (layouts + directives)
+│   ├── components.html / .md  # generated component reference (all layouts)
 │   ├── notes/                 # durable developer / agent investigation notes
 │   │                          # (also: forward-looking design proposals)
-│   └── references/            # canonical references
-│       └── design.md, pipeline.md, mermaid.md, audit.md
+│   └── engineering/           # canonical deep references
+│       └── workflow.md, development.md, gotchas.md, cascade.md, mermaid.md, …
 │
 ├── test/
 │   ├── unit/                  # fast (<100 ms); no child processes

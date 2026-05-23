@@ -207,7 +207,7 @@ function renderDocs(m) {
 
   lines.push('## Universal modifiers');
   lines.push('');
-  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.');
+  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.');
   lines.push('');
 
   if (Array.isArray(m.related) && m.related.length) {

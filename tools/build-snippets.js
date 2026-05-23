@@ -14,7 +14,7 @@
  * `lib/components/*.json` so the snippets stay in lockstep with
  * the manifests; CI runs --check to enforce this.
  *
- * See docs/design-system.md §7 for the discovery model.
+ * See reference/design-system.md §7 for the discovery model.
  */
 
 const fs = require('node:fs');

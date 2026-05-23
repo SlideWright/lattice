@@ -14,7 +14,7 @@ deck onto a dark canvas without touching colour values.
 If you're here to author a new palette: skip to **The five-minute
 path** below. The diagrams above it explain the model the engine has
 of a palette, which is what makes the rules in the deep reference
-(`docs/theming.md`) make sense rather than feel arbitrary.
+(`reference/theming.md`) make sense rather than feel arbitrary.
 
 ---
 
@@ -41,7 +41,7 @@ DIAGRAM OVERRIDES section in `lattice.css` both consume them via
 the host page cascade — the same mechanism the runtime preview uses —
 so palettes never write per-diagram CSS or get handed to Mermaid's
 `themeCSS` init parameter. (Earlier versions did; see
-`docs/notes/2026-05-12-diagram-tokens.md` for why we dropped it.)
+`reference/notes/2026-05-12-diagram-tokens.md` for why we dropped it.)
 
 The engine reads the file once. Authors edit one file.
 
@@ -278,7 +278,7 @@ references the `--c-*` tokens by name — your new values flow through.
                                               variant block is incomplete
 ```
 
-For deeper triage see `docs/references/gotchas.md`.
+For deeper triage see `reference/engineering/gotchas.md`.
 
 ---
 
@@ -286,9 +286,9 @@ For deeper triage see `docs/references/gotchas.md`.
 
 | You want to…                                   | Read                       |
 |------------------------------------------------|----------------------------|
-| Author a new palette, end to end               | `docs/theming.md`          |
+| Author a new palette, end to end               | `reference/theming.md`          |
 | See the scored palette proposals per theme     | `examples/palette-audit.md` (build the PDF if not present) |
-| Understand why `themeCSS` was dropped          | `docs/notes/2026-05-12-diagram-tokens.md` |
-| See every layout the engine ships              | `docs/architecture.md`     |
+| Understand why `themeCSS` was dropped          | `reference/notes/2026-05-12-diagram-tokens.md` |
+| See every layout the engine ships              | `reference/architecture.md`     |
 | Trace a colour from palette to rendered pixel  | `lattice.css` (search the token, then the DIAGRAM OVERRIDES section) |
-| Diagnose a render that "looks wrong"           | `docs/references/gotchas.md` |
+| Diagnose a render that "looks wrong"           | `reference/engineering/gotchas.md` |
