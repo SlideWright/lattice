@@ -74,7 +74,7 @@ CSS lives at `lib/base/base.modifiers.css` around line 849
 - **marp-vscode preview pane shows nothing.** The extension does NOT
   load workspace `marp.config.js` plugins, so the `logo:` directive
   is invisible there. The PDF build and the desktop preview both work.
-  See `docs/references/gotchas.md`.
+  See `reference/engineering/gotchas.md`.
 - **Don't use `mask-image` for the same effect.** Chromium blocks
   `file://` URLs as mask sources (treats them as cross-origin) even
   though the same URL works as `<img src>`. The current filter-based

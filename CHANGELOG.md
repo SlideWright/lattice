@@ -11,6 +11,20 @@ in patch versions.
 
 ### Added
 
+- **Documentation site.** A public Astro Starlight site under `docs/`
+  (intro, getting started, authoring and theming guides) deployed to
+  GitHub Pages via `.github/workflows/docs.yml`. Branded with the
+  Lattice palette (indaco accent, Playfair/Outfit/JetBrains Mono).
+- **Component reference portal.** `tools/build-docs-portal.js`
+  aggregates every component manifest into a single canonical reference
+  in two forms: `reference/components.html` — a self-contained, themable
+  two-panel portal (clickable bucket→component sidebar with scroll-spy
+  and live filter; a palette dropdown previews the catalog in any of the
+  shipped palettes, light or dark, resolved from `themes/<name>.css`) —
+  and `reference/components.md`, the plain-Markdown edition. Wired as
+  `npm run docs:portal` with a `--check` gate; a lefthook job keeps it
+  fresh against the manifests.
+
 - **Custom deck logo.** Author-supplied SVG/PNG/JPEG renders as a
   discreet top-right watermark on every slide. A build-stage rewriter
   injects `<img class="deck-logo">` as the first child of each
@@ -87,6 +101,12 @@ in patch versions.
 
 ### Changed
 
+- **Documentation reorganized into two trees.** The internal engineering
+  and design references moved from `docs/` to `reference/` (with the
+  former `docs/references/` becoming `reference/engineering/`), freeing
+  `docs/` for the new public documentation site. All cross-references —
+  CLAUDE.md, generators, the npm `files` list, tooling, and links — were
+  updated accordingly.
 - **BREAKING: `bg-*` decoration classes renamed to `tint-*` / `mark-*`.**
   The Background Library is now the Treatment Library, split into two
   semantic families: 12 `tint-*` gradient washes (corner glows, edge

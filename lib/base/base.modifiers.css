@@ -26,7 +26,7 @@
  * The right fix is surgical: per-component specificity bumps or a
  * custom-property gate on KEY INSIGHT content. Tracked as Phase 5b.
  *
- * See docs/design-system.md §10 for the bundle order, §6.5 for the
+ * See reference/design-system.md §10 for the bundle order, §6.5 for the
  * three-tier modifier model (universal / semi-universal / layout).
  */
 
@@ -209,7 +209,7 @@ section img:not(.emoji):not(.deck-logo) { max-width:100%; max-height:100%; borde
 /* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
    They must render inline at text size and not pick up the block image styling
    above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
-   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+   See reference/engineering/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
 section img.emoji {
   display:inline-block;
   height:1em; width:auto;

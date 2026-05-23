@@ -13,7 +13,7 @@ Anchor — where you are in the deck.
 
 # Function · Form · Substance · Finish.
 
-`docs/design-system.md`
+`reference/design-system.md`
 
 ---
 

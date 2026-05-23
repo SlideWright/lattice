@@ -117,7 +117,7 @@ section.image:not(.full):not(.contain):not(.museum) .image-asset {
 }
 
 /* Legacy selectors still in place for parity until iteration 2 of the
- * Marp Adapter refactor — see docs/notes/2026-05-19-marp-adapter.md. */
+ * Marp Adapter refactor — see reference/notes/2026-05-19-marp-adapter.md. */
 section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;

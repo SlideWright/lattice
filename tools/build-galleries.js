@@ -13,7 +13,7 @@
  *                                in the dark universal variant
  *
  * The two PDFs together form the component's self-documenting catalog
- * entry — every variant in both moods. See docs/notes/2026-05-18-
+ * entry — every variant in both moods. See reference/notes/2026-05-18-
  * component-reorg-and-modular-css.md (Phase 2).
  *
  * Bucket galleries (Phase 5) reuse the same dark-injection pattern via

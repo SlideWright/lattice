@@ -20,7 +20,7 @@ Final slide. Dark canvas mirror of title.
 
 # Function · Form · Substance · Finish.
 
-`docs/design-system.md`
+`reference/design-system.md`
 
 
 ---
@@ -40,7 +40,7 @@ Final slide. Dark canvas mirror of title.
 
 # Function · Form · Substance · Finish.
 
-`docs/design-system.md`
+`reference/design-system.md`
 
 
 ---
@@ -50,7 +50,7 @@ Final slide. Dark canvas mirror of title.
 
 # Function · Form · Substance · Finish.
 
-`docs/design-system.md`
+`reference/design-system.md`
 
 
 ---

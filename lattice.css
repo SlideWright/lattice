@@ -109,7 +109,7 @@
    * --fs-body-compact = 13.5pt: scanned, not read linearly.
    * Headings h4/h5/h6 are deliberately tied to message/body/meta tiers
    * (same size, weight-differentiated). Full contract:
-   * docs/references/typography.md.
+   * reference/engineering/typography.md.
    *
    * Author's mental model — every decision in six rules:
    *   HTML heading                  → --fs-h<level>      (auto via base.elements.css)
@@ -189,7 +189,7 @@
    * `color-scheme: dark` (indaco-dark, cuoio-dark, …) pick up the dark
    * variant automatically.
    *
-   * Tuning rationale (see docs/notes/2026-05-15-state-token-palette.md):
+   * Tuning rationale (see reference/notes/2026-05-15-state-token-palette.md):
    *   - Warn moved from #92400E (H22, L31, burnt brown-amber) to
    *     #B45309 (H32 amber-700) in light mode and #F97316 (orange-500)
    *     in dark mode. Bumps hue 10° clear of red and lifts luminance
@@ -383,7 +383,7 @@ section blockquote { margin:0; padding:0; border:none; }
  * (which reverses by layer) keeps these wins regardless of what else
  * the bundle declares in later layers.
  *
- * See docs/design-system.md §10 for layer cascade semantics.
+ * See reference/design-system.md §10 for layer cascade semantics.
  */
 
 
@@ -2679,7 +2679,7 @@ section.image:not(.full):not(.contain):not(.museum) .image-asset {
 }
 
 /* Legacy selectors still in place for parity until iteration 2 of the
- * Marp Adapter refactor — see docs/notes/2026-05-19-marp-adapter.md. */
+ * Marp Adapter refactor — see reference/notes/2026-05-19-marp-adapter.md. */
 section.image:not(.full):not(.contain):not(.museum) [data-marpit-advanced-background-container] figure,
 section.image:not(.full):not(.contain):not(.museum) .lattice-bg img {
   background-size: cover !important;
@@ -3733,7 +3733,7 @@ section .cluster.section-11 text, section .cluster.section-11 tspan, section .cl
  * This is the ONLY diagram type where the rule applies cleanly.
  * Timeline and journey were investigated as candidates but their inner
  * cards stack on the slide canvas, not on a band — see
- * docs/notes/2026-05-12-diagram-elevation.md for the audit. They keep
+ * reference/notes/2026-05-12-diagram-elevation.md for the audit. They keep
  * their band-N fills from the .section-N rule above.
  */
 section .cluster .items .node rect.basic.label-container,
@@ -8633,7 +8633,7 @@ section.word-cloud .wc-word[data-rotated="1"] {
  * The right fix is surgical: per-component specificity bumps or a
  * custom-property gate on KEY INSIGHT content. Tracked as Phase 5b.
  *
- * See docs/design-system.md §10 for the bundle order, §6.5 for the
+ * See reference/design-system.md §10 for the bundle order, §6.5 for the
  * three-tier modifier model (universal / semi-universal / layout).
  */
 
@@ -8816,7 +8816,7 @@ section img:not(.emoji):not(.deck-logo) { max-width:100%; max-height:100%; borde
 /* Marp Core converts unicode emoji in source markdown to twemoji <img class="emoji">.
    They must render inline at text size and not pick up the block image styling
    above; otherwise a stray "Hello 👋 there" puts the wave on its own line.
-   See docs/references/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
+   See reference/engineering/gotchas.md → "Marp Core wraps emoji in <img class='emoji'>". */
 section img.emoji {
   display:inline-block;
   height:1em; width:auto;
@@ -9906,8 +9906,8 @@ section.progress.dark .progress-fill[data-s="deferred"] {
  * Renamed from base.decorations.css; the old bg-* class names are
  * replaced by tint-* (gradient washes) and mark-* (graphic accents),
  * with an at-* placement axis on tint-corner / tint-edge. See
- * docs/references/treatments.md for the catalogue + composition rules
- * and docs/notes/2026-05-17-treatments-rename.md for the rationale.
+ * reference/engineering/treatments.md for the catalogue + composition rules
+ * and reference/notes/2026-05-17-treatments-rename.md for the rationale.
  *
  * Bundle position: AFTER lib/_legacy.css, BEFORE the universal /
  * semi-universal / diagram-overrides tail. Preserves the cascade
@@ -9954,7 +9954,7 @@ section.progress.dark .progress-fill[data-s="deferred"] {
  * tint-edge; marks render at their per-treatment default home (the
  * old bg-name's suffix). Adding placement to marks is a v2 feature.
  *
- * See docs/references/treatments.md for the full catalogue, the
+ * See reference/engineering/treatments.md for the full catalogue, the
  * placement vocabulary, and the design constraints.
  * ════════════════════════════════════════════════════════════════════════════ */
 
@@ -10231,7 +10231,7 @@ section.tint-ambient {
  * corner geometry has no small bbox, so it renders as stacked radial
  * gradients in --_bg-radial (gradients have no mask to drop).
  *
- * See docs/references/gotchas.md → "Chromium PDF output of CSS
+ * See reference/engineering/gotchas.md → "Chromium PDF output of CSS
  * mask-image renders inconsistently across viewers".
  *
  * Marks (other than mark-seeds) carry no --_bg-radial or --_bg-linear
@@ -10577,7 +10577,7 @@ section.accent.dark h2 { color: var(--accent); }
  * are unlayered and currently still win — once extracted they will join
  * this file under @layer universal.
  *
- * See docs/design-system.md §6.5 for the full vocabulary and rationale.
+ * See reference/design-system.md §6.5 for the full vocabulary and rationale.
  */
 
 
@@ -10892,7 +10892,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
  *
  * Loaded by every render path as part of lattice.css. The inline SVG
  * inherits these rules from the page cascade — no Mermaid `themeCSS`
- * init parameter is used. See docs/notes/2026-05-12-diagram-tokens.md
+ * init parameter is used. See reference/notes/2026-05-12-diagram-tokens.md
  * for the architectural rationale.
  *
  * Selectors are scoped to `section ` (Marp slide root) so rules cannot

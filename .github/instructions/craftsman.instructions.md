@@ -137,6 +137,6 @@ These compose with tiers — a Tier 4 greenfield architectural decision uses bot
 
 **When principles conflict, name the conflict.** Do not silently pick a side. State the tradeoff and either ask or proceed with explicit reasoning.
 
-**Durable investigation notes.** When an investigation produces a non-obvious root cause, a forward-looking design decision, or a lesson worth six months from now, leave a note under `docs/notes/YYYY-MM-DD-topic.md` per the convention in `docs/notes/README.md`. Do not stash such notes in `.scratch/` (it gets pruned) or rely on commit messages alone (they're hard to find later).
+**Durable investigation notes.** When an investigation produces a non-obvious root cause, a forward-looking design decision, or a lesson worth six months from now, leave a note under `reference/notes/YYYY-MM-DD-topic.md` per the convention in `reference/notes/README.md`. Do not stash such notes in `.scratch/` (it gets pruned) or rely on commit messages alone (they're hard to find later).
 
 **Markdown fence convention.** Use ` ``` ` for outer code fences. When a fenced code block needs to *contain* another fenced code block (e.g. a markdown sample that demonstrates fenced code), use `~~~` for the **inner** fence so the outer ` ``` ` parses unambiguously. Do **not** use 4-backtick outer fences — they are easy to mis-count and many renderers handle the close ambiguously. Tag every fence with a language; use `text` for ASCII art, dir trees, and plain output that has no other language.

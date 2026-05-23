@@ -57,6 +57,7 @@ const FULL_SUITE_TRIGGER = new Set([
 // Skip silently — no tests need to run for these.
 function isSkippable(rel) {
   return rel.startsWith('docs/')
+      || rel.startsWith('reference/')
       || rel.startsWith('examples/')
       || rel.startsWith('.scratch/')
       || rel.startsWith('.github/')

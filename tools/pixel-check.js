@@ -47,7 +47,7 @@
  *   1  one or more decks have a non-zero byte delta
  *   2  usage / missing snapshot / missing tool
  *
- * See docs/design-system.md §13 and the _legacy.css destination map.
+ * See reference/design-system.md §13 and the _legacy.css destination map.
  */
 
 const fs = require('node:fs');

@@ -33,7 +33,7 @@
     "mermaid-v11.min.js",
     "lib/",
     "themes/",
-    "docs/",
+    "reference/",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

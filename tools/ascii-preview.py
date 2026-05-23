@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ASCII layout preview helper for docs/references/templates.md (and friends).
+ASCII layout preview helper for reference/engineering/templates.md (and friends).
 
 Two modes:
 
@@ -31,7 +31,7 @@ Why this exists:
 
 Usage:
 
-    python3 tools/ascii-preview.py audit docs/references/templates.md
+    python3 tools/ascii-preview.py audit reference/engineering/templates.md
     python3 tools/ascii-preview.py build           # prints all canonical blocks
 
 History note:

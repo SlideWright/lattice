@@ -127,7 +127,7 @@ integration docs.
 - `lib/_theme.css` — the `@theme lattice` declaration that turns the
   bundle into a registered Marp theme.
 - `themes/README.md` — palette authoring contract.
-- `docs/theming.md` — how palettes map their tokens onto Lattice's
+- `reference/theming.md` — how palettes map their tokens onto Lattice's
   structural surface.
 - `marp.config.js` — Marp's runtime config (lives at repo root).
 - Marp upstream: <https://marpit.marp.app/> for the Marpit core spec
