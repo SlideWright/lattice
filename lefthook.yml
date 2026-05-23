@@ -54,6 +54,16 @@ pre-commit:
         - 'lib/components/**/*.manifest.json'
         - 'lib/components/index.js'
       run: npm run docs:components:check --silent
+    - name: docs-portal-freshness
+      # Catches the "edited a manifest, forgot to regenerate the
+      # aggregated docs/components.html reference portal" failure mode.
+      # Same source of truth as component-docs; fails if the portal
+      # drifts. Skippable via --no-verify only as last resort.
+      glob:
+        - 'lib/components/**/*.manifest.json'
+        - 'lib/components/index.js'
+        - 'tools/build-docs-portal.js'
+      run: npm run docs:portal:check --silent
 
 pre-push-disabled:
   # The per-component / bucket-gallery PDF freshness checks live here

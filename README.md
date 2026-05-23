@@ -14,6 +14,12 @@ Lattice engine that runs from the command line will also run inside the
 SlideWright desktop app (under development), so a deck authored in either
 context renders identically.
 
+> **Documentation:** <https://slidewright.github.io/lattice/> — intro,
+> getting started, authoring and theming guides, and the interactive
+> [component reference](https://slidewright.github.io/lattice/components.html)
+> (every layout, themable in any palette). Built from `docs-site/`; see
+> [`docs-site/README.md`](docs-site/README.md).
+
 ## What you get
 
 - **A renderer.** Two paths from the same source: `marp-cli` (preferred —
