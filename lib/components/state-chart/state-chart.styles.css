@@ -30,14 +30,18 @@
  */
 
 section.state-chart {
+  /* Node surface uses the canonical pale-fill / ink / stroke trio shared
+   * by every native chart (radar, quadrant, kanban…). --c1-light and
+   * --c-ink-light are light-dark() pairs, so the dark canvas flips them
+   * automatically via section.dark's color-scheme. */
   --state-node-fill: var(--c1-light);
   --state-node-ink: var(--c-ink-light);
   --state-node-stroke: var(--c-stroke);
   --state-edge: var(--c-line);
-  --state-edge-back: color-mix(in srgb, var(--c-line) 70%, transparent);
-  --state-index-ink: color-mix(in srgb, var(--c-ink-light) 45%, transparent);
-  --state-marker: var(--c-stroke);
-  --state-label-bg: var(--bg, var(--c-bg-light, white));
+  --state-edge-back: color-mix(in oklab, var(--c-line) 55%, transparent);
+  --state-index-ink: var(--text-muted);
+  --state-marker: var(--c-line);
+  --state-label-bg: var(--bg);
 }
 
 section.state-chart.chart-frame .chart-body {
@@ -61,7 +65,7 @@ section.state-chart .state-chart-canvas {
   width: 100%;
   height: auto;
   overflow: visible;
-  font-family: var(--font-sans, system-ui, sans-serif);
+  font-family: var(--font-body);
 }
 
 /* ── Node rectangles ──────────────────────────────────────────────────── */
@@ -94,46 +98,65 @@ section.state-chart .state-index {
   pointer-events: none;
 }
 
-/* ── Status chip inside the node ──────────────────────────────────────── */
+/* ── Status chip inside the node ──────────────────────────────────────────
+ * Mirrors the .chart-status[data-s=…] vocabulary in chart-family.css:
+ * pass/warn/fail groups use the semantic --pass / --warn / --fail tokens
+ * (and their --*-bg tints); decision rides --accent; deferred rides
+ * --text-muted. All light-dark()-aware, so the dark canvas flips them. */
 
 section.state-chart .state-status-bg {
   stroke-width: 0;
-  fill: color-mix(in srgb, var(--c-stroke) 14%, transparent);
+  fill: color-mix(in oklab, var(--text-muted) 12%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="on-track"],
 section.state-chart .state-status-bg[data-s="done"],
 section.state-chart .state-status-bg[data-s="live"] {
-  fill: color-mix(in srgb, var(--pass, #2a8a4a) 22%, transparent);
+  fill: var(--pass-bg);
 }
 
 section.state-chart .state-status-bg[data-s="at-risk"],
 section.state-chart .state-status-bg[data-s="warn"],
 section.state-chart .state-status-bg[data-s="pilot"] {
-  fill: color-mix(in srgb, var(--warn, #c47b1a) 22%, transparent);
+  fill: var(--warn-bg);
 }
 
 section.state-chart .state-status-bg[data-s="blocked"],
 section.state-chart .state-status-bg[data-s="fail"] {
-  fill: color-mix(in srgb, var(--fail, #b53a3a) 22%, transparent);
+  fill: var(--fail-bg);
 }
 
 section.state-chart .state-status-bg[data-s="decision"] {
-  fill: color-mix(in srgb, var(--decision, #5b67c4) 22%, transparent);
+  fill: color-mix(in oklab, var(--accent) 12%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="deferred"] {
-  fill: color-mix(in srgb, var(--c-ink-muted, #888) 14%, transparent);
+  fill: color-mix(in oklab, var(--text-muted) 10%, transparent);
 }
 
 section.state-chart .state-status-text {
-  fill: var(--state-node-ink);
+  fill: var(--text-muted);
   font-size: 9px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   pointer-events: none;
 }
+
+section.state-chart .state-status-text[data-s="on-track"],
+section.state-chart .state-status-text[data-s="done"],
+section.state-chart .state-status-text[data-s="live"] { fill: var(--pass); }
+
+section.state-chart .state-status-text[data-s="at-risk"],
+section.state-chart .state-status-text[data-s="warn"],
+section.state-chart .state-status-text[data-s="pilot"] { fill: var(--warn); }
+
+section.state-chart .state-status-text[data-s="blocked"],
+section.state-chart .state-status-text[data-s="fail"] { fill: var(--fail); }
+
+section.state-chart .state-status-text[data-s="decision"] { fill: var(--accent); }
+
+section.state-chart .state-status-text[data-s="deferred"] { fill: var(--text-muted); }
 
 /* ── Edges ────────────────────────────────────────────────────────────── */
 
@@ -165,7 +188,7 @@ section.state-chart .state-edge-arrow[data-dir="back"] {
 section.state-chart .state-edge-label {
   fill: var(--state-node-ink);
   font-size: 11px;
-  font-family: var(--font-mono, ui-monospace, monospace);
+  font-family: var(--font-mono);
   paint-order: stroke;
   stroke: var(--state-label-bg);
   stroke-width: 3;
@@ -290,7 +313,7 @@ section.state-chart.horizontal .state-chip[data-dir="back"] {
 
 section.state-chart.inline .state-chip-event,
 section.state-chart.horizontal .state-chip-event {
-  font-family: var(--font-mono, ui-monospace, monospace);
+  font-family: var(--font-mono);
 }
 
 section.state-chart.inline .state-chip-arrow,
@@ -299,11 +322,9 @@ section.state-chart.horizontal .state-chip-arrow {
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Dark modifier ───────────────────────────────────────────────────── */
-
-section.state-chart.dark {
-  --state-node-fill: var(--c1-dark);
-  --state-node-ink: var(--c-ink-dark);
-  --state-node-stroke: color-mix(in srgb, var(--c-stroke) 80%, transparent);
-  --state-marker: color-mix(in srgb, var(--c-stroke) 80%, transparent);
-}
+/* ── Dark canvas ─────────────────────────────────────────────────────────
+ * No explicit overrides needed. section.dark sets `color-scheme: dark`,
+ * which flips every light-dark() token this component consumes
+ * (--c1-light, --c-ink-light, --c-line, --pass/--warn/--fail, --bg,
+ * --text-muted) to its dark-canvas value automatically — same mechanism
+ * the other native charts rely on. */
