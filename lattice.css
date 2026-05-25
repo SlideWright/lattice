@@ -8133,27 +8133,25 @@ section.state-chart.chart-frame .chart-body {
 }
 
 /* Figure shell — a positioning context for the absolutely-placed SVG
- * overlay. Width caps the column; the side space inside it is where the
- * edge bows route (SVG overflow:visible lets long arcs spill if needed). */
+ * overlay. width:fit-content sizes it to the padded node column so the
+ * gutters (the .state-nodes padding below) are real space inside the
+ * figure box, not an overflow the slide can clip. */
 section.state-chart .state-chart-figure {
   position: relative;
-  width: min(640px, 100%);
+  width: fit-content;
+  max-width: 100%;
   margin: 0 auto;
 }
 
-/* LR figures stretch to the row's natural width rather than the column cap. */
-section.state-chart .state-chart-figure[data-sc-dir="lr"] {
-  width: max-content;
-  max-width: 100%;
-}
-
 /* Node column (TB, default) — centred, content-sized HTML nodes. The
- * cross-axis padding leaves room for the start/terminal markers and the
- * edge bows. Sits above the edge layer. */
+ * generous horizontal padding is the bow gutter: forward skips bow into
+ * the right gutter, back-edges into the left, so they stay inside the
+ * figure and never clip. Vertical padding hosts the start/terminal
+ * markers. Sits above the edge layer. */
 section.state-chart .state-nodes {
   list-style: none;
   margin: 0;
-  padding: 40px 0;
+  padding: 44px 128px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8163,13 +8161,14 @@ section.state-chart .state-nodes {
 }
 
 /* LR row — nodes flow left-to-right, centred on the cross (vertical) axis.
- * Horizontal padding hosts the start (left) and terminal (right) markers;
- * vertical padding hosts the forward (below) and back (above) edge bows. */
+ * Horizontal padding hosts the start (left) / terminal (right) markers;
+ * the larger vertical padding is the bow gutter (forward below, back
+ * above). overflow-x lets long rows scroll without clipping the bows. */
 section.state-chart .state-chart-figure[data-sc-dir="lr"] .state-nodes {
   flex-direction: row;
   align-items: center;
-  padding: 56px 44px;
-  gap: 48px;
+  padding: 100px 48px;
+  gap: 56px;
 }
 
 section.state-chart .state-node {
