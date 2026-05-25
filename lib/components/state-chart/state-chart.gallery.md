@@ -44,6 +44,23 @@ How a draft moves from author to archive.
 
 ---
 
+<!-- _class: state-chart lr -->
+<!-- _footer: "Left-to-right · state-chart lr" -->
+
+## Build pipeline.
+
+1. Source `start`
+   - `compile => 2`
+2. Compiled
+   - `test => 3`
+3. Tested
+   - `deploy => 4`
+   - `fail => 1`
+4. Deployed `end`
+
+
+---
+
 <!-- _class: state-chart inline -->
 <!-- _footer: "Inline · state-chart inline" -->
 
@@ -56,23 +73,6 @@ How a draft moves from author to archive.
 2. Connected `live`
    - `disconnect => 1`
 3. Failed `end`
-
-
----
-
-<!-- _class: state-chart horizontal -->
-<!-- _footer: "Horizontal · state-chart horizontal" -->
-
-## Build pipeline.
-
-1. Source `start`
-   - `compile => 2`
-2. Compiled
-   - `test => 3`
-3. Tested
-   - `deploy => 4`
-   - `fail => 1`
-4. Deployed `end`
 
 
 ---

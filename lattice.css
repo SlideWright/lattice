@@ -8141,9 +8141,15 @@ section.state-chart .state-chart-figure {
   margin: 0 auto;
 }
 
-/* Node column — centred, content-sized HTML nodes. Vertical padding
- * leaves room for the start marker above row 1 and the terminal marker
- * below the last row. Sits above the edge layer. */
+/* LR figures stretch to the row's natural width rather than the column cap. */
+section.state-chart .state-chart-figure[data-sc-dir="lr"] {
+  width: max-content;
+  max-width: 100%;
+}
+
+/* Node column (TB, default) — centred, content-sized HTML nodes. The
+ * cross-axis padding leaves room for the start/terminal markers and the
+ * edge bows. Sits above the edge layer. */
 section.state-chart .state-nodes {
   list-style: none;
   margin: 0;
@@ -8154,6 +8160,16 @@ section.state-chart .state-nodes {
   gap: 34px;
   position: relative;
   z-index: 1;
+}
+
+/* LR row — nodes flow left-to-right, centred on the cross (vertical) axis.
+ * Horizontal padding hosts the start (left) and terminal (right) markers;
+ * vertical padding hosts the forward (below) and back (above) edge bows. */
+section.state-chart .state-chart-figure[data-sc-dir="lr"] .state-nodes {
+  flex-direction: row;
+  align-items: center;
+  padding: 56px 44px;
+  gap: 48px;
 }
 
 section.state-chart .state-node {
@@ -8328,7 +8344,9 @@ section.state-chart.horizontal .state-node-row .state-index {
   color: var(--state-index-ink);
 }
 
-section.state-chart.horizontal .state-rows {
+/* Inline LR (lr inline, or the horizontal alias) flows the chip rows
+ * left-to-right; keyed on the figure's resolved direction. */
+section.state-chart .state-chart-figure[data-variant="inline"][data-sc-dir="lr"] .state-rows {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -8337,7 +8355,7 @@ section.state-chart.horizontal .state-rows {
   padding: var(--sp-sm) 0;
 }
 
-section.state-chart.horizontal .state-node-row {
+section.state-chart .state-chart-figure[data-variant="inline"][data-sc-dir="lr"] .state-node-row {
   flex: 0 0 auto;
   min-width: 140px;
 }

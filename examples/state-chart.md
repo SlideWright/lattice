@@ -21,7 +21,7 @@ Numbered list, inline-code transitions, palette-blind SVG. No Mermaid, no charti
 
 ## What this deck shows.
 
-A finite-state machine authored as an ordered list. Each top-level item is a state; the index becomes a stable ref. Nested bullets carry the outgoing transitions, each a single inline-code arrow like `submit => 2` or `revise => self`. Whitespace inside the inline code is insignificant. `lib/components/state-chart/state-chart.transform.js` parses the list, resolves transitions, and emits HTML state nodes overlaid with an SVG edge layer. One default plus two modifiers — `inline` (no SVG, transitions as chips) and `horizontal` — both fed by the same source. `dark` composes on top.
+A finite-state machine authored as an ordered list. Each top-level item is a state; the index becomes a stable ref. Nested bullets carry the outgoing transitions, each a single inline-code arrow like `submit => 2` or `revise => self`. Whitespace inside the inline code is insignificant. The browser measures the laid-out nodes and draws the SVG edges, so it sizes to any content. Two orthogonal modifier classes: direction — `lr` (left-to-right, Mermaid `direction LR`) or the default top-to-bottom — and presentation — `inline` (transitions as chips, no SVG). They compose. `dark` composes on top.
 
 ---
 
@@ -101,8 +101,8 @@ How a draft moves from author to archive.
 
 ---
 
-<!-- _class: state-chart horizontal -->
-<!-- _footer: "Horizontal — states laid left-to-right" -->
+<!-- _class: state-chart lr -->
+<!-- _footer: "lr — left-to-right (Mermaid direction LR)" -->
 
 ## Build pipeline.
 

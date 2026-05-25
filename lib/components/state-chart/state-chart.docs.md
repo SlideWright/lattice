@@ -58,6 +58,25 @@ How a draft moves from author to archive.
 
 ## Variants (layout-specific)
 
+### `lr` — Left-to-right
+
+Lays the machine out horizontally (Mermaid `direction LR`) instead of the default top-to-bottom column. Forward skips bow below the row, back-edges above. Compose with `inline` for a horizontal chip row.
+
+```markdown
+<!-- _class: state-chart lr -->
+
+## Build pipeline.
+
+1. Source `start`
+   - `compile => 2`
+2. Compiled
+   - `test => 3`
+3. Tested
+   - `deploy => 4`
+   - `fail => 1`
+4. Deployed `end`
+```
+
 ### `inline` — Inline
 
 Drops the SVG edge layer; transitions render inline as chips inside each state node. Pure HTML — graceful fallback if the SVG layer is undesirable, or for very dense decks.
@@ -74,25 +93,6 @@ Drops the SVG edge layer; transitions render inline as chips inside each state n
 2. Connected `live`
    - `disconnect => 1`
 3. Failed `end`
-```
-
-### `horizontal` — Horizontal
-
-States lay left-to-right; forward edges arc above, back-edges arc below. Same lane algorithm, rotated 90°.
-
-```markdown
-<!-- _class: state-chart horizontal -->
-
-## Build pipeline.
-
-1. Source `start`
-   - `compile => 2`
-2. Compiled
-   - `test => 3`
-3. Tested
-   - `deploy => 4`
-   - `fail => 1`
-4. Deployed `end`
 ```
 
 ## Universal modifiers

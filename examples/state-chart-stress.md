@@ -159,3 +159,34 @@ Browser-measured layout: nodes are sized by the real text engine, edges are draw
 6. Later `deferred`
    - `=> 7`
 7. Done `done` `end`
+
+---
+
+<!-- _class: state-chart lr -->
+<!-- _footer: "9 — lr direction with branching + back-edge" -->
+
+## Left-to-right pipeline.
+
+1. Source `start`
+   - `compile => 2`
+2. Compiled `on-track`
+   - `test => 3`
+3. Tested
+   - `deploy => 4`
+   - `fail => 1`
+4. Deployed `live` `end`
+
+---
+
+<!-- _class: state-chart lr -->
+<!-- _footer: "10 — lr with long labels + self-loop" -->
+
+## Connection (left-to-right).
+
+1. Disconnected `start`
+   - `connect => 2`
+2. Establishing Session
+   - `retry => self`
+   - `ok => 3`
+   - `timeout => 1`
+3. Connected `live` `end`

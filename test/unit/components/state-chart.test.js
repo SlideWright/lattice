@@ -24,7 +24,6 @@ const {
   STATE_CHART_VARIANTS,
   STATUS_KEYWORDS,
   TRANSITION_RE,
-  pickVariant,
   parseTransitionToken,
   parseStateLi,
   parseStateChart,
@@ -260,21 +259,49 @@ describe('parseStateChart', () => {
   });
 });
 
-// ── Variant dispatch ────────────────────────────────────────────────────
+// ── Variant axes (direction × presentation) ──────────────────────────────
 
-describe('pickVariant', () => {
-  test('default when no modifier present', () => {
-    assert.equal(pickVariant(['state-chart']), 'default');
-    assert.equal(pickVariant(['state-chart', 'dark']), 'default');
+const MODEL = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
+
+describe('variant dispatch', () => {
+  test('STATE_CHART_VARIANTS lists the modifier classes', () => {
+    assert.deepEqual(STATE_CHART_VARIANTS, ['lr', 'inline']);
   });
 
-  test('inline and horizontal are recognised', () => {
-    assert.equal(pickVariant(['state-chart', 'inline']), 'inline');
-    assert.equal(pickVariant(['state-chart', 'horizontal']), 'horizontal');
+  test('default (no modifier) is the SVG canvas, top-to-bottom', () => {
+    const html = buildStateChart(MODEL, ['state-chart']);
+    assert.match(html, /data-variant="default"/);
+    assert.match(html, /data-sc-dir="tb"/);
+    assert.match(html, /class="state-chart-edges"/);
   });
 
-  test('STATE_CHART_VARIANTS lists the registered modifiers', () => {
-    assert.deepEqual(STATE_CHART_VARIANTS, ['inline', 'horizontal']);
+  test('lr sets direction to left-to-right on the SVG canvas', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'lr']);
+    assert.match(html, /data-variant="default"/);
+    assert.match(html, /data-sc-dir="lr"/);
+    assert.match(html, /class="state-chart-edges"/);
+  });
+
+  test('inline is the HTML-chip presentation, default tb direction', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'inline']);
+    assert.match(html, /data-variant="inline"/);
+    assert.match(html, /data-sc-dir="tb"/);
+    assert.match(html, /class="state-chip"/);
+    assert.doesNotMatch(html, /state-chart-edges/);
+  });
+
+  test('lr + inline compose: horizontal chips', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'lr', 'inline']);
+    assert.match(html, /data-variant="inline"/);
+    assert.match(html, /data-sc-dir="lr"/);
+    assert.match(html, /class="state-chip"/);
+  });
+
+  test('horizontal is a backwards-compatible alias for lr inline', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'horizontal']);
+    assert.match(html, /data-variant="inline"/);
+    assert.match(html, /data-sc-dir="lr"/);
+    assert.match(html, /class="state-chip"/);
   });
 });
 
@@ -284,7 +311,7 @@ describe('pickVariant', () => {
 // empty SVG overlay. These tests pin that contract.
 
 describe('buildStateChart (default)', () => {
-  const html = buildStateChart(parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, '')), 'default');
+  const html = buildStateChart(MODEL, ['state-chart']);
 
   test('emits state-chart-figure with state/transition counts', () => {
     assert.match(html, /class="state-chart-figure"/);
