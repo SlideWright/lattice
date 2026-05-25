@@ -89,15 +89,18 @@ How a draft moves from author to archive.
 
 1. Draft `start`
    - `submit => 2`
-   - `discard => 5`
+   - `discard => 6`
 2. Submitted `on-track`
    - `review => 3`
 3. In Review
    - `approve => 4`
    - `reject => 1`
+   - `revise => self`
 4. Approved `done`
-   - `archive => 5`
-5. Archived `end`
+   - `publish => 5`
+5. Published `live`
+   - `archive => 6`
+6. Archived `end`
 
 ---
 
