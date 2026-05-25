@@ -30,12 +30,18 @@
  */
 
 section.state-chart {
-  /* Node surface uses the canonical pale-fill / ink / stroke trio shared
-   * by every native chart (radar, quadrant, kanban…). --c1-light and
-   * --c-ink-light are light-dark() pairs, so the dark canvas flips them
-   * automatically via section.dark's color-scheme. */
-  --state-node-fill: var(--c1-light);
-  --state-node-ink: var(--c-ink-light);
+  /* Nodes are NEUTRAL by default — colour is reserved for meaning.
+   * A state has no inherent category, so tinting every node with a
+   * categorical hue (--c1-light) would be colour-without-meaning AND
+   * would force the status chips to composite their semantic tints over
+   * a coloured surface, muddying them below AA. --bg-alt is the card
+   * surface; --text-heading (=--c-ink-light) on it clears AA with room
+   * to spare, and the status chips now read true on a near-neutral node
+   * exactly as chart-family's pills do on the chart-frame.
+   * All tokens here are light-dark() pairs (or theme-flat) so the dark
+   * canvas flips them automatically via section.dark's color-scheme. */
+  --state-node-fill: var(--bg-alt);
+  --state-node-ink: var(--text-heading);
   --state-node-stroke: var(--c-stroke);
   --state-edge: var(--c-line);
   --state-edge-back: color-mix(in oklab, var(--c-line) 55%, transparent);
@@ -105,33 +111,39 @@ section.state-chart .state-index {
  * --text-muted. All light-dark()-aware, so the dark canvas flips them. */
 
 section.state-chart .state-status-bg {
-  stroke-width: 0;
+  stroke-width: 1;
   fill: color-mix(in oklab, var(--text-muted) 12%, transparent);
+  stroke: color-mix(in oklab, var(--text-muted) 25%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="on-track"],
 section.state-chart .state-status-bg[data-s="done"],
 section.state-chart .state-status-bg[data-s="live"] {
   fill: var(--pass-bg);
+  stroke: color-mix(in oklab, var(--pass) 30%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="at-risk"],
 section.state-chart .state-status-bg[data-s="warn"],
 section.state-chart .state-status-bg[data-s="pilot"] {
   fill: var(--warn-bg);
+  stroke: color-mix(in oklab, var(--warn) 30%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="blocked"],
 section.state-chart .state-status-bg[data-s="fail"] {
   fill: var(--fail-bg);
+  stroke: color-mix(in oklab, var(--fail) 30%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="decision"] {
   fill: color-mix(in oklab, var(--accent) 12%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 35%, transparent);
 }
 
 section.state-chart .state-status-bg[data-s="deferred"] {
   fill: color-mix(in oklab, var(--text-muted) 10%, transparent);
+  stroke: color-mix(in oklab, var(--text-muted) 25%, transparent);
 }
 
 section.state-chart .state-status-text {
