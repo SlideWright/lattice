@@ -23,16 +23,15 @@ const assert = require('node:assert/strict');
 const {
   STATE_CHART_VARIANTS,
   STATUS_KEYWORDS,
-  GEOM,
   TRANSITION_RE,
   pickVariant,
   parseTransitionToken,
   parseStateLi,
   parseStateChart,
-  assignEdgeLanes,
   buildStateChart,
   matchEyebrowText,
-  rowCentreY,
+  STATE_CHART_BROWSER_JS,
+  installStateChartLayout,
 } = require('../../../lib/components/state-chart/state-chart.transform');
 
 // ── Fixtures ────────────────────────────────────────────────────────────
@@ -261,64 +260,6 @@ describe('parseStateChart', () => {
   });
 });
 
-// ── Lane assignment ─────────────────────────────────────────────────────
-
-describe('assignEdgeLanes', () => {
-  test('non-overlapping forward skips share lane 0', () => {
-    // 1→3 and 4→6: forward skips with non-overlapping row spans.
-    const edges = [
-      { from: 1, to: 3, isSelf: false },
-      { from: 4, to: 6, isSelf: false },
-    ];
-    const lanes = assignEdgeLanes(edges);
-    assert.equal(lanes.get(0), 0);
-    assert.equal(lanes.get(1), 0);
-  });
-
-  test('overlapping forward skips go to different lanes', () => {
-    // 1→4 and 2→5: forward skips whose spans overlap.
-    const edges = [
-      { from: 1, to: 4, isSelf: false },
-      { from: 2, to: 5, isSelf: false },
-    ];
-    const lanes = assignEdgeLanes(edges);
-    const used = new Set([lanes.get(0), lanes.get(1)]);
-    assert.equal(used.size, 2);
-  });
-
-  test('forward skips and back edges use independent lane pools', () => {
-    const edges = [
-      { from: 1, to: 5, isSelf: false },   // forward skip, long
-      { from: 5, to: 1, isSelf: false },   // back, long — same row interval
-    ];
-    const lanes = assignEdgeLanes(edges);
-    // Independent pools (right vs left side) — both can have lane 0.
-    assert.equal(lanes.get(0), 0);
-    assert.equal(lanes.get(1), 0);
-  });
-
-  test('adjacent-forward edges (j = i+1) need no lane', () => {
-    // Adjacent edges render as a straight centre line — no lane required.
-    const edges = [
-      { from: 1, to: 2, isSelf: false },
-      { from: 2, to: 3, isSelf: false },
-    ];
-    const lanes = assignEdgeLanes(edges);
-    assert.equal(lanes.size, 0);
-  });
-
-  test('self-loops are skipped (rendered as a fixed shape, no lane)', () => {
-    const edges = [
-      { from: 1, to: 3, isSelf: false },   // forward skip → lane 0
-      { from: 2, to: 2, isSelf: true },    // self-loop → no lane
-    ];
-    const lanes = assignEdgeLanes(edges);
-    assert.equal(lanes.size, 1);
-    assert.equal(lanes.has(0), true);
-    assert.equal(lanes.has(1), false);
-  });
-});
-
 // ── Variant dispatch ────────────────────────────────────────────────────
 
 describe('pickVariant', () => {
@@ -337,78 +278,86 @@ describe('pickVariant', () => {
   });
 });
 
-// ── Build ───────────────────────────────────────────────────────────────
+// ── Build-time HTML emission ──────────────────────────────────────────────
+// Geometry now runs in the browser (installStateChartLayout). The build
+// step emits HTML nodes the browser sizes + a transitions JSON attr + an
+// empty SVG overlay. These tests pin that contract.
 
-describe('buildStateChart', () => {
-  test('emits state-chart-figure with state/transition counts in data-attrs', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
+describe('buildStateChart (default)', () => {
+  const html = buildStateChart(parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, '')), 'default');
+
+  test('emits state-chart-figure with state/transition counts', () => {
     assert.match(html, /class="state-chart-figure"/);
     assert.match(html, /data-variant="default"/);
     assert.match(html, /data-states="6"/);
     assert.match(html, /data-transitions="8"/);
   });
 
-  test('emits SVG canvas with one <rect> per state and data-kind for start/terminal', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    assert.match(html, /<svg class="state-chart-canvas"/);
-    const nodeGroupCount = (html.match(/<g class="state-node"/g) || []).length;
-    assert.equal(nodeGroupCount, 6);
-    const rectCount = (html.match(/class="state-rect"/g) || []).length;
-    assert.equal(rectCount, 6);
+  test('emits one HTML li.state-node per state with data-kind', () => {
+    const nodeCount = (html.match(/class="state-node"/g) || []).length;
+    assert.equal(nodeCount, 6);
     assert.match(html, /data-kind="start"/);
     assert.match(html, /data-kind="terminal"/);
   });
 
-  test('renders SVG path for every transition (forward + back + self)', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    const edgeCount = (html.match(/class="state-edge"/g) || []).length;
-    assert.equal(edgeCount, 8);
-    assert.match(html, /data-dir="forward"/);
-    assert.match(html, /data-dir="back"/);
-    assert.match(html, /data-dir="self"/);
-    assert.match(html, /data-self="true"/);
+  test('emits an empty SVG overlay for the browser pass to fill', () => {
+    assert.match(html, /<svg class="state-chart-edges"[^>]*><\/svg>/);
+    // No build-time geometry — the kernel must not bake paths/arrows.
+    assert.doesNotMatch(html, /class="state-edge"/);
+    assert.doesNotMatch(html, /class="state-edge-arrow"/);
   });
 
-  test('every transition path has an accompanying arrowhead polygon', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    const arrowCount = (html.match(/class="state-edge-arrow"/g) || []).length;
-    // 8 transitions + start marker arrow + terminal marker arrow = 10
-    assert.equal(arrowCount, 10);
+  test('status renders as a chart-family .chart-status pill', () => {
+    assert.match(html, /class="chart-status" data-s="on-track"/);
+    assert.match(html, /class="chart-status" data-s="done"/);
+    assert.match(html, /class="chart-status" data-s="live"/);
   });
 
-  test('event labels render as state-edge-label text', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    assert.match(html, /class="state-edge-label"[^>]*>submit</);
-    assert.match(html, /class="state-edge-label"[^>]*>reject</);
-    assert.match(html, /class="state-edge-label"[^>]*>revise</);
+  test('serialises the resolved transition list into data-sc-transitions', () => {
+    const m = html.match(/data-sc-transitions="([^"]*)"/);
+    assert.ok(m, 'data-sc-transitions present');
+    // Attribute is HTML-escaped; decode the entities the kernel emits.
+    const json = m[1].replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+    const transitions = JSON.parse(json);
+    assert.equal(transitions.length, 8);
+    // self resolved to its own index, flagged isSelf
+    const selfLoops = transitions.filter(t => t.isSelf);
+    assert.equal(selfLoops.length, 1);
+    assert.deepEqual(selfLoops[0], { from: 3, to: 3, event: 'revise', isSelf: true });
+    // a back-edge survives
+    assert.ok(transitions.some(t => t.from === 3 && t.to === 1 && t.event === 'reject'));
   });
+});
 
-  test('status renders as in-node status chip with data-s', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    assert.match(html, /class="state-status" data-s="on-track"/);
-    assert.match(html, /class="state-status" data-s="done"/);
-    assert.match(html, /class="state-status" data-s="live"/);
-  });
-
-  test('inline variant emits HTML rows with chips, no SVG canvas', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'inline');
+describe('buildStateChart (inline / horizontal fallback)', () => {
+  test('inline variant emits HTML chips, no SVG overlay', () => {
+    const html = buildStateChart(parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, '')), 'inline');
     assert.match(html, /data-variant="inline"/);
-    assert.doesNotMatch(html, /state-chart-canvas/);
+    assert.doesNotMatch(html, /state-chart-edges/);
     assert.match(html, /class="state-chip"/);
   });
 
-  test('horizontal variant uses the same HTML fallback as inline', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'horizontal');
+  test('horizontal variant uses the same HTML fallback', () => {
+    const html = buildStateChart(parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, '')), 'horizontal');
     assert.match(html, /class="state-chip"/);
-    assert.doesNotMatch(html, /state-chart-canvas/);
+    assert.doesNotMatch(html, /state-chart-edges/);
+  });
+});
+
+// ── Browser layout module ─────────────────────────────────────────────────
+
+describe('STATE_CHART_BROWSER_JS', () => {
+  test('is a self-invoking string carrying the layout function', () => {
+    assert.equal(typeof STATE_CHART_BROWSER_JS, 'string');
+    assert.match(STATE_CHART_BROWSER_JS, /getBoundingClientRect/);
+    assert.match(STATE_CHART_BROWSER_JS, /data-sc-transitions/);
+    // self-invoked against document
+    assert.match(STATE_CHART_BROWSER_JS, /\)\(document\);\s*$/);
+  });
+
+  test('installStateChartLayout no-ops without a document (Node safety)', () => {
+    // Passing a null doc must not throw — it's required at build time in Node.
+    assert.doesNotThrow(() => installStateChartLayout(null));
   });
 });
 
@@ -422,59 +371,6 @@ describe('matchEyebrowText', () => {
 
   test('returns empty string when absent', () => {
     assert.equal(matchEyebrowText('<h2>Title</h2><ol><li>A</li></ol>'), '');
-  });
-});
-
-// ── Geometry ────────────────────────────────────────────────────────────
-
-describe('rowCentreY', () => {
-  test('monotonic increase with row index', () => {
-    const a = rowCentreY(1);
-    const b = rowCentreY(2);
-    const c = rowCentreY(3);
-    assert.ok(b > a);
-    assert.ok(c > b);
-    // Row step is nodeHeight + rowGap; row centres are exactly one step apart.
-    assert.equal(b - a, GEOM.nodeHeight + GEOM.rowGap);
-  });
-});
-
-// ── Start / terminal markers ────────────────────────────────────────────
-
-describe('start / terminal markers', () => {
-  test('worked example emits one start marker and one terminal marker', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    const startCount = (html.match(/class="state-marker" data-kind="start"/g) || []).length;
-    const terminalCount = (html.match(/class="state-marker" data-kind="terminal"/g) || []).length;
-    assert.equal(startCount, 1);
-    assert.equal(terminalCount, 1);
-  });
-
-  test('start marker is a filled disc; terminal marker is a ring + inner disc', () => {
-    const model = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
-    const html = buildStateChart(model, 'default');
-    assert.match(html, /class="state-marker-disc"/);
-    assert.match(html, /class="state-marker-ring"/);
-    assert.match(html, /class="state-marker-line"/);
-  });
-
-  test('implicit start (no explicit `start`) still renders a start marker', () => {
-    const ol = '<li>A<ul><li><code>=&gt; 2</code></li></ul></li><li>B</li>';
-    const model = parseStateChart(ol);
-    const html = buildStateChart(model, 'default');
-    assert.match(html, /class="state-marker" data-kind="start"/);
-  });
-
-  test('multiple terminals render multiple terminal markers', () => {
-    const ol =
-      '<li>A<ul><li><code>=&gt; 2</code></li><li><code>=&gt; 3</code></li></ul></li>' +
-      '<li>B <code>end</code></li>' +
-      '<li>C <code>end</code></li>';
-    const model = parseStateChart(ol);
-    const html = buildStateChart(model, 'default');
-    const markerTerminals = (html.match(/class="state-marker" data-kind="terminal"/g) || []).length;
-    assert.equal(markerTerminals, 2);
   });
 });
 

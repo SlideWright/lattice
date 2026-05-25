@@ -1868,6 +1868,23 @@ const functionPlotScript = (hasLatticePlot && functionPlotJsAbsPath)
 </script>`
   : '';
 
+// ── state-chart browser-measured layout bootstrap ─────────────────────────
+// state-chart emits HTML nodes + a transitions JSON attr + an empty SVG
+// overlay; the browser measures the laid-out nodes and draws the edges.
+// Only emitted if a slide actually contains a state-chart figure, and it
+// runs on DOMContentLoaded which puppeteer's networkidle0 wait covers —
+// the same pre-render-then-PDF flow function-plot uses. The function body
+// is the canonical installStateChartLayout from the kernel, serialised so
+// the emulator and lattice-runtime share one implementation.
+const hasStateChart = highlightedSlides.some(s => s.includes('state-chart-figure'));
+let stateChartScript = '';
+if (hasStateChart) {
+  try {
+    const { STATE_CHART_BROWSER_JS } = require('./lib/components/state-chart/state-chart.transform');
+    stateChartScript = `<script>\n${STATE_CHART_BROWSER_JS}\n</script>`;
+  } catch (_e) { /* kernel unavailable; figures degrade to an empty overlay */ }
+}
+
 // ── HTML document ─────────────────────────────────────────────────────────────
 const htmlDoc = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
@@ -1883,6 +1900,7 @@ ${globalStyle ? `\n/* Front-matter style: directive */\n${globalStyle}\n` : ''}
 </style></head><body>
 ${slidesWithLogo}
 ${functionPlotScript}
+${stateChartScript}
 <script>
 /* Overflow watcher — tags any section whose content exceeds the slide
    frame with class "overflow" so lattice.css can draw the red warning ring.

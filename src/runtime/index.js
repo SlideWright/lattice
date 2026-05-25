@@ -11,6 +11,7 @@
 // split-list, which the legacy inline mirror omitted). Chart-family,
 // roadmap, journey, word-cloud migrate into this registry in follow-up PRs.
 const sharedTransformerRegistry = require('../../lib/transformers/registry');
+const stateChartLayout = require('../../lib/components/state-chart/state-chart.transform');
 
 (() => {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
@@ -464,6 +465,10 @@ const sharedTransformerRegistry = require('../../lib/transformers/registry');
     sharedTransformerRegistry.applyAllToDom(document);
     applyGlossaryListTable(document);
     applyGlossaryRangePills(document);
+    // state-chart is browser-measured: chart-family emits HTML nodes + an
+    // empty SVG overlay above; this measures the laid-out nodes and draws
+    // the edges/markers. Idempotent (re-runs on each transform pass).
+    try { stateChartLayout.installStateChartLayout(document); } catch (_e) { /* no-op */ }
   }
 
   function initAndRun({ force = false } = {}) {

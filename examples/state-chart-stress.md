@@ -1,0 +1,161 @@
+---
+marp: true
+theme: indaco
+size: 16:9
+paginate: true
+header: "Lattice · State chart — stress test"
+---
+
+<!-- _class: title -->
+<!-- _paginate: false -->
+
+`Lattice · Stress test`
+
+# State chart vs. content we've never seen.
+
+Browser-measured layout: nodes are sized by the real text engine, edges are drawn from measured rects. These slides try to break it.
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "1 — very short labels" -->
+
+## Single-letter states.
+
+1. A `start`
+   - `=> 2`
+2. B
+   - `=> 3`
+   - `=> 1`
+3. C `end`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "2 — long labels that would overflow a fixed box" -->
+
+## Long state names.
+
+1. Awaiting Initial Submission `start`
+   - `submit => 2`
+2. Pending Manual Compliance Re-Review
+   - `escalate => 3`
+   - `return for changes => 1`
+3. Approved by Regional Authority `done`
+   - `archive => 4`
+4. Archived in Cold Storage `end`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "3 — non-Latin (CJK) labels" -->
+
+`状態遷移`
+
+## CJK state labels.
+
+1. 待機 `start`
+   - `開始 => 2`
+2. 実行中 `on-track`
+   - `完了 => 3`
+   - `失敗 => 1`
+3. 完了 `end`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "4 — many states, mostly linear" -->
+
+## Ten-step pipeline.
+
+1. Intake `start`
+   - `=> 2`
+2. Triage
+   - `=> 3`
+3. Assigned
+   - `=> 4`
+4. In Progress `on-track`
+   - `=> 5`
+   - `block => 9`
+5. Code Review
+   - `=> 6`
+   - `reject => 4`
+6. QA
+   - `=> 7`
+   - `fail => 4`
+7. Staging
+   - `=> 8`
+8. Released `live`
+   - `=> 10`
+9. Blocked `blocked`
+   - `unblock => 4`
+10. Closed `end`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "5 — dense branching from one state" -->
+
+## Router with many exits.
+
+1. Dispatch `start`
+   - `a => 2`
+   - `b => 3`
+   - `c => 4`
+   - `d => 5`
+   - `retry => self`
+2. Handler A `done`
+3. Handler B `done`
+4. Handler C `at-risk`
+5. Dead Letter `fail`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "6 — heavy back-edges (everything returns to start)" -->
+
+## Wizard with escape hatches.
+
+1. Welcome `start`
+   - `next => 2`
+2. Account
+   - `next => 3`
+   - `cancel => 1`
+3. Profile
+   - `next => 4`
+   - `cancel => 1`
+4. Payment
+   - `next => 5`
+   - `cancel => 1`
+5. Confirm `done`
+   - `restart => 1`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "7 — single state, no transitions" -->
+
+## Degenerate: one state.
+
+1. Singleton `start`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "8 — mixed widths + every status colour" -->
+
+## Status palette across widths.
+
+1. Q `start`
+   - `=> 2`
+2. Processing Now `on-track`
+   - `=> 3`
+3. Hold `at-risk`
+   - `=> 4`
+4. Stop `blocked`
+   - `=> 5`
+5. Choose `decision`
+   - `=> 6`
+6. Later `deferred`
+   - `=> 7`
+7. Done `done` `end`
