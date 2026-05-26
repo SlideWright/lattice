@@ -43,7 +43,7 @@ const { execFileSync } = require('child_process');
 
 const ROOT       = path.join(__dirname, '..', '..');
 const EXAMPLES   = path.join(ROOT, 'examples');
-const THEME      = path.join(ROOT, 'lattice.css');
+const THEME      = path.join(ROOT, 'dist', 'lattice.css');
 const EMULATOR   = path.join(ROOT, 'lattice-emulator.js');
 const MARP_CFG   = path.join(ROOT, 'marp.config.js');
 const MERMAID_JS = path.join(ROOT, 'mermaid-v11.min.js');

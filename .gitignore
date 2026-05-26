@@ -20,10 +20,10 @@ tokenization/
 !docs/*.pdf
 !themes/*.pdf
 
-# esbuild check tempfile — produced next to lattice-runtime.js by
+# esbuild check tempfile — produced next to dist/lattice-runtime.js by
 # `npm run runtime:check`. The script cleans up on success/failure;
 # this catches the case where the process was killed mid-build.
-lattice-runtime.js.check.tmp
+dist/lattice-runtime.js.check.tmp
 
 # Bucket-gallery build tempfiles — tools/build-bucket-galleries.js writes
 # <bucket>.gallery.<theme>.tmp.md next to the source during render and

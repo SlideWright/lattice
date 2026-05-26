@@ -1,13 +1,13 @@
 // Copy the generated component-reference portal into the site's public/
 // dir so it ships as a static asset at /lattice/components.{html,md}.
 // The portal is generated from the manifests by tools/build-docs-portal.js
-// and committed under reference/; this just stages it for the Astro build.
+// and committed under dist/docs/; this just stages it for the Astro build.
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const repoReference = join(here, '..', '..', 'reference');
+const repoReference = join(here, '..', '..', 'dist', 'docs');
 const publicDir = join(here, '..', 'public');
 
 mkdirSync(publicDir, { recursive: true });

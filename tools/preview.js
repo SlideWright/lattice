@@ -106,7 +106,7 @@ const PATTERNS = Object.freeze({
     /^lib\/_(legacy|scaffold|universal|semi-universal|base|root|theme|diagram-overrides)\.css$/,
     /^themes\//,
     /^lattice-emulator\.js$/,
-    /^lattice-runtime\.js$/,
+    /^dist\/lattice-runtime\.js$/,
     /^marp\.config\.js$/,
     /^lib\/components\/chart\/_chart-family\/chart-family\.js$/,
     /^lib\/match-section\.js$/,
@@ -115,7 +115,7 @@ const PATTERNS = Object.freeze({
     /^lib\/mermaid-hljs\.js$/,
     /^lib\/resolve-palette\.js$/,
     /^lib\/class-aliases\.js$/,
-    /^lattice\.css$/,
+    /^dist\/lattice\.css$/,
   ],
   // Component-scoped triggers — affect that component's per-component
   // gallery + every top-level deck that uses the component. The
@@ -427,7 +427,7 @@ function watchMode(deck) {
   const watchTargets = [
     src,
     path.join(ROOT, 'lib'),
-    path.join(ROOT, 'lattice.css'),
+    path.join(ROOT, 'dist', 'lattice.css'),
     path.join(ROOT, 'themes'),
   ];
 

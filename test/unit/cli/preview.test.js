@@ -64,7 +64,7 @@ describe('preview scope detector', () => {
     assert.equal(detectScope(['lib/_legacy.css']).level, 'L3');
     assert.equal(detectScope(['lib/_universal.css']).level, 'L3');
     assert.equal(detectScope(['lib/_scaffold.css']).level, 'L3');
-    assert.equal(detectScope(['lattice.css']).level, 'L3');
+    assert.equal(detectScope(['dist/lattice.css']).level, 'L3');
   });
 
   test('theme change → L3', () => {

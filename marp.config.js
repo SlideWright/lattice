@@ -586,7 +586,7 @@ function latticeplotFences(md) {
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
   themeSet: [
-    "lattice.css",
+    "dist/lattice.css",
     "themes/ardesia.css",
     "themes/ardesia-dark.css",
     "themes/atelier.css",

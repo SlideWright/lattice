@@ -268,7 +268,7 @@ if (positional[1]?.endsWith('.css')) {
   outFile    = positional[2];
   paletteArg = positional[3];
 } else {
-  cssFile    = path.join(__dirname, 'lattice.css');
+  cssFile    = path.join(__dirname, 'dist', 'lattice.css');
   outFile    = positional[1];
   paletteArg = positional[2];
 }

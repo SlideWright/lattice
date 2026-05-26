@@ -57,11 +57,33 @@ Any authoring transform needs to land in all three or the paths drift:
 
 1. **`lattice-emulator.js`** — build-time CLI; inline implementations.
 2. **`marp.config.js`** → **`lib/engine/*.js`** + **`lib/components/chart/_chart-family/chart-family.js`** + **`lib/integrations/*/`** — the marp-cli path.
-3. **`lattice-runtime.js`** — DOM transforms for marp-vscode preview.
+3. **`dist/lattice-runtime.js`** — DOM transforms for marp-vscode preview
+   (esbuild bundle of `src/runtime/index.js`).
 
 Each transform documents its sibling implementations in a header comment
 (see `liftSlotLabel`, `chartFamily`, `splitPanelCounter`). The integration
 tier asserts cross-renderer parity on slide count.
+
+## The build — `dist/` and `npm run build`
+
+Generated, committed artifacts live in **`dist/`**:
+`dist/lattice.css` (engine bundle), `dist/lattice-runtime.js` (esbuild
+runtime bundle), and `dist/docs/components.{md,html}` (the canonical
+single-file component reference). These are the shipped/public paths —
+decks load `dist/lattice.css` via `marp.config.js` `themeSet`, and the
+README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
+
+- `npm run build` — regenerate every artifact in dependency order,
+  behind the collision gate. `npm run build:check` is the CI/stale gate.
+- `npm run check:ownership` — the collision guard. Many layers share
+  shape on purpose (every theme defines the same tokens; the image
+  scrim/asset/text-panel trio co-own the `image` class). The guard
+  hard-fails on *accidental* collisions — duplicate transformer names,
+  unlisted layout co-ownership, duplicate component CSS selectors,
+  duplicate component names, missing core theme tokens — and forces the
+  intentional cases into the allow-lists in `tools/check-ownership.js`.
+  Individual generators (`css:build`, `runtime:build`, `snippets:build`,
+  `docs:components`, `docs:portal`) still exist for targeted rebuilds.
 
 ## Tests and the regression baseline
 

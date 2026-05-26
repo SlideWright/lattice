@@ -27,8 +27,7 @@
   "main": "lattice-emulator.js",
   "files": [
     "lattice-emulator.js",
-    "lattice-runtime.js",
-    "lattice.css",
+    "dist/",
     "marp.config.js",
     "mermaid-v11.min.js",
     "lib/",

@@ -130,14 +130,14 @@ spin out a `reference/notes/YYYY-MM-DD-topic.md` and link to it from here.
   [marp.config.js](../../marp.config.js) plus the post-render hook in
   [lattice-emulator.js](../../lattice-emulator.js) and the runtime
   mirror `applyDeckLogoFromFrontMatter` in
-  [lattice-runtime.js](../../lattice-runtime.js). The marp-cli and
+  [lattice-runtime.js](../../dist/lattice-runtime.js). The marp-cli and
   emulator paths run at build time; the runtime path fetches the
   source `.md` from the same origin as the rendered HTML. The
   marp-vscode extension does **not** load workspace `marp.config.js`
   plugins, AND the runtime's `fetch()` can't reach workspace files in
   the `vscode-webview://` sandbox — same limitation
   `applyDeckClassFromFrontMatter` documents at
-  [lattice-runtime.js:3463-3465](../../lattice-runtime.js#L3463-L3465).
+  [lattice-runtime.js:3463-3465](../../dist/lattice-runtime.js#L3463-L3465).
   Net result: no path works in the marp-vscode preview.
 - **Mitigation:** None inside marp-vscode preview today. The author
   sees the logo only when they build the PDF or view the exported
