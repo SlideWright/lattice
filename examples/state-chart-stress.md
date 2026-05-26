@@ -190,3 +190,89 @@ Browser-measured layout: nodes are sized by the real text engine, edges are draw
    - `ok => 3`
    - `timeout => 1`
 3. Connected `live` `end`
+
+---
+
+<!-- _class: state-chart -->
+<!-- _footer: "11 — complex TB: skips, converging back-edges, self-loop" -->
+
+## Incident response.
+
+1. Detected `start`
+   - `triage => 2`
+2. Triaged `on-track`
+   - `assign => 3`
+   - `false alarm => 7`
+3. Investigating
+   - `mitigate => 4`
+   - `escalate => 5`
+   - `need more info => 2`
+4. Mitigated
+   - `verify => 6`
+5. Escalated `at-risk`
+   - `hand off => 4`
+   - `re-page => self`
+6. Monitoring `live`
+   - `resolve => 7`
+   - `regression => 3`
+7. Resolved `done`
+   - `postmortem => 8`
+8. Closed `end`
+
+---
+
+<!-- _class: state-chart lr -->
+<!-- _footer: "12 — complex LR: forward skip, back-edges, self-loop" -->
+
+## Build & release graph.
+
+1. Commit `start`
+   - `ci => 2`
+   - `hotfix => 4`
+2. Build `on-track`
+   - `test => 3`
+   - `retry => self`
+3. Tested
+   - `stage => 4`
+   - `fail => 2`
+4. Staging `at-risk`
+   - `promote => 5`
+   - `rollback => 2`
+5. Production `live` `end`
+
+---
+
+<!-- _class: state-chart curved -->
+<!-- _footer: "13 — curved variant (Bézier edges)" -->
+
+## Document approval (curved).
+
+1. Draft `start`
+   - `submit => 2`
+   - `discard => 5`
+2. In Review `on-track`
+   - `approve => 3`
+   - `revise => self`
+   - `reject => 1`
+3. Approved
+   - `publish => 4`
+4. Published `live`
+   - `archive => 5`
+5. Archived `end`
+
+---
+
+<!-- _class: state-chart lr curved -->
+<!-- _footer: "14 — curved variant, left-to-right" -->
+
+## Job runner (curved, lr).
+
+1. Idle `start`
+   - `run => 2`
+   - `skip => 4`
+2. Running `on-track`
+   - `pause => 3`
+   - `finish => 4`
+3. Paused
+   - `resume => 2`
+4. Done `end`
