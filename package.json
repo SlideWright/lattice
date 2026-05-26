@@ -40,7 +40,8 @@
   ],
   "scripts": {
     "build:gallery-jargon": "node lattice-emulator.js examples/gallery-jargon.md examples/gallery-jargon.pdf",
-    "build": "npm run build:gallery-jargon",
+    "build": "node tools/build.js",
+    "build:check": "node tools/build.js --check",
     "new:theme": "node tools/new-theme.js",
     "new:slide": "node tools/new-slide.js",
     "snippets:build": "node tools/build-snippets.js",
