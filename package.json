@@ -54,6 +54,7 @@
     "docs:components:check": "node tools/build-component-docs.js --check",
     "docs:portal": "node tools/build-docs-portal.js",
     "docs:portal:check": "node tools/build-docs-portal.js --check",
+    "check:ownership": "node tools/check-ownership.js",
     "build:galleries": "node tools/build-galleries.js",
     "build:galleries:check": "node tools/build-galleries.js --check",
     "build:bucket-galleries": "node tools/build-bucket-galleries.js",
