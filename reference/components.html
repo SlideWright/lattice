@@ -536,7 +536,7 @@ tbody tr:last-child td { border-bottom: none; }
         </ul>
       </div>
       <div class="nav-bucket">
-        <a class="nav-bucket-head" href="#b-chart"><span>Chart</span><span class="count">8</span></a>
+        <a class="nav-bucket-head" href="#b-chart"><span>Chart</span><span class="count">9</span></a>
         <ul>
           <li><a href="#c-gantt" data-target="c-gantt">gantt</a></li>
           <li><a href="#c-kanban" data-target="c-kanban">kanban</a></li>
@@ -544,6 +544,7 @@ tbody tr:last-child td { border-bottom: none; }
           <li><a href="#c-progress" data-target="c-progress">progress</a></li>
           <li><a href="#c-quadrant" data-target="c-quadrant">quadrant</a></li>
           <li><a href="#c-radar" data-target="c-radar">radar</a></li>
+          <li><a href="#c-state-chart" data-target="c-state-chart">state-chart</a></li>
           <li><a href="#c-timeline-list" data-target="c-timeline-list">timeline-list</a></li>
           <li><a href="#c-word-cloud" data-target="c-word-cloud">word-cloud</a></li>
         </ul>
@@ -579,7 +580,7 @@ tbody tr:last-child td { border-bottom: none; }
       </div>
     </nav>
     <footer class="sidebar-foot">
-      <span>58 components · 12 buckets</span>
+      <span>59 components · 12 buckets</span>
       <span class="gen">Generated from manifests — do not edit by hand.</span>
     </footer>
   </aside>
@@ -5248,6 +5249,140 @@ Effort estimated in story-points; reach as percent of addressable users.
   </section>
   <section class="demo">
     <a class="gallery-link" href="../lib/components/chart/radar/radar.gallery.light.pdf">View rendered gallery →</a>
+  </section>
+</article>
+<article class="component" id="c-state-chart">
+  <header class="component-head">
+    <h3>state-chart</h3>
+    <div class="ffs">
+      <span class="ffs-pill" title="Function">Progression</span>
+      <span class="ffs-pill" title="Form">Timeline</span>
+      <span class="ffs-pill" title="Substance">Graph</span>
+    </div>
+  </header>
+  <p class="lead">Native state machine diagram — states as a numbered list, transitions as nested inline-code refs.</p>
+  <p class="purpose">Use to show a finite-state machine — the discrete states a system can be in and the events that move between them. Authors write a numbered list; each state's index becomes its stable ref so transitions cite numbers, not names. The numbering is the layout: state i renders at row i, so there is no auto-layout problem to solve.</p>
+  <section class="guidance use">
+    <h4>When to use</h4>
+    <ul>
+      <li><strong>Finite, named states with discrete events.</strong> When the slide is about a system with a small set of named places it can be in (Draft / Submitted / Approved / Archived) and the events that move between them (submit, approve, reject). The numbered authoring forces you to enumerate every state up front; the inline refs force you to be explicit about every transition.</li>
+      <li><strong>Sequential authoring as a forcing function.</strong> Numbering the states makes the author commit to an order. Reading the list top-to-bottom is reading the machine from start to terminal. This is the same forcing function that <code>list-steps</code> and <code>agenda</code> apply — a sequence the reader can scan in one pass.</li>
+      <li><strong>Native theming without Mermaid overhead.</strong> Mermaid's <code>stateDiagram-v2</code> works but requires a CSS override cascade with <code>!important</code> to theme cleanly (see <code>docs/theming.md</code>). A native state chart uses palette tokens directly — no overrides, no mmdc subprocess, no version-coupled SVG class names.</li>
+    </ul>
+  </section>
+  <section class="guidance avoid">
+    <h4>When not to use</h4>
+    <ul>
+      <li><strong>More than ~8 states.</strong> Vertical stacks of ten or more states stop reading as a machine and start reading as a list. If the system has many states, group them into phases and show one phase at a time, or step back to a higher-level abstraction. The chart's job is to make the topology obvious in one glance.</li>
+      <li><strong>Hierarchical or parallel states.</strong> v1 grammar is one flat list of states with one outgoing arrow per nested bullet. Composite states, orthogonal regions, history nodes — anything Mermaid's <code>stateDiagram-v2</code> does and this layout doesn't — belong in a Mermaid fence via the <code>diagram</code> component.</li>
+      <li><strong>Continuous processes.</strong> If the diagram is really a workflow with stages that overlap or block (queue depth, throughput, capacity), a <code>gantt</code> or <code>kanban</code> chart reads better. State charts are for discrete, mutually-exclusive states the system flips between.</li>
+    </ul>
+  </section>
+  <section class="authoring">
+    <h4>Authoring</h4>
+    <pre class="code"><code>&lt;!-- _class: state-chart --&gt;
+
+`Submission lifecycle`
+
+## Document approval flow.
+
+How a draft moves from author to archive.
+
+1. Draft `start`
+   - `submit =&gt; 2`
+   - `discard =&gt; 6`
+2. Submitted `on-track`
+   - `review =&gt; 3`
+3. In Review
+   - `approve =&gt; 4`
+   - `reject =&gt; 1`
+   - `revise =&gt; self`
+4. Approved `done`
+   - `publish =&gt; 5`
+5. Published `live`
+   - `archive =&gt; 6`
+6. Archived `end`
+
+*Rejected drafts return to the author; revisions stay in review.*</code></pre>
+  </section>
+  <section class="slots">
+    <h4>Slots</h4>
+    <table>
+      <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading framing the state machine.</td></tr>
+        <tr><td><code>eyebrow</code></td><td><code>p &gt; code</code></td><td><span class="req no">no</span></td><td>Optional eyebrow naming the machine or domain.</td></tr>
+        <tr><td><code>states</code></td><td><code>ol &gt; li</code></td><td><span class="req yes">yes</span></td><td>One li per state. Index is the stable ref. Trailing inline code is a closed metadata vocabulary: <code>start</code>, <code>end</code>, or one of the chart-status keywords (on-track, at-risk, blocked, done, live, decision, deferred, warn, pilot, fail). Multiple metadata tokens allowed; order is irrelevant. Unknown trailing codes are left in the rendered label.</td></tr>
+        <tr><td><code>transitions</code></td><td><code>ol &gt; li &gt; ul &gt; li</code></td><td><span class="req no">no</span></td><td>Outgoing transitions from a state — one per nested bullet. Each carries a single inline-code arrow <code>event=&gt;N</code> or <code>=&gt;N</code> (event optional). Target is a state index or the literal <code>self</code> for self-loops. Whitespace inside the inline code is insignificant.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="variants">
+    <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>lr</code> — Left-to-right</h5>
+      <p>Lays the machine out horizontally (Mermaid <code>direction LR</code>) instead of the default top-to-bottom column. Forward skips bow below the row, back-edges above. Compose with <code>inline</code> for a horizontal chip row.</p>
+      <pre class="code"><code>&lt;!-- _class: state-chart lr --&gt;
+
+## Build pipeline.
+
+1. Source `start`
+   - `compile =&gt; 2`
+2. Compiled
+   - `test =&gt; 3`
+3. Tested
+   - `deploy =&gt; 4`
+   - `fail =&gt; 1`
+4. Deployed `end`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>inline</code> — Inline</h5>
+      <p>Drops the SVG edge layer; transitions render inline as chips inside each state node. Pure HTML — graceful fallback if the SVG layer is undesirable, or for very dense decks.</p>
+      <pre class="code"><code>&lt;!-- _class: state-chart inline --&gt;
+
+## Connection retry.
+
+1. Connecting `start`
+   - `retry =&gt; self`
+   - `ok =&gt; 2`
+   - `fail =&gt; 3`
+2. Connected `live`
+   - `disconnect =&gt; 1`
+3. Failed `end`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>curved</code> — Curved</h5>
+      <p>Routes skip and back edges as single Bézier arcs instead of the default orthogonal racetracks (round-out, straight run, round-in). Each curve's peak is solved so its arc still clears the widest node in its span. Orthogonal to direction — compose with <code>lr</code>.</p>
+      <pre class="code"><code>&lt;!-- _class: state-chart curved --&gt;
+
+## Document approval (curved).
+
+1. Draft `start`
+   - `submit =&gt; 2`
+   - `discard =&gt; 5`
+2. In Review `on-track`
+   - `approve =&gt; 3`
+   - `revise =&gt; self`
+   - `reject =&gt; 1`
+3. Approved
+   - `publish =&gt; 4`
+4. Published `live`
+   - `archive =&gt; 5`
+5. Archived `end`</code></pre>
+    </div>
+  </section>
+  <section class="related">
+    <h4>Related</h4>
+    <ul class="related-list">
+      <li><a class="chip" href="#c-diagram">diagram</a> <span>the machine has hierarchical states, parallel regions, or guards that need Mermaid's full state-diagram grammar</span></li>
+      <li><a class="chip" href="#c-journey">journey</a> <span>the sequence is a user's path through tasks with mood / affect, not a system's discrete states</span></li>
+      <li><a class="chip" href="#c-timeline-list">timeline-list</a> <span>events are points in time rather than transitions between named states</span></li>
+      <li><a class="chip" href="#c-list-steps">list-steps</a> <span>a linear procedure with no branching — state-chart is overkill if there are no choices to make</span></li>
+      <li><a class="chip" href="#c-roadmap">roadmap</a> <span>parallel workstreams across phases, not a single machine's transitions</span></li>
+    </ul>
+  </section>
+  <section class="demo">
+    <a class="gallery-link" href="../lib/components/chart/state-chart/state-chart.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
 <article class="component" id="c-timeline-list">

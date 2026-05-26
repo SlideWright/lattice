@@ -2,7 +2,7 @@
 // dir so it ships as a static asset at /lattice/components.{html,md}.
 // The portal is generated from the manifests by tools/build-docs-portal.js
 // and committed under reference/; this just stages it for the Astro build.
-import { copyFileSync, mkdirSync, existsSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

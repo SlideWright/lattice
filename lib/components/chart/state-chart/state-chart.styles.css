@@ -1,0 +1,318 @@
+/* state-chart — native state machine diagram, browser-measured layout.
+ *
+ * Build time emits HTML state nodes (the browser sizes them to their
+ * content — any label, script, font), a transitions JSON data attr, and
+ * an empty SVG overlay. A browser pass (installStateChartLayout, run by
+ * puppeteer for the PDF and by lattice-runtime for the marp-vscode
+ * preview) measures the laid-out nodes with getBoundingClientRect and
+ * draws the edges + start (●) / terminal (◎) markers into the SVG.
+ *
+ *   <div class="state-chart-figure" data-variant="default" data-sc-transitions="[…]">
+ *     <ol class="state-nodes">
+ *       <li class="state-node" data-index="N" [data-kind="start|terminal"]>
+ *         <span class="state-index">N</span>
+ *         <span class="state-label">…</span>
+ *         <span class="chart-status" data-s="…">…</span>   (reuses chart-family)
+ *       </li>
+ *     </ol>
+ *     <svg class="state-chart-edges">…filled by the browser pass…</svg>
+ *   </div>
+ *
+ * Nodes are NEUTRAL (--bg-alt) so colour is reserved for meaning: the
+ * status pill is the only hue on a node, and it reuses chart-family's
+ * AA-vetted .chart-status vocabulary directly. Palette-blind throughout —
+ * no hex literals, no !important, no :has() chains.
+ *
+ * Sibling implementations (three-renderer parity via the shared registry):
+ *   - lib/components/chart/state-chart/state-chart.transform.js  kernel + browser fn
+ *   - lib/components/chart/_chart-family/chart-family.js         dispatch
+ *   - lattice-emulator.js                                        emits the bootstrap
+ *   - src/runtime/index.js → lattice-runtime.js                  preview pass
+ */
+
+section.state-chart {
+  --state-node-fill: var(--bg-alt);
+  --state-node-ink: var(--text-heading);
+  --state-node-stroke: var(--c-stroke);
+  --state-edge: var(--c-line);
+  --state-edge-back: color-mix(in oklab, var(--c-line) 55%, transparent);
+  --state-index-ink: var(--text-muted);
+  --state-marker: var(--c-line);
+  --state-label-bg: var(--bg);
+}
+
+section.state-chart.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-md) var(--sp-2xl);
+  display: flex;
+  justify-content: center;
+}
+
+/* Figure shell — a positioning context for the absolutely-placed SVG
+ * overlay. width:fit-content sizes it to the padded node column so the
+ * gutters (the .state-nodes padding below) are real space inside the
+ * figure box, not an overflow the slide can clip. */
+section.state-chart .state-chart-figure {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Node column (TB, default) — centred, content-sized HTML nodes. The
+ * generous horizontal padding is the bow gutter: forward skips bow into
+ * the right gutter, back-edges into the left, so they stay inside the
+ * figure and never clip. Vertical padding hosts the start/terminal
+ * markers. Sits above the edge layer. */
+section.state-chart .state-nodes {
+  list-style: none;
+  margin: 0;
+  padding: 56px 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  position: relative;
+  z-index: 1;
+}
+
+/* LR row — nodes flow left-to-right, centred on the cross (vertical) axis.
+ * Horizontal padding hosts the start (left) / terminal (right) markers;
+ * the larger vertical padding is the bow gutter (forward below, back
+ * above). overflow-x lets long rows scroll without clipping the bows. */
+section.state-chart .state-chart-figure[data-sc-dir="lr"] .state-nodes {
+  flex-direction: row;
+  align-items: center;
+  padding: 100px 60px;
+  gap: 56px;
+}
+
+section.state-chart .state-node {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  max-width: 320px;
+  padding: 10px 16px;
+  background: var(--state-node-fill);
+  color: var(--state-node-ink);
+  border: 1px solid var(--state-node-stroke);
+  border-radius: 6px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+section.state-chart .state-node .state-label {
+  min-width: 0;
+}
+
+section.state-chart .state-node .state-index {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  color: var(--state-index-ink);
+  pointer-events: none;
+}
+
+/* Status pill reuses chart-family's .chart-status[data-s=…] vocabulary
+ * verbatim — same AA-vetted token mapping, no duplication here. */
+section.state-chart .state-node .chart-status {
+  flex: 0 0 auto;
+}
+
+/* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. */
+section.state-chart .state-node[data-kind="start"] {
+  border-left-width: 3px;
+}
+
+section.state-chart .state-node[data-kind="terminal"] {
+  outline: 1.5px solid var(--state-node-stroke);
+  outline-offset: 2px;
+}
+
+/* SVG edge overlay — covers the whole figure; the browser pass sets its
+ * viewBox to the figure's measured pixel box so 1 unit == 1px. Behind the
+ * node column so node fills hide any sub-pixel edge overhang. */
+section.state-chart .state-chart-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+
+section.state-chart .state-edge {
+  fill: none;
+  stroke: var(--state-edge);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+section.state-chart .state-edge[data-dir="back"] {
+  stroke: var(--state-edge-back);
+  stroke-dasharray: 4 3;
+}
+
+section.state-chart .state-edge[data-self="true"] {
+  stroke-width: 1.3;
+}
+
+section.state-chart .state-edge-arrow {
+  fill: var(--state-edge);
+  stroke: none;
+}
+
+section.state-chart .state-edge-arrow[data-dir="back"] {
+  fill: var(--state-edge-back);
+}
+
+/* Edge labels sit ON the line at its midpoint (centred). The halo is a
+ * background-coloured stroke painted UNDER the glyphs (paint-order:stroke),
+ * knocking out the edge behind the text so the line visibly breaks around
+ * the label with a clear gap on each side. */
+section.state-chart .state-edge-label {
+  fill: var(--state-node-ink);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  paint-order: stroke;
+  stroke: var(--state-label-bg);
+  stroke-width: 6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+section.state-chart .state-marker-disc {
+  fill: var(--state-marker);
+  stroke: none;
+}
+
+section.state-chart .state-marker-ring {
+  fill: none;
+  stroke: var(--state-marker);
+  stroke-width: 1.5;
+}
+
+section.state-chart .state-marker-line {
+  fill: none;
+  stroke: var(--state-edge);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+/* ── Inline variant (HTML chips, no SVG) ─────────────────────────────── */
+
+section.state-chart.inline .state-chart-figure,
+section.state-chart.horizontal .state-chart-figure {
+  width: auto;
+  max-width: 760px;
+}
+
+section.state-chart.inline .state-rows,
+section.state-chart.horizontal .state-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+section.state-chart.inline .state-node-row,
+section.state-chart.horizontal .state-node-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  margin: 4px 0;
+  background: var(--state-node-fill);
+  color: var(--state-node-ink);
+  border: 1px solid var(--state-node-stroke);
+  border-radius: 6px;
+}
+
+section.state-chart.inline .state-node-row[data-kind="start"],
+section.state-chart.horizontal .state-node-row[data-kind="start"] {
+  border-left-width: 3px;
+}
+
+section.state-chart.inline .state-node-row[data-kind="terminal"],
+section.state-chart.horizontal .state-node-row[data-kind="terminal"] {
+  outline: 1.5px solid var(--state-node-stroke);
+  outline-offset: 2px;
+}
+
+section.state-chart.inline .state-node-row .state-label,
+section.state-chart.horizontal .state-node-row .state-label {
+  flex: 0 0 auto;
+  font-weight: 500;
+}
+
+section.state-chart.inline .state-node-row .state-index,
+section.state-chart.horizontal .state-node-row .state-index {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 9px;
+  color: var(--state-index-ink);
+}
+
+/* Inline LR (lr inline, or the horizontal alias) flows the chip rows
+ * left-to-right; keyed on the figure's resolved direction. */
+section.state-chart .state-chart-figure[data-variant="inline"][data-sc-dir="lr"] .state-rows {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) 0;
+}
+
+section.state-chart .state-chart-figure[data-variant="inline"][data-sc-dir="lr"] .state-node-row {
+  flex: 0 0 auto;
+  min-width: 140px;
+}
+
+section.state-chart.inline .state-transitions,
+section.state-chart.horizontal .state-transitions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xs);
+  margin-left: auto;
+  align-items: center;
+}
+
+section.state-chart.inline .state-chip,
+section.state-chart.horizontal .state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.78em;
+  border: 1px solid var(--state-node-stroke);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--state-node-fill) 60%, transparent);
+}
+
+section.state-chart.inline .state-chip[data-dir="back"],
+section.state-chart.horizontal .state-chip[data-dir="back"] {
+  border-style: dashed;
+}
+
+section.state-chart.inline .state-chip-event,
+section.state-chart.horizontal .state-chip-event {
+  font-family: var(--font-mono);
+}
+
+section.state-chart.inline .state-chip-arrow,
+section.state-chart.horizontal .state-chip-arrow {
+  color: var(--state-index-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Dark canvas ─────────────────────────────────────────────────────────
+ * section.dark sets color-scheme:dark, flipping every light-dark() token
+ * this component consumes (--bg-alt, --text-heading, --c-line, --bg,
+ * --text-muted, and chart-family's --pass/--warn/--fail) automatically. */

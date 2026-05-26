@@ -1,6 +1,7 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+
 import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
 
 // Project Pages site: https://slidewright.github.io/lattice/
 // `site` + `base` must match the GitHub Pages URL so generated links and

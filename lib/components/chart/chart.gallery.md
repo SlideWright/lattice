@@ -2,7 +2,7 @@
 
 # chart
 
-`8 components`
+`9 components`
 
 Chart — series-substance data visualizations (SVG kernel).
 
@@ -142,6 +142,33 @@ Effort estimated in story-points; reach as percent of addressable users.
   - Support `7`
   - Ecosystem `8`
   - Security `8`
+
+---
+
+<!-- _class: state-chart -->
+
+`Submission lifecycle`
+
+## Document approval flow.
+
+How a draft moves from author to archive.
+
+1. Draft `start`
+   - `submit => 2`
+   - `discard => 6`
+2. Submitted `on-track`
+   - `review => 3`
+3. In Review
+   - `approve => 4`
+   - `reject => 1`
+   - `revise => self`
+4. Approved `done`
+   - `publish => 5`
+5. Published `live`
+   - `archive => 6`
+6. Archived `end`
+
+*Rejected drafts return to the author; revisions stay in review.*
 
 ---
 
