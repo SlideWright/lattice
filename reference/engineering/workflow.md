@@ -203,7 +203,7 @@ graduates from "new" to "documented". Treat them like
 
 1. `npm test` — full unit suite must be green.
 2. `npm run test:integration` — rebuilds both galleries through both renderers; asserts page-count parity. This is the merge gate in CI.
-3. `npm run lint` — Biome over every JS file. CI runs this on Node 18/20/22/24.
+3. `npm run lint` — Biome over every JS file. CI runs this on Node 22/24.
 4. If you touched CSS or themes, confirm the visual result in a rebuilt PDF. If you cannot rebuild, say so explicitly — do not claim success.
 5. Rebase onto current `main` if the branch has drifted:
    ```bash

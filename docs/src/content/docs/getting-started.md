@@ -5,7 +5,7 @@ description: Install the Lattice toolchain, render the example galleries, and bu
 
 Lattice runs on Node.js. `npm install` pulls in Marp CLI, the Mermaid
 CLI, and Puppeteer (which downloads a matching Chromium). Requires
-**Node 18+**.
+**Node 22+**.
 
 ## Install
 

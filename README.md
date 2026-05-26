@@ -51,13 +51,14 @@ cd lattice
 npm install
 ```
 
-Requires Node 18+. `npm install` pulls in Marp CLI, the Mermaid CLI,
+Requires Node 22+. `npm install` pulls in Marp CLI, the Mermaid CLI,
 and Puppeteer (which downloads a matching Chromium).
 
 ## Use as a package
 
-Published as `@slidewright/lattice`. The package exposes named entry
-points rather than raw repo paths — consume those, not internals:
+Distributed as `@slidewright/lattice` (npm publishing is pending — see
+[RELEASE.md](RELEASE.md)). The package exposes named entry points rather
+than raw repo paths — consume those, not internals:
 
 | Subpath | Resolves to | For |
 |---|---|---|

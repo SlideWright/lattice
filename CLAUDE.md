@@ -95,8 +95,10 @@ only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
 `!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
 baselines + reviewer deliverables, kept in git but never shipped. Don't
 widen `files` to drag them back in; the tarball is ~1.8 MB, not ~28 MB,
-for that reason. `.github/workflows/release.yml` publishes on a `v*`
-tag after `build:check` + tests gate a fresh `dist/`.
+for that reason. **npm publishing is not yet automated** — `RELEASE.md`
+is the spec (tag `v<version>` matching `package.json`, gated on
+`build:check` + tests) and holds the manual cut-a-release steps plus the
+`release.yml` workflow to implement later.
 
 ## Tests and the regression baseline
 
