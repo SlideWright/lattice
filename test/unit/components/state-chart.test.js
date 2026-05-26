@@ -23,7 +23,6 @@ const assert = require('node:assert/strict');
 const {
   STATE_CHART_VARIANTS,
   STATUS_KEYWORDS,
-  TRANSITION_RE,
   parseTransitionToken,
   parseStateLi,
   parseStateChart,
@@ -265,7 +264,7 @@ const MODEL = parseStateChart(OL_WORKED.replace(/^<ol>|<\/ol>$/g, ''));
 
 describe('variant dispatch', () => {
   test('STATE_CHART_VARIANTS lists the modifier classes', () => {
-    assert.deepEqual(STATE_CHART_VARIANTS, ['lr', 'inline']);
+    assert.deepEqual(STATE_CHART_VARIANTS, ['lr', 'inline', 'curved']);
   });
 
   test('default (no modifier) is the SVG canvas, top-to-bottom', () => {
@@ -280,6 +279,25 @@ describe('variant dispatch', () => {
     assert.match(html, /data-variant="default"/);
     assert.match(html, /data-sc-dir="lr"/);
     assert.match(html, /class="state-chart-edges"/);
+  });
+
+  test('curved sets the Bézier edge style on the SVG canvas', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'curved']);
+    assert.match(html, /data-variant="default"/);
+    assert.match(html, /data-sc-style="curved"/);
+    // default direction is preserved; curved is orthogonal to lr/tb
+    assert.match(html, /data-sc-dir="tb"/);
+  });
+
+  test('default (orthogonal) omits the curved style attr', () => {
+    const html = buildStateChart(MODEL, ['state-chart']);
+    assert.doesNotMatch(html, /data-sc-style/);
+  });
+
+  test('lr + curved compose: left-to-right Bézier canvas', () => {
+    const html = buildStateChart(MODEL, ['state-chart', 'lr', 'curved']);
+    assert.match(html, /data-sc-dir="lr"/);
+    assert.match(html, /data-sc-style="curved"/);
   });
 
   test('inline is the HTML-chip presentation, default tb direction', () => {
@@ -410,5 +428,325 @@ describe('STATUS_KEYWORDS', () => {
     const expected = ['on-track', 'done', 'live', 'at-risk', 'warn', 'pilot', 'blocked', 'fail', 'decision', 'deferred'];
     for (const k of expected) assert.ok(STATUS_KEYWORDS.has(k), `missing: ${k}`);
     assert.equal(STATUS_KEYWORDS.size, expected.length);
+  });
+});
+
+// ── Browser layout (behavioural, via a fake DOM) ──────────────────────────
+// installStateChartLayout is a self-contained closure (it serialises to a
+// string for the emulator bootstrap), so its inner helpers — gutter routing,
+// the 5-slot port picker, crossing minimisation, single-exit convergence —
+// can't be imported piecewise. We instead drive the REAL closure against a
+// minimal synchronous DOM and inspect the SVG it actually emits.
+//
+// The only node property the routing logic depends on is index-ordered,
+// monotonic node centres in a centred column (TB) / row (LR); we simulate
+// exactly that. Then we flatten the emitted <path> geometry to polylines and
+// count true segment crossings. These are the tests that would have caught
+// the slot-ordering regression that shipped (a crossing the parser-level
+// tests are blind to) — they assert the drawn picture, not the model.
+
+describe('browser layout (fake DOM)', () => {
+  const NODE_H = 40;
+  const ROW_GAP = 48;
+  const COL_CX = 400;   // TB column centre x
+  const ROW_CY = 380;   // LR row centre y
+  const GAP = 5;        // mirrors G.gap (arrow-tip → node boundary)
+
+  const nodeWidth = (label) => 70 + String(label).length * 7;
+
+  function layoutRects(spec) {
+    const rects = {};
+    if (spec.dir === 'lr') {
+      let x = 90;
+      for (const nd of spec.nodes) {
+        const w = nodeWidth(nd.label);
+        rects[nd.index] = { x, y: ROW_CY - NODE_H / 2, w, h: NODE_H };
+        x += w + ROW_GAP + 70; // wider row stride so LR gutters don't collide
+      }
+    } else {
+      spec.nodes.forEach((nd, k) => {
+        const w = nodeWidth(nd.label);
+        rects[nd.index] = { x: COL_CX - w / 2, y: 70 + k * (NODE_H + ROW_GAP), w, h: NODE_H };
+      });
+    }
+    return rects;
+  }
+
+  function fakeNodeEl(nd, rect) {
+    return {
+      getAttribute(name) {
+        if (name === 'data-index') return String(nd.index);
+        if (name === 'data-kind') return nd.kind || null;
+        return null;
+      },
+      getBoundingClientRect() {
+        return { left: rect.x, top: rect.y, width: rect.w, height: rect.h };
+      },
+    };
+  }
+
+  function fakeFigure(spec) {
+    const rects = layoutRects(spec);
+    const nodeEls = spec.nodes.map((nd) => fakeNodeEl(nd, rects[nd.index]));
+    const svg = {
+      _attrs: {},
+      innerHTML: '',
+      setAttribute(k, v) { this._attrs[k] = v; },
+    };
+    const ol = { style: {} };
+    const attrs = {
+      'data-sc-transitions': JSON.stringify(spec.transitions),
+      'data-sc-dir': spec.dir === 'lr' ? 'lr' : 'tb',
+      'data-sc-style': spec.style === 'curved' ? 'curved' : null,
+    };
+    const fig = {
+      getAttribute(k) { return Object.hasOwn(attrs, k) ? attrs[k] : null; },
+      getBoundingClientRect() { return { left: 0, top: 0, width: 2400, height: 1200 }; },
+      querySelector(sel) {
+        if (sel === '.state-chart-edges') return svg;
+        if (sel === '.state-nodes') return ol;
+        return null;
+      },
+      querySelectorAll(sel) { return sel === '.state-node' ? nodeEls : []; },
+    };
+    return { fig, svg, rects };
+  }
+
+  function runLayout(spec) {
+    const f = fakeFigure(spec);
+    const doc = {
+      readyState: 'complete',
+      querySelectorAll(sel) {
+        if (sel === '.state-chart-figure[data-sc-transitions]') return [f.fig];
+        if (sel === '.state-chart-figure') return [f.fig];
+        return [];
+      },
+      addEventListener() {},
+    };
+    // No getComputedStyle / ResizeObserver / doc.fonts in Node: makeLabelW's
+    // try/catch falls back to a char-width estimate, and the resize/font
+    // re-draw hooks are skipped — exactly the one-shot pass we want to inspect.
+    installStateChartLayout(doc);
+    return { svg: f.svg.innerHTML, rects: f.rects };
+  }
+
+  // ── Path extraction + geometry ──
+  function extractPaths(svg) {
+    const out = [];
+    const re = /<path class="state-edge"([^>]*?)d="([^"]+)"/g;
+    let m;
+    while ((m = re.exec(svg)) !== null) {
+      out.push({ d: m[2], isSelf: /data-self="true"/.test(m[1]) });
+    }
+    return out;
+  }
+
+  function flatten(d) {
+    const toks = d.match(/[MLC]|-?\d+(?:\.\d+)?/g) || [];
+    const pts = [];
+    let i = 0, cx = 0, cy = 0;
+    while (i < toks.length) {
+      const c = toks[i++];
+      if (c === 'M' || c === 'L') {
+        cx = +toks[i++]; cy = +toks[i++]; pts.push([cx, cy]);
+      } else if (c === 'C') {
+        const x1 = +toks[i++], y1 = +toks[i++], x2 = +toks[i++], y2 = +toks[i++], x = +toks[i++], y = +toks[i++];
+        const steps = 18;
+        for (let s = 1; s <= steps; s++) {
+          const t = s / steps, mt = 1 - t;
+          const bx = mt * mt * mt * cx + 3 * mt * mt * t * x1 + 3 * mt * t * t * x2 + t * t * t * x;
+          const by = mt * mt * mt * cy + 3 * mt * mt * t * y1 + 3 * mt * t * t * y2 + t * t * t * y;
+          pts.push([bx, by]);
+        }
+        cx = x; cy = y;
+      }
+    }
+    return pts;
+  }
+
+  const ccw = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  const near = (p, q) => Math.abs(p[0] - q[0]) < 1e-6 && Math.abs(p[1] - q[1]) < 1e-6;
+
+  // Proper (interior) crossing only — segments that merely share an endpoint
+  // (edges meeting at a node face) or just touch at a vertex don't count.
+  function properCross(p1, p2, p3, p4) {
+    if (near(p1, p3) || near(p1, p4) || near(p2, p3) || near(p2, p4)) return false;
+    const d1 = ccw(p3, p4, p1), d2 = ccw(p3, p4, p2), d3 = ccw(p1, p2, p3), d4 = ccw(p1, p2, p4);
+    return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0));
+  }
+
+  function polysCross(A, B) {
+    for (let i = 0; i + 1 < A.length; i++) {
+      for (let j = 0; j + 1 < B.length; j++) {
+        if (properCross(A[i], A[i + 1], B[j], B[j + 1])) return true;
+      }
+    }
+    return false;
+  }
+
+  // Count pairs of (non-self) edges whose drawn paths cross.
+  function crossingPairs(svg) {
+    const polys = extractPaths(svg).filter((p) => !p.isSelf).map((p) => flatten(p.d));
+    let n = 0;
+    const offenders = [];
+    for (let a = 0; a < polys.length; a++) {
+      for (let b = a + 1; b < polys.length; b++) {
+        if (polysCross(polys[a], polys[b])) { n++; offenders.push([a, b]); }
+      }
+    }
+    return { n, offenders };
+  }
+
+  // ── Fixtures: the charts we fought to make crossing-free (stress slides) ──
+  const node = (index, label, kind) => ({ index, label, kind });
+  const tr = (from, to, event) => ({ from, to, event: event || '', isSelf: from === to });
+
+  // Slide 5 — router with many exits + self-loop. All branches sink → single
+  // exit convergence. The fan-out and the convergence join must not cross.
+  const ROUTER = {
+    dir: 'tb',
+    nodes: [
+      node(1, 'Dispatch', 'start'), node(2, 'Handler A'), node(3, 'Handler B'),
+      node(4, 'Handler C'), node(5, 'Dead Letter'),
+    ],
+    transitions: [
+      tr(1, 2, 'a'), tr(1, 3, 'b'), tr(1, 4, 'c'), tr(1, 5, 'd'), tr(1, 1, 'retry'),
+    ],
+  };
+
+  // Slide 11 — incident response: forward skips, three back-edges, a self
+  // loop. The regression/need-more-info back-edges once crossed; must not.
+  const INCIDENT = {
+    dir: 'tb',
+    nodes: [
+      node(1, 'Detected', 'start'), node(2, 'Triaged'), node(3, 'Investigating'),
+      node(4, 'Mitigated'), node(5, 'Escalated'), node(6, 'Monitoring'),
+      node(7, 'Resolved'), node(8, 'Closed', 'terminal'),
+    ],
+    transitions: [
+      tr(1, 2, 'triage'), tr(2, 3, 'assign'), tr(2, 7, 'false alarm'),
+      tr(3, 4, 'mitigate'), tr(3, 5, 'escalate'), tr(3, 2, 'need more info'),
+      tr(4, 6, 'verify'), tr(5, 4, 'hand off'), tr(5, 5, 're-page'),
+      tr(6, 7, 'resolve'), tr(6, 3, 'regression'), tr(7, 8, 'postmortem'),
+    ],
+  };
+
+  // Slide 6 — wizard: four back-edges all returning to state 1. They share
+  // state 1's back face; the slot picker must fan them without crossing.
+  const WIZARD = {
+    dir: 'tb',
+    nodes: [
+      node(1, 'Welcome', 'start'), node(2, 'Account'), node(3, 'Profile'),
+      node(4, 'Payment'), node(5, 'Confirm'),
+    ],
+    transitions: [
+      tr(1, 2, 'next'), tr(2, 3, 'next'), tr(2, 1, 'cancel'),
+      tr(3, 4, 'next'), tr(3, 1, 'cancel'), tr(4, 5, 'next'),
+      tr(4, 1, 'cancel'), tr(5, 1, 'restart'),
+    ],
+  };
+
+  describe('crossing minimisation', () => {
+    test('router (fan-out + single-exit convergence) draws zero crossings', () => {
+      const { svg } = runLayout(ROUTER);
+      const { n, offenders } = crossingPairs(svg);
+      assert.equal(n, 0, `router crossings: ${JSON.stringify(offenders)}`);
+    });
+
+    test('incident response (skips + back-edges + self-loop) draws zero crossings', () => {
+      const { svg } = runLayout(INCIDENT);
+      const { n, offenders } = crossingPairs(svg);
+      assert.equal(n, 0, `incident crossings: ${JSON.stringify(offenders)}`);
+    });
+
+    test('wizard (four back-edges sharing one face) draws zero crossings', () => {
+      const { svg } = runLayout(WIZARD);
+      const { n, offenders } = crossingPairs(svg);
+      assert.equal(n, 0, `wizard crossings: ${JSON.stringify(offenders)}`);
+    });
+  });
+
+  describe('single-exit convergence', () => {
+    test('exactly one terminal ring regardless of sink count', () => {
+      const { svg } = runLayout(ROUTER);
+      const rings = (svg.match(/data-kind="terminal"/g) || []).length;
+      assert.equal(rings, 1);
+    });
+
+    test('every sink gains a converging edge into the single exit', () => {
+      // Router has 4 sinks (handlers A–C + dead letter) + 5 authored
+      // transitions (incl. self). Convergence adds one edge per sink.
+      const { svg } = runLayout(ROUTER);
+      const paths = extractPaths(svg);
+      assert.equal(paths.length, ROUTER.transitions.length + 4);
+    });
+
+    test('a machine with no sinks (every state has an exit) draws no ring', () => {
+      // Wizard: state 5 loops back to 1, so no state is a sink → no exit ring.
+      const { svg } = runLayout(WIZARD);
+      assert.equal((svg.match(/data-kind="terminal"/g) || []).length, 0);
+      assert.equal(extractPaths(svg).length, WIZARD.transitions.length);
+    });
+  });
+
+  describe('port assignment (5-slot picker)', () => {
+    // A→B→C with a lone A→C skip: the skip is the only edge on each node's
+    // gutter face, so it must attach at the node CENTRE (middle slot).
+    const LONE = {
+      dir: 'tb',
+      nodes: [node(1, 'A', 'start'), node(2, 'B'), node(3, 'C')],
+      transitions: [tr(1, 2, 'go'), tr(1, 3, 'skip'), tr(2, 3, 'go')],
+    };
+
+    test('a lone skip attaches at the node centre line', () => {
+      const { svg, rects } = runLayout(LONE);
+      const skips = extractPaths(svg).filter((p) => !p.isSelf && /C/.test(p.d));
+      assert.equal(skips.length, 1, 'exactly one skip edge (1→3)');
+      const pts = flatten(skips[0].d);
+      const start = pts[0], end = pts[pts.length - 1];
+      const cy1 = rects[1].y + rects[1].h / 2;
+      const cy3 = rects[3].y + rects[3].h / 2;
+      assert.ok(Math.abs(start[1] - cy1) < 0.6, `skip starts at state1 centre (${start[1]} vs ${cy1})`);
+      assert.ok(Math.abs(end[1] - cy3) < 0.6, `skip ends at state3 centre (${end[1]} vs ${cy3})`);
+    });
+
+    test('multiple edges sharing a face take distinct slots', () => {
+      // Router: 1→3, 1→4, 1→5 all leave state 1's right face (1→2 is the
+      // adjacent spine). Their attachment y-coords must be distinct.
+      const { svg, rects } = runLayout(ROUTER);
+      const rightX = rects[1].x + rects[1].w + GAP;
+      const starts = extractPaths(svg)
+        .filter((p) => !p.isSelf)
+        .map((p) => flatten(p.d)[0])
+        .filter((s) => Math.abs(s[0] - rightX) < 0.6)
+        .map((s) => +s[1].toFixed(1));
+      assert.ok(starts.length >= 3, `at least the 3 skips leave state1 right face (got ${starts.length})`);
+      assert.equal(new Set(starts).size, starts.length, `distinct slot y-coords: ${starts}`);
+    });
+  });
+
+  describe('edge style: orthogonal vs curved', () => {
+    const SKIP = {
+      dir: 'tb',
+      nodes: [node(1, 'A', 'start'), node(2, 'B'), node(3, 'C')],
+      transitions: [tr(1, 2, 'go'), tr(1, 3, 'skip'), tr(2, 3, 'go')],
+    };
+
+    test('default style routes skips as racetracks (a straight L run)', () => {
+      const { svg } = runLayout({ ...SKIP, style: 'orthogonal' });
+      // Skip/back edges are the curved (`C`) paths; adjacent spines are M/L
+      // only. A racetrack skip carries BOTH rounded corners (C) and a straight
+      // run (L).
+      const skips = extractPaths(svg).filter((p) => !p.isSelf && /C/.test(p.d));
+      assert.ok(skips.length > 0, 'has a skip edge');
+      assert.ok(skips.every((p) => /L/.test(p.d)), 'racetrack skips contain a straight L run');
+    });
+
+    test('curved style routes skips as a single Bézier (no L run)', () => {
+      const { svg } = runLayout({ ...SKIP, style: 'curved' });
+      const skips = extractPaths(svg).filter((p) => !p.isSelf && /C/.test(p.d));
+      assert.ok(skips.length > 0, 'has a skip edge');
+      assert.ok(skips.every((p) => !/L/.test(p.d)), 'curved skips are pure cubics, no L run');
+    });
   });
 });

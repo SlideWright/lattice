@@ -95,6 +95,29 @@ Drops the SVG edge layer; transitions render inline as chips inside each state n
 3. Failed `end`
 ```
 
+### `curved` — Curved
+
+Routes skip and back edges as single Bézier arcs instead of the default orthogonal racetracks (round-out, straight run, round-in). Each curve's peak is solved so its arc still clears the widest node in its span. Orthogonal to direction — compose with `lr`.
+
+```markdown
+<!-- _class: state-chart curved -->
+
+## Document approval (curved).
+
+1. Draft `start`
+   - `submit => 2`
+   - `discard => 5`
+2. In Review `on-track`
+   - `approve => 3`
+   - `revise => self`
+   - `reject => 1`
+3. Approved
+   - `publish => 4`
+4. Published `live`
+   - `archive => 5`
+5. Archived `end`
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [docs/design-system.md §6.5](../../docs/design-system.md#65-universal-variants--three-tiers) for the catalog.

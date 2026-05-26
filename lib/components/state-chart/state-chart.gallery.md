@@ -77,6 +77,27 @@ How a draft moves from author to archive.
 
 ---
 
+<!-- _class: state-chart curved -->
+<!-- _footer: "Curved · state-chart curved" -->
+
+## Document approval (curved).
+
+1. Draft `start`
+   - `submit => 2`
+   - `discard => 5`
+2. In Review `on-track`
+   - `approve => 3`
+   - `revise => self`
+   - `reject => 1`
+3. Approved
+   - `publish => 4`
+4. Published `live`
+   - `archive => 5`
+5. Archived `end`
+
+
+---
+
 <!-- _class: state-chart dark -->
 <!-- _footer: "Composition: dark · state-chart dark" -->
 
