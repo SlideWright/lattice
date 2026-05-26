@@ -85,6 +85,19 @@ README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
   Individual generators (`css:build`, `runtime:build`, `snippets:build`,
   `docs:components`, `docs:portal`) still exist for targeted rebuilds.
 
+**What ships to npm.** The package is `@slidewright/lattice`, consumed
+through named `exports` subpaths — `/css` (`dist/lattice.css`),
+`/runtime` (`dist/lattice-runtime.js`), `/config` (`marp.config.js`),
+`/themes/<name>.css`, plus the `lattice` `bin` (the emulator). The
+`files` allowlist ships engine source, `dist/`, `themes/`, and the two
+authoring docs (`reference/skill.md`, `reference/design-system.md`)
+only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
+`!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
+baselines + reviewer deliverables, kept in git but never shipped. Don't
+widen `files` to drag them back in; the tarball is ~1.8 MB, not ~28 MB,
+for that reason. `.github/workflows/release.yml` publishes on a `v*`
+tag after `build:check` + tests gate a fresh `dist/`.
+
 ## Tests and the regression baseline
 
 - `npm test` — full unit suite (~4s, 334 tests). Inner loop.

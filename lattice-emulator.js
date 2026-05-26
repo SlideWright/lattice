@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * lattice-emulator.js — Marp-faithful HTML renderer + PDF exporter
  *

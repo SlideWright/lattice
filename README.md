@@ -54,6 +54,36 @@ npm install
 Requires Node 18+. `npm install` pulls in Marp CLI, the Mermaid CLI,
 and Puppeteer (which downloads a matching Chromium).
 
+## Use as a package
+
+Published as `@slidewright/lattice`. The package exposes named entry
+points rather than raw repo paths — consume those, not internals:
+
+| Subpath | Resolves to | For |
+|---|---|---|
+| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle |
+| `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | browser / web-export runtime |
+| `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette at a time |
+| `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config |
+
+```sh
+npm install @slidewright/lattice
+npx lattice deck.md deck.pdf            # the emulator, exposed as a bin
+```
+
+Over a CDN, the same subpaths resolve under jsdelivr:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@slidewright/lattice/themes/indaco.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@slidewright/lattice/dist/lattice.css">
+<script src="https://cdn.jsdelivr.net/npm/@slidewright/lattice/dist/lattice-runtime.js"></script>
+```
+
+The published tarball ships only what these entry points need — engine
+source, `dist/`, `themes/`, and the authoring docs. Regression-baseline
+PDFs and per-bucket galleries stay in git but are excluded from the
+package.
+
 ## Render the example galleries
 
 ```sh

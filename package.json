@@ -25,17 +25,34 @@
   "license": "MIT",
   "author": "SlideWright",
   "main": "lattice-emulator.js",
+  "bin": {
+    "lattice": "lattice-emulator.js"
+  },
+  "exports": {
+    ".": "./lattice-emulator.js",
+    "./runtime": "./dist/lattice-runtime.js",
+    "./css": "./dist/lattice.css",
+    "./config": "./marp.config.js",
+    "./marp.config.js": "./marp.config.js",
+    "./themes/*": "./themes/*",
+    "./lib/*": "./lib/*",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "files": [
     "lattice-emulator.js",
-    "dist/",
     "marp.config.js",
     "mermaid-v11.min.js",
+    "dist/",
     "lib/",
     "themes/",
-    "reference/",
+    "reference/skill.md",
+    "reference/design-system.md",
     "README.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "!**/*.pdf",
+    "!**/*.gallery.md"
   ],
   "scripts": {
     "build:gallery-jargon": "node lattice-emulator.js examples/gallery-jargon.md examples/gallery-jargon.pdf",
