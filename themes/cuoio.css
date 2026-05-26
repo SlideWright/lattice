@@ -60,7 +60,7 @@
  * Palette-blind per-diagram Mermaid overrides live at the bottom of
  * lattice.css, imported transitively via `@import 'lattice';`. Authoring
  * a new palette is purely a token-declaration job — no per-palette CSS
- * rules are needed. See docs/notes/2026-05-12-diagram-tokens.md for the
+ * rules are needed. See reference/notes/2026-05-12-diagram-tokens.md for the
  * architecture.
  */
 
@@ -181,7 +181,7 @@
 
   /* Marp chrome mappings */
   --marp-slide-pagination-color:     var(--text-muted);
-  --marp-slide-pagination-font-size: var(--fs-label);
+  --marp-slide-pagination-font-size: var(--fs-meta);
   --marp-slide-header-color: var(--text-muted);
   --marp-slide-footer-color: var(--text-muted);
 }

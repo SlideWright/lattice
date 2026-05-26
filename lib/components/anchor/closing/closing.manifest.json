@@ -1,0 +1,81 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "closing",
+  "function": "anchor",
+  "form": "bookend",
+  "substance": "prose",
+  "description": "Final slide. Dark canvas mirror of title.",
+  "purpose": "Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals \"we're done.\"",
+  "variants": [
+    "numbered"
+  ],
+  "slots": {
+    "heading": {
+      "selector": "h1",
+      "required": true,
+      "description": "Closing line — takeaway, thank-you, or call to action."
+    },
+    "eyebrow": {
+      "selector": "p > code",
+      "required": false,
+      "description": "Optional category label."
+    },
+    "subtitle": {
+      "selector": "p",
+      "required": false,
+      "description": "Optional supporting line."
+    }
+  },
+  "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
+  "anatomyBlock": "closing-bookend",
+  "sample": "<!-- _class: closing silent -->\n\n# Function · Form · Substance · Finish.\n\n`reference/design-system.md`\n",
+  "whenToUse": [
+    {
+      "title": "Last slide of every deck",
+      "body": "Closes the bookend pair with title. Restates the takeaway, the call to action, or the next-steps line. The dark canvas tells the audience visually that the presentation is over."
+    },
+    {
+      "title": "Single takeaway line",
+      "body": "The h1 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link."
+    },
+    {
+      "title": "Accent modifier for emphasis",
+      "body": "Pair with the universal `accent` modifier to recolor the focal heading. Useful when the closing line is a quote or a key decision the deck has been building toward."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Multi-line h1",
+      "body": "Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact."
+    },
+    {
+      "title": "Header or footer overrides",
+      "body": "Don't reinstate `_header:` or `_footer:` on the closing. The dark canvas is the \"we're done\" signal; chrome breaks it. Use the `silent` modifier to suppress all three in one token."
+    },
+    {
+      "title": "Mid-deck closing",
+      "body": "If the audience needs a strong statement mid-deck, use `big-number` or `content` with the `dark` modifier. Reserving closing for the final slide preserves its bookend role."
+    }
+  ],
+  "related": [
+    {
+      "name": "title",
+      "when": "opens the deck — same dark-bookend chrome"
+    },
+    {
+      "name": "divider",
+      "when": "mid-deck section breaks — same dark canvas"
+    },
+    {
+      "name": "big-number",
+      "when": "single emphatic statement mid-deck without the bookend signal"
+    }
+  ],
+  "variantDocs": {
+    "numbered": {
+      "label": "Numbered — independent closing counter",
+      "caption": "Stamps an auto-incrementing closing number, independent of the divider section counter. Useful for serialized deck families where each deck closes on numbered note `Closing 04`.",
+      "sample": "<!-- _class: closing silent numbered -->\n\n# Take this away.\n\n`Closing 04`\n"
+    }
+  }
+}

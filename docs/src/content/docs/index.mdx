@@ -1,0 +1,81 @@
+---
+title: Lattice
+description: A text file in, a polished PDF out. Lattice is to slide decks what Markdown was to writing on the web.
+template: splash
+hero:
+  tagline: Boardroom-quality slide decks from Markdown. One palette, every deck — no dragging, no nudging, no formatting drift.
+  actions:
+    - text: Get started
+      link: /lattice/getting-started/
+      icon: right-arrow
+    - text: What is Lattice?
+      link: /lattice/introduction/
+      icon: open-book
+      variant: minimal
+    - text: Browse components
+      link: /lattice/components.html
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+You have been on the receiving end of slide decks where every slide is
+slightly different from the one before. The headline is in one font on
+page 4 and another on page 5. The accent blue drifts between two shades.
+A chart copied from a 2022 deck still says "FY22" in the corner. Nobody
+planned the drift — it happens because slide tools make every slide a
+blank canvas, and humans are humans.
+
+**Lattice is what you build when you want to stop that from happening.**
+The author writes the deck as a plain Markdown file, picks one of the
+named layouts for each slide, and the engine assembles the deck against a
+shared palette. Every deck looks like it came from the same team —
+because, structurally, it did.
+
+<CardGrid>
+	<Card title="Text in, PDF out" icon="document">
+		No dragging, no nudging, no alignment guides. Write the words, pick a
+		layout, build.
+	</Card>
+	<Card title="One palette, every deck" icon="setting">
+		Brand colors live in one file. Change them once; every deck picks
+		them up on the next build.
+	</Card>
+	<Card title="Themed diagrams" icon="puzzle">
+		Mermaid flowcharts and more render in the deck's palette
+		automatically — no per-diagram styling.
+	</Card>
+	<Card title="Version control" icon="seti:git">
+		A deck is text. A normal `git diff` shows what changed between
+		revisions, the way it does for code.
+	</Card>
+	<Card title="Accessible by default" icon="approve-check">
+		Contrast is WCAG AA across every layout.
+	</Card>
+	<Card title="No service, no account" icon="laptop">
+		Runs on your laptop or in CI. Fully offline-capable. No telemetry.
+		MIT-licensed.
+	</Card>
+</CardGrid>
+
+## Where to go next
+
+<CardGrid>
+	<Card title="Get started" icon="rocket">
+		Install the toolchain and render your first deck in a few minutes.
+
+		[Getting started →](/lattice/getting-started/)
+	</Card>
+	<Card title="Author decks" icon="pencil">
+		Learn the layout catalog and the authoring contract.
+
+		[Authoring decks →](/lattice/guides/authoring/)
+	</Card>
+	<Card title="Component reference" icon="open-book">
+		Every layout, modifier, and substance contract — themable in all
+		palettes.
+
+		[Browse components →](/lattice/components.html)
+	</Card>
+</CardGrid>

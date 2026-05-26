@@ -1,0 +1,103 @@
+/* list-criteria — extracted from lib/_legacy.css (batch 4).
+ * See lib/components/list-criteria/list-criteria.manifest.json for the component contract.
+ */
+
+/* ── CRITERIA ──
+ * ## heading  ol or ul — li **title** [optional nested ul > li description]
+ * CSS counter provides leading-zero number (01 02…) regardless of list type.
+ * Use ul when order is semantic-free; ol when order carries meaning.
+ */
+section.list-criteria h2 { margin-bottom:var(--sp-md); }
+section.list-criteria > :is(ol, ul) {
+  list-style:none; counter-reset:crit-counter;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1; justify-content:space-between; margin:0; padding:0;
+}
+section.list-criteria > :is(ol, ul) > li {
+  counter-increment:crit-counter;
+  display:flex; align-items:center; gap:var(--sp-md); flex:1;
+  container-type:size;
+}
+section.list-criteria > :is(ol, ul) > li::before {
+  content:counter(crit-counter, decimal-leading-zero);
+  flex-shrink:0; align-self:stretch;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:55cqh; font-weight:700;
+  color:var(--accent); line-height:1;
+}
+section.list-criteria .crit-body {
+  flex:1; display:flex; flex-direction:column; justify-content:center;
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+}
+section.list-criteria .crit-body > strong { font-weight:inherit; color:inherit; }
+section.list-criteria .crit-body ul {
+  list-style:none; padding:0; margin:4px 0 0 0;
+  font-size:var(--fs-body); font-weight:400; color:var(--text-body);
+}
+section.list-criteria .crit-body ul li {
+  font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base);
+  counter-increment:none;
+}
+section.list-criteria .crit-body ul li::before { display:none; content:none; }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * UNIVERSAL STATE TOKEN — the contract shared by every state-bearing
+ * layout in Lattice (checklist, verdict-grid, obligation-matrix, roadmap).
+ *
+ * Authoring grammar (markdown, four states):
+ *   [x] → state-full     filled disc        present / done / applies
+ *   [-] → state-half     half-filled disc   partial / in flight
+ *   [ ] → state-empty    outline disc       absent / not done / exempt
+ *   [/] → state-slashed  filled disc + slash  skipped / out of scope / N/A
+ *
+ * The shape grammar is the universal channel — readable in greyscale,
+ * unambiguous for colour-blind viewers. Colour reinforces shape and
+ * resolves from --state-color, which each layout binds to a semantic
+ * class on the token's element:
+ *   pass / state-shipped / state-applies   → var(--pass)
+ *   warn / state-wip                       → var(--warn)
+ *   fail / state-planned / state-exempt    → var(--text-muted) | var(--fail)
+ *   skip / state-skipped                   → var(--text-muted)
+ *
+ * Two SVG masks total (--state-mask-half, --state-mask-slash, in :root)
+ * paint the half-disc and slash. No fonts, no Unicode, no OS quirks.
+ *
+ * Section modifier `.heat` (universal) flips the palette to a load/risk
+ * axis: full = alarm, half = caution, empty = relief. Any layout can opt
+ * in; obligation-matrix additionally tints cell backgrounds under heat
+ * (chrome-layer responsibility, not the token's).
+ *
+ * Three render paths emit shape + semantic classes from the markdown
+ * grammar (kept in sync per the cross-renderer parity rule in CLAUDE.md):
+ *   - lattice-emulator.js  (build CLI)
+ *   - marp.config.js + lib/roadmap.js  (marp-cli engine)
+ *   - lattice-runtime.js  (marp-vscode preview / DOM mirror)
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* The universal `.heat` overlay rules are placed AFTER the layout blocks
+ * below (see the "UNIVERSAL HEAT OVERLAY" block following the obligation-matrix
+ * section) so source-order wins where specificity ties with per-layout
+ * default --state-color assignments. The author-facing pattern stays
+ * uniform: add `heat` after any state-bearing layout class. */
+
+/* ── CRITERIA ────────────────────────────────────────────────────────────────
+ * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
+ * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+  display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
+  column-gap:var(--sp-md); row-gap:0; align-content:center;
+}
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li::before { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:55cqh; }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li {
+  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
+}
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > strong {
+  grid-column:2; grid-row:1; display:block;
+  font-weight:inherit; color:inherit; margin-bottom:4px;
+}
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul {
+  grid-column:2; grid-row:2; list-style:none; padding:0; margin:0;
+  font-size:var(--fs-body); font-weight:400; color:var(--text-body);
+}
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li { font-size:inherit; font-weight:inherit; color:inherit; line-height:var(--lh-base); }
+section.list-criteria:not(:has(.crit-body)) > :is(ol, ul) > li > ul li::before { display:none; content:none; }

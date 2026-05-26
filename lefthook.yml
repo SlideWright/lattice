@@ -19,13 +19,21 @@ pre-commit:
       # (lattice-emulator.js, lattice.css, package.json, …). The full
       # suite still runs in pre-push as a safety net.
       run: node tools/affected-tests.js {staged_files}
-    - name: pdf-freshness
-      # Catches the "edited examples/<X>.md, forgot to rebuild .pdf"
-      # failure mode. Cheap check + rebuild verification. Skippable
-      # via `git commit --no-verify` only as a last resort. See
-      # docs/references/workflow.md.
-      glob: 'examples/*.md'
-      run: tools/check-pdf-freshness.sh {staged_files}
+    - name: pdf-rebuild
+      # Auto-rebuilds + re-stages the PDF for every staged deck markdown,
+      # incrementally — only the decks whose source changed. Supersedes
+      # the old check-pdf-freshness.sh *gate* (which failed on stale and
+      # made you rebuild by hand): the PDF is a derived artifact, so the
+      # hook regenerates it for you. Scope is markdown-only; component
+      # CSS / shared CSS / engine changes affect many decks at once and
+      # stay in CI (build:galleries:check). The tool queries the git
+      # index directly, so the glob only decides whether it runs.
+      # Skippable via `git commit --no-verify` only as a last resort.
+      glob:
+        - 'examples/*.md'
+        - 'test/integration/baseline-decks/*.md'
+        - 'lib/components/**/*.gallery.md'
+      run: node tools/build-staged-pdfs.js
     - name: runtime-bundle-freshness
       # Catches the "edited src/runtime/** or lib/transformers/**,
       # forgot to rebuild lattice-runtime.js" failure mode. Cheap
@@ -37,6 +45,33 @@ pre-commit:
         - 'lib/engine/**/*.js'
         - 'lib/chart-family/**/*.js'
       run: npm run runtime:check --silent
+    - name: component-docs-freshness
+      # Catches the "edited a manifest, forgot to regenerate the
+      # <name>.docs.md and <name>.gallery.md siblings" failure mode.
+      # Compares generated output against the committed files; fails
+      # if any drift. Skippable via --no-verify only as last resort.
+      glob:
+        - 'lib/components/**/*.manifest.json'
+        - 'lib/components/index.js'
+      run: npm run docs:components:check --silent
+    - name: docs-portal-freshness
+      # Catches the "edited a manifest, forgot to regenerate the
+      # aggregated reference/components.html reference portal" failure mode.
+      # Same source of truth as component-docs; fails if the portal
+      # drifts. Skippable via --no-verify only as last resort.
+      glob:
+        - 'lib/components/**/*.manifest.json'
+        - 'lib/components/index.js'
+        - 'tools/build-docs-portal.js'
+      run: npm run docs:portal:check --silent
+
+pre-push-disabled:
+  # The per-component / bucket-gallery PDF freshness checks live here
+  # rather than pre-commit because rebuilding all 58 + 18 PDFs takes
+  # ~30 minutes and would block every component-CSS commit. They run
+  # in CI instead. Lefthook keys this stage with `-disabled` so it
+  # never fires automatically; documented here as the migration path
+  # if the team wants the gate on push.
 
 pre-push:
   jobs:

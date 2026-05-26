@@ -77,7 +77,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]),
 section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
 :is(pre, marp-pre)[data-mermaid-state]:not([data-mermaid-state="rendered"]) > code {
   font-family:var(--font-mono);
-  font-size:var(--fs-sm);
+  font-size:var(--fs-meta);
   line-height:var(--lh-base);
   background:none !important;
   border:none !important;
@@ -102,7 +102,7 @@ section.diagram :is(pre, marp-pre):not([data-mermaid-state="rendered"]) > code,
  *
  * Loaded by every render path as part of lattice.css. The inline SVG
  * inherits these rules from the page cascade — no Mermaid `themeCSS`
- * init parameter is used. See docs/notes/2026-05-12-diagram-tokens.md
+ * init parameter is used. See reference/notes/2026-05-12-diagram-tokens.md
  * for the architectural rationale.
  *
  * Selectors are scoped to `section ` (Marp slide root) so rules cannot

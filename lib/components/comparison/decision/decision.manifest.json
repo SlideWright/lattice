@@ -1,0 +1,80 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "decision",
+  "function": "comparison",
+  "form": "canvas",
+  "substance": "structure",
+  "description": "The verdict slide — one chosen path, named explicitly.",
+  "purpose": "Use after a comparison slide to land the decision. The chosen option is the focal element; the rejected ones (if shown) are subordinated.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading framing the decision."
+    },
+    "options": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "List items. Authoring contract: a top-level bullet is the option name (renders bold by default); an indented bullet underneath carries the short rationale. The chosen option carries the focal styling."
+    }
+  },
+  "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",
+  "anatomyBlock": "decision",
+  "sample": "<!-- _class: decision -->\n\n## What we are doing.\n\n- Chosen path.\n  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.\n- Rejected option.\n  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.\n",
+  "whenToUse": [
+    {
+      "title": "Land the verdict",
+      "body": "Follows a comparison slide to make the chosen path unambiguous. The heading carries the verb of the decision; the cards substantiate it."
+    },
+    {
+      "title": "Two to four justifications",
+      "body": "Each card is one short rationale — the chosen path first, then a Why-not card for each rejected alternative. More than four crowds the horizontal strip."
+    },
+    {
+      "title": "After the comparison",
+      "body": "Pair with `compare-prose` or `split-compare` upstream — that slide does the weighing, this slide lands the answer. Reaching for decision without a prior comparison reads as edict."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "No clear chosen path",
+      "body": "If the cards don't name one focal verdict, the slide is back to being a comparison. Use `compare-prose` or `split-compare`; reserve decision for the resolved call."
+    },
+    {
+      "title": "Long body per card",
+      "body": "Each card is one sentence of rationale. Paragraphs belong on the comparison slide upstream, not on the verdict slide."
+    },
+    {
+      "title": "Generic heading",
+      "body": "The h2 carries the decision verb — Build, not buy. Adopt the framework. Pause the rollout. A heading like Next steps wastes the focal real estate."
+    }
+  ],
+  "related": [
+    {
+      "name": "compare-prose",
+      "when": "the comparison slide that should precede decision"
+    },
+    {
+      "name": "split-compare",
+      "when": "comparison and verdict on one slide instead of two"
+    },
+    {
+      "name": "closing",
+      "when": "the deck ends without a single-call verdict"
+    },
+    {
+      "name": "big-number",
+      "when": "the decision is a quantitative commitment"
+    }
+  ],
+  "variants": [
+    "banner-tag"
+  ],
+  "variantDocs": {
+    "banner-tag": {
+      "label": "Banner tag — slot label as full-width header strip",
+      "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
+      "sample": "<!-- _class: decision banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+/* tldr — extracted from lib/_legacy.css (batch 3).
+ * See lib/components/tldr/tldr.manifest.json for the component contract.
+ */
+
+/* ── TLDR ──────────────────────────────────────────────────────────────
+ * ## heading
+ * - One-line takeaway. → slide 8
+ * - Another takeaway.  → slide 12
+ *
+ * Executive summary slide. Each item is one short line; an optional
+ * `→` reference at the end is rendered in muted mono.
+ *
+ * Modifier `numbered` adds a 01., 02. counter prefix.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.tldr { display:flex; flex-direction:column; }
+section.tldr h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-md); }
+section.tldr > ul,
+section.tldr > ol {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  gap:var(--sp-sm);
+  flex:1;
+  justify-content:center;
+}
+section.tldr > ul > li,
+section.tldr > ol > li {
+  display:flex; align-items:center;
+  font-size:var(--fs-body);
+  font-weight:500;
+  line-height:var(--lh-snug);
+  color:var(--text-heading);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+}
+section.tldr > ul > li::marker,
+section.tldr > ol > li::marker { content:''; }
+section.tldr > ul > li:last-child,
+section.tldr > ol > li:last-child { border-bottom:none; }
+/* numbered modifier — adds counter prefix */
+section.tldr.numbered > ul,
+section.tldr.numbered > ol {
+  counter-reset:tldr-counter;
+}
+section.tldr.numbered > ul > li,
+section.tldr.numbered > ol > li {
+  counter-increment:tldr-counter;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:var(--sp-lg);
+  align-items:center;
+}
+section.tldr.numbered > ul > li::before,
+section.tldr.numbered > ol > li::before {
+  content:counter(tldr-counter, decimal-leading-zero);
+  font-family:var(--font-mono);
+  font-size:var(--fs-h2);
+  font-weight:700;
+  letter-spacing:0.04em;
+  color:var(--accent);
+  line-height:1;
+}

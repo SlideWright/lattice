@@ -364,7 +364,7 @@ const css = paletteCSS + '\n' + layoutCSS;
 //      onto it at PDF-rasterize time — same mechanism the runtime preview
 //      already uses. No Mermaid `themeCSS` init parameter is used.
 //
-// See docs/notes/2026-05-12-diagram-tokens.md for the architecture.
+// See reference/notes/2026-05-12-diagram-tokens.md for the architecture.
 
 // ── Mermaid theme variables — structural map only ───────────────────────
 // The mapping below names which Mermaid theme variable corresponds to which
@@ -945,11 +945,11 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/radar/radar.transform');
+const radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/quadrant/quadrant.transform');
+const quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;
@@ -1032,10 +1032,12 @@ function parseSlide(raw, index) {
     const side = /\bright\b/.test(kw) ? 'right'
                : /\bleft\b/.test(kw)  ? 'left'
                : 'full';
-    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns all positioning,
-    // fit, and the hairline divider. The img has no inline styles — the
-    // cover/contain rule on section.image controls object-fit.
-    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img src="${url}" alt=""/></div>`;
+    // CSS (.lattice-bg, .lattice-bg-right/left/full) owns wrapper
+    // positioning. `class="image-asset"` on the img matches the
+    // canonical class the image-asset transformer rewrites marpit's
+    // figure to, so both render paths share the same CSS selector for
+    // object-fit / object-position / box-shadow on the image element.
+    bgImageHtml = `<div class="lattice-bg lattice-bg-${side}"><img class="image-asset" src="${url}" alt=""/></div>`;
     return '';
   });
 
@@ -1690,12 +1692,24 @@ function parseSlide(raw, index) {
   const headerEl   = header  ? `<header><div style="display:block;width:100%;text-align:left">${header}</div></header>` : '';
   const footerEl   = footer  ? `<footer><div style="display:block;width:100%;text-align:left">${footer}</div></footer>` : '';
 
+  // Half-canvas image slides wrap their text content in `.image-text` so the
+  // section can use the canonical split-* pattern (flex row, panels with
+  // explicit width) instead of the percentage-padding anti-pattern that
+  // would shrink `container-type: size`'s reported content-box and warp
+  // every cqi unit inside the section. Mirrored by the image-text-panel
+  // transformer for the marp-cli + runtime paths.
+  const _isHalfCanvasImage =
+    /\bimage\b/.test(classAttr) && !/\b(?:full|contain|museum)\b/.test(classAttr);
+  const bodyHtml = _isHalfCanvasImage
+    ? `<div class="image-text">${html}</div>`
+    : html;
+
   return restoreMath([
     `<section id="${slideNum}" class="${classAttr}"`,
     ` data-marpit-slide="${slideNum}"${paginAttr}${styleAttr}>`,
     headerEl,
     bgImageHtml,
-    html,
+    bodyHtml,
     footerEl,
     `</section>`
   ].join(''));
@@ -1815,7 +1829,7 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 //
 // NOTE: this directive is a build-time convenience only. It does NOT
 // render in the marp-vscode preview because the extension doesn't load
-// workspace marp.config.js plugins. See docs/references/gotchas.md.
+// workspace marp.config.js plugins. See reference/engineering/gotchas.md.
 //
 // Called on the joined HTML rather than slide-by-slide so the
 // "first slide" check in the rewriter (used by `logo-on: title`)
@@ -1880,7 +1894,7 @@ const hasStateChart = highlightedSlides.some(s => s.includes('state-chart-figure
 let stateChartScript = '';
 if (hasStateChart) {
   try {
-    const { STATE_CHART_BROWSER_JS } = require('./lib/components/state-chart/state-chart.transform');
+    const { STATE_CHART_BROWSER_JS } = require('./lib/components/chart/state-chart/state-chart.transform');
     stateChartScript = `<script>\n${STATE_CHART_BROWSER_JS}\n</script>`;
   } catch (_e) { /* kernel unavailable; figures degrade to an empty overlay */ }
 }

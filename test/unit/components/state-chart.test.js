@@ -1,5 +1,5 @@
 /**
- * Unit: lib/components/state-chart/state-chart.transform.js — kernel for
+ * Unit: lib/components/chart/state-chart/state-chart.transform.js — kernel for
  * the `state-chart` chart-family member.
  *
  * Section dispatch + chart-frame wrapping live in lib/chart-family/chart-family.js
@@ -30,7 +30,7 @@ const {
   matchEyebrowText,
   STATE_CHART_BROWSER_JS,
   installStateChartLayout,
-} = require('../../../lib/components/state-chart/state-chart.transform');
+} = require('../../../lib/components/chart/state-chart/state-chart.transform');
 
 // ── Fixtures ────────────────────────────────────────────────────────────
 

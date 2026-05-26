@@ -30,7 +30,7 @@ const {
   axisAngle,
   polar,
   matchEyebrowText,
-} = require('../../../lib/components/radar/radar.transform');
+} = require('../../../lib/components/chart/radar/radar.transform');
 
 // ── Fixtures ────────────────────────────────────────────────────────────
 
@@ -297,7 +297,7 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
 // regression in either module surfaces here, not only in the integration
 // PDF build.
 
-const { transformChartSection, applyToRenderedHtml } = require('../../../lib/chart-family/chart-family');
+const { transformChartSection, applyToRenderedHtml } = require('../../../lib/components/chart/_chart-family/chart-family');
 
 describe('radar', () => {
   test('chart-family: radar section is wrapped in chart-frame', () => {

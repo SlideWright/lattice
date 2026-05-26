@@ -1,0 +1,59 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "verdict-grid",
+  "function": "comparison",
+  "form": "grid",
+  "substance": "structure",
+  "description": "Options scored against criteria as a verdict matrix.",
+  "purpose": "Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "Slide heading naming the choice."
+    },
+    "options": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Outer li per option, lead with **Option name.**. Inner li per criterion, prefixed with [x]/[-]/[ ] then the criterion text."
+    }
+  },
+  "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First criterion\n  - [-] Second criterion\n  - [ ] Third criterion\n- **Second option.**\n  - [x] First criterion\n  - [x] Second criterion\n  - [-] Third criterion\n- **Third option.**\n  - [ ] First criterion\n  - [-] Second criterion\n  - [x] Third criterion\n",
+  "anatomyBlock": "verdict-grid",
+  "sample": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **Folder shape.**\n  - [x] Self-contained per component\n  - [x] Familiar pattern from other libraries\n  - [x] Tests can live with their component\n- **Flat files.**\n  - [x] Less restructuring upfront\n  - [-] Per-component grouping by filename only\n  - [ ] No room for transform.js or example.md\n- **Hybrid.**\n  - [-] Manifest stays flat, other files in subfolder\n  - [ ] Splits the component across two locations\n  - [ ] Defeats the self-contained goal\n",
+  "whenToUse": [
+    {
+      "title": "Two to four options",
+      "body": "Each card is one option; the grid keeps two cards per row. Past four options the cards crowd and the criteria badges lose legibility."
+    },
+    {
+      "title": "Shared criteria across cards",
+      "body": "Every option is scored on the same set of criteria, in the same order. Drifting criteria between cards defeats the at-a-glance scan the layout exists for."
+    },
+    {
+      "title": "Pass / partial / fail grammar",
+      "body": "Criteria use the universal `[x]` / `[-]` / `[ ]` / `[/]` state markers — shared with `checklist` and `obligation-matrix`. The badge chrome handles the rest."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Exactly two options",
+      "body": "Two options with shared criteria belong in `compare-prose` or `split-compare`. verdict-grid earns its layout at 3+ options."
+    },
+    {
+      "title": "Free-form text on the badge line",
+      "body": "Each inner bullet starts with a state marker, not a sentence. Naked prose breaks the badge chrome and the criteria stop scanning as a row."
+    },
+    {
+      "title": "Cards with different criteria",
+      "body": "When each option needs its own criteria list, the comparison fails — use `cards-stack` so each card has full prose breathing room instead."
+    }
+  ],
+  "related": [
+    { "name": "compare-prose", "when": "exactly two options with prose bodies" },
+    { "name": "split-compare", "when": "two options with a bottom verdict bar" },
+    { "name": "obligation-matrix", "when": "many regimes scored on shared obligations in a table" },
+    { "name": "compare-table", "when": "cells are textual values, not state markers" },
+    { "name": "checklist", "when": "one set of criteria, not many options against them" }
+  ]
+}

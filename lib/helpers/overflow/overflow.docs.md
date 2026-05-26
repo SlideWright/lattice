@@ -77,5 +77,5 @@ as `lib/helpers/overflow/`.
 
 - `lib/base/base.docs.md` — the rest of the cross-cutting chrome
   conventions (eyebrow, subtitle, key insight, etc.).
-- `docs/references/audit.md` — the deck audit workflow that the
+- `reference/engineering/audit.md` — the deck audit workflow that the
   overflow ring feeds into.

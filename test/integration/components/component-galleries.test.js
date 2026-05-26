@@ -37,9 +37,15 @@ describe('component-galleries', () => {
   const manifests = loadAll();
   for (const m of manifests) {
     const enriched = isEnriched(m);
+    // Hand-authored galleries (manifest.galleryAuthored: true) skip the
+    // manifest-formula page-count assertion — the source isn't generator
+    // output. They still get the light/dark parity check below.
+    const skipFormula = enriched && !m.galleryAuthored ? false :
+      (!enriched ? 'not yet migrated (no enriched prose fields)' :
+       'gallery is hand-authored (manifest.galleryAuthored: true)');
     test(
-      `${m.name}: gallery page count matches manifest formula`,
-      { timeout: 180000, skip: enriched ? false : 'not yet migrated (no enriched prose fields)' },
+      `${m.name}: light gallery page count matches manifest formula`,
+      { timeout: 180000, skip: skipFormula },
       () => {
         const galleryPath = targetPaths(m).gallery;
         assert.ok(
@@ -50,7 +56,40 @@ describe('component-galleries', () => {
         assert.equal(
           pageCount(pdf),
           expectedGallerySlideCount(m),
-          `${m.name}.gallery.pdf page count drifted from manifest formula`,
+          `${m.name}.gallery.light.pdf page count drifted from manifest formula`,
+        );
+      },
+    );
+
+    // Dark sibling — same source rendered with `dark` injected into
+    // every _class directive. Page count must match the light count
+    // (dark is a finish modifier, not a structural change); if it
+    // doesn't, a transform is silently dropping a slide under the dark
+    // variant. The PDF itself is committed via Phase 2.
+    test(
+      `${m.name}: dark gallery page count matches light`,
+      { timeout: 180000, skip: enriched ? false : 'not yet migrated (no enriched prose fields)' },
+      () => {
+        const lightPdfPath = path.join(
+          path.dirname(targetPaths(m).gallery),
+          `${m.name}.gallery.light.pdf`,
+        );
+        const darkPdfPath = path.join(
+          path.dirname(targetPaths(m).gallery),
+          `${m.name}.gallery.dark.pdf`,
+        );
+        assert.ok(
+          fs.existsSync(lightPdfPath),
+          `light PDF missing: ${path.relative(process.cwd(), lightPdfPath)} — run \`npm run build:galleries\``,
+        );
+        assert.ok(
+          fs.existsSync(darkPdfPath),
+          `dark PDF missing: ${path.relative(process.cwd(), darkPdfPath)} — run \`npm run build:galleries\``,
+        );
+        assert.equal(
+          pageCount(darkPdfPath),
+          pageCount(lightPdfPath),
+          `${m.name}.gallery.dark.pdf page count diverged from light — a transform may be dropping a slide under the dark variant`,
         );
       },
     );

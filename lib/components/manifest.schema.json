@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lattice.slidewright.dev/manifest.schema.json",
   "title": "Lattice component manifest",
-  "description": "Spec + prose source-of-truth for a Lattice layout. The engine reads name/function/form/substance/skeleton/slots/variants. The build-component-docs.js generator reads the prose fields (description, purpose, whenToUse, antiPatterns, related, variantDocs) to emit <name>.docs.md and <name>.gallery.md. See docs/design-system.md.",
+  "description": "Spec + prose source-of-truth for a Lattice layout. The engine reads name/function/form/substance/skeleton/slots/variants. The build-component-docs.js generator reads the prose fields (description, purpose, whenToUse, antiPatterns, related, variantDocs) to emit <name>.docs.md and <name>.gallery.md. See reference/design-system.md.",
   "type": "object",
   "required": ["name", "function", "form", "substance", "description", "skeleton"],
   "additionalProperties": false,
@@ -16,7 +16,16 @@
       "description": "The `_class` directive value (kebab-case)."
     },
     "function": {
-      "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery"]
+      "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery"],
+      "description": "Audience-function family the component belongs to (what the viewer leaves knowing). One of the seven taxonomies in reference/design-system.md §3."
+    },
+    "bucket": {
+      "enum": ["anchor", "statement", "inventory", "comparison", "progression", "evidence", "imagery", "chart", "diagram", "math", "code", "legal"],
+      "description": "Disk-layout bucket the component lives in under lib/components/<bucket>/<name>/. Defaults to the value of `function` when absent. Four substance-defined buckets (`chart` for data visualizations, `diagram` for topological visuals, `math` for typeset equations, `code` for syntax-highlighted source) and one domain-defined bucket (`legal` for legal-family components) override the function value when colocation aids maintenance — each substance bucket describes a category of rendered content, not the library that happens to render it today. See reference/design-system.md §9."
+    },
+    "galleryAuthored": {
+      "type": "boolean",
+      "description": "When true, the build-component-docs.js generator skips writing <name>.gallery.md (the file is hand-authored). Use this for components where variation lives in slide CONTENT, not in modifier classes — e.g. `diagram` (every Mermaid diagram type is the same _class) or future `code`/`math` if their galleries need a richer showcase than the manifest's variantDocs can express. <name>.docs.md is still generated from the manifest. The integration test continues to assert light/dark page-count parity for the PDFs but no longer derives the expected count from the manifest formula."
     },
     "form": {
       "enum": ["bookend", "divider", "canvas", "grid", "stack", "ledger", "panel", "matrix", "scatter", "timeline", "split"]

@@ -1,7 +1,7 @@
 ---
 marp: true
-theme: crepuscolo
 size: 4K
+theme: crepuscolo
 paginate: true
 header: "Lattice · Decision Framework Gallery"
 ---
@@ -169,8 +169,10 @@ flowchart LR
 
 ## Two failure modes the framework is designed to prevent
 
-- **False signal amplification.** A single loud voice — one enterprise customer, one analyst report, one VP who "has a feeling" — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight. Unless that source is the CEO, in which case the weight cap is a guideline.
-- **Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change. This rule was printed on a poster and placed in the meeting room. The poster has been replaced by a free-pizza flyer.
+- False signal amplification.
+  - A single loud voice — one enterprise customer, one analyst report, one VP who "has a feeling" — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight. Unless that source is the CEO, in which case the weight cap is a guideline.
+- Signal hoarding.
+  - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change. This rule was printed on a poster and placed in the meeting room. The poster has been replaced by a free-pizza flyer.
 
 ---
 
@@ -316,13 +318,13 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ## Four requirements every decision system must meet
 
-- Speed
+- **Speed**
   - Decisions must close within the window they are relevant to. A framework that takes six months to calibrate before its first useful output is not fast. We are not going to address this directly on this slide.
-- Auditability
+- **Auditability**
   - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment, compliance, and for reconstructing what happened after the launch goes badly.
-- Adoption
+- **Adoption**
   - If the team won't use it weekly, calibration never runs. Ninety minutes per PM is the ceiling we put in the deck. The actual usage data suggests the ceiling is closer to 11 minutes and one skipped retrospective per month.
-- Calibration
+- **Calibration**
   - The system must improve over time. A static scoring model is a spreadsheet with extra steps and a dashboard nobody checks.
 
 ---
@@ -949,7 +951,7 @@ Set `header:` and `footer:` in frontmatter for deck-level labels. The header alw
 
 A tall asset on a wide canvas, dark canvas variant. The lattice pattern fills the space on either side. This slide is in every gallery. It has never been used in a real deck. It is here to prove that it works.
 
-![bg fit](sample-image-portrait.svg)
+![bg fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -987,7 +989,7 @@ A tall asset on a wide canvas, dark canvas variant. The lattice pattern fills th
 
 This is the pattern for slides where the visual is the supporting material, not the argument. The image preserves its native aspect ratio; the lattice pattern frames whatever bands remain. No cropping, ever. Authors see the image they dropped in, which has historically been a stock photo of a lighthouse described as "a metaphor for signal."
 
-![bg right fit](sample-image.svg)
+![bg right fit](../lib/components/imagery/image/sample-image.svg)
 
 ---
 
@@ -1000,7 +1002,7 @@ This is the pattern for slides where the visual is the supporting material, not 
 
 Use `image left` when the visual earns the left-column position — when it is the premise, not the evidence. In practice this layout appears most often when someone wants the image on the left and discovers after the fact that there is a modifier for it.
 
-![bg left fit](sample-image-portrait.svg)
+![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -1013,7 +1015,7 @@ Use `image left` when the visual earns the left-column position — when it is t
 
 The `mirror` modifier is the canonical cross-cutting orientation flag. The `left` alias is preserved for backwards compatibility, which is the polite way of saying there are 40 existing decks that use `image left` and nobody wants to find them.
 
-![bg left fit](sample-image-portrait.svg)
+![bg left fit](../lib/components/imagery/image/sample-image-portrait.svg)
 
 ---
 
@@ -1025,7 +1027,7 @@ The `mirror` modifier is the canonical cross-cutting orientation flag. The `left
 
 Weekly Signal Brief — the primary deliverable of the intake pipeline, distributed every Monday, opened by an estimated 3 of the 14 eligible PMs
 
-![bg fit](sample-image.svg)
+![bg fit](../lib/components/imagery/image/sample-image.svg)
 
 ---
 

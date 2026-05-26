@@ -1,0 +1,37 @@
+/* diagram — evidence.canvas.graph
+ *
+ * The slide is one big Mermaid diagram. The fenced ```mermaid block
+ * is pre-rendered to inline SVG at build time (mmdc) and inflated at
+ * runtime in the marp-vscode preview path. CSS here only handles the
+ * heading and the size of the SVG container; per-diagram theming
+ * lives in the DIAGRAM OVERRIDES section near the end of the bundle.
+ *
+ * See lib/components/diagram/diagram.manifest.json for the component contract.
+ */
+
+
+
+section.diagram { align-items:center; }
+section.diagram h3 { margin-bottom:0.3125cqi; }
+section.diagram h2 { font-size:var(--fs-h3); margin-bottom:0.3125cqi; }
+section.diagram > p { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-muted); margin-bottom:var(--sp-sm); }
+
+/* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
+   Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
+   query the container width before rendering. width:100% on a freshly-inserted flex child
+   can resolve to 0 before the browser commits a layout pass.
+   100cqi (slide width) − 2 × var(--sp-2xl) padding = 90cqi. */
+section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); height:auto; max-width:100%; box-sizing:border-box; }
+
+/* Source <pre> in pending/error states occupies the same slot as the rendered
+ * diagram so the slide layout does not reflow when the diagram swaps in. */
+section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
+  flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
+}
+section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+/* Key Insight panel on diagram slides must stretch full-width to match every
+   other layout. section.diagram uses align-items:center which would shrink
+   the blockquote to fit-content; align-self:stretch overrides that. */
+section.diagram > blockquote { align-self:stretch; }
+
+

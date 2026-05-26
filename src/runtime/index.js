@@ -11,7 +11,7 @@
 // split-list, which the legacy inline mirror omitted). Chart-family,
 // roadmap, journey, word-cloud migrate into this registry in follow-up PRs.
 const sharedTransformerRegistry = require('../../lib/transformers/registry');
-const stateChartLayout = require('../../lib/components/state-chart/state-chart.transform');
+const stateChartLayout = require('../../lib/components/chart/state-chart/state-chart.transform');
 
 (() => {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
@@ -31,7 +31,7 @@ const stateChartLayout = require('../../lib/components/state-chart/state-chart.t
   // palette-blind. Per-diagram CSS overrides live in lattice.css's DIAGRAM
   // OVERRIDES section (loaded via the page stylesheet), not in this runtime —
   // only Mermaid's own themeVariables API surfaces are wired up here.
-  // See docs/notes/2026-05-12-diagram-tokens.md for the architecture.
+  // See reference/notes/2026-05-12-diagram-tokens.md for the architecture.
   function buildMermaidThemeVars() {
     if (typeof document === 'undefined') return {};
     // Marp scopes CSS custom properties to <section> elements, not :root.

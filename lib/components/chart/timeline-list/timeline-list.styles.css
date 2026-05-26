@@ -1,0 +1,101 @@
+/* timeline-list — extracted from lib/_legacy.css (batch 9).
+ * See lib/components/timeline-list/timeline-list.manifest.json for the component contract.
+ */
+
+/* ── TIMELINE-LIST · horizontal ──
+ * Ordered list rendered as a left-to-right spine with dots at each item.
+ * Date pill sits above the dot; title + status pill + body sit below.
+ * Items distribute evenly along the spine. */
+section.timeline-list.chart-frame .chart-body {
+  width: 100%;
+  padding: var(--sp-xl) var(--sp-2xl) var(--sp-lg);
+  align-items: center;
+  justify-content: center;
+}
+section.timeline-list .timeline-spine {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: start;
+  width: 100%;
+  max-width: 85.9375cqi;
+  padding: 0.9375cqi 0 0;  /* room for the dot to "sit on" the spine line */
+}
+/* The horizontal spine line runs through the centre of each dot. The dot
+ * is 1.09375cqi tall with 3px border on each side — its centre is 0.546875cqi
+ * from the top of timeline-item content. Spine padding-top is 0.9375cqi so
+ * the dot appears at y=0.9375cqi, centre at y≈1.484375cqi; line is at same. */
+section.timeline-list .timeline-spine::before {
+  content: '';
+  position: absolute;
+  top: 1.484375cqi;
+  left: 6%;
+  right: 6%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--accent) 12%, transparent) 0%,
+    color-mix(in oklab, var(--accent) 55%, transparent) 12%,
+    color-mix(in oklab, var(--accent) 55%, transparent) 88%,
+    color-mix(in oklab, var(--accent) 12%, transparent) 100%
+  );
+  transform: translateY(-1px);
+  z-index: 0;
+}
+section.timeline-list .timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--sp-sm);
+  z-index: 1;
+}
+section.timeline-list .timeline-dot {
+  width: 1.09375cqi; height: 1.09375cqi;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--bg);
+  margin-bottom: var(--sp-sm);
+  flex: 0 0 auto;
+}
+section.timeline-list .timeline-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 1.875cqi;
+  padding: 0 0.78125cqi;
+  margin-bottom: var(--sp-sm);
+  border-radius: 0.9375cqi;
+  background: var(--bg);
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--border));
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+section.timeline-list .timeline-pill--empty {
+  visibility: hidden;
+}
+section.timeline-list .timeline-title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text-heading);
+  text-align: center;
+  margin-bottom: 0.3125cqi;
+  line-height: var(--lh-tight);
+  max-width: 17.1875cqi;
+}
+section.timeline-list .timeline-item .chart-status {
+  margin-bottom: var(--sp-xs);
+}
+section.timeline-list .timeline-body {
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: var(--lh-relaxed);
+  max-width: 17.1875cqi;
+}

@@ -1,0 +1,17 @@
+/* closing — anchor.bookend.closing
+ *
+ * Mirror of title. Dark canvas, centered, no spectrum bar.
+ *
+ * See lib/components/closing/closing.manifest.json for the component contract.
+ */
+
+
+
+section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
+section.closing { border-top: none; }
+section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
+section.closing hr { margin:0 auto var(--sp-md); }
+section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
+
+

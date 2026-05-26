@@ -1,0 +1,420 @@
+/* kpi — extracted from lib/_legacy.css (batch 7).
+ * See lib/components/kpi/kpi.manifest.json for the component contract.
+ */
+
+/* ── KPI ───────────────────────────────────────────────────────────────
+ * ## heading (with optional eyebrow h3 above)
+ * 1. **94%**
+ *    - Token-issuance success
+ *    - target 99%, +2pp QoQ `On plan` `Board`
+ * 2. **8 ms**
+ *    - p99 detokenize
+ *    - target 10 ms, -3 ms QoQ `On plan` `SRE`
+ *
+ * Executive KPI system. One cohesive base, five layout modifiers:
+ *
+ *   kpi (bare)       — defaults to `briefing` (hero + 3 supports)
+ *   kpi.briefing     — board / financial: hero left + 3 hairline supports
+ *   kpi.ops          — SLO/SLA: 2×2 grid, slipping metrics in --warn
+ *   kpi.compliance   — legal / regulatory: vertical list + source footer
+ *   kpi.trajectory   — investor / period: 4-up cards, categorical stripes
+ *   kpi.spotlight    — single hero metric, monumentalised
+ *
+ * Shared primitives across all five:
+ *   · Eyebrow (h3)   — mono small caps "Domain · Period"
+ *   · Headline (h2)  — Playfair serif, one statement
+ *   · Number (strong)— Playfair display, tabular figures
+ *   · Pill (code)    — trailing inline `code` becomes a status / audience
+ *                       pill; first pill carries the status colour
+ *   · Flagship (✦)   — four-point star on critical / hero card
+ *
+ * The bare `kpi` class resolves to briefing styling — when authors don't
+ * pick a modifier, they get the power-play default.
+ * ──────────────────────────────────────────────────────────────────────── */
+section.kpi {
+  display: flex; flex-direction: column;
+  padding-top: var(--sp-md);
+  /* Trim the base 6.875cqi bottom padding — that much is pure reserved
+   * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
+   * KPI is the densest layout (hero + 3 metric rows + title); the extra
+   * ~3cqi lets the briefing supports breathe at metric size without the
+   * third row clipping the slide edge. */
+  padding-bottom: var(--sp-xl);
+}
+section.kpi h3 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-xs) 0;
+}
+section.kpi h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: var(--lh-tight);
+  margin: 0 0 var(--sp-md) 0;
+}
+section.kpi > ol,
+section.kpi > ul {
+  list-style: none; padding: 0; margin: 0;
+  flex: 1;
+}
+section.kpi > :where(ol, ul) > li::marker { content: ''; }
+section.kpi > :where(ol, ul) > li > :where(ul, ol) {
+  list-style: none; padding: 0; margin: 0;
+}
+section.kpi > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
+
+/* Pills — any `code` inside a kpi slide renders as a pill. First pill on
+ * each row carries the status colour (set per-row by the modifier's
+ * nth-child hooks); subsequent pills stay neutral. */
+section.kpi code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--pill-border, var(--text-muted));
+  background: var(--pill-bg, var(--bg));
+  color: var(--pill-fg, var(--text-body));
+  border-radius: 999px;
+  padding: 0.234375cqi 0.78125cqi;
+  white-space: nowrap;
+  margin-left: 0.46875cqi;
+  vertical-align: 1px;
+}
+section.kpi > :where(ol, ul) > li :where(ul, ol) > li code ~ code,
+section.kpi > :where(ol, ul) > li > code ~ code {
+  --pill-border: var(--text-muted);
+  --pill-bg: var(--bg);
+  --pill-fg: var(--text-muted);
+}
+
+/* Shared number / label / target typography. */
+section.kpi > :where(ol, ul) > li > strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  display: block;
+}
+section.kpi > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text-heading);
+  margin-top: var(--sp-sm);
+  line-height: var(--lh-snug);
+}
+section.kpi > :where(ol, ul) > li > :where(ul, ol) > li + li {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+  margin-top: var(--sp-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ─ MODIFIER · BRIEFING (also the bare-kpi default) ─────────────────── */
+section.kpi.briefing > ol,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 0 var(--sp-2xl);
+}
+section.kpi.briefing > ol > li:nth-child(1),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) {
+  grid-column: 1; grid-row: 1 / -1;
+  background: var(--accent-soft);
+  padding: var(--sp-xl) var(--sp-2xl);
+  position: relative;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  border-left: 4px solid var(--accent);
+}
+section.kpi.briefing > ol > li:nth-child(1)::after,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1)::after {
+  content: '✦';
+  position: absolute;
+  top: var(--sp-lg); right: var(--sp-lg);
+  font-size: var(--fs-h2);
+  color: var(--accent);
+  line-height: 1;
+}
+section.kpi.briefing > ol > li:nth-child(1) > strong,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) > strong {
+  font-size: var(--fs-hero);
+  line-height: 0.88;
+}
+section.kpi.briefing > ol > li:nth-child(1) > ul > li:first-child,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(1) > ul > li:first-child {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  margin-top: var(--sp-md);
+}
+section.kpi.briefing > ol > li:not(:first-child),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) {
+  grid-column: 2;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: var(--sp-xs) 0;
+}
+section.kpi.briefing > ol > li:nth-child(2),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(2) {
+  grid-row: 1;
+  border-top: 1.5px solid var(--text-heading);
+}
+section.kpi.briefing > ol > li:nth-child(3),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(3) {
+  grid-row: 2;
+  border-top: 1px solid var(--border);
+}
+section.kpi.briefing > ol > li:nth-child(4),
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:nth-child(4) {
+  grid-row: 3;
+  border-top: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--text-heading);
+}
+/* Briefing supports: 3.9583cqi (= 38pt) sits between --fs-h2 (28pt, reads
+ * as a heading, too quiet next to the hero) and --fs-h1 (48pt, which makes
+ * 3 stacked supports overflow the right column). Layout-specific metric
+ * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
+section.kpi.briefing > ol > li:not(:first-child) > strong,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
+  font-size: 3.9583cqi;
+}
+section.kpi.briefing > ol > li,
+section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
+  --pill-border: var(--pass);
+  --pill-bg: var(--pass-bg);
+  --pill-fg: var(--pass);
+}
+/* `attention` modifier — the hero is the one slipping. Hero pill turns
+ * warn-coloured and the accent left-border picks up --warn too. Use
+ * when the hero metric is below target / off plan. */
+section.kpi.attention > ol > li:nth-child(1) {
+  --pill-border: var(--warn);
+  --pill-bg: var(--warn-bg);
+  --pill-fg: var(--warn);
+}
+section.kpi.attention > ol > li:nth-child(1) {
+  border-left-color: var(--warn);
+}
+section.kpi.attention > ol > li:nth-child(1)::after {
+  color: var(--warn);
+}
+
+/* ─ MODIFIER · OPS (SLO/SLA review) ─────────────────────────────────── */
+section.kpi.ops > ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--sp-md);
+}
+section.kpi.ops > ol > li {
+  background: var(--bg-alt);
+  padding: var(--sp-md) var(--sp-lg);
+  display: flex; flex-direction: column;
+  justify-content: center;
+  position: relative;
+  min-width: 0;
+}
+section.kpi.ops > ol > li > strong {
+  font-size: var(--fs-h1);
+  line-height: 0.92;
+}
+section.kpi.ops > ol > li:nth-child(1),
+section.kpi.ops > ol > li:nth-child(3) {
+  --pill-border: var(--warn);
+  --pill-bg: var(--warn-bg);
+  --pill-fg: var(--warn);
+}
+section.kpi.ops > ol > li:nth-child(2),
+section.kpi.ops > ol > li:nth-child(4) {
+  --pill-border: var(--pass);
+  --pill-bg: var(--pass-bg);
+  --pill-fg: var(--pass);
+}
+section.kpi.ops > ol > li:nth-child(1) > strong,
+section.kpi.ops > ol > li:nth-child(3) > strong { color: var(--warn); }
+
+/* ─ MODIFIER · COMPLIANCE (legal / regulatory) ──────────────────────── */
+section.kpi.compliance > ol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+section.kpi.compliance > ol > li {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  grid-template-rows: auto auto;
+  column-gap: var(--sp-2xl);
+  row-gap: var(--sp-xs);
+  padding: var(--sp-md) 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+section.kpi.compliance > ol > li:last-child {
+  border-bottom: 1.5px solid var(--text-heading);
+}
+section.kpi.compliance > ol > li > strong {
+  grid-column: 1; grid-row: 1 / 3;
+  font-size: var(--fs-h1);
+  min-width: 4ch;
+  text-align: right;
+  align-self: center;
+}
+section.kpi.compliance > ol > li > ul { display: contents; }
+section.kpi.compliance > ol > li > ul > li:first-child {
+  grid-column: 2; grid-row: 1;
+  margin-top: 0;
+}
+section.kpi.compliance > ol > li > ul > li + li {
+  grid-column: 2; grid-row: 2;
+  margin-top: 0;
+}
+section.kpi.compliance > ol > li > ul > li code:first-of-type {
+  grid-column: 3; grid-row: 1 / 3;
+  align-self: center;
+  margin-left: 0;
+}
+section.kpi.compliance > ol > li:nth-child(1),
+section.kpi.compliance > ol > li:nth-child(2),
+section.kpi.compliance > ol > li:nth-child(4) {
+  --pill-border: var(--pass);
+  --pill-bg: var(--pass-bg);
+  --pill-fg: var(--pass);
+}
+section.kpi.compliance > ol > li:nth-child(3) {
+  --pill-border: var(--warn);
+  --pill-bg: var(--warn-bg);
+  --pill-fg: var(--warn);
+}
+section.kpi.compliance > p:last-of-type {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: var(--sp-md) 0 0 0;
+}
+
+/* ─ MODIFIER · TRAJECTORY (investor / period-over-period) ───────────── */
+section.kpi.trajectory > ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  align-content: center;
+  gap: var(--sp-md);
+}
+section.kpi.trajectory > ol > li {
+  background: var(--bg-alt);
+  padding: var(--sp-lg) var(--sp-md);
+  display: flex; flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-sm);
+  position: relative;
+  border-top: 4px solid var(--accent);
+}
+section.kpi.trajectory > ol > li:nth-child(1) { border-top-color: var(--c1-dark); }
+section.kpi.trajectory > ol > li:nth-child(2) { border-top-color: var(--c2-dark); }
+section.kpi.trajectory > ol > li:nth-child(3) { border-top-color: var(--c3-dark); }
+section.kpi.trajectory > ol > li:nth-child(4) { border-top-color: var(--c4-dark); }
+section.kpi.trajectory > ol > li > strong {
+  font-size: var(--fs-h1);
+  line-height: 1;
+}
+section.kpi.trajectory > ol > li {
+  --pill-border: var(--pass);
+  --pill-bg: var(--pass-bg);
+  --pill-fg: var(--pass);
+}
+
+/* ─ MODIFIER · SPOTLIGHT (single hero metric) ───────────────────────── */
+section.kpi.spotlight > ol {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: stretch;
+  gap: var(--sp-2xl);
+}
+section.kpi.spotlight > ol > li:nth-child(1) {
+  grid-column: 1; grid-row: 1 / -1;
+  background: var(--accent-soft);
+  padding: var(--sp-lg) var(--sp-xl);
+  position: relative;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  border-left: 4px solid var(--accent);
+}
+section.kpi.spotlight > ol > li:nth-child(1)::after {
+  content: '✦';
+  position: absolute;
+  top: var(--sp-xl); right: var(--sp-xl);
+  font-size: var(--fs-h1);
+  color: var(--accent);
+  line-height: 1;
+}
+section.kpi.spotlight > ol > li:nth-child(1) > strong {
+  font-size: var(--fs-hero);
+  line-height: 0.88;
+}
+section.kpi.spotlight > ol > li:nth-child(1) > ul > li:first-child {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  margin-top: var(--sp-md);
+}
+section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  letter-spacing: 0;
+  text-transform: none;
+  margin-top: var(--sp-sm);
+  line-height: var(--lh-snug);
+}
+section.kpi.spotlight > ol > li:nth-child(1) {
+  --pill-border: var(--pass);
+  --pill-bg: var(--pass-bg);
+  --pill-fg: var(--pass);
+}
+section.kpi.spotlight > ol > li:nth-child(2) { grid-column: 2; grid-row: 1; }
+section.kpi.spotlight > ol > li:nth-child(3) { grid-column: 2; grid-row: 2; }
+section.kpi.spotlight > ol > li:nth-child(4) { grid-column: 2; grid-row: 3; }
+section.kpi.spotlight > ol > li:not(:first-child) {
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 0;
+}
+section.kpi.spotlight > ol > li:nth-child(2) { border-top: 1.5px solid var(--text-heading); }
+section.kpi.spotlight > ol > li:nth-child(3) { border-top: 1px solid var(--border); }
+section.kpi.spotlight > ol > li:nth-child(4) {
+  border-top: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--text-heading);
+}
+section.kpi.spotlight > ol > li:not(:first-child) > strong {
+  font-size: var(--fs-emphasis);
+}
+section.kpi.spotlight > ol > li:not(:first-child) > ul > li:first-child {
+  margin-top: 0.15625cqi;
+  font-size: var(--fs-body);
+}
+section.kpi.spotlight > ol > li:not(:first-child) > ul > li + li {
+  font-size: 0.859375cqi;
+  margin-top: 0.15625cqi;
+}
+section.kpi.spotlight > ol > li:not(:first-child) code {
+  padding: 0.15625cqi 0.625cqi;
+  font-size: 0.78125cqi;
+}
+
+
+
+

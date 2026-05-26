@@ -37,7 +37,7 @@
  *   node tools/build-css.js --check  # exit 1 if stale (CI gate)
  *   npm run css:build / css:check
  *
- * See docs/design-system.md §10.
+ * See reference/design-system.md §10.
  */
 
 const fs = require('node:fs');
@@ -74,7 +74,9 @@ const MODIFIERS_SOURCE = 'lib/base/base.modifiers.css';
 const SYNTAX_HIGHLIGHT_SOURCE = 'lib/integrations/highlight-js/highlight-js.css';
 // Shared chart-frame chrome + .chart-status pill vocabulary, shared
 // by gantt, radar, quadrant, progress, piechart, kanban, timeline-list.
-const CHART_FAMILY_SOURCE = 'lib/chart-family/chart-family.css';
+// Lives in the chart bucket under an underscore-prefixed folder
+// (skipped by the component loader and the bucket-wide CSS walker).
+const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css';
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
@@ -102,28 +104,71 @@ function readIfExists(rel) {
   return fs.readFileSync(abs, 'utf8').replace(/\s+$/, '') + '\n';
 }
 
+// Walk lib/components/ for per-component <name>.styles.css files. Tolerates
+// three shapes during the Phase 3 disk-reorg migration:
+//   1. Flat per-component:  lib/components/<name>/<name>.styles.css
+//   2. Bucket-nested:       lib/components/<bucket>/<name>/<name>.styles.css
+//   3. Legacy:              lib/components/<name>/styles.css
+//
+// A directory whose own <dirname>.styles.css exists is treated as a
+// component (covers the `diagram` collision, where the component name
+// matches a bucket name). Otherwise we treat it as a bucket and recurse
+// one level. Sorting by component name keeps bundle order stable
+// regardless of which bucket a component lives in.
 function componentStyles() {
-  const dir = path.join(ROOT, 'lib', 'components');
-  if (!fs.existsSync(dir)) return [];
-  const names = fs
-    .readdirSync(dir, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .map((e) => e.name)
-    .sort();
-  const out = [];
-  for (const name of names) {
-    // Dotted convention: <name>.styles.css; tolerate legacy styles.css too.
-    const dotted = path.join('lib', 'components', name, `${name}.styles.css`);
-    const legacy = path.join('lib', 'components', name, 'styles.css');
+  const root = path.join(ROOT, 'lib', 'components');
+  if (!fs.existsSync(root)) return [];
+  const collected = new Map(); // name → { rel, text }
+
+  function tryReadFor(parentRelDir, name) {
+    if (collected.has(name)) return false;
+    const dotted = path.join(parentRelDir, name, `${name}.styles.css`);
+    const legacy = path.join(parentRelDir, name, 'styles.css');
     const dottedText = readIfExists(dotted);
     if (dottedText) {
-      out.push({ rel: dotted, text: dottedText });
-      continue;
+      collected.set(name, { rel: dotted, text: dottedText });
+      return true;
     }
     const legacyText = readIfExists(legacy);
-    if (legacyText) out.push({ rel: legacy, text: legacyText });
+    if (legacyText) {
+      collected.set(name, { rel: legacy, text: legacyText });
+      return true;
+    }
+    return false;
   }
-  return out;
+
+  function isComponentDir(parentAbsDir, name) {
+    return (
+      fs.existsSync(path.join(parentAbsDir, name, `${name}.styles.css`)) ||
+      fs.existsSync(path.join(parentAbsDir, name, 'styles.css'))
+    );
+  }
+
+  const entries = fs.readdirSync(root, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    if (entry.name.startsWith('_')) continue;
+
+    // Component directly under lib/components/ (flat or per-component).
+    if (isComponentDir(root, entry.name)) {
+      tryReadFor(path.join('lib', 'components'), entry.name);
+      continue;
+    }
+
+    // Otherwise treat as a bucket and walk one level deeper.
+    const bucketRel = path.join('lib', 'components', entry.name);
+    const bucketDir = path.join(root, entry.name);
+    const children = fs.readdirSync(bucketDir, { withFileTypes: true });
+    for (const child of children) {
+      if (!child.isDirectory()) continue;
+      if (child.name.startsWith('_')) continue;
+      tryReadFor(bucketRel, child.name);
+    }
+  }
+
+  return [...collected.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, v]) => v);
 }
 
 function bundle() {

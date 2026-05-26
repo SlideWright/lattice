@@ -1,0 +1,73 @@
+/* compare-code — extracted from lib/_legacy.css (batch 5).
+ * See lib/components/compare-code/compare-code.manifest.json for the component contract.
+ */
+
+/* ── COMPARE-CODE ──
+ * `eyebrow(opt)` ## heading  `left-label` ```block  `right-label` ```block
+ * Column labels are inline-code paragraphs (p>code), consistent with the eyebrow convention.
+ * CSS arranges the two p>code+pre pairs side by side.
+ */
+section.compare-code { }
+section.compare-code h2 { margin-bottom:var(--sp-sm); }
+section.compare-code .code-cols { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-md); flex:1; }
+section.compare-code .code-col { display:flex; flex-direction:column; gap:var(--sp-xs); }
+/* Column label: p>code inside .code-col (JS path) or h2 ~ p>code (fallback path) */
+section.compare-code .code-col p:has(> code:only-child),
+section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; }
+section.compare-code .code-col p:has(> code:only-child) > code,
+section.compare-code h2 ~ p:has(> code:only-child) > code {
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
+  letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
+  background:none; border:none; padding:0; border-radius:0;
+}
+section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
+section.compare-code pre > code { font-family:var(--font-mono); font-size:var(--fs-meta); line-height:var(--lh-base); color:var(--code-text); background:none; padding:0; display:block; }
+
+/* ── COMPARE-CODE fallback ───────────────────────────────────────────────────
+ * Column labels are p>code (inline code paragraphs), matching the eyebrow convention.
+ * Optional eyebrow = p>code placed before h2 (identical to other slide types).
+ *
+ * Detection: :has(> p ~ h2) = "a direct-child p precedes h2 as a sibling" = eyebrow present.
+ * Marp injects <header> into every section, so :has(> h2:first-child) is unreliable.
+ * :has(> p ~ h2) is not nested :has() — p and h2 are both direct child refs.
+ *
+ * Without eyebrow: h2 row1; p(1) col1 row2; p(2) col2 row2; pre(1/2) row3; bq row4
+ * With eyebrow:    p(1)=eyebrow row1; h2 row2; p(2) col1 row3; p(3) col2 row3; pre(1/2) row4; bq row5 */
+
+/* Shared grid shell */
+section.compare-code:not(:has(.code-cols)) {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 var(--sp-md);
+}
+
+/* ── Eyebrow-aware grid rows — appended Phase 7 ──
+ * The :not(:has(.code-cols)) path is the marp-vscode preview fallback
+ * (the post-processor adds .code-cols in the build path). These two
+ * rules handle the WITH-eyebrow (p>code precedes h2) and WITHOUT-
+ * eyebrow grid-row layouts. Originally lived in lib/_legacy.css
+ * under the MARP VS CODE PREVIEW FALLBACKS section.
+ */
+
+/* ── WITHOUT eyebrow (no p precedes h2 among siblings) ── */
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) {
+  grid-template-rows:auto auto 1fr auto;
+}
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > h2               { grid-column:1 / -1; grid-row:1; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(1) { grid-column:1; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > p:nth-of-type(2) { grid-column:2; grid-row:2; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(1) { grid-column:1; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > pre:nth-of-type(2) { grid-column:2; grid-row:3; margin:0; }
+section.compare-code:not(:has(.code-cols)):not(:has(> p ~ h2)) > blockquote         { grid-column:1 / -1; grid-row:4; margin-top:var(--sp-xs); }
+
+/* ── WITH eyebrow (p>code precedes h2 among siblings) ── */
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) {
+  grid-template-rows:auto auto auto 1fr auto;
+}
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(1) { grid-column:1 / -1; grid-row:1; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > h2               { grid-column:1 / -1; grid-row:2; margin-bottom:var(--sp-sm); }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(2) { grid-column:1; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > p:nth-of-type(3) { grid-column:2; grid-row:3; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(1) { grid-column:1; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > pre:nth-of-type(2) { grid-column:2; grid-row:4; margin:0; }
+section.compare-code:not(:has(.code-cols)):has(> p ~ h2) > blockquote         { grid-column:1 / -1; grid-row:5; margin-top:var(--sp-xs); }

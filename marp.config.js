@@ -97,7 +97,7 @@ function readDeckLogoFrontMatter(src) {
  * does NOT load workspace marp.config.js plugins, so the logo does
  * not appear there. Same limitation
  * lattice-runtime.js's applyDeckClassFromFrontMatter documents at
- * lines 3399-3401. See docs/references/gotchas.md.
+ * lines 3399-3401. See reference/engineering/gotchas.md.
  */
 function applyDeckLogoToHtml(html, markdown) {
   const cfg = readDeckLogoFrontMatter(markdown);
@@ -587,10 +587,31 @@ function latticeplotFences(md) {
 module.exports = {
   themeSet: [
     "lattice.css",
-    "themes/indaco.css",
-    "themes/indaco-dark.css",
+    "themes/ardesia.css",
+    "themes/ardesia-dark.css",
+    "themes/atelier.css",
+    "themes/atelier-dark.css",
+    "themes/brina.css",
+    "themes/brina-dark.css",
+    "themes/burgundy.css",
+    "themes/burgundy-dark.css",
+    "themes/carbone.css",
+    "themes/concrete.css",
+    "themes/concrete-dark.css",
+    "themes/crepuscolo.css",
+    "themes/crepuscolo-dark.css",
     "themes/cuoio.css",
     "themes/cuoio-dark.css",
+    "themes/indaco.css",
+    "themes/indaco-dark.css",
+    "themes/laguna.css",
+    "themes/laguna-dark.css",
+    "themes/magnolia.css",
+    "themes/magnolia-dark.css",
+    "themes/mustard.css",
+    "themes/mustard-dark.css",
+    "themes/onyx.css",
+    "themes/onyx-dark.css",
   ],
   html: true,
   allowLocalFiles: true,

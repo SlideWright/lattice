@@ -85,9 +85,10 @@ themes/indaco.css   declares @theme indaco; imports 'lattice' (which is register
                                                   ↓
 lattice.css         (bundled output) declares @theme lattice via lib/_theme.css
                                                   ↓
-                    contains all of: lib/base/, lib/shared/, lib/chart-family/,
+                    contains all of: lib/base/, lib/shared/,
                                      lib/integrations/{mermaid,highlight-js,marp}/,
-                                     and every lib/components/<name>/<name>.styles.css
+                                     lib/components/chart/_chart-family/chart-family.css,
+                                     and every lib/components/<bucket>/<name>/<name>.styles.css
 ```
 
 Marp registers `lattice.css` and all the palette themes via
@@ -126,7 +127,7 @@ integration docs.
 - `lib/_theme.css` — the `@theme lattice` declaration that turns the
   bundle into a registered Marp theme.
 - `themes/README.md` — palette authoring contract.
-- `docs/theming.md` — how palettes map their tokens onto Lattice's
+- `reference/theming.md` — how palettes map their tokens onto Lattice's
   structural surface.
 - `marp.config.js` — Marp's runtime config (lives at repo root).
 - Marp upstream: <https://marpit.marp.app/> for the Marpit core spec

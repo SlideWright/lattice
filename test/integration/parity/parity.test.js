@@ -14,15 +14,18 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
+const path = require('node:path');
 const { runEmulator, runMarp } = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
+
+const GALLERY = path.join(__dirname, '..', 'baseline-decks', 'gallery.md');
 
 describe('parity', () => {
   test('emulator and marp-cli agree on gallery.md page count',
     { timeout: 240000 },
     () => {
-      const emPdf = runEmulator('gallery.md');
-      const mpPdf = runMarp('gallery.md');
+      const emPdf = runEmulator(GALLERY);
+      const mpPdf = runMarp(GALLERY);
       const em = pageCount(emPdf);
       const mp = pageCount(mpPdf);
       // Marp/Chromium adds one blank trailing page; tolerate a delta of 1.

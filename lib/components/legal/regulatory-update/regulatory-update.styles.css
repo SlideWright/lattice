@@ -1,0 +1,241 @@
+/* regulatory-update — progression.ledger.structure
+ *
+ * Extracted from lib/_legacy.css in Phase 4 (completed via Phase 7
+ * finale after three failed attempts). See lib/components/regulatory-
+ * update/manifest.json for the component contract.
+ *
+ * SPECIFICITY-BUMP HACK (transitional). Every section.regulatory-update
+ * selector in this file is doubled to section.regulatory-update.regulatory-
+ * update. Why: slides authored as `<!-- _class: regulatory-update timeline -->`
+ * carry BOTH `.regulatory-update` AND `.timeline` classes, so
+ * `section.timeline > ol > li::before { content: counter(timeline-counter) }`
+ * (specificity 0,1,4) and `section.timeline h2 { margin-bottom: var(--sp-xl) }`
+ * (specificity 0,1,2) MATCH and tie with the corresponding regulatory-
+ * update rules.
+ *
+ * Pre-extraction, regulatory-update's CSS lived at the very end of
+ * _legacy.css and won by source order. Post-extraction, this file
+ * bundles alphabetically BEFORE lib/components/timeline/styles.css —
+ * so timeline now wins source order, replacing the leading-zero
+ * counter with plain decimal and inflating h2 margin-bottom by 36px.
+ *
+ * The doubled class adds 0,1,0 to every selector → 0,2,N → beats the
+ * timeline component's 0,1,N rules on specificity, not source order.
+ * Same pattern as the citation-card / redline hacks earlier in the
+ * branch. Tracked for cleanup once the broader cascade story is
+ * designed (likely: namespace component selectors more defensively,
+ * or activate @layer once _legacy.css is fully retired).
+ *
+ * Pixel-check verified: 22/23 decks byte/pixel-clean against
+ * pre-phase-5b baseline (component-gallery diffs are leftover from
+ * earlier journey + math slide additions, not regulatory-update).
+ */
+
+/* ── REGULATORY-UPDATE ────────────────────────────────────────────────
+ * Period-bounded changelog. "What's new" rhythm.
+ *
+ * <!-- _class: regulatory-update -->
+ * `Q1 2026 · Federal · State · International`
+ * 1. EU AI Act
+ *    - `Title III · High-risk systems`
+ *    - Conformity-assessment pre-market obligation took effect.
+ *    - `Effective Feb 2026`
+ * 2. FTC Order
+ *    - `In re BetterHelp · §5 unfairness`
+ *    - …
+ *
+ * Authoring contract: top-level li carries ONLY the regulation name
+ * (auto-bolded by slotLabelLift). Nested ul carries the body — first
+ * item is the citation chip (only-child <code>), middle items are
+ * prose, last item is the impact / date pill (only-child <code>).
+ *
+ * Default = vertical changelog (numbered, citation chip, body, pill).
+ * Variants: .cards, .timeline, .diff-bands, .priority.
+ * ──────────────────────────────────────────────────────────────────── */
+section.regulatory-update { display:flex; flex-direction:column; }
+section.regulatory-update.regulatory-update h2 { margin-bottom:var(--sp-xs); }
+section.regulatory-update.regulatory-update > p:has(> code:only-child) {
+  margin:0 0 var(--sp-md);
+  font-family:var(--font-mono);
+  font-size:var(--fs-meta);
+  letter-spacing:0.06em;
+  color:var(--accent);
+}
+section.regulatory-update.regulatory-update > p:has(> code:only-child) > code {
+  background:none; border:none; padding:0; color:inherit;
+}
+section.regulatory-update.regulatory-update > ol,
+section.regulatory-update.regulatory-update > ul {
+  list-style:none; padding:0; margin:0;
+  counter-reset:upd;
+  display:flex; flex-direction:column;
+  gap:var(--sp-xs);
+  flex:1;
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li {
+  counter-increment:upd;
+  display:grid;
+  grid-template-columns:auto auto auto 1fr auto;
+  grid-template-rows:auto auto;
+  column-gap:var(--sp-md);
+  row-gap:0.234375cqi;
+  align-items:baseline;
+  padding:0.625cqi var(--sp-md);
+  background:var(--bg-alt);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+  color:var(--text-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-snug);
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li::marker { content:''; }
+section.regulatory-update.regulatory-update > :is(ol, ul) > li::before {
+  content:counter(upd, decimal-leading-zero);
+  grid-column:1; grid-row:1;
+  font-family:var(--font-mono);
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.04em;
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > strong:first-child {
+  grid-column:2; grid-row:1;
+  font-size:var(--fs-body);
+  font-weight:700;
+  color:var(--text-heading);
+}
+/* Body list uses display:contents so its <li> children land directly in
+ * the parent grid. Cite chip on row 1 col 3, prose on row 2 spans 2-4,
+ * pill on row 1 col 5 (right-anchored). */
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > ul,
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > ol {
+  display:contents;
+  list-style:none;
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li {
+  font-size:var(--fs-body);
+  color:var(--text-body);
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li::marker { content:''; }
+/* Citation chip — first nested item, only-child <code>. Row 1, col 3. */
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) {
+  grid-column:3; grid-row:1;
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:first-child:has(> code:only-child) > code {
+  font-family:var(--font-mono);
+  font-size:var(--fs-meta);
+  font-weight:600;
+  color:var(--text-muted);
+  background:none; border:none; padding:0;
+}
+/* Prose body — middle nested items. Row 2 spans cols 2-4. */
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:not(:first-child):not(:last-child) {
+  grid-column:2 / span 3; grid-row:2;
+}
+/* Impact / date pill — last nested item, only-child <code>. Row 1, col 5. */
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:last-child:has(> code:only-child) {
+  grid-column:5; grid-row:1;
+  justify-self:end;
+}
+section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:var(--fs-meta);
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:0.156cqi 0.625cqi;
+  border-radius:999px;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+
+/* .cards — items as 2x2 grid of cards. */
+section.regulatory-update.regulatory-update.cards > :is(ol, ul) {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--sp-md);
+}
+section.regulatory-update.regulatory-update.cards > :is(ol, ul) > li {
+  grid-template-columns:auto 1fr;
+  grid-template-rows:auto auto 1fr;
+  padding:var(--sp-md);
+}
+section.regulatory-update.regulatory-update.cards > :is(ol, ul) > li::before { grid-row:1; }
+section.regulatory-update.regulatory-update.cards > :is(ol, ul) > li > strong:first-child { grid-row:1; grid-column:2; }
+section.regulatory-update.regulatory-update.cards > :is(ol, ul) > li > :is(ul, ol) {
+  grid-row:2; grid-column:1 / -1;
+  margin-top:var(--sp-sm);
+}
+
+/* .timeline — horizontal row of timestamped milestones. */
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul) {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow:column;
+  gap:var(--sp-md);
+  position:relative;
+}
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul)::before {
+  content:'';
+  position:absolute;
+  top:1.4cqi; left:5cqi; right:5cqi;
+  height:2px;
+  background:var(--accent-soft);
+  z-index:0;
+}
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li {
+  display:flex; flex-direction:column; gap:var(--sp-xs);
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-top:none;
+  padding-top:var(--sp-lg);
+  position:relative;
+}
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li::before {
+  position:absolute; top:0; left:50%; transform:translate(-50%, -50%);
+  background:var(--accent); color:var(--on-accent);
+  border-radius:999px;
+  padding:0.234375cqi 0.78125cqi;
+  z-index:1;
+}
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li > strong:first-child { font-size:var(--fs-body); }
+section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li > :is(ul, ol) { margin-top:var(--sp-xs); }
+
+/* .diff-bands — sections by change kind: ADDED / AMENDED / REPEALED / ENFORCED.
+ * Author writes h3 section headers within the slide. */
+section.regulatory-update.regulatory-update.diff-bands > :is(ol, ul) > li { border-left-width:4px; padding:var(--sp-xs) var(--sp-md); background:none; border-color:transparent; border-bottom:1px solid var(--border); border-radius:0; }
+section.regulatory-update.regulatory-update.diff-bands > :is(ol, ul) > li::before { display:none; }
+section.regulatory-update.regulatory-update.diff-bands > h3 {
+  margin:var(--sp-md) 0 var(--sp-xs);
+  font-family:var(--font-mono);
+  font-size:var(--fs-meta);
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  padding-bottom:0.234375cqi;
+  border-bottom:1px solid var(--accent);
+}
+section.regulatory-update.regulatory-update.diff-bands > h3:first-of-type { margin-top:0; }
+section.regulatory-update.regulatory-update.diff-bands > h3:nth-of-type(8n+1) { color:var(--pass); border-color:var(--pass); }
+section.regulatory-update.regulatory-update.diff-bands > h3:nth-of-type(8n+2) { color:var(--warn); border-color:var(--warn); }
+section.regulatory-update.regulatory-update.diff-bands > h3:nth-of-type(8n+3) { color:var(--fail); border-color:var(--fail); }
+section.regulatory-update.regulatory-update.diff-bands > h3:nth-of-type(8n+4) { color:var(--accent); border-color:var(--accent); }
+
+/* .priority — tiered priority badges. */
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li::before {
+  content:'TIER ' counter(upd);
+  background:var(--accent);
+  color:var(--on-accent);
+  border-radius:999px;
+  padding:0.234375cqi 0.625cqi;
+  font-size:var(--fs-meta);
+}
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1) { border-left-color:var(--fail); }
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1)::before { background:var(--fail); }
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(2) { border-left-color:var(--warn); }
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(2)::before { background:var(--warn); }
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3) { border-left-color:var(--pass); }
+section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(3)::before { background:var(--pass); }

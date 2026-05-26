@@ -23,7 +23,7 @@ describe('preview scope detector', () => {
 
   test('test or docs change only → L0', () => {
     assert.equal(detectScope(['test/unit/something.test.js']).level, 'L0');
-    assert.equal(detectScope(['docs/design-system.md']).level, 'L0');
+    assert.equal(detectScope(['reference/design-system.md']).level, 'L0');
     assert.equal(detectScope(['package.json']).level, 'L0');
   });
 
@@ -51,7 +51,7 @@ describe('preview scope detector', () => {
     const s = detectScope(['lib/components/cards-grid/cards-grid.styles.css']);
     assert.equal(s.level, 'L2');
     assert.deepEqual(s.components, ['cards-grid']);
-    assert.ok(s.decks.includes('gallery'), 'gallery uses cards-grid');
+    assert.ok(s.decks.includes('gallery-jargon'), 'gallery-jargon uses cards-grid');
   });
 
   test('component transform.js → L2', () => {
@@ -74,7 +74,7 @@ describe('preview scope detector', () => {
   test('renderer (engine) change → L3', () => {
     assert.equal(detectScope(['lattice-emulator.js']).level, 'L3');
     assert.equal(detectScope(['marp.config.js']).level, 'L3');
-    assert.equal(detectScope(['lib/chart-family.js']).level, 'L3');
+    assert.equal(detectScope(['lib/components/chart/_chart-family/chart-family.js']).level, 'L3');
   });
 
   test('explicit deck override → L1 with that deck', () => {
@@ -127,7 +127,7 @@ describe('preview scope detector', () => {
 describe('decksUsingComponent', () => {
   test('returns the decks whose source mentions the component class', () => {
     const decks = decksUsingComponent('cards-grid');
-    assert.ok(decks.includes('gallery'), 'gallery uses cards-grid');
+    assert.ok(decks.includes('gallery-jargon'), 'gallery-jargon uses cards-grid');
   });
 
   test('returns empty array for an unused component', () => {

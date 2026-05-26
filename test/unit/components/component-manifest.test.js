@@ -21,6 +21,7 @@ const os = require('node:os');
 const path = require('node:path');
 const {
   FUNCTIONS,
+  BUCKETS,
   FORMS,
   SUBSTANCES,
   MIXED_SUBSTANCE,
@@ -34,6 +35,8 @@ const {
   loadOne,
   loadAll,
   groupByFunction,
+  groupByBucket,
+  manifestBucket,
 } = require('../../../lib/components');
 
 const GOOD = Object.freeze({
@@ -248,7 +251,8 @@ describe('component-manifest', () => {
 
   describe('loadOne', () => {
     test('loads and validates a real manifest file', () => {
-      const m = loadOne(path.join(__dirname, '..', '..', '..', 'lib', 'components', 'cards-grid', 'cards-grid.manifest.json'));
+      // Bucket-nested layout (Phase 3+).
+      const m = loadOne(path.join(__dirname, '..', '..', '..', 'lib', 'components', 'inventory', 'cards-grid', 'cards-grid.manifest.json'));
       assert.equal(m.name, 'cards-grid');
       assert.equal(m.function, 'inventory');
     });
@@ -405,6 +409,187 @@ describe('component-manifest', () => {
       const g = groupByFunction([]);
       for (const fn of FUNCTIONS) {
         assert.ok(Array.isArray(g[fn]), `${fn} should be an array`);
+      }
+    });
+  });
+
+  describe('bucket field', () => {
+    test('accepts a valid bucket value', () => {
+      assert.deepEqual(validate({ ...GOOD, bucket: 'chart' }), []);
+      assert.deepEqual(validate({ ...GOOD, bucket: 'diagram' }), []);
+      assert.deepEqual(validate({ ...GOOD, bucket: 'inventory' }), []);
+    });
+
+    test('rejects an unknown bucket value', () => {
+      const errors = validate({ ...GOOD, bucket: 'gallery' });
+      assert.match(errors[0], /bucket must be one of/);
+    });
+
+    test('bucket is optional — manifests without it pass validation', () => {
+      const m = { ...GOOD };
+      assert.equal(m.bucket, undefined);
+      assert.deepEqual(validate(m), []);
+    });
+
+    test('BUCKETS is FUNCTIONS plus chart, diagram, math, code, and legal', () => {
+      assert.deepEqual([...BUCKETS].sort(), [
+        'anchor', 'chart', 'code', 'comparison', 'diagram', 'evidence',
+        'imagery', 'inventory', 'legal', 'math', 'progression', 'statement',
+      ]);
+      for (const fn of FUNCTIONS) assert.ok(BUCKETS.includes(fn));
+    });
+
+    test('BUCKETS is frozen', () => {
+      assert.ok(Object.isFrozen(BUCKETS));
+    });
+  });
+
+  describe('manifestBucket', () => {
+    test('returns the explicit bucket when present', () => {
+      assert.equal(manifestBucket({ function: 'evidence', bucket: 'chart' }), 'chart');
+    });
+
+    test('falls back to function when bucket is absent', () => {
+      assert.equal(manifestBucket({ function: 'evidence' }), 'evidence');
+    });
+
+    test('falls back to function when bucket is empty string', () => {
+      assert.equal(manifestBucket({ function: 'evidence', bucket: '' }), 'evidence');
+    });
+
+    test('returns undefined when neither is present', () => {
+      assert.equal(manifestBucket({}), undefined);
+      assert.equal(manifestBucket(null), undefined);
+    });
+  });
+
+  describe('groupByBucket', () => {
+    test('partitions manifests by disk bucket, honoring the explicit field', () => {
+      const ms = [
+        { ...GOOD, name: 'a', function: 'evidence' },                        // bucket=evidence
+        { ...GOOD, name: 'b', function: 'evidence', bucket: 'chart' },       // overrides
+        { ...GOOD, name: 'c', function: 'evidence', bucket: 'diagram' },     // overrides
+      ];
+      const g = groupByBucket(ms);
+      assert.equal(g.evidence.length, 1);
+      assert.equal(g.chart.length, 1);
+      assert.equal(g.diagram.length, 1);
+      assert.equal(g.evidence[0].name, 'a');
+      assert.equal(g.chart[0].name, 'b');
+      assert.equal(g.diagram[0].name, 'c');
+    });
+
+    test('returns every bucket even when empty', () => {
+      const g = groupByBucket([]);
+      for (const b of BUCKETS) {
+        assert.ok(Array.isArray(g[b]), `${b} should be an array`);
+      }
+    });
+
+    test('shipped manifests partition the 18 known bucket-divergent components correctly', () => {
+      const ms = loadAll();
+      const g = groupByBucket(ms);
+      // chart = 9: gantt, kanban, piechart, progress, quadrant, radar, state-chart, timeline-list, word-cloud
+      assert.equal(g.chart.length, 9, 'chart bucket has 9 components');
+      assert.deepEqual(
+        g.chart.map((m) => m.name).sort(),
+        ['gantt', 'kanban', 'piechart', 'progress', 'quadrant', 'radar', 'state-chart', 'timeline-list', 'word-cloud'],
+      );
+      // diagram = 1: diagram
+      assert.equal(g.diagram.length, 1, 'diagram bucket has 1 component');
+      assert.equal(g.diagram[0].name, 'diagram');
+      // math = 1: math (KaTeX-typeset content; substance-rendering pipeline)
+      assert.equal(g.math.length, 1, 'math bucket has 1 component');
+      assert.equal(g.math[0].name, 'math');
+      // code = 2: code, compare-code (anything that uses syntax highlighting)
+      assert.equal(g.code.length, 2, 'code bucket has 2 components');
+      assert.deepEqual(g.code.map((m) => m.name).sort(), ['code', 'compare-code']);
+      // legal = 5: statute-stack, regulatory-update, authority-chain, citation-card, obligation-matrix
+      assert.equal(g.legal.length, 5, 'legal bucket has 5 components');
+      assert.deepEqual(
+        g.legal.map((m) => m.name).sort(),
+        ['authority-chain', 'citation-card', 'obligation-matrix', 'regulatory-update', 'statute-stack'],
+      );
+    });
+
+    test('the 18 bucket-divergent components keep their function field unchanged', () => {
+      const ms = loadAll();
+      const byName = Object.fromEntries(ms.map((m) => [m.name, m]));
+      // Substance divergence — chart + diagram + math + code buckets,
+      // all function = evidence (or progression for gantt/kanban, or
+      // comparison for compare-code):
+      const evidenceSubstanceBuckets = [
+        'piechart', 'progress', 'quadrant', 'radar', 'timeline-list', 'word-cloud',
+        'diagram', 'math', 'code',
+      ];
+      for (const n of evidenceSubstanceBuckets) {
+        assert.equal(byName[n].function, 'evidence', `${n}.function stays "evidence"`);
+      }
+      assert.equal(byName.gantt.function, 'progression');
+      assert.equal(byName.kanban.function, 'progression');
+      assert.equal(byName['state-chart'].function, 'progression',
+        'state-chart keeps progression function despite living in chart bucket');
+      assert.equal(byName['compare-code'].function, 'comparison',
+        'compare-code keeps comparison function despite living in code bucket');
+      // Domain divergence (legal bucket — components span 4 different
+      // function families, all kept):
+      assert.equal(byName['statute-stack'].function, 'inventory');
+      assert.equal(byName['regulatory-update'].function, 'progression');
+      assert.equal(byName['authority-chain'].function, 'progression');
+      assert.equal(byName['citation-card'].function, 'evidence');
+      assert.equal(byName['obligation-matrix'].function, 'comparison');
+    });
+  });
+
+  describe('loadAll with bucket-nested layout', () => {
+    test('walks one level into bucket-named directories', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      // Mimic Phase 3 layout: <bucket>/<name>/<name>.manifest.json
+      const bucketDir = path.join(tmpDir, 'chart');
+      const compDir = path.join(bucketDir, 'demo-chart');
+      fs.mkdirSync(compDir, { recursive: true });
+      const m = { ...GOOD, name: 'demo-chart', bucket: 'chart' };
+      const manifestPath = path.join(compDir, 'demo-chart.manifest.json');
+      fs.writeFileSync(manifestPath, JSON.stringify(m));
+      try {
+        const ms = loadAll(tmpDir);
+        assert.equal(ms.length, 1);
+        assert.equal(ms[0].name, 'demo-chart');
+      } finally {
+        fs.unlinkSync(manifestPath);
+        fs.rmdirSync(compDir);
+        fs.rmdirSync(bucketDir);
+        fs.rmdirSync(tmpDir);
+      }
+    });
+
+    test('mixed flat + nested layouts coexist (migration tolerance)', () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifests-'));
+      // One flat component, one bucket-nested
+      const flatDir = path.join(tmpDir, 'flat-comp');
+      fs.mkdirSync(flatDir);
+      fs.writeFileSync(
+        path.join(flatDir, 'flat-comp.manifest.json'),
+        JSON.stringify({ ...GOOD, name: 'flat-comp' }),
+      );
+      const bucketDir = path.join(tmpDir, 'chart');
+      const nestedDir = path.join(bucketDir, 'nested-comp');
+      fs.mkdirSync(nestedDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(nestedDir, 'nested-comp.manifest.json'),
+        JSON.stringify({ ...GOOD, name: 'nested-comp', bucket: 'chart' }),
+      );
+      try {
+        const ms = loadAll(tmpDir);
+        assert.equal(ms.length, 2);
+        assert.deepEqual(ms.map((m) => m.name).sort(), ['flat-comp', 'nested-comp']);
+      } finally {
+        fs.unlinkSync(path.join(flatDir, 'flat-comp.manifest.json'));
+        fs.unlinkSync(path.join(nestedDir, 'nested-comp.manifest.json'));
+        fs.rmdirSync(flatDir);
+        fs.rmdirSync(nestedDir);
+        fs.rmdirSync(bucketDir);
+        fs.rmdirSync(tmpDir);
       }
     });
   });
