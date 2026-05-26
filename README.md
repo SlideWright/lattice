@@ -57,28 +57,35 @@ and Puppeteer (which downloads a matching Chromium).
 ## Use as a package
 
 Distributed as `@slidewright/lattice` (npm publishing is pending — see
-[RELEASE.md](RELEASE.md)). The package exposes named entry points rather
-than raw repo paths — consume those, not internals:
-
-| Subpath | Resolves to | For |
-|---|---|---|
-| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle |
-| `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | browser / web-export runtime |
-| `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette at a time |
-| `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config |
+[RELEASE.md](RELEASE.md)). Lattice is a **Marp theme set**, so the two
+supported ways to consume it both go through the Marp pipeline:
 
 ```sh
 npm install @slidewright/lattice
-npx lattice deck.md deck.pdf            # the emulator, exposed as a bin
+
+# 1. The emulator, exposed as a bin. Resolves the engine + every theme
+#    relative to the installed package, so it works from any directory.
+npx lattice deck.md deck.pdf
+
+# 2. marp-cli with the shipped config, which registers the whole theme
+#    set (engine + 25 palettes). Author decks with `theme: indaco` etc.
+npx marp deck.md --config-file node_modules/@slidewright/lattice/marp.config.js --pdf
 ```
 
-Over a CDN, the same subpaths resolve under jsdelivr:
+The package also exposes these named entry points:
 
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@slidewright/lattice/themes/indaco.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@slidewright/lattice/dist/lattice.css">
-<script src="https://cdn.jsdelivr.net/npm/@slidewright/lattice/dist/lattice-runtime.js"></script>
-```
+| Subpath | Resolves to | For |
+|---|---|---|
+| `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config (registers the theme set) |
+| `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the marp-vscode-preview / web-export runtime transforms |
+| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (layouts only, no colour tokens) |
+| `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette — a **Marp theme file**, not a standalone stylesheet |
+
+> **Themes are Marp theme files, not drop-in CSS.** Each one declares
+> `@theme <name>` and pulls the engine in by name (`@import 'lattice'`),
+> which only Marp's theme set resolves — a browser `<link>` to a theme
+> file cannot resolve it. There is **no flattened, browser-droppable
+> bundle today** (one would be a new `dist/` build target).
 
 The published tarball ships only what these entry points need — engine
 source, `dist/`, `themes/`, and the authoring docs. Regression-baseline
