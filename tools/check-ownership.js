@@ -32,6 +32,15 @@
  *      inherit most engine defaults from lattice.css `:root` and override
  *      selectively; only the core surface tokens are mandatory. A missing
  *      core token means the palette silently renders on engine defaults.
+ *   6. Every layout variant a component actually implements — a modifier
+ *      class chained onto its root element, or a name in its transform's
+ *      dispatch array — is declared in the manifest `variants[]`. An
+ *      undeclared variant is invisible: the docs/gallery generator only
+ *      surfaces variants[] ∩ variantDocs, so the variant ships with no
+ *      docs entry, no gallery slide, and no regression PDF (the drift
+ *      that stranded radar/quadrant/word-cloud's variant catalogs).
+ *      Structural root classes and documented aliases are escape-hatched
+ *      via STRUCTURAL_ROOT_CLASSES / VARIANT_DECL_IGNORE.
  *
  * Usage:
  *   node tools/check-ownership.js            # report; exit 1 on any collision
@@ -44,7 +53,10 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { loadAll, manifestBucket, BUCKETS } = require('../lib/components');
+const {
+  loadAll, manifestBucket, BUCKETS,
+  UNIVERSAL_VARIANTS, SEMI_UNIVERSAL_VARIANTS,
+} = require('../lib/components');
 const { TRANSFORMERS } = require('../lib/transformers/registry');
 
 const ROOT = path.join(__dirname, '..');
@@ -66,6 +78,29 @@ const CO_OWNED_LAYOUTS = new Set(['image']);
 // check hard-fails. Empty today: no two component files define the same
 // selector. Populate only for a deliberate shared treatment.
 const SHARED_SELECTORS = new Set([]);
+
+// Class tokens that sit on a component's root element but are NOT
+// author-facing layout variants — so checkVariantDeclaration must not
+// demand a `variants[]` entry for them. Two legitimate kinds:
+//   - the bare-default modifier a layout documents as "this IS the
+//     default appearance" (kpi `briefing`),
+//   - a preserved legacy spelling that aliases a declared variant
+//     (image `left` → `mirror`).
+// Keyed by component name → set of ignored root-class tokens. Add an
+// entry only with a one-line justification; the default expectation is
+// that every root modifier is a declared variant.
+const VARIANT_DECL_IGNORE = new Map([
+  ['kpi', new Set(['briefing'])],            // bare default appearance, documented as such
+  ['image', new Set(['left'])],              // legacy alias of `mirror` (base.modifiers.css)
+  ['state-chart', new Set(['horizontal'])],  // documented back-compat alias of `lr inline`
+]);
+
+// Class tokens that may appear chained onto a component's root element
+// but are shared structural scaffolding, not author-selectable variants.
+// `chart-frame` is the wrapper the chart family applies to every chart
+// section (section.<chart>.chart-frame); it is engine chrome, present on
+// every chart regardless of variant.
+const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame']);
 
 // Core token contract every base palette must define directly. These are
 // the surface tokens the portal and base layout consume without an engine
@@ -165,6 +200,24 @@ function classTokens(selector) {
 }
 
 /**
+ * `.class` tokens at the top level of a compound selector — i.e. chained
+ * directly onto the element, ignoring anything inside a functional
+ * pseudo-class like `:not(...)`, `:has(...)`, `:is(...)`. Used to find
+ * modifier classes without mistaking a `:not(:has(.foo))` presence check
+ * for a modifier.
+ */
+function topLevelClassTokens(compound) {
+  let depth = 0;
+  let outside = '';
+  for (const ch of compound) {
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    else if (depth === 0) outside += ch;
+  }
+  return classTokens(outside);
+}
+
+/**
  * True if `selector` is scoped to component `name`: it references a class
  * token that is either exactly `<name>` or in the component's BEM
  * namespace `<name>-*` (e.g. `gantt` owns `.gantt`, `.gantt-chart`,
@@ -172,6 +225,138 @@ function classTokens(selector) {
  */
 function isScopedTo(selector, name) {
   return classTokens(selector).some((c) => c === name || c.startsWith(`${name}-`));
+}
+
+/**
+ * Split a complex selector into its compound selectors on the top-level
+ * combinators (descendant whitespace, `>`, `+`, `~`), paren- and
+ * bracket-aware so `:is(a > b)` / `[attr~="x y"]` stay intact. Each
+ * returned string is the run of simple selectors targeting one element.
+ */
+function splitCompounds(selector) {
+  const compounds = [];
+  let depth = 0;
+  let bracket = 0;
+  let buf = '';
+  const flush = () => {
+    if (buf.trim()) compounds.push(buf.trim());
+    buf = '';
+  };
+  for (const ch of selector) {
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    else if (ch === '[') bracket++;
+    else if (ch === ']') bracket--;
+    if (depth === 0 && bracket === 0 && (ch === '>' || ch === '+' || ch === '~' || /\s/.test(ch))) {
+      flush();
+      continue;
+    }
+    buf += ch;
+  }
+  flush();
+  return compounds;
+}
+
+/**
+ * Layout-specific modifier class tokens a component's CSS applies to its
+ * own root element — i.e. classes chained directly onto `.<name>`
+ * (`section.<name>.<modifier>`), excluding the name, its `<name>-*` BEM
+ * namespace, and the universal / semi-universal modifier vocabularies.
+ * Descendant/structural classes (`.<name> .cell`) and attribute-driven
+ * variants (`[data-variant="x"]`) are intentionally not returned here —
+ * structural classes are not author modifiers, and attribute variants
+ * come from the transform array instead (see transformModifierTokens).
+ */
+function cssRootModifierTokens(css, name) {
+  const universal = new Set([...UNIVERSAL_VARIANTS, ...SEMI_UNIVERSAL_VARIANTS]);
+  const mods = new Set();
+  for (const list of topLevelSelectors(css)) {
+    for (const sel of splitTopLevel(list)) {
+      for (const compound of splitCompounds(sel)) {
+        // Only classes at the top level of the compound are chained
+        // modifiers; classes nested inside `:not(:has(.x))` / `:is(...)`
+        // reference descendants or presence conditions, not modifiers.
+        const tokens = topLevelClassTokens(compound);
+        if (!tokens.includes(name)) continue; // not the component's root element
+        for (const t of tokens) {
+          if (t === name || t.startsWith(`${name}-`)) continue;
+          if (universal.has(t)) continue;
+          if (STRUCTURAL_ROOT_CLASSES.has(t)) continue;
+          mods.add(t);
+        }
+      }
+    }
+  }
+  return mods;
+}
+
+/** Locate a component's <name>.transform.js across the bucket-nested tree. */
+function componentTransformPath(m) {
+  const bucket = manifestBucket(m);
+  const candidates = [
+    path.join(COMPONENTS_DIR, bucket, m.name, `${m.name}.transform.js`),
+    path.join(COMPONENTS_DIR, m.name, `${m.name}.transform.js`),
+  ];
+  return candidates.find((p) => fs.existsSync(p)) || null;
+}
+
+/**
+ * Variant names a transform branches on, read from its
+ * `const *_MODIFIERS = [...]` / `*_VARIANTS = [...]` array literals.
+ * Source-text scan (no eval) — these arrays are the canonical list a
+ * transform dispatches over (e.g. RADAR_MODIFIERS, QUADRANT_MODIFIERS).
+ */
+function transformModifierTokens(src) {
+  const universal = new Set([...UNIVERSAL_VARIANTS, ...SEMI_UNIVERSAL_VARIANTS]);
+  const mods = new Set();
+  const arrays = src.matchAll(/\b(?:const|let|var)\s+\w*(?:MODIFIERS|VARIANTS)\s*=\s*\[([^\]]*)\]/g);
+  for (const arr of arrays) {
+    for (const lit of arr[1].matchAll(/['"]([\w-]+)['"]/g)) {
+      if (!universal.has(lit[1])) mods.add(lit[1]);
+    }
+  }
+  return mods;
+}
+
+/**
+ * Cross-check: every layout variant a component actually implements —
+ * in its CSS (root-element modifier classes) or its transform (the
+ * dispatch array) — must be declared in the manifest `variants[]`, or
+ * the docs/gallery generator silently omits it (the radar/quadrant/
+ * word-cloud drift class). The inverse (declared-but-unimplemented) is
+ * left to manual review; this guard only catches the invisible-variant
+ * case. False positives are escape-hatched via VARIANT_DECL_IGNORE.
+ */
+function checkVariantDeclaration(manifests, errors) {
+  for (const m of manifests) {
+    const declared = new Set(Array.isArray(m.variants) ? m.variants : []);
+    const ignore = VARIANT_DECL_IGNORE.get(m.name) || new Set();
+    const implemented = new Set();
+
+    const cssPath = componentStylesPath(m);
+    if (cssPath) {
+      for (const t of cssRootModifierTokens(fs.readFileSync(cssPath, 'utf8'), m.name)) {
+        implemented.add(t);
+      }
+    }
+    const txPath = componentTransformPath(m);
+    if (txPath) {
+      for (const t of transformModifierTokens(fs.readFileSync(txPath, 'utf8'))) {
+        implemented.add(t);
+      }
+    }
+
+    const missing = [...implemented]
+      .filter((v) => !declared.has(v) && !ignore.has(v))
+      .sort();
+    if (missing.length) {
+      errors.push(
+        `component "${m.name}" implements variant(s) absent from its manifest "variants": ${missing.join(', ')}. ` +
+        `Declare each in "variants" with a matching "variantDocs" entry so the docs/gallery generator surfaces it; ` +
+        `if a token is internal structure rather than an author modifier, add it to VARIANT_DECL_IGNORE in tools/check-ownership.js.`,
+      );
+    }
+  }
 }
 
 // ── Theme token parsing ────────────────────────────────────────────────────
@@ -314,6 +499,7 @@ function run() {
   checkLayoutOwnership(errors);
   checkComponentNames(manifests, errors);
   checkComponentCss(manifests, errors);
+  checkVariantDeclaration(manifests, errors);
   checkThemeTokenParity(errors);
   return {
     errors,
@@ -350,8 +536,12 @@ module.exports = {
   run,
   topLevelSelectors,
   splitTopLevel,
+  splitCompounds,
   isScopedTo,
   classTokens,
+  cssRootModifierTokens,
+  transformModifierTokens,
+  checkVariantDeclaration,
   parseThemeTokens,
   listBasePalettes,
   CO_OWNED_LAYOUTS,

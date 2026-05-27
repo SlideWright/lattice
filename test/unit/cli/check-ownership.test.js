@@ -16,8 +16,11 @@ const assert = require('node:assert/strict');
 const {
   topLevelSelectors,
   splitTopLevel,
+  splitCompounds,
   classTokens,
   isScopedTo,
+  cssRootModifierTokens,
+  transformModifierTokens,
   parseThemeTokens,
   listBasePalettes,
   REQUIRED_THEME_TOKENS,
@@ -80,6 +83,40 @@ describe('check-ownership', () => {
           assert.ok(p.tokens.has(tok), `theme ${p.name} missing ${tok}`);
         }
       }
+    });
+  });
+
+  describe('variant-declaration detection', () => {
+    test('splitCompounds splits on combinators, paren-aware', () => {
+      assert.deepEqual(
+        splitCompounds('section.x.mod > ul:not(:has(.y)) li'),
+        ['section.x.mod', 'ul:not(:has(.y))', 'li'],
+      );
+    });
+
+    test('cssRootModifierTokens finds root modifiers, skips BEM/universal/nested', () => {
+      const css = `
+        section.radar.target { color: red; }
+        section.radar.dark { color: blue; }           /* universal — skip */
+        section.radar .radar-poly { fill: none; }      /* BEM descendant — skip */
+        section.radar:not(:has(.radar-figure)) { x: 1; } /* presence check — skip */
+        section.radar.minimal .radar-grid { opacity: .3; }
+      `;
+      assert.deepEqual(
+        [...cssRootModifierTokens(css, 'radar')].sort(),
+        ['minimal', 'target'],
+      );
+    });
+
+    test('transformModifierTokens reads the dispatch array, drops universals', () => {
+      const src = `
+        const RADAR_MODIFIERS = ['target', 'delta', 'dark'];
+        function buildRadar() {}
+      `;
+      assert.deepEqual(
+        [...transformModifierTokens(src)].sort(),
+        ['delta', 'target'], // 'dark' is universal, filtered out
+      );
     });
   });
 
