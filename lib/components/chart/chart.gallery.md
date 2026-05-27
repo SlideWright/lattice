@@ -195,15 +195,12 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
