@@ -88,7 +88,7 @@
     "pyramid": {
       "label": "Pyramid — hierarchy by tier weight",
       "caption": "Renders the tiers as a weighted pyramid, the controlling authority widest at the base. Use when the point is the hierarchy of authority itself, not the timeline.",
-      "sample": "<!-- _class: authority-chain pyramid -->\n\n## COPPA — the authority pyramid.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Congress, 1998 — verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule; the 2013 rewrite expanded covered identifiers.\n3. Guidance\n   - `FTC Six-Step Compliance Plan`\n   - Staff guidance — non-binding, but cited in every consent order.\n4. Case\n   - `In re Epic Games · 2022`\n   - $245M consent order operationalised the \"actual knowledge\" standard.\n"
+      "sample": "<!-- _class: authority-chain pyramid -->\n\n## COPPA — the authority pyramid.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Congress, 1998 — consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule.\n3. Guidance\n   - `FTC Six-Step Plan`\n   - Staff guidance, non-binding.\n4. Case\n   - `In re Epic Games · 2022`\n   - $245M consent order.\n"
     },
     "bracket": {
       "label": "Bracket — connected cards",
