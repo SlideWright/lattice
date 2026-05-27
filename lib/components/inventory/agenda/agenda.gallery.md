@@ -114,57 +114,6 @@ Auto-numbered table of contents for the deck.
 
 ---
 
-<!-- _class: agenda progress-7 -->
-<!-- _footer: "Progress · section 7 · agenda progress-7" -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Decision and next steps
-
-
----
-
-<!-- _class: agenda progress-8 -->
-<!-- _footer: "Progress · section 8 · agenda progress-8" -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Decision and next steps
-
-
----
-
-<!-- _class: agenda progress-9 -->
-<!-- _footer: "Progress · section 9 · agenda progress-9" -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
-
-
----
-
 <!-- _class: agenda dark -->
 <!-- _footer: "Composition: dark · agenda dark" -->
 
@@ -215,6 +164,7 @@ Auto-numbered table of contents for the deck.
 - **Sub-bullets per section.** The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here.
 - **Unnumbered list.** Authoring with `-` instead of `1.` loses the numbered chrome the layout depends on. Always use ordered list syntax.
 - **Single-section decks.** If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding.
+- **More than six sections.** A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides.
 
 ---
 

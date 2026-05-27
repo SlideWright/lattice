@@ -17,6 +17,7 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 - **Sub-bullets per section.** The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here.
 - **Unnumbered list.** Authoring with `-` instead of `1.` loses the numbered chrome the layout depends on. Always use ordered list syntax.
 - **Single-section decks.** If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding.
+- **More than six sections.** A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides.
 
 ## Authoring
 
@@ -151,63 +152,6 @@ Same wayfinding pattern on a six-section agenda — current position at the sixt
 4. Migration plan
 5. Risks and mitigations
 6. Decision and next steps
-```
-
-### `progress-7` — Progress · section 7
-
-Current position at the seventh of seven sections.
-
-```markdown
-<!-- _class: agenda progress-7 -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Decision and next steps
-```
-
-### `progress-8` — Progress · section 8
-
-Current position at the eighth of eight sections.
-
-```markdown
-<!-- _class: agenda progress-8 -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Decision and next steps
-```
-
-### `progress-9` — Progress · section 9
-
-Current position at the ninth of nine sections — the maximum a single agenda comfortably holds.
-
-```markdown
-<!-- _class: agenda progress-9 -->
-
-## Where we are now.
-
-1. Why we're here — the problem
-2. Where we are today
-3. The proposal
-4. Migration plan
-5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
 ```
 
 ## Universal modifiers

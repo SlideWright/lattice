@@ -12,10 +12,7 @@
     "progress-3",
     "progress-4",
     "progress-5",
-    "progress-6",
-    "progress-7",
-    "progress-8",
-    "progress-9"
+    "progress-6"
   ],
   "slots": {
     "title": {
@@ -58,6 +55,10 @@
     {
       "title": "Single-section decks",
       "body": "If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding."
+    },
+    {
+      "title": "More than six sections",
+      "body": "A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides."
     }
   ],
   "related": [
@@ -108,21 +109,6 @@
       "label": "Progress · section 6",
       "caption": "Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.",
       "sample": "<!-- _class: agenda progress-6 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Decision and next steps\n"
-    },
-    "progress-7": {
-      "label": "Progress · section 7",
-      "caption": "Current position at the seventh of seven sections.",
-      "sample": "<!-- _class: agenda progress-7 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Decision and next steps\n"
-    },
-    "progress-8": {
-      "label": "Progress · section 8",
-      "caption": "Current position at the eighth of eight sections.",
-      "sample": "<!-- _class: agenda progress-8 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Decision and next steps\n"
-    },
-    "progress-9": {
-      "label": "Progress · section 9",
-      "caption": "Current position at the ninth of nine sections — the maximum a single agenda comfortably holds.",
-      "sample": "<!-- _class: agenda progress-9 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
     }
   }
 }
