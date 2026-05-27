@@ -92,6 +92,30 @@ source, `dist/`, `themes/`, and the authoring docs. Regression-baseline
 PDFs and per-bucket galleries stay in git but are excluded from the
 package.
 
+### Render to PDF, HTML, or PPTX
+
+The package bundles `@marp-team/marp-cli`, which emits all three formats.
+Point it at the shipped config (which registers the theme set) and pick
+the output flag:
+
+```sh
+CONFIG=node_modules/@slidewright/lattice/marp.config.js
+
+npx marp deck.md --config-file $CONFIG --pdf  -o deck.pdf
+npx marp deck.md --config-file $CONFIG --html -o deck.html
+npx marp deck.md --config-file $CONFIG --pptx -o deck.pptx
+```
+
+The `lattice` bin (the emulator) is a fast path for **PDF**, and writes
+an **HTML** sidecar alongside it — but it does not produce PPTX. For
+PPTX, use marp-cli as above.
+
+> **PPTX caveat.** Marp exports PPTX as one full-bleed *image* per slide
+> (not editable text/shapes). Editable export is experimental
+> (`--pptx-editable`) and needs LibreOffice on `PATH` (or `SOFFICE_PATH`).
+> PDF/HTML/PPTX all render through headless Chromium — set `CHROME_PATH`
+> if no system Chrome is found.
+
 ## Render the example galleries
 
 ```sh
