@@ -15,10 +15,11 @@
  * Steps (in order):
  *   0. ownership guard        tools/check-ownership.js   (gate — no output)
  *   1. lattice.css            tools/build-css.js
- *   2. lattice-runtime.js     tools/build-runtime.js
- *   3. VS Code snippets       tools/build-snippets.js
- *   4. per-component docs      tools/build-component-docs.js
- *   5. canonical doc portal    tools/build-docs-portal.js
+ *   2. lattice-default.css    tools/build-default-bundle.js  (engine + default palette)
+ *   3. lattice-runtime.js     tools/build-runtime.js
+ *   4. VS Code snippets       tools/build-snippets.js
+ *   5. per-component docs      tools/build-component-docs.js
+ *   6. canonical doc portal    tools/build-docs-portal.js
  *
  * Gallery PDFs are NOT part of this build: they need Chromium, take tens
  * of seconds, and are regression artifacts rather than shipped source.
@@ -47,6 +48,7 @@ const GUARD = { label: 'ownership guard', script: 'check-ownership.js' };
 
 const STEPS = [
   { label: 'lattice.css', script: 'build-css.js' },
+  { label: 'lattice-default.css', script: 'build-default-bundle.js' },
   { label: 'lattice-runtime.js', script: 'build-runtime.js' },
   { label: 'VS Code snippets', script: 'build-snippets.js' },
   { label: 'per-component docs', script: 'build-component-docs.js' },

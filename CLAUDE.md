@@ -67,8 +67,12 @@ tier asserts cross-renderer parity on slide count.
 ## The build — `dist/` and `npm run build`
 
 Generated, committed artifacts live in **`dist/`**:
-`dist/lattice.css` (engine bundle), `dist/lattice-runtime.js` (esbuild
-runtime bundle), and `dist/docs/components.{md,html}` (the canonical
+`dist/lattice.css` (engine bundle), `dist/lattice-default.css`
+(`build-default-bundle.js` flattens the engine + the default palette,
+cuoio, into one drop-in stylesheet with `@import 'lattice'` resolved —
+the zero-config / browser-droppable default; change `DEFAULT_THEME` in
+that generator to re-bless another palette), `dist/lattice-runtime.js`
+(esbuild runtime bundle), and `dist/docs/components.{md,html}` (the canonical
 single-file component reference). These are the shipped/public paths —
 decks load `dist/lattice.css` via `marp.config.js` `themeSet`, and the
 README/jsdelivr URLs point into `dist/`. Do not hand-edit them.

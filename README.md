@@ -76,16 +76,29 @@ The package also exposes these named entry points:
 
 | Subpath | Resolves to | For |
 |---|---|---|
+| `@slidewright/lattice/default` | `dist/lattice-default.css` | **zero-config default** — engine + the cuoio palette, flattened into one drop-in stylesheet |
 | `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config (registers the theme set) |
 | `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the marp-vscode-preview / web-export runtime transforms |
 | `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (layouts only, no colour tokens) |
 | `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette — a **Marp theme file**, not a standalone stylesheet |
 
-> **Themes are Marp theme files, not drop-in CSS.** Each one declares
+**The default theme is cuoio** (warm leather/cream). In a Marp deck,
+`theme: cuoio` selects it; with no theme chosen, decks render against the
+engine's neutral built-in tokens. For a non-Marp / browser context, drop
+in the flattened default — a single self-contained stylesheet:
+
+```html
+<link rel="stylesheet" href="…/@slidewright/lattice/default">  <!-- engine + cuoio -->
+```
+
+> **Per-theme files are Marp theme files, not drop-in CSS.** Each declares
 > `@theme <name>` and pulls the engine in by name (`@import 'lattice'`),
-> which only Marp's theme set resolves — a browser `<link>` to a theme
-> file cannot resolve it. There is **no flattened, browser-droppable
-> bundle today** (one would be a new `dist/` build target).
+> which only Marp's theme set resolves — a browser `<link>` to a *theme
+> file* can't resolve it, and `dist/lattice.css` alone is palette-blind.
+> The flattened `dist/lattice-default.css` is the exception: its
+> `@import` is resolved at build time, so it is genuinely browser-droppable.
+> Only cuoio is flattened today; other palettes would each be a new
+> flatten target.
 
 The published tarball ships only what these entry points need — engine
 source, `dist/`, `themes/`, and the authoring docs. Regression-baseline
