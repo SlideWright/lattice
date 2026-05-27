@@ -16,12 +16,12 @@
     "words": {
       "selector": "ul > li",
       "required": true,
-      "description": "One li per word. Format: `word — weight` (weight is a number)."
+      "description": "One li per word. Format: `word `weight`` where weight is a relative 1–5 (1 = small/muted, 5 = hero). Out-of-range values are clamped to 1–5."
     }
   },
-  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity — 12\n- ownership — 9\n- handoffs — 7\n- review — 6\n- testing — 5\n- onboarding — 4\n- spec — 3\n- triage — 3\n",
+  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity `5`\n- ownership `4`\n- handoffs `3`\n- review `2`\n",
   "anatomyBlock": "word-cloud-canvas",
-  "sample": "<!-- _class: word-cloud -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n- scaffolder `18`\n- bundler `14`\n",
+  "sample": "<!-- _class: word-cloud -->\n\n## What this branch named, by weight.\n\n- component `5`\n- manifest `4`\n- function `4`\n- form `3`\n- substance `3`\n- gallery `2`\n- variant `2`\n- universal `1`\n- cascade `1`\n",
   "whenToUse": [
     {
       "title": "Qualitative themes at a glance",
@@ -82,22 +82,22 @@
     "constellation": {
       "label": "Constellation — airy, two-tone",
       "caption": "A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.",
-      "sample": "<!-- _class: word-cloud constellation -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n"
+      "sample": "<!-- _class: word-cloud constellation -->\n\n## What this branch named, by weight.\n\n- component `5`\n- manifest `4`\n- function `3`\n- form `3`\n- substance `2`\n- gallery `1`\n"
     },
     "dense": {
       "label": "Dense — tight pack",
       "caption": "A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.",
-      "sample": "<!-- _class: word-cloud dense -->\n\n## Every term this branch touched.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n- scaffolder `18`\n- bundler `14`\n- transform `12`\n- selector `10`\n- palette `9`\n"
+      "sample": "<!-- _class: word-cloud dense -->\n\n## Every term this branch touched.\n\n- component `5`\n- manifest `5`\n- function `4`\n- form `4`\n- substance `4`\n- gallery `3`\n- folder `3`\n- variant `3`\n- universal `2`\n- cascade `2`\n- scaffolder `2`\n- bundler `1`\n- transform `1`\n- selector `1`\n- palette `1`\n"
     },
     "spectrum": {
       "label": "Spectrum — heat ramp",
       "caption": "Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.",
-      "sample": "<!-- _class: word-cloud spectrum -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n"
+      "sample": "<!-- _class: word-cloud spectrum -->\n\n## What this branch named, by weight.\n\n- component `5`\n- manifest `4`\n- function `4`\n- form `3`\n- substance `3`\n- gallery `2`\n- variant `2`\n- universal `1`\n"
     },
     "focal": {
       "label": "Focal — one dominant term",
       "caption": "The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.",
-      "sample": "<!-- _class: word-cloud focal -->\n\n## The one word that defined the branch.\n\n- variants `150`\n- gallery `44`\n- manifest `38`\n- docs `30`\n- declared `24`\n"
+      "sample": "<!-- _class: word-cloud focal -->\n\n## The one word that defined the branch.\n\n- variants `5`\n- gallery `2`\n- manifest `2`\n- docs `1`\n- declared `1`\n"
     }
   }
 }

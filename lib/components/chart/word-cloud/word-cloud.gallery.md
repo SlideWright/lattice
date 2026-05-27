@@ -20,18 +20,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---
@@ -41,12 +38,12 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`
 
 
 ---
@@ -56,21 +53,21 @@ Spiral-packed word cloud — items sized by weight.
 
 ## Every term this branch touched.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
-- transform `12`
-- selector `10`
-- palette `9`
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`
 
 
 ---
@@ -80,16 +77,14 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
 
 
 ---
@@ -99,11 +94,11 @@ Spiral-packed word cloud — items sized by weight.
 
 ## The one word that defined the branch.
 
-- variants `150`
-- gallery `44`
-- manifest `38`
-- docs `30`
-- declared `24`
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`
 
 
 ---
@@ -113,18 +108,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---
@@ -134,18 +126,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---
@@ -155,18 +144,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---

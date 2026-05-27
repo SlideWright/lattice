@@ -25,14 +25,10 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 
 ## What the team called out this quarter.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3
+- velocity `5`
+- ownership `4`
+- handoffs `3`
+- review `2`
 ```
 
 ## Slots
@@ -40,7 +36,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the cloud. |
-| `words` | `ul > li` | yes | One li per word. Format: `word — weight` (weight is a number). |
+| `words` | `ul > li` | yes | One li per word. Format: `word `weight`` where weight is a relative 1–5 (1 = small/muted, 5 = hero). Out-of-range values are clamped to 1–5. |
 
 ## Anatomy
 
@@ -68,12 +64,12 @@ A wider size spread with no rotation — words sit like a constellation with gen
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`
 ```
 
 ### `dense` — Dense — tight pack
@@ -85,21 +81,21 @@ A tighter spiral, narrower size spread, and more rotation pack many terms into t
 
 ## Every term this branch touched.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
-- transform `12`
-- selector `10`
-- palette `9`
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`
 ```
 
 ### `spectrum` — Spectrum — heat ramp
@@ -111,16 +107,14 @@ Colours words along a heat ramp by weight instead of cycling the categorical pal
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
 ```
 
 ### `focal` — Focal — one dominant term
@@ -132,11 +126,11 @@ The widest size spread and steepest curve make the top term tower over the rest.
 
 ## The one word that defined the branch.
 
-- variants `150`
-- gallery `44`
-- manifest `38`
-- docs `30`
-- declared `24`
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`
 ```
 
 ## Universal modifiers

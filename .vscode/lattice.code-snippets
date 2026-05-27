@@ -1012,14 +1012,10 @@
       "",
       "## What the team called out this quarter.",
       "",
-      "- velocity — 12",
-      "- ownership — 9",
-      "- handoffs — 7",
-      "- review — 6",
-      "- testing — 5",
-      "- onboarding — 4",
-      "- spec — 3",
-      "- triage — 3"
+      "- velocity `5`",
+      "- ownership `4`",
+      "- handoffs `3`",
+      "- review `2`"
     ],
     "description": "Spiral-packed word cloud — items sized by weight."
   }
