@@ -56,6 +56,11 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(GOOD), []);
     });
 
+    test('stressSample: accepts a non-empty string, rejects empty', () => {
+      assert.deepEqual(validate({ ...GOOD, stressSample: '<!-- _class: x -->\n\n## …\n' }), []);
+      assert.ok(validate({ ...GOOD, stressSample: '' }).some((e) => /stressSample/.test(e)));
+    });
+
     test('accepts optional fields when present and well-formed', () => {
       const m = {
         ...GOOD,

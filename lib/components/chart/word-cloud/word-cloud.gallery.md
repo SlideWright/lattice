@@ -103,6 +103,35 @@ Spiral-packed word cloud — items sized by weight.
 
 ---
 
+<!-- _class: word-cloud dense -->
+<!-- _footer: "Stress test · word-cloud" -->
+
+## Stress test — 20 terms, raw frequency counts (512 → 5).
+
+- component `512`
+- variant `327`
+- manifest `261`
+- gallery `204`
+- function `168`
+- form `139`
+- substance `116`
+- transform `94`
+- selector `77`
+- palette `63`
+- cascade `51`
+- bundle `42`
+- scaffolder `34`
+- token `28`
+- normalize `22`
+- packer `17`
+- spiral `13`
+- footer `9`
+- eyebrow `7`
+- watermark `5`
+
+
+---
+
 <!-- _class: word-cloud dark -->
 <!-- _footer: "Composition: dark · word-cloud dark" -->
 
