@@ -2,10 +2,10 @@
 /**
  * Build the browser runtime bundle.
  *
- *   src/runtime/index.js  →  lattice-runtime.js (repo root)
+ *   src/runtime/index.js  →  dist/lattice-runtime.js
  *
- * The output path is a public API — every committed example deck embeds
- * <script src="../lattice-runtime.js">, the README documents it, and
+ * The output path is a public API — committed decks embed
+ * <script src="…/dist/lattice-runtime.js">, the README documents it, and
  * external consumers reference it via raw GitHub / jsdelivr URLs.
  * Changing the output path is a breaking change. See
  * reference/notes/2026-05-17-shared-transformer-registry.md (esbuild section)
@@ -35,7 +35,7 @@ const { execSync } = require('child_process');
 
 const ROOT       = path.resolve(__dirname, '..');
 const ENTRY      = path.join(ROOT, 'src', 'runtime', 'index.js');
-const OUT_FILE   = path.join(ROOT, 'lattice-runtime.js');
+const OUT_FILE   = path.join(ROOT, 'dist', 'lattice-runtime.js');
 
 const argv    = process.argv.slice(2);
 const watch   = argv.includes('--watch');

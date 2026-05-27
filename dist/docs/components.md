@@ -164,7 +164,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [closing.gallery.pdf](../lib/components/anchor/closing/closing.gallery.light.pdf) for rendered examples of every variant.
+See [closing.gallery.pdf](../../lib/components/anchor/closing/closing.gallery.light.pdf) for rendered examples of every variant.
 
 ### divider
 
@@ -247,7 +247,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [divider.gallery.pdf](../lib/components/anchor/divider/divider.gallery.light.pdf) for rendered examples of every variant.
+See [divider.gallery.pdf](../../lib/components/anchor/divider/divider.gallery.light.pdf) for rendered examples of every variant.
 
 ### subtopic
 
@@ -327,7 +327,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [subtopic.gallery.pdf](../lib/components/anchor/subtopic/subtopic.gallery.light.pdf) for rendered examples of every variant.
+See [subtopic.gallery.pdf](../../lib/components/anchor/subtopic/subtopic.gallery.light.pdf) for rendered examples of every variant.
 
 ### title
 
@@ -399,7 +399,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [title.gallery.pdf](../lib/components/anchor/title/title.gallery.light.pdf) for rendered examples of every variant.
+See [title.gallery.pdf](../../lib/components/anchor/title/title.gallery.light.pdf) for rendered examples of every variant.
 
 ## Statement
 
@@ -473,7 +473,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [big-number.gallery.pdf](../lib/components/statement/big-number/big-number.gallery.light.pdf) for rendered examples of every variant.
+See [big-number.gallery.pdf](../../lib/components/statement/big-number/big-number.gallery.light.pdf) for rendered examples of every variant.
 
 ### content
 
@@ -545,7 +545,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [content.gallery.pdf](../lib/components/statement/content/content.gallery.light.pdf) for rendered examples of every variant.
+See [content.gallery.pdf](../../lib/components/statement/content/content.gallery.light.pdf) for rendered examples of every variant.
 
 ### quote
 
@@ -611,7 +611,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [quote.gallery.pdf](../lib/components/statement/quote/quote.gallery.light.pdf) for rendered examples of every variant.
+See [quote.gallery.pdf](../../lib/components/statement/quote/quote.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-brief
 
@@ -686,7 +686,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-brief.gallery.pdf](../lib/components/statement/split-brief/split-brief.gallery.light.pdf) for rendered examples of every variant.
+See [split-brief.gallery.pdf](../../lib/components/statement/split-brief/split-brief.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-list
 
@@ -783,7 +783,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-list.gallery.pdf](../lib/components/statement/split-list/split-list.gallery.light.pdf) for rendered examples of every variant.
+See [split-list.gallery.pdf](../../lib/components/statement/split-list/split-list.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-statement
 
@@ -854,7 +854,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-statement.gallery.pdf](../lib/components/statement/split-statement/split-statement.gallery.light.pdf) for rendered examples of every variant.
+See [split-statement.gallery.pdf](../../lib/components/statement/split-statement/split-statement.gallery.light.pdf) for rendered examples of every variant.
 
 ## Inventory
 
@@ -929,7 +929,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [actors.gallery.pdf](../lib/components/inventory/actors/actors.gallery.light.pdf) for rendered examples of every variant.
+See [actors.gallery.pdf](../../lib/components/inventory/actors/actors.gallery.light.pdf) for rendered examples of every variant.
 
 ### agenda
 
@@ -1066,7 +1066,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [agenda.gallery.pdf](../lib/components/inventory/agenda/agenda.gallery.light.pdf) for rendered examples of every variant.
+See [agenda.gallery.pdf](../../lib/components/inventory/agenda/agenda.gallery.light.pdf) for rendered examples of every variant.
 
 ### cards-grid
 
@@ -1219,7 +1219,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [cards-grid.gallery.pdf](../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf) for rendered examples of every variant.
+See [cards-grid.gallery.pdf](../../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf) for rendered examples of every variant.
 
 ### cards-side
 
@@ -1305,7 +1305,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [cards-side.gallery.pdf](../lib/components/inventory/cards-side/cards-side.gallery.light.pdf) for rendered examples of every variant.
+See [cards-side.gallery.pdf](../../lib/components/inventory/cards-side/cards-side.gallery.light.pdf) for rendered examples of every variant.
 
 ### cards-stack
 
@@ -1413,7 +1413,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [cards-stack.gallery.pdf](../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf) for rendered examples of every variant.
+See [cards-stack.gallery.pdf](../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf) for rendered examples of every variant.
 
 ### cards-wide
 
@@ -1486,7 +1486,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [cards-wide.gallery.pdf](../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf) for rendered examples of every variant.
+See [cards-wide.gallery.pdf](../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf) for rendered examples of every variant.
 
 ### checklist
 
@@ -1557,7 +1557,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [checklist.gallery.pdf](../lib/components/inventory/checklist/checklist.gallery.light.pdf) for rendered examples of every variant.
+See [checklist.gallery.pdf](../../lib/components/inventory/checklist/checklist.gallery.light.pdf) for rendered examples of every variant.
 
 ### glossary
 
@@ -1630,7 +1630,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [glossary.gallery.pdf](../lib/components/inventory/glossary/glossary.gallery.light.pdf) for rendered examples of every variant.
+See [glossary.gallery.pdf](../../lib/components/inventory/glossary/glossary.gallery.light.pdf) for rendered examples of every variant.
 
 ### list
 
@@ -1702,7 +1702,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [list.gallery.pdf](../lib/components/inventory/list/list.gallery.light.pdf) for rendered examples of every variant.
+See [list.gallery.pdf](../../lib/components/inventory/list/list.gallery.light.pdf) for rendered examples of every variant.
 
 ### list-tabular
 
@@ -1910,7 +1910,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [list-tabular.gallery.pdf](../lib/components/inventory/list-tabular/list-tabular.gallery.light.pdf) for rendered examples of every variant.
+See [list-tabular.gallery.pdf](../../lib/components/inventory/list-tabular/list-tabular.gallery.light.pdf) for rendered examples of every variant.
 
 ### principles
 
@@ -1997,7 +1997,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [principles.gallery.pdf](../lib/components/inventory/principles/principles.gallery.light.pdf) for rendered examples of every variant.
+See [principles.gallery.pdf](../../lib/components/inventory/principles/principles.gallery.light.pdf) for rendered examples of every variant.
 
 ### tldr
 
@@ -2086,7 +2086,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [tldr.gallery.pdf](../lib/components/inventory/tldr/tldr.gallery.light.pdf) for rendered examples of every variant.
+See [tldr.gallery.pdf](../../lib/components/inventory/tldr/tldr.gallery.light.pdf) for rendered examples of every variant.
 
 ## Comparison
 
@@ -2178,7 +2178,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [before-after.gallery.pdf](../lib/components/comparison/before-after/before-after.gallery.light.pdf) for rendered examples of every variant.
+See [before-after.gallery.pdf](../../lib/components/comparison/before-after/before-after.gallery.light.pdf) for rendered examples of every variant.
 
 ### compare-prose
 
@@ -2329,7 +2329,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [compare-prose.gallery.pdf](../lib/components/comparison/compare-prose/compare-prose.gallery.light.pdf) for rendered examples of every variant.
+See [compare-prose.gallery.pdf](../../lib/components/comparison/compare-prose/compare-prose.gallery.light.pdf) for rendered examples of every variant.
 
 ### compare-table
 
@@ -2406,7 +2406,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [compare-table.gallery.pdf](../lib/components/comparison/compare-table/compare-table.gallery.light.pdf) for rendered examples of every variant.
+See [compare-table.gallery.pdf](../../lib/components/comparison/compare-table/compare-table.gallery.light.pdf) for rendered examples of every variant.
 
 ### decision
 
@@ -2495,7 +2495,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [decision.gallery.pdf](../lib/components/comparison/decision/decision.gallery.light.pdf) for rendered examples of every variant.
+See [decision.gallery.pdf](../../lib/components/comparison/decision/decision.gallery.light.pdf) for rendered examples of every variant.
 
 ### matrix-2x2
 
@@ -2573,7 +2573,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [matrix-2x2.gallery.pdf](../lib/components/comparison/matrix-2x2/matrix-2x2.gallery.light.pdf) for rendered examples of every variant.
+See [matrix-2x2.gallery.pdf](../../lib/components/comparison/matrix-2x2/matrix-2x2.gallery.light.pdf) for rendered examples of every variant.
 
 ### redline
 
@@ -2687,7 +2687,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [redline.gallery.pdf](../lib/components/comparison/redline/redline.gallery.light.pdf) for rendered examples of every variant.
+See [redline.gallery.pdf](../../lib/components/comparison/redline/redline.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-compare
 
@@ -2768,7 +2768,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-compare.gallery.pdf](../lib/components/comparison/split-compare/split-compare.gallery.light.pdf) for rendered examples of every variant.
+See [split-compare.gallery.pdf](../../lib/components/comparison/split-compare/split-compare.gallery.light.pdf) for rendered examples of every variant.
 
 ### verdict-grid
 
@@ -2850,7 +2850,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [verdict-grid.gallery.pdf](../lib/components/comparison/verdict-grid/verdict-grid.gallery.light.pdf) for rendered examples of every variant.
+See [verdict-grid.gallery.pdf](../../lib/components/comparison/verdict-grid/verdict-grid.gallery.light.pdf) for rendered examples of every variant.
 
 ## Progression
 
@@ -3011,7 +3011,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [journey.gallery.pdf](../lib/components/progression/journey/journey.gallery.light.pdf) for rendered examples of every variant.
+See [journey.gallery.pdf](../../lib/components/progression/journey/journey.gallery.light.pdf) for rendered examples of every variant.
 
 ### list-criteria
 
@@ -3087,7 +3087,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [list-criteria.gallery.pdf](../lib/components/progression/list-criteria/list-criteria.gallery.light.pdf) for rendered examples of every variant.
+See [list-criteria.gallery.pdf](../../lib/components/progression/list-criteria/list-criteria.gallery.light.pdf) for rendered examples of every variant.
 
 ### list-steps
 
@@ -3299,7 +3299,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [list-steps.gallery.pdf](../lib/components/progression/list-steps/list-steps.gallery.light.pdf) for rendered examples of every variant.
+See [list-steps.gallery.pdf](../../lib/components/progression/list-steps/list-steps.gallery.light.pdf) for rendered examples of every variant.
 
 ### roadmap
 
@@ -3401,7 +3401,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [roadmap.gallery.pdf](../lib/components/progression/roadmap/roadmap.gallery.light.pdf) for rendered examples of every variant.
+See [roadmap.gallery.pdf](../../lib/components/progression/roadmap/roadmap.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-steps
 
@@ -3477,7 +3477,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-steps.gallery.pdf](../lib/components/progression/split-steps/split-steps.gallery.light.pdf) for rendered examples of every variant.
+See [split-steps.gallery.pdf](../../lib/components/progression/split-steps/split-steps.gallery.light.pdf) for rendered examples of every variant.
 
 ### timeline
 
@@ -3552,7 +3552,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [timeline.gallery.pdf](../lib/components/progression/timeline/timeline.gallery.light.pdf) for rendered examples of every variant.
+See [timeline.gallery.pdf](../../lib/components/progression/timeline/timeline.gallery.light.pdf) for rendered examples of every variant.
 
 ## Evidence
 
@@ -3785,7 +3785,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [kpi.gallery.pdf](../lib/components/evidence/kpi/kpi.gallery.light.pdf) for rendered examples of every variant.
+See [kpi.gallery.pdf](../../lib/components/evidence/kpi/kpi.gallery.light.pdf) for rendered examples of every variant.
 
 ### split-metric
 
@@ -3861,7 +3861,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-metric.gallery.pdf](../lib/components/evidence/split-metric/split-metric.gallery.light.pdf) for rendered examples of every variant.
+See [split-metric.gallery.pdf](../../lib/components/evidence/split-metric/split-metric.gallery.light.pdf) for rendered examples of every variant.
 
 ### stats
 
@@ -3937,7 +3937,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [stats.gallery.pdf](../lib/components/evidence/stats/stats.gallery.light.pdf) for rendered examples of every variant.
+See [stats.gallery.pdf](../../lib/components/evidence/stats/stats.gallery.light.pdf) for rendered examples of every variant.
 
 ## Imagery
 
@@ -4035,7 +4035,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [featured.gallery.pdf](../lib/components/imagery/featured/featured.gallery.light.pdf) for rendered examples of every variant.
+See [featured.gallery.pdf](../../lib/components/imagery/featured/featured.gallery.light.pdf) for rendered examples of every variant.
 
 ### image
 
@@ -4165,7 +4165,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [image.gallery.pdf](../lib/components/imagery/image/image.gallery.light.pdf) for rendered examples of every variant.
+See [image.gallery.pdf](../../lib/components/imagery/image/image.gallery.light.pdf) for rendered examples of every variant.
 
 ## Chart
 
@@ -4252,7 +4252,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [gantt.gallery.pdf](../lib/components/chart/gantt/gantt.gallery.light.pdf) for rendered examples of every variant.
+See [gantt.gallery.pdf](../../lib/components/chart/gantt/gantt.gallery.light.pdf) for rendered examples of every variant.
 
 ### kanban
 
@@ -4338,7 +4338,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [kanban.gallery.pdf](../lib/components/chart/kanban/kanban.gallery.light.pdf) for rendered examples of every variant.
+See [kanban.gallery.pdf](../../lib/components/chart/kanban/kanban.gallery.light.pdf) for rendered examples of every variant.
 
 ### piechart
 
@@ -4436,7 +4436,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [piechart.gallery.pdf](../lib/components/chart/piechart/piechart.gallery.light.pdf) for rendered examples of every variant.
+See [piechart.gallery.pdf](../../lib/components/chart/piechart/piechart.gallery.light.pdf) for rendered examples of every variant.
 
 ### progress
 
@@ -4514,7 +4514,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [progress.gallery.pdf](../lib/components/chart/progress/progress.gallery.light.pdf) for rendered examples of every variant.
+See [progress.gallery.pdf](../../lib/components/chart/progress/progress.gallery.light.pdf) for rendered examples of every variant.
 
 ### quadrant
 
@@ -4600,7 +4600,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [quadrant.gallery.pdf](../lib/components/chart/quadrant/quadrant.gallery.light.pdf) for rendered examples of every variant.
+See [quadrant.gallery.pdf](../../lib/components/chart/quadrant/quadrant.gallery.light.pdf) for rendered examples of every variant.
 
 ### radar
 
@@ -4689,7 +4689,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [radar.gallery.pdf](../lib/components/chart/radar/radar.gallery.light.pdf) for rendered examples of every variant.
+See [radar.gallery.pdf](../../lib/components/chart/radar/radar.gallery.light.pdf) for rendered examples of every variant.
 
 ### state-chart
 
@@ -4825,7 +4825,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [state-chart.gallery.pdf](../lib/components/chart/state-chart/state-chart.gallery.light.pdf) for rendered examples of every variant.
+See [state-chart.gallery.pdf](../../lib/components/chart/state-chart/state-chart.gallery.light.pdf) for rendered examples of every variant.
 
 ### timeline-list
 
@@ -4904,7 +4904,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [timeline-list.gallery.pdf](../lib/components/chart/timeline-list/timeline-list.gallery.light.pdf) for rendered examples of every variant.
+See [timeline-list.gallery.pdf](../../lib/components/chart/timeline-list/timeline-list.gallery.light.pdf) for rendered examples of every variant.
 
 ### word-cloud
 
@@ -4979,7 +4979,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [word-cloud.gallery.pdf](../lib/components/chart/word-cloud/word-cloud.gallery.light.pdf) for rendered examples of every variant.
+See [word-cloud.gallery.pdf](../../lib/components/chart/word-cloud/word-cloud.gallery.light.pdf) for rendered examples of every variant.
 
 ## Diagram
 
@@ -5059,7 +5059,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [diagram.gallery.pdf](../lib/components/diagram/diagram/diagram.gallery.light.pdf) for rendered examples of every variant.
+See [diagram.gallery.pdf](../../lib/components/diagram/diagram/diagram.gallery.light.pdf) for rendered examples of every variant.
 
 ## Math
 
@@ -5283,7 +5283,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [math.gallery.pdf](../lib/components/math/math/math.gallery.light.pdf) for rendered examples of every variant.
+See [math.gallery.pdf](../../lib/components/math/math/math.gallery.light.pdf) for rendered examples of every variant.
 
 ## Code
 
@@ -5361,7 +5361,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [code.gallery.pdf](../lib/components/code/code/code.gallery.light.pdf) for rendered examples of every variant.
+See [code.gallery.pdf](../../lib/components/code/code/code.gallery.light.pdf) for rendered examples of every variant.
 
 ### compare-code
 
@@ -5482,7 +5482,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [compare-code.gallery.pdf](../lib/components/code/compare-code/compare-code.gallery.light.pdf) for rendered examples of every variant.
+See [compare-code.gallery.pdf](../../lib/components/code/compare-code/compare-code.gallery.light.pdf) for rendered examples of every variant.
 
 ## Legal
 
@@ -5607,7 +5607,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [authority-chain.gallery.pdf](../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf) for rendered examples of every variant.
+See [authority-chain.gallery.pdf](../../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf) for rendered examples of every variant.
 
 ### citation-card
 
@@ -5701,7 +5701,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [citation-card.gallery.pdf](../lib/components/legal/citation-card/citation-card.gallery.light.pdf) for rendered examples of every variant.
+See [citation-card.gallery.pdf](../../lib/components/legal/citation-card/citation-card.gallery.light.pdf) for rendered examples of every variant.
 
 ### obligation-matrix
 
@@ -5819,7 +5819,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [obligation-matrix.gallery.pdf](../lib/components/legal/obligation-matrix/obligation-matrix.gallery.light.pdf) for rendered examples of every variant.
+See [obligation-matrix.gallery.pdf](../../lib/components/legal/obligation-matrix/obligation-matrix.gallery.light.pdf) for rendered examples of every variant.
 
 ### regulatory-update
 
@@ -5956,7 +5956,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [regulatory-update.gallery.pdf](../lib/components/legal/regulatory-update/regulatory-update.gallery.light.pdf) for rendered examples of every variant.
+See [regulatory-update.gallery.pdf](../../lib/components/legal/regulatory-update/regulatory-update.gallery.light.pdf) for rendered examples of every variant.
 
 ### statute-stack
 
@@ -6122,5 +6122,5 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [statute-stack.gallery.pdf](../lib/components/legal/statute-stack/statute-stack.gallery.light.pdf) for rendered examples of every variant.
+See [statute-stack.gallery.pdf](../../lib/components/legal/statute-stack/statute-stack.gallery.light.pdf) for rendered examples of every variant.
 

@@ -74,7 +74,7 @@ const SOURCE_DIRS = [
 ];
 
 const SOURCE_FILES = [
-  path.join(ROOT, 'lattice.css'),
+  path.join(ROOT, 'dist', 'lattice.css'),
   path.join(ROOT, 'lattice-emulator.js'),
   path.join(ROOT, 'marp.config.js'),
 ];

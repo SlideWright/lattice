@@ -30,7 +30,7 @@ describe('build-css', () => {
 
   test('output starts with the "Do not edit by hand" banner', () => {
     const out = bundle();
-    assert.match(out, /^\/\* lattice\.css — GENERATED/);
+    assert.match(out, /^\/\* dist\/lattice\.css — GENERATED/);
     assert.match(out, /Do not edit by hand/);
   });
 

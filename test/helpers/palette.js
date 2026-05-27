@@ -52,7 +52,7 @@ function loadPalette(name) {
   // Universal palette defaults live in lattice.css :root. Parse it
   // first so theme declarations override (themes are loaded last in
   // the cascade — @import 'lattice' is at the top of each theme file).
-  const latticeCSS = fs.readFileSync(path.join(root, 'lattice.css'), 'utf8');
+  const latticeCSS = fs.readFileSync(path.join(root, 'dist', 'lattice.css'), 'utf8');
   const combined = latticeCSS + '\n' + raw;
   return { name, raw, vars: parsePaletteVars(combined) };
 }

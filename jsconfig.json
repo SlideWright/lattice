@@ -12,6 +12,6 @@
     "strict": false,
     "lib": ["ES2022", "DOM"]
   },
-  "include": ["lib/**/*.js", "lattice-emulator.js", "lattice-runtime.js", "marp.config.js", "tools/**/*.js", "test/**/*.js"],
+  "include": ["lib/**/*.js", "lattice-emulator.js", "dist/lattice-runtime.js", "marp.config.js", "tools/**/*.js", "test/**/*.js"],
   "exclude": ["node_modules", "mermaid-v11.min.js", ".scratch"]
 }

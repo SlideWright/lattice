@@ -75,7 +75,7 @@ describe('contrast', () => {
         // semantic palette defaults; theme @imports of sibling palettes
         // resolve under themes/.
         const target = m[1] === 'lattice'
-          ? path.join(rootDir, 'lattice.css')
+          ? path.join(rootDir, 'dist', 'lattice.css')
           : path.join(themesDir, `${m[1]}.css`);
         walk(target);
       }

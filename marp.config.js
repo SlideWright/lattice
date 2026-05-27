@@ -386,6 +386,7 @@ function addHeadingPeriods(markdown) {
   });
 }
 
+const path = require("node:path");
 const mermaidLanguage = require("./lib/integrations/mermaid/mermaid.hljs");
 
 /**
@@ -585,8 +586,11 @@ function latticeplotFences(md) {
 
 /** @type {import('@marp-team/marp-cli').MarpCLIConfig} */
 module.exports = {
+  // Anchored to __dirname so theme resolution works regardless of the
+  // caller's cwd — e.g. when this config is consumed from node_modules.
+  // The emulator anchors the same way (lattice-emulator.js).
   themeSet: [
-    "lattice.css",
+    "dist/lattice.css",
     "themes/ardesia.css",
     "themes/ardesia-dark.css",
     "themes/atelier.css",
@@ -612,7 +616,7 @@ module.exports = {
     "themes/mustard-dark.css",
     "themes/onyx.css",
     "themes/onyx-dark.css",
-  ],
+  ].map((p) => path.join(__dirname, p)),
   html: true,
   allowLocalFiles: true,
   imageScale: 1,

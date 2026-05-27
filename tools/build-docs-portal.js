@@ -3,12 +3,12 @@
  * Aggregate every component manifest into a single canonical reference,
  * emitted in two forms:
  *
- *   reference/components.md    — one self-contained Markdown document: a
+ *   dist/docs/components.md    — one self-contained Markdown document: a
  *                           generated table of contents (bucket →
  *                           component) followed by the full per-component
  *                           reference, reusing the exact prose the
  *                           per-component docs.md generator emits.
- *   reference/components.html  — a self-contained, themable two-panel portal:
+ *   dist/docs/components.html  — a self-contained, themable two-panel portal:
  *                           a clickable bucket→component sidebar (scroll-
  *                           spy + live filter) on the left, the full
  *                           reference on the right. The reader picks any
@@ -44,8 +44,9 @@ const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
 const THEMES_DIR = path.join(ROOT, 'themes');
 const ASCII_TOOL = path.join(ROOT, 'tools', 'ascii-preview.py');
-const HTML_FILE = path.join(ROOT, 'reference', 'components.html');
-const MD_FILE = path.join(ROOT, 'reference', 'components.md');
+const DOCS_DIR = path.join(ROOT, 'dist', 'docs');
+const HTML_FILE = path.join(DOCS_DIR, 'components.html');
+const MD_FILE = path.join(DOCS_DIR, 'components.md');
 
 // Portal-consumed theme tokens, resolved per palette / per mode. The
 // portal layout CSS consumes only these; everything else (sidebar fill,
@@ -257,12 +258,12 @@ function bucketTagline(bucket) {
   return idx >= 0 ? blurb.slice(idx + 3) : blurb;
 }
 
-/** Relative path (from reference/) to a component's light gallery PDF, or null. */
+/** Relative path (from dist/docs/) to a component's light gallery PDF, or null. */
 function galleryHref(m) {
   const bucket = manifestBucket(m);
   const abs = path.join(COMPONENTS_DIR, bucket, m.name, `${m.name}.gallery.light.pdf`);
   if (!fs.existsSync(abs)) return null;
-  return path.relative(path.join(ROOT, 'reference'), abs).split(path.sep).join('/');
+  return path.relative(DOCS_DIR, abs).split(path.sep).join('/');
 }
 
 // ── HTML: per-component article ────────────────────────────────────────────
@@ -454,7 +455,7 @@ ${nav.join('\n')}
     </header>
 ${sections.join('\n')}
     <footer class="content-foot">
-      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>reference/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>reference/components.md</code> for the plain-Markdown edition of this reference.</p>
+      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>reference/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>dist/docs/components.md</code> for the plain-Markdown edition of this reference.</p>
     </footer>
   </main>
 </div>
@@ -996,7 +997,7 @@ function demoteHeadings(md, by) {
 }
 
 /** Rewrite the cross-file links in a generated docs.md body so they resolve
- *  from reference/components.md: related → in-page anchors, design-system →
+ *  from dist/docs/components.md: related → in-page anchors, design-system →
  *  sibling reference/, gallery → the rendered light PDF. */
 function rewriteLinks(md, m) {
   let out = md.replace(/\]\(\.\.\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
@@ -1064,9 +1065,10 @@ function isStale(file, content) {
 function main(argv) {
   const check = argv.includes('--check');
   const { html, md, count } = build();
+  fs.mkdirSync(DOCS_DIR, { recursive: true });
   const targets = [
-    { file: HTML_FILE, content: html, label: 'reference/components.html' },
-    { file: MD_FILE, content: md, label: 'reference/components.md' },
+    { file: HTML_FILE, content: html, label: 'dist/docs/components.html' },
+    { file: MD_FILE, content: md, label: 'dist/docs/components.md' },
   ];
 
   if (check) {

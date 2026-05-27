@@ -730,4 +730,4 @@ treeView-beta
      so these scripts are a no-op in the PDF/HTML output. -->
 <!-- markdownlint-disable MD033 -->
 <script src="../mermaid-v11.min.js"></script>
-<script src="../lattice-runtime.js"></script>
+<script src="../dist/lattice-runtime.js"></script>

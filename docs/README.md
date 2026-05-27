@@ -17,7 +17,7 @@ npm run dev      # http://localhost:4321/lattice/
 - `src/styles/lattice.css` — Lattice branding (indaco accent, the engine's fonts).
 - `astro.config.mjs` — `site` + `base` (`/lattice`), sidebar, theme.
 - `scripts/sync-portal.mjs` — copies the generated component-reference
-  portal (`../reference/components.{html,md}`) into `public/` before each
+  portal (`../dist/docs/components.{html,md}`) into `public/` before each
   build, so it ships as a static asset at `/lattice/components.html`.
   The portal itself is generated from the component manifests by
   `tools/build-docs-portal.js` in the repo root.

@@ -57,11 +57,52 @@ Any authoring transform needs to land in all three or the paths drift:
 
 1. **`lattice-emulator.js`** — build-time CLI; inline implementations.
 2. **`marp.config.js`** → **`lib/engine/*.js`** + **`lib/components/chart/_chart-family/chart-family.js`** + **`lib/integrations/*/`** — the marp-cli path.
-3. **`lattice-runtime.js`** — DOM transforms for marp-vscode preview.
+3. **`dist/lattice-runtime.js`** — DOM transforms for marp-vscode preview
+   (esbuild bundle of `src/runtime/index.js`).
 
 Each transform documents its sibling implementations in a header comment
 (see `liftSlotLabel`, `chartFamily`, `splitPanelCounter`). The integration
 tier asserts cross-renderer parity on slide count.
+
+## The build — `dist/` and `npm run build`
+
+Generated, committed artifacts live in **`dist/`**:
+`dist/lattice.css` (engine bundle), `dist/lattice-default.css`
+(`build-default-bundle.js` flattens the engine + the default palette,
+cuoio, into one drop-in stylesheet with `@import 'lattice'` resolved —
+the zero-config / browser-droppable default; change `DEFAULT_THEME` in
+that generator to re-bless another palette), `dist/lattice-runtime.js`
+(esbuild runtime bundle), and `dist/docs/components.{md,html}` (the canonical
+single-file component reference). These are the shipped/public paths —
+decks load `dist/lattice.css` via `marp.config.js` `themeSet`, and the
+README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
+
+- `npm run build` — regenerate every artifact in dependency order,
+  behind the collision gate. `npm run build:check` is the CI/stale gate.
+- `npm run check:ownership` — the collision guard. Many layers share
+  shape on purpose (every theme defines the same tokens; the image
+  scrim/asset/text-panel trio co-own the `image` class). The guard
+  hard-fails on *accidental* collisions — duplicate transformer names,
+  unlisted layout co-ownership, duplicate component CSS selectors,
+  duplicate component names, missing core theme tokens — and forces the
+  intentional cases into the allow-lists in `tools/check-ownership.js`.
+  Individual generators (`css:build`, `runtime:build`, `snippets:build`,
+  `docs:components`, `docs:portal`) still exist for targeted rebuilds.
+
+**What ships to npm.** The package is `@slidewright/lattice`, consumed
+through named `exports` subpaths — `/css` (`dist/lattice.css`),
+`/runtime` (`dist/lattice-runtime.js`), `/config` (`marp.config.js`),
+`/themes/<name>.css`, plus the `lattice` `bin` (the emulator). The
+`files` allowlist ships engine source, `dist/`, `themes/`, and the two
+authoring docs (`reference/skill.md`, `reference/design-system.md`)
+only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
+`!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
+baselines + reviewer deliverables, kept in git but never shipped. Don't
+widen `files` to drag them back in; the tarball is ~1.8 MB, not ~28 MB,
+for that reason. **npm publishing is not yet automated** — `RELEASE.md`
+is the spec (tag `v<version>` matching `package.json`, gated on
+`build:check` + tests) and holds the manual cut-a-release steps plus the
+`release.yml` workflow to implement later.
 
 ## Tests and the regression baseline
 

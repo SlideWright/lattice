@@ -2,7 +2,7 @@
   "include": [
     "lib/**/*.js",
     "lattice-emulator.js",
-    "lattice-runtime.js",
+    "dist/lattice-runtime.js",
     "marp.config.js"
   ],
   "exclude": [
