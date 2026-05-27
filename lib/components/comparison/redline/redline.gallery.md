@@ -63,6 +63,38 @@ Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracki
 
 ---
 
+<!-- _class: redline split -->
+<!-- _footer: "Split — old | new side by side · redline split" -->
+
+## SB-362 — before and after, side by side.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** The left column is the prior text; the right is the amendment. Reading across makes the scope expansion obvious.
+
+
+---
+
+<!-- _class: redline stacked -->
+<!-- _footer: "Stacked — old block atop new · redline stacked" -->
+
+## SB-362 — prior text struck, current below.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** Stacking keeps the reading order vertical when each passage is a full sentence or more.
+
+
+---
+
 <!-- _class: redline dark -->
 <!-- _footer: "Composition: dark · redline dark" -->
 

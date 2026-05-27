@@ -71,5 +71,33 @@
       "name": "tldr",
       "when": "the qualitative summary is prose, not a packed cloud"
     }
-  ]
+  ],
+  "variants": [
+    "constellation",
+    "dense",
+    "spectrum",
+    "focal"
+  ],
+  "variantDocs": {
+    "constellation": {
+      "label": "Constellation — airy, two-tone",
+      "caption": "A wider size spread, no rotation, and an accent-pair palette — words sit like a constellation with generous spacing. Use for a small, high-impact vocabulary.",
+      "sample": "<!-- _class: word-cloud constellation -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- variant `32`\n- universal `28`\n- cascade `22`\n"
+    },
+    "dense": {
+      "label": "Dense — tight pack",
+      "caption": "A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.",
+      "sample": "<!-- _class: word-cloud dense -->\n\n## Every term this branch touched.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n- scaffolder `18`\n- bundler `14`\n- transform `12`\n- selector `10`\n- palette `9`\n"
+    },
+    "spectrum": {
+      "label": "Spectrum — heat ramp",
+      "caption": "Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.",
+      "sample": "<!-- _class: word-cloud spectrum -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- folder `36`\n- variant `32`\n- universal `28`\n- cascade `22`\n"
+    },
+    "focal": {
+      "label": "Focal — one dominant term",
+      "caption": "The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are supporting context.",
+      "sample": "<!-- _class: word-cloud focal -->\n\n## The one word that defined the branch.\n\n- variants `140`\n- component `60`\n- manifest `48`\n- gallery `40`\n- docs `34`\n- gap `28`\n- declared `22`\n- hidden `18`\n- generator `14`\n"
+    }
+  }
 }

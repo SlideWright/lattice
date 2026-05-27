@@ -84,6 +84,64 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 ```
 
+### `status` — Status — heavy state treatment
+
+Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.
+
+```markdown
+<!-- _class: roadmap status -->
+
+`Layout · roadmap status`
+
+## Delivery status by workstream.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+```
+
+### `swimlane` — Swimlane — horizontal tracks
+
+Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.
+
+```markdown
+<!-- _class: roadmap swimlane -->
+
+`Layout · roadmap swimlane`
+
+## Each team's track across the year.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| SDK        | Java                 | .NET                   | Polyglot parity           |
+```
+
+### `milestones` — Milestones — calendar-aware
+
+Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
+
+```markdown
+<!-- _class: roadmap milestones -->
+
+`Layout · roadmap milestones`
+
+## The dated path to GA.
+
+| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

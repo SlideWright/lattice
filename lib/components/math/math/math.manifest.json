@@ -14,7 +14,8 @@
     "compare",
     "canvas",
     "matrix",
-    "stats"
+    "stats",
+    "decompose"
   ],
   "slots": {
     "eyebrow": {
@@ -122,6 +123,11 @@
       "label": "Stats — estimate ± uncertainty",
       "caption": "Point estimate with uncertainty (CI, $p$-value, $n$) followed by plain-English interpretation. Best for treatment-effect slides, regression coefficients, A/B test readouts.",
       "sample": "<!-- _class: math stats -->\n\n## Effect of the treatment.\n\n$$ \\hat\\beta = 0.42 \\pm 0.03 $$\n\n> 95% CI: $[0.36,\\; 0.48]$\n> $p < 0.001 \\quad\\cdot\\quad n = 1{,}204$\n\nFor every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.\n"
+    },
+    "decompose": {
+      "label": "Matrix · decompose — factorisation sequence",
+      "caption": "A compound of `matrix`: lays out a factorisation as a sequence of matrices (A = U Σ Vᵀ, LU, QR). Author it as `math matrix decompose`. Use when the structure of the decomposition is the point.",
+      "sample": "<!-- _class: math matrix decompose -->\n\n## Singular value decomposition.\n\n$$\nA = U \\Sigma V^{\\top}\n$$\n\n- **$A$** — the $m \\times n$ matrix being factorised\n- **$U$** — $m \\times m$ orthonormal left singular vectors\n- **$\\Sigma$** — $m \\times n$ diagonal of singular values, descending\n- **$V^{\\top}$** — $n \\times n$ orthonormal right singular vectors\n- **use** — low-rank approximation: keep the top-$k$ singular values\n"
     }
   }
 }

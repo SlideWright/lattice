@@ -95,6 +95,19 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 ---
 
+<!-- _class: compare-prose rejected -->
+<!-- _footer: "Rejected · compare-prose rejected" -->
+
+## We went with managed Postgres, not the self-hosted cluster.
+
+- Managed Postgres
+  - Higher monthly spend, but zero on-call burden and automatic failover. The team ships features instead of babysitting replication.
+- Self-hosted cluster
+  - Cheaper raw compute, but the operational tax — patching, backups, 3am pages — falls on a four-person team that can't absorb it.
+
+
+---
+
 <!-- _class: compare-prose dark -->
 <!-- _footer: "Composition: dark · compare-prose dark" -->
 

@@ -56,6 +56,22 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 
 ## Variants (layout-specific)
 
+### `progress-1` — Progress · section 1
+
+Wayfinding for the start of the deck — the first item is current, the rest are dimmed ahead.
+
+```markdown
+<!-- _class: agenda progress-1 -->
+
+## Where we are now.
+
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups
+```
+
 ### `progress-2` — Progress · section 2
 
 The same agenda dropped between sections one and two — the second item is marked as the current position.
@@ -118,6 +134,86 @@ Current position on the fifth item — the last section opening, used as a final
 3. The forty-five shipped components, grouped by function
 4. Discovery — scaffolder, snippets, this gallery
 5. What ships next — open questions and follow-ups
+```
+
+### `progress-6` — Progress · section 6
+
+Same wayfinding pattern on a longer, nine-section agenda — current position at the sixth item.
+
+```markdown
+<!-- _class: agenda progress-6 -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+```
+
+### `progress-7` — Progress · section 7
+
+Current position at the seventh of nine sections — most of the deck is behind us.
+
+```markdown
+<!-- _class: agenda progress-7 -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+```
+
+### `progress-8` — Progress · section 8
+
+Current position at the eighth of nine sections — the home stretch.
+
+```markdown
+<!-- _class: agenda progress-8 -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+```
+
+### `progress-9` — Progress · section 9
+
+Current position at the final section — everything before it is marked done.
+
+```markdown
+<!-- _class: agenda progress-9 -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
 ```
 
 ## Universal modifiers

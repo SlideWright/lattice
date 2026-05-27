@@ -71,6 +71,191 @@ Use to compare 2–4 options across the same 4–8 criteria. Each option becomes
 └─────────────────────────────────────────┘
 ```
 
+## Variants (layout-specific)
+
+### `target` — Target — actual vs reference ring
+
+Reads the series named `Target` (or `Goal`/`Plan`) as a dashed reference polygon; each axis where the actual falls short gets a rose gap segment along the spoke, surplus a quiet green one. The shortfall is the read.
+
+```markdown
+<!-- _class: radar target -->
+
+`Scale · 0–100`
+
+## Where we are against the quarter plan.
+
+- Actual
+  - Hiring `72`
+  - Runway `88`
+  - Pipeline `54`
+  - Retention `91`
+  - Compliance `66`
+  - Velocity `78`
+- Target
+  - Hiring `90`
+  - Runway `85`
+  - Pipeline `80`
+  - Retention `90`
+  - Compliance `95`
+  - Velocity `75`
+```
+
+### `delta` — Delta — before vs after
+
+Takes exactly two series — before, then after. The before polygon is muted; a change segment rides each spoke, green where the metric rose, rose where it fell. Built for the period-over-period QBR story.
+
+```markdown
+<!-- _class: radar delta -->
+
+`Scale · 0–10`
+
+## What moved over the half, and which way.
+
+- H1
+  - Velocity `5`
+  - Quality `6`
+  - Morale `4`
+  - Coverage `5`
+  - Onboarding `3`
+- H2
+  - Velocity `8`
+  - Quality `7`
+  - Morale `4`
+  - Coverage `6`
+  - Onboarding `7`
+```
+
+### `benchmark` — Benchmark — hero vs envelope
+
+Draws the first series as the hero line and collapses every other series into a single min–max envelope band — one shape and your line instead of five tangled polygons. Strong where you clear the band, exposed where you sit inside it.
+
+```markdown
+<!-- _class: radar benchmark -->
+
+`Scale · 0–10`
+
+## Are we inside the pack, or outside it.
+
+- Us
+  - Performance `9`
+  - Price `6`
+  - Support `8`
+  - Ecosystem `7`
+  - Docs `9`
+  - Security `8`
+- Competitor A
+  - Performance `7`
+  - Price `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Docs `5`
+  - Security `7`
+- Competitor B
+  - Performance `6`
+  - Price `9`
+  - Support `7`
+  - Ecosystem `6`
+  - Docs `6`
+  - Security `6`
+- Competitor C
+  - Performance `8`
+  - Price `5`
+  - Support `5`
+  - Ecosystem `8`
+  - Docs `7`
+  - Security `9`
+```
+
+### `quadrant` — Quadrant — axes grouped into sectors
+
+Takes a three-level list (series → group → axis); each group becomes a tinted sector with its name on the rim and a dashed mean arc. For boards that think in themes, not twelve loose axes.
+
+```markdown
+<!-- _class: radar quadrant -->
+
+`Scale · 0–5`
+
+## Our capability profile, read by theme.
+
+- Our capability
+  - People
+    - Hiring `4`
+    - Retention `3`
+    - Bench depth `2`
+  - Process
+    - Cadence `5`
+    - Rigor `4`
+  - Technology
+    - Platform `4`
+    - Tooling `3`
+    - Automation `2`
+  - Risk
+    - Compliance `3`
+    - Resilience `4`
+```
+
+### `small-multiples` — Small-multiples — one mini radar per series
+
+Gives each series its own mini radar on a shared scale, laid out in a row — the honest read when an overlay of four-plus series would be mush. Scan the shapes, spot the outlier.
+
+```markdown
+<!-- _class: radar small-multiples -->
+
+`Scale · 0–10`
+
+## Four product lines, the same five criteria.
+
+- Atlas
+  - Adoption `8`
+  - Margin `6`
+  - NPS `7`
+  - Velocity `9`
+  - Risk `4`
+- Beacon
+  - Adoption `5`
+  - Margin `9`
+  - NPS `6`
+  - Velocity `5`
+  - Risk `7`
+- Cinder
+  - Adoption `7`
+  - Margin `4`
+  - NPS `8`
+  - Velocity `6`
+  - Risk `5`
+- Drift
+  - Adoption `6`
+  - Margin `7`
+  - NPS `5`
+  - Velocity `7`
+  - Risk `8`
+```
+
+### `minimal` — Minimal — stroke-only
+
+Composable modifier: drops the polygon fills for a stroke-only read on a faint grid. Layers on the default or any radar variant when the fills would muddy the comparison.
+
+```markdown
+<!-- _class: radar minimal -->
+
+`Scale · 0–10`
+
+## The same comparison, fills dropped.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

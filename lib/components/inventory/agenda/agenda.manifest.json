@@ -7,10 +7,15 @@
   "description": "Auto-numbered table of contents for the deck.",
   "purpose": "Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.",
   "variants": [
+    "progress-1",
     "progress-2",
     "progress-3",
     "progress-4",
-    "progress-5"
+    "progress-5",
+    "progress-6",
+    "progress-7",
+    "progress-8",
+    "progress-9"
   ],
   "slots": {
     "title": {
@@ -93,6 +98,31 @@
       "label": "Progress · section 5",
       "caption": "Current position on the fifth item — the last section opening, used as a final wayfinder before the closing.",
       "sample": "<!-- _class: agenda progress-5 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-1": {
+      "label": "Progress · section 1",
+      "caption": "Wayfinding for the start of the deck — the first item is current, the rest are dimmed ahead.",
+      "sample": "<!-- _class: agenda progress-1 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-6": {
+      "label": "Progress · section 6",
+      "caption": "Same wayfinding pattern on a longer, nine-section agenda — current position at the sixth item.",
+      "sample": "<!-- _class: agenda progress-6 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+    },
+    "progress-7": {
+      "label": "Progress · section 7",
+      "caption": "Current position at the seventh of nine sections — most of the deck is behind us.",
+      "sample": "<!-- _class: agenda progress-7 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+    },
+    "progress-8": {
+      "label": "Progress · section 8",
+      "caption": "Current position at the eighth of nine sections — the home stretch.",
+      "sample": "<!-- _class: agenda progress-8 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+    },
+    "progress-9": {
+      "label": "Progress · section 9",
+      "caption": "Current position at the final section — everything before it is marked done.",
+      "sample": "<!-- _class: agenda progress-9 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
     }
   }
 }

@@ -97,6 +97,42 @@ Splits the passage into three columns: prior text on the left, new text in the m
 - **Link title.** Homepage label is mandatory and standardised.
 ```
 
+### `split` — Split — old | new side by side
+
+Two blockquotes laid out in columns: prior text on the left under an OLD label, amended text on the right under NEW. Use when the passages are short enough to read across.
+
+```markdown
+<!-- _class: redline split -->
+
+## SB-362 — before and after, side by side.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** The left column is the prior text; the right is the amendment. Reading across makes the scope expansion obvious.
+```
+
+### `stacked` — Stacked — old block atop new
+
+Stacks the prior text (struck, labelled OLD — prior text) above the current text (labelled NEW · current). Use when the passages are too long to sit side by side.
+
+```markdown
+<!-- _class: redline stacked -->
+
+## SB-362 — prior text struck, current below.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** Stacking keeps the reading order vertical when each passage is a full sentence or more.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

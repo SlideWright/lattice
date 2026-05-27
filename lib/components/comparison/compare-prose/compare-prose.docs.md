@@ -133,6 +133,21 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
   - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
 ```
 
+### `rejected` — Rejected
+
+Strikes the second option's title and dims its card — the inverse of `chosen`. Use when the slide's job is to record the path NOT taken and why.
+
+```markdown
+<!-- _class: compare-prose rejected -->
+
+## We went with managed Postgres, not the self-hosted cluster.
+
+- Managed Postgres
+  - Higher monthly spend, but zero on-call burden and automatic failover. The team ships features instead of babysitting replication.
+- Self-hosted cluster
+  - Cheaper raw compute, but the operational tax — patching, backups, 3am pages — falls on a four-person team that can't absorb it.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

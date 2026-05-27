@@ -160,6 +160,24 @@ For every additional unit of exposure, the outcome rises by 0.42 SD — roughly 
 
 ---
 
+<!-- _class: math matrix decompose -->
+<!-- _footer: "Matrix · decompose — factorisation sequence · math decompose" -->
+
+## Singular value decomposition.
+
+$$
+A = U \Sigma V^{\top}
+$$
+
+- **$A$** — the $m \times n$ matrix being factorised
+- **$U$** — $m \times m$ orthonormal left singular vectors
+- **$\Sigma$** — $m \times n$ diagonal of singular values, descending
+- **$V^{\top}$** — $n \times n$ orthonormal right singular vectors
+- **use** — low-rank approximation: keep the top-$k$ singular values
+
+
+---
+
 <!-- _class: math dark -->
 <!-- _footer: "Composition: dark · math dark" -->
 

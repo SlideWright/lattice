@@ -46,6 +46,51 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 ---
 
+<!-- _class: citation-card split -->
+<!-- _footer: "Split — quote | gloss columns · citation-card split" -->
+
+## CCPA defines "sale" broadly.
+
+`Cal. Civ. Code §1798.140(ad) · CCPA/CPRA`
+
+> "Sale" means selling, renting, releasing, disclosing, disseminating, making available, transferring, or otherwise communicating a consumer's personal information to a third party for monetary or other valuable consideration.
+
+- The catch is "other valuable consideration."
+  - Data-for-service swaps and ad-tech cookie syncs can qualify as sales even when no money changes hands.
+
+
+---
+
+<!-- _class: citation-card margin -->
+<!-- _footer: "Margin — annotated quotation · citation-card margin" -->
+
+## The GDPR lawful-basis test.
+
+`GDPR Art. 6(1)(f) · legitimate interests`
+
+> Processing is lawful only if and to the extent that processing is necessary for the purposes of the legitimate interests pursued by the controller, except where such interests are overridden by the interests or fundamental rights of the data subject.
+
+- Two-part test.
+  - Necessity first, then a balancing exercise against the data subject's rights. Document both halves or the basis fails on audit.
+
+
+---
+
+<!-- _class: citation-card triptych -->
+<!-- _footer: "Triptych — three panels · citation-card triptych" -->
+
+## What "personal data" covers under GDPR.
+
+`GDPR Art. 4(1) · definitions`
+
+> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.
+
+- Online identifiers count.
+  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.
+
+
+---
+
 <!-- _class: citation-card dark -->
 <!-- _footer: "Composition: dark · citation-card dark" -->
 

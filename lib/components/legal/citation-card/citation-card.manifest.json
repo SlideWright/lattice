@@ -8,7 +8,10 @@
   "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss.",
   "purpose": "Use when one citation IS the slide. The blockquote carries the verbatim language; the trailing list explains what it means and what we must do about it.",
   "variants": [
-    "pull-quote"
+    "pull-quote",
+    "split",
+    "margin",
+    "triptych"
   ],
   "slots": {
     "heading": {
@@ -86,6 +89,21 @@
       "label": "Pull-quote treatment",
       "caption": "Promotes the blockquote to a pull-quote scale — the verbatim language reads as the headline; the gloss compresses to the actionable item.",
       "sample": "<!-- _class: citation-card pull-quote -->\n\n## \"Personal information\" includes the household, not just the person.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> Information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- What we must do.\n  - Audit pixel inventory; treat household IDs as PI in DSAR workflows.\n"
+    },
+    "split": {
+      "label": "Split — quote | gloss columns",
+      "caption": "Puts the verbatim quotation in the left column and the plain-English gloss in the right, with the citation spanning the top. Use when quote and interpretation deserve equal weight.",
+      "sample": "<!-- _class: citation-card split -->\n\n## CCPA defines \"sale\" broadly.\n\n`Cal. Civ. Code §1798.140(ad) · CCPA/CPRA`\n\n> \"Sale\" means selling, renting, releasing, disclosing, disseminating, making available, transferring, or otherwise communicating a consumer's personal information to a third party for monetary or other valuable consideration.\n\n- The catch is \"other valuable consideration.\"\n  - Data-for-service swaps and ad-tech cookie syncs can qualify as sales even when no money changes hands.\n"
+    },
+    "margin": {
+      "label": "Margin — annotated quotation",
+      "caption": "Sets the quotation as the body with the gloss running as margin notes alongside. Use for close reading where each clause earns its own annotation.",
+      "sample": "<!-- _class: citation-card margin -->\n\n## The GDPR lawful-basis test.\n\n`GDPR Art. 6(1)(f) · legitimate interests`\n\n> Processing is lawful only if and to the extent that processing is necessary for the purposes of the legitimate interests pursued by the controller, except where such interests are overridden by the interests or fundamental rights of the data subject.\n\n- Two-part test.\n  - Necessity first, then a balancing exercise against the data subject's rights. Document both halves or the basis fails on audit.\n"
+    },
+    "triptych": {
+      "label": "Triptych — three panels",
+      "caption": "Splits the slide into three panels — citation, verbatim text, and gloss — for a formal, framed presentation of a single authority.",
+      "sample": "<!-- _class: citation-card triptych -->\n\n## What \"personal data\" covers under GDPR.\n\n`GDPR Art. 4(1) · definitions`\n\n> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.\n\n- Online identifiers count.\n  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.\n"
     }
   }
 }

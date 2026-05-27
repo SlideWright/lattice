@@ -77,6 +77,57 @@ Promotes the blockquote to a pull-quote scale — the verbatim language reads as
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
 ```
 
+### `split` — Split — quote | gloss columns
+
+Puts the verbatim quotation in the left column and the plain-English gloss in the right, with the citation spanning the top. Use when quote and interpretation deserve equal weight.
+
+```markdown
+<!-- _class: citation-card split -->
+
+## CCPA defines "sale" broadly.
+
+`Cal. Civ. Code §1798.140(ad) · CCPA/CPRA`
+
+> "Sale" means selling, renting, releasing, disclosing, disseminating, making available, transferring, or otherwise communicating a consumer's personal information to a third party for monetary or other valuable consideration.
+
+- The catch is "other valuable consideration."
+  - Data-for-service swaps and ad-tech cookie syncs can qualify as sales even when no money changes hands.
+```
+
+### `margin` — Margin — annotated quotation
+
+Sets the quotation as the body with the gloss running as margin notes alongside. Use for close reading where each clause earns its own annotation.
+
+```markdown
+<!-- _class: citation-card margin -->
+
+## The GDPR lawful-basis test.
+
+`GDPR Art. 6(1)(f) · legitimate interests`
+
+> Processing is lawful only if and to the extent that processing is necessary for the purposes of the legitimate interests pursued by the controller, except where such interests are overridden by the interests or fundamental rights of the data subject.
+
+- Two-part test.
+  - Necessity first, then a balancing exercise against the data subject's rights. Document both halves or the basis fails on audit.
+```
+
+### `triptych` — Triptych — three panels
+
+Splits the slide into three panels — citation, verbatim text, and gloss — for a formal, framed presentation of a single authority.
+
+```markdown
+<!-- _class: citation-card triptych -->
+
+## What "personal data" covers under GDPR.
+
+`GDPR Art. 4(1) · definitions`
+
+> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.
+
+- Online identifiers count.
+  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

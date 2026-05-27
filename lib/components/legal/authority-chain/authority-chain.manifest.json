@@ -9,7 +9,9 @@
   "purpose": "Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.",
   "variants": [
     "branching",
-    "trail"
+    "trail",
+    "pyramid",
+    "bracket"
   ],
   "slots": {
     "heading": {
@@ -82,6 +84,16 @@
       "label": "Trail — horizontal numbered trail with arrows",
       "caption": "Transposes the vertical chain into a left-to-right trail of numbered cards joined by arrows. Use when the slide canvas favours a wide read and the tiers fit in four short steps.",
       "sample": "<!-- _class: authority-chain trail -->\n\n## COPPA — statute through case, left to right.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule.\n3. Guidance\n   - `FTC Six-Step Plan`\n   - Cited in every consent order.\n4. Case\n   - `Epic Games · 2022`\n   - $245M consent order.\n"
+    },
+    "pyramid": {
+      "label": "Pyramid — hierarchy by tier weight",
+      "caption": "Renders the tiers as a weighted pyramid, the controlling authority widest at the base. Use when the point is the hierarchy of authority itself, not the timeline.",
+      "sample": "<!-- _class: authority-chain pyramid -->\n\n## COPPA — the authority pyramid.\n\n1. Statute\n   - `15 U.S.C. §6501`\n   - Congress, 1998 — verifiable parental consent for under-13 data.\n2. Regulation\n   - `16 C.F.R. Part 312`\n   - FTC implementing rule; the 2013 rewrite expanded covered identifiers.\n3. Guidance\n   - `FTC Six-Step Compliance Plan`\n   - Staff guidance — non-binding, but cited in every consent order.\n4. Case\n   - `In re Epic Games · 2022`\n   - $245M consent order operationalised the \"actual knowledge\" standard.\n"
+    },
+    "bracket": {
+      "label": "Bracket — connected cards",
+      "caption": "Lays the tiers out as bracketed cards joined by strong connectors, emphasising that each rung derives its force from the one above it.",
+      "sample": "<!-- _class: authority-chain bracket -->\n\n## How the GDPR fine traces back to the treaty.\n\n1. Treaty\n   - `Charter of Fundamental Rights, Art. 8`\n   - EU primary law — protection of personal data is a fundamental right.\n2. Regulation\n   - `GDPR (EU) 2016/679`\n   - Directly applicable across all member states; sets the Art. 83 fine tiers.\n3. Guidance\n   - `EDPB Guidelines 04/2022`\n   - Harmonised methodology for calculating administrative fines.\n4. Decision\n   - `DPC v. Meta · 2023`\n   - €1.2B fine — the largest GDPR penalty to date.\n"
     }
   }
 }

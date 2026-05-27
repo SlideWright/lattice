@@ -36,6 +36,85 @@ Spiral-packed word cloud — items sized by weight.
 
 ---
 
+<!-- _class: word-cloud constellation -->
+<!-- _footer: "Constellation — airy, two-tone · word-cloud constellation" -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- variant `32`
+- universal `28`
+- cascade `22`
+
+
+---
+
+<!-- _class: word-cloud dense -->
+<!-- _footer: "Dense — tight pack · word-cloud dense" -->
+
+## Every term this branch touched.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
+- transform `12`
+- selector `10`
+- palette `9`
+
+
+---
+
+<!-- _class: word-cloud spectrum -->
+<!-- _footer: "Spectrum — heat ramp · word-cloud spectrum" -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+
+
+---
+
+<!-- _class: word-cloud focal -->
+<!-- _footer: "Focal — one dominant term · word-cloud focal" -->
+
+## The one word that defined the branch.
+
+- variants `140`
+- component `60`
+- manifest `48`
+- gallery `40`
+- docs `34`
+- gap `28`
+- declared `22`
+- hidden `18`
+- generator `14`
+
+
+---
+
 <!-- _class: word-cloud dark -->
 <!-- _footer: "Composition: dark · word-cloud dark" -->
 

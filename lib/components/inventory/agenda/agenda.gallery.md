@@ -29,6 +29,20 @@ Auto-numbered table of contents for the deck.
 
 ---
 
+<!-- _class: agenda progress-1 -->
+<!-- _footer: "Progress · section 1 · agenda progress-1" -->
+
+## Where we are now.
+
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups
+
+
+---
+
 <!-- _class: agenda progress-2 -->
 <!-- _footer: "Progress · section 2 · agenda progress-2" -->
 
@@ -81,6 +95,78 @@ Auto-numbered table of contents for the deck.
 3. The forty-five shipped components, grouped by function
 4. Discovery — scaffolder, snippets, this gallery
 5. What ships next — open questions and follow-ups
+
+
+---
+
+<!-- _class: agenda progress-6 -->
+<!-- _footer: "Progress · section 6 · agenda progress-6" -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+
+
+---
+
+<!-- _class: agenda progress-7 -->
+<!-- _footer: "Progress · section 7 · agenda progress-7" -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+
+
+---
+
+<!-- _class: agenda progress-8 -->
+<!-- _footer: "Progress · section 8 · agenda progress-8" -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
+
+
+---
+
+<!-- _class: agenda progress-9 -->
+<!-- _footer: "Progress · section 9 · agenda progress-9" -->
+
+## Where we are now.
+
+1. Why we're here — the problem in one slide
+2. Where we are today — current architecture
+3. The proposal — what changes
+4. Migration plan — phases and gates
+5. Risks and mitigations
+6. Cost and timeline
+7. Team and ownership
+8. Open questions
+9. Decision and next steps
 
 
 ---

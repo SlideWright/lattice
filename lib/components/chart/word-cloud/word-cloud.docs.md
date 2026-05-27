@@ -57,6 +57,95 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 └─────────────────────────────────────────┘
 ```
 
+## Variants (layout-specific)
+
+### `constellation` — Constellation — airy, two-tone
+
+A wider size spread, no rotation, and an accent-pair palette — words sit like a constellation with generous spacing. Use for a small, high-impact vocabulary.
+
+```markdown
+<!-- _class: word-cloud constellation -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- variant `32`
+- universal `28`
+- cascade `22`
+```
+
+### `dense` — Dense — tight pack
+
+A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.
+
+```markdown
+<!-- _class: word-cloud dense -->
+
+## Every term this branch touched.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+- scaffolder `18`
+- bundler `14`
+- transform `12`
+- selector `10`
+- palette `9`
+```
+
+### `spectrum` — Spectrum — heat ramp
+
+Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.
+
+```markdown
+<!-- _class: word-cloud spectrum -->
+
+## What this branch named, by weight.
+
+- component `124`
+- manifest `78`
+- function `64`
+- form `52`
+- substance `47`
+- gallery `41`
+- folder `36`
+- variant `32`
+- universal `28`
+- cascade `22`
+```
+
+### `focal` — Focal — one dominant term
+
+The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are supporting context.
+
+```markdown
+<!-- _class: word-cloud focal -->
+
+## The one word that defined the branch.
+
+- variants `140`
+- component `60`
+- manifest `48`
+- gallery `40`
+- docs `34`
+- gap `28`
+- declared `22`
+- hidden `18`
+- generator `14`
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

@@ -70,6 +70,53 @@ Authored as `ol` (`1.` source). Useful when the principles are ordered by priori
 5. **One main idea per slide.** If you can't summarise it, split it.
 ```
 
+### `lettered` — Lettered
+
+Swaps the decimal counter for an A. / B. / C. letter sequence. Use when the principles are referenced by letter elsewhere in the deck or discussion.
+
+```markdown
+<!-- _class: principles lettered -->
+
+## How we make calls when the spec is silent.
+
+- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+- **Write the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
+- **Form follows function.** Let the audience's need shape the layout, not the other way around.
+- **One main idea per slide.** If you can't summarise it in one sentence, split it across two.
+```
+
+### `roman` — Roman
+
+Numbers the principles with lower-case Roman numerals (i, ii, iii). Reads as a more formal canon — house rules, doctrine, a charter.
+
+```markdown
+<!-- _class: principles roman -->
+
+## The editorial canon.
+
+- **Plain words beat clever ones.** If a board member needs a glossary, the slide failed.
+- **One claim per sentence.** Compound claims hide the one a reader would dispute.
+- **Show the number, then the verdict.** Evidence first earns the conclusion that follows.
+- **Cut the adverb, keep the verb.** "Grew sharply" is weaker than "doubled."
+- **End on the decision, not the summary.** The last slide should ask for something.
+```
+
+### `bullet` — Bullet
+
+Drops the numeric counter for a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.
+
+```markdown
+<!-- _class: principles bullet -->
+
+## What we optimise for, in no particular order.
+
+- **Reversibility over consensus.** Make the cheap-to-undo call now; reserve the meeting for the one-way doors.
+- **Clarity over completeness.** A slide that says one true thing beats one that says five hedged ones.
+- **Ownership over process.** Name the person; processes don't get paged.
+- **Evidence over instinct.** Write the prediction down so the instinct can be scored later.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

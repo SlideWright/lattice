@@ -72,6 +72,48 @@ Provenance chain — statute to regulation to guidance to case, walked in order.
 
 ---
 
+<!-- _class: authority-chain pyramid -->
+<!-- _footer: "Pyramid — hierarchy by tier weight · authority-chain pyramid" -->
+
+## COPPA — the authority pyramid.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — verifiable parental consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule; the 2013 rewrite expanded covered identifiers.
+3. Guidance
+   - `FTC Six-Step Compliance Plan`
+   - Staff guidance — non-binding, but cited in every consent order.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order operationalised the "actual knowledge" standard.
+
+
+---
+
+<!-- _class: authority-chain bracket -->
+<!-- _footer: "Bracket — connected cards · authority-chain bracket" -->
+
+## How the GDPR fine traces back to the treaty.
+
+1. Treaty
+   - `Charter of Fundamental Rights, Art. 8`
+   - EU primary law — protection of personal data is a fundamental right.
+2. Regulation
+   - `GDPR (EU) 2016/679`
+   - Directly applicable across all member states; sets the Art. 83 fine tiers.
+3. Guidance
+   - `EDPB Guidelines 04/2022`
+   - Harmonised methodology for calculating administrative fines.
+4. Decision
+   - `DPC v. Meta · 2023`
+   - €1.2B fine — the largest GDPR penalty to date.
+
+
+---
+
 <!-- _class: authority-chain dark -->
 <!-- _footer: "Composition: dark · authority-chain dark" -->
 

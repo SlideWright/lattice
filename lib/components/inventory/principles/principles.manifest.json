@@ -7,7 +7,10 @@
   "description": "Declared statements — short stated principles, each with a one-line justification.",
   "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
   "variants": [
-    "numbered"
+    "numbered",
+    "lettered",
+    "roman",
+    "bullet"
   ],
   "slots": {
     "title": {
@@ -75,6 +78,21 @@
       "label": "Numbered principles",
       "caption": "Authored as `ol` (`1.` source). Useful when the principles are ordered by priority — the first principle wins when two conflict.",
       "sample": "<!-- _class: principles -->\n\n## How we resolve conflicts — top wins.\n\n1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.\n2. **Name the actor, never the system.** Anonymous accountability is no accountability.\n3. **Write down the bet on the same slide as the choice.** Calibration depends on it.\n4. **Form follows function.** Let audience need shape the layout.\n5. **One main idea per slide.** If you can't summarise it, split it.\n"
+    },
+    "lettered": {
+      "label": "Lettered",
+      "caption": "Swaps the decimal counter for an A. / B. / C. letter sequence. Use when the principles are referenced by letter elsewhere in the deck or discussion.",
+      "sample": "<!-- _class: principles lettered -->\n\n## How we make calls when the spec is silent.\n\n- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.\n- **Name the actor, never the system.** \"The PM decides\" lands; \"the process decides\" hides accountability.\n- **Write the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.\n- **Form follows function.** Let the audience's need shape the layout, not the other way around.\n- **One main idea per slide.** If you can't summarise it in one sentence, split it across two.\n"
+    },
+    "roman": {
+      "label": "Roman",
+      "caption": "Numbers the principles with lower-case Roman numerals (i, ii, iii). Reads as a more formal canon — house rules, doctrine, a charter.",
+      "sample": "<!-- _class: principles roman -->\n\n## The editorial canon.\n\n- **Plain words beat clever ones.** If a board member needs a glossary, the slide failed.\n- **One claim per sentence.** Compound claims hide the one a reader would dispute.\n- **Show the number, then the verdict.** Evidence first earns the conclusion that follows.\n- **Cut the adverb, keep the verb.** \"Grew sharply\" is weaker than \"doubled.\"\n- **End on the decision, not the summary.** The last slide should ask for something.\n"
+    },
+    "bullet": {
+      "label": "Bullet",
+      "caption": "Drops the numeric counter for a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.",
+      "sample": "<!-- _class: principles bullet -->\n\n## What we optimise for, in no particular order.\n\n- **Reversibility over consensus.** Make the cheap-to-undo call now; reserve the meeting for the one-way doors.\n- **Clarity over completeness.** A slide that says one true thing beats one that says five hedged ones.\n- **Ownership over process.** Name the person; processes don't get paged.\n- **Evidence over instinct.** Write the prediction down so the instinct can be scored later.\n"
     }
   }
 }

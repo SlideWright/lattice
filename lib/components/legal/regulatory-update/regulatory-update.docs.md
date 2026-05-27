@@ -120,6 +120,69 @@ Stamps a priority rail on the left of each row and ranks by exposure rather than
    - `Effective Mar 2026`
 ```
 
+### `cards` — Cards — one panel per item
+
+Breaks the running list into discrete cards, one per development. Use when each item is independent and the audience may photograph a single card.
+
+```markdown
+<!-- _class: regulatory-update cards -->
+
+## Privacy and AI motion — Q1 2026.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity-assessment pre-market obligation took effect.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Developer and deployer duties for consequential-decision systems.
+   - `Effective Feb 2026`
+3. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order; clarifies the deception standard for privacy branding.
+   - `Final Mar 2026`
+4. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - `Effective Mar 2026`
+```
+
+### `diff-bands` — Diff-bands — grouped by change kind
+
+Groups items under colour-coded h3 bands by the kind of change — Added, Amended, Repealed, Enforced. Use when the type of action matters as much as the instrument.
+
+```markdown
+<!-- _class: regulatory-update diff-bands -->
+
+## What changed this quarter, by kind.
+
+### Added
+
+1. Colorado AI Act
+   - `SB 24-205`
+   - New developer and deployer duties for consequential-decision systems.
+
+### Amended
+
+2. CCPA regulations
+   - `§7027`
+   - Opt-out preference signal handling clarified and tightened.
+
+### Repealed
+
+3. Small-business carve-out
+   - `§541.107`
+   - The blanket exemption was narrowed and partially repealed.
+
+### Enforced
+
+4. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order finalised against deceptive privacy branding.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
