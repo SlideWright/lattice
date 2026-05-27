@@ -113,7 +113,7 @@ Sets the quotation as the body with the gloss running as margin notes alongside.
 
 ### `triptych` — Triptych — three panels
 
-Splits the slide into three panels — citation, verbatim text, and gloss — for a formal, framed presentation of a single authority.
+Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
 
 ```markdown
 <!-- _class: citation-card triptych -->
@@ -122,7 +122,7 @@ Splits the slide into three panels — citation, verbatim text, and gloss — fo
 
 `GDPR Art. 4(1) · definitions`
 
-> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.
+> 'Personal data' means any information relating to an identified or identifiable natural person.
 
 - Online identifiers count.
   - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.

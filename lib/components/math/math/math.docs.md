@@ -205,22 +205,24 @@ For every additional unit of exposure, the outcome rises by 0.42 SD — roughly 
 
 ### `decompose` — Matrix · decompose — factorisation sequence
 
-A compound of `matrix`: lays out a factorisation as a sequence of matrices (A = U Σ Vᵀ, LU, QR). Author it as `math matrix decompose`. Use when the structure of the decomposition is the point.
+A compound of `matrix`: lays a factorisation out as a sequence of matrices (LU, QR, SVD). Author it as `math matrix decompose` with the product written out. Use when the structure of the decomposition is the point.
 
 ```markdown
 <!-- _class: math matrix decompose -->
 
-## Singular value decomposition.
+## LU decomposition.
 
 $$
-A = U \Sigma V^{\top}
+\begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}
+=
+\begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}
+\begin{pmatrix} 2 & 1 \\ 0 & 1 \end{pmatrix}
 $$
 
-- **$A$** — the $m \times n$ matrix being factorised
-- **$U$** — $m \times m$ orthonormal left singular vectors
-- **$\Sigma$** — $m \times n$ diagonal of singular values, descending
-- **$V^{\top}$** — $n \times n$ orthonormal right singular vectors
-- **use** — low-rank approximation: keep the top-$k$ singular values
+- **$A$** — the original matrix being factorised
+- **$L$** — lower-triangular, unit diagonal
+- **$U$** — upper-triangular
+- **use** — solve $Ax = b$ by forward then back substitution
 ```
 
 ## Universal modifiers

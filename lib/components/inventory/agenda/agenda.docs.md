@@ -138,77 +138,71 @@ Current position on the fifth item — the last section opening, used as a final
 
 ### `progress-6` — Progress · section 6
 
-Same wayfinding pattern on a longer, nine-section agenda — current position at the sixth item.
+Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.
 
 ```markdown
 <!-- _class: agenda progress-6 -->
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
+6. Decision and next steps
 ```
 
 ### `progress-7` — Progress · section 7
 
-Current position at the seventh of nine sections — most of the deck is behind us.
+Current position at the seventh of seven sections.
 
 ```markdown
 <!-- _class: agenda progress-7 -->
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
+7. Decision and next steps
 ```
 
 ### `progress-8` — Progress · section 8
 
-Current position at the eighth of nine sections — the home stretch.
+Current position at the eighth of eight sections.
 
 ```markdown
 <!-- _class: agenda progress-8 -->
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
 7. Team and ownership
-8. Open questions
-9. Decision and next steps
+8. Decision and next steps
 ```
 
 ### `progress-9` — Progress · section 9
 
-Current position at the final section — everything before it is marked done.
+Current position at the ninth of nine sections — the maximum a single agenda comfortably holds.
 
 ```markdown
 <!-- _class: agenda progress-9 -->
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
 7. Team and ownership

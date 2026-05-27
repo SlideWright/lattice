@@ -47,9 +47,6 @@ Spiral-packed word cloud — items sized by weight.
 - form `52`
 - substance `47`
 - gallery `41`
-- variant `32`
-- universal `28`
-- cascade `22`
 
 
 ---
@@ -102,15 +99,11 @@ Spiral-packed word cloud — items sized by weight.
 
 ## The one word that defined the branch.
 
-- variants `140`
-- component `60`
-- manifest `48`
-- gallery `40`
-- docs `34`
-- gap `28`
-- declared `22`
-- hidden `18`
-- generator `14`
+- variants `150`
+- gallery `44`
+- manifest `38`
+- docs `30`
+- declared `24`
 
 
 ---

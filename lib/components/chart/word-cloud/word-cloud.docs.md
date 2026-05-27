@@ -61,7 +61,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 
 ### `constellation` — Constellation — airy, two-tone
 
-A wider size spread, no rotation, and an accent-pair palette — words sit like a constellation with generous spacing. Use for a small, high-impact vocabulary.
+A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.
 
 ```markdown
 <!-- _class: word-cloud constellation -->
@@ -74,9 +74,6 @@ A wider size spread, no rotation, and an accent-pair palette — words sit like 
 - form `52`
 - substance `47`
 - gallery `41`
-- variant `32`
-- universal `28`
-- cascade `22`
 ```
 
 ### `dense` — Dense — tight pack
@@ -128,22 +125,18 @@ Colours words along a heat ramp by weight instead of cycling the categorical pal
 
 ### `focal` — Focal — one dominant term
 
-The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are supporting context.
+The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.
 
 ```markdown
 <!-- _class: word-cloud focal -->
 
 ## The one word that defined the branch.
 
-- variants `140`
-- component `60`
-- manifest `48`
-- gallery `40`
-- docs `34`
-- gap `28`
-- declared `22`
-- hidden `18`
-- generator `14`
+- variants `150`
+- gallery `44`
+- manifest `38`
+- docs `30`
+- declared `24`
 ```
 
 ## Universal modifiers

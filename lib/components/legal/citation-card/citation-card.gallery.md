@@ -83,7 +83,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 `GDPR Art. 4(1) · definitions`
 
-> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.
+> 'Personal data' means any information relating to an identified or identifiable natural person.
 
 - Online identifiers count.
   - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.

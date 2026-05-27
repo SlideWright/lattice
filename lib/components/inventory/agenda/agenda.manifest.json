@@ -106,23 +106,23 @@
     },
     "progress-6": {
       "label": "Progress · section 6",
-      "caption": "Same wayfinding pattern on a longer, nine-section agenda — current position at the sixth item.",
-      "sample": "<!-- _class: agenda progress-6 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+      "caption": "Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.",
+      "sample": "<!-- _class: agenda progress-6 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Decision and next steps\n"
     },
     "progress-7": {
       "label": "Progress · section 7",
-      "caption": "Current position at the seventh of nine sections — most of the deck is behind us.",
-      "sample": "<!-- _class: agenda progress-7 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+      "caption": "Current position at the seventh of seven sections.",
+      "sample": "<!-- _class: agenda progress-7 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Decision and next steps\n"
     },
     "progress-8": {
       "label": "Progress · section 8",
-      "caption": "Current position at the eighth of nine sections — the home stretch.",
-      "sample": "<!-- _class: agenda progress-8 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+      "caption": "Current position at the eighth of eight sections.",
+      "sample": "<!-- _class: agenda progress-8 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Decision and next steps\n"
     },
     "progress-9": {
       "label": "Progress · section 9",
-      "caption": "Current position at the final section — everything before it is marked done.",
-      "sample": "<!-- _class: agenda progress-9 -->\n\n## Where we are now.\n\n1. Why we're here — the problem in one slide\n2. Where we are today — current architecture\n3. The proposal — what changes\n4. Migration plan — phases and gates\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
+      "caption": "Current position at the ninth of nine sections — the maximum a single agenda comfortably holds.",
+      "sample": "<!-- _class: agenda progress-9 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Cost and timeline\n7. Team and ownership\n8. Open questions\n9. Decision and next steps\n"
     }
   }
 }

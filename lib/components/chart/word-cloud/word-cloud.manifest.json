@@ -81,8 +81,8 @@
   "variantDocs": {
     "constellation": {
       "label": "Constellation — airy, two-tone",
-      "caption": "A wider size spread, no rotation, and an accent-pair palette — words sit like a constellation with generous spacing. Use for a small, high-impact vocabulary.",
-      "sample": "<!-- _class: word-cloud constellation -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n- variant `32`\n- universal `28`\n- cascade `22`\n"
+      "caption": "A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.",
+      "sample": "<!-- _class: word-cloud constellation -->\n\n## What this branch named, by weight.\n\n- component `124`\n- manifest `78`\n- function `64`\n- form `52`\n- substance `47`\n- gallery `41`\n"
     },
     "dense": {
       "label": "Dense — tight pack",
@@ -96,8 +96,8 @@
     },
     "focal": {
       "label": "Focal — one dominant term",
-      "caption": "The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are supporting context.",
-      "sample": "<!-- _class: word-cloud focal -->\n\n## The one word that defined the branch.\n\n- variants `140`\n- component `60`\n- manifest `48`\n- gallery `40`\n- docs `34`\n- gap `28`\n- declared `22`\n- hidden `18`\n- generator `14`\n"
+      "caption": "The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.",
+      "sample": "<!-- _class: word-cloud focal -->\n\n## The one word that defined the branch.\n\n- variants `150`\n- gallery `44`\n- manifest `38`\n- docs `30`\n- declared `24`\n"
     }
   }
 }

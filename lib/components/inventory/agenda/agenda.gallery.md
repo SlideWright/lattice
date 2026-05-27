@@ -104,15 +104,12 @@ Auto-numbered table of contents for the deck.
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
-6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
+6. Decision and next steps
 
 
 ---
@@ -122,15 +119,13 @@ Auto-numbered table of contents for the deck.
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
-7. Team and ownership
-8. Open questions
-9. Decision and next steps
+7. Decision and next steps
 
 
 ---
@@ -140,15 +135,14 @@ Auto-numbered table of contents for the deck.
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
 7. Team and ownership
-8. Open questions
-9. Decision and next steps
+8. Decision and next steps
 
 
 ---
@@ -158,10 +152,10 @@ Auto-numbered table of contents for the deck.
 
 ## Where we are now.
 
-1. Why we're here — the problem in one slide
-2. Where we are today — current architecture
-3. The proposal — what changes
-4. Migration plan — phases and gates
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
 5. Risks and mitigations
 6. Cost and timeline
 7. Team and ownership

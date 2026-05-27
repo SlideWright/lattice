@@ -48,11 +48,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two.
+1. **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
+2. **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
+3. **Write the bet on the same slide as the choice.** The decision and its predicted outcome live together.
+4. **Form follows function.** Let the audience's need shape the layout, not the other way around.
+5. **One main idea per slide.** If you can't summarise it in one sentence, split it across two.
 
 
 ---
@@ -62,11 +62,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## The editorial canon.
 
-- **Plain words beat clever ones.** If a board member needs a glossary, the slide failed.
-- **One claim per sentence.** Compound claims hide the one a reader would dispute.
-- **Show the number, then the verdict.** Evidence first earns the conclusion that follows.
-- **Cut the adverb, keep the verb.** "Grew sharply" is weaker than "doubled."
-- **End on the decision, not the summary.** The last slide should ask for something.
+1. **Plain words beat clever ones.** If a board member needs a glossary, the slide failed.
+2. **One claim per sentence.** Compound claims hide the one a reader would dispute.
+3. **Show the number, then the verdict.** Evidence first earns the conclusion that follows.
+4. **Cut the adverb, keep the verb.** "Grew sharply" is weaker than "doubled."
+5. **End on the decision, not the summary.** The last slide should ask for something.
 
 
 ---
@@ -76,10 +76,10 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## What we optimise for, in no particular order.
 
-- **Reversibility over consensus.** Make the cheap-to-undo call now; reserve the meeting for the one-way doors.
-- **Clarity over completeness.** A slide that says one true thing beats one that says five hedged ones.
-- **Ownership over process.** Name the person; processes don't get paged.
-- **Evidence over instinct.** Write the prediction down so the instinct can be scored later.
+1. **Reversibility over consensus.** Make the cheap-to-undo call now; reserve the meeting for the one-way doors.
+2. **Clarity over completeness.** A slide that says one true thing beats one that says five hedged ones.
+3. **Ownership over process.** Name the person; processes don't get paged.
+4. **Evidence over instinct.** Write the prediction down so the instinct can be scored later.
 
 
 ---

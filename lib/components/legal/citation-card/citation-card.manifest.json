@@ -102,8 +102,8 @@
     },
     "triptych": {
       "label": "Triptych — three panels",
-      "caption": "Splits the slide into three panels — citation, verbatim text, and gloss — for a formal, framed presentation of a single authority.",
-      "sample": "<!-- _class: citation-card triptych -->\n\n## What \"personal data\" covers under GDPR.\n\n`GDPR Art. 4(1) · definitions`\n\n> 'Personal data' means any information relating to an identified or identifiable natural person; an identifiable person is one who can be identified, directly or indirectly, by reference to an identifier such as a name, an identification number, location data, or an online identifier.\n\n- Online identifiers count.\n  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.\n"
+      "caption": "Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.",
+      "sample": "<!-- _class: citation-card triptych -->\n\n## What \"personal data\" covers under GDPR.\n\n`GDPR Art. 4(1) · definitions`\n\n> 'Personal data' means any information relating to an identified or identifiable natural person.\n\n- Online identifiers count.\n  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.\n"
     }
   }
 }
