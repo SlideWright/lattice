@@ -25,14 +25,10 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 
 ## What the team called out this quarter.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3
+- velocity `12`
+- ownership `9`
+- handoffs `7`
+- review `5`
 ```
 
 ## Slots
@@ -40,7 +36,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the cloud. |
-| `words` | `ul > li` | yes | One li per word. Format: `word — weight` (weight is a number). |
+| `words` | `ul > li` | yes | One li per word. Format: `word `weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent. |
 
 ## Anatomy
 
@@ -55,6 +51,86 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 │         tiny      LARGE   keyword       │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
+```
+
+## Variants (layout-specific)
+
+### `constellation` — Constellation — airy, two-tone
+
+A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.
+
+```markdown
+<!-- _class: word-cloud constellation -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`
+```
+
+### `dense` — Dense — tight pack
+
+A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.
+
+```markdown
+<!-- _class: word-cloud dense -->
+
+## Every term this branch touched.
+
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`
+```
+
+### `spectrum` — Spectrum — heat ramp
+
+Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.
+
+```markdown
+<!-- _class: word-cloud spectrum -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+```
+
+### `focal` — Focal — one dominant term
+
+The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.
+
+```markdown
+<!-- _class: word-cloud focal -->
+
+## The one word that defined the branch.
+
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`
 ```
 
 ## Universal modifiers

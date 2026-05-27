@@ -29,9 +29,11 @@ const {
   UNIVERSAL_VARIANTS,
   SEMI_UNIVERSAL_VARIANTS,
   CARD_STYLE_LAYOUTS,
+  STATEMENT_OL_LAYOUTS,
   validate,
   effectiveVariants,
   findInlineTitleBodyLine,
+  findBoldOrderedStatement,
   loadOne,
   loadAll,
   groupByFunction,
@@ -52,6 +54,11 @@ describe('component-manifest', () => {
   describe('validate', () => {
     test('accepts a minimal well-formed manifest', () => {
       assert.deepEqual(validate(GOOD), []);
+    });
+
+    test('stressSample: accepts a non-empty string, rejects empty', () => {
+      assert.deepEqual(validate({ ...GOOD, stressSample: '<!-- _class: x -->\n\n## …\n' }), []);
+      assert.ok(validate({ ...GOOD, stressSample: '' }).some((e) => /stressSample/.test(e)));
     });
 
     test('accepts optional fields when present and well-formed', () => {
@@ -212,6 +219,29 @@ describe('component-manifest', () => {
       assert.deepEqual(errors, []);
     });
 
+    test('statement-OL layouts reject `**bold**` in an ordered-list statement', () => {
+      assert.ok(STATEMENT_OL_LAYOUTS.includes('principles'));
+      const m = {
+        ...GOOD,
+        name: 'principles',
+        sample: '<!-- _class: principles -->\n\n## …\n\n1. **Bold lead-in.** breaks the counter grid.\n',
+      };
+      const errors = validate(m);
+      assert.ok(
+        errors.some((e) => /ordered-list statement/.test(e)),
+        'expected bold-in-OL error, got: ' + JSON.stringify(errors),
+      );
+    });
+
+    test('statement-OL layouts accept plain ordered-list statements', () => {
+      const m = {
+        ...GOOD,
+        name: 'principles',
+        sample: '<!-- _class: principles -->\n\n## …\n\n1. Default to the cheaper-to-reverse choice.\n',
+      };
+      assert.ok(!validate(m).some((e) => /ordered-list statement/.test(e)));
+    });
+
     test('non-card-style layouts permit inline format', () => {
       const m = {
         ...GOOD,
@@ -228,6 +258,12 @@ describe('component-manifest', () => {
       const line = findInlineTitleBodyLine('- **Title.** body');
       assert.equal(line, '- **Title.** body');
     });
+    test('findBoldOrderedStatement flags bold inside an ordered item, ignores plain', () => {
+      assert.equal(findBoldOrderedStatement('1. **Bold.** body'), '1. **Bold.** body');
+      assert.equal(findBoldOrderedStatement('1. Plain statement.'), null);
+      assert.equal(findBoldOrderedStatement('- **Bold.** body'), null); // unordered: not flagged
+    });
+
     test('matches inline title+body on any bullet (`-` or `*`)', () => {
       assert.ok(findInlineTitleBodyLine('* **Title.** body'));
     });

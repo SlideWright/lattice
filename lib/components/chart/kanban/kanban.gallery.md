@@ -48,6 +48,51 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ---
 
+<!-- _class: kanban -->
+<!-- _footer: "Stress test · kanban" -->
+
+`Phase 2 · Sprint 14`
+
+## Stress test — four lanes, fifteen cards, mixed sizes.
+
+- Backlog
+  - Per-purpose codebook caching `L`
+    - platform
+  - Crypto-shred runbook `M`
+    - operations
+  - Dependency dashboard `S`
+    - platform
+  - Edge runtime bindings `L`
+    - platform
+- In progress
+  - Multi-tenant DEK rotation `M`
+    - platform `at-risk`
+  - Examiner evidence pack v2 `L`
+    - compliance
+  - Polyglot SDK parity `M`
+    - platform
+  - Centralised examiner log `S`
+    - compliance `blocked`
+- Review
+  - Automated rotation pipeline `M`
+    - operations
+  - Continuous audit trail `S`
+    - compliance
+  - Incident response runbook `S`
+    - operations
+- Done
+  - Codebook signing service `M`
+    - platform
+  - Manual key rotation `S`
+    - operations
+  - Java and .NET parity `M`
+    - platform
+  - Audit trail v1 `S`
+    - compliance
+
+
+---
+
 <!-- _class: kanban dark -->
 <!-- _footer: "Composition: dark · kanban dark" -->
 

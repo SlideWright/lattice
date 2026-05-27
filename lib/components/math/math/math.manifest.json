@@ -14,7 +14,8 @@
     "compare",
     "canvas",
     "matrix",
-    "stats"
+    "stats",
+    "decompose"
   ],
   "slots": {
     "eyebrow": {
@@ -122,6 +123,11 @@
       "label": "Stats — estimate ± uncertainty",
       "caption": "Point estimate with uncertainty (CI, $p$-value, $n$) followed by plain-English interpretation. Best for treatment-effect slides, regression coefficients, A/B test readouts.",
       "sample": "<!-- _class: math stats -->\n\n## Effect of the treatment.\n\n$$ \\hat\\beta = 0.42 \\pm 0.03 $$\n\n> 95% CI: $[0.36,\\; 0.48]$\n> $p < 0.001 \\quad\\cdot\\quad n = 1{,}204$\n\nFor every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.\n"
+    },
+    "decompose": {
+      "label": "Matrix · decompose — factorisation sequence",
+      "caption": "A compound of `matrix`: lays a factorisation out as a sequence of matrices (LU, QR, SVD). Author it as `math matrix decompose` with the product written out. Use when the structure of the decomposition is the point.",
+      "sample": "<!-- _class: math matrix decompose -->\n\n## LU decomposition.\n\n$$\n\\begin{pmatrix} 2 & 1 \\\\ 4 & 3 \\end{pmatrix}\n=\n\\begin{pmatrix} 1 & 0 \\\\ 2 & 1 \\end{pmatrix}\n\\begin{pmatrix} 2 & 1 \\\\ 0 & 1 \\end{pmatrix}\n$$\n\n- **$A$** — the original matrix being factorised\n- **$L$** — lower-triangular, unit diagonal\n- **$U$** — upper-triangular\n- **use** — solve $Ax = b$ by forward then back substitution\n"
     }
   }
 }

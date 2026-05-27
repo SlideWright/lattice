@@ -9,7 +9,9 @@
   "purpose": "Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).",
   "variants": [
     "timeline",
-    "priority"
+    "priority",
+    "cards",
+    "diff-bands"
   ],
   "slots": {
     "heading": {
@@ -87,6 +89,16 @@
       "label": "Priority — ranked by exposure rather than chronology",
       "caption": "Stamps a priority rail on the left of each row and ranks by exposure rather than effective date. Use for board updates where the audience needs 'what to do' before 'when it landed'.",
       "sample": "<!-- _class: regulatory-update priority -->\n\n## Q1 motion ranked by exposure.\n\n`Top three · by ARR at risk`\n\n1. EU AI Act\n   - `Title III`\n   - High-risk system inventory due before April.\n   - `Effective Feb 2026`\n2. Colorado AI Act\n   - `SB 24-205`\n   - Deployer disclosures required; copy in flight.\n   - `Effective Feb 2026`\n3. Texas DPSA\n   - `§541.151`\n   - DSAR opt-out portal mandatory.\n   - `Effective Mar 2026`\n"
+    },
+    "cards": {
+      "label": "Cards — one panel per item",
+      "caption": "Breaks the running list into discrete cards, one per development. Use when each item is independent and the audience may photograph a single card.",
+      "sample": "<!-- _class: regulatory-update cards -->\n\n## Privacy and AI motion — Q1 2026.\n\n`Federal · State · International`\n\n1. EU AI Act\n   - `Title III`\n   - Conformity-assessment pre-market obligation took effect.\n   - `Effective Feb 2026`\n2. Colorado AI Act\n   - `SB 24-205`\n   - Developer and deployer duties for consequential-decision systems.\n   - `Effective Feb 2026`\n3. FTC v. Avast\n   - `§5 unfairness`\n   - $16.5M consent order; clarifies the deception standard for privacy branding.\n   - `Final Mar 2026`\n4. Texas DPSA\n   - `§541.151`\n   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.\n   - `Effective Mar 2026`\n"
+    },
+    "diff-bands": {
+      "label": "Diff-bands — grouped by change kind",
+      "caption": "Groups items under colour-coded h3 bands by the kind of change — Added, Amended, Repealed, Enforced. Use when the type of action matters as much as the instrument.",
+      "sample": "<!-- _class: regulatory-update diff-bands -->\n\n## What changed this quarter, by kind.\n\n### Added\n\n1. Colorado AI Act\n   - `SB 24-205`\n   - New developer and deployer duties for consequential-decision systems.\n\n### Amended\n\n2. CCPA regulations\n   - `§7027`\n   - Opt-out preference signal handling clarified and tightened.\n\n### Repealed\n\n3. Small-business carve-out\n   - `§541.107`\n   - The blanket exemption was narrowed and partially repealed.\n\n### Enforced\n\n4. FTC v. Avast\n   - `§5 unfairness`\n   - $16.5M consent order finalised against deceptive privacy branding.\n"
     }
   }
 }

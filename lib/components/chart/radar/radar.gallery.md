@@ -44,6 +44,215 @@ Native radar / spider chart — items rated across multiple axes.
 
 ---
 
+<!-- _class: radar target -->
+<!-- _footer: "Target — actual vs reference ring · radar target" -->
+
+`Scale · 0–100`
+
+## Where we are against the quarter plan.
+
+- Actual
+  - Hiring `72`
+  - Runway `88`
+  - Pipeline `54`
+  - Retention `91`
+  - Compliance `66`
+  - Velocity `78`
+- Target
+  - Hiring `90`
+  - Runway `85`
+  - Pipeline `80`
+  - Retention `90`
+  - Compliance `95`
+  - Velocity `75`
+
+
+---
+
+<!-- _class: radar delta -->
+<!-- _footer: "Delta — before vs after · radar delta" -->
+
+`Scale · 0–10`
+
+## What moved over the half, and which way.
+
+- H1
+  - Velocity `5`
+  - Quality `6`
+  - Morale `4`
+  - Coverage `5`
+  - Onboarding `3`
+- H2
+  - Velocity `8`
+  - Quality `7`
+  - Morale `4`
+  - Coverage `6`
+  - Onboarding `7`
+
+
+---
+
+<!-- _class: radar benchmark -->
+<!-- _footer: "Benchmark — hero vs envelope · radar benchmark" -->
+
+`Scale · 0–10`
+
+## Are we inside the pack, or outside it.
+
+- Us
+  - Performance `9`
+  - Price `6`
+  - Support `8`
+  - Ecosystem `7`
+  - Docs `9`
+  - Security `8`
+- Competitor A
+  - Performance `7`
+  - Price `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Docs `5`
+  - Security `7`
+- Competitor B
+  - Performance `6`
+  - Price `9`
+  - Support `7`
+  - Ecosystem `6`
+  - Docs `6`
+  - Security `6`
+- Competitor C
+  - Performance `8`
+  - Price `5`
+  - Support `5`
+  - Ecosystem `8`
+  - Docs `7`
+  - Security `9`
+
+
+---
+
+<!-- _class: radar quadrant -->
+<!-- _footer: "Quadrant — axes grouped into sectors · radar quadrant" -->
+
+`Scale · 0–5`
+
+## Our capability profile, read by theme.
+
+- Our capability
+  - People
+    - Hiring `4`
+    - Retention `3`
+    - Bench depth `2`
+  - Process
+    - Cadence `5`
+    - Rigor `4`
+  - Technology
+    - Platform `4`
+    - Tooling `3`
+    - Automation `2`
+  - Risk
+    - Compliance `3`
+    - Resilience `4`
+
+
+---
+
+<!-- _class: radar small-multiples -->
+<!-- _footer: "Small-multiples — one mini radar per series · radar small-multiples" -->
+
+`Scale · 0–10`
+
+## Four product lines, the same five criteria.
+
+- Atlas
+  - Adoption `8`
+  - Margin `6`
+  - NPS `7`
+  - Velocity `9`
+  - Risk `4`
+- Beacon
+  - Adoption `5`
+  - Margin `9`
+  - NPS `6`
+  - Velocity `5`
+  - Risk `7`
+- Cinder
+  - Adoption `7`
+  - Margin `4`
+  - NPS `8`
+  - Velocity `6`
+  - Risk `5`
+- Drift
+  - Adoption `6`
+  - Margin `7`
+  - NPS `5`
+  - Velocity `7`
+  - Risk `8`
+
+
+---
+
+<!-- _class: radar minimal -->
+<!-- _footer: "Minimal — stroke-only · radar minimal" -->
+
+`Scale · 0–10`
+
+## The same comparison, fills dropped.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+
+
+---
+
+<!-- _class: radar -->
+<!-- _footer: "Stress test · radar" -->
+
+`Scale · 0–10`
+
+## Stress test — eight criteria, three vendors.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+  - Documentation `8`
+  - Onboarding `7`
+  - Reliability `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+  - Documentation `6`
+  - Onboarding `8`
+  - Reliability `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+  - Documentation `7`
+  - Onboarding `6`
+  - Reliability `8`
+
+
+---
+
 <!-- _class: radar dark -->
 <!-- _footer: "Composition: dark · radar dark" -->
 

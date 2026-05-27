@@ -24,6 +24,7 @@ const {
   colorForWord,
   pickVariant,
   clampWeight,
+  normalizeWeights,
   parseItem,
   parseItems,
   VARIANT_OPTS,
@@ -65,8 +66,44 @@ describe('word-cloud', () => {
     assert.deepEqual(parseItem('Velocity <code>4.3</code>'), { text: 'Velocity', weight: 4.3 });
   });
 
-  test('parseItem: defaults to weight 3 when no <code>', () => {
-    assert.deepEqual(parseItem('Strategy'), { text: 'Strategy', weight: 3 });
+  test('parseItem: weight is NaN (unspecified) when no <code>', () => {
+    const item = parseItem('Strategy');
+    assert.equal(item.text, 'Strategy');
+    assert.ok(Number.isNaN(item.weight), 'no pill → NaN, normalized to mid downstream');
+  });
+
+  test('parseItem: keeps the raw weight (no clamp)', () => {
+    assert.equal(parseItem('Velocity <code>124</code>').weight, 124);
+  });
+
+  // ── normalizeWeights ────────────────────────────────────────────────────
+
+  test('normalizeWeights: min-max scales any range onto 1-5', () => {
+    const [a, b, c] = normalizeWeights([9, 78, 124]);
+    assert.equal(a, 1);   // min → 1
+    assert.equal(c, 5);   // max → 5
+    assert.ok(b > 1 && b < 5);
+  });
+
+  test('normalizeWeights: a full-range 1-5 set is a fixed point', () => {
+    assert.deepEqual(normalizeWeights([5, 4, 3, 2, 1]), [5, 4, 3, 2, 1]);
+  });
+
+  test('normalizeWeights: skeleton-style counts spread across the scale', () => {
+    const [w12, w9, w7, w6] = normalizeWeights([12, 9, 7, 6]);
+    assert.equal(w12, 5);
+    assert.equal(w6, 1);
+    assert.ok(w9 > w7 && w7 > w6);
+  });
+
+  test('normalizeWeights: single word and all-equal map to mid', () => {
+    assert.deepEqual(normalizeWeights([7]), [3]);
+    assert.deepEqual(normalizeWeights([4, 4, 4]), [3, 3, 3]);
+  });
+
+  test('normalizeWeights: NaN entries map to mid without skewing min/max', () => {
+    // raws [10, NaN, 2] → 10→5, 2→1, NaN→3 (not anchoring the range)
+    assert.deepEqual(normalizeWeights([10, NaN, 2]), [5, 3, 1]);
   });
 
   test('parseItem: ignores non-trailing <code> elements', () => {

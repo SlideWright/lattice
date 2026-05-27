@@ -40,6 +40,158 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 ---
 
+<!-- _class: quadrant bubble -->
+<!-- _footer: "Bubble — third value sizes the dot · quadrant bubble" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — sized by revenue at stake.
+
+- Strategic Bets
+  - Codebook caching `3, 70, 2.4`
+  - Multi-tenant DEKs `5, 85, 4.1`
+- Quick Wins
+  - Per-purpose codebooks `8, 80, 0.9`
+  - Snapshot exports `9, 55, 0.6`
+- Defer
+  - Vendor scoping `2, 30, 0.4`
+- Time Sinks
+  - Custom audit log UI `7, 18, 1.3`
+
+
+---
+
+<!-- _class: quadrant trail -->
+<!-- _footer: "Trail — before → after · quadrant trail" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## How each bet moved after one quarter.
+
+- Strategic Bets
+  - Codebook caching `5, 60` `3, 78`
+  - Multi-tenant DEKs `7, 70` `5, 88`
+- Quick Wins
+  - Snapshot exports `9, 45` `8, 62`
+- Time Sinks
+  - Custom audit log UI `6, 25` `7, 16`
+
+
+---
+
+<!-- _class: quadrant cohort -->
+<!-- _footer: "Cohort — convex-hull tint per group · quadrant cohort" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — clustered by theme.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+  - Manual rotation `1, 22`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM `9, 28`
+
+
+---
+
+<!-- _class: quadrant threshold -->
+<!-- _footer: "Threshold — target lines + zones · quadrant threshold" -->
+
+`Effort 0–10 → Reach 0–100 · targets 5, 50`
+
+## Against the go/no-go thresholds.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+
+
+---
+
+<!-- _class: quadrant magic -->
+<!-- _footer: "Magic — MQ tribute · quadrant magic" -->
+
+`Completeness of vision 0–100 → Ability to execute 0–100`
+
+## The codebook-tooling Magic Quadrant.
+
+- Challengers
+  - Legacy Inc `30, 82`
+- Leaders
+  - Lattice `85, 88`
+  - Vault Corp `72, 76`
+- Niche Players
+  - Boutique KMS `25, 28`
+- Visionaries
+  - Cipher Labs `82, 34`
+
+
+---
+
+<!-- _class: quadrant minimal -->
+<!-- _footer: "Minimal — no fill, faint grid · quadrant minimal" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — unadorned.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+
+
+---
+
+<!-- _class: quadrant -->
+<!-- _footer: "Stress test · quadrant" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Stress test — fourteen initiatives, dense labels.
+
+- Strategic Bets
+  - Codebook caching layer `3, 72`
+  - Multi-tenant DEK rotation `5, 85`
+  - Cross-region replication `4, 78`
+  - Continuous audit trail `2, 66`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+  - Dependency dashboard `7, 62`
+- Defer
+  - Vendor security scoping `2, 30`
+  - Manual key rotation `1, 22`
+  - Legacy SDK shim `3, 14`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM connector `9, 28`
+  - Edge runtime bindings `8, 12`
+  - Polyglot doc generator `6, 25`
+
+
+---
+
 <!-- _class: quadrant dark -->
 <!-- _footer: "Composition: dark · quadrant dark" -->
 

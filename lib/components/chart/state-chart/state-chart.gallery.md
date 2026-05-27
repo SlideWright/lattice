@@ -98,6 +98,32 @@ How a draft moves from author to archive.
 
 ---
 
+<!-- _class: state-chart -->
+<!-- _footer: "Stress test · state-chart" -->
+
+`Submission lifecycle`
+
+## Stress test — back-edges, skips, self-loop.
+
+1. Draft `start`
+   - `submit => 2`
+   - `discard => 5`
+2. Submitted `on-track`
+   - `review => 3`
+   - `withdraw => 1`
+3. In Review
+   - `approve => 4`
+   - `reject => 1`
+   - `revise => self`
+4. Approved `done`
+   - `recall => 3`
+   - `publish => 5`
+5. Published `end`
+   - `amend => 3`
+
+
+---
+
 <!-- _class: state-chart dark -->
 <!-- _footer: "Composition: dark · state-chart dark" -->
 

@@ -127,6 +127,11 @@
       "minLength": 1,
       "description": "Full slide markdown (including the `_class` directive line, with no modifier) for the default-appearance slide of <name>.gallery.md. The skeleton field is the placeholder template for the scaffolder; sample is real prose that demonstrates the component."
     },
+    "stressSample": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional. Full slide markdown for an extra <name>.gallery.md slide that stress-tests the engine with an edge-case input (high volume, wide value range, long text) past the tidy default sample. Rendered after the variant slides; counted by expectedGallerySlideCount()."
+    },
     "variantDocs": {
       "type": "object",
       "description": "Per-variant prose used by the generator. Keys MUST be a subset of variants[]; the validator enforces this.",

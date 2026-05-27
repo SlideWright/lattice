@@ -11,7 +11,8 @@
     "chosen",
     "decision",
     "vertical",
-    "banner-tag"
+    "banner-tag",
+    "rejected"
   ],
   "slots": {
     "title": {
@@ -103,6 +104,11 @@
       "label": "Banner tag — slot label as full-width header strip",
       "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
       "sample": "<!-- _class: compare-prose banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
+    },
+    "rejected": {
+      "label": "Rejected",
+      "caption": "Strikes the second option's title and dims its card — the inverse of `chosen`. Use when the slide's job is to record the path NOT taken and why.",
+      "sample": "<!-- _class: compare-prose rejected -->\n\n## We went with managed Postgres, not the self-hosted cluster.\n\n- Managed Postgres\n  - Higher monthly spend, but zero on-call burden and automatic failover. The team ships features instead of babysitting replication.\n- Self-hosted cluster\n  - Cheaper raw compute, but the operational tax — patching, backups, 3am pages — falls on a four-person team that can't absorb it.\n"
     }
   }
 }

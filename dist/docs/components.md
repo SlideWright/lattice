@@ -950,6 +950,7 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 - **Sub-bullets per section.** The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here.
 - **Unnumbered list.** Authoring with `-` instead of `1.` loses the numbered chrome the layout depends on. Always use ordered list syntax.
 - **Single-section decks.** If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding.
+- **More than six sections.** A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides.
 
 #### Authoring
 
@@ -988,6 +989,22 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 ```
 
 #### Variants (layout-specific)
+
+##### `progress-1` — Progress · section 1
+
+Wayfinding for the start of the deck — the first item is current, the rest are dimmed ahead.
+
+```markdown
+<!-- _class: agenda progress-1 -->
+
+## Where we are now.
+
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups
+```
 
 ##### `progress-2` — Progress · section 2
 
@@ -1051,6 +1068,23 @@ Current position on the fifth item — the last section opening, used as a final
 3. The forty-five shipped components, grouped by function
 4. Discovery — scaffolder, snippets, this gallery
 5. What ships next — open questions and follow-ups
+```
+
+##### `progress-6` — Progress · section 6
+
+Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.
+
+```markdown
+<!-- _class: agenda progress-6 -->
+
+## Where we are now.
+
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
+5. Risks and mitigations
+6. Decision and next steps
 ```
 
 #### Universal modifiers
@@ -1968,20 +2002,67 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 
 #### Variants (layout-specific)
 
-##### `numbered` — Numbered principles
+##### `numbered` — Numbered
 
-Authored as `ol` (`1.` source). Useful when the principles are ordered by priority — the first principle wins when two conflict.
+The default counter — decimal-leading-zero (01, 02, 03). Author each principle as one plain declarative statement; the layout already sets display weight.
 
 ```markdown
 <!-- _class: principles -->
 
 ## How we resolve conflicts — top wins.
 
-1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.
-2. **Name the actor, never the system.** Anonymous accountability is no accountability.
-3. **Write down the bet on the same slide as the choice.** Calibration depends on it.
-4. **Form follows function.** Let audience need shape the layout.
-5. **One main idea per slide.** If you can't summarise it, split it.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
+```
+
+##### `lettered` — Lettered
+
+Swaps the decimal counter for an A / B / C letter sequence. One plain statement per item. Use when the principles are referenced by letter elsewhere in the deck.
+
+```markdown
+<!-- _class: principles lettered -->
+
+## How we make calls when the spec is silent.
+
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
+```
+
+##### `roman` — Roman
+
+Numbers the principles with Roman numerals (I, II, III). Reads as a more formal canon — house rules, doctrine, a charter.
+
+```markdown
+<!-- _class: principles roman -->
+
+## The editorial canon.
+
+1. Plain words beat clever ones.
+2. One claim per sentence.
+3. Show the number, then the verdict.
+4. Cut the adverb, keep the verb.
+5. End on the decision, not the summary.
+```
+
+##### `bullet` — Bullet
+
+Replaces the numeric counter with a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.
+
+```markdown
+<!-- _class: principles bullet -->
+
+## What we optimise for, in no particular order.
+
+1. Reversibility over consensus — make the cheap-to-undo call now.
+2. Clarity over completeness — one true thing beats five hedged ones.
+3. Ownership over process — processes don't get paged.
+4. Evidence over instinct — write the prediction down so it can be scored.
 ```
 
 #### Universal modifiers
@@ -2313,6 +2394,21 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
   - No vendor matches our compliance posture without surrender of control.
 - WHY NOT DELAY
   - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+```
+
+##### `rejected` — Rejected
+
+Strikes the second option's title and dims its card — the inverse of `chosen`. Use when the slide's job is to record the path NOT taken and why.
+
+```markdown
+<!-- _class: compare-prose rejected -->
+
+## We went with managed Postgres, not the self-hosted cluster.
+
+- Managed Postgres
+  - Higher monthly spend, but zero on-call burden and automatic failover. The team ships features instead of babysitting replication.
+- Self-hosted cluster
+  - Cheaper raw compute, but the operational tax — patching, backups, 3am pages — falls on a four-person team that can't absorb it.
 ```
 
 #### Universal modifiers
@@ -2672,6 +2768,42 @@ Splits the passage into three columns: prior text on the left, new text in the m
 - **Scope.** Sale and sharing fold into one duty.
 - **Method floor.** One method now suffices.
 - **Link title.** Homepage label is mandatory and standardised.
+```
+
+##### `split` — Split — old | new side by side
+
+Two blockquotes laid out in columns: prior text on the left under an OLD label, amended text on the right under NEW. Use when the passages are short enough to read across.
+
+```markdown
+<!-- _class: redline split -->
+
+## SB-362 — before and after, side by side.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** The left column is the prior text; the right is the amendment. Reading across makes the scope expansion obvious.
+```
+
+##### `stacked` — Stacked — old block atop new
+
+Stacks the prior text (struck, labelled OLD — prior text) above the current text (labelled NEW · current). Use when the passages are too long to sit side by side.
+
+```markdown
+<!-- _class: redline stacked -->
+
+## SB-362 — prior text struck, current below.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+> A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled "Your Privacy Choices."
+
+- **Why this matters.** Stacking keeps the reading order vertical when each passage is a full sentence or more.
 ```
 
 #### Universal modifiers
@@ -3385,6 +3517,64 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
+```
+
+##### `status` — Status — heavy state treatment
+
+Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.
+
+```markdown
+<!-- _class: roadmap status -->
+
+`Layout · roadmap status`
+
+## Delivery status by workstream.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+```
+
+##### `swimlane` — Swimlane — horizontal tracks
+
+Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.
+
+```markdown
+<!-- _class: roadmap swimlane -->
+
+`Layout · roadmap swimlane`
+
+## Each team's track across the year.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| SDK        | Java                 | .NET                   | Polyglot parity           |
+```
+
+##### `milestones` — Milestones — calendar-aware
+
+Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.
+
+```markdown
+<!-- _class: roadmap milestones -->
+
+`Layout · roadmap milestones`
+
+## The dated path to GA.
+
+| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
 ```
 
 #### Universal modifiers
@@ -4586,6 +4776,143 @@ Effort estimated in story-points; reach as percent of addressable users.
 └─────────────────────────────────────────┘
 ```
 
+#### Variants (layout-specific)
+
+##### `bubble` — Bubble — third value sizes the dot
+
+A third number in each pill (`x, y, size`) scales the dot by honest √-area. Use when a magnitude — revenue, headcount, spend — rides alongside the two positioning axes.
+
+```markdown
+<!-- _class: quadrant bubble -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — sized by revenue at stake.
+
+- Strategic Bets
+  - Codebook caching `3, 70, 2.4`
+  - Multi-tenant DEKs `5, 85, 4.1`
+- Quick Wins
+  - Per-purpose codebooks `8, 80, 0.9`
+  - Snapshot exports `9, 55, 0.6`
+- Defer
+  - Vendor scoping `2, 30, 0.4`
+- Time Sinks
+  - Custom audit log UI `7, 18, 1.3`
+```
+
+##### `trail` — Trail — before → after
+
+Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old position to the new one. Use to show how initiatives moved across a period.
+
+```markdown
+<!-- _class: quadrant trail -->
+
+`Effort 0–10 → Reach 0–100`
+
+## How each bet moved after one quarter.
+
+- Strategic Bets
+  - Codebook caching `5, 60` `3, 78`
+  - Multi-tenant DEKs `7, 70` `5, 88`
+- Quick Wins
+  - Snapshot exports `9, 45` `8, 62`
+- Time Sinks
+  - Custom audit log UI `6, 25` `7, 16`
+```
+
+##### `cohort` — Cohort — convex-hull tint per group
+
+Tints a convex hull behind each top-level group so the clusters read as cohorts, not just loose dots. Use when group membership is part of the argument.
+
+```markdown
+<!-- _class: quadrant cohort -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — clustered by theme.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+  - Manual rotation `1, 22`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM `9, 28`
+```
+
+##### `threshold` — Threshold — target lines + zones
+
+Replaces the centre midlines with target lines declared in the eyebrow (`· targets tx, ty`) and labels the resulting zones. Use for go/no-go reads against an explicit bar.
+
+```markdown
+<!-- _class: quadrant threshold -->
+
+`Effort 0–10 → Reach 0–100 · targets 5, 50`
+
+## Against the go/no-go thresholds.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+```
+
+##### `magic` — Magic — MQ tribute
+
+A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / Challengers / Visionaries / Niche Players quadrant names. Order the groups TL → TR → BL → BR.
+
+```markdown
+<!-- _class: quadrant magic -->
+
+`Completeness of vision 0–100 → Ability to execute 0–100`
+
+## The codebook-tooling Magic Quadrant.
+
+- Challengers
+  - Legacy Inc `30, 82`
+- Leaders
+  - Lattice `85, 88`
+  - Vault Corp `72, 76`
+- Niche Players
+  - Boutique KMS `25, 28`
+- Visionaries
+  - Cipher Labs `82, 34`
+```
+
+##### `minimal` — Minimal — no fill, faint grid
+
+Composable modifier: drops the quadrant fills for a faint grid and bare dots. Layers on the default or any quadrant variant when the tinting would compete with the dots.
+
+```markdown
+<!-- _class: quadrant minimal -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — unadorned.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+```
+
 #### Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -4673,6 +5000,191 @@ Use to compare 2–4 options across the same 4–8 criteria. Each option becomes
 │              D ●───● C                  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
+```
+
+#### Variants (layout-specific)
+
+##### `target` — Target — actual vs reference ring
+
+Reads the series named `Target` (or `Goal`/`Plan`) as a dashed reference polygon; each axis where the actual falls short gets a rose gap segment along the spoke, surplus a quiet green one. The shortfall is the read.
+
+```markdown
+<!-- _class: radar target -->
+
+`Scale · 0–100`
+
+## Where we are against the quarter plan.
+
+- Actual
+  - Hiring `72`
+  - Runway `88`
+  - Pipeline `54`
+  - Retention `91`
+  - Compliance `66`
+  - Velocity `78`
+- Target
+  - Hiring `90`
+  - Runway `85`
+  - Pipeline `80`
+  - Retention `90`
+  - Compliance `95`
+  - Velocity `75`
+```
+
+##### `delta` — Delta — before vs after
+
+Takes exactly two series — before, then after. The before polygon is muted; a change segment rides each spoke, green where the metric rose, rose where it fell. Built for the period-over-period QBR story.
+
+```markdown
+<!-- _class: radar delta -->
+
+`Scale · 0–10`
+
+## What moved over the half, and which way.
+
+- H1
+  - Velocity `5`
+  - Quality `6`
+  - Morale `4`
+  - Coverage `5`
+  - Onboarding `3`
+- H2
+  - Velocity `8`
+  - Quality `7`
+  - Morale `4`
+  - Coverage `6`
+  - Onboarding `7`
+```
+
+##### `benchmark` — Benchmark — hero vs envelope
+
+Draws the first series as the hero line and collapses every other series into a single min–max envelope band — one shape and your line instead of five tangled polygons. Strong where you clear the band, exposed where you sit inside it.
+
+```markdown
+<!-- _class: radar benchmark -->
+
+`Scale · 0–10`
+
+## Are we inside the pack, or outside it.
+
+- Us
+  - Performance `9`
+  - Price `6`
+  - Support `8`
+  - Ecosystem `7`
+  - Docs `9`
+  - Security `8`
+- Competitor A
+  - Performance `7`
+  - Price `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Docs `5`
+  - Security `7`
+- Competitor B
+  - Performance `6`
+  - Price `9`
+  - Support `7`
+  - Ecosystem `6`
+  - Docs `6`
+  - Security `6`
+- Competitor C
+  - Performance `8`
+  - Price `5`
+  - Support `5`
+  - Ecosystem `8`
+  - Docs `7`
+  - Security `9`
+```
+
+##### `quadrant` — Quadrant — axes grouped into sectors
+
+Takes a three-level list (series → group → axis); each group becomes a tinted sector with its name on the rim and a dashed mean arc. For boards that think in themes, not twelve loose axes.
+
+```markdown
+<!-- _class: radar quadrant -->
+
+`Scale · 0–5`
+
+## Our capability profile, read by theme.
+
+- Our capability
+  - People
+    - Hiring `4`
+    - Retention `3`
+    - Bench depth `2`
+  - Process
+    - Cadence `5`
+    - Rigor `4`
+  - Technology
+    - Platform `4`
+    - Tooling `3`
+    - Automation `2`
+  - Risk
+    - Compliance `3`
+    - Resilience `4`
+```
+
+##### `small-multiples` — Small-multiples — one mini radar per series
+
+Gives each series its own mini radar on a shared scale, laid out in a row — the honest read when an overlay of four-plus series would be mush. Scan the shapes, spot the outlier.
+
+```markdown
+<!-- _class: radar small-multiples -->
+
+`Scale · 0–10`
+
+## Four product lines, the same five criteria.
+
+- Atlas
+  - Adoption `8`
+  - Margin `6`
+  - NPS `7`
+  - Velocity `9`
+  - Risk `4`
+- Beacon
+  - Adoption `5`
+  - Margin `9`
+  - NPS `6`
+  - Velocity `5`
+  - Risk `7`
+- Cinder
+  - Adoption `7`
+  - Margin `4`
+  - NPS `8`
+  - Velocity `6`
+  - Risk `5`
+- Drift
+  - Adoption `6`
+  - Margin `7`
+  - NPS `5`
+  - Velocity `7`
+  - Risk `8`
+```
+
+##### `minimal` — Minimal — stroke-only
+
+Composable modifier: drops the polygon fills for a stroke-only read on a faint grid. Layers on the default or any radar variant when the fills would muddy the comparison.
+
+```markdown
+<!-- _class: radar minimal -->
+
+`Scale · 0–10`
+
+## The same comparison, fills dropped.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
 ```
 
 #### Universal modifiers
@@ -4933,14 +5445,10 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 
 ## What the team called out this quarter.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3
+- velocity `12`
+- ownership `9`
+- handoffs `7`
+- review `5`
 ```
 
 #### Slots
@@ -4948,7 +5456,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the cloud. |
-| `words` | `ul > li` | yes | One li per word. Format: `word — weight` (weight is a number). |
+| `words` | `ul > li` | yes | One li per word. Format: `word `weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent. |
 
 #### Anatomy
 
@@ -4963,6 +5471,86 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 │         tiny      LARGE   keyword       │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
+```
+
+#### Variants (layout-specific)
+
+##### `constellation` — Constellation — airy, two-tone
+
+A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.
+
+```markdown
+<!-- _class: word-cloud constellation -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`
+```
+
+##### `dense` — Dense — tight pack
+
+A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.
+
+```markdown
+<!-- _class: word-cloud dense -->
+
+## Every term this branch touched.
+
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`
+```
+
+##### `spectrum` — Spectrum — heat ramp
+
+Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.
+
+```markdown
+<!-- _class: word-cloud spectrum -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+```
+
+##### `focal` — Focal — one dominant term
+
+The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.
+
+```markdown
+<!-- _class: word-cloud focal -->
+
+## The one word that defined the branch.
+
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`
 ```
 
 #### Universal modifiers
@@ -5268,6 +5856,28 @@ $$ \hat\beta = 0.42 \pm 0.03 $$
 > $p < 0.001 \quad\cdot\quad n = 1{,}204$
 
 For every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.
+```
+
+##### `decompose` — Matrix · decompose — factorisation sequence
+
+A compound of `matrix`: lays a factorisation out as a sequence of matrices (LU, QR, SVD). Author it as `math matrix decompose` with the product written out. Use when the structure of the decomposition is the point.
+
+```markdown
+<!-- _class: math matrix decompose -->
+
+## LU decomposition.
+
+$$
+\begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}
+=
+\begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}
+\begin{pmatrix} 2 & 1 \\ 0 & 1 \end{pmatrix}
+$$
+
+- **$A$** — the original matrix being factorised
+- **$L$** — lower-triangular, unit diagonal
+- **$U$** — upper-triangular
+- **use** — solve $Ax = b$ by forward then back substitution
 ```
 
 #### Universal modifiers
@@ -5594,6 +6204,52 @@ Transposes the vertical chain into a left-to-right trail of numbered cards joine
    - $245M consent order.
 ```
 
+##### `pyramid` — Pyramid — hierarchy by tier weight
+
+Renders the tiers as a weighted pyramid, the controlling authority widest at the base. Use when the point is the hierarchy of authority itself, not the timeline.
+
+```markdown
+<!-- _class: authority-chain pyramid -->
+
+## COPPA — the authority pyramid.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule.
+3. Guidance
+   - `FTC Six-Step Plan`
+   - Staff guidance, non-binding.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order.
+```
+
+##### `bracket` — Bracket — connected cards
+
+Lays the tiers out as bracketed cards joined by strong connectors, emphasising that each rung derives its force from the one above it.
+
+```markdown
+<!-- _class: authority-chain bracket -->
+
+## How the GDPR fine traces back to the treaty.
+
+1. Treaty
+   - `Charter of Fundamental Rights, Art. 8`
+   - EU primary law — protection of personal data is a fundamental right.
+2. Regulation
+   - `GDPR (EU) 2016/679`
+   - Directly applicable across all member states; sets the Art. 83 fine tiers.
+3. Guidance
+   - `EDPB Guidelines 04/2022`
+   - Harmonised methodology for calculating administrative fines.
+4. Decision
+   - `DPC v. Meta · 2023`
+   - €1.2B fine — the largest GDPR penalty to date.
+```
+
 #### Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -5686,6 +6342,57 @@ Promotes the blockquote to a pull-quote scale — the verbatim language reads as
 
 - What we must do.
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.
+```
+
+##### `split` — Split — quote | gloss columns
+
+Puts the verbatim quotation in the left column and the plain-English gloss in the right, with the citation spanning the top. Use when quote and interpretation deserve equal weight.
+
+```markdown
+<!-- _class: citation-card split -->
+
+## CCPA defines "sale" broadly.
+
+`Cal. Civ. Code §1798.140(ad) · CCPA/CPRA`
+
+> "Sale" means selling, renting, releasing, disclosing, disseminating, making available, transferring, or otherwise communicating a consumer's personal information to a third party for monetary or other valuable consideration.
+
+- The catch is "other valuable consideration."
+  - Data-for-service swaps and ad-tech cookie syncs can qualify as sales even when no money changes hands.
+```
+
+##### `margin` — Margin — annotated quotation
+
+Sets the quotation as the body with the gloss running as margin notes alongside. Use for close reading where each clause earns its own annotation.
+
+```markdown
+<!-- _class: citation-card margin -->
+
+## The GDPR lawful-basis test.
+
+`GDPR Art. 6(1)(f) · legitimate interests`
+
+> Processing is lawful only if and to the extent that processing is necessary for the purposes of the legitimate interests pursued by the controller, except where such interests are overridden by the interests or fundamental rights of the data subject.
+
+- Two-part test.
+  - Necessity first, then a balancing exercise against the data subject's rights. Document both halves or the basis fails on audit.
+```
+
+##### `triptych` — Triptych — three panels
+
+Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.
+
+```markdown
+<!-- _class: citation-card triptych -->
+
+## What "personal data" covers under GDPR.
+
+`GDPR Art. 4(1) · definitions`
+
+> 'Personal data' means any information relating to an identified or identifiable natural person.
+
+- Online identifiers count.
+  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.
 ```
 
 #### Universal modifiers
@@ -5941,6 +6648,69 @@ Stamps a priority rail on the left of each row and ranks by exposure rather than
    - `§541.151`
    - DSAR opt-out portal mandatory.
    - `Effective Mar 2026`
+```
+
+##### `cards` — Cards — one panel per item
+
+Breaks the running list into discrete cards, one per development. Use when each item is independent and the audience may photograph a single card.
+
+```markdown
+<!-- _class: regulatory-update cards -->
+
+## Privacy and AI motion — Q1 2026.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity-assessment pre-market obligation took effect.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Developer and deployer duties for consequential-decision systems.
+   - `Effective Feb 2026`
+3. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order; clarifies the deception standard for privacy branding.
+   - `Final Mar 2026`
+4. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - `Effective Mar 2026`
+```
+
+##### `diff-bands` — Diff-bands — grouped by change kind
+
+Groups items under colour-coded h3 bands by the kind of change — Added, Amended, Repealed, Enforced. Use when the type of action matters as much as the instrument.
+
+```markdown
+<!-- _class: regulatory-update diff-bands -->
+
+## What changed this quarter, by kind.
+
+### Added
+
+1. Colorado AI Act
+   - `SB 24-205`
+   - New developer and deployer duties for consequential-decision systems.
+
+### Amended
+
+2. CCPA regulations
+   - `§7027`
+   - Opt-out preference signal handling clarified and tightened.
+
+### Repealed
+
+3. Small-business carve-out
+   - `§541.107`
+   - The blanket exemption was narrowed and partially repealed.
+
+### Enforced
+
+4. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order finalised against deceptive privacy branding.
 ```
 
 #### Universal modifiers

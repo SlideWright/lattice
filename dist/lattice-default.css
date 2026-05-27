@@ -555,8 +555,10 @@ section.actors > ol > li > ol > li {
  * title, dotted leader, page reference. Used between sections in
  * long decks.
  *
- * Modifier `progress N` (where N is 1-9) highlights the Nth row as
+ * Modifier `progress N` (where N is 1-6) highlights the Nth row as
  * "you are here." Past rows render muted; future rows render normal.
+ * A single agenda slide holds up to six sections at a legible row
+ * height; group beyond that rather than spilling onto the footer.
  * ──────────────────────────────────────────────────────────────────────── */
 section.agenda { display:flex; flex-direction:column; }
 section.agenda h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-lg); }
@@ -595,10 +597,7 @@ section.agenda.progress-2 ol > li:nth-child(2),
 section.agenda.progress-3 ol > li:nth-child(3),
 section.agenda.progress-4 ol > li:nth-child(4),
 section.agenda.progress-5 ol > li:nth-child(5),
-section.agenda.progress-6 ol > li:nth-child(6),
-section.agenda.progress-7 ol > li:nth-child(7),
-section.agenda.progress-8 ol > li:nth-child(8),
-section.agenda.progress-9 ol > li:nth-child(9) {
+section.agenda.progress-6 ol > li:nth-child(6) {
   opacity:1;
   background:var(--accent-soft);
   border-left:3px solid var(--accent);
@@ -611,10 +610,7 @@ section.agenda.progress-2 ol > li:nth-child(-n+1),
 section.agenda.progress-3 ol > li:nth-child(-n+2),
 section.agenda.progress-4 ol > li:nth-child(-n+3),
 section.agenda.progress-5 ol > li:nth-child(-n+4),
-section.agenda.progress-6 ol > li:nth-child(-n+5),
-section.agenda.progress-7 ol > li:nth-child(-n+6),
-section.agenda.progress-8 ol > li:nth-child(-n+7),
-section.agenda.progress-9 ol > li:nth-child(-n+8) {
+section.agenda.progress-6 ol > li:nth-child(-n+5) {
   opacity:0.4;
 }
 
@@ -1725,11 +1721,11 @@ section.citation-card > :is(ul, ol) > li > strong:first-child {
 }
 
 /* .split — verbatim left, translate+do right. */
-section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); grid-template-rows:auto 1fr; }
-section.citation-card.split h2 { grid-column:1 / -1; }
-section.citation-card.split > p:has(> code:only-child) { grid-column:1; grid-row:2; align-self:start; }
-section.citation-card.split > blockquote { grid-column:1; grid-row:2; align-self:stretch; margin-top:var(--sp-lg); }
-section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:2; }
+section.citation-card.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-lg); grid-template-rows:auto auto 1fr; }
+section.citation-card.split h2 { grid-column:1 / -1; grid-row:1; }
+section.citation-card.split > p:has(> code:only-child) { grid-column:1 / -1; grid-row:2; align-self:start; }
+section.citation-card.split > blockquote { grid-column:1; grid-row:3; align-self:stretch; margin-top:0; }
+section.citation-card.split > :is(ul, ol) { grid-column:2; grid-row:3; }
 
 /* .pull-quote — hero quote dominant. */
 section.citation-card.pull-quote > blockquote {

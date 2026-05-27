@@ -7,7 +7,10 @@
   "description": "Declared statements — short stated principles, each with a one-line justification.",
   "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
   "variants": [
-    "numbered"
+    "numbered",
+    "lettered",
+    "roman",
+    "bullet"
   ],
   "slots": {
     "title": {
@@ -72,9 +75,24 @@
   ],
   "variantDocs": {
     "numbered": {
-      "label": "Numbered principles",
-      "caption": "Authored as `ol` (`1.` source). Useful when the principles are ordered by priority — the first principle wins when two conflict.",
-      "sample": "<!-- _class: principles -->\n\n## How we resolve conflicts — top wins.\n\n1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.\n2. **Name the actor, never the system.** Anonymous accountability is no accountability.\n3. **Write down the bet on the same slide as the choice.** Calibration depends on it.\n4. **Form follows function.** Let audience need shape the layout.\n5. **One main idea per slide.** If you can't summarise it, split it.\n"
+      "label": "Numbered",
+      "caption": "The default counter — decimal-leading-zero (01, 02, 03). Author each principle as one plain declarative statement; the layout already sets display weight.",
+      "sample": "<!-- _class: principles -->\n\n## How we resolve conflicts — top wins.\n\n1. Default to the choice that is cheaper to reverse.\n2. Name the actor, never the system.\n3. Write the bet on the same slide as the choice.\n4. Let form follow function.\n5. Keep one main idea per slide.\n"
+    },
+    "lettered": {
+      "label": "Lettered",
+      "caption": "Swaps the decimal counter for an A / B / C letter sequence. One plain statement per item. Use when the principles are referenced by letter elsewhere in the deck.",
+      "sample": "<!-- _class: principles lettered -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Name the actor, never the system.\n3. Write the bet on the same slide as the choice.\n4. Let form follow function.\n5. Keep one main idea per slide.\n"
+    },
+    "roman": {
+      "label": "Roman",
+      "caption": "Numbers the principles with Roman numerals (I, II, III). Reads as a more formal canon — house rules, doctrine, a charter.",
+      "sample": "<!-- _class: principles roman -->\n\n## The editorial canon.\n\n1. Plain words beat clever ones.\n2. One claim per sentence.\n3. Show the number, then the verdict.\n4. Cut the adverb, keep the verb.\n5. End on the decision, not the summary.\n"
+    },
+    "bullet": {
+      "label": "Bullet",
+      "caption": "Replaces the numeric counter with a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.",
+      "sample": "<!-- _class: principles bullet -->\n\n## What we optimise for, in no particular order.\n\n1. Reversibility over consensus — make the cheap-to-undo call now.\n2. Clarity over completeness — one true thing beats five hedged ones.\n3. Ownership over process — processes don't get paged.\n4. Evidence over instinct — write the prediction down so it can be scored.\n"
     }
   }
 }

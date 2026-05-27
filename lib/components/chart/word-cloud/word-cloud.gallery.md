@@ -20,18 +20,114 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
+
+
+---
+
+<!-- _class: word-cloud constellation -->
+<!-- _footer: "Constellation — airy, two-tone · word-cloud constellation" -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`
+
+
+---
+
+<!-- _class: word-cloud dense -->
+<!-- _footer: "Dense — tight pack · word-cloud dense" -->
+
+## Every term this branch touched.
+
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`
+
+
+---
+
+<!-- _class: word-cloud spectrum -->
+<!-- _footer: "Spectrum — heat ramp · word-cloud spectrum" -->
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+
+
+---
+
+<!-- _class: word-cloud focal -->
+<!-- _footer: "Focal — one dominant term · word-cloud focal" -->
+
+## The one word that defined the branch.
+
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`
+
+
+---
+
+<!-- _class: word-cloud dense -->
+<!-- _footer: "Stress test · word-cloud" -->
+
+## Stress test — 20 terms, raw frequency counts (512 → 5).
+
+- component `512`
+- variant `327`
+- manifest `261`
+- gallery `204`
+- function `168`
+- form `139`
+- substance `116`
+- transform `94`
+- selector `77`
+- palette `63`
+- cascade `51`
+- bundle `42`
+- scaffolder `34`
+- token `28`
+- normalize `22`
+- packer `17`
+- spiral `13`
+- footer `9`
+- eyebrow `7`
+- watermark `5`
 
 
 ---
@@ -41,18 +137,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---
@@ -62,18 +155,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---
@@ -83,18 +173,15 @@ Spiral-packed word cloud — items sized by weight.
 
 ## What this branch named, by weight.
 
-- component `124`
-- manifest `78`
-- function `64`
-- form `52`
-- substance `47`
-- gallery `41`
-- folder `36`
-- variant `32`
-- universal `28`
-- cascade `22`
-- scaffolder `18`
-- bundler `14`
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`
+- cascade `1`
 
 
 ---

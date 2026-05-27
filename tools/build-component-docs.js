@@ -323,6 +323,12 @@ ${m.description}`);
     slides.push(sampleWithFooter);
   }
 
+  // Optional stress-test slide — an edge-case input (volume, range,
+  // length) that exercises the engine past the tidy default sample.
+  if (m.stressSample) {
+    slides.push(injectFooter(m.stressSample, `Stress test · ${m.name}`));
+  }
+
   // Composition slides — one per universal modifier the component accepts.
   for (const mod of compositionModifiersFor(m)) {
     const slide = renderCompositionSlide(m, mod);
@@ -398,6 +404,7 @@ function expectedGallerySlideCount(m) {
   let n = 1; // title
   if (m.sample) n += 1;
   n += variantKeys;
+  if (m.stressSample) n += 1;
   // Composition slides — emitted only if there's a sample to compose from.
   if (m.sample) n += compositionModifiersFor(m).length;
   if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) n += 1;

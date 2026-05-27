@@ -203,6 +203,28 @@ $$ \hat\beta = 0.42 \pm 0.03 $$
 For every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.
 ```
 
+### `decompose` — Matrix · decompose — factorisation sequence
+
+A compound of `matrix`: lays a factorisation out as a sequence of matrices (LU, QR, SVD). Author it as `math matrix decompose` with the product written out. Use when the structure of the decomposition is the point.
+
+```markdown
+<!-- _class: math matrix decompose -->
+
+## LU decomposition.
+
+$$
+\begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}
+=
+\begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}
+\begin{pmatrix} 2 & 1 \\ 0 & 1 \end{pmatrix}
+$$
+
+- **$A$** — the original matrix being factorised
+- **$L$** — lower-triangular, unit diagonal
+- **$U$** — upper-triangular
+- **use** — solve $Ax = b$ by forward then back substitution
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

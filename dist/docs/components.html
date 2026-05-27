@@ -1509,6 +1509,7 @@ One-sentence framing paragraph explaining what the findings cover.
       <li><strong>Sub-bullets per section.</strong> The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here.</li>
       <li><strong>Unnumbered list.</strong> Authoring with <code>-</code> instead of <code>1.</code> loses the numbered chrome the layout depends on. Always use ordered list syntax.</li>
       <li><strong>Single-section decks.</strong> If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding.</li>
+      <li><strong>More than six sections.</strong> A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides.</li>
     </ul>
   </section>
   <section class="authoring">
@@ -1548,6 +1549,19 @@ One-sentence framing paragraph explaining what the findings cover.
   </section>
   <section class="variants">
     <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>progress-1</code> — Progress · section 1</h5>
+      <p>Wayfinding for the start of the deck — the first item is current, the rest are dimmed ahead.</p>
+      <pre class="code"><code>&lt;!-- _class: agenda progress-1 --&gt;
+
+## Where we are now.
+
+1. The four-layer model — Function · Form · Substance · Finish
+2. Component manifests — the single source of truth
+3. The shipped components, grouped by function
+4. Discovery — scaffolder, snippets, this gallery
+5. What ships next — open questions and follow-ups</code></pre>
+    </div>
     <div class="variant">
       <h5><code>progress-2</code> — Progress · section 2</h5>
       <p>The same agenda dropped between sections one and two — the second item is marked as the current position.</p>
@@ -1599,6 +1613,20 @@ One-sentence framing paragraph explaining what the findings cover.
 3. The forty-five shipped components, grouped by function
 4. Discovery — scaffolder, snippets, this gallery
 5. What ships next — open questions and follow-ups</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>progress-6</code> — Progress · section 6</h5>
+      <p>Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.</p>
+      <pre class="code"><code>&lt;!-- _class: agenda progress-6 --&gt;
+
+## Where we are now.
+
+1. Why we're here — the problem
+2. Where we are today
+3. The proposal
+4. Migration plan
+5. Risks and mitigations
+6. Decision and next steps</code></pre>
     </div>
   </section>
   <section class="related">
@@ -2512,17 +2540,55 @@ One-sentence framing paragraph explaining what the findings cover.
   <section class="variants">
     <h4>Variants</h4>
     <div class="variant">
-      <h5><code>numbered</code> — Numbered principles</h5>
-      <p>Authored as <code>ol</code> (<code>1.</code> source). Useful when the principles are ordered by priority — the first principle wins when two conflict.</p>
+      <h5><code>numbered</code> — Numbered</h5>
+      <p>The default counter — decimal-leading-zero (01, 02, 03). Author each principle as one plain declarative statement; the layout already sets display weight.</p>
       <pre class="code"><code>&lt;!-- _class: principles --&gt;
 
 ## How we resolve conflicts — top wins.
 
-1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.
-2. **Name the actor, never the system.** Anonymous accountability is no accountability.
-3. **Write down the bet on the same slide as the choice.** Calibration depends on it.
-4. **Form follows function.** Let audience need shape the layout.
-5. **One main idea per slide.** If you can't summarise it, split it.</code></pre>
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>lettered</code> — Lettered</h5>
+      <p>Swaps the decimal counter for an A / B / C letter sequence. One plain statement per item. Use when the principles are referenced by letter elsewhere in the deck.</p>
+      <pre class="code"><code>&lt;!-- _class: principles lettered --&gt;
+
+## How we make calls when the spec is silent.
+
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>roman</code> — Roman</h5>
+      <p>Numbers the principles with Roman numerals (I, II, III). Reads as a more formal canon — house rules, doctrine, a charter.</p>
+      <pre class="code"><code>&lt;!-- _class: principles roman --&gt;
+
+## The editorial canon.
+
+1. Plain words beat clever ones.
+2. One claim per sentence.
+3. Show the number, then the verdict.
+4. Cut the adverb, keep the verb.
+5. End on the decision, not the summary.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>bullet</code> — Bullet</h5>
+      <p>Replaces the numeric counter with a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.</p>
+      <pre class="code"><code>&lt;!-- _class: principles bullet --&gt;
+
+## What we optimise for, in no particular order.
+
+1. Reversibility over consensus — make the cheap-to-undo call now.
+2. Clarity over completeness — one true thing beats five hedged ones.
+3. Ownership over process — processes don't get paged.
+4. Evidence over instinct — write the prediction down so it can be scored.</code></pre>
     </div>
   </section>
   <section class="related">
@@ -2850,6 +2916,18 @@ One-sentence framing paragraph explaining what the findings cover.
   - No vendor matches our compliance posture without surrender of control.
 - WHY NOT DELAY
   - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>rejected</code> — Rejected</h5>
+      <p>Strikes the second option's title and dims its card — the inverse of <code>chosen</code>. Use when the slide's job is to record the path NOT taken and why.</p>
+      <pre class="code"><code>&lt;!-- _class: compare-prose rejected --&gt;
+
+## We went with managed Postgres, not the self-hosted cluster.
+
+- Managed Postgres
+  - Higher monthly spend, but zero on-call burden and automatic failover. The team ships features instead of babysitting replication.
+- Self-hosted cluster
+  - Cheaper raw compute, but the operational tax — patching, backups, 3am pages — falls on a four-person team that can't absorb it.</code></pre>
     </div>
   </section>
   <section class="related">
@@ -3218,6 +3296,36 @@ One-sentence framing paragraph explaining what the findings cover.
 - **Scope.** Sale and sharing fold into one duty.
 - **Method floor.** One method now suffices.
 - **Link title.** Homepage label is mandatory and standardised.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>split</code> — Split — old | new side by side</h5>
+      <p>Two blockquotes laid out in columns: prior text on the left under an OLD label, amended text on the right under NEW. Use when the passages are short enough to read across.</p>
+      <pre class="code"><code>&lt;!-- _class: redline split --&gt;
+
+## SB-362 — before and after, side by side.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+&gt; A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+&gt; A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled &quot;Your Privacy Choices.&quot;
+
+- **Why this matters.** The left column is the prior text; the right is the amendment. Reading across makes the scope expansion obvious.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>stacked</code> — Stacked — old block atop new</h5>
+      <p>Stacks the prior text (struck, labelled OLD — prior text) above the current text (labelled NEW · current). Use when the passages are too long to sit side by side.</p>
+      <pre class="code"><code>&lt;!-- _class: redline stacked --&gt;
+
+## SB-362 — prior text struck, current below.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+&gt; A business that collects consumers' personal information shall provide two or more designated methods for submitting requests to opt out of the sale of their personal information.
+
+&gt; A business that collects, sells, or shares consumers' personal information shall provide at least one designated method for submitting requests to opt-out, including a clear and conspicuous homepage link titled &quot;Your Privacy Choices.&quot;
+
+- **Why this matters.** Stacking keeps the reading order vertical when each passage is a full sentence or more.</code></pre>
     </div>
   </section>
   <section class="related">
@@ -3921,6 +4029,55 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>status</code> — Status — heavy state treatment</h5>
+      <p>Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.</p>
+      <pre class="code"><code>&lt;!-- _class: roadmap status --&gt;
+
+`Layout · roadmap status`
+
+## Delivery status by workstream.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>swimlane</code> — Swimlane — horizontal tracks</h5>
+      <p>Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.</p>
+      <pre class="code"><code>&lt;!-- _class: roadmap swimlane --&gt;
+
+`Layout · roadmap swimlane`
+
+## Each team's track across the year.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| SDK        | Java                 | .NET                   | Polyglot parity           |</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>milestones</code> — Milestones — calendar-aware</h5>
+      <p>Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.</p>
+      <pre class="code"><code>&lt;!-- _class: roadmap milestones --&gt;
+
+`Layout · roadmap milestones`
+
+## The dated path to GA.
+
+| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |</code></pre>
     </div>
   </section>
   <section class="related">
@@ -5144,6 +5301,126 @@ Effort estimated in story-points; reach as percent of addressable users.
 │  footer                           1/19  │
 └─────────────────────────────────────────┘</code></pre>
   </section>
+  <section class="variants">
+    <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>bubble</code> — Bubble — third value sizes the dot</h5>
+      <p>A third number in each pill (<code>x, y, size</code>) scales the dot by honest √-area. Use when a magnitude — revenue, headcount, spend — rides alongside the two positioning axes.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant bubble --&gt;
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — sized by revenue at stake.
+
+- Strategic Bets
+  - Codebook caching `3, 70, 2.4`
+  - Multi-tenant DEKs `5, 85, 4.1`
+- Quick Wins
+  - Per-purpose codebooks `8, 80, 0.9`
+  - Snapshot exports `9, 55, 0.6`
+- Defer
+  - Vendor scoping `2, 30, 0.4`
+- Time Sinks
+  - Custom audit log UI `7, 18, 1.3`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>trail</code> — Trail — before → after</h5>
+      <p>Two coordinate pills per item (<code>x, y</code> then <code>x2, y2</code>) draw a trail from the old position to the new one. Use to show how initiatives moved across a period.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant trail --&gt;
+
+`Effort 0–10 → Reach 0–100`
+
+## How each bet moved after one quarter.
+
+- Strategic Bets
+  - Codebook caching `5, 60` `3, 78`
+  - Multi-tenant DEKs `7, 70` `5, 88`
+- Quick Wins
+  - Snapshot exports `9, 45` `8, 62`
+- Time Sinks
+  - Custom audit log UI `6, 25` `7, 16`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>cohort</code> — Cohort — convex-hull tint per group</h5>
+      <p>Tints a convex hull behind each top-level group so the clusters read as cohorts, not just loose dots. Use when group membership is part of the argument.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant cohort --&gt;
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — clustered by theme.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+  - Manual rotation `1, 22`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM `9, 28`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>threshold</code> — Threshold — target lines + zones</h5>
+      <p>Replaces the centre midlines with target lines declared in the eyebrow (<code>· targets tx, ty</code>) and labels the resulting zones. Use for go/no-go reads against an explicit bar.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant threshold --&gt;
+
+`Effort 0–10 → Reach 0–100 · targets 5, 50`
+
+## Against the go/no-go thresholds.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>magic</code> — Magic — MQ tribute</h5>
+      <p>A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / Challengers / Visionaries / Niche Players quadrant names. Order the groups TL → TR → BL → BR.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant magic --&gt;
+
+`Completeness of vision 0–100 → Ability to execute 0–100`
+
+## The codebook-tooling Magic Quadrant.
+
+- Challengers
+  - Legacy Inc `30, 82`
+- Leaders
+  - Lattice `85, 88`
+  - Vault Corp `72, 76`
+- Niche Players
+  - Boutique KMS `25, 28`
+- Visionaries
+  - Cipher Labs `82, 34`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>minimal</code> — Minimal — no fill, faint grid</h5>
+      <p>Composable modifier: drops the quadrant fills for a faint grid and bare dots. Layers on the default or any quadrant variant when the tinting would compete with the dots.</p>
+      <pre class="code"><code>&lt;!-- _class: quadrant minimal --&gt;
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next dollar — unadorned.
+
+- Strategic Bets
+  - Codebook caching `3, 70`
+  - Multi-tenant DEKs `5, 85`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+- Defer
+  - Vendor scoping `2, 30`
+- Time Sinks
+  - Custom audit log UI `7, 18`</code></pre>
+    </div>
+  </section>
   <section class="related">
     <h4>Related</h4>
     <ul class="related-list">
@@ -5236,6 +5513,174 @@ Effort estimated in story-points; reach as percent of addressable users.
 │              D ●───● C                  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘</code></pre>
+  </section>
+  <section class="variants">
+    <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>target</code> — Target — actual vs reference ring</h5>
+      <p>Reads the series named <code>Target</code> (or <code>Goal</code>/<code>Plan</code>) as a dashed reference polygon; each axis where the actual falls short gets a rose gap segment along the spoke, surplus a quiet green one. The shortfall is the read.</p>
+      <pre class="code"><code>&lt;!-- _class: radar target --&gt;
+
+`Scale · 0–100`
+
+## Where we are against the quarter plan.
+
+- Actual
+  - Hiring `72`
+  - Runway `88`
+  - Pipeline `54`
+  - Retention `91`
+  - Compliance `66`
+  - Velocity `78`
+- Target
+  - Hiring `90`
+  - Runway `85`
+  - Pipeline `80`
+  - Retention `90`
+  - Compliance `95`
+  - Velocity `75`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>delta</code> — Delta — before vs after</h5>
+      <p>Takes exactly two series — before, then after. The before polygon is muted; a change segment rides each spoke, green where the metric rose, rose where it fell. Built for the period-over-period QBR story.</p>
+      <pre class="code"><code>&lt;!-- _class: radar delta --&gt;
+
+`Scale · 0–10`
+
+## What moved over the half, and which way.
+
+- H1
+  - Velocity `5`
+  - Quality `6`
+  - Morale `4`
+  - Coverage `5`
+  - Onboarding `3`
+- H2
+  - Velocity `8`
+  - Quality `7`
+  - Morale `4`
+  - Coverage `6`
+  - Onboarding `7`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>benchmark</code> — Benchmark — hero vs envelope</h5>
+      <p>Draws the first series as the hero line and collapses every other series into a single min–max envelope band — one shape and your line instead of five tangled polygons. Strong where you clear the band, exposed where you sit inside it.</p>
+      <pre class="code"><code>&lt;!-- _class: radar benchmark --&gt;
+
+`Scale · 0–10`
+
+## Are we inside the pack, or outside it.
+
+- Us
+  - Performance `9`
+  - Price `6`
+  - Support `8`
+  - Ecosystem `7`
+  - Docs `9`
+  - Security `8`
+- Competitor A
+  - Performance `7`
+  - Price `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Docs `5`
+  - Security `7`
+- Competitor B
+  - Performance `6`
+  - Price `9`
+  - Support `7`
+  - Ecosystem `6`
+  - Docs `6`
+  - Security `6`
+- Competitor C
+  - Performance `8`
+  - Price `5`
+  - Support `5`
+  - Ecosystem `8`
+  - Docs `7`
+  - Security `9`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>quadrant</code> — Quadrant — axes grouped into sectors</h5>
+      <p>Takes a three-level list (series → group → axis); each group becomes a tinted sector with its name on the rim and a dashed mean arc. For boards that think in themes, not twelve loose axes.</p>
+      <pre class="code"><code>&lt;!-- _class: radar quadrant --&gt;
+
+`Scale · 0–5`
+
+## Our capability profile, read by theme.
+
+- Our capability
+  - People
+    - Hiring `4`
+    - Retention `3`
+    - Bench depth `2`
+  - Process
+    - Cadence `5`
+    - Rigor `4`
+  - Technology
+    - Platform `4`
+    - Tooling `3`
+    - Automation `2`
+  - Risk
+    - Compliance `3`
+    - Resilience `4`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>small-multiples</code> — Small-multiples — one mini radar per series</h5>
+      <p>Gives each series its own mini radar on a shared scale, laid out in a row — the honest read when an overlay of four-plus series would be mush. Scan the shapes, spot the outlier.</p>
+      <pre class="code"><code>&lt;!-- _class: radar small-multiples --&gt;
+
+`Scale · 0–10`
+
+## Four product lines, the same five criteria.
+
+- Atlas
+  - Adoption `8`
+  - Margin `6`
+  - NPS `7`
+  - Velocity `9`
+  - Risk `4`
+- Beacon
+  - Adoption `5`
+  - Margin `9`
+  - NPS `6`
+  - Velocity `5`
+  - Risk `7`
+- Cinder
+  - Adoption `7`
+  - Margin `4`
+  - NPS `8`
+  - Velocity `6`
+  - Risk `5`
+- Drift
+  - Adoption `6`
+  - Margin `7`
+  - NPS `5`
+  - Velocity `7`
+  - Risk `8`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>minimal</code> — Minimal — stroke-only</h5>
+      <p>Composable modifier: drops the polygon fills for a stroke-only read on a faint grid. Layers on the default or any radar variant when the fills would muddy the comparison.</p>
+      <pre class="code"><code>&lt;!-- _class: radar minimal --&gt;
+
+`Scale · 0–10`
+
+## The same comparison, fills dropped.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`</code></pre>
+    </div>
   </section>
   <section class="related">
     <h4>Related</h4>
@@ -5501,14 +5946,10 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## What the team called out this quarter.
 
-- velocity — 12
-- ownership — 9
-- handoffs — 7
-- review — 6
-- testing — 5
-- onboarding — 4
-- spec — 3
-- triage — 3</code></pre>
+- velocity `12`
+- ownership `9`
+- handoffs `7`
+- review `5`</code></pre>
   </section>
   <section class="slots">
     <h4>Slots</h4>
@@ -5516,7 +5957,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
       <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading framing the cloud.</td></tr>
-        <tr><td><code>words</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One li per word. Format: <code>word — weight</code> (weight is a number).</td></tr>
+        <tr><td><code>words</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One li per word. Format: <code>word </code>weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent.</td></tr>
       </tbody>
     </table>
   </section>
@@ -5532,6 +5973,75 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 │         tiny      LARGE   keyword       │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘</code></pre>
+  </section>
+  <section class="variants">
+    <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>constellation</code> — Constellation — airy, two-tone</h5>
+      <p>A wider size spread with no rotation — words sit like a constellation with generous spacing. Built for a small, high-impact vocabulary; keep it to six or eight terms.</p>
+      <pre class="code"><code>&lt;!-- _class: word-cloud constellation --&gt;
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `3`
+- form `3`
+- substance `2`
+- gallery `1`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>dense</code> — Dense — tight pack</h5>
+      <p>A tighter spiral, narrower size spread, and more rotation pack many terms into the canvas. Use for a long tail of vocabulary where coverage matters more than any single word.</p>
+      <pre class="code"><code>&lt;!-- _class: word-cloud dense --&gt;
+
+## Every term this branch touched.
+
+- component `5`
+- manifest `5`
+- function `4`
+- form `4`
+- substance `4`
+- gallery `3`
+- folder `3`
+- variant `3`
+- universal `2`
+- cascade `2`
+- scaffolder `2`
+- bundler `1`
+- transform `1`
+- selector `1`
+- palette `1`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>spectrum</code> — Spectrum — heat ramp</h5>
+      <p>Colours words along a heat ramp by weight instead of cycling the categorical palette — the hottest terms read first. No rotation, so the ramp stays legible.</p>
+      <pre class="code"><code>&lt;!-- _class: word-cloud spectrum --&gt;
+
+## What this branch named, by weight.
+
+- component `5`
+- manifest `4`
+- function `4`
+- form `3`
+- substance `3`
+- gallery `2`
+- variant `2`
+- universal `1`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>focal</code> — Focal — one dominant term</h5>
+      <p>The widest size spread and steepest curve make the top term tower over the rest. Use when one word IS the message and the others are brief supporting context — keep the list short.</p>
+      <pre class="code"><code>&lt;!-- _class: word-cloud focal --&gt;
+
+## The one word that defined the branch.
+
+- variants `5`
+- gallery `2`
+- manifest `2`
+- docs `1`
+- declared `1`</code></pre>
+    </div>
   </section>
   <section class="related">
     <h4>Related</h4>
@@ -5828,6 +6338,25 @@ $$ \hat\beta = 0.42 \pm 0.03 $$
 &gt; $p &lt; 0.001 \quad\cdot\quad n = 1{,}204$
 
 For every additional unit of exposure, the outcome rises by 0.42 SD — roughly an **8%** shift on the baseline. Effect size is the headline; the $p$-value just rules out chance.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>decompose</code> — Matrix · decompose — factorisation sequence</h5>
+      <p>A compound of <code>matrix</code>: lays a factorisation out as a sequence of matrices (LU, QR, SVD). Author it as <code>math matrix decompose</code> with the product written out. Use when the structure of the decomposition is the point.</p>
+      <pre class="code"><code>&lt;!-- _class: math matrix decompose --&gt;
+
+## LU decomposition.
+
+$$
+\begin{pmatrix} 2 &amp; 1 \\ 4 &amp; 3 \end{pmatrix}
+=
+\begin{pmatrix} 1 &amp; 0 \\ 2 &amp; 1 \end{pmatrix}
+\begin{pmatrix} 2 &amp; 1 \\ 0 &amp; 1 \end{pmatrix}
+$$
+
+- **$A$** — the original matrix being factorised
+- **$L$** — lower-triangular, unit diagonal
+- **$U$** — upper-triangular
+- **use** — solve $Ax = b$ by forward then back substitution</code></pre>
     </div>
   </section>
   <section class="related">
@@ -6162,6 +6691,46 @@ function loadOne(name) {
    - `Epic Games · 2022`
    - $245M consent order.</code></pre>
     </div>
+    <div class="variant">
+      <h5><code>pyramid</code> — Pyramid — hierarchy by tier weight</h5>
+      <p>Renders the tiers as a weighted pyramid, the controlling authority widest at the base. Use when the point is the hierarchy of authority itself, not the timeline.</p>
+      <pre class="code"><code>&lt;!-- _class: authority-chain pyramid --&gt;
+
+## COPPA — the authority pyramid.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule.
+3. Guidance
+   - `FTC Six-Step Plan`
+   - Staff guidance, non-binding.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>bracket</code> — Bracket — connected cards</h5>
+      <p>Lays the tiers out as bracketed cards joined by strong connectors, emphasising that each rung derives its force from the one above it.</p>
+      <pre class="code"><code>&lt;!-- _class: authority-chain bracket --&gt;
+
+## How the GDPR fine traces back to the treaty.
+
+1. Treaty
+   - `Charter of Fundamental Rights, Art. 8`
+   - EU primary law — protection of personal data is a fundamental right.
+2. Regulation
+   - `GDPR (EU) 2016/679`
+   - Directly applicable across all member states; sets the Art. 83 fine tiers.
+3. Guidance
+   - `EDPB Guidelines 04/2022`
+   - Harmonised methodology for calculating administrative fines.
+4. Decision
+   - `DPC v. Meta · 2023`
+   - €1.2B fine — the largest GDPR penalty to date.</code></pre>
+    </div>
   </section>
   <section class="related">
     <h4>Related</h4>
@@ -6257,6 +6826,48 @@ function loadOne(name) {
 
 - What we must do.
   - Audit pixel inventory; treat household IDs as PI in DSAR workflows.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>split</code> — Split — quote | gloss columns</h5>
+      <p>Puts the verbatim quotation in the left column and the plain-English gloss in the right, with the citation spanning the top. Use when quote and interpretation deserve equal weight.</p>
+      <pre class="code"><code>&lt;!-- _class: citation-card split --&gt;
+
+## CCPA defines &quot;sale&quot; broadly.
+
+`Cal. Civ. Code §1798.140(ad) · CCPA/CPRA`
+
+&gt; &quot;Sale&quot; means selling, renting, releasing, disclosing, disseminating, making available, transferring, or otherwise communicating a consumer's personal information to a third party for monetary or other valuable consideration.
+
+- The catch is &quot;other valuable consideration.&quot;
+  - Data-for-service swaps and ad-tech cookie syncs can qualify as sales even when no money changes hands.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>margin</code> — Margin — annotated quotation</h5>
+      <p>Sets the quotation as the body with the gloss running as margin notes alongside. Use for close reading where each clause earns its own annotation.</p>
+      <pre class="code"><code>&lt;!-- _class: citation-card margin --&gt;
+
+## The GDPR lawful-basis test.
+
+`GDPR Art. 6(1)(f) · legitimate interests`
+
+&gt; Processing is lawful only if and to the extent that processing is necessary for the purposes of the legitimate interests pursued by the controller, except where such interests are overridden by the interests or fundamental rights of the data subject.
+
+- Two-part test.
+  - Necessity first, then a balancing exercise against the data subject's rights. Document both halves or the basis fails on audit.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>triptych</code> — Triptych — three panels</h5>
+      <p>Frames the citation, the verbatim text, and the gloss as three panels for a formal presentation of a single authority. Keep the quotation short so it sits comfortably in its panel.</p>
+      <pre class="code"><code>&lt;!-- _class: citation-card triptych --&gt;
+
+## What &quot;personal data&quot; covers under GDPR.
+
+`GDPR Art. 4(1) · definitions`
+
+&gt; 'Personal data' means any information relating to an identified or identifiable natural person.
+
+- Online identifiers count.
+  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.</code></pre>
     </div>
   </section>
   <section class="related">
@@ -6510,6 +7121,63 @@ Each row promotes to a card with body-level breathing room.</code></pre>
    - `§541.151`
    - DSAR opt-out portal mandatory.
    - `Effective Mar 2026`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>cards</code> — Cards — one panel per item</h5>
+      <p>Breaks the running list into discrete cards, one per development. Use when each item is independent and the audience may photograph a single card.</p>
+      <pre class="code"><code>&lt;!-- _class: regulatory-update cards --&gt;
+
+## Privacy and AI motion — Q1 2026.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity-assessment pre-market obligation took effect.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Developer and deployer duties for consequential-decision systems.
+   - `Effective Feb 2026`
+3. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order; clarifies the deception standard for privacy branding.
+   - `Final Mar 2026`
+4. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - `Effective Mar 2026`</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>diff-bands</code> — Diff-bands — grouped by change kind</h5>
+      <p>Groups items under colour-coded h3 bands by the kind of change — Added, Amended, Repealed, Enforced. Use when the type of action matters as much as the instrument.</p>
+      <pre class="code"><code>&lt;!-- _class: regulatory-update diff-bands --&gt;
+
+## What changed this quarter, by kind.
+
+### Added
+
+1. Colorado AI Act
+   - `SB 24-205`
+   - New developer and deployer duties for consequential-decision systems.
+
+### Amended
+
+2. CCPA regulations
+   - `§7027`
+   - Opt-out preference signal handling clarified and tightened.
+
+### Repealed
+
+3. Small-business carve-out
+   - `§541.107`
+   - The blanket exemption was narrowed and partially repealed.
+
+### Enforced
+
+4. FTC v. Avast
+   - `§5 unfairness`
+   - $16.5M consent order finalised against deceptive privacy branding.</code></pre>
     </div>
   </section>
   <section class="related">

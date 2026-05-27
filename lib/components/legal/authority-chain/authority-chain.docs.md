@@ -104,6 +104,52 @@ Transposes the vertical chain into a left-to-right trail of numbered cards joine
    - $245M consent order.
 ```
 
+### `pyramid` — Pyramid — hierarchy by tier weight
+
+Renders the tiers as a weighted pyramid, the controlling authority widest at the base. Use when the point is the hierarchy of authority itself, not the timeline.
+
+```markdown
+<!-- _class: authority-chain pyramid -->
+
+## COPPA — the authority pyramid.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule.
+3. Guidance
+   - `FTC Six-Step Plan`
+   - Staff guidance, non-binding.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order.
+```
+
+### `bracket` — Bracket — connected cards
+
+Lays the tiers out as bracketed cards joined by strong connectors, emphasising that each rung derives its force from the one above it.
+
+```markdown
+<!-- _class: authority-chain bracket -->
+
+## How the GDPR fine traces back to the treaty.
+
+1. Treaty
+   - `Charter of Fundamental Rights, Art. 8`
+   - EU primary law — protection of personal data is a fundamental right.
+2. Regulation
+   - `GDPR (EU) 2016/679`
+   - Directly applicable across all member states; sets the Art. 83 fine tiers.
+3. Guidance
+   - `EDPB Guidelines 04/2022`
+   - Harmonised methodology for calculating administrative fines.
+4. Decision
+   - `DPC v. Meta · 2023`
+   - €1.2B fine — the largest GDPR penalty to date.
+```
+
 ## Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.

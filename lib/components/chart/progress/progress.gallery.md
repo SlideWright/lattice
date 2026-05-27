@@ -33,6 +33,25 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ---
 
+<!-- _class: progress -->
+<!-- _footer: "Stress test · progress" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Stress test — eight workstreams, full status range.
+
+- Codebook platform `92%` `on-track`
+- Operations runbook `68%` `at-risk`
+- Compliance audit pack `81%` `on-track`
+- SDK polyglot parity `34%` `deferred`
+- Dependency dashboard `12%` `blocked`
+- Continuous audit trail `100%` `done`
+- Crypto-shred tooling `45%` `deferred`
+- Examiner log rollout `73%` `on-track`
+
+
+---
+
 <!-- _class: progress dark -->
 <!-- _footer: "Composition: dark · progress dark" -->
 

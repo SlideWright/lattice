@@ -7,10 +7,12 @@
   "description": "Auto-numbered table of contents for the deck.",
   "purpose": "Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.",
   "variants": [
+    "progress-1",
     "progress-2",
     "progress-3",
     "progress-4",
-    "progress-5"
+    "progress-5",
+    "progress-6"
   ],
   "slots": {
     "title": {
@@ -53,6 +55,10 @@
     {
       "title": "Single-section decks",
       "body": "If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding."
+    },
+    {
+      "title": "More than six sections",
+      "body": "A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides."
     }
   ],
   "related": [
@@ -93,6 +99,16 @@
       "label": "Progress · section 5",
       "caption": "Current position on the fifth item — the last section opening, used as a final wayfinder before the closing.",
       "sample": "<!-- _class: agenda progress-5 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The forty-five shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-1": {
+      "label": "Progress · section 1",
+      "caption": "Wayfinding for the start of the deck — the first item is current, the rest are dimmed ahead.",
+      "sample": "<!-- _class: agenda progress-1 -->\n\n## Where we are now.\n\n1. The four-layer model — Function · Form · Substance · Finish\n2. Component manifests — the single source of truth\n3. The shipped components, grouped by function\n4. Discovery — scaffolder, snippets, this gallery\n5. What ships next — open questions and follow-ups\n"
+    },
+    "progress-6": {
+      "label": "Progress · section 6",
+      "caption": "Same wayfinding pattern on a six-section agenda — current position at the sixth and final item.",
+      "sample": "<!-- _class: agenda progress-6 -->\n\n## Where we are now.\n\n1. Why we're here — the problem\n2. Where we are today\n3. The proposal\n4. Migration plan\n5. Risks and mitigations\n6. Decision and next steps\n"
     }
   }
 }

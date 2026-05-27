@@ -54,20 +54,67 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 
 ## Variants (layout-specific)
 
-### `numbered` — Numbered principles
+### `numbered` — Numbered
 
-Authored as `ol` (`1.` source). Useful when the principles are ordered by priority — the first principle wins when two conflict.
+The default counter — decimal-leading-zero (01, 02, 03). Author each principle as one plain declarative statement; the layout already sets display weight.
 
 ```markdown
 <!-- _class: principles -->
 
 ## How we resolve conflicts — top wins.
 
-1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.
-2. **Name the actor, never the system.** Anonymous accountability is no accountability.
-3. **Write down the bet on the same slide as the choice.** Calibration depends on it.
-4. **Form follows function.** Let audience need shape the layout.
-5. **One main idea per slide.** If you can't summarise it, split it.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
+```
+
+### `lettered` — Lettered
+
+Swaps the decimal counter for an A / B / C letter sequence. One plain statement per item. Use when the principles are referenced by letter elsewhere in the deck.
+
+```markdown
+<!-- _class: principles lettered -->
+
+## How we make calls when the spec is silent.
+
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
+```
+
+### `roman` — Roman
+
+Numbers the principles with Roman numerals (I, II, III). Reads as a more formal canon — house rules, doctrine, a charter.
+
+```markdown
+<!-- _class: principles roman -->
+
+## The editorial canon.
+
+1. Plain words beat clever ones.
+2. One claim per sentence.
+3. Show the number, then the verdict.
+4. Cut the adverb, keep the verb.
+5. End on the decision, not the summary.
+```
+
+### `bullet` — Bullet
+
+Replaces the numeric counter with a plain bullet. Use when the principles are a set with no rank or sequence — order carries no meaning.
+
+```markdown
+<!-- _class: principles bullet -->
+
+## What we optimise for, in no particular order.
+
+1. Reversibility over consensus — make the cheap-to-undo call now.
+2. Clarity over completeness — one true thing beats five hedged ones.
+3. Ownership over process — processes don't get paged.
+4. Evidence over instinct — write the prediction down so it can be scored.
 ```
 
 ## Universal modifiers

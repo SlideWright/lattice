@@ -53,6 +53,58 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 
 ---
 
+<!-- _class: roadmap status -->
+<!-- _footer: "Status — heavy state treatment · roadmap status" -->
+
+`Layout · roadmap status`
+
+## Delivery status by workstream.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+
+State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
+
+
+---
+
+<!-- _class: roadmap swimlane -->
+<!-- _footer: "Swimlane — horizontal tracks · roadmap swimlane" -->
+
+`Layout · roadmap swimlane`
+
+## Each team's track across the year.
+
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| SDK        | Java                 | .NET                   | Polyglot parity           |
+
+
+---
+
+<!-- _class: roadmap milestones -->
+<!-- _footer: "Milestones — calendar-aware · roadmap milestones" -->
+
+`Layout · roadmap milestones`
+
+## The dated path to GA.
+
+| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ---------- | -------------------- | ---------------------- | ------------------------- |
+| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
+| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+
+
+---
+
 <!-- _class: roadmap dark -->
 <!-- _footer: "Composition: dark · roadmap dark" -->
 

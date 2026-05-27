@@ -7,7 +7,10 @@
   "description": "Phased multi-workstream grid — phases across the top, workstreams down the side.",
   "purpose": "Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).",
   "variants": [
-    "horizons"
+    "horizons",
+    "status",
+    "swimlane",
+    "milestones"
   ],
   "slots": {
     "title": {
@@ -79,6 +82,21 @@
       "label": "Horizons — three-horizon planning framing",
       "caption": "Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKinsey three-horizons framing. Use when the planning frame is strategic-horizon-aware rather than fiscal-quarter-aware.",
       "sample": "<!-- _class: roadmap horizons -->\n\n`Three-horizon planning`\n\n## Where the platform invests across horizons.\n\n| Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |\n| ---------- | ------------------------ | ------------------------ | ------------------------- |\n| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |\n| SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |\n\nHorizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.\n"
+    },
+    "status": {
+      "label": "Status — heavy state treatment",
+      "caption": "Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell grounds, an uppercase state eyebrow, and a corner state disc. Use for the standing delivery-status review.",
+      "sample": "<!-- _class: roadmap status -->\n\n`Layout · roadmap status`\n\n## Delivery status by workstream.\n\n| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | -------------------- | ---------------------- | ------------------------- |\n| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |\n| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n"
+    },
+    "swimlane": {
+      "label": "Swimlane — horizontal tracks",
+      "caption": "Renders each workstream as a horizontal track across the phase columns, so a reader scans one team's whole journey left-to-right before moving to the next.",
+      "sample": "<!-- _class: roadmap swimlane -->\n\n`Layout · roadmap swimlane`\n\n## Each team's track across the year.\n\n| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | -------------------- | ---------------------- | ------------------------- |\n| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |\n| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |\n| Compliance | Audit trail          | Centralised log        | Examiner pack             |\n| SDK        | Java                 | .NET                   | Polyglot parity           |\n"
+    },
+    "milestones": {
+      "label": "Milestones — calendar-aware",
+      "caption": "Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.",
+      "sample": "<!-- _class: roadmap milestones -->\n\n`Layout · roadmap milestones`\n\n## The dated path to GA.\n\n| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |\n| ---------- | -------------------- | ---------------------- | ------------------------- |\n| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |\n| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |\n| Compliance | Audit trail          | Centralised log        | Examiner pack             |\n"
     }
   }
 }
