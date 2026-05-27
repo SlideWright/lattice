@@ -30,15 +30,15 @@ Declared statements — short stated principles, each with a one-line justificat
 ---
 
 <!-- _class: principles -->
-<!-- _footer: "Numbered principles · principles numbered" -->
+<!-- _footer: "Numbered · principles numbered" -->
 
 ## How we resolve conflicts — top wins.
 
-1. **Default to the choice that is cheaper to reverse.** Reversibility beats every other tie-breaker.
-2. **Name the actor, never the system.** Anonymous accountability is no accountability.
-3. **Write down the bet on the same slide as the choice.** Calibration depends on it.
-4. **Form follows function.** Let audience need shape the layout.
-5. **One main idea per slide.** If you can't summarise it, split it.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
 
 
 ---
@@ -48,11 +48,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-1. **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-2. **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-3. **Write the bet on the same slide as the choice.** The decision and its predicted outcome live together.
-4. **Form follows function.** Let the audience's need shape the layout, not the other way around.
-5. **One main idea per slide.** If you can't summarise it in one sentence, split it across two.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Let form follow function.
+5. Keep one main idea per slide.
 
 
 ---
@@ -62,11 +62,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## The editorial canon.
 
-1. **Plain words beat clever ones.** If a board member needs a glossary, the slide failed.
-2. **One claim per sentence.** Compound claims hide the one a reader would dispute.
-3. **Show the number, then the verdict.** Evidence first earns the conclusion that follows.
-4. **Cut the adverb, keep the verb.** "Grew sharply" is weaker than "doubled."
-5. **End on the decision, not the summary.** The last slide should ask for something.
+1. Plain words beat clever ones.
+2. One claim per sentence.
+3. Show the number, then the verdict.
+4. Cut the adverb, keep the verb.
+5. End on the decision, not the summary.
 
 
 ---
@@ -76,10 +76,10 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## What we optimise for, in no particular order.
 
-1. **Reversibility over consensus.** Make the cheap-to-undo call now; reserve the meeting for the one-way doors.
-2. **Clarity over completeness.** A slide that says one true thing beats one that says five hedged ones.
-3. **Ownership over process.** Name the person; processes don't get paged.
-4. **Evidence over instinct.** Write the prediction down so the instinct can be scored later.
+1. Reversibility over consensus — make the cheap-to-undo call now.
+2. Clarity over completeness — one true thing beats five hedged ones.
+3. Ownership over process — processes don't get paged.
+4. Evidence over instinct — write the prediction down so it can be scored.
 
 
 ---
