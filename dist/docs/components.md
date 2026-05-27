@@ -5445,10 +5445,10 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 
 ## What the team called out this quarter.
 
-- velocity `5`
-- ownership `4`
-- handoffs `3`
-- review `2`
+- velocity `12`
+- ownership `9`
+- handoffs `7`
+- review `5`
 ```
 
 #### Slots
@@ -5456,7 +5456,7 @@ Use for qualitative summaries — retrospective themes, survey verbatims. Word s
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the cloud. |
-| `words` | `ul > li` | yes | One li per word. Format: `word `weight`` where weight is a relative 1–5 (1 = small/muted, 5 = hero). Out-of-range values are clamped to 1–5. |
+| `words` | `ul > li` | yes | One li per word. Format: `word `weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent. |
 
 #### Anatomy
 

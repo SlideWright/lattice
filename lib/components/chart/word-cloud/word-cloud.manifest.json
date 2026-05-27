@@ -16,10 +16,10 @@
     "words": {
       "selector": "ul > li",
       "required": true,
-      "description": "One li per word. Format: `word `weight`` where weight is a relative 1–5 (1 = small/muted, 5 = hero). Out-of-range values are clamped to 1–5."
+      "description": "One li per word. Format: `word `weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent."
     }
   },
-  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity `5`\n- ownership `4`\n- handoffs `3`\n- review `2`\n",
+  "skeleton": "<!-- _class: word-cloud -->\n\n## What the team called out this quarter.\n\n- velocity `12`\n- ownership `9`\n- handoffs `7`\n- review `5`\n",
   "anatomyBlock": "word-cloud-canvas",
   "sample": "<!-- _class: word-cloud -->\n\n## What this branch named, by weight.\n\n- component `5`\n- manifest `4`\n- function `4`\n- form `3`\n- substance `3`\n- gallery `2`\n- variant `2`\n- universal `1`\n- cascade `1`\n",
   "whenToUse": [

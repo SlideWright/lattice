@@ -30,12 +30,10 @@ const {
   SEMI_UNIVERSAL_VARIANTS,
   CARD_STYLE_LAYOUTS,
   STATEMENT_OL_LAYOUTS,
-  WEIGHTED_WORD_LAYOUTS,
   validate,
   effectiveVariants,
   findInlineTitleBodyLine,
   findBoldOrderedStatement,
-  findOutOfRangeWordWeight,
   loadOne,
   loadAll,
   groupByFunction,
@@ -239,25 +237,6 @@ describe('component-manifest', () => {
       assert.ok(!validate(m).some((e) => /ordered-list statement/.test(e)));
     });
 
-    test('weighted-word layouts reject a word weight outside the 1–5 scale', () => {
-      assert.ok(WEIGHTED_WORD_LAYOUTS.includes('word-cloud'));
-      const m = {
-        ...GOOD,
-        name: 'word-cloud',
-        sample: '<!-- _class: word-cloud -->\n\n## …\n\n- velocity `124`\n- review `3`\n',
-      };
-      assert.ok(validate(m).some((e) => /outside the 1–5 scale/.test(e)));
-    });
-
-    test('weighted-word layouts accept in-range weights', () => {
-      const m = {
-        ...GOOD,
-        name: 'word-cloud',
-        sample: '<!-- _class: word-cloud -->\n\n## …\n\n- velocity `5`\n- review `3`\n- docs `1`\n',
-      };
-      assert.ok(!validate(m).some((e) => /1–5 scale/.test(e)));
-    });
-
     test('non-card-style layouts permit inline format', () => {
       const m = {
         ...GOOD,
@@ -278,13 +257,6 @@ describe('component-manifest', () => {
       assert.equal(findBoldOrderedStatement('1. **Bold.** body'), '1. **Bold.** body');
       assert.equal(findBoldOrderedStatement('1. Plain statement.'), null);
       assert.equal(findBoldOrderedStatement('- **Bold.** body'), null); // unordered: not flagged
-    });
-
-    test('findOutOfRangeWordWeight flags weights outside 1–5, ignores in-range', () => {
-      assert.equal(findOutOfRangeWordWeight('- velocity `124`'), '- velocity `124`');
-      assert.equal(findOutOfRangeWordWeight('- velocity `0`'), '- velocity `0`');
-      assert.equal(findOutOfRangeWordWeight('- velocity `5`'), null);
-      assert.equal(findOutOfRangeWordWeight('- velocity `2.5`'), null);
     });
 
     test('matches inline title+body on any bullet (`-` or `*`)', () => {

@@ -5946,10 +5946,10 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## What the team called out this quarter.
 
-- velocity `5`
-- ownership `4`
-- handoffs `3`
-- review `2`</code></pre>
+- velocity `12`
+- ownership `9`
+- handoffs `7`
+- review `5`</code></pre>
   </section>
   <section class="slots">
     <h4>Slots</h4>
@@ -5957,7 +5957,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
       <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading framing the cloud.</td></tr>
-        <tr><td><code>words</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One li per word. Format: <code>word </code>weight`` where weight is a relative 1–5 (1 = small/muted, 5 = hero). Out-of-range values are clamped to 1–5.</td></tr>
+        <tr><td><code>words</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One li per word. Format: <code>word </code>weight`` where weight is any positive number — a frequency count, a 1–5 rating, a percentage. Words are sized and coloured RELATIVE to each other: the lightest maps to small/muted, the heaviest to the hero size/accent.</td></tr>
       </tbody>
     </table>
   </section>
