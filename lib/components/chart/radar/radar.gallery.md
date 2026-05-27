@@ -215,6 +215,44 @@ Native radar / spider chart — items rated across multiple axes.
 
 ---
 
+<!-- _class: radar -->
+<!-- _footer: "Stress test · radar" -->
+
+`Scale · 0–10`
+
+## Stress test — eight criteria, three vendors.
+
+- Lattice
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+  - Documentation `8`
+  - Onboarding `7`
+  - Reliability `9`
+- Rival North
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+  - Documentation `6`
+  - Onboarding `8`
+  - Reliability `7`
+- Rival West
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+  - Documentation `7`
+  - Onboarding `6`
+  - Reliability `8`
+
+
+---
+
 <!-- _class: radar dark -->
 <!-- _footer: "Composition: dark · radar dark" -->
 

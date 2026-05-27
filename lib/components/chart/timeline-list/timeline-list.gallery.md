@@ -36,6 +36,29 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ---
 
+<!-- _class: timeline-list -->
+<!-- _footer: "Stress test · timeline-list" -->
+
+`Codebook architecture`
+
+## Stress test — six milestones over three years.
+
+1. `2023 Q4` Centralised vault round-trip
+   - First production tokenization on a centralised vault. p99 60 ms.
+2. `2024 Q2` In-process codebook proposal `decision`
+   - Architecture review accepts the in-process model.
+3. `2024 Q4` Codebook GA `live`
+   - Phase 1 rollout complete; twelve production tenants migrated.
+4. `2025 Q2` Multi-tenant DEK rotation `live`
+   - Per-tenant key isolation shipped; caching cut p99 below 5 ms.
+5. `2025 Q4` Cross-region replication `at-risk`
+   - Active-active codebook replication enters pilot.
+6. `2026 Q2` Crypto-shred tooling
+   - Per-purpose deletion and examiner evidence pack in build.
+
+
+---
+
 <!-- _class: timeline-list dark -->
 <!-- _footer: "Composition: dark · timeline-list dark" -->
 

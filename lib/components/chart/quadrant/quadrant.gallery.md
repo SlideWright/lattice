@@ -163,6 +163,35 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 ---
 
+<!-- _class: quadrant -->
+<!-- _footer: "Stress test · quadrant" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Stress test — fourteen initiatives, dense labels.
+
+- Strategic Bets
+  - Codebook caching layer `3, 72`
+  - Multi-tenant DEK rotation `5, 85`
+  - Cross-region replication `4, 78`
+  - Continuous audit trail `2, 66`
+- Quick Wins
+  - Per-purpose codebooks `8, 80`
+  - Snapshot exports `9, 55`
+  - Dependency dashboard `7, 62`
+- Defer
+  - Vendor security scoping `2, 30`
+  - Manual key rotation `1, 22`
+  - Legacy SDK shim `3, 14`
+- Time Sinks
+  - Custom audit log UI `7, 18`
+  - Bespoke SCIM connector `9, 28`
+  - Edge runtime bindings `8, 12`
+  - Polyglot doc generator `6, 25`
+
+
+---
+
 <!-- _class: quadrant dark -->
 <!-- _footer: "Composition: dark · quadrant dark" -->
 

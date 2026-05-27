@@ -7,7 +7,11 @@
   "substance": "graph",
   "description": "Native state machine diagram — states as a numbered list, transitions as nested inline-code refs.",
   "purpose": "Use to show a finite-state machine — the discrete states a system can be in and the events that move between them. Authors write a numbered list; each state's index becomes its stable ref so transitions cite numbers, not names. The numbering is the layout: state i renders at row i, so there is no auto-layout problem to solve.",
-  "variants": ["lr", "inline", "curved"],
+  "variants": [
+    "lr",
+    "inline",
+    "curved"
+  ],
   "slots": {
     "title": {
       "selector": "h2",
@@ -98,5 +102,6 @@
       "caption": "Routes skip and back edges as single Bézier arcs instead of the default orthogonal racetracks (round-out, straight run, round-in). Each curve's peak is solved so its arc still clears the widest node in its span. Orthogonal to direction — compose with `lr`.",
       "sample": "<!-- _class: state-chart curved -->\n\n## Document approval (curved).\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 5`\n2. In Review `on-track`\n   - `approve => 3`\n   - `revise => self`\n   - `reject => 1`\n3. Approved\n   - `publish => 4`\n4. Published `live`\n   - `archive => 5`\n5. Archived `end`\n"
     }
-  }
+  },
+  "stressSample": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Stress test — back-edges, skips, self-loop.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 5`\n2. Submitted `on-track`\n   - `review => 3`\n   - `withdraw => 1`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `recall => 3`\n   - `publish => 5`\n5. Published `end`\n   - `amend => 3`\n"
 }

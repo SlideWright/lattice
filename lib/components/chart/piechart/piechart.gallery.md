@@ -51,6 +51,28 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ---
 
+<!-- _class: piechart -->
+<!-- _footer: "Stress test · piechart" -->
+
+`FY2026 · 1,840 person-hours`
+
+## Stress test — eleven slices, long-tail distribution.
+
+- Codebook platform engineering `28%`
+- Operations and on-call runbook `16%`
+- Compliance and audit work `13%`
+- Multi-tenant DEK rotation `11%`
+- SDK polyglot parity `9%`
+- Pilot and customer support `7%`
+- Documentation and gallery `5%`
+- Dependency dashboard `4%`
+- Edge runtime bindings `3%`
+- Incident response `2%`
+- Miscellaneous toil `2%`
+
+
+---
+
 <!-- _class: piechart dark -->
 <!-- _footer: "Composition: dark · piechart dark" -->
 

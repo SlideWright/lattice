@@ -67,5 +67,6 @@
       "name": "list-steps",
       "when": "sequential process with descriptive steps, no parallel lanes"
     }
-  ]
+  ],
+  "stressSample": "<!-- _class: gantt -->\n\n`2026 Q1 → 2026 Q4`\n\n## Stress test — four workstreams, twelve tasks, mixed status.\n\n- Platform Engineering\n  - Codebook signing service `Q1 → Q2` `done`\n  - Multi-tenant DEK rotation `Q2 → Q3` `live`\n  - Per-purpose codebook caching `Q3 → Q4` `at-risk`\n- Operations & SRE\n  - Manual key rotation `Q1 → Q2` `done`\n  - Automated rotation pipeline `Q2 → Q3` `live`\n  - Crypto-shred tooling `Q3 → Q4` `blocked`\n- Compliance & Audit\n  - Continuous audit trail `Q1 → Q3` `done`\n  - Centralised examiner log `Q2 → Q4` `live`\n  - Examiner evidence pack `Q3 → Q4`\n- SDK & Integrations\n  - Java and .NET parity `Q1 → Q2` `done`\n  - Polyglot SDK parity `Q2 → Q4` `at-risk`\n  - Edge runtime bindings `Q3 → Q4`\n"
 }

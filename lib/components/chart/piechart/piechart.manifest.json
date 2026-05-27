@@ -77,5 +77,6 @@
       "caption": "Hollows the pie into a donut. Visually cleaner for executive decks; the centre can be left blank or used for a total label. Default pick for board and investor material.",
       "sample": "<!-- _class: piechart donut -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the engineering quarter went.\n\nWedges drawn proportionally; legend reads in author order with raw values.\n\n- Codebook platform `46%`\n- Operations runbook `22%`\n- Compliance work `18%`\n- Pilot support `9%`\n- Toil and on-call `5%`\n"
     }
-  }
+  },
+  "stressSample": "<!-- _class: piechart -->\n\n`FY2026 · 1,840 person-hours`\n\n## Stress test — eleven slices, long-tail distribution.\n\n- Codebook platform engineering `28%`\n- Operations and on-call runbook `16%`\n- Compliance and audit work `13%`\n- Multi-tenant DEK rotation `11%`\n- SDK polyglot parity `9%`\n- Pilot and customer support `7%`\n- Documentation and gallery `5%`\n- Dependency dashboard `4%`\n- Edge runtime bindings `3%`\n- Incident response `2%`\n- Miscellaneous toil `2%`\n"
 }

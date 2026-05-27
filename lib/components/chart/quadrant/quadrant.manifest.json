@@ -116,5 +116,6 @@
       "caption": "Composable modifier: drops the quadrant fills for a faint grid and bare dots. Layers on the default or any quadrant variant when the tinting would compete with the dots.",
       "sample": "<!-- _class: quadrant minimal -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Where to put the next dollar — unadorned.\n\n- Strategic Bets\n  - Codebook caching `3, 70`\n  - Multi-tenant DEKs `5, 85`\n- Quick Wins\n  - Per-purpose codebooks `8, 80`\n  - Snapshot exports `9, 55`\n- Defer\n  - Vendor scoping `2, 30`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n"
     }
-  }
+  },
+  "stressSample": "<!-- _class: quadrant -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Stress test — fourteen initiatives, dense labels.\n\n- Strategic Bets\n  - Codebook caching layer `3, 72`\n  - Multi-tenant DEK rotation `5, 85`\n  - Cross-region replication `4, 78`\n  - Continuous audit trail `2, 66`\n- Quick Wins\n  - Per-purpose codebooks `8, 80`\n  - Snapshot exports `9, 55`\n  - Dependency dashboard `7, 62`\n- Defer\n  - Vendor security scoping `2, 30`\n  - Manual key rotation `1, 22`\n  - Legacy SDK shim `3, 14`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n  - Bespoke SCIM connector `9, 28`\n  - Edge runtime bindings `8, 12`\n  - Polyglot doc generator `6, 25`\n"
 }

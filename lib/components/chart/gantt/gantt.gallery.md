@@ -40,6 +40,33 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ---
 
+<!-- _class: gantt -->
+<!-- _footer: "Stress test · gantt" -->
+
+`2026 Q1 → 2026 Q4`
+
+## Stress test — four workstreams, twelve tasks, mixed status.
+
+- Platform Engineering
+  - Codebook signing service `Q1 → Q2` `done`
+  - Multi-tenant DEK rotation `Q2 → Q3` `live`
+  - Per-purpose codebook caching `Q3 → Q4` `at-risk`
+- Operations & SRE
+  - Manual key rotation `Q1 → Q2` `done`
+  - Automated rotation pipeline `Q2 → Q3` `live`
+  - Crypto-shred tooling `Q3 → Q4` `blocked`
+- Compliance & Audit
+  - Continuous audit trail `Q1 → Q3` `done`
+  - Centralised examiner log `Q2 → Q4` `live`
+  - Examiner evidence pack `Q3 → Q4`
+- SDK & Integrations
+  - Java and .NET parity `Q1 → Q2` `done`
+  - Polyglot SDK parity `Q2 → Q4` `at-risk`
+  - Edge runtime bindings `Q3 → Q4`
+
+
+---
+
 <!-- _class: gantt dark -->
 <!-- _footer: "Composition: dark · gantt dark" -->
 
