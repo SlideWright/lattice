@@ -55,10 +55,14 @@ pre-commit:
       # (lib/core, lib/transformers, lib/components/*.transform, lib/integrations,
       # marp.config.js). node_modules deps stay external, so dep bumps don't
       # need a rebuild. Cheap rebuild-to-tmp + byte-diff via emulator:check.
+      # package.json is in the glob because the bundle inlines it
+      # (require('./package.json') for --version), so a version/script edit
+      # restales the bundle.
       # Skippable via `git commit --no-verify` only as a last resort.
       glob:
         - 'lattice-emulator.js'
         - 'marp.config.js'
+        - 'package.json'
         - 'lib/core/**/*.js'
         - 'lib/transformers/**/*.js'
         - 'lib/components/**/*.transform.js'

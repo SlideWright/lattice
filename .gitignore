@@ -1,6 +1,7 @@
 node_modules/
 .scratch/
 tokenization/
+release/
 
 # Marp / build outputs
 # (note: the four allow-listed locations below are intentionally
@@ -20,10 +21,11 @@ tokenization/
 !docs/*.pdf
 !themes/*.pdf
 
-# esbuild check tempfile — produced next to dist/lattice-runtime.js by
-# `npm run runtime:check`. The script cleans up on success/failure;
-# this catches the case where the process was killed mid-build.
+# esbuild check tempfiles — produced next to the bundles by
+# `npm run runtime:check` / `emulator:check`. The scripts clean up on
+# success/failure; these catch the killed-mid-build case.
 dist/lattice-runtime.js.check.tmp
+dist/lattice-emulator.js.check.tmp
 
 # Bucket-gallery build tempfiles — tools/build-bucket-galleries.js writes
 # <bucket>.gallery.<theme>.tmp.md next to the source during render and

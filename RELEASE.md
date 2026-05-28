@@ -63,10 +63,59 @@ npm pack --dry-run
 # 5. Publish + push the tag.
 npm publish --access public
 git push origin main --follow-tags
+
+# 6. Build the GitHub release zip and attach it to the release.
+npm run release:zip          # → release/lattice-v<version>.zip
+# gh release create v<version> release/lattice-v<version>.zip --notes-file …
 ```
 
 `prepublishOnly` re-runs `npm test` as a backstop before the registry
 upload.
+
+## The GitHub release zip
+
+Three artifacts ship from a tag, each for a different audience — don't
+conflate them:
+
+| Artifact | Built by | For |
+|---|---|---|
+| **npm tarball** | `npm publish` (`files` allowlist) | `npm install` consumers; engine source + `dist/`, no PDFs. ~1.8 MB. |
+| **Source code (zip/tar.gz)** | GitHub, automatically | the whole repo at the tag — clone-and-build. |
+| **`lattice-v<x.y.z>.zip`** | `npm run release:zip` | download-and-use: the curated, offline-browsable **full showcase**. |
+
+The release zip is the only one that carries the **gallery + example
+PDFs** (npm drops them, the source zip buries them in the tree). It is a
+`git archive` of HEAD under a `lattice-v<x.y.z>/` prefix, so it is
+tracked-only and deterministic per commit. Contents (full showcase):
+
+- `dist/` — the engine: `lattice.css`, `lattice-default.css`,
+  `lattice-runtime.js`, the bundled `lattice-emulator.js`, `README.md`,
+  and `docs/components.{md,html}`.
+- `lib/` — the `marp.config.js` runtime deps (transformers, core,
+  component transforms, integrations) **and** the 142 gallery PDFs the
+  component reference links to, so `dist/docs/components.html` resolves
+  its `../../lib/components/…` links inside the unzipped tree.
+- `themes/` — all palette files.
+- `marp.config.js` — the marp-cli config.
+- `examples/` — showcase decks + their PDFs.
+- `design/skill.md`, `design/design-system.md`, `README.md`, `LICENSE`,
+  `CHANGELOG.md`.
+
+Deliberately excluded: `test/`, `tools/`, `engineering/`, editor/CI
+config, `node_modules/`, and the repo-root `lattice-emulator.js` source
+(the bundle supersedes it).
+
+The tool gates on a clean tree (it archives HEAD, not the working tree —
+pass `--allow-dirty` to override) and on `build:check` (pass `--skip-check`
+to override). Output lands in the gitignored `release/` dir; it is
+uploaded to the Release, never committed.
+
+> **Standalone-ness caveat.** PDF *export* (the emulator / marp-cli) shells
+> out to Chromium (puppeteer) + `mmdc`, which a zip can't carry. The
+> genuinely unzip-and-go surface is the CSS/runtime drop-in (browser /
+> Marp-theme use) and the offline HTML + PDF reference. Rendering new decks
+> to PDF from the zip still needs `npm install puppeteer
+> @mermaid-js/mermaid-cli katex function-plot` (or a global marp-cli).
 
 ## Automation (to implement)
 
@@ -81,6 +130,9 @@ mirror the manual steps as a gate before `npm publish`:
 4. `npm test`
 5. Verify the tag matches `package.json` version; fail if not.
 6. `npm publish --access public --provenance`.
+7. `npm run release:zip` then upload `release/lattice-v<version>.zip` to
+   the GitHub Release (e.g. `softprops/action-gh-release` or
+   `gh release create`).
 
 Prerequisites before enabling:
 

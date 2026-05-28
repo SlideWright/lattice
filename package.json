@@ -77,6 +77,7 @@
     "playground:watch": "node tools/build-playground.js --watch",
     "dist-readme:build": "node tools/build-dist-readme.js",
     "dist-readme:check": "node tools/build-dist-readme.js --check",
+    "release:zip": "node tools/build-release-zip.js",
     "docs:components": "node tools/build-component-docs.js",
     "docs:components:check": "node tools/build-component-docs.js --check",
     "docs:portal": "node tools/build-docs-portal.js",
