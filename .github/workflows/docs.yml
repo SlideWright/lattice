@@ -5,8 +5,8 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
-      - 'reference/components.html'
-      - 'reference/components.md'
+      - 'dist/docs/components.html'
+      - 'dist/docs/components.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 

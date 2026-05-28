@@ -27,7 +27,7 @@
  *   - lib/components/chart/state-chart/state-chart.transform.js  kernel + browser fn
  *   - lib/components/chart/_chart-family/chart-family.js         dispatch
  *   - lattice-emulator.js                                        emits the bootstrap
- *   - src/runtime/index.js → lattice-runtime.js                  preview pass
+ *   - lib/runtime/index.js → lattice-runtime.js                  preview pass
  */
 
 section.state-chart {

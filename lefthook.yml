@@ -35,15 +35,18 @@ pre-commit:
         - 'lib/components/**/*.gallery.md'
       run: node tools/build-staged-pdfs.js
     - name: runtime-bundle-freshness
-      # Catches the "edited src/runtime/** or lib/transformers/**,
-      # forgot to rebuild lattice-runtime.js" failure mode. Cheap
-      # rebuild-to-tmp + byte-diff via npm run runtime:check.
+      # Catches the "edited a runtime-bundle source, forgot to rebuild
+      # lattice-runtime.js" failure mode. The esbuild bundle entry is
+      # lib/runtime/index.js; it pulls in lib/transformers/** (the
+      # registry + adapters), their lib/core/** kernels, and the
+      # per-component *.transform.js files. Cheap rebuild-to-tmp +
+      # byte-diff via npm run runtime:check.
       # Skippable via `git commit --no-verify` only as a last resort.
       glob:
-        - 'src/runtime/**/*'
+        - 'lib/runtime/**/*'
         - 'lib/transformers/**/*.js'
-        - 'lib/engine/**/*.js'
-        - 'lib/chart-family/**/*.js'
+        - 'lib/core/**/*.js'
+        - 'lib/components/**/*.transform.js'
       run: npm run runtime:check --silent
     - name: component-docs-freshness
       # Catches the "edited a manifest, forgot to regenerate the
@@ -56,7 +59,7 @@ pre-commit:
       run: npm run docs:components:check --silent
     - name: docs-portal-freshness
       # Catches the "edited a manifest, forgot to regenerate the
-      # aggregated reference/components.html reference portal" failure mode.
+      # aggregated dist/docs/components.html reference portal" failure mode.
       # Same source of truth as component-docs; fails if the portal
       # drifts. Skippable via --no-verify only as last resort.
       glob:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Validate commit message format: `area(scope): summary` or `area: summary`.
-# Matches the convention in reference/engineering/workflow.md.
+# Matches the convention in engineering/workflow.md.
 #
 # Allows merges, reverts, fixups, squashes (git's machine-generated forms),
 # and empty messages (git's own validation handles those).

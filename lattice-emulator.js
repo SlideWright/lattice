@@ -944,7 +944,7 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
-// shared with lib/chart-family.js (marp.config.js path) and mirrored in
+// shared with lib/components/chart/_chart-family/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
 const radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five

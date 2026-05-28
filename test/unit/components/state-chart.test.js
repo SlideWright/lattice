@@ -2,7 +2,7 @@
  * Unit: lib/components/chart/state-chart/state-chart.transform.js — kernel for
  * the `state-chart` chart-family member.
  *
- * Section dispatch + chart-frame wrapping live in lib/chart-family/chart-family.js
+ * Section dispatch + chart-frame wrapping live in lib/components/chart/_chart-family/chart-family.js
  * (state-chart is one of CHART_LAYOUTS); this kernel just produces the figure HTML.
  * Tests cover the layers chart-family delegates to:
  *
@@ -423,7 +423,7 @@ describe('matchEyebrowText', () => {
 
 describe('STATUS_KEYWORDS', () => {
   test('matches the .chart-status[data-s=…] vocabulary in chart-family.css', () => {
-    // Same set as lib/chart-family/chart-family.css. Drift here is a
+    // Same set as lib/components/chart/_chart-family/chart-family.css. Drift here is a
     // canary that the kernel and the CSS have diverged.
     const expected = ['on-track', 'done', 'live', 'at-risk', 'warn', 'pilot', 'blocked', 'fail', 'decision', 'deferred'];
     for (const k of expected) assert.ok(STATUS_KEYWORDS.has(k), `missing: ${k}`);

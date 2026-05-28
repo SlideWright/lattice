@@ -8,7 +8,7 @@ tokenization/
 # per-bucket galleries under lib/components/, per-integration
 # galleries under lib/integrations/, and the CI baseline regression
 # decks under test/integration/baseline-decks/. See
-# reference/engineering/workflow.md and CLAUDE.md. The rule below catches
+# engineering/workflow.md and CLAUDE.md. The rule below catches
 # ad-hoc renders elsewhere in the tree.)
 *.pptx
 *.pdf

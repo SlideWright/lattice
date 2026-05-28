@@ -1,7 +1,7 @@
 /**
  * Unit: lib/radar.js — kernel for the `radar` chart-family member.
  *
- * Section dispatch + chart-frame wrapping live in lib/chart-family.js (radar
+ * Section dispatch + chart-frame wrapping live in lib/components/chart/_chart-family/chart-family.js (radar
  * is one of CHART_LAYOUTS); this kernel just produces the figure HTML. Tests
  * here cover the layers chart-family delegates to:
  *
@@ -291,9 +291,9 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
   assert.equal(matchEyebrowText('<h2>X</h2><ul></ul>'), '');
 });
 
-// ── chart-family dispatch (integration with lib/chart-family.js) ────────
+// ── chart-family dispatch (integration with lib/components/chart/_chart-family/chart-family.js) ────────
 // Radar is a chart-family member; section dispatch + chart-frame wrapping
-// are owned by lib/chart-family.js. These tests pin the wiring so a
+// are owned by lib/components/chart/_chart-family/chart-family.js. These tests pin the wiring so a
 // regression in either module surfaces here, not only in the integration
 // PDF build.
 
