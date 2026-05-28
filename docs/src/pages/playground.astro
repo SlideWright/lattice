@@ -1,0 +1,260 @@
+---
+// Lattice playground — a standalone Astro route (like the landing) that runs
+// the marp-cli render path client-side via docs/public/playground/
+// lattice-playground.js. Type Lattice markdown, pick a component template, see
+// it render live in the chosen palette.
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import '../styles/landing.css';
+import '../styles/playground.css';
+
+const docsRoot = process.cwd();
+const repoRoot = join(docsRoot, '..');
+const require = createRequire(import.meta.url);
+const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const manifests = loadAll();
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+// Template catalog for the picker, grouped by Function family.
+const FUNCTION_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery'];
+const catalog = {};
+for (const m of manifests) {
+	(catalog[m.name] = { skeleton: m.skeleton, sample: m.sample || m.skeleton });
+}
+const groups = FUNCTION_ORDER.map((fn) => ({
+	fn,
+	items: manifests.filter((m) => m.function === fn).map((m) => m.name).sort(),
+})).filter((g) => g.items.length);
+
+// Starter deck = the hero component's sample (verdict-grid).
+const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
+const starter = (heroComp && heroComp.sample) || '<!-- _class: title silent -->\n\n# Lattice\n';
+
+const pgData = JSON.stringify({
+	catalog,
+	themeBase: url('playground/themes/'),
+	runtimeUrl: url('playground/lattice-runtime.js'),
+	defaultPalette: 'indaco',
+});
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Lattice playground — try it in the browser</title>
+		<meta name="description" content="Write Lattice Markdown and watch it render to boardroom slides live in your browser. Start from any component template." />
+		<link rel="icon" type="image/svg+xml" href={url('lattice-logo.svg')} />
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<header class="topbar">
+			<div class="wrap topbar-inner" style="max-width:none">
+				<a class="brand" href={url('')}>
+					<img class="brand-logo" src={url('lattice-logo.svg')} alt="" width="30" height="30" />
+					<span class="brand-mark">Lattice</span>
+				</a>
+				<nav class="topnav">
+					<a class="navlink" href={url('components.html')}>Components</a>
+					<a class="navlink" href={url('guides/authoring/')}>Authoring</a>
+					<div class="controls">
+						<select class="palette-select" id="palette" aria-label="Palette">
+							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
+						</select>
+						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					</div>
+				</nav>
+			</div>
+		</header>
+
+		<div class="pg-bar">
+			<div class="pg-picker">
+				<label for="pg-template">Template</label>
+				<select id="pg-template" aria-label="Component template">
+					<option value="">Pick a component…</option>
+					{groups.map((g) => (
+						<optgroup label={titleCase(g.fn)}>
+							{g.items.map((n) => <option value={n}>{n}</option>)}
+						</optgroup>
+					))}
+				</select>
+			</div>
+			<button class="pg-btn" id="pg-insert-sample">Insert example</button>
+			<button class="pg-btn" id="pg-insert-skeleton">Insert skeleton</button>
+			<span class="spacer"></span>
+			<span class="pg-status" id="pg-status">Ready.</span>
+			<div class="pg-tabs" role="tablist">
+				<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
+				<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
+			</div>
+		</div>
+
+		<main class="pg-split">
+			<section class="pg-pane editor">
+				<div class="pg-pane-label">Markdown</div>
+				<textarea id="editor" spellcheck="false" aria-label="Lattice markdown editor">{starter}</textarea>
+			</section>
+			<section class="pg-pane preview">
+				<div class="pg-pane-label">Rendered slides</div>
+				<div class="pg-preview-wrap">
+					<iframe id="preview" title="Rendered slides preview"></iframe>
+				</div>
+			</section>
+		</main>
+
+		<script type="application/json" id="pg-data" is:inline set:html={pgData}></script>
+		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
+		<script is:inline>
+			(function () {
+				var data = JSON.parse(document.getElementById('pg-data').textContent);
+				var catalog = data.catalog;
+				var THEME_BASE = data.themeBase;
+				var RUNTIME_URL = data.runtimeUrl;
+				var root = document.documentElement;
+				var editor = document.getElementById('editor');
+				var frame = document.getElementById('preview');
+				var statusEl = document.getElementById('pg-status');
+				var paletteSel = document.getElementById('palette');
+				var modeBtn = document.getElementById('mode-toggle');
+				var tmplSel = document.getElementById('pg-template');
+
+				paletteSel.value = root.getAttribute('data-palette');
+				var fetched = {}; // theme name -> Promise<cssText>
+				var latticeReady = null;
+
+				function setStatus(msg, isErr) {
+					statusEl.textContent = msg;
+					statusEl.classList.toggle('err', !!isErr);
+				}
+
+				function fetchTheme(name) {
+					if (!fetched[name]) {
+						fetched[name] = fetch(THEME_BASE + name + '.css').then(function (r) {
+							if (!r.ok) throw new Error('theme ' + name + ' (' + r.status + ')');
+							return r.text();
+						});
+					}
+					return fetched[name];
+				}
+
+				function ensureThemes(palette, mode) {
+					var PG = window.LatticePlayground;
+					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (css) { PG.addThemes([css]); });
+					var jobs = [latticeReady];
+					if (!PG.hasTheme(palette)) jobs.push(fetchTheme(palette).then(function (css) { PG.addThemes([css]); }));
+					var darkName = palette + '-dark';
+					if (mode === 'dark') {
+						jobs.push(fetchTheme(darkName).then(function (css) { PG.addThemes([css]); }).catch(function () {}));
+					}
+					return Promise.all(jobs);
+				}
+
+				var KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+				// UMD build sets window.mermaid, which lattice-runtime.js polls for and
+				// then renders ```mermaid fences (and charts/split-panels via applyAllToDom).
+				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+
+				function writeFrame(html, css, mode) {
+					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					var doc = frame.contentDocument;
+					doc.open();
+					doc.write(
+						'<!doctype html><html><head><meta charset="utf-8">' +
+						'<link rel="stylesheet" href="' + KATEX + '">' +
+						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
+						'.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:auto;margin:0 auto 16px;' +
+						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;background:#fff;}' +
+						css + '</style></head><body>' + html +
+						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
+						'</body></html>'
+					);
+					doc.close();
+				}
+
+				var timer = null;
+				function scheduleRender() { clearTimeout(timer); timer = setTimeout(render, 220); }
+
+				function render() {
+					var PG = window.LatticePlayground;
+					if (!PG) { setStatus('Loading engine…'); return setTimeout(render, 60); }
+					var palette = root.getAttribute('data-palette') || 'indaco';
+					var mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+					setStatus('Rendering…');
+					ensureThemes(palette, mode).then(function () {
+						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
+						try {
+							var out = PG.render(editor.value, theme);
+							writeFrame(out.html, out.css, mode);
+							setStatus('Rendered ' + (out.html.match(/<\/section>/g) || []).length + ' slide(s).');
+						} catch (e) {
+							setStatus(String(e.message || e), true);
+						}
+					}).catch(function (e) { setStatus(String(e.message || e), true); });
+				}
+
+				editor.addEventListener('input', scheduleRender);
+
+				tmplSel.addEventListener('change', function () {
+					var name = tmplSel.value;
+					if (name && catalog[name]) { editor.value = catalog[name].sample; render(); }
+				});
+				document.getElementById('pg-insert-sample').addEventListener('click', function () {
+					var name = tmplSel.value;
+					if (name && catalog[name]) { editor.value = catalog[name].sample; render(); }
+					else setStatus('Pick a component first.', true);
+				});
+				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
+					var name = tmplSel.value;
+					if (name && catalog[name]) { editor.value = catalog[name].skeleton; render(); }
+					else setStatus('Pick a component first.', true);
+				});
+
+				paletteSel.addEventListener('change', function () {
+					root.setAttribute('data-palette', paletteSel.value);
+					try { localStorage.setItem('lattice-docs-palette', paletteSel.value); } catch (e) {}
+					render();
+				});
+				modeBtn.addEventListener('click', function () {
+					var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+					root.setAttribute('data-mode', next);
+					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+					render();
+				});
+
+				// Mobile Edit | Preview tabs.
+				var tabEdit = document.getElementById('tab-edit');
+				var tabPreview = document.getElementById('tab-preview');
+				function setPane(which) {
+					document.body.setAttribute('data-pane', which);
+					tabEdit.setAttribute('aria-selected', which === 'edit');
+					tabPreview.setAttribute('aria-selected', which === 'preview');
+				}
+				tabEdit.addEventListener('click', function () { setPane('edit'); });
+				tabPreview.addEventListener('click', function () { setPane('preview'); render(); });
+				setPane('edit');
+
+				render();
+			})();
+		</script>
+	</body>
+</html>
