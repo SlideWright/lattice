@@ -55,5 +55,6 @@
     { "name": "obligation-matrix", "when": "many regimes scored on shared obligations in a table" },
     { "name": "compare-table", "when": "cells are textual values, not state markers" },
     { "name": "checklist", "when": "one set of criteria, not many options against them" }
-  ]
+  ],
+  "showcase": { "hero": true }
 }

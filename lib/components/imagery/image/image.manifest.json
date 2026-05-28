@@ -103,5 +103,6 @@
       "caption": "Flips the default split: text leads from the right, image anchors from the left. Use when the surrounding deck reads right-to-left across a spread or when the page-turn lands on the image edge.",
       "sample": "<!-- _class: image mirror -->\n\n## Mirror lands the image on the left.\n\nText leads from the right; image anchors from the left. Use when the surrounding spread reads right-to-left or when the page-turn cue lands on the image side.\n\n![bg left](sample-image-landscape.svg)\n"
     }
-  }
+  },
+  "showcase": { "featured": true }
 }

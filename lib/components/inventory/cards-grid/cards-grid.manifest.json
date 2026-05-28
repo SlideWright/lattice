@@ -111,5 +111,6 @@
       "caption": "The universal `mirror` modifier is declared for completeness but has no visible effect — cards-grid is a symmetric layout with no inherent left/right asymmetry to flip.",
       "sample": "<!-- _class: cards-grid mirror -->\n\n## Mirror is a no-op here.\n\n- First card.\n  - Same position with or without `mirror`.\n- Second card.\n  - Same position with or without `mirror`.\n- Third card.\n  - Symmetric grids have nothing to flip.\n- Fourth card.\n  - This slide renders identically to the default.\n"
     }
-  }
+  },
+  "showcase": { "featured": true }
 }

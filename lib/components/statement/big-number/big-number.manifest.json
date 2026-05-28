@@ -71,5 +71,6 @@
       "name": "content",
       "when": "the argument is mostly prose with a number embedded"
     }
-  ]
+  ],
+  "showcase": { "featured": true }
 }

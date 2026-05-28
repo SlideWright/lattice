@@ -3,6 +3,7 @@
 // renders full-bleed with the engine's own tokens instead of Starlight chrome.
 // The docs pages (/getting-started, /introduction, …) stay 100% Starlight.
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
 
@@ -10,9 +11,9 @@ import '../styles/landing.css';
 // repo reads to cwd (import.meta.url is unreliable once the page is bundled).
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
-const vg = JSON.parse(
-	readFileSync(join(repoRoot, 'lib/components/comparison/verdict-grid/verdict-grid.manifest.json'), 'utf8'),
-);
+const require = createRequire(import.meta.url);
+const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const manifests = loadAll();
 
 // Base-path-safe URL builder (project pages live under /lattice/).
 const base = import.meta.env.BASE_URL;
@@ -26,8 +27,11 @@ const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '')
 
 // The hero's left panel shows the REAL manifest sample that produced the right
 // panel's rendered slide image — so "write this, get this" is literally true.
+// Hero = the component flagged `showcase.hero` in its manifest; its sample is
+// shown verbatim as the headline source and rendered as the hero slide image.
+const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const heroSource = vg.sample.trim();
+const heroSource = heroComp.sample.trim();
 const heroCodeHtml = heroSource
 	.split('\n')
 	.map((line) => {
@@ -38,16 +42,14 @@ const heroCodeHtml = heroSource
 	})
 	.join('\n');
 
-const showcase = [
-	{ id: 'anchor', fn: 'Anchor', nm: 'divider' },
-	{ id: 'statement', fn: 'Statement', nm: 'big-number' },
-	{ id: 'inventory', fn: 'Inventory', nm: 'cards-grid' },
-	{ id: 'comparison', fn: 'Comparison', nm: 'before-after' },
-	{ id: 'progression', fn: 'Progression', nm: 'roadmap' },
-	{ id: 'evidence', fn: 'Evidence', nm: 'kpi' },
-	{ id: 'imagery', fn: 'Imagery', nm: 'image' },
-	{ id: 'hero', fn: 'Comparison', nm: 'verdict-grid' },
-];
+// Showcase strip = every component flagged `showcase.featured`, ordered by
+// Function family. Each tile expects /showcase/<name>.<mode>.webp (minted by
+// docs/scripts/rasterize-showcase.mjs and existence-gated by showcase:check).
+const FUNCTION_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery'];
+const showcase = manifests
+	.filter((m) => m.showcase && m.showcase.featured)
+	.sort((a, b) => FUNCTION_ORDER.indexOf(a.function) - FUNCTION_ORDER.indexOf(b.function))
+	.map((m) => ({ fn: titleCase(m.function), nm: m.name }));
 ---
 
 <!doctype html>
@@ -124,8 +126,8 @@ const showcase = [
 						</div>
 						<div class="proof-arrow">↓ renders to ↓</div>
 						<figure class="slide-frame">
-							<img class="for-light" src={url('showcase/hero.light.webp')} alt="A verdict-grid slide rendered by Lattice" width="1600" height="900" loading="eager" />
-							<img class="for-dark" src={url('showcase/hero.dark.webp')} alt="A verdict-grid slide rendered by Lattice in dark mode" width="1600" height="900" loading="eager" />
+							<img class="for-light" src={url(`showcase/${heroComp.name}.light.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice`} width="1600" height="900" loading="eager" />
+							<img class="for-dark" src={url(`showcase/${heroComp.name}.dark.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice in dark mode`} width="1600" height="900" loading="eager" />
 						</figure>
 					</div>
 				</div>
@@ -188,8 +190,8 @@ const showcase = [
 						{showcase.map((s) => (
 							<figure class="shot">
 								<div class="shot-img">
-									<img class="for-light" src={url(`showcase/${s.id}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
-									<img class="for-dark" src={url(`showcase/${s.id}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
+									<img class="for-light" src={url(`showcase/${s.nm}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
+									<img class="for-dark" src={url(`showcase/${s.nm}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
 								</div>
 								<figcaption>
 									<span class="fn">{s.fn}</span>
