@@ -308,7 +308,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // Resolve palette name from the precedence chain (CLI > env > front
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
-const { resolvePalette } = require('./lib/engine/resolve-palette');
+const { resolvePalette } = require('./lib/core/resolve-palette');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -934,9 +934,9 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 
 // Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
 // directly. See that file for the fence-and-headingDivider rationale.
-const { splitSlides }    = require('./lib/engine/split-slides');
+const { splitSlides }    = require('./lib/core/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
-const { liftSlotLabel }  = require('./lib/engine/slot-label-lift');
+const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
 // See lib/transformers/registry.js for the contract and order rationale.
