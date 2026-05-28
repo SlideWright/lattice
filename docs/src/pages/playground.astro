@@ -172,6 +172,10 @@ const pgData = JSON.stringify({
 				// UMD build sets window.mermaid, which lattice-runtime.js polls for and
 				// then renders ```mermaid fences (and charts/split-panels via applyAllToDom).
 				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+				// Marp's official polyfill for Safari/iOS, which renders <foreignObject>
+				// inside a scaled <svg> at native size (slide overflows on mobile Safari).
+				// It patches the section transform; a no-op on Chrome/Firefox.
+				var SVG_POLYFILL = 'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill@2.1.0/lib/polyfill.browser.js';
 
 				function writeFrame(html, css, mode) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
@@ -184,6 +188,8 @@ const pgData = JSON.stringify({
 						'.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:auto;margin:0 auto 16px;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;background:#fff;}' +
 						css + '</style></head><body>' + html +
+						'<scr' + 'ipt src="' + SVG_POLYFILL + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe();</scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
 						'</body></html>'
