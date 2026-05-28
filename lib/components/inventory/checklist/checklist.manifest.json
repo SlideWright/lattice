@@ -66,5 +66,6 @@
       "name": "cards-stack",
       "when": "each item needs two sentences of body"
     }
-  ]
+  ],
+  "showcase": { "featured": true }
 }
