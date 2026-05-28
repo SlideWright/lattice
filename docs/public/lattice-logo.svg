@@ -1,29 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 116" role="img" aria-label="Lattice">
   <title>Lattice</title>
   <defs>
-    <!-- Lengthwise gradients (along each strut): lit toward the top, falling to
-         a deeper tone at the foot — a consistent overhead light, smooth (no
-         centerline stripe). Spatial split: indigo left, leather-gold right.
-         Indigo stays mid-tone so the mark also reads on a dark canvas. -->
-    <linearGradient id="ll-navy" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4a4f97"/>
-      <stop offset="1" stop-color="#11163a"/>
+    <!-- Diagonal gradients give each ribbon a clean dimensional bevel (lit one
+         corner, deepening to the opposite) — no chrome-stripe artifact. Deep
+         indigo gathers left, leather-gold right; indigo stays mid-tone at the
+         lit corner so the mark also reads on a dark canvas. -->
+    <linearGradient id="ll-navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#454a93"/>
+      <stop offset="1" stop-color="#0d1234"/>
     </linearGradient>
-    <linearGradient id="ll-gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f1c25c"/>
-      <stop offset="1" stop-color="#9a6417"/>
-    </linearGradient>
-    <linearGradient id="ll-mix1" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6a609a"/>
-      <stop offset="1" stop-color="#9c6c24"/>
-    </linearGradient>
-    <linearGradient id="ll-mix2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4a4f97"/>
-      <stop offset="1" stop-color="#b07f2a"/>
+    <linearGradient id="ll-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eeb24c"/>
+      <stop offset="1" stop-color="#8f5a14"/>
     </linearGradient>
     <linearGradient id="ll-frame" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#36467a"/>
-      <stop offset="1" stop-color="#1b2350"/>
+      <stop offset="0" stop-color="#46568f"/>
+      <stop offset="1" stop-color="#1f2a55"/>
     </linearGradient>
     <filter id="ll-shadow" x="-25%" y="-25%" width="150%" height="150%">
       <feDropShadow dx="0" dy="1.1" stdDeviation="1.2" flood-color="#0a1024" flood-opacity="0.3"/>
@@ -32,23 +24,21 @@
 
   <!-- 16:9 presentation-slide frame -->
   <rect x="22" y="26" width="88" height="64" rx="7" fill="none"
-        stroke="url(#ll-frame)" stroke-width="5" filter="url(#ll-shadow)"/>
+        stroke="url(#ll-frame)" stroke-width="6" filter="url(#ll-shadow)"/>
 
-  <!-- Interlacing struts of UNEVEN length, staggered start/end, in two mirrored
-       near-vertical diagonals. Indigo gathers left, gold right. Each is a beveled
-       ribbon; varied lengths give the hand-woven lattice its irregular weave. -->
+  <!-- Interlacing struts of uneven length, staggered start/end, in two mirrored
+       near-vertical diagonals. Flat-cut ends read as angled ribbon cuts once
+       rotated; the dense weave + length variation matches the woven lattice. -->
   <g filter="url(#ll-shadow)">
-    <!-- leaning one way -->
-    <rect x="25"  y="-26" width="5.5" height="178" rx="2" fill="url(#ll-navy)" transform="rotate(-28 66 58)"/>
-    <rect x="43"  y="10"  width="5.5" height="112" rx="2" fill="url(#ll-navy)" transform="rotate(-26 66 58)"/>
-    <rect x="61"  y="-12" width="5.5" height="152" rx="2" fill="url(#ll-mix1)" transform="rotate(-30 66 58)"/>
-    <rect x="80"  y="26"  width="5.5" height="88"  rx="2" fill="url(#ll-gold)" transform="rotate(-27 66 58)"/>
-    <rect x="97"  y="-18" width="5.5" height="150" rx="2" fill="url(#ll-gold)" transform="rotate(-29 66 58)"/>
-    <!-- leaning the other way -->
-    <rect x="31"  y="16"  width="5.5" height="108" rx="2" fill="url(#ll-navy)" transform="rotate(29 66 58)"/>
-    <rect x="50"  y="-22" width="5.5" height="170" rx="2" fill="url(#ll-navy)" transform="rotate(27 66 58)"/>
-    <rect x="68"  y="12"  width="5.5" height="116" rx="2" fill="url(#ll-mix2)" transform="rotate(31 66 58)"/>
-    <rect x="86"  y="-24" width="5.5" height="178" rx="2" fill="url(#ll-gold)" transform="rotate(28 66 58)"/>
-    <rect x="103" y="28"  width="5.5" height="86"  rx="2" fill="url(#ll-gold)" transform="rotate(30 66 58)"/>
+    <rect x="24"  y="-32" width="6" height="192" fill="url(#ll-navy)" transform="rotate(-28 66 58)"/>
+    <rect x="42"  y="6"   width="6" height="120" fill="url(#ll-navy)" transform="rotate(-26 66 58)"/>
+    <rect x="60"  y="-16" width="6" height="162" fill="url(#ll-navy)" transform="rotate(-30 66 58)"/>
+    <rect x="80"  y="24"  width="6" height="96"  fill="url(#ll-gold)" transform="rotate(-27 66 58)"/>
+    <rect x="99"  y="-22" width="6" height="160" fill="url(#ll-gold)" transform="rotate(-29 66 58)"/>
+    <rect x="30"  y="14"  width="6" height="116" fill="url(#ll-navy)" transform="rotate(29 66 58)"/>
+    <rect x="49"  y="-30" width="6" height="188" fill="url(#ll-navy)" transform="rotate(27 66 58)"/>
+    <rect x="69"  y="8"   width="6" height="126" fill="url(#ll-gold)" transform="rotate(31 66 58)"/>
+    <rect x="88"  y="-30" width="6" height="192" fill="url(#ll-gold)" transform="rotate(28 66 58)"/>
+    <rect x="106" y="26"  width="6" height="92"  fill="url(#ll-gold)" transform="rotate(30 66 58)"/>
   </g>
 </svg>
