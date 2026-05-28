@@ -56,15 +56,15 @@ Use to show 'who owns what' across a process, codebook, or org chart. Two-column
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — rows are reference entries, not owners
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — each item needs two sentences of body text
-- [`principles`](../principles/principles.docs.md) — stating shared rules rather than per-actor responsibilities
-- [`glossary`](../glossary/glossary.docs.md) — the left column is a term, not an actor
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows are reference entries, not owners
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item needs two sentences of body text
+- [`principles`](../../inventory/principles/principles.docs.md) — stating shared rules rather than per-actor responsibilities
+- [`glossary`](../../inventory/glossary/glossary.docs.md) — the left column is a term, not an actor
 
 ## Demo deck
 
-See [actors.gallery.pdf](./actors.gallery.pdf) for rendered examples of every variant.
+See [actors.gallery.light.pdf](./actors.gallery.light.pdf) for rendered examples of every variant.

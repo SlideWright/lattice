@@ -63,15 +63,15 @@ Use for categorical 2×2 reasoning when the items are fixed and you control whic
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`quadrant`](../quadrant/quadrant.docs.md) — items have continuous x/y coordinates rather than discrete quadrant labels
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored across more than two dimensions
-- [`obligation-matrix`](../obligation-matrix/obligation-matrix.docs.md) — many rows × many columns of state-marker cells
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — the items don't divide along two axes
+- [`quadrant`](../../chart/quadrant/quadrant.docs.md) — items have continuous x/y coordinates rather than discrete quadrant labels
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored across more than two dimensions
+- [`obligation-matrix`](../../legal/obligation-matrix/obligation-matrix.docs.md) — many rows × many columns of state-marker cells
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — the items don't divide along two axes
 
 ## Demo deck
 
-See [matrix-2x2.gallery.pdf](./matrix-2x2.gallery.pdf) for rendered examples of every variant.
+See [matrix-2x2.gallery.light.pdf](./matrix-2x2.gallery.light.pdf) for rendered examples of every variant.

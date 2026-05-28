@@ -10,7 +10,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { splitSlides } = require('../../../lib/engine/split-slides');
+const { splitSlides } = require('../../../lib/core/split-slides');
 
 describe('splitter', () => {
   test('empty input → empty array', () => {

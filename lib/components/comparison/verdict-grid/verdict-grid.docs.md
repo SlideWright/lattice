@@ -66,16 +66,16 @@ Use to evaluate 2–4 options against the same set of criteria, with pass/partia
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — exactly two options with prose bodies
-- [`split-compare`](../split-compare/split-compare.docs.md) — two options with a bottom verdict bar
-- [`obligation-matrix`](../obligation-matrix/obligation-matrix.docs.md) — many regimes scored on shared obligations in a table
-- [`compare-table`](../compare-table/compare-table.docs.md) — cells are textual values, not state markers
-- [`checklist`](../checklist/checklist.docs.md) — one set of criteria, not many options against them
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — exactly two options with prose bodies
+- [`split-compare`](../../comparison/split-compare/split-compare.docs.md) — two options with a bottom verdict bar
+- [`obligation-matrix`](../../legal/obligation-matrix/obligation-matrix.docs.md) — many regimes scored on shared obligations in a table
+- [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — cells are textual values, not state markers
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — one set of criteria, not many options against them
 
 ## Demo deck
 
-See [verdict-grid.gallery.pdf](./verdict-grid.gallery.pdf) for rendered examples of every variant.
+See [verdict-grid.gallery.light.pdf](./verdict-grid.gallery.light.pdf) for rendered examples of every variant.

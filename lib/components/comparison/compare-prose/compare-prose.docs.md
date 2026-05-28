@@ -150,16 +150,16 @@ Strikes the second option's title and dims its card — the inverse of `chosen`.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`before-after`](../before-after/before-after.docs.md) — two states of one system, not two alternatives
-- [`compare-code`](../compare-code/compare-code.docs.md) — the columns are code, not prose
-- [`split-compare`](../split-compare/split-compare.docs.md) — the verdict needs a bottom recommendation bar
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria
-- [`decision`](../decision/decision.docs.md) — the verdict slide that lands after a comparison
+- [`before-after`](../../comparison/before-after/before-after.docs.md) — two states of one system, not two alternatives
+- [`compare-code`](../../code/compare-code/compare-code.docs.md) — the columns are code, not prose
+- [`split-compare`](../../comparison/split-compare/split-compare.docs.md) — the verdict needs a bottom recommendation bar
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria
+- [`decision`](../../comparison/decision/decision.docs.md) — the verdict slide that lands after a comparison
 
 ## Demo deck
 
-See [compare-prose.gallery.pdf](./compare-prose.gallery.pdf) for rendered examples of every variant.
+See [compare-prose.gallery.light.pdf](./compare-prose.gallery.light.pdf) for rendered examples of every variant.

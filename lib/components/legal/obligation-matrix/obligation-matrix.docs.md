@@ -103,15 +103,15 @@ Each row promotes to a card with body-level breathing room.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-table`](../compare-table/compare-table.docs.md) — cells are textual values, not state markers
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored against criteria with a per-card layout instead of a table
-- [`matrix-2x2`](../matrix-2x2/matrix-2x2.docs.md) — two axes, four cells, qualitative placement
-- [`checklist`](../checklist/checklist.docs.md) — one set of obligations against one regime, not many
+- [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — cells are textual values, not state markers
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against criteria with a per-card layout instead of a table
+- [`matrix-2x2`](../../comparison/matrix-2x2/matrix-2x2.docs.md) — two axes, four cells, qualitative placement
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — one set of obligations against one regime, not many
 
 ## Demo deck
 
-See [obligation-matrix.gallery.pdf](./obligation-matrix.gallery.pdf) for rendered examples of every variant.
+See [obligation-matrix.gallery.light.pdf](./obligation-matrix.gallery.light.pdf) for rendered examples of every variant.

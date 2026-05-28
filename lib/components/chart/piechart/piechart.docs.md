@@ -83,15 +83,15 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`progress`](../progress/progress.docs.md) — comparable parts but precise differences matter
-- [`stats`](../stats/stats.docs.md) — the values are independent metrics, not a partition
-- [`big-number`](../big-number/big-number.docs.md) — the headline is one slice, not the breakdown
-- [`kpi`](../kpi/kpi.docs.md) — the slices need status framing and targets
+- [`progress`](../../chart/progress/progress.docs.md) — comparable parts but precise differences matter
+- [`stats`](../../evidence/stats/stats.docs.md) — the values are independent metrics, not a partition
+- [`big-number`](../../statement/big-number/big-number.docs.md) — the headline is one slice, not the breakdown
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — the slices need status framing and targets
 
 ## Demo deck
 
-See [piechart.gallery.pdf](./piechart.gallery.pdf) for rendered examples of every variant.
+See [piechart.gallery.light.pdf](./piechart.gallery.light.pdf) for rendered examples of every variant.

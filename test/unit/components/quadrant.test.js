@@ -1,7 +1,7 @@
 /**
  * Unit: lib/quadrant.js — kernel for the `quadrant` chart-family member.
  *
- * Section dispatch + chart-frame wrapping live in lib/chart-family.js
+ * Section dispatch + chart-frame wrapping live in lib/components/chart/_chart-family/chart-family.js
  * (quadrant is one of CHART_LAYOUTS); this kernel just produces the
  * figure HTML. Tests here cover the layers chart-family delegates to:
  *
@@ -422,9 +422,9 @@ test('matchEyebrowText: pulls the first <p><code> text', () => {
   assert.equal(matchEyebrowText('<h2>X</h2><ul></ul>'), '');
 });
 
-// ── chart-family dispatch (integration with lib/chart-family.js) ───────
+// ── chart-family dispatch (integration with lib/components/chart/_chart-family/chart-family.js) ───────
 // Quadrant is a chart-family member; section dispatch + chart-frame
-// wrapping are owned by lib/chart-family.js. These pin the wiring.
+// wrapping are owned by lib/components/chart/_chart-family/chart-family.js. These pin the wiring.
 
 const { transformChartSection } = require('../../../lib/components/chart/_chart-family/chart-family');
 

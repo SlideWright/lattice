@@ -3,8 +3,8 @@
  * Renamed from base.decorations.css; the old bg-* class names are
  * replaced by tint-* (gradient washes) and mark-* (graphic accents),
  * with an at-* placement axis on tint-corner / tint-edge. See
- * reference/engineering/treatments.md for the catalogue + composition rules
- * and reference/notes/2026-05-17-treatments-rename.md for the rationale.
+ * engineering/treatments.md for the catalogue + composition rules
+ * and engineering/decisions/2026-05-17-treatments-rename.md for the rationale.
  *
  * Bundle position: AFTER lib/_legacy.css, BEFORE the universal /
  * semi-universal / diagram-overrides tail. Preserves the cascade
@@ -51,7 +51,7 @@
  * tint-edge; marks render at their per-treatment default home (the
  * old bg-name's suffix). Adding placement to marks is a v2 feature.
  *
- * See reference/engineering/treatments.md for the full catalogue, the
+ * See engineering/treatments.md for the full catalogue, the
  * placement vocabulary, and the design constraints.
  * ════════════════════════════════════════════════════════════════════════════ */
 
@@ -328,7 +328,7 @@ section.tint-ambient {
  * corner geometry has no small bbox, so it renders as stacked radial
  * gradients in --_bg-radial (gradients have no mask to drop).
  *
- * See reference/engineering/gotchas.md → "Chromium PDF output of CSS
+ * See engineering/gotchas.md → "Chromium PDF output of CSS
  * mask-image renders inconsistently across viewers".
  *
  * Marks (other than mark-seeds) carry no --_bg-radial or --_bg-linear

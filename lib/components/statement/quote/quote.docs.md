@@ -52,14 +52,14 @@ Attribution — Person, Role
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`split-statement`](../split-statement/split-statement.docs.md) — the quote needs implications spelled out alongside it
-- [`content`](../content/content.docs.md) — the language is paraphrasable — let prose carry it
-- [`big-number`](../big-number/big-number.docs.md) — the most memorable thing is a metric, not a phrase
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the quote needs implications spelled out alongside it
+- [`content`](../../statement/content/content.docs.md) — the language is paraphrasable — let prose carry it
+- [`big-number`](../../statement/big-number/big-number.docs.md) — the most memorable thing is a metric, not a phrase
 
 ## Demo deck
 
-See [quote.gallery.pdf](./quote.gallery.pdf) for rendered examples of every variant.
+See [quote.gallery.light.pdf](./quote.gallery.light.pdf) for rendered examples of every variant.

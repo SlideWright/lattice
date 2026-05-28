@@ -228,7 +228,7 @@ section .cluster.section-11 text, section .cluster.section-11 tspan, section .cl
  * This is the ONLY diagram type where the rule applies cleanly.
  * Timeline and journey were investigated as candidates but their inner
  * cards stack on the slide canvas, not on a band — see
- * reference/notes/2026-05-12-diagram-elevation.md for the audit. They keep
+ * engineering/decisions/2026-05-12-diagram-elevation.md for the audit. They keep
  * their band-N fills from the .section-N rule above.
  */
 section .cluster .items .node rect.basic.label-container,

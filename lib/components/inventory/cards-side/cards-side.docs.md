@@ -71,15 +71,15 @@ Authored as `ol` (`1.` source). Each card gets a flush top-left accent corner ta
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — three or four parallel items, not two
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — two items that read top-to-bottom, not left-right
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — the comparison has a winner you want to declare
-- [`split-list`](../split-list/split-list.docs.md) — one side is framing, the other is supporting evidence
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items, not two
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — two items that read top-to-bottom, not left-right
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison has a winner you want to declare
+- [`split-list`](../../statement/split-list/split-list.docs.md) — one side is framing, the other is supporting evidence
 
 ## Demo deck
 
-See [cards-side.gallery.pdf](./cards-side.gallery.pdf) for rendered examples of every variant.
+See [cards-side.gallery.light.pdf](./cards-side.gallery.light.pdf) for rendered examples of every variant.

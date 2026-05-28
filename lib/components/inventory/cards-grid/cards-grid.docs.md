@@ -137,16 +137,16 @@ The universal `mirror` modifier is declared for completeness but has no visible 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list-steps`](../list-steps/list-steps.docs.md) — items carry an explicit sequence
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — items stack vertically as full-width rows
-- [`cards-side`](../cards-side/cards-side.docs.md) — two-card horizontal comparison
-- [`cards-wide`](../cards-wide/cards-wide.docs.md) — three full-width rows for longer prose per item
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — comparing options against shared criteria
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit sequence
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — items stack vertically as full-width rows
+- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — two-card horizontal comparison
+- [`cards-wide`](../../inventory/cards-wide/cards-wide.docs.md) — three full-width rows for longer prose per item
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — comparing options against shared criteria
 
 ## Demo deck
 
-See [cards-grid.gallery.pdf](./cards-grid.gallery.pdf) for rendered examples of every variant.
+See [cards-grid.gallery.light.pdf](./cards-grid.gallery.light.pdf) for rendered examples of every variant.

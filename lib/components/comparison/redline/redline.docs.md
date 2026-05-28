@@ -135,15 +135,15 @@ Stacks the prior text (struck, labelled OLD — prior text) above the current te
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-code`](../compare-code/compare-code.docs.md) — the diff is source code, not natural language
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — two narrative alternatives, not verbatim amendments
-- [`before-after`](../before-after/before-after.docs.md) — the change is structural state, not text
-- [`obligation-matrix`](../obligation-matrix/obligation-matrix.docs.md) — comparing many regimes against shared obligations
+- [`compare-code`](../../code/compare-code/compare-code.docs.md) — the diff is source code, not natural language
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — two narrative alternatives, not verbatim amendments
+- [`before-after`](../../comparison/before-after/before-after.docs.md) — the change is structural state, not text
+- [`obligation-matrix`](../../legal/obligation-matrix/obligation-matrix.docs.md) — comparing many regimes against shared obligations
 
 ## Demo deck
 
-See [redline.gallery.pdf](./redline.gallery.pdf) for rendered examples of every variant.
+See [redline.gallery.light.pdf](./redline.gallery.light.pdf) for rendered examples of every variant.

@@ -60,16 +60,16 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`big-number`](../big-number/big-number.docs.md) — one number is enough to carry the slide
-- [`kpi`](../kpi/kpi.docs.md) — metrics need targets, trends, and status pills
-- [`split-metric`](../split-metric/split-metric.docs.md) — one focal KPI with a paragraph of supporting prose
-- [`piechart`](../piechart/piechart.docs.md) — the numbers are parts of a whole, not independent
-- [`progress`](../progress/progress.docs.md) — the metrics are completion percentages across workstreams
+- [`big-number`](../../statement/big-number/big-number.docs.md) — one number is enough to carry the slide
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — metrics need targets, trends, and status pills
+- [`split-metric`](../../evidence/split-metric/split-metric.docs.md) — one focal KPI with a paragraph of supporting prose
+- [`piechart`](../../chart/piechart/piechart.docs.md) — the numbers are parts of a whole, not independent
+- [`progress`](../../chart/progress/progress.docs.md) — the metrics are completion percentages across workstreams
 
 ## Demo deck
 
-See [stats.gallery.pdf](./stats.gallery.pdf) for rendered examples of every variant.
+See [stats.gallery.light.pdf](./stats.gallery.light.pdf) for rendered examples of every variant.

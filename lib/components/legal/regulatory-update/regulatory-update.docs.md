@@ -185,15 +185,15 @@ Groups items under colour-coded h3 bands by the kind of change — Added, Amende
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`authority-chain`](../authority-chain/authority-chain.docs.md) — single rule walked statute → regulation → guidance → case
-- [`list-criteria`](../list-criteria/list-criteria.docs.md) — flat enumeration of requirements without dates or citations
-- [`timeline`](../timeline/timeline.docs.md) — chronological sequence of events on a single axis
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — structured metadata per row but no regulatory framing
+- [`authority-chain`](../../legal/authority-chain/authority-chain.docs.md) — single rule walked statute → regulation → guidance → case
+- [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — flat enumeration of requirements without dates or citations
+- [`timeline`](../../progression/timeline/timeline.docs.md) — chronological sequence of events on a single axis
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — structured metadata per row but no regulatory framing
 
 ## Demo deck
 
-See [regulatory-update.gallery.pdf](./regulatory-update.gallery.pdf) for rendered examples of every variant.
+See [regulatory-update.gallery.light.pdf](./regulatory-update.gallery.light.pdf) for rendered examples of every variant.

@@ -135,16 +135,16 @@ The widest size spread and steepest curve make the top term tower over the rest.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`progress`](../progress/progress.docs.md) — the weights need precise visual comparison
-- [`stats`](../stats/stats.docs.md) — the headline metrics are independent numbers, not a corpus
-- [`piechart`](../piechart/piechart.docs.md) — the items are parts of a whole, not free-form themes
-- [`quote`](../quote/quote.docs.md) — the verbatim language matters more than the frequency
-- [`tldr`](../tldr/tldr.docs.md) — the qualitative summary is prose, not a packed cloud
+- [`progress`](../../chart/progress/progress.docs.md) — the weights need precise visual comparison
+- [`stats`](../../evidence/stats/stats.docs.md) — the headline metrics are independent numbers, not a corpus
+- [`piechart`](../../chart/piechart/piechart.docs.md) — the items are parts of a whole, not free-form themes
+- [`quote`](../../statement/quote/quote.docs.md) — the verbatim language matters more than the frequency
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — the qualitative summary is prose, not a packed cloud
 
 ## Demo deck
 
-See [word-cloud.gallery.pdf](./word-cloud.gallery.pdf) for rendered examples of every variant.
+See [word-cloud.gallery.light.pdf](./word-cloud.gallery.light.pdf) for rendered examples of every variant.

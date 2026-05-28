@@ -455,7 +455,7 @@ ${nav.join('\n')}
     </header>
 ${sections.join('\n')}
     <footer class="content-foot">
-      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>reference/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>dist/docs/components.md</code> for the plain-Markdown edition of this reference.</p>
+      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>design/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>dist/docs/components.md</code> for the plain-Markdown edition of this reference.</p>
     </footer>
   </main>
 </div>
@@ -998,12 +998,19 @@ function demoteHeadings(md, by) {
 
 /** Rewrite the cross-file links in a generated docs.md body so they resolve
  *  from dist/docs/components.md: related → in-page anchors, design-system →
- *  sibling reference/, gallery → the rendered light PDF. */
+ *  sibling design/, gallery → the rendered light PDF. */
 function rewriteLinks(md, m) {
-  let out = md.replace(/\]\(\.\.\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
+  // Related-component links are emitted in-place-correct as cross-bucket
+  // paths (../../<bucket>/<name>/<name>.docs.md); collapse to in-page anchors
+  // for the single-file portal.
+  let out = md.replace(/\]\(\.\.\/\.\.\/[a-z0-9-]+\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
+  // The design-system pointer is emitted four levels up (in-place-correct for
+  // lib/components/<bucket>/<name>/); the portal sits at dist/docs/, so root
+  // is two levels up.
+  out = out.replace(/\]\(\.\.\/\.\.\/\.\.\/\.\.\/design\//g, '](../../design/');
   out = out.replace(/\]\(\.\.\/\.\.\/docs\/([^)]+)\)/g, '](./$1)');
   const gh = galleryHref(m);
-  if (gh) out = out.replace(/\]\(\.\/[a-z0-9-]+\.gallery\.pdf\)/g, `](${gh})`);
+  if (gh) out = out.replace(/\]\(\.\/[a-z0-9-]+\.gallery\.light\.pdf\)/g, `](${gh})`);
   return out;
 }
 

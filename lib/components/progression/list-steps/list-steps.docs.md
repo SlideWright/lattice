@@ -196,16 +196,16 @@ Counter format becomes `I`, `II`, `III` (composes with any prefix).
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`timeline`](../timeline/timeline.docs.md) — shorter labels per step, horizontal axis instead of vertical cards
-- [`list-criteria`](../list-criteria/list-criteria.docs.md) — gating requirements rather than a sequence of actions
-- [`split-steps`](../split-steps/split-steps.docs.md) — phase label + heading on the left, steps on the right
-- [`roadmap`](../roadmap/roadmap.docs.md) — phased grid across multiple workstreams
-- [`principles`](../principles/principles.docs.md) — tenets or values rather than a procedural sequence
+- [`timeline`](../../progression/timeline/timeline.docs.md) — shorter labels per step, horizontal axis instead of vertical cards
+- [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — gating requirements rather than a sequence of actions
+- [`split-steps`](../../progression/split-steps/split-steps.docs.md) — phase label + heading on the left, steps on the right
+- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid across multiple workstreams
+- [`principles`](../../inventory/principles/principles.docs.md) — tenets or values rather than a procedural sequence
 
 ## Demo deck
 
-See [list-steps.gallery.pdf](./list-steps.gallery.pdf) for rendered examples of every variant.
+See [list-steps.gallery.light.pdf](./list-steps.gallery.light.pdf) for rendered examples of every variant.

@@ -2,7 +2,7 @@
  * Unit tests for the roadmap transformer's applyToDom (DOM-walk path).
  *
  * applyToDom runs in the browser (lattice-runtime.js bundle), invoked
- * from src/runtime/index.js's content-transform loop via
+ * from lib/runtime/index.js's content-transform loop via
  * registry.applyAllToDom(document). These tests use jsdom to exercise
  * the same code path without a real browser. The HTML-string kernel is
  * covered separately in registry.test.js.

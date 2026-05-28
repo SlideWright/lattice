@@ -60,16 +60,16 @@ Measurement window and qualifying detail in one short sentence.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`big-number`](../big-number/big-number.docs.md) — the number is the whole slide — no supporting findings needed
-- [`stats`](../stats/stats.docs.md) — a row of comparable headline metrics instead of one focal KPI
-- [`kpi`](../kpi/kpi.docs.md) — the metric needs targets, status pills, and a dashboard frame
-- [`split-statement`](../split-statement/split-statement.docs.md) — the left is a quote, not a metric
-- [`split-brief`](../split-brief/split-brief.docs.md) — the left is a thesis statement, not a number
+- [`big-number`](../../statement/big-number/big-number.docs.md) — the number is the whole slide — no supporting findings needed
+- [`stats`](../../evidence/stats/stats.docs.md) — a row of comparable headline metrics instead of one focal KPI
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — the metric needs targets, status pills, and a dashboard frame
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the left is a quote, not a metric
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the left is a thesis statement, not a number
 
 ## Demo deck
 
-See [split-metric.gallery.pdf](./split-metric.gallery.pdf) for rendered examples of every variant.
+See [split-metric.gallery.light.pdf](./split-metric.gallery.light.pdf) for rendered examples of every variant.

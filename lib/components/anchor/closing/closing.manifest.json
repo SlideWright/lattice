@@ -28,7 +28,7 @@
   },
   "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
   "anatomyBlock": "closing-bookend",
-  "sample": "<!-- _class: closing silent -->\n\n# Function · Form · Substance · Finish.\n\n`reference/design-system.md`\n",
+  "sample": "<!-- _class: closing silent -->\n\n# Function · Form · Substance · Finish.\n\n`design/design-system.md`\n",
   "whenToUse": [
     {
       "title": "Last slide of every deck",

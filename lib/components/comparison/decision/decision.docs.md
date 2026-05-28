@@ -74,15 +74,15 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — the comparison slide that should precede decision
-- [`split-compare`](../split-compare/split-compare.docs.md) — comparison and verdict on one slide instead of two
-- [`closing`](../closing/closing.docs.md) — the deck ends without a single-call verdict
-- [`big-number`](../big-number/big-number.docs.md) — the decision is a quantitative commitment
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison slide that should precede decision
+- [`split-compare`](../../comparison/split-compare/split-compare.docs.md) — comparison and verdict on one slide instead of two
+- [`closing`](../../anchor/closing/closing.docs.md) — the deck ends without a single-call verdict
+- [`big-number`](../../statement/big-number/big-number.docs.md) — the decision is a quantitative commitment
 
 ## Demo deck
 
-See [decision.gallery.pdf](./decision.gallery.pdf) for rendered examples of every variant.
+See [decision.gallery.light.pdf](./decision.gallery.light.pdf) for rendered examples of every variant.

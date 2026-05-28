@@ -128,7 +128,7 @@ transforms were a pattern.
 
 A planned cleanup distributes all kernels to their components, leaving
 `chart-family.js` as pure dispatch + shared helpers. See
-`reference/notes/2026-05-17-chart-family-refactor.md` for the design.
+`engineering/decisions/2026-05-17-chart-family-refactor.md` for the design.
 
 ---
 

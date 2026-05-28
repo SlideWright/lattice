@@ -151,15 +151,15 @@ Pivots to a markdown table — columns for jurisdiction, citation, obligation, s
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — the rows are citation-only references, no obligation prose
-- [`obligation-matrix`](../obligation-matrix/obligation-matrix.docs.md) — obligations cross-tab against actors or controls
-- [`authority-chain`](../authority-chain/authority-chain.docs.md) — the rows are a delegation lineage, not parallel jurisdictions
-- [`compare-table`](../compare-table/compare-table.docs.md) — the comparison is across criteria, not jurisdictions
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — the rows are citation-only references, no obligation prose
+- [`obligation-matrix`](../../legal/obligation-matrix/obligation-matrix.docs.md) — obligations cross-tab against actors or controls
+- [`authority-chain`](../../legal/authority-chain/authority-chain.docs.md) — the rows are a delegation lineage, not parallel jurisdictions
+- [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — the comparison is across criteria, not jurisdictions
 
 ## Demo deck
 
-See [statute-stack.gallery.pdf](./statute-stack.gallery.pdf) for rendered examples of every variant.
+See [statute-stack.gallery.light.pdf](./statute-stack.gallery.light.pdf) for rendered examples of every variant.

@@ -258,16 +258,16 @@ Composable modifier: drops the polygon fills for a stroke-only read on a faint g
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`quadrant`](../quadrant/quadrant.docs.md) — two axes are enough — the other six dimensions drop out
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — the criteria are categorical (pass/fail), not graded
-- [`kpi`](../kpi/kpi.docs.md) — the comparison is one option's metrics, not multi-option
-- [`compare-table`](../compare-table/compare-table.docs.md) — a precise tabular comparison reads better than a shape
-- [`piechart`](../piechart/piechart.docs.md) — the question is part-to-whole, not multi-criterion
+- [`quadrant`](../../chart/quadrant/quadrant.docs.md) — two axes are enough — the other six dimensions drop out
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — the criteria are categorical (pass/fail), not graded
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — the comparison is one option's metrics, not multi-option
+- [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — a precise tabular comparison reads better than a shape
+- [`piechart`](../../chart/piechart/piechart.docs.md) — the question is part-to-whole, not multi-criterion
 
 ## Demo deck
 
-See [radar.gallery.pdf](./radar.gallery.pdf) for rendered examples of every variant.
+See [radar.gallery.light.pdf](./radar.gallery.light.pdf) for rendered examples of every variant.

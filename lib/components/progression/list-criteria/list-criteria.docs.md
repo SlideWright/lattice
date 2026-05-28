@@ -60,16 +60,16 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list-steps`](../list-steps/list-steps.docs.md) — rows are procedural steps with longer body, not gating criteria
-- [`checklist`](../checklist/checklist.docs.md) — rows carry done/in-flight/planned state markers
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored against shared criteria
-- [`principles`](../principles/principles.docs.md) — tenets or values rather than gates a decision must clear
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — rows carry structured metadata alongside the name and description
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — rows are procedural steps with longer body, not gating criteria
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — rows carry done/in-flight/planned state markers
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria
+- [`principles`](../../inventory/principles/principles.docs.md) — tenets or values rather than gates a decision must clear
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows carry structured metadata alongside the name and description
 
 ## Demo deck
 
-See [list-criteria.gallery.pdf](./list-criteria.gallery.pdf) for rendered examples of every variant.
+See [list-criteria.gallery.light.pdf](./list-criteria.gallery.light.pdf) for rendered examples of every variant.

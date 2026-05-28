@@ -130,15 +130,15 @@ Frames the citation, the verbatim text, and the gloss as three panels for a form
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`statute-stack`](../statute-stack/statute-stack.docs.md) — two or three citations need to land on one slide
-- [`quote`](../quote/quote.docs.md) — the source is a person, not a document
-- [`split-statement`](../split-statement/split-statement.docs.md) — a quote with three or four implications
-- [`content`](../content/content.docs.md) — the citation is one input among several in a prose argument
+- [`statute-stack`](../../legal/statute-stack/statute-stack.docs.md) — two or three citations need to land on one slide
+- [`quote`](../../statement/quote/quote.docs.md) — the source is a person, not a document
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — a quote with three or four implications
+- [`content`](../../statement/content/content.docs.md) — the citation is one input among several in a prose argument
 
 ## Demo deck
 
-See [citation-card.gallery.pdf](./citation-card.gallery.pdf) for rendered examples of every variant.
+See [citation-card.gallery.light.pdf](./citation-card.gallery.light.pdf) for rendered examples of every variant.

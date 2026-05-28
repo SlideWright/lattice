@@ -69,7 +69,6 @@ const KNOWN_UNRESOLVED_BASELINE = new Set([
 // excluded — it's a build artifact; we want to catch issues at the source.
 const SOURCE_DIRS = [
   path.join(ROOT, 'lib'),
-  path.join(ROOT, 'src'),
   path.join(ROOT, 'themes'),
 ];
 

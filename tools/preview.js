@@ -38,7 +38,7 @@
  * Designed so that an agent (or a Bash caller) can read `send` and
  * stream each file. Human callers see `summary` + interactive prompts.
  *
- * See reference/engineering/workflow.md for the share-the-PDF rule.
+ * See engineering/workflow.md for the share-the-PDF rule.
  */
 
 
@@ -57,7 +57,7 @@ const EMULATOR = path.join(ROOT, 'lattice-emulator.js');
 // CI baseline deck (gallery.md → test/integration/baseline-decks/),
 // the mermaid integration showcase (mermaid.gallery.md →
 // lib/integrations/mermaid/), the design-system slide demo
-// (design-system.gallery.md → reference/), and the palette-audit theme-
+// (design-system.gallery.md → design/), and the palette-audit theme-
 // designer's deck (palette-audit.md → themes/) are intentionally
 // NOT here — each lives with its owner, and its integration test
 // or documentation reference picks it up directly.
@@ -76,7 +76,8 @@ const PATTERNS = Object.freeze({
   noVisualImpact: [
     /^test\//,
     /^docs\//,
-    /^reference\//,
+    /^engineering\//,
+    /^design\//,
     /^package(-lock)?\.json$/,
     /^biome\.json$/,
     /^lefthook\.yml$/,

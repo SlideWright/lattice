@@ -227,15 +227,15 @@ $$
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`code`](../code/code.docs.md) — the implementation, not the equation, is the argument
-- [`diagram`](../diagram/diagram.docs.md) — the structure of the model, not its closed form
-- [`stats`](../stats/stats.docs.md) — a row of statistical results without a single equation focus
-- [`content`](../content/content.docs.md) — one inline equation inside a paragraph of prose
+- [`code`](../../code/code/code.docs.md) — the implementation, not the equation, is the argument
+- [`diagram`](../../diagram/diagram/diagram.docs.md) — the structure of the model, not its closed form
+- [`stats`](../../evidence/stats/stats.docs.md) — a row of statistical results without a single equation focus
+- [`content`](../../statement/content/content.docs.md) — one inline equation inside a paragraph of prose
 
 ## Demo deck
 
-See [math.gallery.pdf](./math.gallery.pdf) for rendered examples of every variant.
+See [math.gallery.light.pdf](./math.gallery.light.pdf) for rendered examples of every variant.

@@ -23,7 +23,7 @@ describe('preview scope detector', () => {
 
   test('test or docs change only → L0', () => {
     assert.equal(detectScope(['test/unit/something.test.js']).level, 'L0');
-    assert.equal(detectScope(['reference/design-system.md']).level, 'L0');
+    assert.equal(detectScope(['design/design-system.md']).level, 'L0');
     assert.equal(detectScope(['package.json']).level, 'L0');
   });
 

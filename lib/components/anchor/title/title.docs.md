@@ -58,14 +58,14 @@ One-line subtitle that frames the deck.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`divider`](../divider/divider.docs.md) — mid-deck section breaks — same dark-bookend chrome
-- [`closing`](../closing/closing.docs.md) — the final slide — closes the bookend pair
-- [`subtopic`](../subtopic/subtopic.docs.md) — lighter mid-deck orientation slide on the bright canvas
+- [`divider`](../../anchor/divider/divider.docs.md) — mid-deck section breaks — same dark-bookend chrome
+- [`closing`](../../anchor/closing/closing.docs.md) — the final slide — closes the bookend pair
+- [`subtopic`](../../anchor/subtopic/subtopic.docs.md) — lighter mid-deck orientation slide on the bright canvas
 
 ## Demo deck
 
-See [title.gallery.pdf](./title.gallery.pdf) for rendered examples of every variant.
+See [title.gallery.light.pdf](./title.gallery.light.pdf) for rendered examples of every variant.

@@ -10,7 +10,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { liftSlotLabel } = require('../../../lib/engine/slot-label-lift');
+const { liftSlotLabel } = require('../../../lib/core/slot-label-lift');
 
 describe('slot-label-lift', () => {
   // ── happy path ──────────────────────────────────────────────────────────

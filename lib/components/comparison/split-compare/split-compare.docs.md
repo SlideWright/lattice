@@ -66,15 +66,15 @@ One-sentence context paragraph explaining the stakes.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — the comparison is undecided — no verdict bar yet
-- [`decision`](../decision/decision.docs.md) — the verdict slide that follows a separate comparison
-- [`split-brief`](../split-brief/split-brief.docs.md) — the right side is findings, not paired options
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison is undecided — no verdict bar yet
+- [`decision`](../../comparison/decision/decision.docs.md) — the verdict slide that follows a separate comparison
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the right side is findings, not paired options
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria
 
 ## Demo deck
 
-See [split-compare.gallery.pdf](./split-compare.gallery.pdf) for rendered examples of every variant.
+See [split-compare.gallery.light.pdf](./split-compare.gallery.light.pdf) for rendered examples of every variant.

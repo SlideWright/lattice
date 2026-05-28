@@ -93,15 +93,15 @@ Authored as `ol` (`1.` source). Each row carries a flush corner number — use w
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
-- [`cards-wide`](../cards-wide/cards-wide.docs.md) — three or four rows with more substantial per-card body
-- [`cards-side`](../cards-side/cards-side.docs.md) — exactly two items in left-right balance
-- [`list-steps`](../list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
+- [`cards-wide`](../../inventory/cards-wide/cards-wide.docs.md) — three or four rows with more substantial per-card body
+- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — exactly two items in left-right balance
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
 
 ## Demo deck
 
-See [cards-stack.gallery.pdf](./cards-stack.gallery.pdf) for rendered examples of every variant.
+See [cards-stack.gallery.light.pdf](./cards-stack.gallery.light.pdf) for rendered examples of every variant.

@@ -58,15 +58,15 @@ Use when each item has enough body text to want its own row but the slide should
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — two or three rows with shorter body per card
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — four or fewer parallel items in a scannable grid
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — five or more reference-style rows
-- [`list-steps`](../list-steps/list-steps.docs.md) — rows carry an explicit, ordered sequence
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — two or three rows with shorter body per card
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — four or fewer parallel items in a scannable grid
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — five or more reference-style rows
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — rows carry an explicit, ordered sequence
 
 ## Demo deck
 
-See [cards-wide.gallery.pdf](./cards-wide.gallery.pdf) for rendered examples of every variant.
+See [cards-wide.gallery.light.pdf](./cards-wide.gallery.light.pdf) for rendered examples of every variant.

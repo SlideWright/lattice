@@ -55,15 +55,15 @@ Use to make one metric land. The number should be the headline — supporting te
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`stats`](../stats/stats.docs.md) — row of 2-3 metrics, comparable visual weight
-- [`kpi`](../kpi/kpi.docs.md) — grid of 4-6 metrics with status indicators
-- [`split-metric`](../split-metric/split-metric.docs.md) — the metric needs a paragraph of context alongside it
-- [`content`](../content/content.docs.md) — the argument is mostly prose with a number embedded
+- [`stats`](../../evidence/stats/stats.docs.md) — row of 2-3 metrics, comparable visual weight
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — grid of 4-6 metrics with status indicators
+- [`split-metric`](../../evidence/split-metric/split-metric.docs.md) — the metric needs a paragraph of context alongside it
+- [`content`](../../statement/content/content.docs.md) — the argument is mostly prose with a number embedded
 
 ## Demo deck
 
-See [big-number.gallery.pdf](./big-number.gallery.pdf) for rendered examples of every variant.
+See [big-number.gallery.light.pdf](./big-number.gallery.light.pdf) for rendered examples of every variant.

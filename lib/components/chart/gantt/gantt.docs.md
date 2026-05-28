@@ -68,15 +68,15 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`roadmap`](../roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams without continuous spans
-- [`timeline`](../timeline/timeline.docs.md) — single-lane sequence of milestones
-- [`kanban`](../kanban/kanban.docs.md) — current state by stage rather than schedule by lane
-- [`list-steps`](../list-steps/list-steps.docs.md) — sequential process with descriptive steps, no parallel lanes
+- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid of deliverables across workstreams without continuous spans
+- [`timeline`](../../progression/timeline/timeline.docs.md) — single-lane sequence of milestones
+- [`kanban`](../../chart/kanban/kanban.docs.md) — current state by stage rather than schedule by lane
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — sequential process with descriptive steps, no parallel lanes
 
 ## Demo deck
 
-See [gantt.gallery.pdf](./gantt.gallery.pdf) for rendered examples of every variant.
+See [gantt.gallery.light.pdf](./gantt.gallery.light.pdf) for rendered examples of every variant.

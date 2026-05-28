@@ -308,7 +308,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // Resolve palette name from the precedence chain (CLI > env > front
 // matter > default). Logic lives in lib/resolve-palette.js so it can
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
-const { resolvePalette } = require('./lib/engine/resolve-palette');
+const { resolvePalette } = require('./lib/core/resolve-palette');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
 const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
@@ -365,7 +365,7 @@ const css = paletteCSS + '\n' + layoutCSS;
 //      onto it at PDF-rasterize time — same mechanism the runtime preview
 //      already uses. No Mermaid `themeCSS` init parameter is used.
 //
-// See reference/notes/2026-05-12-diagram-tokens.md for the architecture.
+// See engineering/decisions/2026-05-12-diagram-tokens.md for the architecture.
 
 // ── Mermaid theme variables — structural map only ───────────────────────
 // The mapping below names which Mermaid theme variable corresponds to which
@@ -934,9 +934,9 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 
 // Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
 // directly. See that file for the fence-and-headingDivider rationale.
-const { splitSlides }    = require('./lib/engine/split-slides');
+const { splitSlides }    = require('./lib/core/split-slides');
 // Named-slot lift helper used by decision / before-after / compare-prose.
-const { liftSlotLabel }  = require('./lib/engine/slot-label-lift');
+const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
 // See lib/transformers/registry.js for the contract and order rationale.
@@ -944,7 +944,7 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // Radar chart kernel — parsing + SVG-geometry engine for the `radar`
 // chart-family member (one default + five modifier variants). Section
 // dispatch lives in the inline chart-family block below; this kernel is
-// shared with lib/chart-family.js (marp.config.js path) and mirrored in
+// shared with lib/components/chart/_chart-family/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
 const radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
@@ -1830,7 +1830,7 @@ const highlightedSlides = slides.map(s => applyHighlighting(s));
 //
 // NOTE: this directive is a build-time convenience only. It does NOT
 // render in the marp-vscode preview because the extension doesn't load
-// workspace marp.config.js plugins. See reference/engineering/gotchas.md.
+// workspace marp.config.js plugins. See engineering/gotchas.md.
 //
 // Called on the joined HTML rather than slide-by-slide so the
 // "first slide" check in the rewriter (used by `logo-on: title`)

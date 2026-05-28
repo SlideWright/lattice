@@ -70,14 +70,14 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`title`](../title/title.docs.md) — opens the deck — same dark-bookend chrome
-- [`divider`](../divider/divider.docs.md) — mid-deck section breaks — same dark canvas
-- [`big-number`](../big-number/big-number.docs.md) — single emphatic statement mid-deck without the bookend signal
+- [`title`](../../anchor/title/title.docs.md) — opens the deck — same dark-bookend chrome
+- [`divider`](../../anchor/divider/divider.docs.md) — mid-deck section breaks — same dark canvas
+- [`big-number`](../../statement/big-number/big-number.docs.md) — single emphatic statement mid-deck without the bookend signal
 
 ## Demo deck
 
-See [closing.gallery.pdf](./closing.gallery.pdf) for rendered examples of every variant.
+See [closing.gallery.light.pdf](./closing.gallery.light.pdf) for rendered examples of every variant.

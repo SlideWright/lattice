@@ -152,15 +152,15 @@ Lays the tiers out as bracketed cards joined by strong connectors, emphasising t
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`regulatory-update`](../regulatory-update/regulatory-update.docs.md) — period-bounded changelog rather than a single rule's lineage
-- [`list-criteria`](../list-criteria/list-criteria.docs.md) — flat enumeration of requirements without tier hierarchy
-- [`timeline`](../timeline/timeline.docs.md) — the sequence is chronological events, not legal tiers
-- [`list-steps`](../list-steps/list-steps.docs.md) — the rows are procedural steps rather than authority tiers
+- [`regulatory-update`](../../legal/regulatory-update/regulatory-update.docs.md) — period-bounded changelog rather than a single rule's lineage
+- [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — flat enumeration of requirements without tier hierarchy
+- [`timeline`](../../progression/timeline/timeline.docs.md) — the sequence is chronological events, not legal tiers
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the rows are procedural steps rather than authority tiers
 
 ## Demo deck
 
-See [authority-chain.gallery.pdf](./authority-chain.gallery.pdf) for rendered examples of every variant.
+See [authority-chain.gallery.light.pdf](./authority-chain.gallery.light.pdf) for rendered examples of every variant.

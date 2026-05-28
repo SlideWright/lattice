@@ -56,16 +56,16 @@ The explanatory paragraph that develops the heading goes here. Keep the slide un
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`quote`](../quote/quote.docs.md) — the prose IS a quote — let the quotation chrome carry it
-- [`big-number`](../big-number/big-number.docs.md) — the prose IS a metric — let the number carry it
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — the prose IS a parallel list of items
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — the prose IS a two-way comparison
-- [`list-steps`](../list-steps/list-steps.docs.md) — the prose IS an ordered sequence
+- [`quote`](../../statement/quote/quote.docs.md) — the prose IS a quote — let the quotation chrome carry it
+- [`big-number`](../../statement/big-number/big-number.docs.md) — the prose IS a metric — let the number carry it
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — the prose IS a parallel list of items
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the prose IS a two-way comparison
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the prose IS an ordered sequence
 
 ## Demo deck
 
-See [content.gallery.pdf](./content.gallery.pdf) for rendered examples of every variant.
+See [content.gallery.light.pdf](./content.gallery.light.pdf) for rendered examples of every variant.

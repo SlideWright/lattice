@@ -8,7 +8,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { parseSelector, matchSection, resolveSelector } = require('../../../lib/engine/match-section');
+const { parseSelector, matchSection, resolveSelector } = require('../../../lib/core/match-section');
 
 describe('match-section', () => {
   const SECTIONS = [

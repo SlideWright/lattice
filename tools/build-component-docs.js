@@ -43,6 +43,19 @@ const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
 const ASCII_TOOL = path.join(ROOT, 'tools', 'ascii-preview.py');
 
+// component name → bucket, for resolving cross-bucket related-component
+// links. Components are bucket-nested (lib/components/<bucket>/<name>/), so a
+// related link from one component to another in a different bucket must route
+// up to lib/components/ and back down. Memoized; the portal's rewriteLinks
+// collapses these back to in-page anchors.
+let _nameToBucket = null;
+function bucketOf(name) {
+  if (!_nameToBucket) {
+    _nameToBucket = new Map(loadAll().map((m) => [m.name, manifestBucket(m)]));
+  }
+  return _nameToBucket.get(name);
+}
+
 /**
  * Cache of the canonical ASCII catalog. Lazily populated by
  * loadAnatomyCatalog() so the python subprocess runs at most once per
@@ -207,21 +220,23 @@ function renderDocs(m) {
 
   lines.push('## Universal modifiers');
   lines.push('');
-  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.');
+  lines.push('This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.');
   lines.push('');
 
   if (Array.isArray(m.related) && m.related.length) {
     lines.push('## Related components');
     lines.push('');
     for (const r of m.related) {
-      lines.push(`- [\`${r.name}\`](../${r.name}/${r.name}.docs.md) — ${r.when}`);
+      const b = bucketOf(r.name);
+      const href = b ? `../../${b}/${r.name}/${r.name}.docs.md` : `../${r.name}/${r.name}.docs.md`;
+      lines.push(`- [\`${r.name}\`](${href}) — ${r.when}`);
     }
     lines.push('');
   }
 
   lines.push('## Demo deck');
   lines.push('');
-  lines.push(`See [${m.name}.gallery.pdf](./${m.name}.gallery.pdf) for rendered examples of every variant.`);
+  lines.push(`See [${m.name}.gallery.light.pdf](./${m.name}.gallery.light.pdf) for rendered examples of every variant.`);
   lines.push('');
 
   return lines.join('\n');

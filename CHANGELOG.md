@@ -103,7 +103,7 @@ in patch versions.
 
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
-  former `docs/references/` becoming `reference/engineering/`), freeing
+  former `docs/references/` becoming `engineering/`), freeing
   `docs/` for the new public documentation site. All cross-references —
   CLAUDE.md, generators, the npm `files` list, tooling, and links — were
   updated accordingly.

@@ -119,15 +119,15 @@ Replaces the numeric counter with a plain bullet. Use when the principles are a 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`actors`](../actors/actors.docs.md) — rules attach to named owners, not shared tenets
-- [`tldr`](../tldr/tldr.docs.md) — single-line takeaways without justification body
-- [`list`](../list/list.docs.md) — items are short bullets without title + body shape
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — each principle needs two sentences of body
+- [`actors`](../../inventory/actors/actors.docs.md) — rules attach to named owners, not shared tenets
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — single-line takeaways without justification body
+- [`list`](../../inventory/list/list.docs.md) — items are short bullets without title + body shape
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each principle needs two sentences of body
 
 ## Demo deck
 
-See [principles.gallery.pdf](./principles.gallery.pdf) for rendered examples of every variant.
+See [principles.gallery.light.pdf](./principles.gallery.light.pdf) for rendered examples of every variant.

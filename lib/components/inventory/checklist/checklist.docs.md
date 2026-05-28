@@ -56,15 +56,15 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [reference/design-system.md §6.5](../../reference/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list`](../list/list.docs.md) — items have no state — just bullets
-- [`tldr`](../tldr/tldr.docs.md) — summary lines without per-item completion tracking
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — rows need a label-plus-description structure, not state
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — each item needs two sentences of body
+- [`list`](../../inventory/list/list.docs.md) — items have no state — just bullets
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — summary lines without per-item completion tracking
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows need a label-plus-description structure, not state
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item needs two sentences of body
 
 ## Demo deck
 
-See [checklist.gallery.pdf](./checklist.gallery.pdf) for rendered examples of every variant.
+See [checklist.gallery.light.pdf](./checklist.gallery.light.pdf) for rendered examples of every variant.

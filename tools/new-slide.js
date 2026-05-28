@@ -18,7 +18,7 @@
  *   1  unknown component name
  *   2  usage error (missing arg, unknown flag)
  *
- * See reference/design-system.md §7 for the discovery model.
+ * See design/design-system.md §7 for the discovery model.
  */
 
 

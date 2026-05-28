@@ -2,7 +2,7 @@
  * Unit tests for the split-panels transformer's applyToDom (DOM-walk path).
  *
  * applyToDom runs in the browser (lattice-runtime.js bundle), invoked from
- * src/runtime/index.js's content-transform loop. These tests use jsdom to
+ * lib/runtime/index.js's content-transform loop. These tests use jsdom to
  * exercise the same code path without a real browser. The HTML-string
  * kernel is covered separately in registry.test.js.
  */

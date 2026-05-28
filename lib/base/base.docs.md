@@ -505,7 +505,7 @@ load workspace `marp.config.js` plugins, so the logo does not appear
 there. The runtime path covers exported HTML viewed in a browser but
 gracefully no-ops in the vscode-webview sandbox (fetch can't reach
 workspace files). Same constraint `class: dark` has — see
-`reference/engineering/gotchas.md`.
+`engineering/gotchas.md`.
 
 **Brand style.** `logo-style: brand` adds `deck-logo-brand` to the
 injected img. The silhouette mask is removed; the logo's original
@@ -534,7 +534,7 @@ conflict.
 
 ## Related
 
-- `reference/design-system.md §6.5` — the variant tier system (universal,
+- `design/design-system.md §6.5` — the variant tier system (universal,
   semi-universal, layout-specific) and the rules manifests follow.
 - `lib/shared/shared.docs.md` — the semi-universal modifiers
   (`compact`, `loose`, `accent`) that compose with most layouts.
