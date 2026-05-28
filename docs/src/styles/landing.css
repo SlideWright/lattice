@@ -120,6 +120,21 @@ code {
 	gap: 20px;
 	height: 62px;
 }
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	text-decoration: none;
+}
+.brand-logo {
+	display: block;
+	width: 30px;
+	height: 30px;
+}
+.foot .brand-logo {
+	width: 26px;
+	height: 26px;
+}
 .brand-mark {
 	font-family: var(--font-display);
 	font-weight: 700;

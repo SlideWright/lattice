@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Lattice">
+  <title>Lattice</title>
+  <defs>
+    <!-- Length-wise gradients (objectBoundingBox so they rotate with each strut).
+         Navy kept mid-indigo so the mark reads on both light and dark canvases. -->
+    <linearGradient id="ll-navy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#454588"/>
+      <stop offset="1" stop-color="#1a2150"/>
+    </linearGradient>
+    <linearGradient id="ll-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#edb44e"/>
+      <stop offset="1" stop-color="#b0791d"/>
+    </linearGradient>
+    <linearGradient id="ll-mix1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c2c64"/>
+      <stop offset="1" stop-color="#c68f33"/>
+    </linearGradient>
+    <linearGradient id="ll-mix2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#212150"/>
+      <stop offset="1" stop-color="#d89c39"/>
+    </linearGradient>
+    <linearGradient id="ll-frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#36467a"/>
+      <stop offset="1" stop-color="#1b2350"/>
+    </linearGradient>
+    <filter id="ll-shadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="1.1" stdDeviation="1.2" flood-color="#0a1024" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Frame -->
+  <rect x="22" y="22" width="76" height="76" rx="7" fill="none"
+        stroke="url(#ll-frame)" stroke-width="5.5" filter="url(#ll-shadow)"/>
+
+  <!-- Woven struts: navy on the left shading to gold on the right, in two
+       mirrored near-vertical diagonals. Each is a long rounded ribbon. -->
+  <g filter="url(#ll-shadow)">
+    <!-- leaning one way (rotate -30) -->
+    <rect x="23" y="-26" width="6" height="172" rx="3" fill="url(#ll-navy)" transform="rotate(-30 60 60)"/>
+    <rect x="45" y="-26" width="6" height="172" rx="3" fill="url(#ll-navy)" transform="rotate(-30 60 60)"/>
+    <rect x="67" y="-26" width="6" height="172" rx="3" fill="url(#ll-mix1)" transform="rotate(-30 60 60)"/>
+    <rect x="89" y="-26" width="6" height="172" rx="3" fill="url(#ll-gold)" transform="rotate(-30 60 60)"/>
+    <!-- leaning the other way (rotate 30) -->
+    <rect x="31" y="-26" width="6" height="172" rx="3" fill="url(#ll-navy)" transform="rotate(30 60 60)"/>
+    <rect x="53" y="-26" width="6" height="172" rx="3" fill="url(#ll-mix2)" transform="rotate(30 60 60)"/>
+    <rect x="75" y="-26" width="6" height="172" rx="3" fill="url(#ll-gold)" transform="rotate(30 60 60)"/>
+    <rect x="93" y="-26" width="6" height="172" rx="3" fill="url(#ll-gold)" transform="rotate(30 60 60)"/>
+  </g>
+</svg>
