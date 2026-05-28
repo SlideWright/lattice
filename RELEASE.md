@@ -21,8 +21,8 @@ it at release time:
   through named subpaths (`/css`, `/runtime`, `/config`,
   `/themes/<name>.css`), never raw repo paths.
 - **`files`** — the allowlist. Ships engine source, `dist/`, `themes/`,
-  and the two authoring docs (`reference/skill.md`,
-  `reference/design-system.md`). PDFs and `*.gallery.md` are excluded
+  and the two authoring docs (`design/skill.md`,
+  `design/design-system.md`). PDFs and `*.gallery.md` are excluded
   via negation — they're regression baselines and reviewer
   deliverables, kept in git but never shipped. Tarball is ~1.8 MB.
 

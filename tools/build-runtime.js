@@ -8,7 +8,7 @@
  * <script src="…/dist/lattice-runtime.js">, the README documents it, and
  * external consumers reference it via raw GitHub / jsdelivr URLs.
  * Changing the output path is a breaking change. See
- * reference/notes/2026-05-17-shared-transformer-registry.md (esbuild section)
+ * engineering/decisions/2026-05-17-shared-transformer-registry.md (esbuild section)
  * for the rationale.
  *
  * Default build:  unminified IIFE + inline source map. Suitable for
@@ -24,7 +24,7 @@
  *
  * Target: chrome91+. The marp-vscode preview webview runs on a Chromium
  * version a few major releases behind stable; we keep the bundle below
- * features that have caused trouble there (see reference/engineering/gotchas.md
+ * features that have caused trouble there (see engineering/gotchas.md
  * for the ":not(:has(...))" case).
  */
 

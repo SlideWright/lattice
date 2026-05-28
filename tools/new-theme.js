@@ -14,7 +14,7 @@
  * so it inherits the author's new values without selector edits.
  *
  * See themes/README.md for the mental model and 5-minute path.
- * See reference/theming.md for the variable contract and the --diagram-*
+ * See design/theming.md for the variable contract and the --diagram-*
  * taxonomy.
  */
 
@@ -183,7 +183,7 @@ function main() {
     `  5. Audit contrast:\n` +
     `       node tools/contrast-audit.js ${name}\n` +
     `\n` +
-    `Reference: themes/README.md (mental model), reference/theming.md (depth).\n`
+    `Reference: themes/README.md (mental model), design/theming.md (depth).\n`
   );
 }
 

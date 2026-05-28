@@ -455,7 +455,7 @@ ${nav.join('\n')}
     </header>
 ${sections.join('\n')}
     <footer class="content-foot">
-      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>reference/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>dist/docs/components.md</code> for the plain-Markdown edition of this reference.</p>
+      <p>Lattice — the engine layer of SlideWright. The visual contract is <code>lattice.css</code>; palettes supply the tokens. See <code>design/design-system.md</code> for the Function · Form · Substance · Finish model, and <code>dist/docs/components.md</code> for the plain-Markdown edition of this reference.</p>
     </footer>
   </main>
 </div>
@@ -998,7 +998,7 @@ function demoteHeadings(md, by) {
 
 /** Rewrite the cross-file links in a generated docs.md body so they resolve
  *  from dist/docs/components.md: related → in-page anchors, design-system →
- *  sibling reference/, gallery → the rendered light PDF. */
+ *  sibling design/, gallery → the rendered light PDF. */
 function rewriteLinks(md, m) {
   let out = md.replace(/\]\(\.\.\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
   out = out.replace(/\]\(\.\.\/\.\.\/docs\/([^)]+)\)/g, '](./$1)');
