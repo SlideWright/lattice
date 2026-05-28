@@ -12,8 +12,8 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Lattice',
-			favicon: '/lattice-logo.svg',
-			logo: { src: './public/lattice-logo.svg', alt: 'Lattice' },
+			favicon: '/lattice-logo.png',
+			logo: { src: './public/lattice-logo.png', alt: 'Lattice' },
 			description:
 				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
 			customCss: ['./src/styles/lattice.css'],

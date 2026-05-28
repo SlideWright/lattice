@@ -128,12 +128,12 @@ code {
 }
 .brand-logo {
 	display: block;
-	width: 30px;
 	height: 30px;
+	width: auto;
 }
 .foot .brand-logo {
-	width: 26px;
 	height: 26px;
+	width: auto;
 }
 .brand-mark {
 	font-family: var(--font-display);
