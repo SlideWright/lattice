@@ -74,15 +74,15 @@ Authored as `ol` (`1.` source). Adds a `01.`, `02.` counter prefix to each line 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list`](../list/list.docs.md) — lines are general bullets, not section takeaways
-- [`principles`](../principles/principles.docs.md) — each line is a stated rule with a justification body
-- [`closing`](../closing/closing.docs.md) — the slide is the deck's final word, not a section recap
-- [`agenda`](../agenda/agenda.docs.md) — previewing what's coming at the top of the deck
+- [`list`](../../inventory/list/list.docs.md) — lines are general bullets, not section takeaways
+- [`principles`](../../inventory/principles/principles.docs.md) — each line is a stated rule with a justification body
+- [`closing`](../../anchor/closing/closing.docs.md) — the slide is the deck's final word, not a section recap
+- [`agenda`](../../inventory/agenda/agenda.docs.md) — previewing what's coming at the top of the deck
 
 ## Demo deck
 
-See [tldr.gallery.pdf](./tldr.gallery.pdf) for rendered examples of every variant.
+See [tldr.gallery.light.pdf](./tldr.gallery.light.pdf) for rendered examples of every variant.

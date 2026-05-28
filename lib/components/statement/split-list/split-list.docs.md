@@ -82,15 +82,15 @@ Flips the dark accent panel from the left to the right. Use when the deck's visu
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`split-statement`](../split-statement/split-statement.docs.md) — thesis + one big-number — quantitative version of split-list
-- [`split-brief`](../split-brief/split-brief.docs.md) — title-style left + executive paragraph right
-- [`big-number`](../big-number/big-number.docs.md) — single statement, no supporting list — the full-canvas version
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — the right-side list grows past four points
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — thesis + one big-number — quantitative version of split-list
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — title-style left + executive paragraph right
+- [`big-number`](../../statement/big-number/big-number.docs.md) — single statement, no supporting list — the full-canvas version
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — the right-side list grows past four points
 
 ## Demo deck
 
-See [split-list.gallery.pdf](./split-list.gallery.pdf) for rendered examples of every variant.
+See [split-list.gallery.light.pdf](./split-list.gallery.light.pdf) for rendered examples of every variant.

@@ -213,16 +213,16 @@ Hero KPI gets a paragraph of body copy and a row of context pills; the supportin
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`stats`](../stats/stats.docs.md) — metric row without targets or status pills
-- [`big-number`](../big-number/big-number.docs.md) — a single number is the whole argument
-- [`split-metric`](../split-metric/split-metric.docs.md) — one KPI with a paragraph of supporting prose
-- [`progress`](../progress/progress.docs.md) — completion percentages across parallel workstreams
-- [`timeline-list`](../timeline-list/timeline-list.docs.md) — milestones in time, not metrics at a moment
+- [`stats`](../../evidence/stats/stats.docs.md) — metric row without targets or status pills
+- [`big-number`](../../statement/big-number/big-number.docs.md) — a single number is the whole argument
+- [`split-metric`](../../evidence/split-metric/split-metric.docs.md) — one KPI with a paragraph of supporting prose
+- [`progress`](../../chart/progress/progress.docs.md) — completion percentages across parallel workstreams
+- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — milestones in time, not metrics at a moment
 
 ## Demo deck
 
-See [kpi.gallery.pdf](./kpi.gallery.pdf) for rendered examples of every variant.
+See [kpi.gallery.light.pdf](./kpi.gallery.light.pdf) for rendered examples of every variant.

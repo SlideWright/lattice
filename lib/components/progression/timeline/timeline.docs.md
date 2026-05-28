@@ -59,16 +59,16 @@ Use for sequential processes with 3–6 stages. Ordered list (ol) renders number
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`list-steps`](../list-steps/list-steps.docs.md) — each step needs body-paragraph room, not just a label
-- [`split-steps`](../split-steps/split-steps.docs.md) — a phase anchor + heading reads on the left, steps on the right
-- [`journey`](../journey/journey.docs.md) — each step carries actors and mood, not just a label
-- [`gantt`](../gantt/gantt.docs.md) — tasks have duration and overlap across multiple workstreams
-- [`roadmap`](../roadmap/roadmap.docs.md) — phased grid across multiple workstreams rather than a single axis
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — each step needs body-paragraph room, not just a label
+- [`split-steps`](../../progression/split-steps/split-steps.docs.md) — a phase anchor + heading reads on the left, steps on the right
+- [`journey`](../../progression/journey/journey.docs.md) — each step carries actors and mood, not just a label
+- [`gantt`](../../chart/gantt/gantt.docs.md) — tasks have duration and overlap across multiple workstreams
+- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid across multiple workstreams rather than a single axis
 
 ## Demo deck
 
-See [timeline.gallery.pdf](./timeline.gallery.pdf) for rendered examples of every variant.
+See [timeline.gallery.light.pdf](./timeline.gallery.light.pdf) for rendered examples of every variant.

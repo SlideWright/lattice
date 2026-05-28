@@ -120,16 +120,16 @@ Routes skip and back edges as single Bézier arcs instead of the default orthogo
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`diagram`](../diagram/diagram.docs.md) — the machine has hierarchical states, parallel regions, or guards that need Mermaid's full state-diagram grammar
-- [`journey`](../journey/journey.docs.md) — the sequence is a user's path through tasks with mood / affect, not a system's discrete states
-- [`timeline-list`](../timeline-list/timeline-list.docs.md) — events are points in time rather than transitions between named states
-- [`list-steps`](../list-steps/list-steps.docs.md) — a linear procedure with no branching — state-chart is overkill if there are no choices to make
-- [`roadmap`](../roadmap/roadmap.docs.md) — parallel workstreams across phases, not a single machine's transitions
+- [`diagram`](../../diagram/diagram/diagram.docs.md) — the machine has hierarchical states, parallel regions, or guards that need Mermaid's full state-diagram grammar
+- [`journey`](../../progression/journey/journey.docs.md) — the sequence is a user's path through tasks with mood / affect, not a system's discrete states
+- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — events are points in time rather than transitions between named states
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — a linear procedure with no branching — state-chart is overkill if there are no choices to make
+- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — parallel workstreams across phases, not a single machine's transitions
 
 ## Demo deck
 
-See [state-chart.gallery.pdf](./state-chart.gallery.pdf) for rendered examples of every variant.
+See [state-chart.gallery.light.pdf](./state-chart.gallery.light.pdf) for rendered examples of every variant.

@@ -60,15 +60,15 @@ One-sentence framing paragraph explaining what the findings cover.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`split-list`](../split-list/split-list.docs.md) — the right side is a list of supporting points, not findings
-- [`split-statement`](../split-statement/split-statement.docs.md) — the left side carries a quote, not a thesis
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — the slide is mostly the list of findings; no executive framing needed
-- [`tldr`](../tldr/tldr.docs.md) — 5+ one-line takeaways without supporting detail
+- [`split-list`](../../statement/split-list/split-list.docs.md) — the right side is a list of supporting points, not findings
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the left side carries a quote, not a thesis
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — the slide is mostly the list of findings; no executive framing needed
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — 5+ one-line takeaways without supporting detail
 
 ## Demo deck
 
-See [split-brief.gallery.pdf](./split-brief.gallery.pdf) for rendered examples of every variant.
+See [split-brief.gallery.light.pdf](./split-brief.gallery.light.pdf) for rendered examples of every variant.

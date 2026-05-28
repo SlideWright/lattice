@@ -142,15 +142,15 @@ Chip widths scale to the `+volume` token; chip colour still encodes mood. Two di
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`timeline`](../timeline/timeline.docs.md) — linear sequence without per-step mood or actors
-- [`list-steps`](../list-steps/list-steps.docs.md) — process needs descriptive body per step, no chart
-- [`gantt`](../gantt/gantt.docs.md) — schedule of overlapping tasks across lanes
-- [`kanban`](../kanban/kanban.docs.md) — current status by stage rather than sequence over time
+- [`timeline`](../../progression/timeline/timeline.docs.md) — linear sequence without per-step mood or actors
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — process needs descriptive body per step, no chart
+- [`gantt`](../../chart/gantt/gantt.docs.md) — schedule of overlapping tasks across lanes
+- [`kanban`](../../chart/kanban/kanban.docs.md) — current status by stage rather than sequence over time
 
 ## Demo deck
 
-See [journey.gallery.pdf](./journey.gallery.pdf) for rendered examples of every variant.
+See [journey.gallery.light.pdf](./journey.gallery.light.pdf) for rendered examples of every variant.

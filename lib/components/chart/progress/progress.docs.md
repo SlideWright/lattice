@@ -62,16 +62,16 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`kpi`](../kpi/kpi.docs.md) — value + target + status tiles, not a single percent
-- [`stats`](../stats/stats.docs.md) — independent headline metrics, no completion scale
-- [`gantt`](../gantt/gantt.docs.md) — the rows are time-bound and need a date axis
-- [`checklist`](../checklist/checklist.docs.md) — binary done / not-done across a flat list
-- [`timeline-list`](../timeline-list/timeline-list.docs.md) — the workstreams resolve in sequence, not in parallel
+- [`kpi`](../../evidence/kpi/kpi.docs.md) — value + target + status tiles, not a single percent
+- [`stats`](../../evidence/stats/stats.docs.md) — independent headline metrics, no completion scale
+- [`gantt`](../../chart/gantt/gantt.docs.md) — the rows are time-bound and need a date axis
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — binary done / not-done across a flat list
+- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — the workstreams resolve in sequence, not in parallel
 
 ## Demo deck
 
-See [progress.gallery.pdf](./progress.gallery.pdf) for rendered examples of every variant.
+See [progress.gallery.light.pdf](./progress.gallery.light.pdf) for rendered examples of every variant.

@@ -59,15 +59,15 @@ app.post('/api/v2/auth', async (req, res) => {
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-code`](../compare-code/compare-code.docs.md) — before/after snippet comparison
-- [`diagram`](../diagram/diagram.docs.md) — the architecture matters more than the code
-- [`math`](../math/math.docs.md) — the equation is the argument, not the implementation
-- [`content`](../content/content.docs.md) — code is one piece of a longer prose explanation
+- [`compare-code`](../../code/compare-code/compare-code.docs.md) — before/after snippet comparison
+- [`diagram`](../../diagram/diagram/diagram.docs.md) — the architecture matters more than the code
+- [`math`](../../math/math/math.docs.md) — the equation is the argument, not the implementation
+- [`content`](../../statement/content/content.docs.md) — code is one piece of a longer prose explanation
 
 ## Demo deck
 
-See [code.gallery.pdf](./code.gallery.pdf) for rendered examples of every variant.
+See [code.gallery.light.pdf](./code.gallery.light.pdf) for rendered examples of every variant.

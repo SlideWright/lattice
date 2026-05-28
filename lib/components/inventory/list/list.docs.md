@@ -57,15 +57,15 @@ Use only when the items are genuinely a list (5–6 short points). For anything 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`tldr`](../tldr/tldr.docs.md) — single-line takeaways at the end of a section
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — each item has a title plus body sentence
-- [`list-tabular`](../list-tabular/list-tabular.docs.md) — five or more rows with label-plus-description
-- [`checklist`](../checklist/checklist.docs.md) — items carry state markers (done / partial / todo)
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — single-line takeaways at the end of a section
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each item has a title plus body sentence
+- [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — five or more rows with label-plus-description
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — items carry state markers (done / partial / todo)
 
 ## Demo deck
 
-See [list.gallery.pdf](./list.gallery.pdf) for rendered examples of every variant.
+See [list.gallery.light.pdf](./list.gallery.light.pdf) for rendered examples of every variant.

@@ -114,16 +114,16 @@ Text leads from the right; image anchors from the left. Use when the surrounding
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`featured`](../featured/featured.docs.md) — the recommendation is a card, not an image
-- [`diagram`](../diagram/diagram.docs.md) — the visual is a Mermaid graph, not a photo or screenshot
-- [`content`](../content/content.docs.md) — the slide is mostly prose with one inline visual
-- [`title`](../title/title.docs.md) — the image is a bookend hero, not the body of a slide
-- [`quote`](../quote/quote.docs.md) — the slide is a quotation, not an image
+- [`featured`](../../imagery/featured/featured.docs.md) — the recommendation is a card, not an image
+- [`diagram`](../../diagram/diagram/diagram.docs.md) — the visual is a Mermaid graph, not a photo or screenshot
+- [`content`](../../statement/content/content.docs.md) — the slide is mostly prose with one inline visual
+- [`title`](../../anchor/title/title.docs.md) — the image is a bookend hero, not the body of a slide
+- [`quote`](../../statement/quote/quote.docs.md) — the slide is a quotation, not an image
 
 ## Demo deck
 
-See [image.gallery.pdf](./image.gallery.pdf) for rendered examples of every variant.
+See [image.gallery.light.pdf](./image.gallery.light.pdf) for rendered examples of every variant.

@@ -106,15 +106,15 @@ function loadOne(name) {
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`before-after`](../before-after/before-after.docs.md) — the change is state, not code
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — the comparison is prose-versus-prose
-- [`redline`](../redline/redline.docs.md) — the change is in verbatim text or legal language
-- [`compare-table`](../compare-table/compare-table.docs.md) — three or more variants on shared dimensions
+- [`before-after`](../../comparison/before-after/before-after.docs.md) — the change is state, not code
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison is prose-versus-prose
+- [`redline`](../../comparison/redline/redline.docs.md) — the change is in verbatim text or legal language
+- [`compare-table`](../../comparison/compare-table/compare-table.docs.md) — three or more variants on shared dimensions
 
 ## Demo deck
 
-See [compare-code.gallery.pdf](./compare-code.gallery.pdf) for rendered examples of every variant.
+See [compare-code.gallery.light.pdf](./compare-code.gallery.light.pdf) for rendered examples of every variant.

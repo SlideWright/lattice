@@ -207,16 +207,16 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`matrix-2x2`](../matrix-2x2/matrix-2x2.docs.md) — the 2×2 is categorical, not coordinate-based
-- [`radar`](../radar/radar.docs.md) — items rated across more than two criteria
-- [`progress`](../progress/progress.docs.md) — percent-complete on a single axis
-- [`piechart`](../piechart/piechart.docs.md) — part-to-whole, not bivariate position
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — comparing options against shared categorical criteria
+- [`matrix-2x2`](../../comparison/matrix-2x2/matrix-2x2.docs.md) — the 2×2 is categorical, not coordinate-based
+- [`radar`](../../chart/radar/radar.docs.md) — items rated across more than two criteria
+- [`progress`](../../chart/progress/progress.docs.md) — percent-complete on a single axis
+- [`piechart`](../../chart/piechart/piechart.docs.md) — part-to-whole, not bivariate position
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — comparing options against shared categorical criteria
 
 ## Demo deck
 
-See [quadrant.gallery.pdf](./quadrant.gallery.pdf) for rendered examples of every variant.
+See [quadrant.gallery.light.pdf](./quadrant.gallery.light.pdf) for rendered examples of every variant.

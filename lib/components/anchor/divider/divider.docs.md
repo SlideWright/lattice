@@ -69,14 +69,14 @@ Stamps an auto-incrementing section number in the corner. Each divider in the de
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`title`](../title/title.docs.md) — opens the deck — same dark-bookend chrome
-- [`subtopic`](../subtopic/subtopic.docs.md) — lighter mid-section orientation on the bright canvas
-- [`closing`](../closing/closing.docs.md) — closes the deck — completes the bookend trio
+- [`title`](../../anchor/title/title.docs.md) — opens the deck — same dark-bookend chrome
+- [`subtopic`](../../anchor/subtopic/subtopic.docs.md) — lighter mid-section orientation on the bright canvas
+- [`closing`](../../anchor/closing/closing.docs.md) — closes the deck — completes the bookend trio
 
 ## Demo deck
 
-See [divider.gallery.pdf](./divider.gallery.pdf) for rendered examples of every variant.
+See [divider.gallery.light.pdf](./divider.gallery.light.pdf) for rendered examples of every variant.

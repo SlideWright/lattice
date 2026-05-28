@@ -156,15 +156,15 @@ Same wayfinding pattern on a six-section agenda — current position at the sixt
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`subtopic`](../subtopic/subtopic.docs.md) — opening a single section mid-deck
-- [`divider`](../divider/divider.docs.md) — marking a section boundary without restating the menu
-- [`tldr`](../tldr/tldr.docs.md) — closing the deck with the takeaways the agenda promised
-- [`title`](../title/title.docs.md) — the slide immediately preceding the agenda
+- [`subtopic`](../../anchor/subtopic/subtopic.docs.md) — opening a single section mid-deck
+- [`divider`](../../anchor/divider/divider.docs.md) — marking a section boundary without restating the menu
+- [`tldr`](../../inventory/tldr/tldr.docs.md) — closing the deck with the takeaways the agenda promised
+- [`title`](../../anchor/title/title.docs.md) — the slide immediately preceding the agenda
 
 ## Demo deck
 
-See [agenda.gallery.pdf](./agenda.gallery.pdf) for rendered examples of every variant.
+See [agenda.gallery.light.pdf](./agenda.gallery.light.pdf) for rendered examples of every variant.

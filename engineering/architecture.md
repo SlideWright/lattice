@@ -5,7 +5,7 @@ the engine, fork it, or understand a build failure. Most deck authors
 don't need to read this.
 
 > Debugging something subtle? Check
-> [references/gotchas.md](./references/gotchas.md) first. It tracks the
+> [gotchas.md](gotchas.md) first. It tracks the
 > hacks, workarounds, and dependency quirks (Marpit, Mermaid, Chromium,
 > marp-vscode) that the engine is structured around — many of which
 > aren't self-documenting in the code.
@@ -125,7 +125,7 @@ structured slide looks wrong, check the source list shape first.
 
 **Audit implication.** Structured layouts are where
 `lattice-emulator.js` and `marp-cli` are most likely to diverge — see
-[references/audit.md §11.4](references/audit.md#114-comparison-workflow).
+[audit.md §11.4](audit.md#114-comparison-workflow).
 The three-renderer parity gate in the integration tier (running on
 `test/integration/baseline-decks/gallery.md`) catches structural drift
 before merge.

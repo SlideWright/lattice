@@ -60,16 +60,16 @@ flowchart LR
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`code`](../code/code.docs.md) — the implementation, not the topology, is the argument
-- [`quadrant`](../quadrant/quadrant.docs.md) — items positioned by two numeric attributes
-- [`radar`](../radar/radar.docs.md) — options rated across several criteria
-- [`timeline-list`](../timeline-list/timeline-list.docs.md) — the graph is a sequence in time, not a topology
-- [`content`](../content/content.docs.md) — the diagram is one element in a prose slide
+- [`code`](../../code/code/code.docs.md) — the implementation, not the topology, is the argument
+- [`quadrant`](../../chart/quadrant/quadrant.docs.md) — items positioned by two numeric attributes
+- [`radar`](../../chart/radar/radar.docs.md) — options rated across several criteria
+- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — the graph is a sequence in time, not a topology
+- [`content`](../../statement/content/content.docs.md) — the diagram is one element in a prose slide
 
 ## Demo deck
 
-See [diagram.gallery.pdf](./diagram.gallery.pdf) for rendered examples of every variant.
+See [diagram.gallery.light.pdf](./diagram.gallery.light.pdf) for rendered examples of every variant.

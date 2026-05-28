@@ -66,14 +66,14 @@ Stamps an auto-incrementing module number. Each subtopic carries an independent 
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`divider`](../divider/divider.docs.md) — major section starts — darker, h1, dedicated canvas
-- [`title`](../title/title.docs.md) — opens the deck — same dark-bookend chrome as divider
-- [`content`](../content/content.docs.md) — the body slides that follow a subtopic
+- [`divider`](../../anchor/divider/divider.docs.md) — major section starts — darker, h1, dedicated canvas
+- [`title`](../../anchor/title/title.docs.md) — opens the deck — same dark-bookend chrome as divider
+- [`content`](../../statement/content/content.docs.md) — the body slides that follow a subtopic
 
 ## Demo deck
 
-See [subtopic.gallery.pdf](./subtopic.gallery.pdf) for rendered examples of every variant.
+See [subtopic.gallery.light.pdf](./subtopic.gallery.light.pdf) for rendered examples of every variant.

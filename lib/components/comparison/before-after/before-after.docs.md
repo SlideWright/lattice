@@ -73,15 +73,15 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — two alternatives being weighed, not a transformation
-- [`split-compare`](../split-compare/split-compare.docs.md) — binary decision with a verdict bar
-- [`redline`](../redline/redline.docs.md) — the change is in verbatim text, not structural state
-- [`list-steps`](../list-steps/list-steps.docs.md) — the change has more than two phases
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — two alternatives being weighed, not a transformation
+- [`split-compare`](../../comparison/split-compare/split-compare.docs.md) — binary decision with a verdict bar
+- [`redline`](../../comparison/redline/redline.docs.md) — the change is in verbatim text, not structural state
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the change has more than two phases
 
 ## Demo deck
 
-See [before-after.gallery.pdf](./before-after.gallery.pdf) for rendered examples of every variant.
+See [before-after.gallery.light.pdf](./before-after.gallery.light.pdf) for rendered examples of every variant.

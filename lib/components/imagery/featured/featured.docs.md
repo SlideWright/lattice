@@ -78,16 +78,16 @@ Flips the layout: the supporting sub-grid sits on the left, the featured card on
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`cards-grid`](../cards-grid/cards-grid.docs.md) — all options carry equal weight; no winner declared
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not picked
-- [`cards-side`](../cards-side/cards-side.docs.md) — two options side by side, no hierarchy between them
-- [`decision`](../decision/decision.docs.md) — the recommendation needs an explicit pro/con frame
-- [`split-brief`](../split-brief/split-brief.docs.md) — the recommendation is a thesis sentence + supporting findings
+- [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — all options carry equal weight; no winner declared
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not picked
+- [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — two options side by side, no hierarchy between them
+- [`decision`](../../comparison/decision/decision.docs.md) — the recommendation needs an explicit pro/con frame
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the recommendation is a thesis sentence + supporting findings
 
 ## Demo deck
 
-See [featured.gallery.pdf](./featured.gallery.pdf) for rendered examples of every variant.
+See [featured.gallery.light.pdf](./featured.gallery.light.pdf) for rendered examples of every variant.

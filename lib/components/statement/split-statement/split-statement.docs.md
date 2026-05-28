@@ -57,14 +57,14 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`quote`](../quote/quote.docs.md) — the quote IS the slide — no implications needed
-- [`split-brief`](../split-brief/split-brief.docs.md) — the left carries a thesis statement, not a quote
-- [`split-list`](../split-list/split-list.docs.md) — the right side is supporting points, no quoted claim on the left
+- [`quote`](../../statement/quote/quote.docs.md) — the quote IS the slide — no implications needed
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the left carries a thesis statement, not a quote
+- [`split-list`](../../statement/split-list/split-list.docs.md) — the right side is supporting points, no quoted claim on the left
 
 ## Demo deck
 
-See [split-statement.gallery.pdf](./split-statement.gallery.pdf) for rendered examples of every variant.
+See [split-statement.gallery.light.pdf](./split-statement.gallery.light.pdf) for rendered examples of every variant.

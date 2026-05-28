@@ -1000,10 +1000,17 @@ function demoteHeadings(md, by) {
  *  from dist/docs/components.md: related → in-page anchors, design-system →
  *  sibling design/, gallery → the rendered light PDF. */
 function rewriteLinks(md, m) {
-  let out = md.replace(/\]\(\.\.\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
+  // Related-component links are emitted in-place-correct as cross-bucket
+  // paths (../../<bucket>/<name>/<name>.docs.md); collapse to in-page anchors
+  // for the single-file portal.
+  let out = md.replace(/\]\(\.\.\/\.\.\/[a-z0-9-]+\/([a-z0-9-]+)\/\1\.docs\.md\)/g, '](#$1)');
+  // The design-system pointer is emitted four levels up (in-place-correct for
+  // lib/components/<bucket>/<name>/); the portal sits at dist/docs/, so root
+  // is two levels up.
+  out = out.replace(/\]\(\.\.\/\.\.\/\.\.\/\.\.\/design\//g, '](../../design/');
   out = out.replace(/\]\(\.\.\/\.\.\/docs\/([^)]+)\)/g, '](./$1)');
   const gh = galleryHref(m);
-  if (gh) out = out.replace(/\]\(\.\/[a-z0-9-]+\.gallery\.pdf\)/g, `](${gh})`);
+  if (gh) out = out.replace(/\]\(\.\/[a-z0-9-]+\.gallery\.light\.pdf\)/g, `](${gh})`);
   return out;
 }
 

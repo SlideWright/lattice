@@ -63,16 +63,16 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`gantt`](../gantt/gantt.docs.md) — milestones occupy date ranges, not single moments
-- [`list-steps`](../list-steps/list-steps.docs.md) — the sequence has no dates, just an order
-- [`journey`](../journey/journey.docs.md) — stage-by-stage progress without calendar dates
-- [`roadmap`](../roadmap/roadmap.docs.md) — the timeline is forward-looking and bucketed by horizon
-- [`progress`](../progress/progress.docs.md) — the events are parallel workstreams with completion percentages
+- [`gantt`](../../chart/gantt/gantt.docs.md) — milestones occupy date ranges, not single moments
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the sequence has no dates, just an order
+- [`journey`](../../progression/journey/journey.docs.md) — stage-by-stage progress without calendar dates
+- [`roadmap`](../../progression/roadmap/roadmap.docs.md) — the timeline is forward-looking and bucketed by horizon
+- [`progress`](../../chart/progress/progress.docs.md) — the events are parallel workstreams with completion percentages
 
 ## Demo deck
 
-See [timeline-list.gallery.pdf](./timeline-list.gallery.pdf) for rendered examples of every variant.
+See [timeline-list.gallery.light.pdf](./timeline-list.gallery.light.pdf) for rendered examples of every variant.

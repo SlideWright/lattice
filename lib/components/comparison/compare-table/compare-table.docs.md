@@ -62,15 +62,15 @@ Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-pro
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`compare-prose`](../compare-prose/compare-prose.docs.md) — exactly two options with prose bodies
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored against criteria with pass/partial/fail badges
-- [`obligation-matrix`](../obligation-matrix/obligation-matrix.docs.md) — many regimes compared against shared obligations
-- [`cards-stack`](../cards-stack/cards-stack.docs.md) — each row needs full-prose breathing room rather than a tabular cell
+- [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — exactly two options with prose bodies
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against criteria with pass/partial/fail badges
+- [`obligation-matrix`](../../legal/obligation-matrix/obligation-matrix.docs.md) — many regimes compared against shared obligations
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — each row needs full-prose breathing room rather than a tabular cell
 
 ## Demo deck
 
-See [compare-table.gallery.pdf](./compare-table.gallery.pdf) for rendered examples of every variant.
+See [compare-table.gallery.light.pdf](./compare-table.gallery.light.pdf) for rendered examples of every variant.

@@ -15,15 +15,15 @@ Open the relevant file before starting work. Only load what the current task nee
 | Task | Load |
 |------|------|
 | **Understanding the catalog** — function families, forms, substances, the component model | [design-system.md](./design-system.md) — the canonical four-layer model |
-| Writing or editing slide content | [references/design.md](./references/design.md) + `lib/components/<name>/<name>.docs.md` per component |
+| Writing or editing slide content | [design.md](./design-principles.md) + `lib/components/<name>/<name>.docs.md` per component |
 | **Picking a component** by purpose (the *what kind of slide*) | [design-system.md §3](./design-system.md#3-the-7-functions) — function families table |
 | **Cross-cutting authoring patterns** (eyebrow, subtitle, key-insight, state markers, dark/mirror/numbered, etc.) | [../lib/base/base.docs.md](../lib/base/base.docs.md) |
 | Scaffolding a new slide from a known component | `npm run new:slide <component>` (skeleton via the manifest); `npm run new:slide -- --list` enumerates the 58 shipped components |
-| Adding a treatment — tint or mark (`tint-*` / `mark-*` classes, `at-*` placement) | [references/treatments.md](./references/treatments.md) |
-| Adding a Mermaid diagram | [references/mermaid.md](./references/mermaid.md) |
-| Running the render pipeline (PDF/HTML/PPTX) | [references/pipeline.md](./references/pipeline.md) |
-| Comparing lattice-emulator.js vs marp-cli output | [references/audit.md](./references/audit.md) |
-| Hitting an unexpected behavior, hack, or browser/Marp/Mermaid quirk | [references/gotchas.md](./references/gotchas.md) — read first when something breaks in an unfamiliar way; add an entry when you find a new one |
+| Adding a treatment — tint or mark (`tint-*` / `mark-*` classes, `at-*` placement) | [treatments.md](../engineering/treatments.md) |
+| Adding a Mermaid diagram | [mermaid.md](../engineering/mermaid.md) |
+| Running the render pipeline (PDF/HTML/PPTX) | [pipeline.md](../engineering/pipeline.md) |
+| Comparing lattice-emulator.js vs marp-cli output | [audit.md](../engineering/audit.md) |
+| Hitting an unexpected behavior, hack, or browser/Marp/Mermaid quirk | [gotchas.md](../engineering/gotchas.md) — read first when something breaks in an unfamiliar way; add an entry when you find a new one |
 
 **Do not load all files at once.** Load only what the task requires.
 
@@ -83,7 +83,7 @@ Palette resolution precedence: CLI flag > positional palette > `LATTICE_PALETTE`
 
 The 2nd positional accepts either an output path or a `.css` path; if it ends in `.css` the emulator treats it as a custom layout CSS and shifts the remaining args right (backward-compat with the old 3-arg form).
 
-Full rendering pipeline (Mermaid, PPTX, image conversion): see [references/pipeline.md](./references/pipeline.md).
+Full rendering pipeline (Mermaid, PPTX, image conversion): see [pipeline.md](../engineering/pipeline.md).
 
 ---
 
@@ -128,7 +128,7 @@ marp-vscode preview pane because the extension doesn't load workspace
 `marp.config.js` plugins. The published-HTML path
 (`lattice-runtime.js`) restores it for any deck served from a web
 origin. See [lib/base/base.docs.md § Custom logo](../lib/base/base.docs.md)
-and [references/gotchas.md](./references/gotchas.md).
+and [gotchas.md](../engineering/gotchas.md).
 
 ---
 
@@ -145,7 +145,7 @@ Five paths can produce a slide screenshot or rebuilt PDF. They have meaningfully
 | Iterative loop on prebuilt HTML                     | `screenshot-slides.js` against existing HTML      |          1.6s  |              0.5s/slide | configurable |
 | Cross-renderer regression                           | `npm run test:integration`                        |             —  |                  ~30s | full check  |
 
-**`npm run preview` is the primary visual loop during development.** It reads `git diff` and only rebuilds the decks affected by the change (L0 nothing → L3 full). PNG screenshot paths below are for spot-checks and screenshot capture, not the everyday "did this change break anything" loop. See [workflow.md § Iteration cycle](./references/workflow.md#iteration-cycle) for the L0–L3 scope taxonomy and the `SendUserFile`-based share contract.
+**`npm run preview` is the primary visual loop during development.** It reads `git diff` and only rebuilds the decks affected by the change (L0 nothing → L3 full). PNG screenshot paths below are for spot-checks and screenshot capture, not the everyday "did this change break anything" loop. See [workflow.md § Iteration cycle](../engineering/workflow.md#iteration-cycle) for the L0–L3 scope taxonomy and the `SendUserFile`-based share contract.
 
 **Picking the path.**
 

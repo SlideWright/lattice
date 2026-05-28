@@ -144,16 +144,16 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 ## Universal modifiers
 
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
 
 ## Related components
 
-- [`gantt`](../gantt/gantt.docs.md) — continuous task bars across a date axis rather than discrete phase cells
-- [`kanban`](../kanban/kanban.docs.md) — current state by stage rather than phased schedule
-- [`list-steps`](../list-steps/list-steps.docs.md) — single workstream sequence without parallel lanes
-- [`verdict-grid`](../verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not phased delivery
-- [`checklist`](../checklist/checklist.docs.md) — single list with state markers, no workstream dimension
+- [`gantt`](../../chart/gantt/gantt.docs.md) — continuous task bars across a date axis rather than discrete phase cells
+- [`kanban`](../../chart/kanban/kanban.docs.md) — current state by stage rather than phased schedule
+- [`list-steps`](../../progression/list-steps/list-steps.docs.md) — single workstream sequence without parallel lanes
+- [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not phased delivery
+- [`checklist`](../../inventory/checklist/checklist.docs.md) — single list with state markers, no workstream dimension
 
 ## Demo deck
 
-See [roadmap.gallery.pdf](./roadmap.gallery.pdf) for rendered examples of every variant.
+See [roadmap.gallery.light.pdf](./roadmap.gallery.light.pdf) for rendered examples of every variant.

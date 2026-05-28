@@ -42,7 +42,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   Element-name selectors (`pre`) match the latter but not the former.
 - **Mitigation:** Use `:is(pre, marp-pre)` for any rule that needs to
   hit both render paths. Currently applied to the inline-code chip
-  reset at [lattice.css:114-120](../lattice.css#L114-L120).
+  reset at [lattice.css:114-120](../dist/lattice.css#L114-L120).
 - **Triggered by:** Any fenced code block — including mermaid sources
   before they're upgraded to SVG.
 - **Removable when:** marp-vscode unifies on `<pre is="marp-pre">`.
@@ -64,7 +64,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   width. The marp-cli build and the marp-vscode preview both hit this;
   lattice-emulator leaves emoji as raw text (no rewrite) but inherits
   the inline alignment issue when no emoji font is in the stack.
-- **Mitigation:** Two parts in [lattice.css](../lattice.css):
+- **Mitigation:** Two parts in [lattice.css](../dist/lattice.css):
   1. Exempt the emoji class from the block image rule — the catch-all
      is now `section img:not(.emoji)`, and `section img.emoji` is set
      to `display:inline-block; height:1em; vertical-align:-0.1em`.
@@ -395,7 +395,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   to avoid stale content collisions. So during the render window:
   data-processed=true + innerHTML empty + no svg yet — looks like a
   failure to a synchronous observer.
-- **Mitigation:** [lattice-runtime.js](../lattice-runtime.js) wraps
+- **Mitigation:** [lattice-runtime.js](../dist/lattice-runtime.js) wraps
   any post-render restoration in `Promise.resolve(_runPromise).then()`
   so the loop only fires after the render promise resolves. Per-fence
   `mermaid.render` with try/catch is the structurally cleaner pattern
@@ -415,7 +415,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   context, not a fixed-height slide. The icon sits at `x=1440`. Inside
   Marp's `foreignObject` slot, the SVG height resolves to `0/auto`
   and content overflows visually.
-- **Mitigation:** [lattice-runtime.js](../lattice-runtime.js) sets
+- **Mitigation:** [lattice-runtime.js](../dist/lattice-runtime.js) sets
   `suppressErrorRendering: true` in `mermaid.initialize()`, then saves
   raw source as `data-ll-source` before `mermaid.run()` clears
   innerHTML. A post-run loop restores `textContent` on any
@@ -439,7 +439,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `:root { --bg: …; }`. Reading from `documentElement` returns the
   unset value (empty string).
 - **Mitigation:** `buildMermaidThemeVars` in
-  [lattice-runtime.js:31](../lattice-runtime.js#L31) reads from
+  [lattice-runtime.js:31](../dist/lattice-runtime.js#L31) reads from
   `document.querySelector('section') ?? document.documentElement`. A
   sentinel-color guard before `mermaid.initialize()` retries until
   the stylesheet has applied (the first tick can fire before
@@ -500,7 +500,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   plugins from the workspace.
 - **Mitigation:** Behaviors that need to fire in VS Code preview must
   be mirrored as DOM transforms in
-  [lattice-runtime.js](../lattice-runtime.js) (loaded into the
+  [lattice-runtime.js](../dist/lattice-runtime.js) (loaded into the
   preview via `<script src="../lattice-runtime.js">` at the end of
   every deck). Maintained as a separate code path; see the
   comments above each `transform*()` function.
@@ -721,7 +721,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Mitigation:** Use the real ink-ramp tokens that themes actually
   define — `--text-heading`, `--text-body`, `--text-label`,
   `--text-muted`, `--border`, `--bg`. The radar chart was caught on this
-  pre-merge and uses them ([lattice.css](../lattice.css), the `RADAR`
+  pre-merge and uses them ([lattice.css](../dist/lattice.css), the `RADAR`
   block). **The journey `--fg` references are still live and unaudited** —
   its low-opacity gridlines/plumb-lines likely render wrong.
 - **Triggered by:** Any CSS — especially SVG `fill`/`stroke` — that
@@ -745,7 +745,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   real color property (`element.style.color = 'var(--name)'`) and
   read `getComputedStyle(element).color`. The browser resolves
   everything for actual color properties. See `vc()` helper in
-  [lattice-runtime.js:46-58](../lattice-runtime.js#L46-L58).
+  [lattice-runtime.js:46-58](../dist/lattice-runtime.js#L46-L58).
 - **Triggered by:** Any JS read of a custom property whose value
   contains a CSS function.
 - **Removable when:** Never — this is by design.
@@ -825,7 +825,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   200%; white-space: nowrap` and keep `font-size` inherited. The disc
   stays sized from the cell's font-size; any trailing label is pushed
   out of the box and clipped. Used in
-  [lattice.css](../lattice.css) (`section.obligation-matrix td
+  [lattice.css](../dist/lattice.css) (`section.obligation-matrix td
   .state`). See the UNIVERSAL STATE TOKEN block.
 - **Triggered by:** Combining `font-size: 0` (label-hiding) with `em`
   width/height on the same element.
@@ -944,7 +944,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 ### Chart-family observer's broad `MutationObserver` scope
 
 - **Symptom:** None observed yet, but worth knowing.
-- **Cause:** [lattice-runtime.js:1005-1011](../lattice-runtime.js#L1005-L1011)
+- **Cause:** [lattice-runtime.js:1005-1011](../dist/lattice-runtime.js#L1005-L1011)
   observes `document.body` with `subtree: true, childList: true,
   attributes: true, characterData: true`. Every attribute mutation
   in the DOM fires it. Idempotent (re-applies are no-ops on already-
@@ -966,9 +966,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Cause:** Marp renders each slide into a fixed-size SVG viewport.
   Anything past the bottom of the viewport gets clipped at the
   rasterization step with no warning.
-- **Mitigation:** [lattice.css](../lattice.css) defines
+- **Mitigation:** [lattice.css](../dist/lattice.css) defines
   `section.overflow` as a 4px inset red ring (via `box-shadow`, no
-  layout shift). [lattice-runtime.js](../lattice-runtime.js)
+  layout shift). [lattice-runtime.js](../dist/lattice-runtime.js)
   `startOverflowWatcher()` tags the class on every section whose
   scrollHeight/Width exceeds clientHeight/Width by more than 12px
   (the tolerance filters sub-pixel rounding noise from nested flex/
@@ -992,7 +992,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   apply internal lightening or darkening to themeVariable inputs
   (kanban cScale lighten step). The themeVariables API is partial.
 - **Mitigation:** Per-diagram-type CSS overrides in
-  [lattice.css](../lattice.css)'s "DIAGRAM OVERRIDES" section (at
+  [lattice.css](../dist/lattice.css)'s "DIAGRAM OVERRIDES" section (at
   the bottom of the file). Palette-blind — every rule consumes
   `var(--diagram-*)`, so new palettes inherit coverage by defining the
   token contract. Coverage is audited periodically — the most recent
@@ -1042,7 +1042,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   `section.image:not(.full):not(.museum)` — museum slides structurally
   never receive the border or its padding offset. Museum rules no longer
   need explicit `border: none` resets. Museum emulator box-shadow
-  promoted to `!important` ([lattice.css](../lattice.css), image
+  promoted to `!important` ([lattice.css](../dist/lattice.css), image
   half-canvas block).
 - **Triggered by:** Any `image museum` or `image museum mirror` slide.
 - **Removable when:** Never — the guard is cheap and the alternative
