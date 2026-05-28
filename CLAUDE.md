@@ -81,10 +81,18 @@ Generated, committed artifacts live in **`dist/`**:
 cuoio, into one drop-in stylesheet with `@import 'lattice'` resolved —
 the zero-config / browser-droppable default; change `DEFAULT_THEME` in
 that generator to re-bless another palette), `dist/lattice-runtime.js`
-(esbuild runtime bundle), and `dist/docs/components.{md,html}` (the canonical
-single-file component reference). These are the shipped/public paths —
-decks load `dist/lattice.css` via `marp.config.js` `themeSet`, and the
-README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
+(esbuild runtime bundle), `dist/lattice-emulator.js` (the esbuild-bundled
+emulator CLI — the package `bin`/`main`; `build-emulator.js` inlines the
+local engine graph and leaves node_modules deps external, mirroring the
+runtime split of `lib/runtime/index.js` source → `dist/` bundle),
+`dist/docs/components.{md,html}` (the canonical single-file component
+reference), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
+runs last). These are the shipped/public paths — decks load
+`dist/lattice.css` via `marp.config.js` `themeSet`, and the README/jsdelivr
+URLs point into `dist/`. Do not hand-edit them. (The repo-root
+`lattice-emulator.js` is the **source** the bundle builds from — and the
+path tests/tools invoke directly; the bundle uses a package-root walk so it
+resolves `themes/` and `dist/lattice.css` from either location.)
 
 - `npm run build` — regenerate every artifact in dependency order,
   behind the collision gate. `npm run build:check` is the CI/stale gate.
@@ -95,13 +103,16 @@ README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
   unlisted layout co-ownership, duplicate component CSS selectors,
   duplicate component names, missing core theme tokens — and forces the
   intentional cases into the allow-lists in `tools/check-ownership.js`.
-  Individual generators (`css:build`, `runtime:build`, `snippets:build`,
-  `docs:components`, `docs:portal`) still exist for targeted rebuilds.
+  Individual generators (`css:build`, `runtime:build`, `emulator:build`,
+  `snippets:build`, `docs:components`, `docs:portal`, `dist-readme:build`)
+  still exist for targeted rebuilds.
 
 **What ships to npm.** The package is `@slidewright/lattice`, consumed
 through named `exports` subpaths — `/css` (`dist/lattice.css`),
 `/runtime` (`dist/lattice-runtime.js`), `/config` (`marp.config.js`),
-`/themes/<name>.css`, plus the `lattice` `bin` (the emulator). The
+`/themes/<name>.css`, plus the `lattice` `bin` / `main` / `.` export, all
+now pointing at the bundled `dist/lattice-emulator.js` (not the repo-root
+source). The
 `files` allowlist ships engine source, `dist/`, `themes/`, and the two
 authoring docs (`design/skill.md`, `design/design-system.md`)
 only. **PDFs and `*.gallery.md` are excluded from the tarball** (the

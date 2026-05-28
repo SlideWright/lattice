@@ -48,6 +48,30 @@ pre-commit:
         - 'lib/core/**/*.js'
         - 'lib/components/**/*.transform.js'
       run: npm run runtime:check --silent
+    - name: emulator-bundle-freshness
+      # Catches the "edited the emulator or a module it inlines, forgot to
+      # rebuild dist/lattice-emulator.js" failure mode. The esbuild bundle
+      # entry is lattice-emulator.js; it inlines the local graph
+      # (lib/core, lib/transformers, lib/components/*.transform, lib/integrations,
+      # marp.config.js). node_modules deps stay external, so dep bumps don't
+      # need a rebuild. Cheap rebuild-to-tmp + byte-diff via emulator:check.
+      # Skippable via `git commit --no-verify` only as a last resort.
+      glob:
+        - 'lattice-emulator.js'
+        - 'marp.config.js'
+        - 'lib/core/**/*.js'
+        - 'lib/transformers/**/*.js'
+        - 'lib/components/**/*.transform.js'
+        - 'lib/integrations/**/*.js'
+      run: npm run emulator:check --silent
+    - name: dist-readme-freshness
+      # Catches "changed which files dist/ ships (or their descriptions),
+      # forgot to regenerate dist/README.md". The README indexes dist/
+      # structure, so the generator itself is the trigger; structural
+      # additions are otherwise caught by build:check in CI.
+      glob:
+        - 'tools/build-dist-readme.js'
+      run: npm run dist-readme:check --silent
     - name: component-docs-freshness
       # Catches the "edited a manifest, forgot to regenerate the
       # <name>.docs.md and <name>.gallery.md siblings" failure mode.

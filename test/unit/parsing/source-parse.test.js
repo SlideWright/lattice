@@ -29,4 +29,8 @@ describe('source-parse', () => {
   test('lattice-runtime.js parses', () => {
     assert.doesNotThrow(() => nodeCheck('dist/lattice-runtime.js'));
   });
+
+  test('dist/lattice-emulator.js parses', () => {
+    assert.doesNotThrow(() => nodeCheck('dist/lattice-emulator.js'));
+  });
 });

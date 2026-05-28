@@ -29,6 +29,23 @@ const path          = require('path');
 const os            = require('os');
 const { execSync }  = require('child_process');
 
+// Package root for sibling-asset lookups (themes/, dist/lattice.css,
+// node_modules/.bin/mmdc). This file runs from two locations: as repo-root
+// source (tests, `node lattice-emulator.js`) where __dirname IS the root,
+// and as the bundled dist/lattice-emulator.js (the published `bin`) where
+// __dirname is <root>/dist. esbuild collapses every bundled module onto the
+// output file's __dirname, so a fixed `..` is wrong for the source case —
+// walk up to the nearest package.json instead, which lands on the root in
+// both layouts (and on the installed package dir for npm consumers).
+const PKG_ROOT = (() => {
+  let dir = __dirname;
+  while (dir !== path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
+    dir = path.dirname(dir);
+  }
+  return __dirname;
+})();
+
 // highlight.js — available as transitive dep of mermaid-cli, or as a
 // project dep. Try standard resolution first, then mermaid-cli's bundled copy.
 let hljs;
@@ -151,7 +168,7 @@ function restoreMath(html) {
 // ── Help / version (handled before positional parsing) ─────────────────────
 function listAvailablePalettes() {
   try {
-    return fs.readdirSync(path.join(__dirname, 'themes'))
+    return fs.readdirSync(path.join(PKG_ROOT, 'themes'))
       .filter(f => f.endsWith('.css'))
       .map(f => f.replace('.css', ''))
       .join(', ');
@@ -269,7 +286,7 @@ if (positional[1]?.endsWith('.css')) {
   outFile    = positional[2];
   paletteArg = positional[3];
 } else {
-  cssFile    = path.join(__dirname, 'dist', 'lattice.css');
+  cssFile    = path.join(PKG_ROOT, 'dist', 'lattice.css');
   outFile    = positional[1];
   paletteArg = positional[2];
 }
@@ -310,7 +327,7 @@ const md = readFileOrDie(mdFile, 'source markdown');
 // be unit-tested in isolation; see test/unit/palette-resolution.test.js.
 const { resolvePalette } = require('./lib/core/resolve-palette');
 const paletteName = resolvePalette({ md, cliArg: paletteArg }).name;
-const palettePath = path.join(__dirname, 'themes', `${paletteName}.css`);
+const palettePath = path.join(PKG_ROOT, 'themes', `${paletteName}.css`);
 if (!fs.existsSync(palettePath)) {
   console.error(`error: palette not found: ${paletteName}`);
   console.error(`       (looked in ${palettePath})`);
@@ -809,7 +826,7 @@ function renderMermaid(definition) {
   // Resolve mmdc binary explicitly — falls back to bare 'mmdc' on PATH if the
   // local install is missing. Direct `node lattice-emulator.js` doesn't include
   // node_modules/.bin in PATH the way `npm run` does.
-  const localMmdc = path.join(__dirname, 'node_modules', '.bin', 'mmdc');
+  const localMmdc = path.join(PKG_ROOT, 'node_modules', '.bin', 'mmdc');
   const mmdcBin   = fs.existsSync(localMmdc) ? localMmdc : 'mmdc';
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
