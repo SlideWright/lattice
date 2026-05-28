@@ -1,32 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 116" role="img" aria-label="Lattice">
   <title>Lattice</title>
   <defs>
-    <!-- Cross-width gradients give each strut a metallic, beveled tube sheen.
-         Spatial split: indigo struts on the left, leather-gold on the right.
+    <!-- Lengthwise gradients (along each strut): lit toward the top, falling to
+         a deeper tone at the foot — a consistent overhead light, smooth (no
+         centerline stripe). Spatial split: indigo left, leather-gold right.
          Indigo stays mid-tone so the mark also reads on a dark canvas. -->
-    <linearGradient id="ll-navy" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#10173a"/>
-      <stop offset="0.34" stop-color="#3b3f7c"/>
-      <stop offset="0.5" stop-color="#5054a0"/>
-      <stop offset="0.68" stop-color="#2a2e5e"/>
-      <stop offset="1" stop-color="#0c1130"/>
+    <linearGradient id="ll-navy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4f97"/>
+      <stop offset="1" stop-color="#11163a"/>
     </linearGradient>
-    <linearGradient id="ll-gold" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#8a5e16"/>
-      <stop offset="0.34" stop-color="#d79c38"/>
-      <stop offset="0.5" stop-color="#f3c75f"/>
-      <stop offset="0.68" stop-color="#c2862a"/>
-      <stop offset="1" stop-color="#8a5a14"/>
+    <linearGradient id="ll-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f1c25c"/>
+      <stop offset="1" stop-color="#9a6417"/>
     </linearGradient>
-    <linearGradient id="ll-mix1" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#2c2c64"/>
-      <stop offset="0.5" stop-color="#7a6a55"/>
-      <stop offset="1" stop-color="#c68f33"/>
+    <linearGradient id="ll-mix1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a609a"/>
+      <stop offset="1" stop-color="#9c6c24"/>
     </linearGradient>
-    <linearGradient id="ll-mix2" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#212150"/>
-      <stop offset="0.5" stop-color="#86714e"/>
-      <stop offset="1" stop-color="#d89c39"/>
+    <linearGradient id="ll-mix2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4f97"/>
+      <stop offset="1" stop-color="#b07f2a"/>
     </linearGradient>
     <linearGradient id="ll-frame" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#36467a"/>
