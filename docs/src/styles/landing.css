@@ -1,0 +1,545 @@
+/* Lattice landing page — dogfoods the engine's own design tokens.
+ *
+ * Colour tokens (--bg / --accent / …) come from lattice-tokens.generated.css,
+ * which is emitted by tools/build-landing-tokens.js from the SAME resolver the
+ * component portal uses (themes/<name>.css). That keeps the landing and the
+ * portal visually identical and lets a visitor's palette/mode choice persist
+ * across the jump (shared localStorage keys: lattice-docs-palette / -mode).
+ *
+ * Only STRUCTURE lives here; never hand-edit the generated token file. */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import './lattice-tokens.generated.css';
+
+:root {
+	--font-display: 'Playfair Display', Georgia, serif;
+	--font-body: 'Outfit', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+	/* Fallback palette (indaco light) — overridden by the generated blocks
+	 * once data-palette / data-mode are set on <html>. */
+	--bg: #ffffff;
+	--bg-alt: #f2f5fa;
+	--border: #e4eaf2;
+	--text-heading: #0a1628;
+	--text-body: #1e3a5f;
+	--text-muted: #6b7f9a;
+	--accent: #006fa8;
+	--accent-soft: #eff6fc;
+	--bg-dark: #003d66;
+
+	--maxw: 1180px;
+	--radius-sm: 8px;
+	--radius-md: 14px;
+	--radius-lg: 22px;
+}
+
+/* Derived, mode-level tokens (palette-agnostic), mirroring the portal. */
+:root,
+html[data-mode='light'] {
+	--shadow-sm: 0 1px 2px rgba(10, 22, 40, 0.05), 0 4px 12px rgba(10, 22, 40, 0.06);
+	--shadow-lg: 0 2px 6px rgba(10, 22, 40, 0.06), 0 24px 60px rgba(10, 22, 40, 0.14);
+	--on-dark: #f4f8fc;
+	--on-dark-muted: rgba(244, 248, 252, 0.62);
+}
+html[data-mode='dark'] {
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.4);
+	--shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.4), 0 24px 60px rgba(0, 0, 0, 0.55);
+	--on-dark: #f4f8fc;
+	--on-dark-muted: rgba(244, 248, 252, 0.62);
+}
+
+/* ── Reset (standalone page — no Starlight resets inherited) ─────────── */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+html {
+	scroll-behavior: smooth;
+	-webkit-text-size-adjust: 100%;
+}
+body {
+	margin: 0;
+	font-family: var(--font-body);
+	font-weight: 400;
+	color: var(--text-body);
+	background: var(--bg);
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+img {
+	max-width: 100%;
+	display: block;
+}
+a {
+	color: var(--accent);
+	text-decoration: none;
+}
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	color: var(--text-heading);
+	letter-spacing: -0.02em;
+	line-height: 1.08;
+	margin: 0;
+}
+code {
+	font-family: var(--font-mono);
+}
+.wrap {
+	width: 100%;
+	max-width: var(--maxw);
+	margin: 0 auto;
+	padding: 0 24px;
+}
+.eyebrow {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--accent);
+	margin: 0;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────── */
+.topbar {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background: color-mix(in srgb, var(--bg) 86%, transparent);
+	backdrop-filter: saturate(180%) blur(12px);
+	border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	height: 62px;
+}
+.brand-mark {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 22px;
+	color: var(--text-heading);
+	letter-spacing: -0.01em;
+}
+.topnav {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	margin-left: auto;
+}
+.topnav a.navlink {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--text-body);
+}
+.topnav a.navlink:hover {
+	color: var(--accent);
+}
+.controls {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.palette-select {
+	padding: 6px 9px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--text-body);
+	font-family: var(--font-body);
+	font-size: 13px;
+	cursor: pointer;
+}
+.palette-select:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.mode-toggle {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	cursor: pointer;
+	font-size: 15px;
+	line-height: 1;
+}
+.mode-toggle:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+.mode-toggle::before {
+	content: '☾';
+}
+html[data-mode='dark'] .mode-toggle::before {
+	content: '☀';
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 22px;
+	border-radius: var(--radius-sm);
+	font-family: var(--font-body);
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.btn-primary {
+	background: var(--accent);
+	color: var(--on-dark);
+	box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-lg);
+}
+.btn-ghost {
+	background: transparent;
+	color: var(--text-heading);
+	border-color: var(--border);
+}
+.btn-ghost:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────── */
+.hero {
+	padding: clamp(48px, 7vw, 96px) 0 clamp(40px, 5vw, 72px);
+}
+.hero-grid {
+	display: grid;
+	grid-template-columns: 1.05fr 1fr;
+	gap: clamp(28px, 4vw, 56px);
+	align-items: center;
+}
+.hero-copy .eyebrow {
+	margin-bottom: 18px;
+}
+.hero h1 {
+	font-size: clamp(38px, 5.4vw, 68px);
+	margin-bottom: 22px;
+}
+.hero h1 .accent {
+	color: var(--accent);
+	font-style: italic;
+}
+.hero-lead {
+	font-size: clamp(17px, 1.5vw, 20px);
+	color: var(--text-body);
+	max-width: 46ch;
+	margin: 0 0 30px;
+}
+.cta-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+}
+.cta-note {
+	font-size: 13px;
+	color: var(--text-muted);
+	margin: 16px 0 0;
+}
+
+/* The "write Markdown → get this" pairing. */
+.proof {
+	display: grid;
+	grid-template-rows: auto auto;
+	gap: 14px;
+}
+.proof-code {
+	background: var(--bg-dark);
+	border-radius: var(--radius-md);
+	padding: 18px 20px;
+	box-shadow: var(--shadow-lg);
+	overflow: auto;
+}
+.proof-code pre {
+	margin: 0;
+	font-family: var(--font-mono);
+	font-size: 12.5px;
+	line-height: 1.65;
+	color: var(--on-dark);
+	white-space: pre;
+}
+.proof-code .ln-class {
+	color: color-mix(in srgb, var(--accent) 70%, #ffffff);
+}
+.proof-code .ln-h {
+	color: #fff;
+	font-weight: 600;
+}
+.proof-code .ln-dim {
+	color: var(--on-dark-muted);
+}
+.proof-arrow {
+	align-self: center;
+	justify-self: center;
+	font-family: var(--font-mono);
+	font-size: 12px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+.slide-frame {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	box-shadow: var(--shadow-lg);
+	background: var(--bg-alt);
+	aspect-ratio: 16 / 9;
+}
+.slide-frame img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* ── Section scaffolding ─────────────────────────────────────────────── */
+.section {
+	padding: clamp(48px, 6vw, 88px) 0;
+}
+.section.alt {
+	background: var(--bg-alt);
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+}
+.section-head {
+	max-width: 62ch;
+	margin-bottom: 40px;
+}
+.section-head .eyebrow {
+	margin-bottom: 12px;
+}
+.section-head h2 {
+	font-size: clamp(28px, 3.4vw, 42px);
+	margin-bottom: 14px;
+}
+.section-head p {
+	font-size: 17px;
+	color: var(--text-body);
+	margin: 0;
+}
+
+/* ── Feature grid ────────────────────────────────────────────────────── */
+.feature-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+.feature {
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	padding: 26px 24px;
+	box-shadow: var(--shadow-sm);
+}
+.section.alt .feature {
+	background: var(--bg);
+}
+.feature h3 {
+	font-family: var(--font-body);
+	font-weight: 600;
+	font-size: 18px;
+	letter-spacing: -0.01em;
+	color: var(--text-heading);
+	margin-bottom: 8px;
+	line-height: 1.3;
+}
+.feature p {
+	font-size: 15px;
+	color: var(--text-body);
+	margin: 0;
+}
+.feature code {
+	font-size: 0.88em;
+	color: var(--accent);
+}
+
+/* ── Showcase strip ──────────────────────────────────────────────────── */
+.showcase {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 16px;
+}
+.shot {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	background: var(--bg);
+	box-shadow: var(--shadow-sm);
+	transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.shot:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-lg);
+}
+.shot .shot-img {
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+}
+.shot .shot-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.shot figcaption {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 8px;
+	padding: 12px 14px;
+	border-top: 1px solid var(--border);
+}
+.shot .fn {
+	font-family: var(--font-mono);
+	font-size: 10.5px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+.shot .nm {
+	font-size: 12.5px;
+	color: var(--text-muted);
+}
+
+/* ── Next-step cards ─────────────────────────────────────────────────── */
+.next-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+.next-card {
+	display: block;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	padding: 26px 24px;
+	box-shadow: var(--shadow-sm);
+	transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+}
+.next-card:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-lg);
+	border-color: var(--accent);
+}
+.next-card h3 {
+	font-family: var(--font-body);
+	font-weight: 600;
+	font-size: 19px;
+	color: var(--text-heading);
+	margin-bottom: 8px;
+}
+.next-card p {
+	font-size: 15px;
+	color: var(--text-body);
+	margin: 0 0 14px;
+}
+.next-card .go {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--accent);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.foot {
+	border-top: 1px solid var(--border);
+	background: var(--bg-alt);
+	padding: 40px 0;
+}
+.foot-inner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px 32px;
+	align-items: center;
+}
+.foot .brand-mark {
+	font-size: 18px;
+}
+.foot nav {
+	display: flex;
+	gap: 22px;
+	flex-wrap: wrap;
+}
+.foot nav a {
+	font-size: 14px;
+	color: var(--text-body);
+}
+.foot nav a:hover {
+	color: var(--accent);
+}
+.foot .legal {
+	margin-left: auto;
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+/* Light/dark slide-image swap (each showcase has a .light + .dark render). */
+.for-dark {
+	display: none;
+}
+html[data-mode='dark'] .for-light {
+	display: none;
+}
+html[data-mode='dark'] .for-dark {
+	display: block;
+}
+
+/* ── Responsive (fluid, single codebase) ─────────────────────────────── */
+@media (max-width: 900px) {
+	.hero-grid {
+		grid-template-columns: 1fr;
+	}
+	.proof {
+		order: -1; /* image-first on small screens */
+	}
+	.feature-grid,
+	.next-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.showcase {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media (max-width: 620px) {
+	.topnav {
+		gap: 12px;
+	}
+	.topnav .navlink {
+		display: none; /* keep palette + mode controls; links collapse to footer */
+	}
+	.feature-grid,
+	.next-grid {
+		grid-template-columns: 1fr;
+	}
+	/* Showcase becomes a horizontal swipe carousel on phones. */
+	.showcase {
+		display: flex;
+		gap: 14px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		padding-bottom: 6px;
+	}
+	.shot {
+		flex: 0 0 78%;
+		scroll-snap-align: start;
+	}
+	.foot .legal {
+		margin-left: 0;
+	}
+}

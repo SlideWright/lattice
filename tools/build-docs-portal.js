@@ -428,6 +428,10 @@ ${buildStyle()}
     <div class="brand">
       <a href="#top" class="brand-mark">Lattice</a>
       <p class="brand-sub">Component Reference</p>
+      <nav class="brand-links">
+        <a href="./">← Home</a>
+        <a href="https://github.com/slidewright/lattice">GitHub</a>
+      </nav>
     </div>
     <div class="controls">
       <label class="palette-field">
@@ -554,6 +558,18 @@ code { font-family: var(--font-mono); font-size: 0.88em; }
   letter-spacing: 0.14em;
   color: var(--text-muted);
 }
+.brand-links {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+}
+.brand-links a {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-body);
+  text-decoration: none;
+}
+.brand-links a:hover { color: var(--accent); }
 
 .controls {
   display: flex;
@@ -1111,6 +1127,8 @@ module.exports = {
   renderComponent,
   resolvePalettes,
   listBasePalettes,
+  paletteCss,
+  PORTAL_TOKENS,
   build,
   HTML_FILE,
   MD_FILE,

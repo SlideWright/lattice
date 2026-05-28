@@ -5,6 +5,8 @@ dist/
 # portal copies staged from ../docs by scripts/sync-portal.mjs
 public/components.html
 public/components.md
+# scratch dir used by scripts/rasterize-showcase.mjs (cleaned up on success)
+.showcase-tmp/
 
 # dependencies
 node_modules/

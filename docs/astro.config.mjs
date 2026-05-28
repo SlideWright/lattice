@@ -22,6 +22,7 @@ export default defineConfig({
 				{
 					label: 'Start here',
 					items: [
+						{ label: 'Overview', slug: 'overview' },
 						{ label: 'What is Lattice?', slug: 'introduction' },
 						{ label: 'Getting started', slug: 'getting-started' },
 					],

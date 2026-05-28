@@ -1,0 +1,267 @@
+---
+// Lattice landing page — a standalone Astro route (NOT a Starlight page), so it
+// renders full-bleed with the engine's own tokens instead of Starlight chrome.
+// The docs pages (/getting-started, /introduction, …) stay 100% Starlight.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import '../styles/landing.css';
+
+// Astro evaluates this frontmatter at build time with cwd = docs/, so anchor
+// repo reads to cwd (import.meta.url is unreliable once the page is bundled).
+const docsRoot = process.cwd();
+const repoRoot = join(docsRoot, '..');
+const vg = JSON.parse(
+	readFileSync(join(repoRoot, 'lib/components/comparison/verdict-grid/verdict-grid.manifest.json'), 'utf8'),
+);
+
+// Base-path-safe URL builder (project pages live under /lattice/).
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+// Palette list = the distinct names baked into the generated token CSS — one
+// source of truth (themes/*.css via build-landing-tokens.js), no duplication.
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+// The hero's left panel shows the REAL manifest sample that produced the right
+// panel's rendered slide image — so "write this, get this" is literally true.
+const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const heroSource = vg.sample.trim();
+const heroCodeHtml = heroSource
+	.split('\n')
+	.map((line) => {
+		let cls = 'ln-dim';
+		if (/^<!--\s*_class/.test(line)) cls = 'ln-class';
+		else if (/^#{1,6}\s/.test(line)) cls = 'ln-h';
+		return `<span class="${cls}">${escapeHtml(line) || ' '}</span>`;
+	})
+	.join('\n');
+
+const showcase = [
+	{ id: 'anchor', fn: 'Anchor', nm: 'divider' },
+	{ id: 'statement', fn: 'Statement', nm: 'big-number' },
+	{ id: 'inventory', fn: 'Inventory', nm: 'cards-grid' },
+	{ id: 'comparison', fn: 'Comparison', nm: 'before-after' },
+	{ id: 'progression', fn: 'Progression', nm: 'roadmap' },
+	{ id: 'evidence', fn: 'Evidence', nm: 'kpi' },
+	{ id: 'imagery', fn: 'Imagery', nm: 'image' },
+	{ id: 'hero', fn: 'Comparison', nm: 'verdict-grid' },
+];
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Lattice — boardroom-quality slide decks from Markdown</title>
+		<meta
+			name="description"
+			content="Lattice turns a plain Markdown file into a boardroom-quality slide deck. Pick a named layout per slide; the engine assembles every deck against one palette."
+		/>
+		<link rel="icon" href={url('favicon.svg')} />
+		<!-- Set palette/mode before first paint to avoid a flash. Shares the
+		     portal's localStorage keys so a choice carries across the jump. -->
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)
+						r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<header class="topbar">
+			<div class="wrap topbar-inner">
+				<a class="brand-mark" href={url('')}>Lattice</a>
+				<nav class="topnav">
+					<a class="navlink" href={url('getting-started/')}>Get started</a>
+					<a class="navlink" href={url('guides/authoring/')}>Authoring</a>
+					<a class="navlink" href={url('components.html')}>Components</a>
+					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+					<div class="controls">
+						<select class="palette-select" id="palette" aria-label="Palette">
+							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
+						</select>
+						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+					</div>
+				</nav>
+			</div>
+		</header>
+
+		<main>
+			<!-- Hero -->
+			<section class="hero">
+				<div class="wrap hero-grid">
+					<div class="hero-copy">
+						<p class="eyebrow">A text file in, a polished PDF out</p>
+						<h1>Write the <span class="accent">words</span>. The deck builds itself.</h1>
+						<p class="hero-lead">
+							You write the deck as a Markdown file and pick a named layout for each
+							slide. Lattice assembles every page against one shared palette — no
+							dragging, no nudging, no formatting drift.
+						</p>
+						<div class="cta-row">
+							<a class="btn btn-primary" href={url('getting-started/')}>Render your first deck →</a>
+							<a class="btn btn-ghost" href={url('components.html')}>Browse the catalog</a>
+						</div>
+						<p class="cta-note">Runs on your laptop or in CI. Fully offline. MIT-licensed.</p>
+					</div>
+
+					<div class="proof">
+						<div class="proof-code">
+							<pre><code set:html={heroCodeHtml}></code></pre>
+						</div>
+						<div class="proof-arrow">↓ renders to ↓</div>
+						<figure class="slide-frame">
+							<img class="for-light" src={url('showcase/hero.light.webp')} alt="A verdict-grid slide rendered by Lattice" width="1600" height="900" loading="eager" />
+							<img class="for-dark" src={url('showcase/hero.dark.webp')} alt="A verdict-grid slide rendered by Lattice in dark mode" width="1600" height="900" loading="eager" />
+						</figure>
+					</div>
+				</div>
+			</section>
+
+			<!-- Why -->
+			<section class="section alt">
+				<div class="wrap">
+					<div class="section-head">
+						<p class="eyebrow">Why decks drift, and why these don't</p>
+						<h2>Every deck looks like it came from the same team — because it did.</h2>
+						<p>
+							Slide tools make every slide a blank canvas, so the headline font on
+							page 4 drifts from page 5 and the accent blue wanders between two shades.
+							Lattice removes the canvas. You choose meaning; the engine owns the pixels.
+						</p>
+					</div>
+					<div class="feature-grid">
+						<div class="feature">
+							<h3>Brand colors live in one file.</h3>
+							<p>Change a palette once; every deck picks it up on the next build. Layouts never name a colour — they read <code>var(--token)</code>.</p>
+						</div>
+						<div class="feature">
+							<h3>A <code>git diff</code> shows what changed.</h3>
+							<p>A deck is text. Revisions read like code review — line by line — instead of hunting for the box that moved three pixels.</p>
+						</div>
+						<div class="feature">
+							<h3>Mermaid diagrams render in the palette.</h3>
+							<p>Flowcharts and sequence diagrams pick up the deck's tokens automatically. No per-diagram styling, no recolouring by hand.</p>
+						</div>
+						<div class="feature">
+							<h3>Contrast is WCAG AA across every layout.</h3>
+							<p>Accessibility is built into the token contract, not bolted on. Light and dark both clear the bar.</p>
+						</div>
+						<div class="feature">
+							<h3>Fifty-eight layouts, one vocabulary.</h3>
+							<p>Function · Form · Substance · Finish organizes the catalog, so "which layout do I want?" has an answer that isn't <em>scroll the gallery</em>.</p>
+						</div>
+						<div class="feature">
+							<h3>No service, no account, no telemetry.</h3>
+							<p>The engine is a build step. It runs where your code runs and sends nothing anywhere.</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Showcase -->
+			<section class="section">
+				<div class="wrap">
+					<div class="section-head">
+						<p class="eyebrow">One engine, every kind of slide</p>
+						<h2>From the opening title to the closing ask.</h2>
+						<p>
+							Seven functions cover what a slide does for the audience — anchor,
+							statement, inventory, comparison, progression, evidence, imagery. Each
+							renders in the palette you choose above.
+						</p>
+					</div>
+					<div class="showcase">
+						{showcase.map((s) => (
+							<figure class="shot">
+								<div class="shot-img">
+									<img class="for-light" src={url(`showcase/${s.id}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
+									<img class="for-dark" src={url(`showcase/${s.id}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
+								</div>
+								<figcaption>
+									<span class="fn">{s.fn}</span>
+									<span class="nm">{s.nm}</span>
+								</figcaption>
+							</figure>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Next steps -->
+			<section class="section alt">
+				<div class="wrap">
+					<div class="section-head">
+						<p class="eyebrow">Where to go next</p>
+						<h2>Pick a starting point.</h2>
+					</div>
+					<div class="next-grid">
+						<a class="next-card" href={url('getting-started/')}>
+							<h3>Get started</h3>
+							<p>Install the toolchain and render your first deck in a few minutes.</p>
+							<span class="go">Getting started →</span>
+						</a>
+						<a class="next-card" href={url('guides/authoring/')}>
+							<h3>Author decks</h3>
+							<p>Learn the layout catalog and the authoring contract slide by slide.</p>
+							<span class="go">Authoring guide →</span>
+						</a>
+						<a class="next-card" href={url('components.html')}>
+							<h3>Component reference</h3>
+							<p>Every layout, modifier, and substance contract — themable in all palettes.</p>
+							<span class="go">Browse components →</span>
+						</a>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="foot">
+			<div class="wrap foot-inner">
+				<a class="brand-mark" href={url('')}>Lattice</a>
+				<nav>
+					<a href={url('introduction/')}>What is Lattice?</a>
+					<a href={url('getting-started/')}>Get started</a>
+					<a href={url('guides/authoring/')}>Authoring</a>
+					<a href={url('guides/themes/')}>Themes</a>
+					<a href={url('components.html')}>Components</a>
+					<a href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<span class="legal">The engine layer of SlideWright · MIT-licensed</span>
+			</div>
+		</footer>
+
+		<!-- Palette + light/dark wiring. Same localStorage keys as the portal. -->
+		<script is:inline>
+			(function () {
+				var root = document.documentElement;
+				var sel = document.getElementById('palette');
+				if (sel) {
+					sel.value = root.getAttribute('data-palette');
+					sel.addEventListener('change', function () {
+						root.setAttribute('data-palette', sel.value);
+						try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
+					});
+				}
+				var btn = document.getElementById('mode-toggle');
+				if (btn) {
+					btn.addEventListener('click', function () {
+						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+						root.setAttribute('data-mode', next);
+						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+					});
+				}
+			})();
+		</script>
+	</body>
+</html>

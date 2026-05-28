@@ -74,6 +74,8 @@
     "docs:components:check": "node tools/build-component-docs.js --check",
     "docs:portal": "node tools/build-docs-portal.js",
     "docs:portal:check": "node tools/build-docs-portal.js --check",
+    "docs:landing-tokens": "node tools/build-landing-tokens.js",
+    "docs:landing-tokens:check": "node tools/build-landing-tokens.js --check",
     "check:ownership": "node tools/check-ownership.js",
     "build:galleries": "node tools/build-galleries.js",
     "build:galleries:check": "node tools/build-galleries.js --check",

@@ -4,9 +4,11 @@
   "version": "0.0.1",
   "scripts": {
     "sync:portal": "node scripts/sync-portal.mjs",
+    "showcase": "node scripts/rasterize-showcase.mjs",
+    "showcase:check": "node scripts/rasterize-showcase.mjs --check",
     "dev": "npm run sync:portal && astro dev",
     "start": "npm run sync:portal && astro dev",
-    "build": "npm run sync:portal && astro build",
+    "build": "npm run showcase:check && npm run sync:portal && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
