@@ -98,5 +98,6 @@
       "caption": "Treats the phase headers as dated milestones, carrying their date pill as a subtitle. Use when the cadence of the dates is part of the story, not just the sequence.",
       "sample": "<!-- _class: roadmap milestones -->\n\n`Layout · roadmap milestones`\n\n## The dated path to GA.\n\n| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |\n| ---------- | -------------------- | ---------------------- | ------------------------- |\n| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |\n| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |\n| Compliance | Audit trail          | Centralised log        | Examiner pack             |\n"
     }
-  }
+  },
+  "showcase": { "featured": true }
 }

@@ -77,5 +77,6 @@
       "name": "content",
       "when": "the diagram is one element in a prose slide"
     }
-  ]
+  ],
+  "showcase": { "featured": true, "page": 4 }
 }

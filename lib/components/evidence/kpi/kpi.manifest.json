@@ -115,5 +115,6 @@
       "caption": "Hero KPI gets a paragraph of body copy and a row of context pills; the supporting three render at normal weight underneath. Best for the headline slide of an investor update or earnings narrative.",
       "sample": "<!-- _class: kpi spotlight -->\n\n### Headline · Q4 2026\n## The number behind the quarter.\n\n1. **$420M**\n   - Annual recurring revenue\n   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M.\n   - `Headline` `Board` `Investor`\n2. **94%**\n   - Net dollar retention\n   - +3pp YoY `On plan`\n3. **2,840**\n   - Enterprise logos\n   - +540 net new `On plan`\n4. **$148K**\n   - Average contract value\n   - +$22K vs prior year `On plan`\n"
     }
-  }
+  },
+  "showcase": { "featured": true }
 }

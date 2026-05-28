@@ -62,5 +62,6 @@
       "name": "big-number",
       "when": "the most memorable thing is a metric, not a phrase"
     }
-  ]
+  ],
+  "showcase": { "featured": true }
 }

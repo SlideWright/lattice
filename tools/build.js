@@ -20,6 +20,8 @@
  *   4. VS Code snippets       tools/build-snippets.js
  *   5. per-component docs      tools/build-component-docs.js
  *   6. canonical doc portal    tools/build-docs-portal.js
+ *   7. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
+ *   8. playground bundle       tools/build-playground.js      (docs site browser engine)
  *
  * Gallery PDFs are NOT part of this build: they need Chromium, take tens
  * of seconds, and are regression artifacts rather than shipped source.
@@ -53,6 +55,8 @@ const STEPS = [
   { label: 'VS Code snippets', script: 'build-snippets.js' },
   { label: 'per-component docs', script: 'build-component-docs.js' },
   { label: 'doc portal (components.md/.html)', script: 'build-docs-portal.js' },
+  { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
+  { label: 'playground bundle (docs site)', script: 'build-playground.js' },
 ];
 
 function runStep(step, check) {

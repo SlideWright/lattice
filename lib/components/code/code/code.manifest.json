@@ -67,5 +67,6 @@
       "name": "content",
       "when": "code is one piece of a longer prose explanation"
     }
-  ]
+  ],
+  "showcase": { "featured": true }
 }

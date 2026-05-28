@@ -72,5 +72,6 @@
       "caption": "Stamps an auto-incrementing section number in the corner. Each divider in the deck increments the counter; closing slides carry an independent counter.",
       "sample": "<!-- _class: divider silent numbered -->\n\n`Section 03`\n\n# Inventory\n"
     }
-  }
+  },
+  "showcase": { "featured": true }
 }
