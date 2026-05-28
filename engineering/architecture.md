@@ -161,6 +161,37 @@ The structural mapping (`MERMAID_VAR_MAP`) is duplicated between
 runtime environments — Node and browser, respectively. The maps are
 verified byte-equivalent in the smoke test.
 
+## Where transforms live — the four roles
+
+A slide DOM transform can live in one of four places. The rule is
+**a transform kernel lives next to whatever it is most tightly coupled
+to** — so the location tells you the kind of thing it is, and vice
+versa:
+
+| Role | Coupled to | Home |
+|------|-----------|------|
+| **Component transform** | one component's CSS/manifest | `lib/components/<bucket>/<name>/<name>.transform.js` (roadmap, journey, word-cloud, the chart layouts) |
+| **Bucket-family transform** | one bucket | `lib/components/<bucket>/_family/` (chart-family) |
+| **Structural primitive** | nothing — any component opts in | `lib/core/` (split-panels, split-slides, slot-label-lift, match-section, resolve-palette) |
+| **Registry + render adapters** | the wiring across render paths | `lib/transformers/` |
+
+The distinction that surprises people: `split-panels` lives in
+`lib/core/`, not with a component, because it is a *structural
+primitive* — six distinct components in five buckets (split-metric in
+evidence, split-compare in comparison, split-steps in progression,
+split-list/brief/statement in statement) opt into its left-anchor /
+right-content panel mechanism, and they don't even share DOM class
+names. It is the same kind of thing as `split-slides`, not the same
+kind of thing as `roadmap.transform.js`. Different role → different
+home is correct, not an inconsistency.
+
+The `lib/transformers/` registry is the wiring layer: each entry is a
+registry-shaped adapter around a kernel (which lives in one of the
+first three homes), exposing the uniform interface the three render
+paths consume. That two-file split (kernel co-located with its
+component or in `lib/core/`; adapter in `lib/transformers/`) keeps
+component folders free of render-path plumbing.
+
 ## The Mermaid theming wall
 
 Mermaid's theming API has known limits we work around:

@@ -64,6 +64,15 @@ Each transform documents its sibling implementations in a header comment
 (see `liftSlotLabel`, `chartFamily`, `splitPanelCounter`). The integration
 tier asserts cross-renderer parity on slide count.
 
+**Where a transform kernel lives is determined by what it's coupled to**
+(full table in `engineering/architecture.md` § "Where transforms live"):
+component-coupled → `lib/components/<bucket>/<name>/<name>.transform.js`;
+bucket-coupled → `lib/components/<bucket>/_family/`; coupled to nothing
+(a structural primitive any component opts into, e.g. `split-panels`,
+`split-slides`) → `lib/core/`. The `lib/transformers/` registry is the
+wiring layer — a registry-shaped adapter around each kernel, exposing the
+uniform interface the three render paths consume.
+
 ## The build — `dist/` and `npm run build`
 
 Generated, committed artifacts live in **`dist/`**:
