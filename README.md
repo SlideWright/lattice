@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/public/lattice-lockup-dark.svg">
+    <img alt="Lattice" src="docs/public/lattice-lockup.svg" width="440">
+  </picture>
+</p>
+
 # Lattice
 
 A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets — from Markdown.
