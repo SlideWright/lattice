@@ -18,7 +18,7 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 <!-- _class: roadmap -->
 <!-- _footer: "Default · roadmap" -->
 
-`Layout · roadmap`
+`H2 2026 · Platform plan`
 
 ## What ships in each phase, by workstream.
 
@@ -28,8 +28,6 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 | Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
 | Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 
 ---
@@ -108,7 +106,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _class: roadmap dark -->
 <!-- _footer: "Composition: dark · roadmap dark" -->
 
-`Layout · roadmap`
+`H2 2026 · Platform plan`
 
 ## What ships in each phase, by workstream.
 
@@ -118,8 +116,6 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
 | Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 
 ---
@@ -127,7 +123,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _class: roadmap compact -->
 <!-- _footer: "Composition: compact · roadmap compact" -->
 
-`Layout · roadmap`
+`H2 2026 · Platform plan`
 
 ## What ships in each phase, by workstream.
 
@@ -137,8 +133,6 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
 | Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 
 ---
@@ -146,7 +140,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 <!-- _class: roadmap accent -->
 <!-- _footer: "Composition: accent · roadmap accent" -->
 
-`Layout · roadmap`
+`H2 2026 · Platform plan`
 
 ## What ships in each phase, by workstream.
 
@@ -156,8 +150,6 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
 | Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 
 ---

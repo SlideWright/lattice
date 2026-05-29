@@ -20,11 +20,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
+- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
+- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
+- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
 
 
 ---
@@ -89,11 +89,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
+- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
+- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
+- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
 
 
 ---
@@ -103,11 +103,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
+- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
+- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
+- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
 
 
 ---
@@ -117,11 +117,11 @@ Declared statements — short stated principles, each with a one-line justificat
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
+- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
+- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
+- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
 
 
 ---

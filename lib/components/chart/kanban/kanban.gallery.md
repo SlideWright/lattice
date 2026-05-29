@@ -22,7 +22,7 @@ Kanban board — columns of cards by stage.
 
 ## Where Phase 2 work stands today.
 
-Four columns, mixed card density. Size badge sits in the title row.
+Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
 
 - Backlog
   - Per-purpose codebooks `S`
@@ -100,7 +100,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## Where Phase 2 work stands today.
 
-Four columns, mixed card density. Size badge sits in the title row.
+Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
 
 - Backlog
   - Per-purpose codebooks `S`
@@ -133,7 +133,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## Where Phase 2 work stands today.
 
-Four columns, mixed card density. Size badge sits in the title row.
+Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
 
 - Backlog
   - Per-purpose codebooks `S`
@@ -166,7 +166,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## Where Phase 2 work stands today.
 
-Four columns, mixed card density. Size badge sits in the title row.
+Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
 
 - Backlog
   - Per-purpose codebooks `S`

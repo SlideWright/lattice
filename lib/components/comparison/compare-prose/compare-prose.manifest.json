@@ -28,7 +28,7 @@
   },
   "skeleton": "<!-- _class: compare-prose -->\n\n## Heading framing the comparison.\n\n- **First option.** Two-sentence description of the first option, including the strongest argument for it.\n- **Second option.** Two-sentence description of the second option, including the strongest argument for it.\n",
   "anatomyBlock": "T11-comparison",
-  "sample": "<!-- _class: compare-prose -->\n\n## Two options, equal weight, head-to-head.\n\n- First option\n  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.\n- Second option\n  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.\n",
+  "sample": "<!-- _class: compare-prose -->\n\n## Renew at list price, or hold the discount.\n\n- Hold the published rate\n  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.\n- Extend the legacy discount\n  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.\n",
   "whenToUse": [
     {
       "title": "Two prose alternatives",

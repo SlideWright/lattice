@@ -18,13 +18,13 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors -->
 <!-- _footer: "Default · actors" -->
 
-## Who owns each part of the lifecycle.
+## Who owns what when an incident is live.
 
-- **Author.** Drafts the deck; owns content and framing.
-- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
-- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
-- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
-- **Operator.** Schedules the briefing; controls the room and the projector.
+- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
+- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
+- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
+- **Scribe.** Logs every action with a timestamp for the post-incident review.
+- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
 
 
 ---
@@ -32,13 +32,13 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors dark -->
 <!-- _footer: "Composition: dark · actors dark" -->
 
-## Who owns each part of the lifecycle.
+## Who owns what when an incident is live.
 
-- **Author.** Drafts the deck; owns content and framing.
-- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
-- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
-- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
-- **Operator.** Schedules the briefing; controls the room and the projector.
+- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
+- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
+- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
+- **Scribe.** Logs every action with a timestamp for the post-incident review.
+- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
 
 
 ---
@@ -46,13 +46,13 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors compact -->
 <!-- _footer: "Composition: compact · actors compact" -->
 
-## Who owns each part of the lifecycle.
+## Who owns what when an incident is live.
 
-- **Author.** Drafts the deck; owns content and framing.
-- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
-- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
-- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
-- **Operator.** Schedules the briefing; controls the room and the projector.
+- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
+- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
+- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
+- **Scribe.** Logs every action with a timestamp for the post-incident review.
+- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
 
 
 ---
@@ -60,13 +60,13 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors accent -->
 <!-- _footer: "Composition: accent · actors accent" -->
 
-## Who owns each part of the lifecycle.
+## Who owns what when an incident is live.
 
-- **Author.** Drafts the deck; owns content and framing.
-- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
-- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
-- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
-- **Operator.** Schedules the briefing; controls the room and the projector.
+- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
+- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
+- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
+- **Scribe.** Logs every action with a timestamp for the post-incident review.
+- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
 
 
 ---

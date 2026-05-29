@@ -18,14 +18,14 @@ Three or four wide rows, each a full-width card.
 <!-- _class: cards-wide -->
 <!-- _footer: "Default · cards-wide" -->
 
-## When the items want full-width rows.
+## Three findings from the Q2 win/loss review.
 
-1. Each item has substantial body text
-   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
-2. The slide scans top-to-bottom
-   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
-3. Three or four rows feels right
-   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
+1. Price is rarely the reason we lose
+   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
+2. The security review is our slowest gate
+   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
+3. One competitor takes most of the displacement
+   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 
 ---
@@ -33,14 +33,14 @@ Three or four wide rows, each a full-width card.
 <!-- _class: cards-wide dark -->
 <!-- _footer: "Composition: dark · cards-wide dark" -->
 
-## When the items want full-width rows.
+## Three findings from the Q2 win/loss review.
 
-1. Each item has substantial body text
-   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
-2. The slide scans top-to-bottom
-   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
-3. Three or four rows feels right
-   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
+1. Price is rarely the reason we lose
+   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
+2. The security review is our slowest gate
+   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
+3. One competitor takes most of the displacement
+   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 
 ---
@@ -48,14 +48,14 @@ Three or four wide rows, each a full-width card.
 <!-- _class: cards-wide compact -->
 <!-- _footer: "Composition: compact · cards-wide compact" -->
 
-## When the items want full-width rows.
+## Three findings from the Q2 win/loss review.
 
-1. Each item has substantial body text
-   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
-2. The slide scans top-to-bottom
-   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
-3. Three or four rows feels right
-   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
+1. Price is rarely the reason we lose
+   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
+2. The security review is our slowest gate
+   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
+3. One competitor takes most of the displacement
+   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 
 ---
@@ -63,14 +63,14 @@ Three or four wide rows, each a full-width card.
 <!-- _class: cards-wide accent -->
 <!-- _footer: "Composition: accent · cards-wide accent" -->
 
-## When the items want full-width rows.
+## Three findings from the Q2 win/loss review.
 
-1. Each item has substantial body text
-   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
-2. The slide scans top-to-bottom
-   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
-3. Three or four rows feels right
-   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
+1. Price is rarely the reason we lose
+   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
+2. The security review is our slowest gate
+   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
+3. One competitor takes most of the displacement
+   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 
 ---

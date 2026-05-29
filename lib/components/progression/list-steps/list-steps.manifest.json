@@ -30,7 +30,7 @@
   },
   "skeleton": "<!-- _class: list-steps -->\n\n## How to roll this out.\n\n1. First step — a sentence describing what you do here.\n2. Second step — a sentence describing what you do here.\n3. Third step — a sentence describing what you do here.\n4. Fourth step — a sentence describing what you do here.\n",
   "anatomyBlock": "list-steps",
-  "sample": "<!-- _class: list-steps -->\n\n## How to add a new component to Lattice.\n\n1. Scaffold the folder\n   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.\n2. Author the styles\n   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.\n3. Add a transform if needed\n   - Substance `structure` or `series` ships a transform module wired into all three render paths.\n4. Demo and document\n   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.\n",
+  "sample": "<!-- _class: list-steps -->\n\n## What happens in the first hour of an incident.\n\n1. Declare and page\n   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.\n2. Assign a commander\n   - One person owns coordination and communication. They direct the response — they do not debug it.\n3. Stop the bleeding\n   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.\n4. Communicate on a clock\n   - A status update every 30 minutes, even when it is \"still investigating.\" Silence is what erodes trust.\n",
   "whenToUse": [
     {
       "title": "Steps need a sentence each",

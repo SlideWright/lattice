@@ -18,16 +18,16 @@ Vertical sequence of steps, each with full description body.
 <!-- _class: list-steps -->
 <!-- _footer: "Default · list-steps" -->
 
-## How to add a new component to Lattice.
+## What happens in the first hour of an incident.
 
-1. Scaffold the folder
-   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Author the styles
-   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
-3. Add a transform if needed
-   - Substance `structure` or `series` ships a transform module wired into all three render paths.
-4. Demo and document
-   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
+1. Declare and page
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+2. Assign a commander
+   - One person owns coordination and communication. They direct the response — they do not debug it.
+3. Stop the bleeding
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+4. Communicate on a clock
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
 
 
 ---
@@ -157,16 +157,16 @@ Vertical sequence of steps, each with full description body.
 <!-- _class: list-steps dark -->
 <!-- _footer: "Composition: dark · list-steps dark" -->
 
-## How to add a new component to Lattice.
+## What happens in the first hour of an incident.
 
-1. Scaffold the folder
-   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Author the styles
-   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
-3. Add a transform if needed
-   - Substance `structure` or `series` ships a transform module wired into all three render paths.
-4. Demo and document
-   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
+1. Declare and page
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+2. Assign a commander
+   - One person owns coordination and communication. They direct the response — they do not debug it.
+3. Stop the bleeding
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+4. Communicate on a clock
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
 
 
 ---
@@ -174,16 +174,16 @@ Vertical sequence of steps, each with full description body.
 <!-- _class: list-steps compact -->
 <!-- _footer: "Composition: compact · list-steps compact" -->
 
-## How to add a new component to Lattice.
+## What happens in the first hour of an incident.
 
-1. Scaffold the folder
-   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Author the styles
-   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
-3. Add a transform if needed
-   - Substance `structure` or `series` ships a transform module wired into all three render paths.
-4. Demo and document
-   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
+1. Declare and page
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+2. Assign a commander
+   - One person owns coordination and communication. They direct the response — they do not debug it.
+3. Stop the bleeding
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+4. Communicate on a clock
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
 
 
 ---
@@ -191,16 +191,16 @@ Vertical sequence of steps, each with full description body.
 <!-- _class: list-steps accent -->
 <!-- _footer: "Composition: accent · list-steps accent" -->
 
-## How to add a new component to Lattice.
+## What happens in the first hour of an incident.
 
-1. Scaffold the folder
-   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Author the styles
-   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
-3. Add a transform if needed
-   - Substance `structure` or `series` ships a transform module wired into all three render paths.
-4. Demo and document
-   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
+1. Declare and page
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+2. Assign a commander
+   - One person owns coordination and communication. They direct the response — they do not debug it.
+3. Stop the bleeding
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+4. Communicate on a clock
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
 
 
 ---

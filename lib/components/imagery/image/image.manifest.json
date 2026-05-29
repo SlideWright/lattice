@@ -31,7 +31,7 @@
   },
   "skeleton": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nReplace the bg image below with your own asset. The image fills its half-canvas slot edge-to-edge; a 1px hairline marks the join between text and image.\n\n![bg right](your-image.jpg)\n",
   "anatomyBlock": "image-canvas",
-  "sample": "<!-- _class: image -->\n\n## Image right is the default — text leads, evidence follows.\n\nThe image fills its half-canvas slot edge-to-edge. A 1px hairline marks the join between text and image — boardroom polish, no placeholder pattern visible behind a real photo. Replace the bg image directive with your own asset.\n\n![bg right](sample-image-landscape.svg)\n",
+  "sample": "<!-- _class: image -->\n\n## Activation is where the trial is won or lost.\n\nTwo-thirds of trials that reach the first generated report convert to paid; the ones that stall at workspace setup almost never do. The funnel on the right shows where the drop-off concentrates — in the week-one setup step, not at the price page.\n\n![bg right](sample-image-landscape.svg)\n",
   "whenToUse": [
     {
       "title": "The visual carries meaning",

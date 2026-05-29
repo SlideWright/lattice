@@ -18,16 +18,16 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 <!-- _class: timeline -->
 <!-- _footer: "Default · timeline" -->
 
-## How a deck moves from draft to share.
+## From first pilot to general availability.
 
-1. **Draft**
-   - *Author writes markdown with the appropriate `_class` directives.*
-2. **Build**
-   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
-3. **Review**
-   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
-4. **Ship**
-   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+1. **Pilot**
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. **Calibrate**
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. **Roll out**
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. **GA**
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
 ---
@@ -35,16 +35,16 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 <!-- _class: timeline dark -->
 <!-- _footer: "Composition: dark · timeline dark" -->
 
-## How a deck moves from draft to share.
+## From first pilot to general availability.
 
-1. **Draft**
-   - *Author writes markdown with the appropriate `_class` directives.*
-2. **Build**
-   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
-3. **Review**
-   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
-4. **Ship**
-   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+1. **Pilot**
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. **Calibrate**
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. **Roll out**
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. **GA**
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
 ---
@@ -52,16 +52,16 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 <!-- _class: timeline compact -->
 <!-- _footer: "Composition: compact · timeline compact" -->
 
-## How a deck moves from draft to share.
+## From first pilot to general availability.
 
-1. **Draft**
-   - *Author writes markdown with the appropriate `_class` directives.*
-2. **Build**
-   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
-3. **Review**
-   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
-4. **Ship**
-   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+1. **Pilot**
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. **Calibrate**
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. **Roll out**
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. **GA**
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
 ---
@@ -69,16 +69,16 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 <!-- _class: timeline accent -->
 <!-- _footer: "Composition: accent · timeline accent" -->
 
-## How a deck moves from draft to share.
+## From first pilot to general availability.
 
-1. **Draft**
-   - *Author writes markdown with the appropriate `_class` directives.*
-2. **Build**
-   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
-3. **Review**
-   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
-4. **Ship**
-   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+1. **Pilot**
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. **Calibrate**
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. **Roll out**
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. **GA**
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
 ---

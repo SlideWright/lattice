@@ -18,15 +18,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist -->
 <!-- _footer: "Default · checklist" -->
 
-## Pre-flight checklist for a new component.
+## Go-live readiness for the codebook rollout.
 
-- [x] Pick function and form coordinates per the spec
-- [x] Write the manifest with name, function, form, substance, and slots
-- [x] Author CSS rules scoped to the section class
-- [-] Add a transform module if substance is structure or series
-- [-] Write a substantive example and README
-- [ ] Update the templates catalog reference
-- [ ] Add unit tests under the new component test path
+- [x] Load test passed at 3× projected peak throughput
+- [x] Key-rotation runbook signed off by security
+- [x] Tenant migration rehearsed end to end in staging
+- [-] Examiner audit pack drafted, pending compliance review
+- [-] On-call rotation staffed, one gap in the EU window
+- [ ] Customer comms scheduled with named owners
+- [ ] Rollback plan rehearsed against production data
 
 
 ---
@@ -34,15 +34,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist dark -->
 <!-- _footer: "Composition: dark · checklist dark" -->
 
-## Pre-flight checklist for a new component.
+## Go-live readiness for the codebook rollout.
 
-- [x] Pick function and form coordinates per the spec
-- [x] Write the manifest with name, function, form, substance, and slots
-- [x] Author CSS rules scoped to the section class
-- [-] Add a transform module if substance is structure or series
-- [-] Write a substantive example and README
-- [ ] Update the templates catalog reference
-- [ ] Add unit tests under the new component test path
+- [x] Load test passed at 3× projected peak throughput
+- [x] Key-rotation runbook signed off by security
+- [x] Tenant migration rehearsed end to end in staging
+- [-] Examiner audit pack drafted, pending compliance review
+- [-] On-call rotation staffed, one gap in the EU window
+- [ ] Customer comms scheduled with named owners
+- [ ] Rollback plan rehearsed against production data
 
 
 ---
@@ -50,15 +50,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist compact -->
 <!-- _footer: "Composition: compact · checklist compact" -->
 
-## Pre-flight checklist for a new component.
+## Go-live readiness for the codebook rollout.
 
-- [x] Pick function and form coordinates per the spec
-- [x] Write the manifest with name, function, form, substance, and slots
-- [x] Author CSS rules scoped to the section class
-- [-] Add a transform module if substance is structure or series
-- [-] Write a substantive example and README
-- [ ] Update the templates catalog reference
-- [ ] Add unit tests under the new component test path
+- [x] Load test passed at 3× projected peak throughput
+- [x] Key-rotation runbook signed off by security
+- [x] Tenant migration rehearsed end to end in staging
+- [-] Examiner audit pack drafted, pending compliance review
+- [-] On-call rotation staffed, one gap in the EU window
+- [ ] Customer comms scheduled with named owners
+- [ ] Rollback plan rehearsed against production data
 
 
 ---
@@ -66,15 +66,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist accent -->
 <!-- _footer: "Composition: accent · checklist accent" -->
 
-## Pre-flight checklist for a new component.
+## Go-live readiness for the codebook rollout.
 
-- [x] Pick function and form coordinates per the spec
-- [x] Write the manifest with name, function, form, substance, and slots
-- [x] Author CSS rules scoped to the section class
-- [-] Add a transform module if substance is structure or series
-- [-] Write a substantive example and README
-- [ ] Update the templates catalog reference
-- [ ] Add unit tests under the new component test path
+- [x] Load test passed at 3× projected peak throughput
+- [x] Key-rotation runbook signed off by security
+- [x] Tenant migration rehearsed end to end in staging
+- [-] Examiner audit pack drafted, pending compliance review
+- [-] On-call rotation staffed, one gap in the EU window
+- [ ] Customer comms scheduled with named owners
+- [ ] Rollback plan rehearsed against production data
 
 
 ---

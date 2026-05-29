@@ -22,7 +22,7 @@ Gantt chart — task bars across a date axis.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
+Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 - Platform
   - Codebook signing `Q1 → Q2` `done`
@@ -74,7 +74,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
+Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 - Platform
   - Codebook signing `Q1 → Q2` `done`
@@ -99,7 +99,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
+Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 - Platform
   - Codebook signing `Q1 → Q2` `done`
@@ -124,7 +124,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
+Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 - Platform
   - Codebook signing `Q1 → Q2` `done`

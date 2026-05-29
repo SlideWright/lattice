@@ -18,42 +18,27 @@ Two fenced code blocks side-by-side, each with a label.
 <!-- _class: compare-code -->
 <!-- _footer: "Default · compare-code" -->
 
-`Before & after · Component manifest loading`
+`Query path · report generation`
 
-## Flat-file lookup versus folder-shape lookup.
+## The N+1 query that slowed every report.
 
-`Before · flat file`
+`Before · one query per row`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+const signals = await db.signals.findAll();
+for (const s of signals) {
+  s.owner = await db.users.find(s.ownerId);
 }
-
-const cards = loadOne('cards-grid');
+return signals;
 ```
 
-`After · folder shape`
+`After · one batched join`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
+const signals = await db.signals.findAll({
+  include: { owner: true },
+});
+return signals;
 ```
 
 
@@ -96,42 +81,27 @@ function loadOne(name) {
 <!-- _class: compare-code dark -->
 <!-- _footer: "Composition: dark · compare-code dark" -->
 
-`Before & after · Component manifest loading`
+`Query path · report generation`
 
-## Flat-file lookup versus folder-shape lookup.
+## The N+1 query that slowed every report.
 
-`Before · flat file`
+`Before · one query per row`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+const signals = await db.signals.findAll();
+for (const s of signals) {
+  s.owner = await db.users.find(s.ownerId);
 }
-
-const cards = loadOne('cards-grid');
+return signals;
 ```
 
-`After · folder shape`
+`After · one batched join`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
+const signals = await db.signals.findAll({
+  include: { owner: true },
+});
+return signals;
 ```
 
 
@@ -140,42 +110,27 @@ const cards = loadOne('cards-grid');
 <!-- _class: compare-code compact -->
 <!-- _footer: "Composition: compact · compare-code compact" -->
 
-`Before & after · Component manifest loading`
+`Query path · report generation`
 
-## Flat-file lookup versus folder-shape lookup.
+## The N+1 query that slowed every report.
 
-`Before · flat file`
+`Before · one query per row`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+const signals = await db.signals.findAll();
+for (const s of signals) {
+  s.owner = await db.users.find(s.ownerId);
 }
-
-const cards = loadOne('cards-grid');
+return signals;
 ```
 
-`After · folder shape`
+`After · one batched join`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
+const signals = await db.signals.findAll({
+  include: { owner: true },
+});
+return signals;
 ```
 
 
@@ -184,42 +139,27 @@ const cards = loadOne('cards-grid');
 <!-- _class: compare-code accent -->
 <!-- _footer: "Composition: accent · compare-code accent" -->
 
-`Before & after · Component manifest loading`
+`Query path · report generation`
 
-## Flat-file lookup versus folder-shape lookup.
+## The N+1 query that slowed every report.
 
-`Before · flat file`
+`Before · one query per row`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+const signals = await db.signals.findAll();
+for (const s of signals) {
+  s.owner = await db.users.find(s.ownerId);
 }
-
-const cards = loadOne('cards-grid');
+return signals;
 ```
 
-`After · folder shape`
+`After · one batched join`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
+const signals = await db.signals.findAll({
+  include: { owner: true },
+});
+return signals;
 ```
 
 

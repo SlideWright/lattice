@@ -18,9 +18,9 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 <!-- _class: subtopic -->
 <!-- _footer: "Default · subtopic" -->
 
-`Anchor family · light divider`
+`The Framework · Component 02`
 
-## Subtopic introduces a specific topic within a section.
+## Before we can score a signal, we have to agree on what one is.
 
 
 ---
@@ -38,9 +38,9 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 <!-- _class: subtopic dark -->
 <!-- _footer: "Composition: dark · subtopic dark" -->
 
-`Anchor family · light divider`
+`The Framework · Component 02`
 
-## Subtopic introduces a specific topic within a section.
+## Before we can score a signal, we have to agree on what one is.
 
 
 ---
@@ -48,9 +48,9 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 <!-- _class: subtopic compact -->
 <!-- _footer: "Composition: compact · subtopic compact" -->
 
-`Anchor family · light divider`
+`The Framework · Component 02`
 
-## Subtopic introduces a specific topic within a section.
+## Before we can score a signal, we have to agree on what one is.
 
 
 ---
@@ -58,9 +58,9 @@ Sub-section boundary — lighter than divider, no canvas reskin.
 <!-- _class: subtopic accent -->
 <!-- _footer: "Composition: accent · subtopic accent" -->
 
-`Anchor family · light divider`
+`The Framework · Component 02`
 
-## Subtopic introduces a specific topic within a section.
+## Before we can score a signal, we have to agree on what one is.
 
 
 ---

@@ -22,7 +22,7 @@ Horizontal progress bars — one row per item, percentage filled.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 - Codebook platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -59,7 +59,7 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 - Codebook platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -77,7 +77,7 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 - Codebook platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -95,7 +95,7 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 - Codebook platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`

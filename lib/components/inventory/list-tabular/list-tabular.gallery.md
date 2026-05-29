@@ -18,20 +18,20 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular -->
 <!-- _footer: "Default · list-tabular" -->
 
-## The four substance contracts a component plugs into.
+## The four workstreams carrying the H2 platform plan.
 
-1. Prose
-   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
-   - _CSS-only; no post-processor required_
-2. Structure
-   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
-   - _Per-component transform.js in lib/components_
-3. Series
-   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
-   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
-4. Graph
-   - External graph language (Mermaid today; D2 or PlantUML in the future).
-   - _External CLI; palette injected at build time_
+1. Platform
+   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
+   - _Two engineers · ships Q3_
+2. Operations
+   - Automated rotation and crypto-shred, retiring the manual maintenance window.
+   - _One engineer · ships Q3_
+3. Compliance
+   - Centralised audit log and the examiner-ready export pack.
+   - _One engineer · ships Q4_
+4. SDK
+   - Polyglot parity so every client team adopts the same path.
+   - _Contractor · ships Q4_
 
 
 ---
@@ -157,20 +157,20 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular dark -->
 <!-- _footer: "Composition: dark · list-tabular dark" -->
 
-## The four substance contracts a component plugs into.
+## The four workstreams carrying the H2 platform plan.
 
-1. Prose
-   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
-   - _CSS-only; no post-processor required_
-2. Structure
-   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
-   - _Per-component transform.js in lib/components_
-3. Series
-   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
-   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
-4. Graph
-   - External graph language (Mermaid today; D2 or PlantUML in the future).
-   - _External CLI; palette injected at build time_
+1. Platform
+   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
+   - _Two engineers · ships Q3_
+2. Operations
+   - Automated rotation and crypto-shred, retiring the manual maintenance window.
+   - _One engineer · ships Q3_
+3. Compliance
+   - Centralised audit log and the examiner-ready export pack.
+   - _One engineer · ships Q4_
+4. SDK
+   - Polyglot parity so every client team adopts the same path.
+   - _Contractor · ships Q4_
 
 
 ---
@@ -178,20 +178,20 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular compact -->
 <!-- _footer: "Composition: compact · list-tabular compact" -->
 
-## The four substance contracts a component plugs into.
+## The four workstreams carrying the H2 platform plan.
 
-1. Prose
-   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
-   - _CSS-only; no post-processor required_
-2. Structure
-   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
-   - _Per-component transform.js in lib/components_
-3. Series
-   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
-   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
-4. Graph
-   - External graph language (Mermaid today; D2 or PlantUML in the future).
-   - _External CLI; palette injected at build time_
+1. Platform
+   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
+   - _Two engineers · ships Q3_
+2. Operations
+   - Automated rotation and crypto-shred, retiring the manual maintenance window.
+   - _One engineer · ships Q3_
+3. Compliance
+   - Centralised audit log and the examiner-ready export pack.
+   - _One engineer · ships Q4_
+4. SDK
+   - Polyglot parity so every client team adopts the same path.
+   - _Contractor · ships Q4_
 
 
 ---
@@ -199,20 +199,20 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular accent -->
 <!-- _footer: "Composition: accent · list-tabular accent" -->
 
-## The four substance contracts a component plugs into.
+## The four workstreams carrying the H2 platform plan.
 
-1. Prose
-   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
-   - _CSS-only; no post-processor required_
-2. Structure
-   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
-   - _Per-component transform.js in lib/components_
-3. Series
-   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
-   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
-4. Graph
-   - External graph language (Mermaid today; D2 or PlantUML in the future).
-   - _External CLI; palette injected at build time_
+1. Platform
+   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
+   - _Two engineers · ships Q3_
+2. Operations
+   - Automated rotation and crypto-shred, retiring the manual maintenance window.
+   - _One engineer · ships Q3_
+3. Compliance
+   - Centralised audit log and the examiner-ready export pack.
+   - _One engineer · ships Q4_
+4. SDK
+   - Polyglot parity so every client team adopts the same path.
+   - _Contractor · ships Q4_
 
 
 ---

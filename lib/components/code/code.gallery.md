@@ -11,16 +11,18 @@ Code — syntax-highlighted source code blocks.
 
 <!-- _class: code -->
 
-## What loading a manifest looks like.
+## How a signal earns its score.
 
 ```js
-const { loadAll, groupByFunction } = require("./lib/components");
+function scoreSignal({ confidence, relevance, observedAt }, weights) {
+  const ageDays = (Date.now() - observedAt) / DAY_MS;
+  const recency = Math.exp(-ageDays / weights.halfLife);
 
-const manifests = loadAll();           // 58 components, validated
-const byFunction = groupByFunction(manifests);
-
-for (const m of byFunction.evidence) {
-  console.log(m.name, m.form, m.substance);
+  return (
+    confidence * weights.confidence +
+    recency * weights.recency +
+    relevance * weights.relevance
+  );
 }
 ```
 
@@ -28,40 +30,25 @@ for (const m of byFunction.evidence) {
 
 <!-- _class: compare-code -->
 
-`Before & after · Component manifest loading`
+`Query path · report generation`
 
-## Flat-file lookup versus folder-shape lookup.
+## The N+1 query that slowed every report.
 
-`Before · flat file`
+`Before · one query per row`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    `${name}.json`
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+const signals = await db.signals.findAll();
+for (const s of signals) {
+  s.owner = await db.users.find(s.ownerId);
 }
-
-const cards = loadOne('cards-grid');
+return signals;
 ```
 
-`After · folder shape`
+`After · one batched join`
 
 ```js
-const fs = require('node:fs');
-const path = require('node:path');
-
-function loadOne(name) {
-  const p = path.join(
-    __dirname, 'lib', 'components',
-    name, 'manifest.json'
-  );
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-const cards = loadOne('cards-grid');
+const signals = await db.signals.findAll({
+  include: { owner: true },
+});
+return signals;
 ```

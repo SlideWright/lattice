@@ -11,9 +11,9 @@ Anchor — where you are in the deck.
 
 <!-- _class: closing silent -->
 
-# Function · Form · Substance · Finish.
+# The signal was always there. Now we have a system that looks.
 
-`design/design-system.md`
+`Product Strategy · Q3 2025`
 
 ---
 
@@ -27,9 +27,9 @@ Anchor — where you are in the deck.
 
 <!-- _class: subtopic -->
 
-`Anchor family · light divider`
+`The Framework · Component 02`
 
-## Subtopic introduces a specific topic within a section.
+## Before we can score a signal, we have to agree on what one is.
 
 ---
 

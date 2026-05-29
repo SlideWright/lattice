@@ -18,13 +18,13 @@ Single-line takeaways — the deck or section's headline points.
 <!-- _class: tldr -->
 <!-- _footer: "Default · tldr" -->
 
-## What this section will tell you, in five lines.
+## What this review will tell you, in five lines.
 
-- Components stay short — `cards-grid` not `inventory.grid.cards`.
-- The four layers organise the catalog; they do not name components.
-- Manifests are the single source of truth for every component.
-- Discovery happens via the scaffolder and IDE snippets, not the directive.
-- Forty-five components ship — one folder each.
+- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
+- The shortfall is in enterprise renewals, not new logos.
+- Every one of the three causes is fixable before the Q4 close.
+- The Q3 plan moves two engineers and one rep onto the gaps.
+- We are not asking for more headcount — we are asking to move what we have.
 
 
 ---
@@ -46,13 +46,13 @@ Single-line takeaways — the deck or section's headline points.
 <!-- _class: tldr dark -->
 <!-- _footer: "Composition: dark · tldr dark" -->
 
-## What this section will tell you, in five lines.
+## What this review will tell you, in five lines.
 
-- Components stay short — `cards-grid` not `inventory.grid.cards`.
-- The four layers organise the catalog; they do not name components.
-- Manifests are the single source of truth for every component.
-- Discovery happens via the scaffolder and IDE snippets, not the directive.
-- Forty-five components ship — one folder each.
+- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
+- The shortfall is in enterprise renewals, not new logos.
+- Every one of the three causes is fixable before the Q4 close.
+- The Q3 plan moves two engineers and one rep onto the gaps.
+- We are not asking for more headcount — we are asking to move what we have.
 
 
 ---
@@ -60,13 +60,13 @@ Single-line takeaways — the deck or section's headline points.
 <!-- _class: tldr compact -->
 <!-- _footer: "Composition: compact · tldr compact" -->
 
-## What this section will tell you, in five lines.
+## What this review will tell you, in five lines.
 
-- Components stay short — `cards-grid` not `inventory.grid.cards`.
-- The four layers organise the catalog; they do not name components.
-- Manifests are the single source of truth for every component.
-- Discovery happens via the scaffolder and IDE snippets, not the directive.
-- Forty-five components ship — one folder each.
+- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
+- The shortfall is in enterprise renewals, not new logos.
+- Every one of the three causes is fixable before the Q4 close.
+- The Q3 plan moves two engineers and one rep onto the gaps.
+- We are not asking for more headcount — we are asking to move what we have.
 
 
 ---
@@ -74,13 +74,13 @@ Single-line takeaways — the deck or section's headline points.
 <!-- _class: tldr accent -->
 <!-- _footer: "Composition: accent · tldr accent" -->
 
-## What this section will tell you, in five lines.
+## What this review will tell you, in five lines.
 
-- Components stay short — `cards-grid` not `inventory.grid.cards`.
-- The four layers organise the catalog; they do not name components.
-- Manifests are the single source of truth for every component.
-- Discovery happens via the scaffolder and IDE snippets, not the directive.
-- Forty-five components ship — one folder each.
+- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
+- The shortfall is in enterprise renewals, not new logos.
+- Every one of the three causes is fixable before the Q4 close.
+- The Q3 plan moves two engineers and one rep onto the gaps.
+- We are not asking for more headcount — we are asking to move what we have.
 
 
 ---

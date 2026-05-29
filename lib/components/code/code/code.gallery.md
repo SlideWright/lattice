@@ -18,16 +18,18 @@ Single fenced code block as the slide's centerpiece.
 <!-- _class: code -->
 <!-- _footer: "Default · code" -->
 
-## What loading a manifest looks like.
+## How a signal earns its score.
 
 ```js
-const { loadAll, groupByFunction } = require("./lib/components");
+function scoreSignal({ confidence, relevance, observedAt }, weights) {
+  const ageDays = (Date.now() - observedAt) / DAY_MS;
+  const recency = Math.exp(-ageDays / weights.halfLife);
 
-const manifests = loadAll();           // 58 components, validated
-const byFunction = groupByFunction(manifests);
-
-for (const m of byFunction.evidence) {
-  console.log(m.name, m.form, m.substance);
+  return (
+    confidence * weights.confidence +
+    recency * weights.recency +
+    relevance * weights.relevance
+  );
 }
 ```
 
@@ -37,16 +39,18 @@ for (const m of byFunction.evidence) {
 <!-- _class: code dark -->
 <!-- _footer: "Composition: dark · code dark" -->
 
-## What loading a manifest looks like.
+## How a signal earns its score.
 
 ```js
-const { loadAll, groupByFunction } = require("./lib/components");
+function scoreSignal({ confidence, relevance, observedAt }, weights) {
+  const ageDays = (Date.now() - observedAt) / DAY_MS;
+  const recency = Math.exp(-ageDays / weights.halfLife);
 
-const manifests = loadAll();           // 58 components, validated
-const byFunction = groupByFunction(manifests);
-
-for (const m of byFunction.evidence) {
-  console.log(m.name, m.form, m.substance);
+  return (
+    confidence * weights.confidence +
+    recency * weights.recency +
+    relevance * weights.relevance
+  );
 }
 ```
 
@@ -56,16 +60,18 @@ for (const m of byFunction.evidence) {
 <!-- _class: code compact -->
 <!-- _footer: "Composition: compact · code compact" -->
 
-## What loading a manifest looks like.
+## How a signal earns its score.
 
 ```js
-const { loadAll, groupByFunction } = require("./lib/components");
+function scoreSignal({ confidence, relevance, observedAt }, weights) {
+  const ageDays = (Date.now() - observedAt) / DAY_MS;
+  const recency = Math.exp(-ageDays / weights.halfLife);
 
-const manifests = loadAll();           // 58 components, validated
-const byFunction = groupByFunction(manifests);
-
-for (const m of byFunction.evidence) {
-  console.log(m.name, m.form, m.substance);
+  return (
+    confidence * weights.confidence +
+    recency * weights.recency +
+    relevance * weights.relevance
+  );
 }
 ```
 
@@ -75,16 +81,18 @@ for (const m of byFunction.evidence) {
 <!-- _class: code accent -->
 <!-- _footer: "Composition: accent · code accent" -->
 
-## What loading a manifest looks like.
+## How a signal earns its score.
 
 ```js
-const { loadAll, groupByFunction } = require("./lib/components");
+function scoreSignal({ confidence, relevance, observedAt }, weights) {
+  const ageDays = (Date.now() - observedAt) / DAY_MS;
+  const recency = Math.exp(-ageDays / weights.halfLife);
 
-const manifests = loadAll();           // 58 components, validated
-const byFunction = groupByFunction(manifests);
-
-for (const m of byFunction.evidence) {
-  console.log(m.name, m.form, m.substance);
+  return (
+    confidence * weights.confidence +
+    recency * weights.recency +
+    relevance * weights.relevance
+  );
 }
 ```
 

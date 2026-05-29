@@ -18,13 +18,11 @@ Generic prose slide — heading plus paragraphs or a short list.
 <!-- _class: content -->
 <!-- _footer: "Default · content" -->
 
-## The catch-all prose slide.
+`Context · Competitive Dynamics`
 
-Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+## The window for differentiation is narrowing.
 
-- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
-- For comparisons, prefer `compare-prose` or `compare-table`.
-- For single metrics, prefer `big-number` or `stats`.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
 
 
 ---
@@ -32,13 +30,11 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: content dark -->
 <!-- _footer: "Composition: dark · content dark" -->
 
-## The catch-all prose slide.
+`Context · Competitive Dynamics`
 
-Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+## The window for differentiation is narrowing.
 
-- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
-- For comparisons, prefer `compare-prose` or `compare-table`.
-- For single metrics, prefer `big-number` or `stats`.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
 
 
 ---
@@ -46,13 +42,11 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: content compact -->
 <!-- _footer: "Composition: compact · content compact" -->
 
-## The catch-all prose slide.
+`Context · Competitive Dynamics`
 
-Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+## The window for differentiation is narrowing.
 
-- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
-- For comparisons, prefer `compare-prose` or `compare-table`.
-- For single metrics, prefer `big-number` or `stats`.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
 
 
 ---
@@ -60,13 +54,11 @@ Use `content` when no more specific component fits. A heading, a paragraph, opti
 <!-- _class: content accent -->
 <!-- _footer: "Composition: accent · content accent" -->
 
-## The catch-all prose slide.
+`Context · Competitive Dynamics`
 
-Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+## The window for differentiation is narrowing.
 
-- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
-- For comparisons, prefer `compare-prose` or `compare-table`.
-- For single metrics, prefer `big-number` or `stats`.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
 
 
 ---

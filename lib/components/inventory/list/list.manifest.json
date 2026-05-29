@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: list -->\n\n## Slide heading.\n\n- First short bullet point.\n- Second short bullet point.\n- Third short bullet point.\n- Fourth short bullet point.\n- Fifth short bullet point.\n",
   "anatomyBlock": "list",
-  "sample": "<!-- _class: list -->\n\n## When the items truly are a list.\n\n- Five to six short points, each under twelve words.\n- No internal structure per item — if items have title + body, use cards-stack instead.\n- Numbered (ol) when order matters; bulleted (ul) when it does not.\n- Inline-code metadata at the end of a row becomes a pill via the universal-pill recipe.\n- For richer items with descriptions, prefer list-tabular.\n",
+  "sample": "<!-- _class: list -->\n\n## What the first six months of pilots taught us.\n\n- Teams log roughly one decision for every twenty they actually make.\n- The scoring weights get re-tuned after almost every retrospective.\n- Predicted outcomes are the field most often left blank.\n- Alignment scores rose fastest on the teams that reviewed the log weekly.\n- No pilot team has asked to go back to the old process.\n",
   "whenToUse": [
     {
       "title": "Genuinely a list",

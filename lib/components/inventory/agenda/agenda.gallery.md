@@ -18,13 +18,13 @@ Auto-numbered table of contents for the deck.
 <!-- _class: agenda -->
 <!-- _footer: "Default · agenda" -->
 
-## What this deck covers.
+## What this review covers.
 
-1. The four-layer model — Function · Form · Substance · Finish
-2. Component manifests — the single source of truth
-3. The forty-five shipped components, grouped by function
-4. Discovery — scaffolder, snippets, this gallery
-5. What ships next — open questions and follow-ups
+1. Where Q2 landed against plan — slide 3
+2. The enterprise renewal shortfall — slide 8
+3. What we are changing in Q3 — slide 14
+4. The resourcing ask — slide 21
+5. Risks we are watching — slide 27
 
 
 ---
@@ -117,13 +117,13 @@ Auto-numbered table of contents for the deck.
 <!-- _class: agenda dark -->
 <!-- _footer: "Composition: dark · agenda dark" -->
 
-## What this deck covers.
+## What this review covers.
 
-1. The four-layer model — Function · Form · Substance · Finish
-2. Component manifests — the single source of truth
-3. The forty-five shipped components, grouped by function
-4. Discovery — scaffolder, snippets, this gallery
-5. What ships next — open questions and follow-ups
+1. Where Q2 landed against plan — slide 3
+2. The enterprise renewal shortfall — slide 8
+3. What we are changing in Q3 — slide 14
+4. The resourcing ask — slide 21
+5. Risks we are watching — slide 27
 
 
 ---
@@ -131,13 +131,13 @@ Auto-numbered table of contents for the deck.
 <!-- _class: agenda compact -->
 <!-- _footer: "Composition: compact · agenda compact" -->
 
-## What this deck covers.
+## What this review covers.
 
-1. The four-layer model — Function · Form · Substance · Finish
-2. Component manifests — the single source of truth
-3. The forty-five shipped components, grouped by function
-4. Discovery — scaffolder, snippets, this gallery
-5. What ships next — open questions and follow-ups
+1. Where Q2 landed against plan — slide 3
+2. The enterprise renewal shortfall — slide 8
+3. What we are changing in Q3 — slide 14
+4. The resourcing ask — slide 21
+5. Risks we are watching — slide 27
 
 
 ---
@@ -145,13 +145,13 @@ Auto-numbered table of contents for the deck.
 <!-- _class: agenda accent -->
 <!-- _footer: "Composition: accent · agenda accent" -->
 
-## What this deck covers.
+## What this review covers.
 
-1. The four-layer model — Function · Form · Substance · Finish
-2. Component manifests — the single source of truth
-3. The forty-five shipped components, grouped by function
-4. Discovery — scaffolder, snippets, this gallery
-5. What ships next — open questions and follow-ups
+1. Where Q2 landed against plan — slide 3
+2. The enterprise renewal shortfall — slide 8
+3. What we are changing in Q3 — slide 14
+4. The resourcing ask — slide 21
+5. Risks we are watching — slide 27
 
 
 ---

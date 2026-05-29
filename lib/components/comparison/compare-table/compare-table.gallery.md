@@ -18,14 +18,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table -->
 <!-- _footer: "Default · compare-table" -->
 
-## Where the four substance contracts come from.
+## How the three encryption models trade off.
 
-| Substance | Author writes | Renderer | Output |
+| Model | Latency p99 | Blast radius | Key rotation |
 | --- | --- | --- | --- |
-| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
-| structure | nested lists with conventions | lib/*.js post-processor | DOM |
-| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
-| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+| Central vault | 60 ms | Every tenant | Offline window |
+| In-process codebook | < 5 ms | One tenant | Online |
+| Client-side envelope | < 2 ms | One record | Manual, per client |
 
 
 ---
@@ -33,14 +32,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table dark -->
 <!-- _footer: "Composition: dark · compare-table dark" -->
 
-## Where the four substance contracts come from.
+## How the three encryption models trade off.
 
-| Substance | Author writes | Renderer | Output |
+| Model | Latency p99 | Blast radius | Key rotation |
 | --- | --- | --- | --- |
-| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
-| structure | nested lists with conventions | lib/*.js post-processor | DOM |
-| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
-| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+| Central vault | 60 ms | Every tenant | Offline window |
+| In-process codebook | < 5 ms | One tenant | Online |
+| Client-side envelope | < 2 ms | One record | Manual, per client |
 
 
 ---
@@ -48,14 +46,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table compact -->
 <!-- _footer: "Composition: compact · compare-table compact" -->
 
-## Where the four substance contracts come from.
+## How the three encryption models trade off.
 
-| Substance | Author writes | Renderer | Output |
+| Model | Latency p99 | Blast radius | Key rotation |
 | --- | --- | --- | --- |
-| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
-| structure | nested lists with conventions | lib/*.js post-processor | DOM |
-| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
-| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+| Central vault | 60 ms | Every tenant | Offline window |
+| In-process codebook | < 5 ms | One tenant | Online |
+| Client-side envelope | < 2 ms | One record | Manual, per client |
 
 
 ---
@@ -63,14 +60,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table accent -->
 <!-- _footer: "Composition: accent · compare-table accent" -->
 
-## Where the four substance contracts come from.
+## How the three encryption models trade off.
 
-| Substance | Author writes | Renderer | Output |
+| Model | Latency p99 | Blast radius | Key rotation |
 | --- | --- | --- | --- |
-| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
-| structure | nested lists with conventions | lib/*.js post-processor | DOM |
-| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
-| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+| Central vault | 60 ms | Every tenant | Offline window |
+| In-process codebook | < 5 ms | One tenant | Online |
+| Client-side envelope | < 2 ms | One record | Manual, per client |
 
 
 ---

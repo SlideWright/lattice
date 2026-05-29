@@ -18,18 +18,16 @@ Featured left panel + supporting list on the right.
 <!-- _class: split-list -->
 <!-- _footer: "Default · split-list" -->
 
-## A featured statement on the left lands the argument.
+## The best product does not win. The most understood one does.
 
-### Use when
+### Why understanding wins
 
-- One claim deserves emphasis
-  - The panel headline carries the weight; the right side substantiates.
-- You need both a thesis and proof
-  - Statement on the left, evidence list on the right.
-- The right side is short
-  - Three to four supporting points; longer lists belong in cards-stack.
-- The mirror modifier flips it
-  - Image-style decks often want the panel on the right.
+- Clarity is a product decision
+  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
+- Onboarding is the first argument
+  - The moment a user first succeeds sets the frame for everything that follows.
+- Comprehension drives retention
+  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
 
 ---
@@ -54,18 +52,16 @@ Featured left panel + supporting list on the right.
 <!-- _class: split-list dark -->
 <!-- _footer: "Composition: dark · split-list dark" -->
 
-## A featured statement on the left lands the argument.
+## The best product does not win. The most understood one does.
 
-### Use when
+### Why understanding wins
 
-- One claim deserves emphasis
-  - The panel headline carries the weight; the right side substantiates.
-- You need both a thesis and proof
-  - Statement on the left, evidence list on the right.
-- The right side is short
-  - Three to four supporting points; longer lists belong in cards-stack.
-- The mirror modifier flips it
-  - Image-style decks often want the panel on the right.
+- Clarity is a product decision
+  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
+- Onboarding is the first argument
+  - The moment a user first succeeds sets the frame for everything that follows.
+- Comprehension drives retention
+  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
 
 ---
@@ -73,18 +69,16 @@ Featured left panel + supporting list on the right.
 <!-- _class: split-list compact -->
 <!-- _footer: "Composition: compact · split-list compact" -->
 
-## A featured statement on the left lands the argument.
+## The best product does not win. The most understood one does.
 
-### Use when
+### Why understanding wins
 
-- One claim deserves emphasis
-  - The panel headline carries the weight; the right side substantiates.
-- You need both a thesis and proof
-  - Statement on the left, evidence list on the right.
-- The right side is short
-  - Three to four supporting points; longer lists belong in cards-stack.
-- The mirror modifier flips it
-  - Image-style decks often want the panel on the right.
+- Clarity is a product decision
+  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
+- Onboarding is the first argument
+  - The moment a user first succeeds sets the frame for everything that follows.
+- Comprehension drives retention
+  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
 
 ---
@@ -92,18 +86,16 @@ Featured left panel + supporting list on the right.
 <!-- _class: split-list accent -->
 <!-- _footer: "Composition: accent · split-list accent" -->
 
-## A featured statement on the left lands the argument.
+## The best product does not win. The most understood one does.
 
-### Use when
+### Why understanding wins
 
-- One claim deserves emphasis
-  - The panel headline carries the weight; the right side substantiates.
-- You need both a thesis and proof
-  - Statement on the left, evidence list on the right.
-- The right side is short
-  - Three to four supporting points; longer lists belong in cards-stack.
-- The mirror modifier flips it
-  - Image-style decks often want the panel on the right.
+- Clarity is a product decision
+  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
+- Onboarding is the first argument
+  - The moment a user first succeeds sets the frame for everything that follows.
+- Comprehension drives retention
+  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
 
 ---

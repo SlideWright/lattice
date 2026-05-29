@@ -18,12 +18,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after -->
 <!-- _footer: "Default · before-after" -->
 
-## What the manifest refactor produced.
+## What moving off the central vault changed.
 
 - Before.
-  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
 - After.
-  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
 
 
 ---
@@ -46,12 +46,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after dark -->
 <!-- _footer: "Composition: dark · before-after dark" -->
 
-## What the manifest refactor produced.
+## What moving off the central vault changed.
 
 - Before.
-  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
 - After.
-  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
 
 
 ---
@@ -59,12 +59,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after compact -->
 <!-- _footer: "Composition: compact · before-after compact" -->
 
-## What the manifest refactor produced.
+## What moving off the central vault changed.
 
 - Before.
-  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
 - After.
-  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
 
 
 ---
@@ -72,12 +72,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after accent -->
 <!-- _footer: "Composition: accent · before-after accent" -->
 
-## What the manifest refactor produced.
+## What moving off the central vault changed.
 
 - Before.
-  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
 - After.
-  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
 
 
 ---

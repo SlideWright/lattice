@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- **First row title.** Body text for the first wide row, one or two sentences.\n- **Second row title.** Body text for the second wide row.\n- **Third row title.** Body text for the third wide row.\n",
   "anatomyBlock": "cards-wide",
-  "sample": "<!-- _class: cards-wide -->\n\n## When the items want full-width rows.\n\n1. Each item has substantial body text\n   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.\n2. The slide scans top-to-bottom\n   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.\n3. Three or four rows feels right\n   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.\n",
+  "sample": "<!-- _class: cards-wide -->\n\n## Three findings from the Q2 win/loss review.\n\n1. Price is rarely the reason we lose\n   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.\n2. The security review is our slowest gate\n   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.\n3. One competitor takes most of the displacement\n   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.\n",
   "whenToUse": [
     {
       "title": "Substantial per-row body",

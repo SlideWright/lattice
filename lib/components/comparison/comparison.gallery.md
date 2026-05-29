@@ -11,64 +11,65 @@ Comparison — how two or more options differ.
 
 <!-- _class: before-after -->
 
-## What the manifest refactor produced.
+## What moving off the central vault changed.
 
 - Before.
-  - 35 layouts scattered across one 10,382-line lattice.css monolith. Per-layout rules grepped, not folder-located. No central metadata.
+  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
 - After.
-  - 45 components self-contained at lib/components, one folder each with manifest plus styles plus example plus README. Bundler concatenates per-component CSS; loader exposes the catalog via JSON.
+  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
 
 ---
 
 <!-- _class: compare-prose -->
 
-## Two options, equal weight, head-to-head.
+## Renew at list price, or hold the discount.
 
-- First option
-  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- Second option
-  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+- Hold the published rate
+  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.
+- Extend the legacy discount
+  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.
 
 ---
 
 <!-- _class: compare-table -->
 
-## Where the four substance contracts come from.
+## How the three encryption models trade off.
 
-| Substance | Author writes | Renderer | Output |
+| Model | Latency p99 | Blast radius | Key rotation |
 | --- | --- | --- | --- |
-| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |
-| structure | nested lists with conventions | lib/*.js post-processor | DOM |
-| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |
-| graph | external graph language | external CLI (mmdc, future d2) | SVG |
+| Central vault | 60 ms | Every tenant | Offline window |
+| In-process codebook | < 5 ms | One tenant | Online |
+| Client-side envelope | < 2 ms | One record | Manual, per client |
 
 ---
 
 <!-- _class: decision -->
 
-## What we are doing.
+## Buy the platform; build the differentiation.
 
-- Chosen path.
-  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
-- Rejected option.
-  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+- Buy and configure.
+  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+- Build in-house.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
 
 ---
 
 <!-- _class: matrix-2x2 -->
 
-## Where each component substance lives.
+## Where the H2 bets land on effort and impact.
 
-- **Author-driven · DOM output.**
-  - prose — headings + paragraphs
-  - structure — nested lists
-- **Author-driven · SVG output.**
-  - series — tabular DSL
-  - graph — external language
-- **Data-driven · DOM output.**
-  - (Lattice does not target this cell)
-- **Data-driven · SVG output.**
-  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+- **High impact · Low effort.**
+  - Automated key rotation
+  - Examiner audit pack
+- **High impact · High effort.**
+  - Multi-tenant codebooks
+  - Polyglot SDK parity
+- **Low impact · Low effort.**
+  - Status-page polish
+  - Dependency dashboard
+- **Low impact · High effort.**
+  - Bespoke per-tenant audit UI
+  - Custom SCIM connector
 
 ---
 
@@ -107,17 +108,17 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 <!-- _class: verdict-grid -->
 
-## Which option meets the criteria.
+## Which data platform clears the bar.
 
-- **Folder shape.**
-  - [x] Self-contained per component
-  - [x] Familiar pattern from other libraries
-  - [x] Tests can live with their component
-- **Flat files.**
-  - [x] Less restructuring upfront
-  - [-] Per-component grouping by filename only
-  - [ ] No room for transform.js or example.md
-- **Hybrid.**
-  - [-] Manifest stays flat, other files in subfolder
-  - [ ] Splits the component across two locations
-  - [ ] Defeats the self-contained goal
+- **Vendor North.**
+  - [x] SOC 2 Type II, no exceptions
+  - [x] Data stays in-region
+  - [-] Export documented but support-gated
+- **Vendor West.**
+  - [x] SOC 2 Type II, no exceptions
+  - [ ] Residency limited to US regions
+  - [x] Self-serve export
+- **Build in-house.**
+  - [x] Full control of schema and roadmap
+  - [-] Residency achievable, not yet built
+  - [ ] Three engineer-quarters to parity

@@ -18,12 +18,12 @@ Two prose options side-by-side with a labeled corner tag on each.
 <!-- _class: compare-prose -->
 <!-- _footer: "Default · compare-prose" -->
 
-## Two options, equal weight, head-to-head.
+## Renew at list price, or hold the discount.
 
-- First option
-  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- Second option
-  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+- Hold the published rate
+  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.
+- Extend the legacy discount
+  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.
 
 
 ---
@@ -111,12 +111,12 @@ Two prose options side-by-side with a labeled corner tag on each.
 <!-- _class: compare-prose dark -->
 <!-- _footer: "Composition: dark · compare-prose dark" -->
 
-## Two options, equal weight, head-to-head.
+## Renew at list price, or hold the discount.
 
-- First option
-  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- Second option
-  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+- Hold the published rate
+  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.
+- Extend the legacy discount
+  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.
 
 
 ---
@@ -124,12 +124,12 @@ Two prose options side-by-side with a labeled corner tag on each.
 <!-- _class: compare-prose compact -->
 <!-- _footer: "Composition: compact · compare-prose compact" -->
 
-## Two options, equal weight, head-to-head.
+## Renew at list price, or hold the discount.
 
-- First option
-  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- Second option
-  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+- Hold the published rate
+  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.
+- Extend the legacy discount
+  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.
 
 
 ---
@@ -137,12 +137,12 @@ Two prose options side-by-side with a labeled corner tag on each.
 <!-- _class: compare-prose accent -->
 <!-- _footer: "Composition: accent · compare-prose accent" -->
 
-## Two options, equal weight, head-to-head.
+## Renew at list price, or hold the discount.
 
-- First option
-  - Two-sentence description of the first option, including the strongest argument for it. Equal-density prose lets the audience compare line by line.
-- Second option
-  - Two-sentence description of the second option, including the strongest argument for it. The `chosen` or `decision` modifier marks the verdict when one has been made.
+- Hold the published rate
+  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.
+- Extend the legacy discount
+  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.
 
 
 ---
