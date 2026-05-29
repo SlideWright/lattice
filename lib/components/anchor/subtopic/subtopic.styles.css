@@ -7,6 +7,5 @@
  */
 
 section.subtopic { justify-content:center; align-items:center; }
-section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
 section.subtopic h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-sm); text-align:center; }
 section.subtopic p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }

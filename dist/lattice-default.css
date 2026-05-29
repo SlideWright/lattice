@@ -1017,7 +1017,6 @@ section.before-after :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 
 section.big-number { justify-content:center; align-items:center; }
-section.big-number h5 { margin-bottom:var(--sp-sm); }
 section.big-number > ul { list-style:none; padding:0; margin:0; text-align:center; }
 section.big-number > ul > li { font-family:var(--font-display); font-size:var(--fs-hero); font-weight:700; color:var(--accent); line-height:1; }
 section.big-number > ul > li > ul { list-style:none; padding:0; margin:var(--sp-lg) 0 0 0; }
@@ -1845,7 +1844,6 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.closing { border-top: none; }
-section.closing h5 { color:var(--on-dark-ghost); margin-bottom:var(--sp-sm); }
 section.closing hr { margin:0 auto var(--sp-md); }
 section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
@@ -2269,7 +2267,6 @@ section.diagram > blockquote { align-self:stretch; }
 section.divider { background:var(--bg-dark); padding-left:calc(var(--_sec-1cqi,1cqi)*9.375); justify-content:center; align-items:flex-start; }
 section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
-section.divider h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-xs); }
 section.divider h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 section.divider h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 
@@ -4232,46 +4229,6 @@ section.list-criteria .crit-body ul li {
 }
 section.list-criteria .crit-body ul li::before { display:none; content:none; }
 
-/* ════════════════════════════════════════════════════════════════════════
- * UNIVERSAL STATE TOKEN — the contract shared by every state-bearing
- * layout in Lattice (checklist, verdict-grid, obligation-matrix, roadmap).
- *
- * Authoring grammar (markdown, four states):
- *   [x] → state-full     filled disc        present / done / applies
- *   [-] → state-half     half-filled disc   partial / in flight
- *   [ ] → state-empty    outline disc       absent / not done / exempt
- *   [/] → state-slashed  filled disc + slash  skipped / out of scope / N/A
- *
- * The shape grammar is the universal channel — readable in greyscale,
- * unambiguous for colour-blind viewers. Colour reinforces shape and
- * resolves from --state-color, which each layout binds to a semantic
- * class on the token's element:
- *   pass / state-shipped / state-applies   → var(--pass)
- *   warn / state-wip                       → var(--warn)
- *   fail / state-planned / state-exempt    → var(--text-muted) | var(--fail)
- *   skip / state-skipped                   → var(--text-muted)
- *
- * Two SVG masks total (--state-mask-half, --state-mask-slash, in :root)
- * paint the half-disc and slash. No fonts, no Unicode, no OS quirks.
- *
- * Section modifier `.heat` (universal) flips the palette to a load/risk
- * axis: full = alarm, half = caution, empty = relief. Any layout can opt
- * in; obligation-matrix additionally tints cell backgrounds under heat
- * (chrome-layer responsibility, not the token's).
- *
- * Three render paths emit shape + semantic classes from the markdown
- * grammar (kept in sync per the cross-renderer parity rule in CLAUDE.md):
- *   - lattice-emulator.js  (build CLI)
- *   - marp.config.js + lib/roadmap.js  (marp-cli engine)
- *   - lattice-runtime.js  (marp-vscode preview / DOM mirror)
- * ──────────────────────────────────────────────────────────────────────── */
-
-/* The universal `.heat` overlay rules are placed AFTER the layout blocks
- * below (see the "UNIVERSAL HEAT OVERLAY" block following the obligation-matrix
- * section) so source-order wins where specificity ties with per-layout
- * default --state-color assignments. The author-facing pattern stays
- * uniform: add `heat` after any state-bearing layout class. */
-
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
  * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
  * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */
@@ -5591,22 +5548,6 @@ section.piechart .piechart-svg {
 section.piechart .piechart-svg .wedge {
   stroke: var(--bg);
   stroke-width: 2;
-}
-section.piechart .piechart-svg .donut-hole {
-  fill: var(--bg);
-}
-section.piechart .piechart-total {
-  font-family: var(--font-display);
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  fill: var(--text-heading);
-}
-section.piechart .piechart-total-label {
-  font-family: var(--font-mono);
-  font-size: 0.859375cqi;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  fill: var(--text-muted);
 }
 section.piechart .piechart-legend {
   flex: 0 1 auto;
@@ -7578,7 +7519,6 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
  */
 section.split-list { padding:0; flex-direction:row; }
 section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
-section.split-list h5 { font-size:var(--fs-meta); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
 /* Decorative letterform watermark: explicit 11.46cqi (= 110pt). Sized
@@ -8421,7 +8361,6 @@ section.statute-stack.lane td:last-child {
  */
 
 section.subtopic { justify-content:center; align-items:center; }
-section.subtopic h5 { margin-bottom:var(--sp-xs); text-align:center; }
 section.subtopic h2 { font-size:var(--fs-h2); margin-bottom:var(--sp-sm); text-align:center; }
 section.subtopic p  { font-size:var(--fs-message); max-width:46.875cqi; line-height:var(--lh-relaxed); margin:0 auto; text-align:center; }
 
@@ -8654,7 +8593,6 @@ section.timeline-list .timeline-body {
 
 section.title { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.title { border-top: none; }
-section.title h5 { color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.title h1 { font-size:var(--fs-h1); color:var(--text-display); margin-bottom:var(--sp-xs); text-align:center; }
 section.title hr { background:var(--accent); height:1px; width:64px; margin:var(--sp-sm) auto; }
 section.title p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-weight:300; margin:0; text-align:center; }
