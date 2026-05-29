@@ -48,3 +48,6 @@ test/integration/**/*.html
 !examples/**/*.pdf
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
+
+# Transient palette bake-off candidates (deleted after convergence)
+themes/cand-*.css
