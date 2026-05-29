@@ -10,7 +10,8 @@
   "variants": [
     "lr",
     "inline",
-    "curved"
+    "curved",
+    "horizontal"
   ],
   "slots": {
     "title": {

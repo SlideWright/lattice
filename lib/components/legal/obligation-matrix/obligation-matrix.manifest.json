@@ -9,7 +9,9 @@
   "purpose": "Use when many regimes need comparing across the same obligations. Cells carry the universal state-token grammar ([x] applies, [-] partial, [ ] exempt, [/] out of scope) shared with checklist / verdict-grid / roadmap.",
   "variants": [
     "heat",
-    "asymmetric"
+    "asymmetric",
+    "pills",
+    "lanes"
   ],
   "slots": {
     "heading": {
