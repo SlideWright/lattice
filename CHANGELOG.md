@@ -39,6 +39,16 @@ in patch versions.
   scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
   the front matter for the whole deck. Composes with any layout or
   variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.
+- **Agent authoring affordances.** Three additions help AI agents author
+  decks correctly: a machine-readable catalog `dist/docs/components.json`
+  (every component's axes, tags, slots, skeleton, and when/anti/related
+  prose plus the controlled vocabularies, generated alongside
+  `components.md/.html`); a draft-deck linter `npm run lint:deck -- <file>`
+  (`tools/lint-deck.js` → `lib/authoring/lint.js`) that flags the markdown
+  footguns — card-style inline-title, ordered-list bold, class typos — as
+  structured, no-render diagnostics; and a vendor-neutral `AGENTS.md`
+  entrypoint pointing agents at `design/skill.md`, the catalog, and the
+  linter. See `design/design-system.md` §7.
 - **Searchable component tags.** Every component manifest now declares a
   `tags` field (3–5 entries) — the *searcher's* vocabulary, complementary
   to the Function/Form/Substance axes. Tags are drawn from a controlled

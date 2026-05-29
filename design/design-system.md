@@ -355,6 +355,25 @@ allow-listed in `SINGLETON_TAGS`. Tags surface in the generated
 `<name>.docs.md`, the aggregated `dist/docs/components.md`, and as
 chips + a live filter facet in `dist/docs/components.html`.
 
+### For agents
+
+AI agents authoring decks get a discovery surface and a validation loop:
+
+- **`dist/docs/components.json`** — a machine-readable catalog: every
+  component's axes, tags, slots, skeleton, and when/anti/related prose,
+  plus the controlled vocabularies, in one deterministic document an agent
+  loads in a single read. Generated alongside `components.md/.html` by
+  `tools/build-docs-portal.js`.
+- **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
+  `lib/authoring/lint.js`) — runs the markdown footgun checks
+  (card-style inline-title, ordered-list bold, class typos) against a
+  *draft* deck and emits structured, fix-oriented diagnostics with no
+  Chromium render. The fast edit→check loop. The per-manifest equivalents
+  of the same rules run in `validate()`; the repo-wide commit gate is
+  `test/unit/components/deck-authoring.test.js`.
+- **`AGENTS.md`** (repo root) — the vendor-neutral entrypoint pointing any
+  agent at `design/skill.md`, the catalog, and the linter.
+
 ---
 
 ## 8. For each audience
