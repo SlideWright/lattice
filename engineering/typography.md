@@ -142,7 +142,10 @@ delivered by the `\`label\`` inline-code paragraph modifier in
   and h1), the split-list decorative watermark (11.46cqi = 110 pt, above
   hero), and the kpi.briefing supports (3.9583cqi = 38 pt, between h2 and
   h1). These are documented exceptions, not the norm. Undocumented
-  sub-token rawness in tokens.css is a bug.
+  sub-token rawness in tokens.css is a bug. Each of the three wraps its
+  literal in `calc(<n>cqi * var(--fs-scale))` so it tracks the global font
+  scale (§7) — the *only* reason a raw cqi value should mention
+  `--fs-scale`.
 
 ## 5 — History: the 16-token legacy and the rethink
 
@@ -186,4 +189,66 @@ are documented in their component CSS.
 - `lib/base/base.tokens.css` — the canonical declarations.
 - `lib/base/base.elements.css` — h1–h6 wiring.
 - `lib/base/base.modifiers.css` — eyebrow / subtitle / key-insight
-  visual treatments that use `--fs-meta` and `--fs-body`.
+  visual treatments that use `--fs-meta` and `--fs-body`; also the
+  `scale-l` / `scale-xl` / `scale-2xl` modifiers (§7).
+
+## 7 — Global font scale
+
+The 12 tokens are normalized to a **desk-distance** footprint — Lattice
+makes boardroom PDFs read at reading distance, not slides projected at
+20 ft. When a deck *is* going to a projector, a large room, or needs an
+accessibility bump, the whole scale can be raised in one move without
+re-picking sizes.
+
+A single unitless multiplier, **`--fs-scale`** (default `1`), is baked
+into every token: `--fs-body: calc(1.67cqi * var(--fs-scale))`, and so
+on for all 12. The three documented between-token raw-cqi sites (§4)
+carry it too. Raising it scales **everything in lockstep** — content,
+headings, hero, chrome (pagination / footer / eyebrow) — so the tuned
+proportions are preserved; only the overall magnitude moves.
+
+Three modifier steps set it (`lib/base/base.modifiers.css`):
+
+| Class | `--fs-scale` | Body lands at | Use |
+|---|---|---|---|
+| `scale-l`   | 1.15 | ~18.4 pt | Gentle bump — slightly larger rooms. |
+| `scale-xl`  | 1.3  | ~20.8 pt | Strong — projection, back-of-room reading. |
+| `scale-2xl` | 1.5  | 24 pt    | Dramatic — large halls, low-vision accessibility. |
+
+### Why the calc lives on `:root, section`
+
+Custom-property `var()` substitution happens at the element where a
+property is **declared**, not where it's used. A `:root`-only
+`calc(… * var(--fs-scale))` would bake in `--fs-scale: 1` and never see a
+per-slide override. Declaring the 12 tokens on `:root, section` gives the
+`:root` copy for the Marp chrome bridges and a per-`section` copy that
+re-runs the calc against each slide's own `--fs-scale`.
+
+### Scope is native Marp class scoping
+
+No second mechanism — the same class works at both scopes through Marp's
+own directive grammar:
+
+```markdown
+<!-- _class: scale-xl -->   <!-- this slide only (spot directive) -->
+```
+
+```yaml
+---
+marp: true
+class: scale-xl            # whole deck (global front-matter directive)
+---
+```
+
+A slide-level `_class` also scales that slide's `::after` pagination and
+`header` / `footer` chrome, since they inherit `--fs-scale` from the
+section. The modifier composes with any layout or variant (`dark`,
+`cards-grid`, …) because it only sets one custom property.
+
+### When NOT to use it
+
+This is a magnitude knob, not a size picker. If one element is wrong,
+fix the element's token (§2) — don't scale the whole slide to fix one
+heading. And if a slide overflows at a higher scale, it had too much
+content for that magnitude: split it or step the scale back down, the
+same as any overflow (§4).

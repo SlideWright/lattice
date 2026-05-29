@@ -27,6 +27,15 @@ in patch versions.
 
 ### Added
 
+- **Global font-scale modifiers `scale-l` / `scale-xl` / `scale-2xl`.**
+  Bump every font on a slide up in lockstep (×1.15 / ×1.3 / ×1.5) without
+  re-picking sizes. A new unitless `--fs-scale` multiplier (default `1`)
+  is baked into all 12 typography tokens and the three documented
+  between-token raw-cqi sites, so content, headings, hero, and chrome all
+  grow together and the tuned proportions hold. Scope is native Marp class
+  scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
+  the front matter for the whole deck. Composes with any layout or
+  variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.
 - **`dist/` is now a self-contained distribution.** It ships the bundled
   emulator CLI (`dist/lattice-emulator.js`, esbuild bundle of the engine
   graph — the package `bin`/`main`/`.` now resolve to it) and a generated

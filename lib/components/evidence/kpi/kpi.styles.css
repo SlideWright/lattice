@@ -187,7 +187,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
  * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: 3.9583cqi;
+  font-size: calc(3.9583cqi * var(--fs-scale));
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
