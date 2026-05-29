@@ -1997,7 +1997,7 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `principles` | `ul > li` | yes | One li per principle. Lead each with **The principle.** then a justification sentence. |
+| `principles` | `ol > li` | yes | One li per principle: a short declarative statement, authored as an ordered list (the counter renders as a large display numeral). No bold and no separate justification — keep each principle to one terse line. |
 
 #### Anatomy
 

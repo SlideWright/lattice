@@ -19,14 +19,14 @@
       "description": "Slide heading."
     },
     "principles": {
-      "selector": "ul > li",
+      "selector": "ol > li",
       "required": true,
-      "description": "One li per principle. Lead each with **The principle.** then a justification sentence."
+      "description": "One li per principle: a short declarative statement, authored as an ordered list (the counter renders as a large display numeral). No bold and no separate justification — keep each principle to one terse line."
     }
   },
   "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
   "anatomyBlock": "principles",
-  "sample": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.\n- **Name the actor, never the system.** \"The PM decides\" lands; \"the process decides\" hides who is accountable.\n- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.\n- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.\n- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.\n",
+  "sample": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Name the actor, never the system.\n3. Write the bet on the same slide as the choice.\n4. Disagree in the room, then commit outside it.\n5. Optimise for the reader who wasn't there.\n",
   "whenToUse": [
     {
       "title": "Working agreements",
