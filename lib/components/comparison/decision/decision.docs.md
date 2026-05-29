@@ -4,7 +4,7 @@
 
 **Function** comparison · **Form** canvas · **Substance** structure
 
-Use after a comparison slide to land the decision. The chosen option is the focal element; the rejected ones (if shown) are subordinated.
+Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 
 ## When to use
 
@@ -14,7 +14,7 @@ Use after a comparison slide to land the decision. The chosen option is the foca
 
 ## When NOT to use
 
-- **No clear chosen path.** If the cards don't name one focal verdict, the slide is back to being a comparison. Use `compare-prose` or `split-compare`; reserve decision for the resolved call.
+- **No clear chosen path.** If the cards don't resolve to a single verdict, the slide is back to being a comparison. Use `compare-prose` or `split-compare`; reserve decision for the resolved call.
 - **Long body per card.** Each card is one sentence of rationale. Paragraphs belong on the comparison slide upstream, not on the verdict slide.
 - **Generic heading.** The h2 carries the decision verb — Build, not buy. Adopt the framework. Pause the rollout. A heading like Next steps wastes the focal real estate.
 
@@ -36,7 +36,7 @@ Use after a comparison slide to land the decision. The chosen option is the foca
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the decision. |
-| `options` | `ul > li` | yes | List items. Authoring contract: a top-level bullet is the option name (renders bold by default); an indented bullet underneath carries the short rationale. The chosen option carries the focal styling. |
+| `options` | `ul > li` | yes | List items. Authoring contract: a top-level bullet is the option name (renders bold by default); an indented bullet underneath carries the short rationale. The cards render as a unified strip of co-equal categorical tags; the verdict is carried by the heading, not by emphasizing one card. |
 
 ## Anatomy
 

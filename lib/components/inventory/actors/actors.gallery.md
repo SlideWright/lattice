@@ -18,13 +18,18 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors -->
 <!-- _footer: "Default · actors" -->
 
-## Who owns what when an incident is live.
+## Who owns each part of the framework.
 
-- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
-- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
-- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
-- **Scribe.** Logs every action with a timestamp for the post-incident review.
-- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
+- **Owns the scoring model** `Head of Product`
+  - Sets the weights and signs off changes after each calibration.
+- **Runs the weekly signal review** `Chief of Staff`
+  - Chairs the thirty minutes and keeps the decision log current.
+- **Maintains the decision log** `Program Manager`
+  - Every call recorded with its bet; chases the missing predicted outcomes.
+- **Owns adoption** `Enablement Lead`
+  - Onboards each team — the reason attendance is merely aspirational.
+- **Clears blockers** `Executive Sponsor`
+  - Approves the operating rhythm; stays out of the scoring debates.
 
 
 ---
@@ -32,13 +37,18 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors dark -->
 <!-- _footer: "Composition: dark · actors dark" -->
 
-## Who owns what when an incident is live.
+## Who owns each part of the framework.
 
-- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
-- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
-- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
-- **Scribe.** Logs every action with a timestamp for the post-incident review.
-- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
+- **Owns the scoring model** `Head of Product`
+  - Sets the weights and signs off changes after each calibration.
+- **Runs the weekly signal review** `Chief of Staff`
+  - Chairs the thirty minutes and keeps the decision log current.
+- **Maintains the decision log** `Program Manager`
+  - Every call recorded with its bet; chases the missing predicted outcomes.
+- **Owns adoption** `Enablement Lead`
+  - Onboards each team — the reason attendance is merely aspirational.
+- **Clears blockers** `Executive Sponsor`
+  - Approves the operating rhythm; stays out of the scoring debates.
 
 
 ---
@@ -46,13 +56,18 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors compact -->
 <!-- _footer: "Composition: compact · actors compact" -->
 
-## Who owns what when an incident is live.
+## Who owns each part of the framework.
 
-- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
-- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
-- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
-- **Scribe.** Logs every action with a timestamp for the post-incident review.
-- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
+- **Owns the scoring model** `Head of Product`
+  - Sets the weights and signs off changes after each calibration.
+- **Runs the weekly signal review** `Chief of Staff`
+  - Chairs the thirty minutes and keeps the decision log current.
+- **Maintains the decision log** `Program Manager`
+  - Every call recorded with its bet; chases the missing predicted outcomes.
+- **Owns adoption** `Enablement Lead`
+  - Onboards each team — the reason attendance is merely aspirational.
+- **Clears blockers** `Executive Sponsor`
+  - Approves the operating rhythm; stays out of the scoring debates.
 
 
 ---
@@ -60,13 +75,18 @@ Roster of responsibilities owned by named actors.
 <!-- _class: actors accent -->
 <!-- _footer: "Composition: accent · actors accent" -->
 
-## Who owns what when an incident is live.
+## Who owns each part of the framework.
 
-- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
-- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
-- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
-- **Scribe.** Logs every action with a timestamp for the post-incident review.
-- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
+- **Owns the scoring model** `Head of Product`
+  - Sets the weights and signs off changes after each calibration.
+- **Runs the weekly signal review** `Chief of Staff`
+  - Chairs the thirty minutes and keeps the decision log current.
+- **Maintains the decision log** `Program Manager`
+  - Every call recorded with its bet; chases the missing predicted outcomes.
+- **Owns adoption** `Enablement Lead`
+  - Onboards each team — the reason attendance is merely aspirational.
+- **Clears blockers** `Executive Sponsor`
+  - Approves the operating rhythm; stays out of the scoring debates.
 
 
 ---

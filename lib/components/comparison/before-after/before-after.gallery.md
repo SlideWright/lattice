@@ -31,14 +31,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after banner-tag -->
 <!-- _footer: "Banner tag — slot label as full-width header strip · before-after banner-tag" -->
 
-## Three reasons we are building.
+## What the operating review changed.
 
-- BUILD
-  - The platform is the product. Owning it owns the roadmap.
-- WHY NOT BUY
-  - No vendor matches our compliance posture without surrender of control.
-- WHY NOT DELAY
-  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+- BEFORE
+  - Status arrived as a 40-slide deck nobody finished; the real decision happened in the hallway afterward.
+- AFTER
+  - One scorecard, one page; the call is logged in the room before anyone leaves.
 
 
 ---

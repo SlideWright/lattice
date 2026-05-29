@@ -74,7 +74,7 @@
     "banner-tag": {
       "label": "Banner tag — slot label as full-width header strip",
       "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
-      "sample": "<!-- _class: before-after banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
+      "sample": "<!-- _class: before-after banner-tag -->\n\n## What the operating review changed.\n\n- BEFORE\n  - Status arrived as a 40-slide deck nobody finished; the real decision happened in the hallway afterward.\n- AFTER\n  - One scorecard, one page; the call is logged in the room before anyone leaves.\n"
     }
   },
   "showcase": { "featured": true }

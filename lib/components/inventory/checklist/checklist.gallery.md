@@ -26,7 +26,7 @@ Items with state markers — done, partial, todo.
 - [-] Pilot teams trained, two still "circling back"
 - [-] Operating rhythm on the calendar, attendance optional in practice
 - [ ] Exec sponsor confirmed for the launch comms
-- [ ] Rollback plan, should we decide to stop deciding
+- [/] Per-team weighting UI, descoped to next half
 
 
 ---
@@ -42,7 +42,7 @@ Items with state markers — done, partial, todo.
 - [-] Pilot teams trained, two still "circling back"
 - [-] Operating rhythm on the calendar, attendance optional in practice
 - [ ] Exec sponsor confirmed for the launch comms
-- [ ] Rollback plan, should we decide to stop deciding
+- [/] Per-team weighting UI, descoped to next half
 
 
 ---
@@ -58,7 +58,7 @@ Items with state markers — done, partial, todo.
 - [-] Pilot teams trained, two still "circling back"
 - [-] Operating rhythm on the calendar, attendance optional in practice
 - [ ] Exec sponsor confirmed for the launch comms
-- [ ] Rollback plan, should we decide to stop deciding
+- [/] Per-team weighting UI, descoped to next half
 
 
 ---
@@ -74,7 +74,7 @@ Items with state markers — done, partial, todo.
 - [-] Pilot teams trained, two still "circling back"
 - [-] Operating rhythm on the calendar, attendance optional in practice
 - [ ] Exec sponsor confirmed for the launch comms
-- [ ] Rollback plan, should we decide to stop deciding
+- [/] Per-team weighting UI, descoped to next half
 
 
 ---
