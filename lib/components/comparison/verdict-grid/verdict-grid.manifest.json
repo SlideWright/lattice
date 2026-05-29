@@ -15,12 +15,17 @@
     "options": {
       "selector": "ul > li",
       "required": true,
-      "description": "Outer li per option, lead with **Option name.**. Inner li per criterion, prefixed with [x]/[-]/[ ] then the criterion text."
+      "description": "One outer li per option, lead with **Option name.**. Then one inner li per criterion, each led by a state marker ([x]/[-]/[ ]/[/]) followed by a badge label of AT MOST TWO WORDS. Criteria are shared across every option, in the same order. The last option renders as the focal verdict."
+    },
+    "rationale": {
+      "selector": "ul > li > ul > li:last-child",
+      "required": true,
+      "description": "REQUIRED. The final inner li of every option carries NO state marker — one short prose line giving the verdict for that option. This content line is what fills the card; omit it and the card renders empty below the badges."
     }
   },
-  "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First criterion\n  - [-] Second criterion\n  - [ ] Third criterion\n- **Second option.**\n  - [x] First criterion\n  - [x] Second criterion\n  - [-] Third criterion\n- **Third option.**\n  - [ ] First criterion\n  - [-] Second criterion\n  - [x] Third criterion\n",
+  "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First badge\n  - [-] Second badge\n  - [ ] Third badge\n  - One-line rationale giving the verdict for this option.\n- **Second option.**\n  - [x] First badge\n  - [x] Second badge\n  - [-] Third badge\n  - One-line rationale giving the verdict for this option.\n- **Third option.**\n  - [x] First badge\n  - [x] Second badge\n  - [x] Third badge\n  - One-line rationale; the last option is the focal verdict. Recommended.\n",
   "anatomyBlock": "verdict-grid",
-  "sample": "<!-- _class: verdict-grid -->\n\n## Which data platform clears the bar.\n\n- **Vendor North.**\n  - [x] SOC 2 Type II\n  - [x] In-region residency\n  - [-] Self-serve export\n- **Vendor West.**\n  - [x] SOC 2 Type II\n  - [ ] In-region residency\n  - [x] Self-serve export\n- **Build in-house.**\n  - [ ] SOC 2 Type II\n  - [-] In-region residency\n  - [ ] Self-serve export\n",
+  "sample": "<!-- _class: verdict-grid -->\n\n## Which data platform clears the bar.\n\n- **Build in-house.**\n  - [ ] Certified\n  - [-] Residency\n  - [ ] Export\n  - Full control of every axis, and three engineer-quarters from having any of it.\n- **Vendor North.**\n  - [x] Certified\n  - [x] Residency\n  - [-] Export\n  - Certified and in-region, but data export is support-gated, not self-serve.\n- **Vendor West.**\n  - [x] Certified\n  - [x] Residency\n  - [x] Export\n  - Certified, in-region, and self-serve on every axis. Recommended.\n",
   "whenToUse": [
     {
       "title": "Two to four options",
@@ -31,8 +36,12 @@
       "body": "Every option is scored on the same set of criteria, in the same order. Drifting criteria between cards defeats the at-a-glance scan the layout exists for."
     },
     {
-      "title": "Pass / partial / fail grammar",
-      "body": "Criteria use the universal `[x]` / `[-]` / `[ ]` / `[/]` state markers — shared with `checklist` and `obligation-matrix`. The badge chrome handles the rest."
+      "title": "Two-word badges",
+      "body": "Each criterion is a state marker (`[x]` / `[-]` / `[ ]` / `[/]`, shared with `checklist` and `obligation-matrix`) plus a badge label of at most two words — `Residency`, `Self-serve`, `SOC 2`. The badge is chrome that must scan in a glance."
+    },
+    {
+      "title": "A rationale line is required",
+      "body": "Every option ends with one final inner bullet that carries NO marker — a short prose verdict for that option. It is the body that fills the card, and the last option renders as the focal, recommended verdict."
     }
   ],
   "antiPatterns": [
@@ -41,8 +50,12 @@
       "body": "Two options with shared criteria belong in `compare-prose` or `split-compare`. verdict-grid earns its layout at 3+ options."
     },
     {
-      "title": "Free-form text on the badge line",
-      "body": "Each inner bullet starts with a state marker, not a sentence. Naked prose breaks the badge chrome and the criteria stop scanning as a row."
+      "title": "Missing the rationale line",
+      "body": "Every option must end with a marker-less prose line — the verdict for that card. Omit it and the card renders empty below the badges, and the focal last card has nothing to recommend. The rationale is required, not optional."
+    },
+    {
+      "title": "Badge longer than two words",
+      "body": "The text after the marker is a badge, not a sentence — two words at most (`Residency`, `Self-serve`). A sentence on a badge line breaks the row scan; prose belongs only on the final rationale line."
     },
     {
       "title": "Cards with different criteria",

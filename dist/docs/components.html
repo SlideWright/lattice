@@ -3462,14 +3462,16 @@ One-sentence context paragraph explaining the stakes.
     <ul>
       <li><strong>Two to four options.</strong> Each card is one option; the grid keeps two cards per row. Past four options the cards crowd and the criteria badges lose legibility.</li>
       <li><strong>Shared criteria across cards.</strong> Every option is scored on the same set of criteria, in the same order. Drifting criteria between cards defeats the at-a-glance scan the layout exists for.</li>
-      <li><strong>Pass / partial / fail grammar.</strong> Criteria use the universal <code>[x]</code> / <code>[-]</code> / <code>[ ]</code> / <code>[/]</code> state markers — shared with <code>checklist</code> and <code>obligation-matrix</code>. The badge chrome handles the rest.</li>
+      <li><strong>Two-word badges.</strong> Each criterion is a state marker (<code>[x]</code> / <code>[-]</code> / <code>[ ]</code> / <code>[/]</code>, shared with <code>checklist</code> and <code>obligation-matrix</code>) plus a badge label of at most two words — <code>Residency</code>, <code>Self-serve</code>, <code>SOC 2</code>. The badge is chrome that must scan in a glance.</li>
+      <li><strong>A rationale line is required.</strong> Every option ends with one final inner bullet that carries NO marker — a short prose verdict for that option. It is the body that fills the card, and the last option renders as the focal, recommended verdict.</li>
     </ul>
   </section>
   <section class="guidance avoid">
     <h4>When not to use</h4>
     <ul>
       <li><strong>Exactly two options.</strong> Two options with shared criteria belong in <code>compare-prose</code> or <code>split-compare</code>. verdict-grid earns its layout at 3+ options.</li>
-      <li><strong>Free-form text on the badge line.</strong> Each inner bullet starts with a state marker, not a sentence. Naked prose breaks the badge chrome and the criteria stop scanning as a row.</li>
+      <li><strong>Missing the rationale line.</strong> Every option must end with a marker-less prose line — the verdict for that card. Omit it and the card renders empty below the badges, and the focal last card has nothing to recommend. The rationale is required, not optional.</li>
+      <li><strong>Badge longer than two words.</strong> The text after the marker is a badge, not a sentence — two words at most (<code>Residency</code>, <code>Self-serve</code>). A sentence on a badge line breaks the row scan; prose belongs only on the final rationale line.</li>
       <li><strong>Cards with different criteria.</strong> When each option needs its own criteria list, the comparison fails — use <code>cards-stack</code> so each card has full prose breathing room instead.</li>
     </ul>
   </section>
@@ -3480,17 +3482,20 @@ One-sentence context paragraph explaining the stakes.
 ## Which option meets the criteria.
 
 - **First option.**
-  - [x] First criterion
-  - [-] Second criterion
-  - [ ] Third criterion
+  - [x] First badge
+  - [-] Second badge
+  - [ ] Third badge
+  - One-line rationale giving the verdict for this option.
 - **Second option.**
-  - [x] First criterion
-  - [x] Second criterion
-  - [-] Third criterion
+  - [x] First badge
+  - [x] Second badge
+  - [-] Third badge
+  - One-line rationale giving the verdict for this option.
 - **Third option.**
-  - [ ] First criterion
-  - [-] Second criterion
-  - [x] Third criterion</code></pre>
+  - [x] First badge
+  - [x] Second badge
+  - [x] Third badge
+  - One-line rationale; the last option is the focal verdict. Recommended.</code></pre>
   </section>
   <section class="slots">
     <h4>Slots</h4>
@@ -3498,7 +3503,8 @@ One-sentence context paragraph explaining the stakes.
       <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading naming the choice.</td></tr>
-        <tr><td><code>options</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>Outer li per option, lead with <strong>Option name.</strong>. Inner li per criterion, prefixed with [x]/[-]/[ ] then the criterion text.</td></tr>
+        <tr><td><code>options</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One outer li per option, lead with <strong>Option name.</strong>. Then one inner li per criterion, each led by a state marker ([x]/[-]/[ ]/[/]) followed by a badge label of AT MOST TWO WORDS. Criteria are shared across every option, in the same order. The last option renders as the focal verdict.</td></tr>
+        <tr><td><code>rationale</code></td><td><code>ul &gt; li &gt; ul &gt; li:last-child</code></td><td><span class="req yes">yes</span></td><td>REQUIRED. The final inner li of every option carries NO state marker — one short prose line giving the verdict for that option. This content line is what fills the card; omit it and the card renders empty below the badges.</td></tr>
       </tbody>
     </table>
   </section>

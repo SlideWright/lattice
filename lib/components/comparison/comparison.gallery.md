@@ -110,15 +110,18 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ## Which data platform clears the bar.
 
-- **Vendor North.**
-  - [x] SOC 2 Type II
-  - [x] In-region residency
-  - [-] Self-serve export
-- **Vendor West.**
-  - [x] SOC 2 Type II
-  - [ ] In-region residency
-  - [x] Self-serve export
 - **Build in-house.**
-  - [ ] SOC 2 Type II
-  - [-] In-region residency
-  - [ ] Self-serve export
+  - [ ] Certified
+  - [-] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- **Vendor North.**
+  - [x] Certified
+  - [x] Residency
+  - [-] Export
+  - Certified and in-region, but data export is support-gated, not self-serve.
+- **Vendor West.**
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
