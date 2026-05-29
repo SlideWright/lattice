@@ -150,7 +150,7 @@
    * `color-scheme: dark` (indaco-dark, cuoio-dark, …) pick up the dark
    * variant automatically.
    *
-   * Tuning rationale (see engineering/decisions/2026-05-15-state-token-palette.md):
+   * Tuning rationale (see engineering/decisions/2026-05-29-palette-recuration.md §4.5):
    *   - Warn moved from #92400E (H22, L31, burnt brown-amber) to
    *     #B45309 (H32 amber-700) in light mode and #F97316 (orange-500)
    *     in dark mode. Bumps hue 10° clear of red and lifts luminance

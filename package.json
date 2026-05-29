@@ -88,6 +88,7 @@
     "docs:landing-tokens": "node tools/build-landing-tokens.js",
     "docs:landing-tokens:check": "node tools/build-landing-tokens.js --check",
     "check:ownership": "node tools/check-ownership.js",
+    "audit:contrast": "node tools/contrast-audit.js",
     "build:galleries": "node tools/build-galleries.js",
     "build:galleries:check": "node tools/build-galleries.js --check",
     "build:bucket-galleries": "node tools/build-bucket-galleries.js",

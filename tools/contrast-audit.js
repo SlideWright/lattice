@@ -2,76 +2,84 @@
 /**
  * Contrast and colour-theory audit for all Lattice themes.
  *
- * Checks WCAG AA contrast (4.5:1) for every critical text-on-fill pair
- * that appears in Mermaid diagrams and slide layouts. Also reports OKLab
- * pairwise distances between chart-1..6 to flag perceptual similarity.
+ * Measures WCAG contrast for every text-bearing and graphical token pair
+ * in the CURRENT token taxonomy (--cN-light / --cN-dark categorical cycle,
+ * universal semantic palette, state signals, quadrant, surfaces/ink), across
+ * every shipped theme in BOTH canvas modes. Also reports OKLab pairwise
+ * distance across the categorical cycle to flag perceptually-similar slots.
+ *
+ * Tiered bars (see engineering/decisions/2026-05-29-palette-recuration.md):
+ *   AA   = 4.5:1  text-bearing tokens (ink on fills, headings on surfaces)
+ *   UI   = 3.0:1  graphical / shape-encoded signals (state discs, strokes)
+ *   DEC  =   —    decorative (hairline borders, muted chrome, lines): reported, not gated
+ *
+ * This tool is the measurement instrument; test/unit/palette/contrast.test.js
+ * is the CI gate that holds the AA/UI bars on every theme.
  *
  * Usage:
- *   node tools/contrast-audit.js               # all themes
- *   node tools/contrast-audit.js indaco cuoio  # specific themes
- *   node tools/contrast-audit.js --fails-only  # suppress passing themes
+ *   node tools/contrast-audit.js                 # all themes, both modes
+ *   node tools/contrast-audit.js indaco cuoio    # specific themes
+ *   node tools/contrast-audit.js --fails-only    # suppress clean themes
+ *   node tools/contrast-audit.js --tier=AA       # gate AA pairs only
  */
-
-
 
 const fs   = require('fs');
 const path = require('path');
 
 const ROOT       = path.join(__dirname, '..');
 const THEMES_DIR = path.join(ROOT, 'themes');
+const ENGINE_CSS = path.join(ROOT, 'dist', 'lattice.css'); // universal-default source
 
-// ── CSS loader (mirrors emulator's loadPaletteWithImports) ────────────────
-
+// ── CSS loader — walk @import graph; resolve `lattice` to the engine bundle
+// so universal semantic defaults (base.tokens.css → dist/lattice.css) are
+// visible, exactly as the contrast unit test does. ───────────────────────
 function loadPaletteWithImports(filePath, seen = new Set()) {
   if (seen.has(filePath) || !fs.existsSync(filePath)) return '';
   seen.add(filePath);
-  const content = fs.readFileSync(filePath, 'utf8');
-  const dir     = path.dirname(filePath);
+  const content  = fs.readFileSync(filePath, 'utf8');
   const importRe = /@import\s+["']?([A-Za-z0-9_-]+)["']?\s*;/g;
   let imported = '';
   let m;
   while ((m = importRe.exec(content)) !== null) {
-    const name = m[1];
-    if (name === 'lattice') continue; // layout CSS; colour tokens live in themes
-    const imp = path.join(dir, `${name}.css`);
-    if (fs.existsSync(imp)) imported += loadPaletteWithImports(imp, seen) + '\n';
+    if (m[1] === 'lattice-diagram') continue;
+    const target = m[1] === 'lattice'
+      ? ENGINE_CSS
+      : path.join(THEMES_DIR, `${m[1]}.css`);
+    imported += loadPaletteWithImports(target, seen) + '\n';
   }
   return imported + content;
 }
 
-// ── Token resolver (mirrors emulator's parsePaletteVars) ─────────────────
-
-function parsePaletteVars(content) {
+// ── Token resolver — light-dark() collapse per requested mode, then iterate
+// var() refs to a fixed point. ───────────────────────────────────────────
+function parsePaletteVars(content, mode = 'light') {
   const stripped = content.replace(/\/\*[\s\S]*?\*\//g, '');
   const vars = {};
-  // Collect all :root blocks; later declarations override earlier ones.
   for (const block of (stripped.match(/:root\s*\{[^}]*\}/g) || [])) {
     for (const d of (block.match(/--[a-z0-9-]+\s*:\s*[^;]+/gi) || [])) {
-      const m = d.match(/--([a-z0-9-]+)\s*:\s*(.+)$/i);
-      if (m) vars[m[1]] = m[2].trim();
+      const mm = d.match(/--([a-z0-9-]+)\s*:\s*(.+)$/i);
+      if (mm) vars[mm[1]] = mm[2].trim();
     }
   }
-  // Collapse light-dark() to the correct side.
-  const isDark = /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
   for (const k of Object.keys(vars)) {
     const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
-    if (ld) vars[k] = (isDark ? ld[2] : ld[1]).trim();
+    if (ld) vars[k] = (mode === 'dark' ? ld[2] : ld[1]).trim();
   }
-  // Resolve var() one level (handles brand-axis refs like var(--brand-wine-mid)).
-  for (const k of Object.keys(vars)) {
-    const ref = vars[k].match(/^var\(--([a-z0-9-]+)\)$/i);
-    if (ref && vars[ref[1]]) vars[k] = vars[ref[1]];
-  }
-  // Second pass: resolve any var() that was itself a light-dark() result.
-  for (const k of Object.keys(vars)) {
-    const ref = vars[k].match(/^var\(--([a-z0-9-]+)\)$/i);
-    if (ref && vars[ref[1]]) vars[k] = vars[ref[1]];
+  for (let pass = 0; pass < 10; pass++) {
+    let changed = false;
+    for (const k of Object.keys(vars)) {
+      const ref = vars[k].match(/^var\(--([a-z0-9-]+)\)$/i);
+      if (ref && vars[ref[1]] && vars[ref[1]] !== vars[k]) {
+        vars[k] = vars[ref[1]];
+        changed = true;
+      }
+    }
+    if (!changed) break;
   }
   return vars;
 }
 
-// ── Colour math ───────────────────────────────────────────────────────────
-
+// ── Colour math (WCAG sRGB luminance + OKLab) ─────────────────────────────
 function parseHex(hex) {
   if (!hex) return null;
   hex = hex.trim().replace(/^#/, '');
@@ -83,37 +91,18 @@ function parseHex(hex) {
     b: parseInt(hex.slice(4, 6), 16),
   };
 }
-
-function toLinear(c) {
-  c /= 255;
-  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
+function toLinear(c) { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }
 function luminance(hex) {
   const rgb = parseHex(hex);
   if (!rgb) return null;
-  return 0.2126 * toLinear(rgb.r)
-       + 0.7152 * toLinear(rgb.g)
-       + 0.0722 * toLinear(rgb.b);
+  return 0.2126 * toLinear(rgb.r) + 0.7152 * toLinear(rgb.g) + 0.0722 * toLinear(rgb.b);
 }
-
 function contrastRatio(fg, bg) {
-  const l1 = luminance(fg);
-  const l2 = luminance(bg);
+  const l1 = luminance(fg), l2 = luminance(bg);
   if (l1 === null || l2 === null) return null;
-  const hi = Math.max(l1, l2);
-  const lo = Math.min(l1, l2);
+  const hi = Math.max(l1, l2), lo = Math.min(l1, l2);
   return (hi + 0.05) / (lo + 0.05);
 }
-
-function _wcagGrade(ratio) {
-  if (ratio === null)  return 'N/A  ';
-  if (ratio >= 7.0)    return 'AAA  ';
-  if (ratio >= 4.5)    return 'AA   ';
-  return                      'FAIL ';
-}
-
-// OKLab conversion for perceptual distance checks.
 function toOKLab(hex) {
   const rgb = parseHex(hex);
   if (!rgb) return null;
@@ -123,183 +112,138 @@ function toOKLab(hex) {
   const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
   const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
   return {
-    L:  0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
-    a:  1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
-    b:  0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_,
+    L: 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+    a: 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+    b: 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_,
   };
 }
-
-function oklabDist(hex1, hex2) {
-  const a = toOKLab(hex1), b = toOKLab(hex2);
+function oklabDist(h1, h2) {
+  const a = toOKLab(h1), b = toOKLab(h2);
   if (!a || !b) return null;
-  return Math.sqrt((a.L-b.L)**2 + (a.a-b.a)**2 + (a.b-b.b)**2);
+  return Math.sqrt((a.L - b.L) ** 2 + (a.a - b.a) ** 2 + (a.b - b.b) ** 2);
 }
 
-// ── Audit definition ──────────────────────────────────────────────────────
+// ── Pair definitions: [label, fillToken, textToken, tier] ─────────────────
+const AA = 4.5, UI = 3.0;
+function buildPairs() {
+  const P = [];
+  // Surfaces / ink (text-bearing)
+  for (const s of ['bg', 'bg-alt']) {
+    P.push([`text-heading on ${s}`, s, 'text-heading', AA]);
+    P.push([`text-body on ${s}`,    s, 'text-body',    AA]);
+    P.push([`text-label on ${s}`,   s, 'text-label',   AA]);
+  }
+  P.push(['text-display on bg-dark', 'bg-dark', 'text-display', AA]);
+  P.push(['accent on bg',            'bg',      'accent',       AA]); // inline-code/eyebrow text
+  P.push(['on-accent on accent',     'accent',  'on-accent',    AA]);
+  P.push(['code-text on code-bg',    'code-bg', 'code-text',    AA]);
+  // Categorical cycle — both tiers, paired ink
+  for (let i = 1; i <= 12; i++) P.push([`c${i}-light / c-ink-light`, `c${i}-light`, 'c-ink-light', AA]);
+  for (let i = 1; i <= 12; i++) P.push([`c${i}-dark / c-ink-dark`,   `c${i}-dark`,  'c-ink-dark',  AA]);
+  // Universal semantic fills with their ink
+  P.push(['c-warm-light / c-ink-light', 'c-warm-light', 'c-ink-light', AA]);
+  P.push(['c-cool-light / c-ink-light', 'c-cool-light', 'c-ink-light', AA]);
+  P.push(['c-note / c-ink-light',       'c-note',       'c-ink-light', AA]);
+  P.push(['c-ink-dark on c-alarm',      'c-alarm',      'c-ink-dark',  AA]);
+  // Quadrant fill/text
+  for (let n = 1; n <= 4; n++) P.push([`quadrant-${n} fill/text`, `c-quadrant-${n}-fill`, `c-quadrant-${n}-text`, AA]);
+  // State signals — shape-encoded discs (slash mask): graphical 3:1 floor
+  P.push(['pass on bg', 'bg', 'pass', UI]);
+  P.push(['warn on bg', 'bg', 'warn', UI]);
+  P.push(['fail on bg', 'bg', 'fail', UI]);
+  // Strokes are graphical and run on PALE band fills. Only meaningful in
+  // light mode — in dark mode --cN-light resolves to the DEEP tier, so the
+  // "stroke on band" pairing inverts. Gated light-mode only (see caller).
+  for (const band of ['c1-light', 'c5-light', 'c9-light']) {
+    P.push([`c-stroke on ${band}`, band, 'c-stroke', UI, 'light-only']);
+  }
+  return P;
+}
 
-// Each entry: [fgToken, bgToken, context, minRatio]
-// minRatio defaults to 4.5 (AA body text). Large/decorative text passes at 3.0.
-const PAIRS = [
-  // ── Slide layout (baseline) ──────────────────────────────────────────
-  ['text-heading', 'bg',         'slide: heading on canvas'],
-  ['text-body',    'bg',         'slide: body on canvas'],
-  ['text-label',   'bg',         'slide: label on canvas'],
-  ['text-heading', 'bg-alt',     'slide: heading on card'],
-  ['text-heading', 'accent-soft','slide: heading on accent-soft'],
-  ['on-accent',    'accent',     'slide: on-accent on accent'],
-  ['bg',           'fail',       'slide: bg on fail (error chip)'],
-
-  // ── Mermaid node fills ────────────────────────────────────────────────
-  // Current state: mermaid-primary-color (may be inherited pale blue)
-  ['text-heading', 'mermaid-primary-color',   'mermaid: heading on primary node fill'],
-  ['text-heading', 'mermaid-secondary-color', 'mermaid: heading on secondary node fill'],
-
-  // Proposed state after refactor: accent-soft / bg-alt as node fills
-  ['text-heading', 'accent-soft', 'mermaid (post): heading on primary node fill'],
-  ['text-heading', 'bg-alt',      'mermaid (post): heading on cluster fill'],
-
-  // ── Mermaid chart fills (pie, active gantt, quadrant) ─────────────────
-  // text-heading on mid-tone chart colours — high risk
-  ['text-heading', 'chart-1', 'mermaid: heading on chart-1 (pie/gantt)'],
-  ['text-heading', 'chart-2', 'mermaid: heading on chart-2'],
-  ['text-heading', 'chart-3', 'mermaid: heading on chart-3'],
-  ['text-heading', 'chart-4', 'mermaid: heading on chart-4'],
-  ['text-heading', 'chart-5', 'mermaid: heading on chart-5'],
-  ['text-heading', 'chart-6', 'mermaid: heading on chart-6'],
-
-  // on-accent on mid-tone chart colours — alternative for pie text
-  ['on-accent', 'chart-1', 'mermaid: on-accent on chart-1'],
-  ['on-accent', 'chart-2', 'mermaid: on-accent on chart-2'],
-  ['on-accent', 'chart-3', 'mermaid: on-accent on chart-3'],
-  ['on-accent', 'chart-4', 'mermaid: on-accent on chart-4'],
-  ['on-accent', 'chart-5', 'mermaid: on-accent on chart-5'],
-  ['on-accent', 'chart-6', 'mermaid: on-accent on chart-6'],
-
-  // ── Edge labels ───────────────────────────────────────────────────────
-  ['text-heading', 'bg', 'mermaid: edge label text on canvas bg'],
+// Decorative pairs: reported for awareness, never gated.
+const DECORATIVE = [
+  ['border on bg',     'bg', 'border'],
+  ['text-muted on bg', 'bg', 'text-muted'],
 ];
 
-const CHART_TOKENS = ['chart-1','chart-2','chart-3','chart-4','chart-5','chart-6'];
-// OKLab distance threshold: 0.15 ≈ "just about distinct" for categorical use.
-// Well-designed palettes target ≥ 0.20 for adjacent slots.
-const OKLAB_THRESHOLD = 0.15;
-
 // ── Runner ────────────────────────────────────────────────────────────────
-
-const args       = process.argv.slice(2);
-const failsOnly  = args.includes('--fails-only');
-const themeArgs  = args.filter(a => !a.startsWith('-'));
+const args      = process.argv.slice(2);
+const failsOnly = args.includes('--fails-only');
+const tierArg   = (args.find(a => a.startsWith('--tier=')) || '').split('=')[1] || null;
+const themeArgs = args.filter(a => !a.startsWith('-'));
 
 const allThemes = fs.readdirSync(THEMES_DIR)
-  .filter(f => f.endsWith('.css'))
+  .filter(f => f.endsWith('.css') && !f.endsWith('-dark.css'))
   .map(f => f.replace('.css', ''))
   .sort();
-
 const themes = themeArgs.length ? themeArgs : allThemes;
 
-let totalFails = 0;
-const totalWarns = 0;
-let totalChecks = 0;
+const PAIRS = buildPairs().filter(([, , , tier]) =>
+  !tierArg || (tierArg === 'AA' ? tier === AA : tier === UI));
 
-console.log('');
-console.log('  Lattice · Contrast & Colour-Theory Audit');
+let totalFails = 0, totalChecks = 0;
+
+console.log('\n  Lattice · Contrast & Colour-Theory Audit');
 console.log('  ══════════════════════════════════════════════════════════════');
-console.log('  WCAG AA = 4.5:1 · AAA = 7:1 · OKLab ΔE threshold = 0.15');
-console.log('');
+console.log('  AA text = 4.5:1 · UI graphical = 3.0:1 · OKLab ΔE flag < 0.15\n');
 
 for (const theme of themes) {
   const cssFile = path.join(THEMES_DIR, `${theme}.css`);
-  if (!fs.existsSync(cssFile)) {
-    console.log(`  [skip] ${theme} — file not found`);
-    continue;
-  }
+  if (!fs.existsSync(cssFile)) { console.log(`  [skip] ${theme} — not found`); continue; }
+  const css      = loadPaletteWithImports(cssFile);
+  const hasDark  = fs.existsSync(path.join(THEMES_DIR, `${theme}-dark.css`));
+  const modes    = hasDark ? ['light', 'dark'] : ['light'];
 
-  const css  = loadPaletteWithImports(cssFile);
-  const vars = parsePaletteVars(css);
+  for (const mode of modes) {
+    const vars = parsePaletteVars(css, mode);
+    const fails = [], decoNotes = [];
 
-  const fails = [];
-  const missing = [];
+    for (const [label, fk, tk, bar, scope] of PAIRS) {
+      if (scope === 'light-only' && mode !== 'light') continue;
+      const f = vars[fk], t = vars[tk];
+      if (!parseHex(f) || !parseHex(t)) continue; // token absent or non-hex (color-mix) — skip
+      totalChecks++;
+      const ratio = contrastRatio(f, t);
+      if (ratio < bar) { totalFails++; fails.push({ label, f, t, ratio, bar }); }
+    }
+    for (const [label, fk, tk] of DECORATIVE) {
+      const f = vars[fk], t = vars[tk];
+      if (!parseHex(f) || !parseHex(t)) continue;
+      decoNotes.push({ label, ratio: contrastRatio(f, t), f, t });
+    }
 
-  for (const [fg, bg, ctx] of PAIRS) {
-    const fgHex = vars[fg];
-    const bgHex = vars[bg];
-
-    // Skip pairs where either token is not defined in this theme's chain.
-    if (!fgHex || !bgHex) {
-      if (parseHex(fgHex) === null || parseHex(bgHex) === null) {
-        // Token exists but value isn't a plain hex (e.g. color-mix).
-        // Flag only if both tokens exist but can't be resolved.
-        if (fgHex && bgHex) {
-          missing.push({ ctx, fg: fgHex, bg: bgHex });
-        }
+    // Categorical distinctness (OKLab) across the 8 CHART series slots
+    // (c1-dark..c8-dark — what charts actually cycle). Summarise: the
+    // global min ΔE and any genuinely confusable pairs (ΔE < 0.10).
+    const series = [];
+    for (let i = 1; i <= 8; i++) { const h = vars[`c${i}-dark`]; if (parseHex(h)) series.push([i, h]); }
+    let minDE = Infinity; const confusable = [];
+    for (let i = 0; i < series.length; i++)
+      for (let j = i + 1; j < series.length; j++) {
+        const d = oklabDist(series[i][1], series[j][1]);
+        if (d === null) continue;
+        if (d < minDE) minDE = d;
+        if (d < 0.10) confusable.push(`c${series[i][0]}↔c${series[j][0]}·${d.toFixed(2)}`);
       }
-      continue;
-    }
 
-    if (!parseHex(fgHex) || !parseHex(bgHex)) {
-      missing.push({ ctx, fg: fgHex, bg: bgHex });
-      continue;
-    }
+    const clean = fails.length === 0 && confusable.length === 0;
+    if (clean && failsOnly) continue;
 
-    totalChecks++;
-    const ratio = contrastRatio(fgHex, bgHex);
-    if (ratio < 4.5) {
-      totalFails++;
-      fails.push({ ctx, fgHex, bgHex, ratio });
-    }
-  }
-
-  // Chart palette: OKLab pairwise distinctness.
-  const chartHexes = CHART_TOKENS.map(t => vars[t]).filter(h => parseHex(h));
-  const weakPairs = [];
-  for (let i = 0; i < chartHexes.length; i++) {
-    for (let j = i + 1; j < chartHexes.length; j++) {
-      const d = oklabDist(chartHexes[i], chartHexes[j]);
-      if (d !== null && d < OKLAB_THRESHOLD) {
-        weakPairs.push({
-          a: `chart-${i+1}(${chartHexes[i]})`,
-          b: `chart-${j+1}(${chartHexes[j]})`,
-          d,
-        });
-      }
-    }
-  }
-
-  const hasIssues = fails.length || weakPairs.length || missing.length;
-
-  if (!hasIssues && failsOnly) continue;
-
-  const isDark = css.match(/:root\s*\{[^}]*color-scheme\s*:\s*dark\b/) ? ' [dark]' : '';
-  console.log(`  ── ${theme}${isDark} ${'─'.repeat(Math.max(1, 52 - theme.length - isDark.length))}`);
-
-  if (!hasIssues) {
-    const minDist = chartHexes.length >= 2
-      ? Math.min(...CHART_TOKENS.slice(0, chartHexes.length).flatMap((_, i) =>
-          CHART_TOKENS.slice(i+1, chartHexes.length).map((__, j) => {
-            const d = oklabDist(chartHexes[i], chartHexes[i+1+j]);
-            return d ?? Infinity;
-          })
-        ))
-      : Infinity;
-    const distStr = Number.isFinite(minDist) ? `  chart min ΔE ${minDist.toFixed(3)}` : '';
-    console.log(`     ✓ all checks pass${distStr}`);
-  } else {
+    const tag = (theme === 'indaco' || theme === 'cuoio') ? 'CI' : '··';
+    console.log(`  ── [${tag}] ${theme} (${mode}) ${'─'.repeat(Math.max(1, 40 - theme.length))} ${fails.length} fail`);
     for (const f of fails) {
-      const r = f.ratio.toFixed(2).padStart(5);
-      console.log(`     ✗ ${r}:1  ${f.fgHex} on ${f.bgHex}`);
-      console.log(`          ${f.ctx}`);
+      const t = f.bar === AA ? 'AA' : 'UI';
+      console.log(`     ✗ ${f.ratio.toFixed(2).padStart(5)}:1 [${t}]  ${f.label}   ${f.f} / ${f.t}`);
     }
-    for (const w of weakPairs) {
-      console.log(`     ⚠ chart ΔE ${w.d.toFixed(3)}  ${w.a} ↔ ${w.b}`);
-    }
-    for (const u of missing) {
-      console.log(`     ?  unresolved pair [${u.ctx}]`);
-      console.log(`          fg=${u.fg}  bg=${u.bg}`);
-    }
+    if (Number.isFinite(minDE))
+      console.log(`     ◦ chart series (c1..c8) min ΔE ${minDE.toFixed(2)}` +
+        (confusable.length ? `  — confusable: ${confusable.join(' ')}` : ''));
+    if (!failsOnly) for (const d of decoNotes)
+      console.log(`     · ${d.ratio.toFixed(2).padStart(5)}:1 [dec] ${d.label}   ${d.f} / ${d.t}`);
+    console.log('');
   }
-  console.log('');
 }
 
 console.log('  ══════════════════════════════════════════════════════════════');
-console.log(`  ${totalFails} contrast failures · ${totalWarns} warnings · ${totalChecks} pairs checked across ${themes.length} themes`);
-console.log('');
+console.log(`  ${totalFails} gated failures · ${totalChecks} pairs checked across ${themes.length} themes\n`);
+process.exitCode = totalFails > 0 ? 1 : 0;
