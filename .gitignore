@@ -36,6 +36,10 @@ lib/components/**/*.gallery.*.tmp.md
 # macOS
 .DS_Store
 
+# Python bytecode (design/logo/generate.py)
+__pycache__/
+*.pyc
+
 examples/*.html
 examples/**/*.html
 lib/components/**/*.html
