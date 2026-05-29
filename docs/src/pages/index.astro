@@ -441,7 +441,13 @@ const liveData = JSON.stringify({
 					if (tabSource) tabSource.addEventListener('click', function () { setHeroView('source'); });
 					renderHero();
 
-					// ── Showcase tiles: lazy live render with static fallback ─
+					// ── Showcase tiles: live render with static fallback ─
+					// Render the WHOLE strip once it nears the viewport (not per-tile
+					// on intersection). On the mobile carousel the off-screen tiles
+					// never intersect until swiped, so per-tile lazy left them showing
+					// the indaco static fallback — the carousel read as "not live".
+					// One render pass when the strip approaches keeps it light (below
+					// the fold) while making every tile palette-correct up front.
 					var tiles = [].slice.call(document.querySelectorAll('.shot-img[data-live]'));
 					var rendered = [];
 					function renderTile(host) {
@@ -450,13 +456,15 @@ const liveData = JSON.stringify({
 						if (!t) return;
 						renderInto(host, t.sample, t.mermaid).then(function (ok) { if (ok && rendered.indexOf(host) < 0) rendered.push(host); });
 					}
-					if ('IntersectionObserver' in window) {
+					function renderAllTiles() { tiles.forEach(renderTile); }
+					var strip = document.querySelector('.showcase-carousel') || document.querySelector('.showcase');
+					if ('IntersectionObserver' in window && strip) {
 						var io = new IntersectionObserver(function (entries) {
-							entries.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); renderTile(e.target); } });
-						}, { rootMargin: '200px' });
-						tiles.forEach(function (t) { io.observe(t); });
+							if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); renderAllTiles(); }
+						}, { rootMargin: '300px' });
+						io.observe(strip);
 					} else {
-						tiles.forEach(renderTile);
+						renderAllTiles();
 					}
 
 					// ── Re-render on palette / mode change (hero + visible tiles) ─
