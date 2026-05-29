@@ -50,3 +50,11 @@ test/integration/**/*.html
 !examples/**/*.pdf
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
+
+# Palette bake-off scratch candidates (themes/ is tracked; these are throwaway
+# variants the render harness reads. The WINNER is written to the real
+# indaco.css/cuoio.css and committed properly after synthesis.)
+themes/forge-*.css
+themes/ca-*.css
+themes/cb-*.css
+themes/cc-*.css
