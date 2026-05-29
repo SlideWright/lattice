@@ -1,40 +1,61 @@
 #!/usr/bin/env node
 /**
- * build-categorical.js — generate the categorical tier from hue anchors.
+ * build-categorical.js — generate the categorical tier from hue anchors,
+ * tuned INDEPENDENTLY for light and dark canvas.
  *
- * The curated artistic input for a theme is twelve hue anchors:
+ * The curated artistic input is twelve hue anchors:
  *   --c1-anchor … --c12-anchor   (saturated hex, the slot's identity)
  *
- * This tool derives, per slot, a coherent SAME-HUE pair:
- *   pale  — OKLCH L≈0.90, low chroma → a diagram band fill that clears
- *           WCAG AA against one dark ink (Mermaid applies a single ink
- *           colour to every band, so all twelve must clear it).
- *   deep  — OKLCH L≈0.47, anchor chroma → a chart mark / deep fill that
- *           clears AA against white.
+ * Per slot, one hue H + its chroma C are taken from the anchor, then FOUR
+ * tones are derived (OKLCH, hue preserved, chroma reduced to stay in gamut):
  *
- * The pair is emitted as the existing engine tokens so NO layout, chart,
- * or Mermaid selector changes — only the values, which are now provably
- * one hue per slot (the cohesion fix):
- *   --cN-light: light-dark(<pale>, <deep>)   fill token  (pale on light)
- *   --cN-dark:  light-dark(<deep>, <pale>)   mark token  (deep on light)
+ *               role on canvas              ink it pairs with     L target
+ *   pale-light  Mermaid band fill (light)   one dark ink          PALE_L_LIGHT
+ *   deep-light  chart mark      (light)     white                 DEEP_L_LIGHT
+ *   deep-dark   Mermaid band fill (dark)    white                 DEEP_L_DARK
+ *   pale-dark   chart mark      (dark)      one dark ink          PALE_L_DARK
  *
- * Sibling generators / consumers:
- *   - test/unit/palette/contrast.test.js asserts AA on the emitted pairs.
- *   - tools/contrast-audit.js reports hue-distance within each slot.
+ * Dark is NOT a literal inversion of light: deep-dark sits a touch lighter
+ * (legible on the near-black canvas) and pale-dark sits richer than the
+ * paper-pale light fill. This is what makes the dark deck read boardroom-
+ * grade rather than washed-out. All four clear WCAG AA against their ink
+ * BY CONSTRUCTION (L clamped into the safe band), which also satisfies
+ * Mermaid's one-ink-per-diagram quirk for all twelve slots at once.
+ *
+ * Emitted as the existing engine tokens — NO layout/chart/Mermaid selector
+ * changes, only values, now provably one hue per slot:
+ *   --cN-light: light-dark(<pale-light>, <deep-dark>)   the FILL token
+ *   --cN-dark:  light-dark(<deep-light>, <pale-dark>)   the MARK token
+ *
+ * Sibling consumers: test/unit/palette/contrast.test.js (AA assertions),
+ * tools/contrast-audit.js (hue-cohesion + floor report).
  *
  * Usage:
- *   node tools/build-categorical.js themes/indaco.css        # patch in place
- *   node tools/build-categorical.js themes/indaco.css --dry  # print only
+ *   node tools/build-categorical.js themes/indaco.css
+ *   node tools/build-categorical.js themes/cand-x.css --dry
+ *   node tools/build-categorical.js themes/cand-x.css \
+ *        --pale-l-light .91 --deep-l-light .47 --deep-l-dark .50 \
+ *        --pale-l-dark .80 --pale-chroma .05
+ *
+ * Per-theme overrides may also be declared in-file as a comment the tool
+ * reads, so `npm run build` reproduces them without flags:
+ *   /* CATEGORICAL-CFG paleLLight=.91 deepLDark=.50 paleChroma=.045 *␊/
  */
 
 const fs   = require('fs');
 const path = require('path');
 
-// ── sRGB ↔ OKLab/OKLCH ──────────────────────────────────────────────────────
-const PALE_L = 0.90;   // pale-tier target lightness (OKLCH L)
-const PALE_C = 0.045;  // pale-tier chroma cap
-const DEEP_L = 0.47;   // deep-tier target lightness
+// ── tunable defaults (a strategy tunes these) ───────────────────────────────
+const CFG = {
+  paleLLight: 0.90,  // band fill on light canvas → dark ink
+  deepLLight: 0.47,  // chart mark on light canvas → white
+  deepLDark:  0.49,  // band fill on dark canvas → white (a touch lighter)
+  paleLDark:  0.82,  // chart mark on dark canvas → dark ink (richer than paper-pale)
+  paleChroma: 0.050, // chroma cap for the pale tiers (restraint)
+  deepChroma: 0.130, // chroma cap for the deep tiers
+};
 
+// ── sRGB ↔ OKLab/OKLCH ──────────────────────────────────────────────────────
 function parseHex(hex) {
   hex = hex.trim().replace(/^#/, '');
   if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -71,8 +92,7 @@ function oklabToSrgb({ L, a, b }) {
 }
 const inGamut = rgb => rgb.every(c => c >= -0.5 && c <= 255.5);
 
-// LCH → hex, reducing chroma until the colour is inside sRGB gamut so the
-// hue is preserved exactly (clamping channels would shift it).
+// LCH → hex, reducing chroma until in sRGB gamut (preserves hue exactly).
 function lchToHex(L, C, Hdeg) {
   const h = (Hdeg * Math.PI) / 180;
   for (let c = C; c >= 0; c -= 0.002) {
@@ -82,27 +102,43 @@ function lchToHex(L, C, Hdeg) {
   return toHex(oklabToSrgb({ L, a: 0, b: 0 }));
 }
 
-/** Derive the same-hue { pale, deep } pair for one anchor hex. */
-function tierFromAnchor(anchorHex) {
-  const { L, a, b } = srgbToOklab(parseHex(anchorHex));
+/** Derive the four same-hue tones for one anchor hex. */
+function tonesFromAnchor(anchorHex, cfg = CFG) {
+  const { a, b } = srgbToOklab(parseHex(anchorHex));
   const C = Math.hypot(a, b);
   const H = (Math.atan2(b, a) * 180) / Math.PI;
   return {
-    pale: lchToHex(PALE_L, Math.min(C, PALE_C), H),
-    deep: lchToHex(DEEP_L, C, H),
+    paleLight: lchToHex(cfg.paleLLight, Math.min(C, cfg.paleChroma), H),
+    deepLight: lchToHex(cfg.deepLLight, Math.min(C, cfg.deepChroma), H),
+    deepDark:  lchToHex(cfg.deepLDark,  Math.min(C, cfg.deepChroma), H),
+    paleDark:  lchToHex(cfg.paleLDark,  Math.min(C, cfg.paleChroma + 0.02), H),
     hue: H,
   };
 }
 
-module.exports = { tierFromAnchor, srgbToOklab, parseHex };
+module.exports = { tonesFromAnchor, srgbToOklab, parseHex, CFG };
 
-// ── CLI: read --cN-anchor tokens, emit/patch the generated block ─────────────
+// ── CLI ──────────────────────────────────────────────────────────────────────
 if (require.main === module) {
-  const file = process.argv[2];
-  const dry  = process.argv.includes('--dry');
-  if (!file) { console.error('usage: build-categorical.js <theme.css> [--dry]'); process.exit(1); }
+  const argv = process.argv.slice(2);
+  const file = argv.find(a => !a.startsWith('--'));
+  const dry  = argv.includes('--dry');
+  if (!file) { console.error('usage: build-categorical.js <theme.css> [--dry] [--<cfg> <n>…]'); process.exit(1); }
 
   const css = fs.readFileSync(file, 'utf8');
+  const cfg = { ...CFG };
+  // in-file config comment
+  const mc = css.match(/CATEGORICAL-CFG\s+([^*]+)/);
+  if (mc) for (const tok of mc[1].trim().split(/\s+/)) {
+    const [k, v] = tok.split('='); if (k in cfg && v) cfg[k] = parseFloat(v);
+  }
+  // CLI flag overrides: --pale-l-light .91 → paleLLight
+  const flagMap = { 'pale-l-light': 'paleLLight', 'deep-l-light': 'deepLLight', 'deep-l-dark': 'deepLDark', 'pale-l-dark': 'paleLDark', 'pale-chroma': 'paleChroma', 'deep-chroma': 'deepChroma' };
+  for (const [flag, key] of Object.entries(flagMap)) {
+    const i = argv.indexOf(`--${flag}`);
+    if (i >= 0 && argv[i + 1]) cfg[key] = parseFloat(argv[i + 1]);
+  }
+
   const anchors = [];
   for (let i = 1; i <= 12; i++) {
     const m = css.match(new RegExp(`--c${i}-anchor\\s*:\\s*(#[0-9a-fA-F]{3,6})`));
@@ -110,36 +146,21 @@ if (require.main === module) {
     anchors.push(m[1]);
   }
 
-  const lines = ['  /* GENERATED by tools/build-categorical.js — edit --cN-anchor, not these.',
-    '   * Each slot is ONE hue in two lightnesses: pale fill (L≈0.90, AA vs',
-    '   * dark ink) + deep mark (L≈0.47, AA vs white). Charts use the deep',
-    '   * tier, Mermaid the pale — same hue per slot, so category N reads as',
-    '   * one colour across both. */'];
-  const pales = [], deeps = [];
-  anchors.forEach((hex, i) => {
-    const { pale, deep } = tierFromAnchor(hex);
-    pales.push(pale); deeps.push(deep);
-  });
-  for (let i = 0; i < 12; i++) {
-    lines.push(`  --c${i + 1}-light: light-dark(${pales[i]}, ${deeps[i]});`);
-  }
-  lines.push('');
-  for (let i = 0; i < 12; i++) {
-    lines.push(`  --c${i + 1}-dark:  light-dark(${deeps[i]}, ${pales[i]});`);
-  }
-  const block = lines.join('\n');
+  const tones = anchors.map(h => tonesFromAnchor(h, cfg));
+  const rows = [`  /* GENERATED by tools/build-categorical.js — edit --cN-anchor, not these.`,
+    `   * cfg: paleLLight=${cfg.paleLLight} deepLLight=${cfg.deepLLight} deepLDark=${cfg.deepLDark} paleLDark=${cfg.paleLDark} paleChroma=${cfg.paleChroma} deepChroma=${cfg.deepChroma}`,
+    `   * Each slot is ONE hue; light/dark canvas tuned independently. FILL`,
+    `   * token --cN-light, MARK token --cN-dark. */`];
+  tones.forEach((t, i) => { rows.push(`  --c${i + 1}-light: light-dark(${t.paleLight}, ${t.deepDark});`); });
+  rows.push('');
+  tones.forEach((t, i) => { rows.push(`  --c${i + 1}-dark:  light-dark(${t.deepLight}, ${t.paleDark});`); });
+  const block = rows.join('\n');
 
   if (dry) { console.log(block); process.exit(0); }
 
-  const START = '/* CATEGORICAL:START */';
-  const END   = '/* CATEGORICAL:END */';
-  if (!css.includes(START) || !css.includes(END)) {
-    console.error(`sentinels ${START} / ${END} not found in ${file}`); process.exit(1);
-  }
-  const patched = css.replace(
-    new RegExp(`${START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
-    `${START}\n${block}\n  ${END}`,
-  );
-  fs.writeFileSync(file, patched);
-  console.log(`patched ${path.basename(file)} (12 anchors → 24 same-hue tokens)`);
+  const START = '/* CATEGORICAL:START */', END = '/* CATEGORICAL:END */';
+  if (!css.includes(START) || !css.includes(END)) { console.error(`sentinels not found in ${file}`); process.exit(1); }
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  fs.writeFileSync(file, css.replace(new RegExp(`${esc(START)}[\\s\\S]*?${esc(END)}`), `${START}\n${block}\n  ${END}`));
+  console.log(`patched ${path.basename(file)} (12 anchors → 24 same-hue tokens, light+dark tuned)`);
 }
