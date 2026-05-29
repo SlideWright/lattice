@@ -8,12 +8,12 @@
 // Astro/Vite bundles this (imported from playground.astro), so no separate
 // esbuild step — the CodeMirror packages live in docs/package.json.
 
-import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection } from '@codemirror/view';
-import { EditorState, Compartment } from '@codemirror/state';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { bracketMatching, HighlightStyle, indentOnInput, LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
-import { StreamLanguage, LanguageSupport, HighlightStyle, syntaxHighlighting, bracketMatching, indentOnInput } from '@codemirror/language';
+import { EditorState } from '@codemirror/state';
+import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
 
 // ── Mermaid: a tiny StreamLanguage so ```mermaid fences get keyword colour ──
