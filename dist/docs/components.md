@@ -730,8 +730,9 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `panel-heading` | `h2` | yes | Heading shown in the dark left panel. |
-| `panel-eyebrow` | `h3` | no | Optional rubric label below the panel heading. |
+| `panel-eyebrow` | `h3` | no | Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow). |
 | `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
+| `meta` | `section :is(ul,ol) + ul` | no | Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels. |
 
 #### Anatomy
 
@@ -6292,6 +6293,7 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 - **Multiple citations on one slide.** If you are stacking two or three statutes, use statute-stack instead — citation-card is built for the canvas-weight treatment of a single authority.
 - **Paraphrased 'quote'.** If you are rewriting the source language, drop the citation framing and use content or split-statement. The whole point of citation-card is verbatim language with attribution.
 - **Gloss longer than the quote.** When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a `What we must do` action, or move to content.
+- **Plain gloss under the pull-quote variant.** The `pull-quote` variant hides any gloss line that does not lead with **bold** — it shows only the `**What we must do**` action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant.
 
 #### Authoring
 

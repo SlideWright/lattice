@@ -66,6 +66,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
+
 ---
 
 <!-- _class: split-statement -->

@@ -1297,8 +1297,9 @@ One-sentence framing paragraph explaining what the findings cover.
       <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td><code>panel-heading</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Heading shown in the dark left panel.</td></tr>
-        <tr><td><code>panel-eyebrow</code></td><td><code>h3</code></td><td><span class="req no">no</span></td><td>Optional rubric label below the panel heading.</td></tr>
+        <tr><td><code>panel-eyebrow</code></td><td><code>h3</code></td><td><span class="req no">no</span></td><td>Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow).</td></tr>
         <tr><td><code>points</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>Right-side supporting points. Lead each with <strong>Label.</strong> then body text.</td></tr>
+        <tr><td><code>meta</code></td><td><code>section :is(ul,ol) + ul</code></td><td><span class="req no">no</span></td><td>Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels.</td></tr>
       </tbody>
     </table>
   </section>
@@ -6798,6 +6799,7 @@ function loadOne(name) {
       <li><strong>Multiple citations on one slide.</strong> If you are stacking two or three statutes, use statute-stack instead — citation-card is built for the canvas-weight treatment of a single authority.</li>
       <li><strong>Paraphrased 'quote'.</strong> If you are rewriting the source language, drop the citation framing and use content or split-statement. The whole point of citation-card is verbatim language with attribution.</li>
       <li><strong>Gloss longer than the quote.</strong> When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a <code>What we must do</code> action, or move to content.</li>
+      <li><strong>Plain gloss under the pull-quote variant.</strong> The <code>pull-quote</code> variant hides any gloss line that does not lead with <strong>bold</strong> — it shows only the <code><strong>What we must do</strong></code> action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant.</li>
     </ul>
   </section>
   <section class="authoring">

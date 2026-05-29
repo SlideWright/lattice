@@ -18,17 +18,22 @@
     "panel-eyebrow": {
       "selector": "h3",
       "required": false,
-      "description": "Optional rubric label below the panel heading."
+      "description": "Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow)."
     },
     "points": {
       "selector": "ul > li",
       "required": true,
       "description": "Right-side supporting points. Lead each with **Label.** then body text."
+    },
+    "meta": {
+      "selector": "section :is(ul,ol) + ul",
+      "required": false,
+      "description": "Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience \u00b7' and 'Intent \u00b7' labels."
     }
   },
   "skeleton": "<!-- _class: split-list -->\n\n## Panel headline that frames the side points.\n\n### Section rubric\n\n- First point\n  - Supporting sentence explaining the first point.\n- Second point\n  - Supporting sentence explaining the second point.\n- Third point\n  - Supporting sentence explaining the third point.\n",
   "anatomyBlock": "T17-split-list",
-  "sample": "<!-- _class: split-list -->\n\n## The best product does not win. The most understood one does.\n\n### Why understanding wins\n\n- Clarity is a product decision\n  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.\n- Onboarding is the first argument\n  - The moment a user first succeeds sets the frame for everything that follows.\n- Comprehension drives retention\n  - Users who understand the system's logic stay through friction; users who don't churn at the first one.\n",
+  "sample": "<!-- _class: split-list -->\n\n## The best product does not win. The most understood one does.\n\n### Why understanding wins\n\n- Clarity is a product decision\n  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.\n- Onboarding is the first argument\n  - The moment a user first succeeds sets the frame for everything that follows.\n- Comprehension drives retention\n  - Users who understand the system's logic stay through friction; users who don't churn at the first one.\n\n<!-- -->\n\n- Product and growth leadership\n- Win on comprehension, not feature count\n",
   "whenToUse": [
     {
       "title": "Thesis plus proof",

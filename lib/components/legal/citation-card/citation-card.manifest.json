@@ -64,6 +64,10 @@
     {
       "title": "Gloss longer than the quote",
       "body": "When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a `What we must do` action, or move to content."
+    },
+    {
+      "title": "Plain gloss under the pull-quote variant",
+      "body": "The `pull-quote` variant hides any gloss line that does not lead with **bold** — it shows only the `**What we must do**` action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant."
     }
   ],
   "related": [
