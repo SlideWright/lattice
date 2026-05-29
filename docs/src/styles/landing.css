@@ -269,6 +269,16 @@ html[data-mode='dark'] .mode-toggle::before {
 	gap: clamp(28px, 4vw, 56px);
 	align-items: center;
 }
+/* Both grid items must be allowed to shrink below their intrinsic content
+ * width. A grid track defaults to min-width:auto, so the live-preview iframe
+ * (intrinsic 1280px) forces the .proof track ~1280px wide — overflowing the
+ * viewport, and on WebKit the aspect-ratio:16/9 height re-resolves against
+ * that runaway width on every scroll (the "preview grows as you scroll"
+ * bug). min-width:0 lets the tracks size to the container instead. */
+.hero-copy,
+.proof {
+	min-width: 0;
+}
 .hero-copy .eyebrow {
 	margin-bottom: 18px;
 }
@@ -363,6 +373,14 @@ html[data-mode='dark'] .mode-toggle::before {
 }
 .slide-frame {
 	position: relative;
+	/* <figure> carries a UA margin (0 40px); reset it or width:100% + 40px
+	 * side margins push the frame 40px right and overflow the viewport. */
+	margin: 0;
+	/* Explicit width so it's a DEFINITE dimension: as a flex item in the
+	 * column-flex .proof, an auto width let WebKit resolve width-FROM-height
+	 * (via aspect-ratio), producing a wrong ratio (~1.37). With width:100%,
+	 * aspect-ratio:16/9 derives the height from the width as intended. */
+	width: 100%;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	overflow: hidden;
@@ -388,6 +406,12 @@ html[data-mode='dark'] .mode-toggle::before {
 	opacity: 1;
 }
 .slide-frame img {
+	/* Absolutely positioned so the static fallback image doesn't add to the
+	 * box height — aspect-ratio:16/9 alone controls it. (When static, height:
+	 * 100% against an aspect-derived height is circular and WebKit resolves it
+	 * by inflating the box, breaking the 16:9 ratio.) */
+	position: absolute;
+	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
@@ -488,6 +512,8 @@ html[data-mode='dark'] .mode-toggle::before {
 	overflow: hidden;
 }
 .shot .shot-img img {
+	position: absolute;
+	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
