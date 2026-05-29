@@ -118,11 +118,14 @@ authoring docs (`design/skill.md`, `design/design-system.md`)
 only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
 `!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
 baselines + reviewer deliverables, kept in git but never shipped. Don't
-widen `files` to drag them back in; the tarball is ~1.8 MB, not ~28 MB,
-for that reason. **npm publishing is not yet automated** — `RELEASE.md`
-is the spec (tag `v<version>` matching `package.json`, gated on
-`build:check` + tests) and holds the manual cut-a-release steps plus the
-`release.yml` workflow to implement later.
+widen `files` to drag them back in; the tarball is ~2.3 MB, not ~28 MB,
+for that reason. **Releases are automated but manually triggered** — the
+**Release** workflow (`.github/workflows/release.yml`, `workflow_dispatch`)
+derives the semver bump from `CHANGELOG.md` `## Unreleased` via
+`tools/changelog.js`, rolls the changelog, tags, pushes to `main`, and
+publishes a GitHub Release with notes + the showcase zip; **npm publish is
+opt-in** (off until an `NPM_TOKEN` is set). `npm run release` runs the same
+flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
 
 ## Tests and the regression baseline
 

@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **`dist/` is now a self-contained distribution.** It ships the bundled
+  emulator CLI (`dist/lattice-emulator.js`, esbuild bundle of the engine
+  graph — the package `bin`/`main`/`.` now resolve to it) and a generated
+  `dist/README.md` indexing the folder, alongside the existing CSS/runtime
+  bundles and the canonical component reference. A `npm run release:zip`
+  target packages the full offline-browsable showcase (engine + themes +
+  examples + gallery PDFs) for GitHub Releases.
+- **Automated, changelog-driven releases.** The **Release** workflow
+  (`workflow_dispatch`) derives the semver bump from this `## Unreleased`
+  section (`tools/changelog.js`), rolls it into a dated section, tags,
+  pushes, and publishes a GitHub Release with notes + the showcase zip
+  (`tools/release.js`). `npm run release` / `release:dry` run it locally.
 - **Documentation site.** A public Astro Starlight site under `docs/`
   (intro, getting started, authoring and theming guides) deployed to
   GitHub Pages via `.github/workflows/docs.yml`. Branded with the
