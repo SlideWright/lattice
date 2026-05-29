@@ -22,7 +22,7 @@
       "description": "Each list item becomes one stacked card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
     }
   },
-  "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first stacked card, two short sentences max.\n- **Second card title.** Body text for the second stacked card.\n- **Third card title.** Body text for the third stacked card.\n",
+  "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- First card title\n  - Body text for the first stacked card, two short sentences max.\n- Second card title\n  - Body text for the second stacked card.\n- Third card title\n  - Body text for the third stacked card.\n",
   "anatomyBlock": "cards-stack",
   "sample": "<!-- _class: cards-stack -->\n\n## Three forces are compressing the differentiation window.\n\n- Infrastructure has commoditized.\n  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.\n- Release cycles have collapsed.\n  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.\n- Switching costs are rising.\n  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.\n",
   "whenToUse": [

@@ -21,7 +21,7 @@
       "description": "First li becomes the featured card; remaining lis form the sub-grid. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
     }
   },
-  "skeleton": "<!-- _class: featured -->\n\n## Applying the criteria, here is where the evidence points.\n\n- **Featured recommendation.** One to two sentences making the case.\n- **Supporting card.** Short context on a related option.\n- **Supporting card.** Short context on another option.\n- **Supporting card.** Short context on another option.\n",
+  "skeleton": "<!-- _class: featured -->\n\n## Slide heading framing the recommendation.\n\n- Featured recommendation\n  - One to two sentences making the case.\n- Supporting card\n  - Short context on a related option.\n- Supporting card\n  - Short context on another option.\n- Supporting card\n  - Short context on another option.\n",
   "anatomyBlock": "featured",
   "sample": "<!-- _class: featured -->\n\n## Where the next quarter of effort goes.\n\n- The scoring-model rewrite.\n  - The flagship bet. Replaces the spreadsheet everyone quietly keeps a private copy of with one model the steering committee can argue over in a single place. Two quarters, and the source of at least four future retrospectives.\n- Weekly signal review.\n  - Thirty minutes that retire three Slack threads and a hallway debate. One quarter.\n- The decision log.\n  - Every call recorded with the bet it made. Eighteen entries so far, against roughly 340 decisions. One quarter.\n- Calibration cadence.\n  - A monthly look at predicted outcomes versus actual ones. The meeting exists.\n",
   "whenToUse": [

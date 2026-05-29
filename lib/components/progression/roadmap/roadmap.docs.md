@@ -23,16 +23,14 @@ Use to show what ships in each phase across multiple parallel workstreams. Cells
 ```markdown
 <!-- _class: roadmap -->
 
-`Layout · roadmap`
+`H2 2026 · Plan`
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | --------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
-| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |
+| --- | --- | --- | --- |
+| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |
+| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 ```
@@ -42,7 +40,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the plan. |
-| `rows` | `ul > li` | yes | Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable. |
+| `rows` | `table` | yes | A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable. |
 
 ## Anatomy
 

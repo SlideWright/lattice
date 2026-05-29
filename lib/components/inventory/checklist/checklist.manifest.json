@@ -15,7 +15,7 @@
     "items": {
       "selector": "ul > li",
       "required": true,
-      "description": "Each item prefixed with [x] (done), [-] (partial), or [ ] (todo). Plain text follows the marker."
+      "description": "Each item prefixed with a state marker — [x] done, [-] partial, [ ] todo, or [/] out-of-scope (struck through). Plain text follows the marker; an optional trailing inline-code pill floats right as a status tag."
     }
   },
   "skeleton": "<!-- _class: checklist -->\n\n## Pre-launch readiness.\n\n- [x] First item that is fully done.\n- [x] Second item that is fully done.\n- [-] Third item that is partially complete with a caveat.\n- [ ] Fourth item that is not yet started.\n",
@@ -46,7 +46,7 @@
     },
     {
       "title": "Custom state markers",
-      "body": "Only `[x]`, `[-]`, and `[ ]` map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract."
+      "body": "Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract."
     }
   ],
   "related": [

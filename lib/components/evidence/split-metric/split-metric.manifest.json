@@ -28,7 +28,7 @@
       "description": "Right-side supporting findings. Lead each with **Title.** then nested body."
     }
   },
-  "skeleton": "<!-- _class: split-metric -->\n\n`Metric name`\n\n## 114*%*\n\nMeasurement window and qualifying detail in one short sentence.\n\n- **First supporting point.** Why this metric matters and what's driving it.\n- **Second supporting point.** What concentration or trend explains it.\n- **Third supporting point.** What this number unlocks or threatens.\n",
+  "skeleton": "<!-- _class: split-metric -->\n\n`Metric name`\n\n## 114*%*\n\nMeasurement window and qualifying detail in one short sentence.\n\n- **First supporting point.**\n  - Why this metric matters and what's driving it.\n- **Second supporting point.**\n  - What concentration or trend explains it.\n- **Third supporting point.**\n  - What this number unlocks or threatens.\n",
   "anatomyBlock": "split-metric",
   "sample": "<!-- _class: split-metric -->\n\n`Net Revenue Retention`\n\n## 114*%*\n\nMeasured across all customers active for 12+ months, March 31 cohort.\n\n- **Existing customers are growing faster than we lose them.**\n  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.\n- **Expansion is concentrated — three segments drive 80% of the gain.**\n  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.\n- **Sustained above 110%, this unlocks a capital-efficient growth path.**\n  - NRR above 110% meets the investor threshold for venture-category efficiency.\n",
   "whenToUse": [

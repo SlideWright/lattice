@@ -27,10 +27,14 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 
 ## Slide heading.
 
-- **First card title.** Body text for the first card, one sentence.
-- **Second card title.** Body text for the second card, one sentence.
-- **Third card title.** Body text for the third card, one sentence.
-- **Fourth card title.** Body text for the fourth card, one sentence.
+- First card title
+  - Body text for the first card, one sentence.
+- Second card title
+  - Body text for the second card, one sentence.
+- Third card title
+  - Body text for the third card, one sentence.
+- Fourth card title
+  - Body text for the fourth card, one sentence.
 ```
 
 ## Slots

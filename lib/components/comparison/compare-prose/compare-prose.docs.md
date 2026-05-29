@@ -25,8 +25,10 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 
 ## Heading framing the comparison.
 
-- **First option.** Two-sentence description of the first option, including the strongest argument for it.
-- **Second option.** Two-sentence description of the second option, including the strongest argument for it.
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it.
 ```
 
 ## Slots

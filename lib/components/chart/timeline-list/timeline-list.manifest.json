@@ -14,12 +14,12 @@
       "description": "Slide heading framing the timeline."
     },
     "events": {
-      "selector": "ul > li",
+      "selector": "ol > li",
       "required": true,
-      "description": "One li per event. Format: `Date — status — Title` then nested body bullets."
+      "description": "Ordered list (numbered). One li per event: a leading inline-code date pill, then the title, then an optional trailing inline-code status pill, then nested body bullets — e.g. 1. `2025 Q1` Framework approved `decision`. Status vocabulary: decision / live / at-risk / blocked / done / on-track / deferred."
     }
   },
-  "skeleton": "<!-- _class: timeline-list -->\n\n`Codebook architecture`\n\n## How the codebook architecture arrived in production.\n\nFour stages over eighteen months. Date pill leads each item; status pill trails.\n\n1. `2024 Q3` Vault round-trip\n   - First production tokenization shipped on a centralised vault. p99 60 ms.\n2. `2025 Q1` Codebook proposal `decision`\n   - Architecture review accepts the in-process model. Build approved.\n3. `2025 Q3` Codebook GA `live`\n   - Phase 1 rollout complete; 12 production tenants on the new path.\n4. `2026 Q1` Multi-tenant DEKs `live`\n   - Hardening shipped; codebook caching cut p99 below 5 ms.\n",
+  "skeleton": "<!-- _class: timeline-list -->\n\n`Eyebrow · context`\n\n## How it unfolded.\n\n1. `2024 Q3` First milestone\n   - One-sentence description of what shipped.\n2. `2025 Q1` Second milestone `decision`\n   - One-sentence description.\n3. `2025 Q3` Third milestone `live`\n   - One-sentence description.\n",
   "anatomyBlock": "timeline-list",
   "sample": "<!-- _class: timeline-list -->\n\n`Decision framework`\n\n## How the framework arrived in production.\n\nFour stages over eighteen months, from the first workshop to the operating rhythm.\n\n1. `2024 Q3` First workshop\n   - The one where we agreed to agree on a definition of \"signal.\" Output: a fifth workshop.\n2. `2025 Q1` Framework approved `decision`\n   - The steering committee accepts the scoring model. Build approved.\n3. `2025 Q3` Pilot live `live`\n   - Four product teams onboarded; the decision log opens. Eighteen entries to date.\n4. `2026 Q1` Operating rhythm `live`\n   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.\n",
   "whenToUse": [

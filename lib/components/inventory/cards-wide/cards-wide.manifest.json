@@ -18,7 +18,7 @@
       "description": "Three or four list items, each one wide row. Lead each with **Card Title.** then 1–2 sentences."
     }
   },
-  "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- **First row title.** Body text for the first wide row, one or two sentences.\n- **Second row title.** Body text for the second wide row.\n- **Third row title.** Body text for the third wide row.\n",
+  "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- First row title\n  - Body text for the first wide row, one or two sentences.\n- Second row title\n  - Body text for the second wide row.\n- Third row title\n  - Body text for the third wide row.\n",
   "anatomyBlock": "cards-wide",
   "sample": "<!-- _class: cards-wide -->\n\n## Three findings from the Q2 win/loss review.\n\n1. Price is rarely the reason we lose\n   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.\n2. The security review is our slowest gate\n   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.\n3. One competitor takes most of the displacement\n   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.\n",
   "whenToUse": [

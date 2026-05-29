@@ -19,12 +19,12 @@
       "description": "Slide heading naming the plan."
     },
     "rows": {
-      "selector": "ul > li",
+      "selector": "table",
       "required": true,
-      "description": "Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable."
+      "description": "A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable."
     }
   },
-  "skeleton": "<!-- _class: roadmap -->\n\n`Layout · roadmap`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |\n| ---------- | --------------------- | ---------------------- | ------------------------- |\n| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |\n| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |\n| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |\n| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
+  "skeleton": "<!-- _class: roadmap -->\n\n`H2 2026 · Plan`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |\n| --- | --- | --- | --- |\n| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |\n| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |\n\nState markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.\n",
   "anatomyBlock": "roadmap",
   "sample": "<!-- _class: roadmap -->\n\n`H2 2026 · Rollout plan`\n\n## What ships in each phase, by workstream.\n\n| Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |\n| ---------- | ---------------------- | ------------------------ | ----------------------- |\n| Framework  | [x] Signal taxonomy    | [-] Scoring model v2     | [ ] Per-team weighting  |\n| Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |\n| Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |\n| Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |\n",
   "whenToUse": [

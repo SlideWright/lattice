@@ -29,9 +29,12 @@ Use when a single KPI is the argument. The hero number is the headline; the righ
 
 Measurement window and qualifying detail in one short sentence.
 
-- **First supporting point.** Why this metric matters and what's driving it.
-- **Second supporting point.** What concentration or trend explains it.
-- **Third supporting point.** What this number unlocks or threatens.
+- **First supporting point.**
+  - Why this metric matters and what's driving it.
+- **Second supporting point.**
+  - What concentration or trend explains it.
+- **Third supporting point.**
+  - What this number unlocks or threatens.
 ```
 
 ## Slots

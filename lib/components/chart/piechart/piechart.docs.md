@@ -23,17 +23,14 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 ```markdown
 <!-- _class: piechart donut -->
 
-`H1 2026 · 1,840 person-hours`
+`Eyebrow · context`
 
-## Where the engineering quarter went.
+## What the breakdown shows.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
-
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- First slice `40%`
+- Second slice `30%`
+- Third slice `20%`
+- Fourth slice `10%`
 ```
 
 ## Slots
@@ -41,7 +38,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the breakdown. |
-| `slices` | `ul > li` | yes | One li per slice. Format: `Label — value` (values are proportional). |
+| `slices` | `ul > li` | yes | One li per slice: label text then a trailing inline-code value pill, e.g. - Marketing `40%` (slices are drawn proportionally to the values). |
 
 ## Anatomy
 

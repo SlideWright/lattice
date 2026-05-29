@@ -1131,10 +1131,14 @@ Use when the audience needs to compare or scan a small set of options at a glanc
 
 ## Slide heading.
 
-- **First card title.** Body text for the first card, one sentence.
-- **Second card title.** Body text for the second card, one sentence.
-- **Third card title.** Body text for the third card, one sentence.
-- **Fourth card title.** Body text for the fourth card, one sentence.
+- First card title
+  - Body text for the first card, one sentence.
+- Second card title
+  - Body text for the second card, one sentence.
+- Third card title
+  - Body text for the third card, one sentence.
+- Fourth card title
+  - Body text for the fourth card, one sentence.
 ```
 
 #### Slots
@@ -1282,8 +1286,10 @@ Use for an explicit pair — two options, two phases, two artifacts presented wi
 
 ## Slide heading.
 
-- **Left card title.** Body text for the left card, two short sentences.
-- **Right card title.** Body text for the right card, two short sentences.
+- Left card title
+  - Body text for the left card, two short sentences.
+- Right card title
+  - Body text for the right card, two short sentences.
 ```
 
 #### Slots
@@ -1368,9 +1374,12 @@ Use when the items want vertical reading order — sequential exploration rather
 
 ## Slide heading.
 
-- **First card title.** Body text for the first stacked card, two short sentences max.
-- **Second card title.** Body text for the second stacked card.
-- **Third card title.** Body text for the third stacked card.
+- First card title
+  - Body text for the first stacked card, two short sentences max.
+- Second card title
+  - Body text for the second stacked card.
+- Third card title
+  - Body text for the third stacked card.
 ```
 
 #### Slots
@@ -1476,9 +1485,12 @@ Use when each item has enough body text to want its own row but the slide should
 
 ## Slide heading.
 
-- **First row title.** Body text for the first wide row, one or two sentences.
-- **Second row title.** Body text for the second wide row.
-- **Third row title.** Body text for the third wide row.
+- First row title
+  - Body text for the first wide row, one or two sentences.
+- Second row title
+  - Body text for the second wide row.
+- Third row title
+  - Body text for the third wide row.
 ```
 
 #### Slots
@@ -1540,7 +1552,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 - **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters.
 - **Long per-item prose.** Each item is one short line. If a row needs a sentence of explanation, the right home is cards-stack or list-tabular.
-- **Custom state markers.** Only `[x]`, `[-]`, and `[ ]` map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
+- **Custom state markers.** Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
 
 #### Authoring
 
@@ -1560,7 +1572,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `items` | `ul > li` | yes | Each item prefixed with [x] (done), [-] (partial), or [ ] (todo). Plain text follows the marker. |
+| `items` | `ul > li` | yes | Each item prefixed with a state marker — [x] done, [-] partial, [ ] todo, or [/] out-of-scope (struck through). Plain text follows the marker; an optional trailing inline-code pill floats right as a status tag. |
 
 #### Anatomy
 
@@ -1633,7 +1645,7 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading — typically 'Glossary'. |
-| `entries` | `ul > li` | yes | Nested bullets: outer li is the term, inner li is the definition. |
+| `entries` | `ul > li` | yes | Nested bullets: outer li is the term, inner li is its one-line definition. A runtime transform converts the list into a two-column table and derives the alphabetic range pill from the first and last terms, so terms should be authored in alphabetical order; without the Lattice runtime the raw nested list renders unstyled. |
 
 #### Anatomy
 
@@ -2288,8 +2300,10 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 
 ## Heading framing the comparison.
 
-- **First option.** Two-sentence description of the first option, including the strongest argument for it.
-- **Second option.** Two-sentence description of the second option, including the strongest argument for it.
+- First option
+  - Two-sentence description of the first option, including the strongest argument for it.
+- Second option
+  - Two-sentence description of the second option, including the strongest argument for it.
 ```
 
 #### Slots
@@ -2531,8 +2545,10 @@ Use after a comparison slide to land the decision. The chosen option is the foca
 
 ## What we are doing.
 
-- **Chosen path.** One-line rationale for the decision.
-- **Rejected option.** One-line rationale for why this didn't fit.
+- Chosen path
+  - One-line rationale for the decision.
+- Rejected option
+  - One-line rationale for why this didn't fit.
 ```
 
 #### Slots
@@ -3464,16 +3480,14 @@ Use to show what ships in each phase across multiple parallel workstreams. Cells
 ```markdown
 <!-- _class: roadmap -->
 
-`Layout · roadmap`
+`H2 2026 · Plan`
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | --------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
-| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |
+| --- | --- | --- | --- |
+| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |
+| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 ```
@@ -3483,7 +3497,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the plan. |
-| `rows` | `ul > li` | yes | Outer li per workstream, lead with **Workstream.**. Inner bullets per phase, marked [x]/[-]/[ ]/[/] then the deliverable. |
+| `rows` | `table` | yes | A markdown table. The header row lists the phases (each may carry an inline-code date pill, e.g. `Q2 2026`); the first column is the workstream name; each cell leads with a state marker [x]/[-]/[ ]/[/] then the deliverable. |
 
 #### Anatomy
 
@@ -3630,9 +3644,12 @@ Use when a multi-step process needs a phase anchor (week N, sprint, milestone) a
 
 One-sentence summary describing what this phase produces.
 
-1. **First step.** What happens and what gets produced.
-2. **Second step.** What follows and how it's validated.
-3. **Third step.** What closes the phase out.
+1. First step
+   - What happens and what gets produced.
+2. Second step
+   - What follows and how it's validated.
+3. Third step
+   - What closes the phase out.
 ```
 
 #### Slots
@@ -4014,9 +4031,12 @@ Use when a single KPI is the argument. The hero number is the headline; the righ
 
 Measurement window and qualifying detail in one short sentence.
 
-- **First supporting point.** Why this metric matters and what's driving it.
-- **Second supporting point.** What concentration or trend explains it.
-- **Third supporting point.** What this number unlocks or threatens.
+- **First supporting point.**
+  - Why this metric matters and what's driving it.
+- **Second supporting point.**
+  - What concentration or trend explains it.
+- **Third supporting point.**
+  - What this number unlocks or threatens.
 ```
 
 #### Slots
@@ -4164,12 +4184,16 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 ```markdown
 <!-- _class: featured -->
 
-## Applying the criteria, here is where the evidence points.
+## Slide heading framing the recommendation.
 
-- **Featured recommendation.** One to two sentences making the case.
-- **Supporting card.** Short context on a related option.
-- **Supporting card.** Short context on another option.
-- **Supporting card.** Short context on another option.
+- Featured recommendation
+  - One to two sentences making the case.
+- Supporting card
+  - Short context on a related option.
+- Supporting card
+  - Short context on another option.
+- Supporting card
+  - Short context on another option.
 ```
 
 #### Slots
@@ -4396,20 +4420,13 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
-
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- First workstream
+  - First task `Q1 → Q2` `done`
+  - Second task `Q2 → Q3` `live`
+  - Third task `Q3 → Q4` `at-risk`
+- Second workstream
+  - First task `Q1 → Q2` `done`
+  - Second task `Q2 → Q3`
 ```
 
 #### Slots
@@ -4417,7 +4434,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the plan. |
-| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries inline-code tokens for span (`Q1 → Q2`) and optional status (`done` / `live` / `at-risk` / `blocked`). |
+| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries inline-code tokens for span (`Q1 → Q2`, or an en-dash / -> delimiter) and an optional status pill; the two pills may appear in any order. Status vocabulary: on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision. The range axis recognises quarters (Q1–Q4) or months (Jan–Dec); other vocabularies fall back to a four-column axis with no ticks. |
 
 #### Anatomy
 
@@ -4475,27 +4492,21 @@ Use for status snapshots: what's in each lane (todo/doing/done or similar). Each
 ```markdown
 <!-- _class: kanban -->
 
-`Phase 2 · Sprint 14`
+`Eyebrow · context`
 
-## Where Phase 2 work stands today.
-
-Four columns, mixed card density. Size badge sits in the title row.
+## Board status today.
 
 - Backlog
-  - Per-purpose codebooks `S`
-  - Crypto-shred runbook `M`
-  - Dependency dashboard `S`
+  - First card `S`
+    - team-a
+  - Second card `M`
+    - team-b `at-risk`
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
-- Review
-  - Centralised log `S`
-    - compliance
+  - Third card `M`
+    - team-a
 - Done
-  - Codebook signing `M`
-  - Manual rotation `S`
+  - Fourth card `S`
+    - team-b
 ```
 
 #### Slots
@@ -4503,7 +4514,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `lanes` | `ul > li` | yes | Outer li per lane (stage), lead with **Stage name.**. Inner bullets per card in that lane. |
+| `lanes` | `ul > li` | yes | Three levels. Outer li = column header as plain text (e.g. Backlog). Each inner li = a card: title then a trailing inline-code size badge (S/M/L/XL; other codes are left in the title). Each card may carry its own nested bullet = a categorical lane label, optionally with a trailing status pill, e.g. - platform `at-risk`. A column titled Done / Completed / Shipped / Closed dims its cards. Status vocabulary matches the shared chart set (on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision). |
 
 #### Anatomy
 
@@ -4561,17 +4572,14 @@ Use for part-to-whole breakdowns with three to six slices. Add the `donut` modif
 ```markdown
 <!-- _class: piechart donut -->
 
-`H1 2026 · 1,840 person-hours`
+`Eyebrow · context`
 
-## Where the engineering quarter went.
+## What the breakdown shows.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
-
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- First slice `40%`
+- Second slice `30%`
+- Third slice `20%`
+- Fourth slice `10%`
 ```
 
 #### Slots
@@ -4579,7 +4587,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the breakdown. |
-| `slices` | `ul > li` | yes | One li per slice. Format: `Label — value` (values are proportional). |
+| `slices` | `ul > li` | yes | One li per slice: label text then a trailing inline-code value pill, e.g. - Marketing `40%` (slices are drawn proportionally to the values). |
 
 #### Anatomy
 
@@ -4659,17 +4667,13 @@ Use for status-tracking across multiple parallel items (project readiness, OKR p
 ```markdown
 <!-- _class: progress -->
 
-`H1 2026 · Phase 1 readiness`
+`Eyebrow · context`
 
-## Phase 1 readiness, by workstream.
+## Progress by item.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
-
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- First item `80%` `on-track`
+- Second item `55%` `at-risk`
+- Third item `30%` `blocked`
 ```
 
 #### Slots
@@ -4679,7 +4683,7 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
 | `title` | `h2` | yes | Slide heading framing the progress view. |
 | `eyebrow` | `p > code` | no | Optional eyebrow caption above the heading. |
 | `subtitle` | `p` | no | Optional plain subtitle after the heading. |
-| `rows` | `ul > li` | yes | One li per item. Format: `Label — N% — status` where status is on-track / at-risk / blocked / done. |
+| `rows` | `ul > li` | yes | One li per item: label text then trailing inline-code pills — percent first, optional status second, e.g. - Adoption `68%` `at-risk`. Status vocabulary: on-track / live / at-risk / warn / blocked / fail / deferred / done. An optional nested bullet renders as a per-row note. |
 
 #### Anatomy
 
@@ -5370,20 +5374,16 @@ Use for milestone history or annotated timelines. Each item gets a date pill on 
 ```markdown
 <!-- _class: timeline-list -->
 
-`Codebook architecture`
+`Eyebrow · context`
 
-## How the codebook architecture arrived in production.
+## How it unfolded.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
-
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First milestone
+   - One-sentence description of what shipped.
+2. `2025 Q1` Second milestone `decision`
+   - One-sentence description.
+3. `2025 Q3` Third milestone `live`
+   - One-sentence description.
 ```
 
 #### Slots
@@ -5391,7 +5391,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the timeline. |
-| `events` | `ul > li` | yes | One li per event. Format: `Date — status — Title` then nested body bullets. |
+| `events` | `ol > li` | yes | Ordered list (numbered). One li per event: a leading inline-code date pill, then the title, then an optional trailing inline-code status pill, then nested body bullets — e.g. 1. `2025 Q1` Framework approved `decision`. Status vocabulary: decision / live / at-risk / blocked / done / on-track / deferred. |
 
 #### Anatomy
 

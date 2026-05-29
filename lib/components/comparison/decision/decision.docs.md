@@ -25,8 +25,10 @@ Use after a comparison slide to land the decision. The chosen option is the foca
 
 ## What we are doing.
 
-- **Chosen path.** One-line rationale for the decision.
-- **Rejected option.** One-line rationale for why this didn't fit.
+- Chosen path
+  - One-line rationale for the decision.
+- Rejected option
+  - One-line rationale for why this didn't fit.
 ```
 
 ## Slots
