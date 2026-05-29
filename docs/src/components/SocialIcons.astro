@@ -1,0 +1,20 @@
+---
+// Override of Starlight's header SocialIcons slot. Renders the same global
+// nav links the landing/playground topbars carry, then the default social
+// icons — so the docs header reads as the same site, not a separate zone.
+// The links duplicate sidebar destinations on purpose (a persistent global
+// nav); they hide below 72rem, where the sidebar (with its Tools group) is
+// the reachable path instead. See docs/src/styles/lattice.css.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+---
+
+<nav class="lattice-headernav" aria-label="Site">
+	<a href={url('getting-started/')}>Get started</a>
+	<a href={url('guides/authoring/')}>Guides</a>
+	<a href={url('playground/')}>Playground</a>
+	<a href={url('components.html')}>Components</a>
+</nav>
+<Default><slot /></Default>

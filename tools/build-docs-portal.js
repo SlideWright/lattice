@@ -429,7 +429,10 @@ ${buildStyle()}
       <a href="#top" class="brand-mark">Lattice</a>
       <p class="brand-sub">Component Reference</p>
       <nav class="brand-links">
-        <a href="./">← Home</a>
+        <a href="./">Home</a>
+        <a href="getting-started/">Get started</a>
+        <a href="guides/authoring/">Guides</a>
+        <a href="playground/">Playground</a>
         <a href="https://github.com/slidewright/lattice">GitHub</a>
       </nav>
     </div>
@@ -560,7 +563,8 @@ code { font-family: var(--font-mono); font-size: 0.88em; }
 }
 .brand-links {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 7px 14px;
   margin-top: 8px;
 }
 .brand-links a {

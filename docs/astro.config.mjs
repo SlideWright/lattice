@@ -13,6 +13,11 @@ export default defineConfig({
 		starlight({
 			title: 'Lattice',
 			favicon: '/lattice-logo.png',
+			components: {
+				// Inject the global nav links into the header (next to the social
+				// icons) so the docs zone shares the landing/playground topbar.
+				SocialIcons: './src/components/SocialIcons.astro',
+			},
 			logo: { src: './public/lattice-logo.png', alt: 'Lattice' },
 			description:
 				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
