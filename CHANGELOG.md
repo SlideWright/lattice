@@ -7,6 +7,22 @@ changes to either are major version bumps. New layouts and new themes are
 additive minor versions. Mermaid CSS overrides are internal and may change
 in patch versions.
 
+> **This file drives the release.** `## Unreleased` is the source of truth
+> for the next version. `tools/changelog.js` reads its Keep-a-Changelog
+> categories to pick the bump deterministically, and the release workflow
+> rolls `## Unreleased` into a dated `## <version> - <date>` section:
+>
+> | Category in `## Unreleased` | Bump |
+> |---|---|
+> | `### Removed`, or any `**Breaking:**` bullet / `BREAKING CHANGE` token | **major** |
+> | `### Added`, `### Changed`, `### Deprecated` | **minor** |
+> | `### Fixed`, `### Security` | **patch** |
+>
+> Keep entries here current **as changes land** (see `CLAUDE.md`) — an empty
+> `## Unreleased` means there is nothing to release. Flag a breaking change
+> by leading the bullet with `**Breaking:**` so it counts as major even
+> under `### Changed`.
+
 ## Unreleased
 
 ### Added

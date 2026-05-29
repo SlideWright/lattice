@@ -273,6 +273,19 @@ caught by the hook instead of by reviewer eyeballs.
   for the bucket-survey reference and any per-component gallery for
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
+- **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
+  as it lands** — not at release time. The changelog is the source of
+  truth the release reads: `tools/changelog.js` derives the semver bump
+  from the Keep-a-Changelog categories there (`### Removed` /
+  `**Breaking:**` → major, `### Added`/`### Changed`/`### Deprecated` →
+  minor, `### Fixed`/`### Security` → patch). When a change alters a
+  shipped surface (a component, modifier, token, export, theme, CLI
+  flag, or render behavior), add or update the right `## Unreleased`
+  entry **in the same change** — pure-internal refactors/tests/docs need
+  no entry. Lead a bullet with `**Breaking:**` for any change that breaks
+  an existing deck or consumer, so it scores major even under
+  `### Changed`. The release workflow rolls `## Unreleased` into a dated
+  section; you keep it accurate. See `RELEASE.md`.
 - **No hex literals in layout rules.** Always `var(--token)`.
 - **Typography uses the 12-token system.** Three scales: content
   (`--fs-meta` 11.25 / `--fs-body-compact` 13.5 / `--fs-body` 16 /
