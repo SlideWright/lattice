@@ -8,6 +8,8 @@
 const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 const { lintText, buildVocab, isKnownModifier } = require('../../../lib/authoring/lint');
+const { discoverDecks } = require('../../../tools/lint-deck');
+const fs = require('node:fs');
 
 const FM = '---\nmarp: true\ntheme: indaco\n---\n\n';
 
@@ -72,5 +74,17 @@ describe('deck linter', () => {
     const f = lintText(src, { vocab }).find((x) => x.rule === 'card-style-inline-title');
     // chunk 0 = pre-front-matter, 1 = front matter, 2 = first slide, 3 = second.
     assert.equal(f.slide, 3);
+  });
+
+  test('every committed deck is free of error-severity findings', () => {
+    // Locks in the fixes for the baseline gallery (cards-stack inline-title)
+    // and gallery-jargon (image-full) and guards against regressions. Warnings
+    // (unknown-class) are triage-only and not asserted here.
+    const offenders = [];
+    for (const deck of discoverDecks()) {
+      const errs = lintText(fs.readFileSync(deck, 'utf8'), { vocab }).filter((f) => f.severity === 'error');
+      if (errs.length) offenders.push(`${deck}: ${errs.map((e) => `${e.rule}@${e.slide}`).join(', ')}`);
+    }
+    assert.deepEqual(offenders, [], offenders.join('\n'));
   });
 });

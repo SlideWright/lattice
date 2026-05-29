@@ -22,6 +22,32 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { lintText, buildVocab } = require('../lib/authoring/lint');
 
+const ROOT = path.join(__dirname, '..');
+
+/**
+ * Discover every hand-authored + generated deck in the repo — the same set
+ * the commit-time gate (deck-authoring.test.js) covers: examples, the
+ * baseline decks, and every bucket/component/integration *.gallery.md.
+ * Used by --all so CI can lint the whole tree in one invocation.
+ */
+function discoverDecks() {
+  const out = [];
+  const walk = (dir, test) => {
+    if (!fs.existsSync(dir)) return;
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full, test);
+      else if (test(e.name)) out.push(full);
+    }
+  };
+  walk(path.join(ROOT, 'examples'), (n) => n.endsWith('.md'));
+  walk(path.join(ROOT, 'test', 'integration', 'baseline-decks'), (n) => n.endsWith('.md'));
+  walk(path.join(ROOT, 'lib', 'components'), (n) => n.endsWith('.gallery.md'));
+  walk(path.join(ROOT, 'lib', 'integrations'), (n) => n.endsWith('.gallery.md'));
+  return [...new Set(out)];
+}
+
 function expandArgs(patterns) {
   // Minimal glob: support a single `*` within a directory listing. Anything
   // without a `*` is taken literally. Keeps the tool dependency-free.
@@ -45,9 +71,9 @@ function main(argv) {
   const strict = flags.has('--strict');
   const asJson = flags.has('--json');
 
-  const files = expandArgs(patterns).filter((f) => fs.existsSync(f));
+  const files = (flags.has('--all') ? discoverDecks() : expandArgs(patterns)).filter((f) => fs.existsSync(f));
   if (!files.length) {
-    process.stderr.write('lint:deck — no files matched. Usage: npm run lint:deck -- <file.md> [more.md]\n');
+    process.stderr.write('lint:deck — no files matched. Usage: npm run lint:deck -- <file.md> [more.md] | --all\n');
     return 2;
   }
 
@@ -90,4 +116,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { main, expandArgs };
+module.exports = { main, expandArgs, discoverDecks };

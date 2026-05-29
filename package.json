@@ -113,6 +113,7 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "lint:deck": "node tools/lint-deck.js",
+    "lint:deck:all": "node tools/lint-deck.js --all",
     "clean:scratch": "find .scratch -mindepth 1 -mtime +14 -print -delete",
     "prepare": "lefthook install || true",
     "prepublishOnly": "npm test"

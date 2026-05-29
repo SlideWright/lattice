@@ -46,9 +46,12 @@ in patch versions.
   `components.md/.html`); a draft-deck linter `npm run lint:deck -- <file>`
   (`tools/lint-deck.js` → `lib/authoring/lint.js`) that flags the markdown
   footguns — card-style inline-title, ordered-list bold, class typos — as
-  structured, no-render diagnostics; and a vendor-neutral `AGENTS.md`
-  entrypoint pointing agents at `design/skill.md`, the catalog, and the
-  linter. See `design/design-system.md` §7.
+  structured, no-render diagnostics (wired into the pre-commit hook on
+  staged decks and into CI via `npm run lint:deck:all`; errors block,
+  unknown-class warnings are surfaced but non-blocking); and a
+  vendor-neutral `AGENTS.md` entrypoint pointing agents at
+  `design/skill.md`, the catalog, and the linter. See
+  `design/design-system.md` §7.
 - **Searchable component tags.** Every component manifest now declares a
   `tags` field (3–5 entries) — the *searcher's* vocabulary, complementary
   to the Function/Form/Substance axes. Tags are drawn from a controlled

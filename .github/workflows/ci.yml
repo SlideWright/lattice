@@ -28,6 +28,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Lint decks
+        # Author-facing footgun checks across every deck (errors fail the
+        # build; unknown-class warnings are surfaced but non-blocking).
+        run: npm run lint:deck:all
+
       - name: Unit tests
         run: npm test
 
