@@ -83,21 +83,25 @@ const showcase = manifests
 		<header class="topbar">
 			<div class="wrap topbar-inner">
 				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="35" height="30" />
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
 					<span class="brand-mark">Lattice</span>
 				</a>
-				<nav class="topnav">
+				<nav class="topnav" id="topnav">
 					<a class="navlink" href={url('getting-started/')}>Get started</a>
+					<a class="navlink" href={url('guides/authoring/')}>Guides</a>
 					<a class="navlink" href={url('playground/')}>Playground</a>
 					<a class="navlink" href={url('components.html')}>Components</a>
 					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<div class="topbar-actions">
 					<div class="controls">
 						<select class="palette-select" id="palette" aria-label="Palette">
 							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
 						</select>
 						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
 					</div>
-				</nav>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false">☰</button>
+				</div>
 			</div>
 		</header>
 
@@ -186,19 +190,30 @@ const showcase = manifests
 							renders in the palette you choose above.
 						</p>
 					</div>
-					<div class="showcase">
-						{showcase.map((s) => (
-							<figure class="shot">
-								<div class="shot-img">
-									<img class="for-light" src={url(`showcase/${s.nm}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
-									<img class="for-dark" src={url(`showcase/${s.nm}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
-								</div>
-								<figcaption>
-									<span class="fn">{s.fn}</span>
-									<span class="nm">{s.nm}</span>
-								</figcaption>
-							</figure>
-						))}
+					<div class="showcase-carousel">
+						<div class="showcase-viewport">
+							<div class="showcase" id="showcase">
+								{showcase.map((s) => (
+									<figure class="shot">
+										<div class="shot-img">
+											<img class="for-light" src={url(`showcase/${s.nm}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
+											<img class="for-dark" src={url(`showcase/${s.nm}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
+										</div>
+										<figcaption>
+											<span class="fn">{s.fn}</span>
+											<span class="nm">{s.nm}</span>
+										</figcaption>
+									</figure>
+								))}
+							</div>
+							<button class="carousel-arrow prev" id="sc-prev" type="button" aria-label="Previous slides" aria-controls="showcase">‹</button>
+							<button class="carousel-arrow next" id="sc-next" type="button" aria-label="Next slides" aria-controls="showcase">›</button>
+						</div>
+						<div class="carousel-dots" id="sc-dots" aria-label="Showcase position">
+							{showcase.map((_, i) => (
+								<button class="dot" type="button" data-i={i} aria-label={`Go to slide ${i + 1}`}></button>
+							))}
+						</div>
 					</div>
 				</div>
 			</section>
@@ -234,7 +249,7 @@ const showcase = manifests
 		<footer class="foot">
 			<div class="wrap foot-inner">
 				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="26" />
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="26" height="26" />
 					<span class="brand-mark">Lattice</span>
 				</a>
 				<nav>
@@ -268,6 +283,53 @@ const showcase = manifests
 						root.setAttribute('data-mode', next);
 						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
 					});
+				}
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+
+				// Showcase carousel (mobile). Arrows + dots are display:none above
+				// the breakpoint, so this is inert on desktop (the strip is a grid
+				// there and scrollLeft stays 0). Index-based: snap to exact card
+				// boundaries and derive the active dot / arrow-disabled state from
+				// the rounded index, so it can't drift between cards.
+				var strip = document.getElementById('showcase');
+				if (strip) {
+					var prevBtn = document.getElementById('sc-prev');
+					var nextBtn = document.getElementById('sc-next');
+					var dots = [].slice.call(document.querySelectorAll('#sc-dots .dot'));
+					var n = dots.length;
+					var clamp = function (i) { return Math.max(0, Math.min(n - 1, i)); };
+					var step = function () {
+						var card = strip.querySelector('.shot');
+						if (!card) return strip.clientWidth;
+						var gap = parseFloat(getComputedStyle(strip).columnGap) || 14;
+						return card.getBoundingClientRect().width + gap;
+					};
+					var indexNow = function () { return clamp(Math.round(strip.scrollLeft / step())); };
+					// `current` is the source of truth for arrow clicks so rapid taps
+					// accumulate even mid-animation; manual swipes resync it (debounced
+					// so a programmatic smooth-scroll's own events don't fight it).
+					var current = 0;
+					var render = function () {
+						dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+						if (prevBtn) prevBtn.disabled = current <= 0;
+						if (nextBtn) nextBtn.disabled = current >= n - 1;
+					};
+					var goTo = function (i) { current = clamp(i); strip.scrollTo({ left: current * step(), behavior: 'smooth' }); render(); };
+					if (prevBtn) prevBtn.addEventListener('click', function () { goTo(current - 1); });
+					if (nextBtn) nextBtn.addEventListener('click', function () { goTo(current + 1); });
+					dots.forEach(function (d, i) { d.addEventListener('click', function () { goTo(i); }); });
+					var t;
+					strip.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(function () { current = indexNow(); render(); }, 120); }, { passive: true });
+					window.addEventListener('resize', function () { strip.scrollLeft = current * step(); render(); });
+					strip.scrollLeft = 0; // start on the first card, not a partial snap
+					render();
 				}
 			})();
 		</script>

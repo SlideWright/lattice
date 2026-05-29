@@ -1,0 +1,34 @@
+---
+// Override of Starlight's header SocialIcons slot. Renders the same global
+// nav links the landing/playground topbars carry, then the default social
+// icons — so the docs header reads as the same site, not a separate zone.
+// The links duplicate sidebar destinations on purpose (a persistent global
+// nav); they hide below 64rem, where the sidebar (with its Tools group) and
+// the mobile menu carry the same destinations. The link matching the current
+// section gets aria-current="page" so "you are here" is true in the header
+// too. See docs/src/styles/lattice.css.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const here = Astro.url.pathname;
+const links = [
+	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
+	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
+	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
+	{ label: 'Components', href: url('components.html'), seg: 'components' },
+];
+const current = (seg) => here.includes('/' + seg);
+---
+
+<nav class="lattice-headernav" aria-label="Site">
+	{
+		links.map((l) => (
+			<a href={l.href} aria-current={current(l.seg) ? 'page' : undefined}>
+				{l.label}
+			</a>
+		))
+	}
+</nav>
+<Default><slot /></Default>

@@ -38,3 +38,34 @@ h1#_top {
 .hero h1 {
 	font-weight: 700;
 }
+
+/* Global nav links injected into the header via the SocialIcons override.
+ * Hidden below 64rem, where the sidebar (with its Tools group) and the
+ * mobile menu carry the same destinations — avoids crowding the header
+ * against the search box on narrow viewports. The link for the current
+ * section gets aria-current="page" (set in SocialIcons.astro). */
+.lattice-headernav {
+	display: none;
+}
+@media (min-width: 64rem) {
+	.lattice-headernav {
+		display: flex;
+		align-items: center;
+		gap: 1.15rem;
+		margin-inline-end: 0.5rem;
+	}
+	.lattice-headernav a {
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		color: var(--sl-color-text);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.lattice-headernav a:hover {
+		color: var(--sl-color-text-accent);
+	}
+	.lattice-headernav a[aria-current='page'] {
+		color: var(--sl-color-text-accent);
+		font-weight: 600;
+	}
+}

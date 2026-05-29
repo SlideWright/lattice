@@ -116,7 +116,8 @@ code { font-family: var(--font-mono); font-size: 0.88em; }
 }
 .brand-links {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 7px 14px;
   margin-top: 8px;
 }
 .brand-links a {
@@ -443,12 +444,15 @@ tbody tr:last-child td { border-bottom: none; }
 <body>
 <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.body.classList.toggle('nav-open')">☰</button>
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" data-pagefind-ignore>
     <div class="brand">
       <a href="#top" class="brand-mark">Lattice</a>
       <p class="brand-sub">Component Reference</p>
       <nav class="brand-links">
-        <a href="./">← Home</a>
+        <a href="./">Home</a>
+        <a href="getting-started/">Get started</a>
+        <a href="guides/authoring/">Guides</a>
+        <a href="playground/">Playground</a>
         <a href="https://github.com/slidewright/lattice">GitHub</a>
       </nav>
     </div>
@@ -600,7 +604,7 @@ tbody tr:last-child td { border-bottom: none; }
       <span class="gen">Generated from manifests — do not edit by hand.</span>
     </footer>
   </aside>
-  <main class="content" id="top">
+  <main class="content" id="top" data-pagefind-body>
     <header class="hero">
       <p class="eyebrow">Boardroom-quality slides from Markdown</p>
       <h1>Component Reference</h1>
@@ -611,9 +615,9 @@ tbody tr:last-child td { border-bottom: none; }
         <h2>Anchor</h2>
         <p>where you are in the deck.</p>
       </header>
-<article class="component" id="c-closing">
+<article class="component" data-name="closing">
   <header class="component-head">
-    <h3>closing</h3>
+    <h3 id="c-closing">closing</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Anchor</span>
       <span class="ffs-pill" title="Form">Bookend</span>
@@ -697,9 +701,9 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/closing/closing.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-divider">
+<article class="component" data-name="divider">
   <header class="component-head">
-    <h3>divider</h3>
+    <h3 id="c-divider">divider</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Anchor</span>
       <span class="ffs-pill" title="Form">Divider</span>
@@ -782,9 +786,9 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/divider/divider.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-subtopic">
+<article class="component" data-name="subtopic">
   <header class="component-head">
-    <h3>subtopic</h3>
+    <h3 id="c-subtopic">subtopic</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Anchor</span>
       <span class="ffs-pill" title="Form">Divider</span>
@@ -864,9 +868,9 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/subtopic/subtopic.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-title">
+<article class="component" data-name="title">
   <header class="component-head">
-    <h3>title</h3>
+    <h3 id="c-title">title</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Anchor</span>
       <span class="ffs-pill" title="Form">Bookend</span>
@@ -946,9 +950,9 @@ One-line subtitle that frames the deck.</code></pre>
         <h2>Statement</h2>
         <p>one declarative claim per slide.</p>
       </header>
-<article class="component" id="c-big-number">
+<article class="component" data-name="big-number">
   <header class="component-head">
-    <h3>big-number</h3>
+    <h3 id="c-big-number">big-number</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -1020,9 +1024,9 @@ One-line subtitle that frames the deck.</code></pre>
     <a class="gallery-link" href="../../lib/components/statement/big-number/big-number.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-content">
+<article class="component" data-name="content">
   <header class="component-head">
-    <h3>content</h3>
+    <h3 id="c-content">content</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -1096,9 +1100,9 @@ The explanatory paragraph that develops the heading goes here. Keep the slide un
     <a class="gallery-link" href="../../lib/components/statement/content/content.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-quote">
+<article class="component" data-name="quote">
   <header class="component-head">
-    <h3>quote</h3>
+    <h3 id="c-quote">quote</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -1166,9 +1170,9 @@ Attribution — Person, Role</code></pre>
     <a class="gallery-link" href="../../lib/components/statement/quote/quote.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-brief">
+<article class="component" data-name="split-brief">
   <header class="component-head">
-    <h3>split-brief</h3>
+    <h3 id="c-split-brief">split-brief</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -1245,9 +1249,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/statement/split-brief/split-brief.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-list">
+<article class="component" data-name="split-list">
   <header class="component-head">
-    <h3>split-list</h3>
+    <h3 id="c-split-list">split-list</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Panel</span>
@@ -1344,9 +1348,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/statement/split-list/split-list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-statement">
+<article class="component" data-name="split-statement">
   <header class="component-head">
-    <h3>split-statement</h3>
+    <h3 id="c-split-statement">split-statement</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Statement</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -1425,9 +1429,9 @@ One-sentence framing paragraph explaining what the findings cover.
         <h2>Inventory</h2>
         <p>parallel sets of related items.</p>
       </header>
-<article class="component" id="c-actors">
+<article class="component" data-name="actors">
   <header class="component-head">
-    <h3>actors</h3>
+    <h3 id="c-actors">actors</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -1500,9 +1504,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/actors/actors.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-agenda">
+<article class="component" data-name="agenda">
   <header class="component-head">
-    <h3>agenda</h3>
+    <h3 id="c-agenda">agenda</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -1658,9 +1662,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/agenda/agenda.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-cards-grid">
+<article class="component" data-name="cards-grid">
   <header class="component-head">
-    <h3>cards-grid</h3>
+    <h3 id="c-cards-grid">cards-grid</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Grid</span>
@@ -1804,9 +1808,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-cards-side">
+<article class="component" data-name="cards-side">
   <header class="component-head">
-    <h3>cards-side</h3>
+    <h3 id="c-cards-side">cards-side</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -1892,9 +1896,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-side/cards-side.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-cards-stack">
+<article class="component" data-name="cards-stack">
   <header class="component-head">
-    <h3>cards-stack</h3>
+    <h3 id="c-cards-stack">cards-stack</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -1999,9 +2003,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-cards-wide">
+<article class="component" data-name="cards-wide">
   <header class="component-head">
-    <h3>cards-wide</h3>
+    <h3 id="c-cards-wide">cards-wide</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -2076,9 +2080,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-checklist">
+<article class="component" data-name="checklist">
   <header class="component-head">
-    <h3>checklist</h3>
+    <h3 id="c-checklist">checklist</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -2151,9 +2155,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/checklist/checklist.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-glossary">
+<article class="component" data-name="glossary">
   <header class="component-head">
-    <h3>glossary</h3>
+    <h3 id="c-glossary">glossary</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -2228,9 +2232,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/glossary/glossary.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-list">
+<article class="component" data-name="list">
   <header class="component-head">
-    <h3>list</h3>
+    <h3 id="c-list">list</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -2304,9 +2308,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/list/list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-list-tabular">
+<article class="component" data-name="list-tabular">
   <header class="component-head">
-    <h3>list-tabular</h3>
+    <h3 id="c-list-tabular">list-tabular</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -2493,9 +2497,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/list-tabular/list-tabular.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-principles">
+<article class="component" data-name="principles">
   <header class="component-head">
-    <h3>principles</h3>
+    <h3 id="c-principles">principles</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -2620,9 +2624,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/principles/principles.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-tldr">
+<article class="component" data-name="tldr">
   <header class="component-head">
-    <h3>tldr</h3>
+    <h3 id="c-tldr">tldr</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -2717,9 +2721,9 @@ One-sentence framing paragraph explaining what the findings cover.
         <h2>Comparison</h2>
         <p>how two or more options differ.</p>
       </header>
-<article class="component" id="c-before-after">
+<article class="component" data-name="before-after">
   <header class="component-head">
-    <h3>before-after</h3>
+    <h3 id="c-before-after">before-after</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -2807,9 +2811,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/before-after/before-after.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-compare-prose">
+<article class="component" data-name="compare-prose">
   <header class="component-head">
-    <h3>compare-prose</h3>
+    <h3 id="c-compare-prose">compare-prose</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -2960,9 +2964,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/compare-prose/compare-prose.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-compare-table">
+<article class="component" data-name="compare-table">
   <header class="component-head">
-    <h3>compare-table</h3>
+    <h3 id="c-compare-table">compare-table</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -3041,9 +3045,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/compare-table/compare-table.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-decision">
+<article class="component" data-name="decision">
   <header class="component-head">
-    <h3>decision</h3>
+    <h3 id="c-decision">decision</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -3132,9 +3136,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/decision/decision.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-matrix-2x2">
+<article class="component" data-name="matrix-2x2">
   <header class="component-head">
-    <h3>matrix-2x2</h3>
+    <h3 id="c-matrix-2x2">matrix-2x2</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Matrix</span>
@@ -3214,9 +3218,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/matrix-2x2/matrix-2x2.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-redline">
+<article class="component" data-name="redline">
   <header class="component-head">
-    <h3>redline</h3>
+    <h3 id="c-redline">redline</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -3357,9 +3361,9 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/redline/redline.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-compare">
+<article class="component" data-name="split-compare">
   <header class="component-head">
-    <h3>split-compare</h3>
+    <h3 id="c-split-compare">split-compare</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -3442,9 +3446,9 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/comparison/split-compare/split-compare.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-verdict-grid">
+<article class="component" data-name="verdict-grid">
   <header class="component-head">
-    <h3>verdict-grid</h3>
+    <h3 id="c-verdict-grid">verdict-grid</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Grid</span>
@@ -3534,9 +3538,9 @@ One-sentence context paragraph explaining the stakes.
         <h2>Progression</h2>
         <p>ordered movement through stages or time.</p>
       </header>
-<article class="component" id="c-journey">
+<article class="component" data-name="journey">
   <header class="component-head">
-    <h3>journey</h3>
+    <h3 id="c-journey">journey</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -3684,9 +3688,9 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/journey/journey.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-list-criteria">
+<article class="component" data-name="list-criteria">
   <header class="component-head">
-    <h3>list-criteria</h3>
+    <h3 id="c-list-criteria">list-criteria</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -3764,9 +3768,9 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/list-criteria/list-criteria.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-list-steps">
+<article class="component" data-name="list-steps">
   <header class="component-head">
-    <h3>list-steps</h3>
+    <h3 id="c-list-steps">list-steps</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -3957,9 +3961,9 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/list-steps/list-steps.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-roadmap">
+<article class="component" data-name="roadmap">
   <header class="component-head">
-    <h3>roadmap</h3>
+    <h3 id="c-roadmap">roadmap</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Matrix</span>
@@ -4110,9 +4114,9 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
     <a class="gallery-link" href="../../lib/components/progression/roadmap/roadmap.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-steps">
+<article class="component" data-name="split-steps">
   <header class="component-head">
-    <h3>split-steps</h3>
+    <h3 id="c-split-steps">split-steps</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -4190,9 +4194,9 @@ One-sentence summary describing what this phase produces.
     <a class="gallery-link" href="../../lib/components/progression/split-steps/split-steps.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-timeline">
+<article class="component" data-name="timeline">
   <header class="component-head">
-    <h3>timeline</h3>
+    <h3 id="c-timeline">timeline</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -4275,9 +4279,9 @@ One-sentence summary describing what this phase produces.
         <h2>Evidence</h2>
         <p>data that supports the argument.</p>
       </header>
-<article class="component" id="c-kpi">
+<article class="component" data-name="kpi">
   <header class="component-head">
-    <h3>kpi</h3>
+    <h3 id="c-kpi">kpi</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -4491,9 +4495,9 @@ Source · regulatory register · weekly export</code></pre>
     <a class="gallery-link" href="../../lib/components/evidence/kpi/kpi.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-split-metric">
+<article class="component" data-name="split-metric">
   <header class="component-head">
-    <h3>split-metric</h3>
+    <h3 id="c-split-metric">split-metric</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -4571,9 +4575,9 @@ Measurement window and qualifying detail in one short sentence.
     <a class="gallery-link" href="../../lib/components/evidence/split-metric/split-metric.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-stats">
+<article class="component" data-name="stats">
   <header class="component-head">
-    <h3>stats</h3>
+    <h3 id="c-stats">stats</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Stack</span>
@@ -4657,9 +4661,9 @@ Measurement window and qualifying detail in one short sentence.
         <h2>Imagery</h2>
         <p>visuals that carry their own meaning.</p>
       </header>
-<article class="component" id="c-featured">
+<article class="component" data-name="featured">
   <header class="component-head">
-    <h3>featured</h3>
+    <h3 id="c-featured">featured</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Imagery</span>
       <span class="ffs-pill" title="Form">Panel</span>
@@ -4753,9 +4757,9 @@ Measurement window and qualifying detail in one short sentence.
     <a class="gallery-link" href="../../lib/components/imagery/featured/featured.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-image">
+<article class="component" data-name="image">
   <header class="component-head">
-    <h3>image</h3>
+    <h3 id="c-image">image</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Imagery</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -4882,9 +4886,9 @@ Text leads from the right; image anchors from the left. Use when the surrounding
         <h2>Chart</h2>
         <p>series-substance data visualizations (SVG kernel).</p>
       </header>
-<article class="component" id="c-gantt">
+<article class="component" data-name="gantt">
   <header class="component-head">
-    <h3>gantt</h3>
+    <h3 id="c-gantt">gantt</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -4969,9 +4973,9 @@ Three workstreams across four quarters. Status pills tint each bar.
     <a class="gallery-link" href="../../lib/components/chart/gantt/gantt.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-kanban">
+<article class="component" data-name="kanban">
   <header class="component-head">
-    <h3>kanban</h3>
+    <h3 id="c-kanban">kanban</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -5059,9 +5063,9 @@ Four columns, mixed card density. Size badge sits in the title row.
     <a class="gallery-link" href="../../lib/components/chart/kanban/kanban.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-piechart">
+<article class="component" data-name="piechart">
   <header class="component-head">
-    <h3>piechart</h3>
+    <h3 id="c-piechart">piechart</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -5159,9 +5163,9 @@ Wedges drawn proportionally; legend reads in author order with raw values.
     <a class="gallery-link" href="../../lib/components/chart/piechart/piechart.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-progress">
+<article class="component" data-name="progress">
   <header class="component-head">
-    <h3>progress</h3>
+    <h3 id="c-progress">progress</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -5241,9 +5245,9 @@ Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
     <a class="gallery-link" href="../../lib/components/chart/progress/progress.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-quadrant">
+<article class="component" data-name="quadrant">
   <header class="component-head">
-    <h3>quadrant</h3>
+    <h3 id="c-quadrant">quadrant</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Scatter</span>
@@ -5451,9 +5455,9 @@ Effort estimated in story-points; reach as percent of addressable users.
     <a class="gallery-link" href="../../lib/components/chart/quadrant/quadrant.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-radar">
+<article class="component" data-name="radar">
   <header class="component-head">
-    <h3>radar</h3>
+    <h3 id="c-radar">radar</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Scatter</span>
@@ -5712,9 +5716,9 @@ Effort estimated in story-points; reach as percent of addressable users.
     <a class="gallery-link" href="../../lib/components/chart/radar/radar.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-state-chart">
+<article class="component" data-name="state-chart">
   <header class="component-head">
-    <h3>state-chart</h3>
+    <h3 id="c-state-chart">state-chart</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -5846,9 +5850,9 @@ How a draft moves from author to archive.
     <a class="gallery-link" href="../../lib/components/chart/state-chart/state-chart.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-timeline-list">
+<article class="component" data-name="timeline-list">
   <header class="component-head">
-    <h3>timeline-list</h3>
+    <h3 id="c-timeline-list">timeline-list</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -5929,9 +5933,9 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
     <a class="gallery-link" href="../../lib/components/chart/timeline-list/timeline-list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-word-cloud">
+<article class="component" data-name="word-cloud">
   <header class="component-head">
-    <h3>word-cloud</h3>
+    <h3 id="c-word-cloud">word-cloud</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -6079,9 +6083,9 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
         <h2>Diagram</h2>
         <p>graph-substance network visuals (external renderer).</p>
       </header>
-<article class="component" id="c-diagram">
+<article class="component" data-name="diagram">
   <header class="component-head">
-    <h3>diagram</h3>
+    <h3 id="c-diagram">diagram</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -6165,9 +6169,9 @@ flowchart LR
         <h2>Math</h2>
         <p>typeset equations and proofs.</p>
       </header>
-<article class="component" id="c-math">
+<article class="component" data-name="math">
   <header class="component-head">
-    <h3>math</h3>
+    <h3 id="c-math">math</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -6394,9 +6398,9 @@ $$
         <h2>Code</h2>
         <p>syntax-highlighted source code blocks.</p>
       </header>
-<article class="component" id="c-code">
+<article class="component" data-name="code">
   <header class="component-head">
-    <h3>code</h3>
+    <h3 id="c-code">code</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -6472,9 +6476,9 @@ app.post('/api/v2/auth', async (req, res) =&gt; {
     <a class="gallery-link" href="../../lib/components/code/code/code.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-compare-code">
+<article class="component" data-name="compare-code">
   <header class="component-head">
-    <h3>compare-code</h3>
+    <h3 id="c-compare-code">compare-code</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Split</span>
@@ -6601,9 +6605,9 @@ function loadOne(name) {
         <h2>Legal</h2>
         <p>citation-aware layouts for statutes, obligations, and regulatory change.</p>
       </header>
-<article class="component" id="c-authority-chain">
+<article class="component" data-name="authority-chain">
   <header class="component-head">
-    <h3>authority-chain</h3>
+    <h3 id="c-authority-chain">authority-chain</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Timeline</span>
@@ -6761,9 +6765,9 @@ function loadOne(name) {
     <a class="gallery-link" href="../../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-citation-card">
+<article class="component" data-name="citation-card">
   <header class="component-head">
-    <h3>citation-card</h3>
+    <h3 id="c-citation-card">citation-card</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Evidence</span>
       <span class="ffs-pill" title="Form">Canvas</span>
@@ -6899,9 +6903,9 @@ function loadOne(name) {
     <a class="gallery-link" href="../../lib/components/legal/citation-card/citation-card.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-obligation-matrix">
+<article class="component" data-name="obligation-matrix">
   <header class="component-head">
-    <h3>obligation-matrix</h3>
+    <h3 id="c-obligation-matrix">obligation-matrix</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Comparison</span>
       <span class="ffs-pill" title="Form">Matrix</span>
@@ -7016,9 +7020,9 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     <a class="gallery-link" href="../../lib/components/legal/obligation-matrix/obligation-matrix.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-regulatory-update">
+<article class="component" data-name="regulatory-update">
   <header class="component-head">
-    <h3>regulatory-update</h3>
+    <h3 id="c-regulatory-update">regulatory-update</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Progression</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -7209,9 +7213,9 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     <a class="gallery-link" href="../../lib/components/legal/regulatory-update/regulatory-update.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" id="c-statute-stack">
+<article class="component" data-name="statute-stack">
   <header class="component-head">
-    <h3>statute-stack</h3>
+    <h3 id="c-statute-stack">statute-stack</h3>
     <div class="ffs">
       <span class="ffs-pill" title="Function">Inventory</span>
       <span class="ffs-pill" title="Form">Ledger</span>
@@ -7424,9 +7428,9 @@ Each row promotes to a card with body-level breathing room.</code></pre>
   var THRESHOLD = 120;
 
   function updateSpy() {
-    var activeId = articles.length ? articles[0].id : null;
+    var activeId = articles.length ? articles[0].querySelector('h3').id : null;
     for (var i = 0; i < articles.length; i++) {
-      if (articles[i].getBoundingClientRect().top <= THRESHOLD) activeId = articles[i].id;
+      if (articles[i].getBoundingClientRect().top <= THRESHOLD) activeId = articles[i].querySelector('h3').id;
       else break;
     }
     if (!activeId || activeId === current) return;
@@ -7457,7 +7461,7 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     filter.addEventListener('input', function () {
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
-        var name = art.id.replace(/^c-/, '');
+        var name = art.dataset.name;
         var lead = art.querySelector('.lead');
         var desc = lead ? lead.textContent.toLowerCase() : '';
         var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;

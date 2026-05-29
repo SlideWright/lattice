@@ -13,6 +13,11 @@ export default defineConfig({
 		starlight({
 			title: 'Lattice',
 			favicon: '/lattice-logo.png',
+			components: {
+				// Inject the global nav links into the header (next to the social
+				// icons) so the docs zone shares the landing/playground topbar.
+				SocialIcons: './src/components/SocialIcons.astro',
+			},
 			logo: { src: './public/lattice-logo.png', alt: 'Lattice' },
 			description:
 				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
@@ -37,9 +42,17 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Reference',
+					// Standalone routes that live outside Starlight's page tree (the
+					// landing-styled playground and the generated component portal).
+					// Surfacing them here keeps the docs zone from dead-ending — a
+					// reader in the guides can reach the interactive tools in one
+					// click. "Components" is the single canonical pointer to the
+					// reference (the portal); the topbar/header use the same label
+					// and destination, so there's one "Components" everywhere.
+					label: 'Tools',
 					items: [
-						{ label: 'Component reference', slug: 'reference/components' },
+						{ label: 'Playground', link: '/playground/' },
+						{ label: 'Components', link: '/components.html' },
 					],
 				},
 			],

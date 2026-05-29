@@ -153,13 +153,41 @@ code {
 	font-weight: 500;
 	color: var(--text-body);
 }
-.topnav a.navlink:hover {
+.topnav a.navlink:hover,
+.topnav a.navlink[aria-current='page'] {
 	color: var(--accent);
+}
+.topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 .controls {
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+/* Hamburger — desktop-hidden; the mobile breakpoint reveals it and turns
+ * .topnav into a dropdown so nav links survive on phones (they used to
+ * vanish, leaving only the palette/mode controls). */
+.nav-toggle {
+	display: none;
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	cursor: pointer;
+	font-size: 17px;
+	line-height: 1;
+}
+.nav-toggle:hover {
+	border-color: var(--accent);
+	color: var(--accent);
 }
 .palette-select {
 	padding: 6px 9px;
@@ -391,6 +419,16 @@ html[data-mode='dark'] .mode-toggle::before {
 	grid-template-columns: repeat(4, 1fr);
 	gap: 16px;
 }
+/* Carousel chrome (arrows + dots) is mobile-only — on desktop the strip is a
+ * static grid, so the controls stay hidden. The mobile breakpoint reveals
+ * them; the script (scrollBy + active-dot tracking) is a no-op until then. */
+.showcase-viewport {
+	position: relative;
+}
+.carousel-arrow,
+.carousel-dots {
+	display: none;
+}
 .shot {
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
@@ -530,13 +568,40 @@ html[data-mode='dark'] .for-dark {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
-@media (max-width: 620px) {
+/* Tablet / phone: collapse the nav links behind the hamburger. The links
+ * become a full-width dropdown panel under the bar; palette + mode controls
+ * stay visible at all sizes. */
+@media (max-width: 760px) {
+	.nav-toggle {
+		display: inline-flex;
+	}
+	.topbar-actions {
+		margin-left: auto; /* .topnav is now absolute, so push controls right */
+	}
 	.topnav {
-		gap: 12px;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		display: none;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		margin: 0;
+		padding: 6px 0;
+		background: var(--bg);
+		border-bottom: 1px solid var(--border);
+		box-shadow: var(--shadow-lg);
 	}
-	.topnav .navlink {
-		display: none; /* keep palette + mode controls; links collapse to footer */
+	.topbar.nav-open .topnav {
+		display: flex;
 	}
+	.topnav a.navlink {
+		font-size: 16px;
+		padding: 12px 24px;
+	}
+}
+@media (max-width: 620px) {
 	.feature-grid,
 	.next-grid {
 		grid-template-columns: 1fr;
@@ -549,10 +614,74 @@ html[data-mode='dark'] .for-dark {
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		padding-bottom: 6px;
+		scrollbar-width: none; /* hide native bar; arrows + dots are the cue */
+	}
+	.showcase::-webkit-scrollbar {
+		display: none;
 	}
 	.shot {
 		flex: 0 0 78%;
+		min-width: 0; /* enforce the 78% basis so every card is the same width */
+		margin: 0; /* drop the <figure> UA margin so card advance == width + gap */
 		scroll-snap-align: start;
+	}
+	/* Prev/next chevrons overlaid on the strip edges. */
+	.carousel-arrow {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		top: 42%;
+		transform: translateY(-50%);
+		width: 38px;
+		height: 38px;
+		padding: 0;
+		border-radius: 50%;
+		border: 1px solid var(--border);
+		background: color-mix(in srgb, var(--bg) 88%, transparent);
+		backdrop-filter: saturate(180%) blur(8px);
+		color: var(--text-heading);
+		font-size: 22px;
+		line-height: 1;
+		box-shadow: var(--shadow-sm);
+		cursor: pointer;
+		z-index: 3;
+		transition: opacity 0.15s ease, border-color 0.15s ease;
+	}
+	.carousel-arrow.prev {
+		left: 6px;
+	}
+	.carousel-arrow.next {
+		right: 6px;
+	}
+	.carousel-arrow:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.carousel-arrow:disabled {
+		opacity: 0;
+		pointer-events: none;
+	}
+	/* Position dots under the strip. */
+	.carousel-dots {
+		display: flex;
+		justify-content: center;
+		gap: 7px;
+		margin-top: 14px;
+	}
+	.carousel-dots .dot {
+		width: 7px;
+		height: 7px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: var(--border);
+		cursor: pointer;
+		transition: background 0.15s ease, transform 0.15s ease;
+	}
+	.carousel-dots .dot.active {
+		background: var(--accent);
+		transform: scale(1.4);
 	}
 	.foot .legal {
 		margin-left: 0;

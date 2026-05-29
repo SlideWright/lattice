@@ -70,19 +70,25 @@ const pgData = JSON.stringify({
 		<header class="topbar">
 			<div class="wrap topbar-inner" style="max-width:none">
 				<a class="brand" href={url('')}>
-					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="35" height="30" />
+					<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
 					<span class="brand-mark">Lattice</span>
 				</a>
-				<nav class="topnav">
+				<nav class="topnav" id="topnav">
+					<a class="navlink" href={url('getting-started/')}>Get started</a>
+					<a class="navlink" href={url('guides/authoring/')}>Guides</a>
+					<a class="navlink" href={url('playground/')} aria-current="page">Playground</a>
 					<a class="navlink" href={url('components.html')}>Components</a>
-					<a class="navlink" href={url('guides/authoring/')}>Authoring</a>
+					<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+				</nav>
+				<div class="topbar-actions">
 					<div class="controls">
 						<select class="palette-select" id="palette" aria-label="Palette">
 							{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
 						</select>
 						<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
 					</div>
-				</nav>
+					<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false">☰</button>
+				</div>
 			</div>
 		</header>
 
@@ -246,6 +252,15 @@ const pgData = JSON.stringify({
 					try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
 					render();
 				});
+
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
 
 				// Mobile Edit | Preview tabs.
 				var tabEdit = document.getElementById('tab-edit');
