@@ -143,6 +143,13 @@ const pgData = JSON.stringify({
 				var modeBtn = document.getElementById('mode-toggle');
 				var tmplSel = document.getElementById('pg-template');
 
+				// Persist the editor across reloads / refresh / session end so the
+				// author's in-progress deck survives (palette + mode already persist
+				// via the shared localStorage keys).
+				var SOURCE_KEY = 'lattice-docs-pg-source';
+				try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) editor.value = saved; } catch (e) {}
+				function saveSource() { try { localStorage.setItem(SOURCE_KEY, editor.value); } catch (e) {} }
+
 				paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {}; // theme name -> Promise<cssText>
 				var latticeReady = null;
@@ -185,9 +192,15 @@ const pgData = JSON.stringify({
 
 				function writeFrame(html, css, mode) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
-					var doc = frame.contentDocument;
-					doc.open();
-					doc.write(
+					// Use srcdoc (a fresh browsing context per render), NOT
+					// doc.open()/write()/close(). The latter clears the document but
+					// KEEPS the iframe window, so lattice-runtime.js's one-shot guard
+					// (globalScope.__llMermaidBootstrapLoaded) survives — the starter
+					// render sets it, and every later render short-circuits the whole
+					// runtime, so Mermaid/charts added after the first edit never
+					// render. A fresh srcdoc window resets the guard each time.
+					// See engineering/gotchas.md "Playground: Mermaid stops rendering".
+					frame.srcdoc =
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
@@ -198,9 +211,7 @@ const pgData = JSON.stringify({
 						'<scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe();</scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
-						'</body></html>'
-					);
-					doc.close();
+						'</body></html>';
 				}
 
 				var timer = null;
@@ -224,20 +235,20 @@ const pgData = JSON.stringify({
 					}).catch(function (e) { setStatus(String(e.message || e), true); });
 				}
 
-				editor.addEventListener('input', scheduleRender);
+				editor.addEventListener('input', function () { saveSource(); scheduleRender(); });
 
 				tmplSel.addEventListener('change', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].sample; render(); }
+					if (name && catalog[name]) { editor.value = catalog[name].sample; saveSource(); render(); }
 				});
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].sample; render(); }
+					if (name && catalog[name]) { editor.value = catalog[name].sample; saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].skeleton; render(); }
+					if (name && catalog[name]) { editor.value = catalog[name].skeleton; saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 

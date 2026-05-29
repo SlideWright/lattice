@@ -280,6 +280,31 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## Mermaid
 
+### Playground: Mermaid (and all DOM transforms) stop rendering after the first edit
+
+- **Symptom:** In the docs playground, add a ```mermaid fence and nothing
+  renders — the source stays a code block. `window.mermaid` is loaded and there
+  are no console errors. Charts/badges added after the first render also fail.
+- **Cause (two compounding bugs):**
+  1. `writeFrame` rebuilt the preview with `document.open()/write()/close()`,
+     which clears the *document* but reuses the iframe *window*.
+     `lattice-runtime.js` is one IIFE guarded by
+     `globalScope.__llMermaidBootstrapLoaded` (set once per window); the starter
+     render set it, so every later render short-circuited the whole runtime.
+  2. `runAllContentTransforms()` called `transformStripHeadingPeriods` /
+     `transformAddHeadingPeriods` / `applyGlossaryListTable` /
+     `applyGlossaryRangePills`, and bootstrap called `startObserver` — undefined
+     leftovers from the registry migration (`690835d`). The first threw a
+     ReferenceError that aborted the pass *before* `wrapFences()`. (Masked until
+     bug #1 was fixed, since the guard meant bootstrap rarely re-ran.)
+- **Mitigation:** Playground `writeFrame` uses `iframe.srcdoc` (fresh browsing
+  context per render → guard resets). Dead calls removed (heading periods are a
+  render-time markdown-it concern; glossary likewise); `startObserver()`
+  replaced with the Mermaid-fence `MutationObserver` it was meant to be (wired
+  to `scheduleRun`). Rebuild `dist/lattice-runtime.js`.
+- **Applies to:** any embedder reusing one iframe via `document.write`. The
+  landing's live showcase (`index.astro`) already uses `srcdoc` for this reason.
+
 ### Mermaid's color parser rejects `light-dark()`
 
 - **Symptom:** `[pageerror] Unsupported color format:
