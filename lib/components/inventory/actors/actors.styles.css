@@ -4,10 +4,10 @@
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **Key custody** `HSM admin`
- *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Model ownership** `model owner`
+ *   - Manages KEK ceremonies and rotation. Never holds plaintext weighting models.
  * - **Policy** `Platform operator`
- *   - Owns codebook policy, signing keys, version floors.
+ *   - Owns framework policy, scoring weights, version floors.
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,

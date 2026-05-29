@@ -255,7 +255,7 @@ in patch versions.
   overrides to `themes/indaco.css` and `themes/cuoio.css` (journey faces/circles/
   strokes, c4 prefix-class catchall via `[class*="person"]`/`[class*="system"]`,
   mindmap+timeline connector strokes, sankey nodes/labels/links, packet blocks,
-  architecture services/glyphs/edges, ER row-rect alternation). Tokenized the radar
+  architecture services/glyphs/edges, ER row-rect alternation). Parsed the radar
   warm-orange contrast accent as `--mermaid-accent-warm` so audits recognize it.
   Audit verified deterministic across 3 rounds: 0 strays, 0 missing SVGs, 37/37
   diagrams on palette. Smoke test still passes (42 + 38 pages).

@@ -7,10 +7,10 @@
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Codebook signing in production
- * - [x] HSM-anchored audit trail
+ * - [x] Model sign-off in production
+ * - [x] the registry-anchored audit trail
  * - [-] TTL refresh under cold-start load — _open, see slide 27_
- * - [ ] Multi-tenant operation — _Phase 2_
+ * - [ ] Multi-team operation — _Phase 2_
  * - [/] Cross-region replication — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):

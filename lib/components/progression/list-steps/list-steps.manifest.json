@@ -100,7 +100,7 @@
     "lettered": {
       "label": "Lettered — counter format becomes A, B, C",
       "caption": "Replaces the leading-zero decimal counter with letters. Composes with any prefix; useful when the rows are options or tracks rather than ordered work.",
-      "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
+      "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Per-team weighting, automated recalibration, and the log purge runbook land in this track.\n2. Compliance posture\n   - Board pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
     },
     "stage": {
       "label": "Stage",

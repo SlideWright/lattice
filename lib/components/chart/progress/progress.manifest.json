@@ -82,5 +82,5 @@
       "when": "the workstreams resolve in sequence, not in parallel"
     }
   ],
-  "stressSample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Stress test — eight workstreams, full status range.\n\n- Codebook platform `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n- Continuous audit trail `100%` `done`\n- Crypto-shred tooling `45%` `deferred`\n- Examiner log rollout `73%` `on-track`\n"
+  "stressSample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Stress test — eight workstreams, full status range.\n\n- Scoring platform `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n- Continuous audit trail `100%` `done`\n- Log purge tooling `45%` `deferred`\n- Board reviewer log rollout `73%` `on-track`\n"
 }

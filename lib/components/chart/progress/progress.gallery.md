@@ -40,14 +40,14 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Stress test — eight workstreams, full status range.
 
-- Codebook platform `92%` `on-track`
+- Scoring platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`
 - Compliance audit pack `81%` `on-track`
 - SDK polyglot parity `34%` `deferred`
 - Dependency dashboard `12%` `blocked`
 - Continuous audit trail `100%` `done`
-- Crypto-shred tooling `45%` `deferred`
-- Examiner log rollout `73%` `on-track`
+- Log purge tooling `45%` `deferred`
+- Board reviewer log rollout `73%` `on-track`
 
 
 ---

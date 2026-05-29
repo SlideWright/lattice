@@ -53,11 +53,11 @@ type, pills, eyebrow, and ✦ flagship ornament.
    - API availability
    - SLO 99.95% · -0.03pp `At risk` `SRE`
 2. **42 ms**
-   - p99 read latency
+   - cycle time read latency
    - SLO 50 ms · -16% headroom `On track` `SRE`
 3. **18 ms**
-   - p99 write latency
-   - SLO 15 ms · +20% `Breaching` `Platform`
+   - cycle time write latency
+   - SLO 1a week · +20% `Breaching` `Platform`
 4. **0.04%**
    - Error budget burn (28d)
    - SLO 1% · 4% consumed `On track` `Reliability`

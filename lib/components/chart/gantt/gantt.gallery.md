@@ -48,17 +48,17 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 ## Stress test — four workstreams, twelve tasks, mixed status.
 
 - Platform Engineering
-  - Codebook signing service `Q1 → Q2` `done`
-  - Multi-tenant DEK rotation `Q2 → Q3` `live`
-  - Per-purpose codebook caching `Q3 → Q4` `at-risk`
+  - Model sign-off service `Q1 → Q2` `done`
+  - Multi-team weighting model rotation `Q2 → Q3` `live`
+  - Per-team weighting cache `Q3 → Q4` `at-risk`
 - Operations & SRE
-  - Manual key rotation `Q1 → Q2` `done`
-  - Automated rotation pipeline `Q2 → Q3` `live`
-  - Crypto-shred tooling `Q3 → Q4` `blocked`
+  - Manual weight recalibration `Q1 → Q2` `done`
+  - Automated recalibration pipeline `Q2 → Q3` `live`
+  - Log purge tooling `Q3 → Q4` `blocked`
 - Compliance & Audit
   - Continuous audit trail `Q1 → Q3` `done`
-  - Centralised examiner log `Q2 → Q4` `live`
-  - Examiner evidence pack `Q3 → Q4`
+  - Centralised board reviewer log `Q2 → Q4` `live`
+  - Board reviewer evidence pack `Q3 → Q4`
 - SDK & Integrations
   - Java and .NET parity `Q1 → Q2` `done`
   - Polyglot SDK parity `Q2 → Q4` `at-risk`

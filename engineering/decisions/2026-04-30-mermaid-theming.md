@@ -116,7 +116,7 @@ test before committing the swap.
 **Files changed**:
 - `examples/gallery.md` (+ regenerated `examples/gallery.html`)
 - `examples/mermaid-gallery.md`
-- (also: external tokenization decks, since moved out of the repo)
+- (also: external signal scoring decks, since moved out of the repo)
 
 ---
 

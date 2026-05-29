@@ -417,7 +417,7 @@ Use to make one metric land. The number should be the headline — supporting te
 
 - **One metric carries the slide.** When the audience needs to remember exactly one number from this part of the deck. The whole slide is the chart — no surrounding context, no comparisons, no axes.
 - **Headline that earns the canvas.** Reach for big-number when the metric is the argument: cost reduced by 4×, audience reach grew 92%, time-to-decision dropped from 14 days to 4. One claim, one canvas.
-- **Eyebrow names the metric class.** The inline-code eyebrow contextualizes the number ("Audience recall", "Q3 revenue", "Latency p99"). The number is the value; the eyebrow is the label.
+- **Eyebrow names the metric class.** The inline-code eyebrow contextualizes the number ("Audience recall", "Q3 revenue", "Latency cycle time"). The number is the value; the eyebrow is the label.
 
 #### When NOT to use
 
@@ -867,7 +867,7 @@ See [split-statement.gallery.light.pdf](../../lib/components/statement/split-sta
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
-Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.
+Use to show 'who owns what' across a process, framework, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 #### When to use
 
@@ -3367,9 +3367,9 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 ## Three tracks for the next quarter.
 
 1. Platform hardening
-   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.
+   - Per-team weighting, automated recalibration, and the log purge runbook land in this track.
 2. Compliance posture
-   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.
+   - Board pack v2 and the centralised audit log ship for the Q3 audit window.
 3. Developer surface
    - Polyglot SDK parity and the new CLI flags close out the API roadmap.
 ```
@@ -3534,9 +3534,9 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
+| Platform   | [x] Model sign-off     | [-] Per-team weighting    | [ ] Per-team weighting |
+| Operations | [x] Manual recalibration      | [-] Automated recalibration   | [ ] Log purge          |
+| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Board pack         |
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
@@ -3555,9 +3555,9 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| Platform   | [x] Model sign-off | [-] Per-team weighting  | [ ] Per-team weighting |
+| Operations | [x] Manual recalibration  | [-] Automated recalibration | [ ] Log purge          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Board pack         |
 | SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
@@ -3576,9 +3576,9 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Platform   | Model sign-off     | Per-team weighting      | Per-team weighting     |
+| Operations | Manual recalibration      | Automated recalibration     | Log purge              |
+| Compliance | Audit trail          | Centralised log        | Board pack             |
 | SDK        | Java                 | .NET                   | Polyglot parity           |
 ```
 
@@ -3595,9 +3595,9 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Platform   | Model sign-off     | Per-team weighting      | Per-team weighting     |
+| Operations | Manual recalibration      | Automated recalibration     | Log purge              |
+| Compliance | Audit trail          | Centralised log        | Board pack             |
 ```
 
 #### Universal modifiers
@@ -3853,9 +3853,9 @@ Bare-bones variance dashboard — each KPI shows current value against target wi
 1. **94%**
    - Signal-classification success
    - target 99%, gap is "known issue"
-2. **18 min**
-   - p99 decision close
-   - target 20 min, beating target
+2. **6 days**
+   - Decision cycle time
+   - target 7 days, beating target
 3. **18**
    - Decisions logged
    - target 340, gap is "cultural"
@@ -3871,21 +3871,21 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Authentication · Q4 2026
+### Adoption · Q4 2026
 ## One metric below target; remediation under way.
 
 1. **94%**
-   - Token-issuance success
+   - Signals scored on time
    - target 99% · -5pp `At risk` `Board`
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms `On plan` `SRE`
+2. **6 days**
+   - Decision cycle time
+   - target 7 days `On plan` `Product`
 3. **0**
-   - Examiner findings
+   - Board findings
    - target 0 `On plan` `Audit`
 4. **3.2×**
-   - Detokenize headroom
-   - target 2× `On plan` `Platform`
+   - Scoring headroom
+   - target 2× `On plan` `Framework`
 ```
 
 ##### `ops` — Ops — SLO / SLA grid
@@ -3895,26 +3895,26 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi ops -->
 
-### Platform · Q4 2026
-## One latency target slipping; everything else inside SLO.
+### Framework · Q4 2026
+## One cycle-time target slipping; everything else inside SLO.
 
 1. **99.92%**
-   - API availability
-   - SLO 99.95% · -0.03pp `At risk` `SRE`
-2. **42 ms**
-   - p99 read latency
-   - SLO 50 ms · -16% headroom `On track` `SRE`
-3. **18 ms**
-   - p99 write latency
-   - SLO 15 ms · +20% `Breaching` `Platform`
+   - Scoring availability
+   - SLO 99.95% · -0.03pp `At risk` `Adoption`
+2. **5 days**
+   - Median decision cycle time
+   - SLO 7 days · -29% headroom `On track` `Adoption`
+3. **9 days**
+   - Escalated decision cycle time
+   - SLO 7 days · +29% `Breaching` `Framework`
 4. **0.04%**
-   - Error budget burn (28d)
-   - SLO 1% · 4% consumed `On track` `Reliability`
+   - Recalibration slip (28d)
+   - SLO 1% · 4% consumed `On track` `Governance`
 ```
 
 ##### `compliance` — Compliance — binary state
 
-Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for the regulatory register. Best for audit committee packs, examiner reviews, and quarterly compliance walk-throughs.
+Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for the regulatory register. Best for audit committee packs, board reviews, and quarterly compliance walk-throughs.
 
 ```markdown
 <!-- _class: kpi compliance -->
@@ -4623,7 +4623,7 @@ Hollows the pie into a donut. Visually cleaner for executive decks; the centre c
 
 Wedges drawn proportionally; legend reads in author order with raw values.
 
-- Codebook platform `46%`
+- Scoring platform `46%`
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`
@@ -4751,14 +4751,14 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 Effort estimated in story-points; reach as percent of addressable users.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
   - Bespoke SCIM `9, 28`
@@ -4803,10 +4803,10 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 ## Where to put the next dollar — sized by revenue at stake.
 
 - Strategic Bets
-  - Codebook caching `3, 70, 2.4`
-  - Multi-tenant DEKs `5, 85, 4.1`
+  - Weighting cache `3, 70, 2.4`
+  - Per-team weighting `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose codebooks `8, 80, 0.9`
+  - Per-team weighting `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -4826,8 +4826,8 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 ## How each bet moved after one quarter.
 
 - Strategic Bets
-  - Codebook caching `5, 60` `3, 78`
-  - Multi-tenant DEKs `7, 70` `5, 88`
+  - Weighting cache `5, 60` `3, 78`
+  - Per-team weighting `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -4846,14 +4846,14 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 ## Where to put the next dollar — clustered by theme.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
   - Bespoke SCIM `9, 28`
@@ -4871,10 +4871,10 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 ## Against the go/no-go thresholds.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -4890,13 +4890,13 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The codebook-tooling Magic Quadrant.
+## The framework-tooling Magic Quadrant.
 
 - Challengers
   - Legacy Inc `30, 82`
 - Leaders
   - Lattice `85, 88`
-  - Vault Corp `72, 76`
+  - Spreadsheet Corp `72, 76`
 - Niche Players
   - Boutique KMS `25, 28`
 - Visionaries
@@ -4915,10 +4915,10 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 ## Where to put the next dollar — unadorned.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`

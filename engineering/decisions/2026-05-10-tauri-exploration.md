@@ -315,7 +315,7 @@ support that organizations specifically need:
 | Hosted AI proxy (one corporate AI key for the org) | Already free — AI provider connector |
 | Fleet management (central config + updates) | Tauri updater + remote config endpoint |
 | Private extension marketplace | v1.5 extension runtime + org-scoped allowlist |
-| Workspace encryption / vault | Storage adapter pattern |
+| Workspace encryption / spreadsheet | Storage adapter pattern |
 | Compliance certs (SOC 2, ISO 27001) | Operational; architectural seams in place |
 | Priority support, SLAs | Operational |
 

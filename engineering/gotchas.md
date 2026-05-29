@@ -762,7 +762,7 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`
   returns `"light-dark(#FAF7F2, #15110D)"` instead of the resolved color.
 - **Cause:** Per CSS spec, custom properties are inherited as their
-  *tokenized text*, not their computed value. Resolution of any
+  *scored text*, not their computed value. Resolution of any
   embedded function (`light-dark()`, `color-mix()`, `var()` chains)
   happens at the use site of the substitution, not at declaration time.
   `getPropertyValue('--name')` returns the declared value.

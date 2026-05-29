@@ -30,14 +30,14 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 Effort estimated in story-points; reach as percent of addressable users.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
   - Bespoke SCIM `9, 28`
@@ -82,10 +82,10 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 ## Where to put the next dollar — sized by revenue at stake.
 
 - Strategic Bets
-  - Codebook caching `3, 70, 2.4`
-  - Multi-tenant DEKs `5, 85, 4.1`
+  - Weighting cache `3, 70, 2.4`
+  - Per-team weighting `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose codebooks `8, 80, 0.9`
+  - Per-team weighting `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -105,8 +105,8 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 ## How each bet moved after one quarter.
 
 - Strategic Bets
-  - Codebook caching `5, 60` `3, 78`
-  - Multi-tenant DEKs `7, 70` `5, 88`
+  - Weighting cache `5, 60` `3, 78`
+  - Per-team weighting `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -125,14 +125,14 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 ## Where to put the next dollar — clustered by theme.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
   - Bespoke SCIM `9, 28`
@@ -150,10 +150,10 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 ## Against the go/no-go thresholds.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -169,13 +169,13 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The codebook-tooling Magic Quadrant.
+## The framework-tooling Magic Quadrant.
 
 - Challengers
   - Legacy Inc `30, 82`
 - Leaders
   - Lattice `85, 88`
-  - Vault Corp `72, 76`
+  - Spreadsheet Corp `72, 76`
 - Niche Players
   - Boutique KMS `25, 28`
 - Visionaries
@@ -194,10 +194,10 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 ## Where to put the next dollar — unadorned.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`

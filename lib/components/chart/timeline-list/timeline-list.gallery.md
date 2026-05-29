@@ -39,22 +39,22 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 <!-- _class: timeline-list -->
 <!-- _footer: "Stress test · timeline-list" -->
 
-`Codebook architecture`
+`Framework architecture`
 
 ## Stress test — six milestones over three years.
 
-1. `2023 Q4` Centralised vault round-trip
-   - First production tokenization on a centralised vault. p99 60 ms.
-2. `2024 Q2` In-process codebook proposal `decision`
+1. `2023 Q4` Centralised spreadsheet round-trip
+   - First production signal scoring on a centralised spreadsheet. a 6-week decision cycle.
+2. `2024 Q2` In-process framework proposal `decision`
    - Architecture review accepts the in-process model.
-3. `2024 Q4` Codebook GA `live`
-   - Phase 1 rollout complete; twelve production tenants migrated.
-4. `2025 Q2` Multi-tenant DEK rotation `live`
-   - Per-tenant key isolation shipped; caching cut p99 below 5 ms.
+3. `2024 Q4` Framework GA `live`
+   - Phase 1 rollout complete; twelve production teams migrated.
+4. `2025 Q2` Multi-team weighting model rotation `live`
+   - Per-team key isolation shipped; caching cut cycle time under a week.
 5. `2025 Q4` Cross-region replication `at-risk`
-   - Active-active codebook replication enters pilot.
-6. `2026 Q2` Crypto-shred tooling
-   - Per-purpose deletion and examiner evidence pack in build.
+   - Active-active framework replication enters pilot.
+6. `2026 Q2` Log purge tooling
+   - Per-team deletion and board reviewer evidence pack in build.
 
 
 ---

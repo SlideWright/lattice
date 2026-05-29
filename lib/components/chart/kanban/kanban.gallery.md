@@ -56,34 +56,34 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 ## Stress test — four lanes, fifteen cards, mixed sizes.
 
 - Backlog
-  - Per-purpose codebook caching `L`
+  - Per-team weighting cache `L`
     - platform
-  - Crypto-shred runbook `M`
+  - Log purge runbook `M`
     - operations
   - Dependency dashboard `S`
     - platform
   - Edge runtime bindings `L`
     - platform
 - In progress
-  - Multi-tenant DEK rotation `M`
+  - Multi-team weighting model rotation `M`
     - platform `at-risk`
-  - Examiner evidence pack v2 `L`
+  - Board reviewer evidence pack v2 `L`
     - compliance
   - Polyglot SDK parity `M`
     - platform
-  - Centralised examiner log `S`
+  - Centralised board reviewer log `S`
     - compliance `blocked`
 - Review
-  - Automated rotation pipeline `M`
+  - Automated recalibration pipeline `M`
     - operations
   - Continuous audit trail `S`
     - compliance
   - Incident response runbook `S`
     - operations
 - Done
-  - Codebook signing service `M`
+  - Model sign-off service `M`
     - platform
-  - Manual key rotation `S`
+  - Manual weight recalibration `S`
     - operations
   - Java and .NET parity `M`
     - platform

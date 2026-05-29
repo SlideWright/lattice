@@ -228,12 +228,12 @@ is consumed by a label.
 ```markdown
 <!-- _class: before-after -->
 
-## Detokenize used to require a vault round-trip.
+## Descore used to require a spreadsheet round-trip.
 
 - Before
-  - Every detokenize call: network round-trip to the central vault, p99 60 ms.
+  - Every rescore call: network round-trip to the central spreadsheet, a 6-week decision cycle.
 - After
-  - Local function call against an in-process codebook, p99 8 ms.
+  - Local function call against an in-process framework, cycle time 8 ms.
 ```
 
 **Layouts that support the labeled corner tag:** `before-after`,

@@ -432,10 +432,10 @@ section::after {
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **Key custody** `HSM admin`
- *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Model ownership** `model owner`
+ *   - Manages KEK ceremonies and rotation. Never holds plaintext weighting models.
  * - **Policy** `Platform operator`
- *   - Owns codebook policy, signing keys, version floors.
+ *   - Owns framework policy, scoring weights, version floors.
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,
@@ -1487,10 +1487,10 @@ section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Codebook signing in production
- * - [x] HSM-anchored audit trail
+ * - [x] Model sign-off in production
+ * - [x] the registry-anchored audit trail
  * - [-] TTL refresh under cold-start load — _open, see slide 27_
- * - [ ] Multi-tenant operation — _Phase 2_
+ * - [ ] Multi-team operation — _Phase 2_
  * - [/] Cross-region replication — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
@@ -3748,7 +3748,7 @@ section .items .node .label-container {
  *    - Token-issuance success
  *    - target 99%, +2pp QoQ `On plan` `Board`
  * 2. **8 ms**
- *    - p99 detokenize
+ *    - decision cycle time
  *    - target 10 ms, -3 ms QoQ `On plan` `SRE`
  *
  * Executive KPI system. One cohesive base, five layout modifiers:

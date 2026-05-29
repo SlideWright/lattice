@@ -41,17 +41,17 @@ const {
 const UL_FOUR = (
   '<ul>' +
     '<li>Strategic Bets<ul>' +
-      '<li>Codebook caching <code>3, 70</code></li>' +
-      '<li>Multi-tenant DEKs <code>7, 85</code></li>' +
+      '<li>Weighting cache <code>3, 70</code></li>' +
+      '<li>Per-team weighting <code>7, 85</code></li>' +
     '</ul></li>' +
     '<li>Quick Wins<ul>' +
-      '<li>Per-purpose codebooks <code>8, 40</code></li>' +
+      '<li>Per-team weighting <code>8, 40</code></li>' +
     '</ul></li>' +
     '<li>Defer<ul>' +
       '<li>Vendor scoping <code>4, 55</code></li>' +
     '</ul></li>' +
     '<li>Time Sinks<ul>' +
-      '<li>Manual rotation <code>2, 20</code></li>' +
+      '<li>Manual recalibration <code>2, 20</code></li>' +
     '</ul></li>' +
   '</ul>'
 );

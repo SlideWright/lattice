@@ -4,7 +4,7 @@
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
-Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.
+Use to show 'who owns what' across a process, framework, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 ## When to use
 

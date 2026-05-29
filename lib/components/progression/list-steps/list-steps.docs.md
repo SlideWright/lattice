@@ -119,9 +119,9 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 ## Three tracks for the next quarter.
 
 1. Platform hardening
-   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.
+   - Per-team weighting, automated recalibration, and the log purge runbook land in this track.
 2. Compliance posture
-   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.
+   - Board pack v2 and the centralised audit log ship for the Q3 audit window.
 3. Developer surface
    - Polyglot SDK parity and the new CLI flags close out the API roadmap.
 ```

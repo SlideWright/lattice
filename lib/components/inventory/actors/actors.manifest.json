@@ -5,7 +5,7 @@
   "form": "ledger",
   "substance": "structure",
   "description": "Roster of responsibilities owned by named actors.",
-  "purpose": "Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.",
+  "purpose": "Use to show 'who owns what' across a process, framework, or org chart. Two-column layout: actor on left, responsibilities on right.",
   "slots": {
     "title": {
       "selector": "h2",

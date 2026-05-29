@@ -57,7 +57,7 @@ The system has 26 layouts and **two** modifiers (`dark` everywhere, `left` on `i
 
 Authors today work around the gap in three predictable ways:
 
-- **They overload `cards-grid` and `compare-prose`** for any mid-deck content slide. Look at any non-trivial deck (the tokenization deck on screen right now is a faithful sample): half the slides are one of these two layouts because nothing more specific exists.
+- **They overload `cards-grid` and `compare-prose`** for any mid-deck content slide. Look at any non-trivial deck (the signal scoring deck on screen right now is a faithful sample): half the slides are one of these two layouts because nothing more specific exists.
 - **They rebuild visual variations by hand** — duplicating `cards-stack` slides and tweaking one to feel "more important", or pasting `## STAGE 01` strings into `list-steps` because the layout only knows the word `STEP`.
 - **They mix presentation and prose** when a slide needs to feel different — putting `> blockquote` panels everywhere because that is the only "this matters more" primitive.
 
@@ -124,7 +124,7 @@ Each entry below is the layout, the modifiers I propose, and a one-line rational
 
 **`divider`**
 - `numbered` — auto-increments "01 / N" using a CSS counter scoped to `section.divider`. The author writes the title; the index is computed.
-- `appendix` — distinct treatment (lighter weight, `APPENDIX` label, no accent bar). Solves the user's tokenization-deck pattern (`Appendix A · Infrastructure`) without manual styling.
+- `appendix` — distinct treatment (lighter weight, `APPENDIX` label, no accent bar). Solves the user's signal scoring-deck pattern (`Appendix A · Infrastructure`) without manual styling.
 - `progress` — stamps tick marks for total sections with the current one filled. Makes "where am I in the deck" legible.
 
 **`subtopic` / `closing`**
@@ -225,7 +225,7 @@ This is the layout authors abuse most because there is no native "decision" layo
 - `three` — three-way comparison.
 - `vertical` — stack the cards vertically. For long-body comparisons where horizontal forces ellipsis.
 
-The author of the tokenization deck has eight `compare-prose` slides, every one of which is a "considered then chose" — `decision` would name that intent directly.
+The author of the signal scoring deck has eight `compare-prose` slides, every one of which is a "considered then chose" — `decision` would name that intent directly.
 
 **`compare-table`**
 - `striped` — zebra rows.
@@ -353,9 +353,9 @@ A grid: rows = workstreams, columns = phases, cells = deliverables. Authors toda
 
 | Workstream | Phase 01           | Phase 02              | Phase 03              |
 | ---------- | ------------------ | --------------------- | --------------------- |
-| Platform   | Codebook signing   | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation    | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM)  | Centralised log       | Examiner pack         |
+| Platform   | Model sign-off   | Per-team weighting     | Per-team weighting |
+| Operations | Manual recalibration    | Automated recalibration    | Log purge          |
+| Compliance | Audit trail (the registry)  | Centralised log       | Board pack         |
 ```
 
 The first column is treated as a workstream label (sticky). Phase columns get phase chrome (number badge, accent gradient progressing left-to-right). Empty cells render as a thin dash.
@@ -374,9 +374,9 @@ Like `stats`, but with trend signals. For business decks where every number has 
 1. **94%**
    - Token-issuance success — _target 99%, +2pp QoQ_
 2. **8 ms**
-   - p99 detokenize — _target 10 ms, -3 ms QoQ_
+   - decision cycle time — _target 10 ms, -3 ms QoQ_
 3. **0**
-   - Examiner findings — _target 0, flat_
+   - Board reviewer findings — _target 0, flat_
 ```
 
 Number, label, sub-line with target + trend. Trend arrows colour by direction. Modifiers: `target` (highlights gap), `trend` (sparkline placeholder).
@@ -390,14 +390,14 @@ Two halves with a big arrow between. Today authors use `compare-code before-afte
 ```markdown
 <!-- _class: before-after -->
 
-## Detokenize used to require a vault round-trip.
+## Descore used to require a spreadsheet round-trip.
 
 `Latency story · before vs after`
 
 - **Before**
-  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
+  - Every rescore call: network round-trip to the central spreadsheet, average 18 ms, a 6-week decision cycle. Spreadsheet outages cascaded into application outages.
 - **After**
-  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
+  - Descore is a local function call. cycle time 8 ms. Spreadsheet outages do not affect scored-record reads.
 ```
 
 Renders left card, large arrow, right card. Modifier `vertical` stacks them with the arrow rotated.
@@ -429,14 +429,14 @@ A list of actors with their responsibilities, formatted as role-tag chips + body
 ```markdown
 <!-- _class: actors -->
 
-## Who owns each part of the codebook lifecycle.
+## Who owns each part of the framework lifecycle.
 
-- **HSM admin** `key custody`
-  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+- **model owner** `model ownership`
+  - Manages KEK ceremonies and rotation. Never holds plaintext weighting models.
 - **Platform operator** `policy`
-  - Owns codebook policy, signing keys, version floors.
+  - Owns framework policy, scoring weights, version floors.
 - **Application team** `consumption`
-  - Holds time-bound codebooks; tokenizes/detokenizes in-process.
+  - Holds time-bound scoring models; scores/rescores in-process.
 ```
 
 Strong = role name; inline-code = role tag (chip); body = responsibility.
@@ -454,9 +454,9 @@ A list of single-line takeaways with optional reference numbers ("→ slide 14")
 
 `Section 03 · Recap`
 
-- The codebook model gets in-process latency with vault-grade key custody. → slide 8
+- The framework model gets in-process latency with spreadsheet-grade model ownership. → slide 8
 - Rotation is a version-floor increment, not a coordinated cutover. → slide 12
-- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
+- Per-team KEKs make log purge a single the registry op. → slide 18
 - Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
 - Five questions stay open until Phase 1 closes them on the record. → slide 27
 ```
@@ -493,12 +493,12 @@ Term left, definition right, two-column. Useful for spec / protocol / jargon-hea
 
 ## The vocabulary used in this deck.
 
-- **Codebook**
-  - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry.
-- **DEK**
+- **Framework**
+  - The signed envelope an SDK installs. Carries policy, wrapped weighting model, version, expiry.
+- **weighting model**
   - Data encryption key. Wrapped by a KEK; lives plaintext only in native memory.
 - **KEK**
-  - Key encryption key. Lives in the HSM, never exported.
+  - Key encryption key. Lives in the the registry, never exported.
 ```
 
 ### 3.11 `legend` — the explicit key
@@ -529,11 +529,11 @@ Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[-]`).
 
 ## Phase 1 acceptance, by item.
 
-- [x] Codebook signing in production
-- [x] HSM-anchored audit trail
+- [x] Model sign-off in production
+- [x] the registry-anchored audit trail
 - [x] One client integrated end-to-end
 - [-] TTL refresh under cold-start load — _open, see slide 27_
-- [ ] Multi-tenant operation — _Phase 2_
+- [ ] Multi-team operation — _Phase 2_
 ```
 
 States colour-mapped: ✓ pass, – warn, ☐ pending. Reuses the `--pass`/`--warn`/`--fail` palette.
@@ -567,7 +567,7 @@ The last-slide-of-section citation list. Numbered, mono, smaller font. Today aut
 ## References cited in this section.
 
 1. NIST SP 800-38G — _FF1 / FF3-1 specification_
-2. PCI-SSC Tokenization Guidelines v2.0 — _Type 1 substitution model_
+2. PCI-SSC Signal scoring Guidelines v2.0 — _Type 1 substitution model_
 3. Internal audit AUDIT-2025-Q3-014 — _vendor evaluation_
 ```
 

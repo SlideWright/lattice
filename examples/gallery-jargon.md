@@ -481,7 +481,7 @@ Three phases, four workstreams. We own the policy, the loop, and the timeline. W
 | ------------- | ------------------- | --------------------- | --------------------- |
 | Signal Intake | Connector v1        | Multi-source dedupe   | Anomaly auto-routing  |
 | Scoring       | Equal-weights model | Per-team calibration  | Per-decision profiles |
-| Decision Log  | Append-only schema  | Outcome auto-pairing  | Examiner export       |
+| Decision Log  | Append-only schema  | Outcome auto-pairing  | Board reviewer export       |
 | Adoption      | One pilot team      |                       | Org-wide enablement   |
 
 Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap since 2024. Phase 2 is ongoing.
@@ -542,7 +542,7 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 - [x] Scoring policy live across all pilot teams
 - [x] Decision Log audit trail readable by Auditor role `shipped 2026-Q1`
 - [x] One reference team running end-to-end weekly cadence `one team`
-- [-] Examiner pack auto-generation `was Phase 01 · now Phase 1b`
+- [-] Board pack auto-generation `was Phase 01 · now Phase 1b`
 - [ ] Multi-team calibration cadence `Phase 02`
 - [ ] Adoption above 90% `Phase 03`
 - [ ] Culture change `not in roadmap`
@@ -557,7 +557,7 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 `Before and after the framework`
 
 - Before
-  - Every prioritization debate started from first principles. Average close: 4 hours. p99: an entire offsite. Outcome: whatever the most senior person in the room wanted, expressed as a consensus.
+  - Every prioritization debate started from first principles. Average close: 4 hours. cycle time: an entire offsite. Outcome: whatever the most senior person in the room wanted, expressed as a consensus.
 - After
   - Decisions resolve against logged weights and prior calibration outcomes. Average close: 18 minutes. Outcome: whatever the scoring model outputs, after the weights are adjusted to reflect what the most senior person in the room wants.
 
@@ -759,7 +759,7 @@ The pilot team measured what the pilot team built.
    - Signal-classification success
    - target 99%, gap is "known issue"
 2. **18 min**
-   - p99 decision close
+   - cycle time decision close
    - target 20 min, beating target
 3. **18**
    - Decisions logged
@@ -858,7 +858,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 2. `2025 Q1` Framework proposal `decision`
    - Architecture review accepts the calibration model. Build approved. Build team is the architecture review team.
 3. `2025 Q3` Pilot `pilot`
-   - One team, one decision class, one quarter. 18 decisions logged. 340 decisions made. p99 18 min on logged decisions.
+   - One team, one decision class, one quarter. 18 decisions logged. 340 decisions made. cycle time 18 min on logged decisions.
 4. `2026 Q1` Production `live`
    - Scoring policy live. 12% adoption. Phase 02 planned for Q2.
 

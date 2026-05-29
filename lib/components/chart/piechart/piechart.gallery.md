@@ -42,7 +42,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 Wedges drawn proportionally; legend reads in author order with raw values.
 
-- Codebook platform `46%`
+- Scoring platform `46%`
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`
@@ -58,10 +58,10 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Stress test — eleven slices, long-tail distribution.
 
-- Codebook platform engineering `28%`
+- Scoring platform engineering `28%`
 - Operations and on-call runbook `16%`
 - Compliance and audit work `13%`
-- Multi-tenant DEK rotation `11%`
+- Multi-team weighting model rotation `11%`
 - SDK polyglot parity `9%`
 - Pilot and customer support `7%`
 - Documentation and gallery `5%`

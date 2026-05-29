@@ -45,9 +45,9 @@ Executive KPI system — one base, five layout modifiers.
 1. **94%**
    - Signal-classification success
    - target 99%, gap is "known issue"
-2. **18 min**
-   - p99 decision close
-   - target 20 min, beating target
+2. **6 days**
+   - Decision cycle time
+   - target 7 days, beating target
 3. **18**
    - Decisions logged
    - target 340, gap is "cultural"
@@ -61,21 +61,21 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi attention -->
 <!-- _footer: "Attention — the slipping metric leads · kpi attention" -->
 
-### Authentication · Q4 2026
+### Adoption · Q4 2026
 ## One metric below target; remediation under way.
 
 1. **94%**
-   - Token-issuance success
+   - Signals scored on time
    - target 99% · -5pp `At risk` `Board`
-2. **8 ms**
-   - p99 detokenize
-   - target 10 ms `On plan` `SRE`
+2. **6 days**
+   - Decision cycle time
+   - target 7 days `On plan` `Product`
 3. **0**
-   - Examiner findings
+   - Board findings
    - target 0 `On plan` `Audit`
 4. **3.2×**
-   - Detokenize headroom
-   - target 2× `On plan` `Platform`
+   - Scoring headroom
+   - target 2× `On plan` `Framework`
 
 
 ---
@@ -83,21 +83,21 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi ops -->
 <!-- _footer: "Ops — SLO / SLA grid · kpi ops" -->
 
-### Platform · Q4 2026
-## One latency target slipping; everything else inside SLO.
+### Framework · Q4 2026
+## One cycle-time target slipping; everything else inside SLO.
 
 1. **99.92%**
-   - API availability
-   - SLO 99.95% · -0.03pp `At risk` `SRE`
-2. **42 ms**
-   - p99 read latency
-   - SLO 50 ms · -16% headroom `On track` `SRE`
-3. **18 ms**
-   - p99 write latency
-   - SLO 15 ms · +20% `Breaching` `Platform`
+   - Scoring availability
+   - SLO 99.95% · -0.03pp `At risk` `Adoption`
+2. **5 days**
+   - Median decision cycle time
+   - SLO 7 days · -29% headroom `On track` `Adoption`
+3. **9 days**
+   - Escalated decision cycle time
+   - SLO 7 days · +29% `Breaching` `Framework`
 4. **0.04%**
-   - Error budget burn (28d)
-   - SLO 1% · 4% consumed `On track` `Reliability`
+   - Recalibration slip (28d)
+   - SLO 1% · 4% consumed `On track` `Governance`
 
 
 ---

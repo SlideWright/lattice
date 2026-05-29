@@ -41,9 +41,9 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
+| Platform   | [x] Model sign-off     | [-] Per-team weighting    | [ ] Per-team weighting |
+| Operations | [x] Manual recalibration      | [-] Automated recalibration   | [ ] Log purge          |
+| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Board pack         |
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
@@ -60,9 +60,9 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
+| Platform   | [x] Model sign-off | [-] Per-team weighting  | [ ] Per-team weighting |
+| Operations | [x] Manual recalibration  | [-] Automated recalibration | [ ] Log purge          |
+| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Board pack         |
 | SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
@@ -79,9 +79,9 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Platform   | Model sign-off     | Per-team weighting      | Per-team weighting     |
+| Operations | Manual recalibration      | Automated recalibration     | Log purge              |
+| Compliance | Audit trail          | Centralised log        | Board pack             |
 | SDK        | Java                 | .NET                   | Polyglot parity           |
 
 
@@ -96,9 +96,9 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Platform   | Model sign-off     | Per-team weighting      | Per-team weighting     |
+| Operations | Manual recalibration      | Automated recalibration     | Log purge              |
+| Compliance | Audit trail          | Centralised log        | Board pack             |
 
 
 ---

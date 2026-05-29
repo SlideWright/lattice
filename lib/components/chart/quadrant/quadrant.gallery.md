@@ -48,10 +48,10 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## Where to put the next dollar — sized by revenue at stake.
 
 - Strategic Bets
-  - Codebook caching `3, 70, 2.4`
-  - Multi-tenant DEKs `5, 85, 4.1`
+  - Weighting cache `3, 70, 2.4`
+  - Per-team weighting `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose codebooks `8, 80, 0.9`
+  - Per-team weighting `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -69,8 +69,8 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## How each bet moved after one quarter.
 
 - Strategic Bets
-  - Codebook caching `5, 60` `3, 78`
-  - Multi-tenant DEKs `7, 70` `5, 88`
+  - Weighting cache `5, 60` `3, 78`
+  - Per-team weighting `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -87,14 +87,14 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## Where to put the next dollar — clustered by theme.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
   - Bespoke SCIM `9, 28`
@@ -110,10 +110,10 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## Against the go/no-go thresholds.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -127,13 +127,13 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The codebook-tooling Magic Quadrant.
+## The framework-tooling Magic Quadrant.
 
 - Challengers
   - Legacy Inc `30, 82`
 - Leaders
   - Lattice `85, 88`
-  - Vault Corp `72, 76`
+  - Spreadsheet Corp `72, 76`
 - Niche Players
   - Boutique KMS `25, 28`
 - Visionaries
@@ -150,10 +150,10 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## Where to put the next dollar — unadorned.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Weighting cache `3, 70`
+  - Per-team weighting `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
@@ -171,17 +171,17 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 ## Stress test — fourteen initiatives, dense labels.
 
 - Strategic Bets
-  - Codebook caching layer `3, 72`
-  - Multi-tenant DEK rotation `5, 85`
+  - Weighting cache layer `3, 72`
+  - Multi-team weighting model rotation `5, 85`
   - Cross-region replication `4, 78`
   - Continuous audit trail `2, 66`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-decision weighting `8, 80`
   - Snapshot exports `9, 55`
   - Dependency dashboard `7, 62`
 - Defer
   - Vendor security scoping `2, 30`
-  - Manual key rotation `1, 22`
+  - Manual weight recalibration `1, 22`
   - Legacy SDK shim `3, 14`
 - Time Sinks
   - Custom audit log UI `7, 18`

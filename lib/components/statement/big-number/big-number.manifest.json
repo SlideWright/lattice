@@ -37,7 +37,7 @@
     },
     {
       "title": "Eyebrow names the metric class",
-      "body": "The inline-code eyebrow contextualizes the number (\"Audience recall\", \"Q3 revenue\", \"Latency p99\"). The number is the value; the eyebrow is the label."
+      "body": "The inline-code eyebrow contextualizes the number (\"Audience recall\", \"Q3 revenue\", \"Latency cycle time\"). The number is the value; the eyebrow is the label."
     }
   ],
   "antiPatterns": [

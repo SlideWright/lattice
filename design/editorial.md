@@ -10,9 +10,9 @@ Every H2 (`## ...`) is a complete declarative sentence. Not a noun phrase,
 not a fragment, not a question.
 
 ```md
-## The codebook is signed by the control plane.   ← yes
-## Codebook signing                                ← no
-## How does the codebook get signed?               ← no
+## The framework is signed by the control plane.   ← yes
+## Model sign-off                                ← no
+## How does the framework get signed?               ← no
 ```
 
 The reason: a deck is read at speed. A reader scans the H2 to know what
@@ -20,8 +20,8 @@ the slide is *about*. A noun phrase makes them work. A complete sentence
 delivers the slide's claim.
 
 A complete sentence in the H2 also forces the writer to figure out what
-the slide is actually saying. "Codebook signing" doesn't commit to
-anything. "The codebook is signed by the control plane" makes a claim,
+the slide is actually saying. "Model sign-off" doesn't commit to
+anything. "The framework is signed by the control plane" makes a claim,
 and now the body has to support it.
 
 ## Speak-first writing
@@ -57,7 +57,7 @@ body delivers the support. Don't restate the claim in the body opening.
 ```md
 ## The audit log lives outside the platform's control.
 
-Every DEK unwrap operation is logged by CloudHSM itself, in a stream
+Every weighting model unwrap operation is logged by Cloudthe registry itself, in a stream
 the platform cannot write to. A compromised application cannot forge
 or erase the trail.
 ```
@@ -70,9 +70,9 @@ claim with the specific mechanism.
 
 When you have a choice, prefer the concrete noun.
 
-- "AWS CloudHSM" beats "the key management infrastructure"
+- "AWS Cloudthe registry" beats "the key management infrastructure"
 - "Twelve weeks" beats "a meaningful timeline"
-- "The control plane signs the codebook" beats "Authorization happens
+- "The control plane signs the framework" beats "Authorization happens
   at the control-plane layer"
 
 Concrete nouns are faster to read, easier to remember, and harder to
@@ -87,13 +87,13 @@ Most slide prose should be active voice with the actor named:
 - "Procurement files the request" beats "A request is filed"
 
 The exception is when the actor is genuinely irrelevant (passive: "The
-codebook is signed before issuance" — fine if the next sentence names
-who) or when the verb is the focus (passive: "The DEK is zeroed on
+framework is signed before issuance" — fine if the next sentence names
+who) or when the verb is the focus (passive: "The weighting model is zeroed on
 close" — emphasizes the zeroing, not the zeroer).
 
-Named actors also make role-based prose work. "The HSM admin manages
+Named actors also make role-based prose work. "The model owner manages
 KEK lifecycle. The platform operator manages policy. The application
-holds time-bound codebooks." Three sentences, three actors, clear
+holds time-bound scoring models." Three sentences, three actors, clear
 boundaries — the structure delivers the access-control story without
 any extra explanation.
 
@@ -116,13 +116,13 @@ noun phrases and verb phrases.
 
 Good card title sets:
 
-- "Layer 1 · HSM audit" / "Layer 2 · Control plane audit" / "Layer 3 · SDK local audit"
+- "Layer 1 · the registry audit" / "Layer 2 · Control plane audit" / "Layer 3 · SDK local audit"
 - "Strategic Bets" / "Quick Wins" / "Defer" / "Time Sinks"
 - "What works" / "What requires tuning"
 
 Bad card title sets:
 
-- "Layer 1 · HSM audit" / "Validate the application" / "Bonus: SDK"
+- "Layer 1 · the registry audit" / "Validate the application" / "Bonus: SDK"
 
 Parallel structure helps the reader scan the cards as a set.
 
