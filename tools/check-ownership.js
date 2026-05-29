@@ -62,6 +62,12 @@ const { TRANSFORMERS } = require('../lib/transformers/registry');
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
 const THEMES_DIR = path.join(ROOT, 'themes');
+// Layout-specific variants are styled in two places: a component's own
+// <name>.styles.css, AND the shared base.modifiers.css (where the cross-
+// cutting modifier block lives — e.g. obligation-matrix .pills/.lanes,
+// split-list/cards-stack .mirror). checkVariantDeclaration scans both so a
+// variant defined only in base.modifiers can't go undeclared.
+const BASE_MODIFIERS_CSS = path.join(ROOT, 'lib', 'base', 'base.modifiers.css');
 
 // ── Allow-lists: declared, intentional shared shape ──────────────────────
 
@@ -328,6 +334,9 @@ function transformModifierTokens(src) {
  * case. False positives are escape-hatched via VARIANT_DECL_IGNORE.
  */
 function checkVariantDeclaration(manifests, errors) {
+  const baseModifiersCss = fs.existsSync(BASE_MODIFIERS_CSS)
+    ? fs.readFileSync(BASE_MODIFIERS_CSS, 'utf8')
+    : '';
   for (const m of manifests) {
     const declared = new Set(Array.isArray(m.variants) ? m.variants : []);
     const ignore = VARIANT_DECL_IGNORE.get(m.name) || new Set();
@@ -338,6 +347,12 @@ function checkVariantDeclaration(manifests, errors) {
       for (const t of cssRootModifierTokens(fs.readFileSync(cssPath, 'utf8'), m.name)) {
         implemented.add(t);
       }
+    }
+    // Also scan the shared modifier stylesheet — many layout variants
+    // (e.g. obligation-matrix .pills/.lanes) are defined there, not in the
+    // component's own CSS, and would otherwise escape the check.
+    for (const t of cssRootModifierTokens(baseModifiersCss, m.name)) {
+      implemented.add(t);
     }
     const txPath = componentTransformPath(m);
     if (txPath) {

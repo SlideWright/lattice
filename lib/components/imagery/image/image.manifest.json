@@ -10,8 +10,7 @@
     "full",
     "contain",
     "museum",
-    "mirror",
-    "left"
+    "mirror"
   ],
   "slots": {
     "image": {

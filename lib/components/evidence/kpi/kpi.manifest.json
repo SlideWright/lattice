@@ -12,8 +12,7 @@
     "ops",
     "compliance",
     "trajectory",
-    "spotlight",
-    "briefing"
+    "spotlight"
   ],
   "slots": {
     "title": {
