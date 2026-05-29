@@ -18,20 +18,20 @@ Options scored against criteria as a verdict matrix.
 <!-- _class: verdict-grid -->
 <!-- _footer: "Default · verdict-grid" -->
 
-## Which option meets the criteria.
+## Which data platform clears the bar.
 
-- **Folder shape.**
-  - [x] Self-contained per component
-  - [x] Familiar pattern from other libraries
-  - [x] Tests can live with their component
-- **Flat files.**
-  - [x] Less restructuring upfront
-  - [-] Per-component grouping by filename only
-  - [ ] No room for transform.js or example.md
-- **Hybrid.**
-  - [-] Manifest stays flat, other files in subfolder
-  - [ ] Splits the component across two locations
-  - [ ] Defeats the self-contained goal
+- **Vendor North.**
+  - [x] SOC 2 Type II, no exceptions
+  - [x] Data stays in-region
+  - [-] Export documented but support-gated
+- **Vendor West.**
+  - [x] SOC 2 Type II, no exceptions
+  - [ ] Residency limited to US regions
+  - [x] Self-serve export
+- **Build in-house.**
+  - [x] Full control of schema and roadmap
+  - [-] Residency achievable, not yet built
+  - [ ] Three engineer-quarters to parity
 
 
 ---
@@ -39,20 +39,20 @@ Options scored against criteria as a verdict matrix.
 <!-- _class: verdict-grid dark -->
 <!-- _footer: "Composition: dark · verdict-grid dark" -->
 
-## Which option meets the criteria.
+## Which data platform clears the bar.
 
-- **Folder shape.**
-  - [x] Self-contained per component
-  - [x] Familiar pattern from other libraries
-  - [x] Tests can live with their component
-- **Flat files.**
-  - [x] Less restructuring upfront
-  - [-] Per-component grouping by filename only
-  - [ ] No room for transform.js or example.md
-- **Hybrid.**
-  - [-] Manifest stays flat, other files in subfolder
-  - [ ] Splits the component across two locations
-  - [ ] Defeats the self-contained goal
+- **Vendor North.**
+  - [x] SOC 2 Type II, no exceptions
+  - [x] Data stays in-region
+  - [-] Export documented but support-gated
+- **Vendor West.**
+  - [x] SOC 2 Type II, no exceptions
+  - [ ] Residency limited to US regions
+  - [x] Self-serve export
+- **Build in-house.**
+  - [x] Full control of schema and roadmap
+  - [-] Residency achievable, not yet built
+  - [ ] Three engineer-quarters to parity
 
 
 ---
@@ -60,20 +60,20 @@ Options scored against criteria as a verdict matrix.
 <!-- _class: verdict-grid compact -->
 <!-- _footer: "Composition: compact · verdict-grid compact" -->
 
-## Which option meets the criteria.
+## Which data platform clears the bar.
 
-- **Folder shape.**
-  - [x] Self-contained per component
-  - [x] Familiar pattern from other libraries
-  - [x] Tests can live with their component
-- **Flat files.**
-  - [x] Less restructuring upfront
-  - [-] Per-component grouping by filename only
-  - [ ] No room for transform.js or example.md
-- **Hybrid.**
-  - [-] Manifest stays flat, other files in subfolder
-  - [ ] Splits the component across two locations
-  - [ ] Defeats the self-contained goal
+- **Vendor North.**
+  - [x] SOC 2 Type II, no exceptions
+  - [x] Data stays in-region
+  - [-] Export documented but support-gated
+- **Vendor West.**
+  - [x] SOC 2 Type II, no exceptions
+  - [ ] Residency limited to US regions
+  - [x] Self-serve export
+- **Build in-house.**
+  - [x] Full control of schema and roadmap
+  - [-] Residency achievable, not yet built
+  - [ ] Three engineer-quarters to parity
 
 
 ---
@@ -81,20 +81,20 @@ Options scored against criteria as a verdict matrix.
 <!-- _class: verdict-grid accent -->
 <!-- _footer: "Composition: accent · verdict-grid accent" -->
 
-## Which option meets the criteria.
+## Which data platform clears the bar.
 
-- **Folder shape.**
-  - [x] Self-contained per component
-  - [x] Familiar pattern from other libraries
-  - [x] Tests can live with their component
-- **Flat files.**
-  - [x] Less restructuring upfront
-  - [-] Per-component grouping by filename only
-  - [ ] No room for transform.js or example.md
-- **Hybrid.**
-  - [-] Manifest stays flat, other files in subfolder
-  - [ ] Splits the component across two locations
-  - [ ] Defeats the self-contained goal
+- **Vendor North.**
+  - [x] SOC 2 Type II, no exceptions
+  - [x] Data stays in-region
+  - [-] Export documented but support-gated
+- **Vendor West.**
+  - [x] SOC 2 Type II, no exceptions
+  - [ ] Residency limited to US regions
+  - [x] Self-serve export
+- **Build in-house.**
+  - [x] Full control of schema and roadmap
+  - [-] Residency achievable, not yet built
+  - [ ] Three engineer-quarters to parity
 
 
 ---

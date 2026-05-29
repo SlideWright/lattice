@@ -11,16 +11,13 @@ Diagram — graph-substance network visuals (external renderer).
 
 <!-- _class: diagram -->
 
-## How a Lattice slide goes from markdown to PDF.
+## How a signal moves from input to decision.
 
 ```mermaid
 flowchart LR
-  A[deck.md] --> B[lattice-emulator.js]
-  B --> C{has mermaid?}
-  C -->|yes| D[mmdc → inline SVG]
-  C -->|no| E[parse + process]
-  D --> E
-  E --> F[HTML]
-  F --> G[Puppeteer print]
-  G --> H[deck.pdf]
+  A["Raw signals"] --> B["Classify"]
+  B --> C["Score & weight"]
+  C --> D["Decision log"]
+  D --> E["Calibration"]
+  E -.->|"adjust weights"| C
 ```

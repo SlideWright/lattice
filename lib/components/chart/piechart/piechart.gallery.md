@@ -22,7 +22,7 @@ Pie or donut chart with legend — proportional wedges.
 
 ## Where the engineering quarter went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
 
 - Codebook platform `46%`
 - Operations runbook `22%`
@@ -80,7 +80,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Where the engineering quarter went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
 
 - Codebook platform `46%`
 - Operations runbook `22%`
@@ -98,7 +98,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Where the engineering quarter went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
 
 - Codebook platform `46%`
 - Operations runbook `22%`
@@ -116,7 +116,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Where the engineering quarter went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
 
 - Codebook platform `46%`
 - Operations runbook `22%`

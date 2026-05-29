@@ -22,7 +22,7 @@ Date-stamped event list — spine with date pills, status pills, and body.
 
 ## How the codebook architecture arrived in production.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
+Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
 
 1. `2024 Q3` Vault round-trip
    - First production tokenization shipped on a centralised vault. p99 60 ms.
@@ -66,7 +66,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## How the codebook architecture arrived in production.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
+Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
 
 1. `2024 Q3` Vault round-trip
    - First production tokenization shipped on a centralised vault. p99 60 ms.
@@ -87,7 +87,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## How the codebook architecture arrived in production.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
+Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
 
 1. `2024 Q3` Vault round-trip
    - First production tokenization shipped on a centralised vault. p99 60 ms.
@@ -108,7 +108,7 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 ## How the codebook architecture arrived in production.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
+Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
 
 1. `2024 Q3` Vault round-trip
    - First production tokenization shipped on a centralised vault. p99 60 ms.

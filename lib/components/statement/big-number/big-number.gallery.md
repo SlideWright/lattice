@@ -18,10 +18,10 @@ Single oversized number as the focal claim.
 <!-- _class: big-number -->
 <!-- _footer: "Default · big-number" -->
 
-`Audience recall`
+`Net new ARR · FY26 through Q3`
 
-- 92%
-  - of the audience remembers a single number from a deck. Make it count.
+- $48M
+  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
 
 
 ---
@@ -29,10 +29,10 @@ Single oversized number as the focal claim.
 <!-- _class: big-number dark -->
 <!-- _footer: "Composition: dark · big-number dark" -->
 
-`Audience recall`
+`Net new ARR · FY26 through Q3`
 
-- 92%
-  - of the audience remembers a single number from a deck. Make it count.
+- $48M
+  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
 
 
 ---
@@ -40,10 +40,10 @@ Single oversized number as the focal claim.
 <!-- _class: big-number compact -->
 <!-- _footer: "Composition: compact · big-number compact" -->
 
-`Audience recall`
+`Net new ARR · FY26 through Q3`
 
-- 92%
-  - of the audience remembers a single number from a deck. Make it count.
+- $48M
+  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
 
 
 ---
@@ -51,10 +51,10 @@ Single oversized number as the focal claim.
 <!-- _class: big-number accent -->
 <!-- _footer: "Composition: accent · big-number accent" -->
 
-`Audience recall`
+`Net new ARR · FY26 through Q3`
 
-- 92%
-  - of the audience remembers a single number from a deck. Make it count.
+- $48M
+  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
 
 
 ---

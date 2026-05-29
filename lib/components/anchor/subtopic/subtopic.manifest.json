@@ -23,7 +23,7 @@
   },
   "skeleton": "<!-- _class: subtopic -->\n\n`Topic family`\n\n## Sub-topic name.\n",
   "anatomyBlock": "subtopic-bookend",
-  "sample": "<!-- _class: subtopic -->\n\n`Anchor family · light divider`\n\n## Subtopic introduces a specific topic within a section.\n",
+  "sample": "<!-- _class: subtopic -->\n\n`The Framework · Component 02`\n\n## Before we can score a signal, we have to agree on what one is.\n",
   "whenToUse": [
     {
       "title": "Between divider and content",

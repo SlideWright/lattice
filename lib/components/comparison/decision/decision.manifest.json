@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: decision -->\n\n## What we are doing.\n\n- **Chosen path.** One-line rationale for the decision.\n- **Rejected option.** One-line rationale for why this didn't fit.\n",
   "anatomyBlock": "decision",
-  "sample": "<!-- _class: decision -->\n\n## What we are doing.\n\n- Chosen path.\n  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.\n- Rejected option.\n  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.\n",
+  "sample": "<!-- _class: decision -->\n\n## Buy the platform; build the differentiation.\n\n- Buy and configure.\n  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.\n- Build in-house.\n  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.\n",
   "whenToUse": [
     {
       "title": "Land the verdict",

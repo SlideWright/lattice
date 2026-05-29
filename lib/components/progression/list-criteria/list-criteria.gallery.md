@@ -18,18 +18,18 @@ Numbered criteria list — each requirement is a row with rationale.
 <!-- _class: list-criteria -->
 <!-- _footer: "Default · list-criteria" -->
 
-## What every component manifest must satisfy.
+## What a vendor must clear before procurement signs.
 
-1. **Stable name**
-   - Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample**
-   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **SOC 2 Type II**
+   - A current report with no exceptions in the security or availability criteria.
+2. **Data residency**
+   - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
+3. **Exit guarantee**
+   - Full data export in a documented format, available without opening a support ticket.
+4. **Breach notification**
+   - A 72-hour notice obligation written into the contract, not the marketing page.
+5. **Uptime history**
+   - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
 ---
@@ -37,18 +37,18 @@ Numbered criteria list — each requirement is a row with rationale.
 <!-- _class: list-criteria dark -->
 <!-- _footer: "Composition: dark · list-criteria dark" -->
 
-## What every component manifest must satisfy.
+## What a vendor must clear before procurement signs.
 
-1. **Stable name**
-   - Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample**
-   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **SOC 2 Type II**
+   - A current report with no exceptions in the security or availability criteria.
+2. **Data residency**
+   - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
+3. **Exit guarantee**
+   - Full data export in a documented format, available without opening a support ticket.
+4. **Breach notification**
+   - A 72-hour notice obligation written into the contract, not the marketing page.
+5. **Uptime history**
+   - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
 ---
@@ -56,18 +56,18 @@ Numbered criteria list — each requirement is a row with rationale.
 <!-- _class: list-criteria compact -->
 <!-- _footer: "Composition: compact · list-criteria compact" -->
 
-## What every component manifest must satisfy.
+## What a vendor must clear before procurement signs.
 
-1. **Stable name**
-   - Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample**
-   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **SOC 2 Type II**
+   - A current report with no exceptions in the security or availability criteria.
+2. **Data residency**
+   - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
+3. **Exit guarantee**
+   - Full data export in a documented format, available without opening a support ticket.
+4. **Breach notification**
+   - A 72-hour notice obligation written into the contract, not the marketing page.
+5. **Uptime history**
+   - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
 ---
@@ -75,18 +75,18 @@ Numbered criteria list — each requirement is a row with rationale.
 <!-- _class: list-criteria accent -->
 <!-- _footer: "Composition: accent · list-criteria accent" -->
 
-## What every component manifest must satisfy.
+## What a vendor must clear before procurement signs.
 
-1. **Stable name**
-   - Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample**
-   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **SOC 2 Type II**
+   - A current report with no exceptions in the security or availability criteria.
+2. **Data residency**
+   - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
+3. **Exit guarantee**
+   - Full data export in a documented format, available without opening a support ticket.
+4. **Breach notification**
+   - A 72-hour notice obligation written into the contract, not the marketing page.
+5. **Uptime history**
+   - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
 ---

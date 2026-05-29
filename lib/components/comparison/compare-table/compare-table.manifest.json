@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: compare-table -->\n\n## Heading framing the comparison.\n\n| Criterion | Option A | Option B | Option C |\n| --- | --- | --- | --- |\n| First criterion | Value | Value | Value |\n| Second criterion | Value | Value | Value |\n| Third criterion | Value | Value | Value |\n",
   "anatomyBlock": "T22-compare-table",
-  "sample": "<!-- _class: compare-table -->\n\n## Where the four substance contracts come from.\n\n| Substance | Author writes | Renderer | Output |\n| --- | --- | --- | --- |\n| prose | headings, paragraphs, lists | Marp markdown → semantic HTML | DOM |\n| structure | nested lists with conventions | lib/*.js post-processor | DOM |\n| series | tabular DSL (axes + datapoints) | chart-family kernel | SVG |\n| graph | external graph language | external CLI (mmdc, future d2) | SVG |\n",
+  "sample": "<!-- _class: compare-table -->\n\n## How the three encryption models trade off.\n\n| Model | Latency p99 | Blast radius | Key rotation |\n| --- | --- | --- | --- |\n| Central vault | 60 ms | Every tenant | Offline window |\n| In-process codebook | < 5 ms | One tenant | Online |\n| Client-side envelope | < 2 ms | One record | Manual, per client |\n",
   "whenToUse": [
     {
       "title": "Wider than compare-prose",

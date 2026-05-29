@@ -27,7 +27,7 @@
   },
   "skeleton": "<!-- _class: diagram -->\n\n## How signals move from input to decision.\n\n```mermaid\nflowchart LR\n  A[Input] --> B[Process]\n  B --> C{Decision}\n  C -->|yes| D[Path A]\n  C -->|no| E[Path B]\n```\n",
   "anatomyBlock": "diagram-canvas",
-  "sample": "<!-- _class: diagram -->\n\n## How a Lattice slide goes from markdown to PDF.\n\n```mermaid\nflowchart LR\n  A[deck.md] --> B[lattice-emulator.js]\n  B --> C{has mermaid?}\n  C -->|yes| D[mmdc → inline SVG]\n  C -->|no| E[parse + process]\n  D --> E\n  E --> F[HTML]\n  F --> G[Puppeteer print]\n  G --> H[deck.pdf]\n```\n",
+  "sample": "<!-- _class: diagram -->\n\n## How a signal moves from input to decision.\n\n```mermaid\nflowchart LR\n  A[\"Raw signals\"] --> B[\"Classify\"]\n  B --> C[\"Score & weight\"]\n  C --> D[\"Decision log\"]\n  D --> E[\"Calibration\"]\n  E -.->|\"adjust weights\"| C\n```\n",
   "whenToUse": [
     {
       "title": "Relational structure is the message",

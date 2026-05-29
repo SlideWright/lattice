@@ -18,18 +18,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 -->
 <!-- _footer: "Default · matrix-2x2" -->
 
-## Where each component substance lives.
+## Where the H2 bets land on effort and impact.
 
-- **Author-driven · DOM output.**
-  - prose — headings + paragraphs
-  - structure — nested lists
-- **Author-driven · SVG output.**
-  - series — tabular DSL
-  - graph — external language
-- **Data-driven · DOM output.**
-  - (Lattice does not target this cell)
-- **Data-driven · SVG output.**
-  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+- **High impact · Low effort.**
+  - Automated key rotation
+  - Examiner audit pack
+- **High impact · High effort.**
+  - Multi-tenant codebooks
+  - Polyglot SDK parity
+- **Low impact · Low effort.**
+  - Status-page polish
+  - Dependency dashboard
+- **Low impact · High effort.**
+  - Bespoke per-tenant audit UI
+  - Custom SCIM connector
 
 
 ---
@@ -37,18 +39,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 dark -->
 <!-- _footer: "Composition: dark · matrix-2x2 dark" -->
 
-## Where each component substance lives.
+## Where the H2 bets land on effort and impact.
 
-- **Author-driven · DOM output.**
-  - prose — headings + paragraphs
-  - structure — nested lists
-- **Author-driven · SVG output.**
-  - series — tabular DSL
-  - graph — external language
-- **Data-driven · DOM output.**
-  - (Lattice does not target this cell)
-- **Data-driven · SVG output.**
-  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+- **High impact · Low effort.**
+  - Automated key rotation
+  - Examiner audit pack
+- **High impact · High effort.**
+  - Multi-tenant codebooks
+  - Polyglot SDK parity
+- **Low impact · Low effort.**
+  - Status-page polish
+  - Dependency dashboard
+- **Low impact · High effort.**
+  - Bespoke per-tenant audit UI
+  - Custom SCIM connector
 
 
 ---
@@ -56,18 +60,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 compact -->
 <!-- _footer: "Composition: compact · matrix-2x2 compact" -->
 
-## Where each component substance lives.
+## Where the H2 bets land on effort and impact.
 
-- **Author-driven · DOM output.**
-  - prose — headings + paragraphs
-  - structure — nested lists
-- **Author-driven · SVG output.**
-  - series — tabular DSL
-  - graph — external language
-- **Data-driven · DOM output.**
-  - (Lattice does not target this cell)
-- **Data-driven · SVG output.**
-  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+- **High impact · Low effort.**
+  - Automated key rotation
+  - Examiner audit pack
+- **High impact · High effort.**
+  - Multi-tenant codebooks
+  - Polyglot SDK parity
+- **Low impact · Low effort.**
+  - Status-page polish
+  - Dependency dashboard
+- **Low impact · High effort.**
+  - Bespoke per-tenant audit UI
+  - Custom SCIM connector
 
 
 ---
@@ -75,18 +81,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 accent -->
 <!-- _footer: "Composition: accent · matrix-2x2 accent" -->
 
-## Where each component substance lives.
+## Where the H2 bets land on effort and impact.
 
-- **Author-driven · DOM output.**
-  - prose — headings + paragraphs
-  - structure — nested lists
-- **Author-driven · SVG output.**
-  - series — tabular DSL
-  - graph — external language
-- **Data-driven · DOM output.**
-  - (Lattice does not target this cell)
-- **Data-driven · SVG output.**
-  - chart-family kernels — radar, quadrant, piechart, gantt, kanban, progress, timeline-list
+- **High impact · Low effort.**
+  - Automated key rotation
+  - Examiner audit pack
+- **High impact · High effort.**
+  - Multi-tenant codebooks
+  - Polyglot SDK parity
+- **Low impact · Low effort.**
+  - Status-page polish
+  - Dependency dashboard
+- **Low impact · High effort.**
+  - Bespoke per-tenant audit UI
+  - Custom SCIM connector
 
 
 ---

@@ -18,12 +18,12 @@ Two cards side-by-side, co-equal.
 <!-- _class: cards-side -->
 <!-- _footer: "Default · cards-side" -->
 
-## Two cards, equal weight, side-by-side.
+## Two ways into the European market.
 
-- An explicit pair.
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
-- Different from compare-prose.
-  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+- Direct sales motion.
+  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
+- Channel partnership.
+  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 
 ---
@@ -44,12 +44,12 @@ Two cards side-by-side, co-equal.
 <!-- _class: cards-side dark -->
 <!-- _footer: "Composition: dark · cards-side dark" -->
 
-## Two cards, equal weight, side-by-side.
+## Two ways into the European market.
 
-- An explicit pair.
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
-- Different from compare-prose.
-  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+- Direct sales motion.
+  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
+- Channel partnership.
+  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 
 ---
@@ -57,12 +57,12 @@ Two cards side-by-side, co-equal.
 <!-- _class: cards-side compact -->
 <!-- _footer: "Composition: compact · cards-side compact" -->
 
-## Two cards, equal weight, side-by-side.
+## Two ways into the European market.
 
-- An explicit pair.
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
-- Different from compare-prose.
-  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+- Direct sales motion.
+  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
+- Channel partnership.
+  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 
 ---
@@ -70,12 +70,12 @@ Two cards side-by-side, co-equal.
 <!-- _class: cards-side accent -->
 <!-- _footer: "Composition: accent · cards-side accent" -->
 
-## Two cards, equal weight, side-by-side.
+## Two ways into the European market.
 
-- An explicit pair.
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
-- Different from compare-prose.
-  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+- Direct sales motion.
+  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
+- Channel partnership.
+  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 
 ---

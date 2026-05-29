@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
   "anatomyBlock": "timeline",
-  "sample": "<!-- _class: timeline -->\n\n## How a deck moves from draft to share.\n\n1. **Draft**\n   - *Author writes markdown with the appropriate `_class` directives.*\n2. **Build**\n   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*\n3. **Review**\n   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*\n4. **Ship**\n   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*\n",
+  "sample": "<!-- _class: timeline -->\n\n## From first pilot to general availability.\n\n1. **Pilot**\n   - *Four product teams run the framework for a quarter against a shared baseline.*\n2. **Calibrate**\n   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*\n3. **Roll out**\n   - *Every product team onboards and the weekly signal review joins the operating rhythm.*\n4. **GA**\n   - *The framework leaves pilot status and ships as the default for new initiatives.*\n",
   "whenToUse": [
     {
       "title": "Short labels on a horizontal axis",

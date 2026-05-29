@@ -30,7 +30,7 @@
   },
   "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
   "anatomyBlock": "list-tabular",
-  "sample": "<!-- _class: list-tabular -->\n\n## The four substance contracts a component plugs into.\n\n1. Prose\n   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.\n   - _CSS-only; no post-processor required_\n2. Structure\n   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.\n   - _Per-component transform.js in lib/components_\n3. Series\n   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.\n   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_\n4. Graph\n   - External graph language (Mermaid today; D2 or PlantUML in the future).\n   - _External CLI; palette injected at build time_\n",
+  "sample": "<!-- _class: list-tabular -->\n\n## The four workstreams carrying the H2 platform plan.\n\n1. Platform\n   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.\n   - _Two engineers · ships Q3_\n2. Operations\n   - Automated rotation and crypto-shred, retiring the manual maintenance window.\n   - _One engineer · ships Q3_\n3. Compliance\n   - Centralised audit log and the examiner-ready export pack.\n   - _One engineer · ships Q4_\n4. SDK\n   - Polyglot parity so every client team adopts the same path.\n   - _Contractor · ships Q4_\n",
   "whenToUse": [
     {
       "title": "Compact reference rows",

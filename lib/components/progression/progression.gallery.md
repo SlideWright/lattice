@@ -28,39 +28,39 @@ Progression — ordered movement through stages or time.
 
 <!-- _class: list-criteria -->
 
-## What every component manifest must satisfy.
+## What a vendor must clear before procurement signs.
 
-1. **Stable name**
-   - Kebab-case, matching the `_class` directive authors type when invoking the component.
-2. **Function coordinate**
-   - One of seven families per the four-layer model: anchor, statement, inventory, comparison, progression, evidence, imagery.
-3. **Form coordinate**
-   - One of eleven spatial shapes: bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split.
-4. **Substance coordinate**
-   - One of four plugin contracts: prose, structure, series, graph (or mixed for panel-form components).
-5. **Skeleton plus sample**
-   - Skeleton scaffolds blank slides for the new-slide CLI; sample demonstrates the component substantively for the gallery.
+1. **SOC 2 Type II**
+   - A current report with no exceptions in the security or availability criteria.
+2. **Data residency**
+   - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
+3. **Exit guarantee**
+   - Full data export in a documented format, available without opening a support ticket.
+4. **Breach notification**
+   - A 72-hour notice obligation written into the contract, not the marketing page.
+5. **Uptime history**
+   - Twelve months of published status at 99.9% or better, verifiable independently.
 
 ---
 
 <!-- _class: list-steps -->
 
-## How to add a new component to Lattice.
+## What happens in the first hour of an incident.
 
-1. Scaffold the folder
-   - Create `lib/components/<name>/` with a manifest declaring name, function, form, substance, slots, and skeleton.
-2. Author the styles
-   - Scope the CSS to the section class. Use palette tokens — no hex literals in layout rules.
-3. Add a transform if needed
-   - Substance `structure` or `series` ships a transform module wired into all three render paths.
-4. Demo and document
-   - Author `<name>.example.md` and enrich the manifest with sample, whenToUse, antiPatterns, and related. The generator emits the docs and gallery sidecars.
+1. Declare and page
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+2. Assign a commander
+   - One person owns coordination and communication. They direct the response — they do not debug it.
+3. Stop the bleeding
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+4. Communicate on a clock
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
 
 ---
 
 <!-- _class: roadmap -->
 
-`Layout · roadmap`
+`H2 2026 · Platform plan`
 
 ## What ships in each phase, by workstream.
 
@@ -70,8 +70,6 @@ Progression — ordered movement through stages or time.
 | Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
 | Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
-
-State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 
 ---
 
@@ -96,13 +94,13 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 <!-- _class: timeline -->
 
-## How a deck moves from draft to share.
+## From first pilot to general availability.
 
-1. **Draft**
-   - *Author writes markdown with the appropriate `_class` directives.*
-2. **Build**
-   - *`npm run build:<deck>` renders HTML then PDF via Puppeteer.*
-3. **Review**
-   - *Reviewer opens the raw PDF link; the per-feature deck shows the change in context.*
-4. **Ship**
-   - *Merge the PR; CI rebuilds against main and refreshes the gallery.*
+1. **Pilot**
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. **Calibrate**
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. **Roll out**
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. **GA**
+   - *The framework leaves pilot status and ships as the default for new initiatives.*

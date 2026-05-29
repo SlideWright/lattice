@@ -18,16 +18,16 @@ Featured card + sub-grid — one prominent item with supporting cards.
 <!-- _class: featured -->
 <!-- _footer: "Default · featured" -->
 
-## Applying the criteria, here is where the evidence points.
+## Where the next dollar of engineering goes.
 
-- Self-contained component folders.
-  - One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.
-- Bundler concatenates CSS at build time.
-  - Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
-- Manifests are the single source of truth.
-  - Scaffolder, snippets, this gallery, and docs all read from the same JSON.
-- Tests stay scoped.
-  - One test file per component under the components test path, runnable as a scoped npm script.
+- Multi-tenant codebooks.
+  - The flagship bet for H2. Drops tokenization latency below 5 ms, scopes any outage to a single tenant, and unblocks the three enterprise deals waiting on a regional-isolation guarantee. Two engineer-quarters, shipping in Q3.
+- Automated key rotation.
+  - Retires the four-hour maintenance window. One quarter.
+- Crypto-shred deletion.
+  - Meets the erasure obligation by destroying keys, not hunting records. One quarter.
+- Examiner audit pack.
+  - Turns a two-week evidence pull into a one-click export. Half a quarter.
 
 
 ---
@@ -52,16 +52,16 @@ Featured card + sub-grid — one prominent item with supporting cards.
 <!-- _class: featured dark -->
 <!-- _footer: "Composition: dark · featured dark" -->
 
-## Applying the criteria, here is where the evidence points.
+## Where the next dollar of engineering goes.
 
-- Self-contained component folders.
-  - One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.
-- Bundler concatenates CSS at build time.
-  - Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
-- Manifests are the single source of truth.
-  - Scaffolder, snippets, this gallery, and docs all read from the same JSON.
-- Tests stay scoped.
-  - One test file per component under the components test path, runnable as a scoped npm script.
+- Multi-tenant codebooks.
+  - The flagship bet for H2. Drops tokenization latency below 5 ms, scopes any outage to a single tenant, and unblocks the three enterprise deals waiting on a regional-isolation guarantee. Two engineer-quarters, shipping in Q3.
+- Automated key rotation.
+  - Retires the four-hour maintenance window. One quarter.
+- Crypto-shred deletion.
+  - Meets the erasure obligation by destroying keys, not hunting records. One quarter.
+- Examiner audit pack.
+  - Turns a two-week evidence pull into a one-click export. Half a quarter.
 
 
 ---
@@ -69,16 +69,16 @@ Featured card + sub-grid — one prominent item with supporting cards.
 <!-- _class: featured compact -->
 <!-- _footer: "Composition: compact · featured compact" -->
 
-## Applying the criteria, here is where the evidence points.
+## Where the next dollar of engineering goes.
 
-- Self-contained component folders.
-  - One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.
-- Bundler concatenates CSS at build time.
-  - Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
-- Manifests are the single source of truth.
-  - Scaffolder, snippets, this gallery, and docs all read from the same JSON.
-- Tests stay scoped.
-  - One test file per component under the components test path, runnable as a scoped npm script.
+- Multi-tenant codebooks.
+  - The flagship bet for H2. Drops tokenization latency below 5 ms, scopes any outage to a single tenant, and unblocks the three enterprise deals waiting on a regional-isolation guarantee. Two engineer-quarters, shipping in Q3.
+- Automated key rotation.
+  - Retires the four-hour maintenance window. One quarter.
+- Crypto-shred deletion.
+  - Meets the erasure obligation by destroying keys, not hunting records. One quarter.
+- Examiner audit pack.
+  - Turns a two-week evidence pull into a one-click export. Half a quarter.
 
 
 ---
@@ -86,16 +86,16 @@ Featured card + sub-grid — one prominent item with supporting cards.
 <!-- _class: featured accent -->
 <!-- _footer: "Composition: accent · featured accent" -->
 
-## Applying the criteria, here is where the evidence points.
+## Where the next dollar of engineering goes.
 
-- Self-contained component folders.
-  - One folder per component holding manifest, styles, transform (if needed), example, and README. Matches the pattern every mature design system uses, and lets the scaffolder, bundler, and docs generator read a single source of truth.
-- Bundler concatenates CSS at build time.
-  - Per-component sources combine into the shipped lattice stylesheet via the build-css tool. Committed bundle with a CI gate.
-- Manifests are the single source of truth.
-  - Scaffolder, snippets, this gallery, and docs all read from the same JSON.
-- Tests stay scoped.
-  - One test file per component under the components test path, runnable as a scoped npm script.
+- Multi-tenant codebooks.
+  - The flagship bet for H2. Drops tokenization latency below 5 ms, scopes any outage to a single tenant, and unblocks the three enterprise deals waiting on a regional-isolation guarantee. Two engineer-quarters, shipping in Q3.
+- Automated key rotation.
+  - Retires the four-hour maintenance window. One quarter.
+- Crypto-shred deletion.
+  - Meets the erasure obligation by destroying keys, not hunting records. One quarter.
+- Examiner audit pack.
+  - Turns a two-week evidence pull into a one-click export. Half a quarter.
 
 
 ---

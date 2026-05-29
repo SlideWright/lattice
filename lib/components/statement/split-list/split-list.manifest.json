@@ -28,7 +28,7 @@
   },
   "skeleton": "<!-- _class: split-list -->\n\n## Panel headline that frames the side points.\n\n### Section rubric\n\n- First point\n  - Supporting sentence explaining the first point.\n- Second point\n  - Supporting sentence explaining the second point.\n- Third point\n  - Supporting sentence explaining the third point.\n",
   "anatomyBlock": "T17-split-list",
-  "sample": "<!-- _class: split-list -->\n\n## A featured statement on the left lands the argument.\n\n### Use when\n\n- One claim deserves emphasis\n  - The panel headline carries the weight; the right side substantiates.\n- You need both a thesis and proof\n  - Statement on the left, evidence list on the right.\n- The right side is short\n  - Three to four supporting points; longer lists belong in cards-stack.\n- The mirror modifier flips it\n  - Image-style decks often want the panel on the right.\n",
+  "sample": "<!-- _class: split-list -->\n\n## The best product does not win. The most understood one does.\n\n### Why understanding wins\n\n- Clarity is a product decision\n  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.\n- Onboarding is the first argument\n  - The moment a user first succeeds sets the frame for everything that follows.\n- Comprehension drives retention\n  - Users who understand the system's logic stay through friction; users who don't churn at the first one.\n",
   "whenToUse": [
     {
       "title": "Thesis plus proof",

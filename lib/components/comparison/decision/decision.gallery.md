@@ -18,12 +18,12 @@ The verdict slide — one chosen path, named explicitly.
 <!-- _class: decision -->
 <!-- _footer: "Default · decision" -->
 
-## What we are doing.
+## Buy the platform; build the differentiation.
 
-- Chosen path.
-  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
-- Rejected option.
-  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+- Buy and configure.
+  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+- Build in-house.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
 
 
 ---
@@ -46,12 +46,12 @@ The verdict slide — one chosen path, named explicitly.
 <!-- _class: decision dark -->
 <!-- _footer: "Composition: dark · decision dark" -->
 
-## What we are doing.
+## Buy the platform; build the differentiation.
 
-- Chosen path.
-  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
-- Rejected option.
-  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+- Buy and configure.
+  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+- Build in-house.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
 
 
 ---
@@ -59,12 +59,12 @@ The verdict slide — one chosen path, named explicitly.
 <!-- _class: decision compact -->
 <!-- _footer: "Composition: compact · decision compact" -->
 
-## What we are doing.
+## Buy the platform; build the differentiation.
 
-- Chosen path.
-  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
-- Rejected option.
-  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+- Buy and configure.
+  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+- Build in-house.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
 
 
 ---
@@ -72,12 +72,12 @@ The verdict slide — one chosen path, named explicitly.
 <!-- _class: decision accent -->
 <!-- _footer: "Composition: accent · decision accent" -->
 
-## What we are doing.
+## Buy the platform; build the differentiation.
 
-- Chosen path.
-  - Self-contained per-component folders at lib/components, one folder per component. Holds manifest plus styles plus optional transform plus example plus README.
-- Rejected option.
-  - Flat files alongside each other in lib/components. Defeats the self-contained goal and leaves transform.js scattered.
+- Buy and configure.
+  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+- Build in-house.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
 
 
 ---

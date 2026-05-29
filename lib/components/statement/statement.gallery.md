@@ -11,22 +11,20 @@ Statement — one declarative claim per slide.
 
 <!-- _class: big-number -->
 
-`Audience recall`
+`Net new ARR · FY26 through Q3`
 
-- 92%
-  - of the audience remembers a single number from a deck. Make it count.
+- $48M
+  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
 
 ---
 
 <!-- _class: content -->
 
-## The catch-all prose slide.
+`Context · Competitive Dynamics`
 
-Use `content` when no more specific component fits. A heading, a paragraph, optionally a short bullet list. Keep the slide under forty words.
+## The window for differentiation is narrowing.
 
-- For lists of items, prefer `list`, `cards-grid`, or `cards-stack`.
-- For comparisons, prefer `compare-prose` or `compare-table`.
-- For single metrics, prefer `big-number` or `stats`.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
 
 ---
 
@@ -57,18 +55,16 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 <!-- _class: split-list -->
 
-## A featured statement on the left lands the argument.
+## The best product does not win. The most understood one does.
 
-### Use when
+### Why understanding wins
 
-- One claim deserves emphasis
-  - The panel headline carries the weight; the right side substantiates.
-- You need both a thesis and proof
-  - Statement on the left, evidence list on the right.
-- The right side is short
-  - Three to four supporting points; longer lists belong in cards-stack.
-- The mirror modifier flips it
-  - Image-style decks often want the panel on the right.
+- Clarity is a product decision
+  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
+- Onboarding is the first argument
+  - The moment a user first succeeds sets the frame for everything that follows.
+- Comprehension drives retention
+  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
 ---
 

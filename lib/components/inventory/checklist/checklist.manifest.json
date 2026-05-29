@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: checklist -->\n\n## Pre-launch readiness.\n\n- [x] First item that is fully done.\n- [x] Second item that is fully done.\n- [-] Third item that is partially complete with a caveat.\n- [ ] Fourth item that is not yet started.\n",
   "anatomyBlock": "checklist",
-  "sample": "<!-- _class: checklist -->\n\n## Pre-flight checklist for a new component.\n\n- [x] Pick function and form coordinates per the spec\n- [x] Write the manifest with name, function, form, substance, and slots\n- [x] Author CSS rules scoped to the section class\n- [-] Add a transform module if substance is structure or series\n- [-] Write a substantive example and README\n- [ ] Update the templates catalog reference\n- [ ] Add unit tests under the new component test path\n",
+  "sample": "<!-- _class: checklist -->\n\n## Go-live readiness for the codebook rollout.\n\n- [x] Load test passed at 3× projected peak throughput\n- [x] Key-rotation runbook signed off by security\n- [x] Tenant migration rehearsed end to end in staging\n- [-] Examiner audit pack drafted, pending compliance review\n- [-] On-call rotation staffed, one gap in the EU window\n- [ ] Customer comms scheduled with named owners\n- [ ] Rollback plan rehearsed against production data\n",
   "whenToUse": [
     {
       "title": "Completion reports",

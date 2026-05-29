@@ -18,14 +18,14 @@ Parallel items stacked vertically, full-width cards.
 <!-- _class: cards-stack -->
 <!-- _footer: "Default · cards-stack" -->
 
-## When to reach for cards-stack.
+## Three forces are compressing the differentiation window.
 
-- Vertical reading order matters.
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card.
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus.
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
 
 
 ---
@@ -63,14 +63,14 @@ Parallel items stacked vertically, full-width cards.
 <!-- _class: cards-stack dark -->
 <!-- _footer: "Composition: dark · cards-stack dark" -->
 
-## When to reach for cards-stack.
+## Three forces are compressing the differentiation window.
 
-- Vertical reading order matters.
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card.
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus.
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
 
 
 ---
@@ -78,14 +78,14 @@ Parallel items stacked vertically, full-width cards.
 <!-- _class: cards-stack compact -->
 <!-- _footer: "Composition: compact · cards-stack compact" -->
 
-## When to reach for cards-stack.
+## Three forces are compressing the differentiation window.
 
-- Vertical reading order matters.
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card.
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus.
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
 
 
 ---
@@ -93,14 +93,14 @@ Parallel items stacked vertically, full-width cards.
 <!-- _class: cards-stack accent -->
 <!-- _footer: "Composition: accent · cards-stack accent" -->
 
-## When to reach for cards-stack.
+## Three forces are compressing the differentiation window.
 
-- Vertical reading order matters.
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card.
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus.
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
 
 
 ---

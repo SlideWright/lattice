@@ -11,25 +11,25 @@ Inventory — parallel sets of related items.
 
 <!-- _class: actors -->
 
-## Who owns each part of the lifecycle.
+## Who owns what when an incident is live.
 
-- **Author.** Drafts the deck; owns content and framing.
-- **Reviewer.** Validates clarity, factual accuracy, and audience-fit.
-- **Engineer.** Ensures the build path renders the same PDF Marp preview shows.
-- **Designer.** Owns the visual contract; palette tokens, layout balance, typography.
-- **Operator.** Schedules the briefing; controls the room and the projector.
+- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
+- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
+- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
+- **Scribe.** Logs every action with a timestamp for the post-incident review.
+- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
 
 ---
 
 <!-- _class: agenda -->
 
-## What this deck covers.
+## What this review covers.
 
-1. The four-layer model — Function · Form · Substance · Finish
-2. Component manifests — the single source of truth
-3. The forty-five shipped components, grouped by function
-4. Discovery — scaffolder, snippets, this gallery
-5. What ships next — open questions and follow-ups
+1. Where Q2 landed against plan — slide 3
+2. The enterprise renewal shortfall — slide 8
+3. What we are changing in Q3 — slide 14
+4. The resourcing ask — slide 21
+5. Risks we are watching — slide 27
 
 ---
 
@@ -50,52 +50,52 @@ Inventory — parallel sets of related items.
 
 <!-- _class: cards-side -->
 
-## Two cards, equal weight, side-by-side.
+## Two ways into the European market.
 
-- An explicit pair.
-  - Two options, two phases, two artifacts presented with equal weight. The slide reads as a comparison without taking sides — neither half is the answer.
-- Different from compare-prose.
-  - compare-prose adds connector chrome and a chosen modifier. cards-side stays neutral and balanced — reach for it when neither option is the winner yet.
+- Direct sales motion.
+  - Stand up a Dublin team and sell into enterprise accounts ourselves. Higher margin and full control of the relationship, against a 9-to-12-month ramp before the first rep carries quota.
+- Channel partnership.
+  - Resell through an established regional integrator. Revenue inside two quarters and local compliance handled for us, at the cost of a 30% margin share and a thinner line to the customer.
 
 ---
 
 <!-- _class: cards-stack -->
 
-## When to reach for cards-stack.
+## Three forces are compressing the differentiation window.
 
-- Vertical reading order matters.
-  - The audience scans top to bottom, not grid-style. Each card builds on the previous one as the eye moves down the slide.
-- Each card has more body than a grid card.
-  - Two sentences instead of one. cards-grid forces parallel density; cards-stack lets each card breathe with longer body text.
-- Two to three items, not four-plus.
-  - Beyond three cards the slide overflows. For more items, split across multiple slides or switch to cards-grid with shorter text.
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
 
 ---
 
 <!-- _class: cards-wide -->
 
-## When the items want full-width rows.
+## Three findings from the Q2 win/loss review.
 
-1. Each item has substantial body text
-   - One to two sentences per item, more than a cards-grid card can hold without crowding. The row layout gives the body room to breathe.
-2. The slide scans top-to-bottom
-   - Reading order is sequential rather than parallel. The audience absorbs one row at a time rather than the whole set at a glance.
-3. Three or four rows feels right
-   - Beyond four rows the slide gets dense. For more items prefer list-tabular; for fewer items with shorter body prefer cards-stack.
+1. Price is rarely the reason we lose
+   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
+2. The security review is our slowest gate
+   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
+3. One competitor takes most of the displacement
+   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 ---
 
 <!-- _class: checklist -->
 
-## Pre-flight checklist for a new component.
+## Go-live readiness for the codebook rollout.
 
-- [x] Pick function and form coordinates per the spec
-- [x] Write the manifest with name, function, form, substance, and slots
-- [x] Author CSS rules scoped to the section class
-- [-] Add a transform module if substance is structure or series
-- [-] Write a substantive example and README
-- [ ] Update the templates catalog reference
-- [ ] Add unit tests under the new component test path
+- [x] Load test passed at 3× projected peak throughput
+- [x] Key-rotation runbook signed off by security
+- [x] Tenant migration rehearsed end to end in staging
+- [-] Examiner audit pack drafted, pending compliance review
+- [-] On-call rotation staffed, one gap in the EU window
+- [ ] Customer comms scheduled with named owners
+- [ ] Rollback plan rehearsed against production data
 
 ---
 
@@ -103,47 +103,47 @@ Inventory — parallel sets of related items.
 
 ## Glossary
 
-- Component
-  - A self-contained unit at lib/components, one folder per component, with manifest plus styles plus example plus optional transform plus README.
-- Function
-  - The communication purpose a slide serves; one of seven families (Anchor, Statement, Inventory, Comparison, Progression, Evidence, Imagery).
-- Form
-  - The spatial composition of a slide; one of eleven shapes (bookend, divider, canvas, grid, stack, ledger, panel, matrix, scatter, timeline, split).
-- Manifest
-  - The JSON description of a component, consumed by the scaffolder, snippets, docs catalog, and autocomplete.
-- Substance
-  - The kind of data that fills the form; one of four (prose, structure, series, graph).
+- Consent
+  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+- Controller
+  - The party that decides why and how personal data is processed, and carries the legal accountability for it.
+- DSAR
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+- PII
+  - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
+- Processor
+  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
 
 ---
 
 <!-- _class: list -->
 
-## When the items truly are a list.
+## What the first six months of pilots taught us.
 
-- Five to six short points, each under twelve words.
-- No internal structure per item — if items have title + body, use cards-stack instead.
-- Numbered (ol) when order matters; bulleted (ul) when it does not.
-- Inline-code metadata at the end of a row becomes a pill via the universal-pill recipe.
-- For richer items with descriptions, prefer list-tabular.
+- Teams log roughly one decision for every twenty they actually make.
+- The scoring weights get re-tuned after almost every retrospective.
+- Predicted outcomes are the field most often left blank.
+- Alignment scores rose fastest on the teams that reviewed the log weekly.
+- No pilot team has asked to go back to the old process.
 
 ---
 
 <!-- _class: list-tabular -->
 
-## The four substance contracts a component plugs into.
+## The four workstreams carrying the H2 platform plan.
 
-1. Prose
-   - Headings, paragraphs, inline emphasis — Marp markdown into semantic HTML.
-   - _CSS-only; no post-processor required_
-2. Structure
-   - Headings plus nested lists with conventions; a post-processor rewrites the list into purpose-built DOM.
-   - _Per-component transform.js in lib/components_
-3. Series
-   - Tabular DSL — axes and datapoints as bullets, parsed into geometry.
-   - _Chart-family kernel (radar, quadrant, piechart, gantt, kanban)_
-4. Graph
-   - External graph language (Mermaid today; D2 or PlantUML in the future).
-   - _External CLI; palette injected at build time_
+1. Platform
+   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
+   - _Two engineers · ships Q3_
+2. Operations
+   - Automated rotation and crypto-shred, retiring the manual maintenance window.
+   - _One engineer · ships Q3_
+3. Compliance
+   - Centralised audit log and the examiner-ready export pack.
+   - _One engineer · ships Q4_
+4. SDK
+   - Polyglot parity so every client team adopts the same path.
+   - _Contractor · ships Q4_
 
 ---
 
@@ -151,20 +151,20 @@ Inventory — parallel sets of related items.
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible calls don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides accountability.
-- **Write down the bet on the same slide as the choice.** The decision and its predicted outcome live together — the calibration loop depends on it.
-- **Form follows function.** Let the audience's need shape the layout, not the other way around.
-- **One main idea per slide.** If you can't summarise it in one sentence, split it across two slides.
+- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
+- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
+- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
+- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
+- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
 
 ---
 
 <!-- _class: tldr -->
 
-## What this section will tell you, in five lines.
+## What this review will tell you, in five lines.
 
-- Components stay short — `cards-grid` not `inventory.grid.cards`.
-- The four layers organise the catalog; they do not name components.
-- Manifests are the single source of truth for every component.
-- Discovery happens via the scaffolder and IDE snippets, not the directive.
-- Forty-five components ship — one folder each.
+- Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
+- The shortfall is in enterprise renewals, not new logos.
+- Every one of the three causes is fixable before the Q4 close.
+- The Q3 plan moves two engineers and one rep onto the gaps.
+- We are not asking for more headcount — we are asking to move what we have.

@@ -18,17 +18,17 @@ Spiral-packed word cloud — items sized by weight.
 <!-- _class: word-cloud -->
 <!-- _footer: "Default · word-cloud" -->
 
-## What this branch named, by weight.
+## What 38 win/loss interviews kept saying, by frequency.
 
-- component `5`
-- manifest `4`
-- function `4`
-- form `3`
-- substance `3`
-- gallery `2`
-- variant `2`
-- universal `1`
-- cascade `1`
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
 
 
 ---
@@ -135,17 +135,17 @@ Spiral-packed word cloud — items sized by weight.
 <!-- _class: word-cloud dark -->
 <!-- _footer: "Composition: dark · word-cloud dark" -->
 
-## What this branch named, by weight.
+## What 38 win/loss interviews kept saying, by frequency.
 
-- component `5`
-- manifest `4`
-- function `4`
-- form `3`
-- substance `3`
-- gallery `2`
-- variant `2`
-- universal `1`
-- cascade `1`
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
 
 
 ---
@@ -153,17 +153,17 @@ Spiral-packed word cloud — items sized by weight.
 <!-- _class: word-cloud compact -->
 <!-- _footer: "Composition: compact · word-cloud compact" -->
 
-## What this branch named, by weight.
+## What 38 win/loss interviews kept saying, by frequency.
 
-- component `5`
-- manifest `4`
-- function `4`
-- form `3`
-- substance `3`
-- gallery `2`
-- variant `2`
-- universal `1`
-- cascade `1`
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
 
 
 ---
@@ -171,17 +171,17 @@ Spiral-packed word cloud — items sized by weight.
 <!-- _class: word-cloud accent -->
 <!-- _footer: "Composition: accent · word-cloud accent" -->
 
-## What this branch named, by weight.
+## What 38 win/loss interviews kept saying, by frequency.
 
-- component `5`
-- manifest `4`
-- function `4`
-- form `3`
-- substance `3`
-- gallery `2`
-- variant `2`
-- universal `1`
-- cascade `1`
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
 
 
 ---

@@ -18,9 +18,9 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent -->
 <!-- _footer: "Default · closing" -->
 
-# Function · Form · Substance · Finish.
+# The signal was always there. Now we have a system that looks.
 
-`design/design-system.md`
+`Product Strategy · Q3 2025`
 
 
 ---
@@ -38,9 +38,9 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent compact -->
 <!-- _footer: "Composition: compact · closing compact" -->
 
-# Function · Form · Substance · Finish.
+# The signal was always there. Now we have a system that looks.
 
-`design/design-system.md`
+`Product Strategy · Q3 2025`
 
 
 ---
@@ -48,9 +48,9 @@ Final slide. Dark canvas mirror of title.
 <!-- _class: closing silent accent -->
 <!-- _footer: "Composition: accent · closing accent" -->
 
-# Function · Form · Substance · Finish.
+# The signal was always there. Now we have a system that looks.
 
-`design/design-system.md`
+`Product Strategy · Q3 2025`
 
 
 ---

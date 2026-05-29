@@ -29,7 +29,7 @@
   },
   "skeleton": "<!-- _class: compare-code -->\n\n## Heading framing the comparison.\n\n### Before\n\n```js\nfunction before() {\n  return 'old';\n}\n```\n\n### After\n\n```js\nfunction after() {\n  return 'new';\n}\n```\n",
   "anatomyBlock": "compare-code",
-  "sample": "<!-- _class: compare-code -->\n\n`Before & after · Component manifest loading`\n\n## Flat-file lookup versus folder-shape lookup.\n\n`Before · flat file`\n\n```js\nconst fs = require('node:fs');\nconst path = require('node:path');\n\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    `${name}.json`\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n\nconst cards = loadOne('cards-grid');\n```\n\n`After · folder shape`\n\n```js\nconst fs = require('node:fs');\nconst path = require('node:path');\n\nfunction loadOne(name) {\n  const p = path.join(\n    __dirname, 'lib', 'components',\n    name, 'manifest.json'\n  );\n  return JSON.parse(fs.readFileSync(p, 'utf8'));\n}\n\nconst cards = loadOne('cards-grid');\n```\n",
+  "sample": "<!-- _class: compare-code -->\n\n`Query path · report generation`\n\n## The N+1 query that slowed every report.\n\n`Before · one query per row`\n\n```js\nconst signals = await db.signals.findAll();\nfor (const s of signals) {\n  s.owner = await db.users.find(s.ownerId);\n}\nreturn signals;\n```\n\n`After · one batched join`\n\n```js\nconst signals = await db.signals.findAll({\n  include: { owner: true },\n});\nreturn signals;\n```\n",
   "whenToUse": [
     {
       "title": "Concrete code on both sides",

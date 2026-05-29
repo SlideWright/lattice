@@ -22,19 +22,19 @@ Native radar / spider chart — items rated across multiple axes.
 
 ## How we stack up across the buying criteria.
 
-- Lattice
+- Meridian
   - Performance `9`
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
   - Security `9`
-- Rival North
+- Vantage
   - Performance `7`
   - Pricing `8`
   - Support `6`
   - Ecosystem `9`
   - Security `7`
-- Rival West
+- Helios
   - Performance `6`
   - Pricing `9`
   - Support `7`
@@ -260,19 +260,19 @@ Native radar / spider chart — items rated across multiple axes.
 
 ## How we stack up across the buying criteria.
 
-- Lattice
+- Meridian
   - Performance `9`
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
   - Security `9`
-- Rival North
+- Vantage
   - Performance `7`
   - Pricing `8`
   - Support `6`
   - Ecosystem `9`
   - Security `7`
-- Rival West
+- Helios
   - Performance `6`
   - Pricing `9`
   - Support `7`
@@ -289,19 +289,19 @@ Native radar / spider chart — items rated across multiple axes.
 
 ## How we stack up across the buying criteria.
 
-- Lattice
+- Meridian
   - Performance `9`
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
   - Security `9`
-- Rival North
+- Vantage
   - Performance `7`
   - Pricing `8`
   - Support `6`
   - Ecosystem `9`
   - Security `7`
-- Rival West
+- Helios
   - Performance `6`
   - Pricing `9`
   - Support `7`
@@ -318,19 +318,19 @@ Native radar / spider chart — items rated across multiple axes.
 
 ## How we stack up across the buying criteria.
 
-- Lattice
+- Meridian
   - Performance `9`
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
   - Security `9`
-- Rival North
+- Vantage
   - Performance `7`
   - Pricing `8`
   - Support `6`
   - Ecosystem `9`
   - Security `7`
-- Rival West
+- Helios
   - Performance `6`
   - Pricing `9`
   - Support `7`

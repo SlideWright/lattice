@@ -15,7 +15,7 @@ Chart — series-substance data visualizations (SVG kernel).
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
+Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 - Platform
   - Codebook signing `Q1 → Q2` `done`
@@ -38,7 +38,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 
 ## Where Phase 2 work stands today.
 
-Four columns, mixed card density. Size badge sits in the title row.
+Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
 
 - Backlog
   - Per-purpose codebooks `S`
@@ -69,7 +69,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 
 ## Where the engineering quarter went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
 
 - Codebook platform `46%`
 - Operations runbook `22%`
@@ -85,7 +85,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot taken at 14:00 UTC. Status pills tint the bar fill.
+Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 - Codebook platform `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -124,19 +124,19 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 ## How we stack up across the buying criteria.
 
-- Lattice
+- Meridian
   - Performance `9`
   - Pricing `7`
   - Support `8`
   - Ecosystem `6`
   - Security `9`
-- Rival North
+- Vantage
   - Performance `7`
   - Pricing `8`
   - Support `6`
   - Ecosystem `9`
   - Security `7`
-- Rival West
+- Helios
   - Performance `6`
   - Pricing `9`
   - Support `7`
@@ -178,7 +178,7 @@ How a draft moves from author to archive.
 
 ## How the codebook architecture arrived in production.
 
-Four stages over eighteen months. Date pill leads each item; status pill trails.
+Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
 
 1. `2024 Q3` Vault round-trip
    - First production tokenization shipped on a centralised vault. p99 60 ms.
@@ -193,14 +193,14 @@ Four stages over eighteen months. Date pill leads each item; status pill trails.
 
 <!-- _class: word-cloud -->
 
-## What this branch named, by weight.
+## What 38 win/loss interviews kept saying, by frequency.
 
-- component `5`
-- manifest `4`
-- function `4`
-- form `3`
-- substance `3`
-- gallery `2`
-- variant `2`
-- universal `1`
-- cascade `1`
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
