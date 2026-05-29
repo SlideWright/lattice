@@ -153,13 +153,41 @@ code {
 	font-weight: 500;
 	color: var(--text-body);
 }
-.topnav a.navlink:hover {
+.topnav a.navlink:hover,
+.topnav a.navlink[aria-current='page'] {
 	color: var(--accent);
+}
+.topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 .controls {
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+/* Hamburger — desktop-hidden; the mobile breakpoint reveals it and turns
+ * .topnav into a dropdown so nav links survive on phones (they used to
+ * vanish, leaving only the palette/mode controls). */
+.nav-toggle {
+	display: none;
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--bg);
+	color: var(--text-body);
+	cursor: pointer;
+	font-size: 17px;
+	line-height: 1;
+}
+.nav-toggle:hover {
+	border-color: var(--accent);
+	color: var(--accent);
 }
 .palette-select {
 	padding: 6px 9px;
@@ -530,13 +558,40 @@ html[data-mode='dark'] .for-dark {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
-@media (max-width: 620px) {
+/* Tablet / phone: collapse the nav links behind the hamburger. The links
+ * become a full-width dropdown panel under the bar; palette + mode controls
+ * stay visible at all sizes. */
+@media (max-width: 760px) {
+	.nav-toggle {
+		display: inline-flex;
+	}
+	.topbar-actions {
+		margin-left: auto; /* .topnav is now absolute, so push controls right */
+	}
 	.topnav {
-		gap: 12px;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		display: none;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		margin: 0;
+		padding: 6px 0;
+		background: var(--bg);
+		border-bottom: 1px solid var(--border);
+		box-shadow: var(--shadow-lg);
 	}
-	.topnav .navlink {
-		display: none; /* keep palette + mode controls; links collapse to footer */
+	.topbar.nav-open .topnav {
+		display: flex;
 	}
+	.topnav a.navlink {
+		font-size: 16px;
+		padding: 12px 24px;
+	}
+}
+@media (max-width: 620px) {
 	.feature-grid,
 	.next-grid {
 		grid-template-columns: 1fr;
