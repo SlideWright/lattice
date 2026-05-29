@@ -151,6 +151,30 @@ describe('contrast', () => {
 
   const AA_THRESHOLD = 4.5;
 
+  // ── Status-distinctness contract (decision 2026-05-29) ──────────────────
+  // Status colour is per-theme curated (full freedom), but the engine
+  // enforces that pass / warn / fail stay mutually distinguishable so a
+  // recolour can't collapse two signals into one. OKLab ΔE ≥ 0.10.
+  function oklab(hex) {
+    const [r, g, b] = hexToRgb(hex).map(v => {
+      const c = v / 255;
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    return {
+      L: 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+      a: 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+      b: 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+    };
+  }
+  function deltaE(h1, h2) {
+    const a = oklab(h1), b = oklab(h2);
+    return Math.hypot(a.L - b.L, a.a - b.a, a.b - b.b);
+  }
+  const STATUS_DE = 0.10;
+
   for (const name of ['indaco', 'cuoio']) {
     for (const mode of ['light', 'dark']) {
       test(`contrast: ${name} (${mode}) every --cN-light / --c-ink-light pair clears AA`, () => {
@@ -249,6 +273,43 @@ describe('contrast', () => {
           `--c-ink-dark (${text}) on --c-alarm (${fill}) = ${ratio.toFixed(2)}:1 (< ${AA_THRESHOLD})`,
         );
       });
+
+      if (mode === 'light') {
+        test(`contrast: ${name} status pass/warn/fail stay mutually distinguishable`, () => {
+          const vars = loadPaletteWithImports(name, mode);
+          const failures = [];
+          for (const [x, y] of [['pass', 'warn'], ['warn', 'fail'], ['pass', 'fail']]) {
+            if (!vars[x] || !vars[y]) continue;
+            const de = deltaE(vars[x], vars[y]);
+            if (de < STATUS_DE) {
+              failures.push(`--${x} (${vars[x]}) vs --${y} (${vars[y]}) = ΔE ${de.toFixed(3)} (< ${STATUS_DE})`);
+            }
+          }
+          assert.deepEqual(failures, [], `status collisions in ${name}:\n  ${failures.join('\n  ')}`);
+        });
+
+        test(`contrast: ${name} every categorical slot is one hue across both tiers`, () => {
+          // pale fill (--cN-light) and deep mark (--cN-dark) must share a
+          // hue so a Mermaid node and a chart wedge at category N read as
+          // the same colour. Generated themes clear this structurally;
+          // hand-tuned themes are exempt until re-curated (rollout).
+          if (name !== 'indaco') return; // indaco is the re-curated reference
+          const vars = loadPaletteWithImports(name, mode);
+          const hue = (hex) => {
+            const o = oklab(hex);
+            return (Math.atan2(o.b, o.a) * 180 / Math.PI + 360) % 360;
+          };
+          const failures = [];
+          for (let i = 1; i <= 12; i++) {
+            const pale = vars[`c${i}-light`], deep = vars[`c${i}-dark`];
+            if (!pale || !deep) continue;
+            let d = Math.abs(hue(pale) - hue(deep)) % 360;
+            if (d > 180) d = 360 - d;
+            if (d > 12) failures.push(`c${i}: pale ${pale} vs deep ${deep} = Δhue ${d.toFixed(0)}°`);
+          }
+          assert.deepEqual(failures, [], `slot hue splits in ${name}:\n  ${failures.join('\n  ')}`);
+        });
+      }
     }
   }
 });
