@@ -21,15 +21,15 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 
 ---
@@ -40,15 +40,15 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 
 ---
@@ -59,15 +59,15 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 
 ---
@@ -78,15 +78,15 @@ Two-column term/definition table with auto-derived alphabetic range pill.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 
 ---

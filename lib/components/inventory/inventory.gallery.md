@@ -104,15 +104,15 @@ Inventory — parallel sets of related items.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 ---
 
@@ -130,7 +130,7 @@ Inventory — parallel sets of related items.
 
 <!-- _class: list-tabular -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the H2 platform plan.
 
 1. Platform
    - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
@@ -141,7 +141,10 @@ Inventory — parallel sets of related items.
 3. Compliance
    - Centralised audit log and the examiner-ready export pack.
    - _One engineer · ships Q4_
-4. SDK
+4. Security
+   - Threat-model refresh and a third-party penetration test ahead of GA.
+   - _One engineer · ships Q4_
+5. SDK
    - Polyglot parity so every client team adopts the same path.
    - _Contractor · ships Q4_
 
@@ -161,10 +164,10 @@ Inventory — parallel sets of related items.
 
 <!-- _class: tldr -->
 
-## What this review will tell you, in five lines.
+## What this review showed, in five lines.
 
 - Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
 - The shortfall is in enterprise renewals, not new logos.
 - Every one of the three causes is fixable before the Q4 close.
 - The Q3 plan moves two engineers and one rep onto the gaps.
-- We are not asking for more headcount — we are asking to move what we have.
+- We are not asking for more headcount — only to move what we have.

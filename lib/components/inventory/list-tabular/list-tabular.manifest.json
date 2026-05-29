@@ -30,7 +30,7 @@
   },
   "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
   "anatomyBlock": "list-tabular",
-  "sample": "<!-- _class: list-tabular -->\n\n## The four workstreams carrying the H2 platform plan.\n\n1. Platform\n   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.\n   - _Two engineers · ships Q3_\n2. Operations\n   - Automated rotation and crypto-shred, retiring the manual maintenance window.\n   - _One engineer · ships Q3_\n3. Compliance\n   - Centralised audit log and the examiner-ready export pack.\n   - _One engineer · ships Q4_\n4. SDK\n   - Polyglot parity so every client team adopts the same path.\n   - _Contractor · ships Q4_\n",
+  "sample": "<!-- _class: list-tabular -->\n\n## The five workstreams carrying the H2 platform plan.\n\n1. Platform\n   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.\n   - _Two engineers · ships Q3_\n2. Operations\n   - Automated rotation and crypto-shred, retiring the manual maintenance window.\n   - _One engineer · ships Q3_\n3. Compliance\n   - Centralised audit log and the examiner-ready export pack.\n   - _One engineer · ships Q4_\n4. Security\n   - Threat-model refresh and a third-party penetration test ahead of GA.\n   - _One engineer · ships Q4_\n5. SDK\n   - Polyglot parity so every client team adopts the same path.\n   - _Contractor · ships Q4_\n",
   "whenToUse": [
     {
       "title": "Compact reference rows",

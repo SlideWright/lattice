@@ -18,7 +18,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular -->
 <!-- _footer: "Default · list-tabular" -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the H2 platform plan.
 
 1. Platform
    - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
@@ -29,7 +29,10 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 3. Compliance
    - Centralised audit log and the examiner-ready export pack.
    - _One engineer · ships Q4_
-4. SDK
+4. Security
+   - Threat-model refresh and a third-party penetration test ahead of GA.
+   - _One engineer · ships Q4_
+5. SDK
    - Polyglot parity so every client team adopts the same path.
    - _Contractor · ships Q4_
 
@@ -157,7 +160,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular dark -->
 <!-- _footer: "Composition: dark · list-tabular dark" -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the H2 platform plan.
 
 1. Platform
    - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
@@ -168,7 +171,10 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 3. Compliance
    - Centralised audit log and the examiner-ready export pack.
    - _One engineer · ships Q4_
-4. SDK
+4. Security
+   - Threat-model refresh and a third-party penetration test ahead of GA.
+   - _One engineer · ships Q4_
+5. SDK
    - Polyglot parity so every client team adopts the same path.
    - _Contractor · ships Q4_
 
@@ -178,7 +184,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular compact -->
 <!-- _footer: "Composition: compact · list-tabular compact" -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the H2 platform plan.
 
 1. Platform
    - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
@@ -189,7 +195,10 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 3. Compliance
    - Centralised audit log and the examiner-ready export pack.
    - _One engineer · ships Q4_
-4. SDK
+4. Security
+   - Threat-model refresh and a third-party penetration test ahead of GA.
+   - _One engineer · ships Q4_
+5. SDK
    - Polyglot parity so every client team adopts the same path.
    - _Contractor · ships Q4_
 
@@ -199,7 +208,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular accent -->
 <!-- _footer: "Composition: accent · list-tabular accent" -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the H2 platform plan.
 
 1. Platform
    - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
@@ -210,7 +219,10 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 3. Compliance
    - Centralised audit log and the examiner-ready export pack.
    - _One engineer · ships Q4_
-4. SDK
+4. Security
+   - Threat-model refresh and a third-party penetration test ahead of GA.
+   - _One engineer · ships Q4_
+5. SDK
    - Polyglot parity so every client team adopts the same path.
    - _Contractor · ships Q4_
 

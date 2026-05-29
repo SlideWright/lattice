@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: content -->\n\n## Slide heading.\n\nThe explanatory paragraph that develops the heading goes here. Keep the slide under forty words.\n\n- Optional supporting point one.\n- Optional supporting point two.\n",
   "anatomyBlock": "content-canvas",
-  "sample": "<!-- _class: content -->\n\n`Context · Competitive Dynamics`\n\n## The window for differentiation is narrowing.\n\nThree converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.\n",
+  "sample": "<!-- _class: content -->\n\n`Context · Competitive Dynamics`\n\n## The window for differentiation is narrowing.\n\nThree converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years can tell signal from noise inside it.\n",
   "whenToUse": [
     {
       "title": "Explanatory prose that doesn't shape",

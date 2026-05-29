@@ -21,7 +21,7 @@ Single oversized number as the focal claim.
 `Net new ARR · FY26 through Q3`
 
 - $48M
-  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
+  - booked against a $42M full-year plan, with a quarter still to close.
 
 
 ---
@@ -32,7 +32,7 @@ Single oversized number as the focal claim.
 `Net new ARR · FY26 through Q3`
 
 - $48M
-  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
+  - booked against a $42M full-year plan, with a quarter still to close.
 
 
 ---
@@ -43,7 +43,7 @@ Single oversized number as the focal claim.
 `Net new ARR · FY26 through Q3`
 
 - $48M
-  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
+  - booked against a $42M full-year plan, with a quarter still to close.
 
 
 ---
@@ -54,7 +54,7 @@ Single oversized number as the focal claim.
 `Net new ARR · FY26 through Q3`
 
 - $48M
-  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
+  - booked against a $42M full-year plan, with a quarter still to close.
 
 
 ---
