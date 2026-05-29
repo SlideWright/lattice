@@ -117,7 +117,12 @@ const pgData = JSON.stringify({
 		<main class="pg-split">
 			<section class="pg-pane editor">
 				<div class="pg-pane-label">Markdown</div>
-				<textarea id="editor" spellcheck="false" aria-label="Lattice markdown editor">{starter}</textarea>
+				<!-- CodeMirror mounts into #editor-host. The textarea is the no-JS /
+				     pre-hydration fallback and the source of the starter text;
+				     editor.js reads its value, then replaces it. -->
+				<div class="pg-editor-host" id="editor-host">
+					<textarea id="editor" spellcheck="false" aria-label="Lattice markdown editor">{starter}</textarea>
+				</div>
 			</section>
 			<section class="pg-pane preview">
 				<div class="pg-pane-label">Rendered slides</div>
@@ -128,6 +133,28 @@ const pgData = JSON.stringify({
 		</main>
 
 		<script type="application/json" id="pg-data" is:inline set:html={pgData}></script>
+
+		<!-- CodeMirror editor (bundled by Astro/Vite). Mounts into #editor-host,
+		     seeded from the textarea, and exposes a tiny adapter on window so the
+		     inline controller below reads/writes source through it. Falls back to
+		     the textarea if this module fails to load. -->
+		<script>
+			import { createEditor } from '../playground/editor.js';
+			const host = document.getElementById('editor-host');
+			const ta = document.getElementById('editor');
+			const initial = ta ? ta.value : '';
+			let notify = null;
+			const ed = createEditor({ parent: host, doc: initial, onChange: (v) => { if (notify) notify(v); } });
+			if (ta) ta.remove();
+			window.__pgEditor = {
+				getValue: () => ed.getValue(),
+				setValue: (t) => ed.setValue(t),
+				focus: () => ed.focus(),
+				onChange: (fn) => { notify = fn; },
+			};
+			window.dispatchEvent(new Event('pg-editor-ready'));
+		</script>
+
 		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {
@@ -136,19 +163,31 @@ const pgData = JSON.stringify({
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
 				var root = document.documentElement;
-				var editor = document.getElementById('editor');
 				var frame = document.getElementById('preview');
 				var statusEl = document.getElementById('pg-status');
 				var paletteSel = document.getElementById('palette');
 				var modeBtn = document.getElementById('mode-toggle');
 				var tmplSel = document.getElementById('pg-template');
 
+				// Source accessors: prefer the CodeMirror adapter (window.__pgEditor),
+				// fall back to the textarea if the editor module hasn't loaded yet or
+				// failed (no-JS safety). All source reads/writes go through these.
+				function getSource() {
+					if (window.__pgEditor) return window.__pgEditor.getValue();
+					var ta = document.getElementById('editor');
+					return ta ? ta.value : '';
+				}
+				function setSource(text) {
+					if (window.__pgEditor) { window.__pgEditor.setValue(text); return; }
+					var ta = document.getElementById('editor');
+					if (ta) ta.value = text;
+				}
+
 				// Persist the editor across reloads / refresh / session end so the
 				// author's in-progress deck survives (palette + mode already persist
 				// via the shared localStorage keys).
 				var SOURCE_KEY = 'lattice-docs-pg-source';
-				try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) editor.value = saved; } catch (e) {}
-				function saveSource() { try { localStorage.setItem(SOURCE_KEY, editor.value); } catch (e) {} }
+				function saveSource() { try { localStorage.setItem(SOURCE_KEY, getSource()); } catch (e) {} }
 
 				paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {}; // theme name -> Promise<cssText>
@@ -226,7 +265,7 @@ const pgData = JSON.stringify({
 					ensureThemes(palette, mode).then(function () {
 						var theme = mode === 'dark' && PG.hasTheme(palette + '-dark') ? palette + '-dark' : palette;
 						try {
-							var out = PG.render(editor.value, theme);
+							var out = PG.render(getSource(), theme);
 							writeFrame(out.html, out.css, mode);
 							setStatus('Rendered ' + (out.html.match(/<\/section>/g) || []).length + ' slide(s).');
 						} catch (e) {
@@ -235,20 +274,35 @@ const pgData = JSON.stringify({
 					}).catch(function (e) { setStatus(String(e.message || e), true); });
 				}
 
-				editor.addEventListener('input', function () { saveSource(); scheduleRender(); });
+				// Wire change events. CodeMirror reports edits via its onChange
+				// adapter; until/if it loads, the textarea's input event covers it.
+				function onEdit() { saveSource(); scheduleRender(); }
+				function wireEditorEvents() {
+					if (window.__pgEditor) {
+						window.__pgEditor.onChange(onEdit);
+						// Restore persisted source into the live editor, then render it.
+						try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
+						render();
+					}
+				}
+				if (window.__pgEditor) wireEditorEvents();
+				else window.addEventListener('pg-editor-ready', wireEditorEvents);
+				// Fallback: textarea input (only fires if CodeMirror never replaced it).
+				var taEl = document.getElementById('editor');
+				if (taEl) taEl.addEventListener('input', onEdit);
 
 				tmplSel.addEventListener('change', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].sample; saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].sample); saveSource(); render(); }
 				});
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].sample; saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].sample); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { editor.value = catalog[name].skeleton; saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].skeleton); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 
