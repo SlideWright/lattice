@@ -1,29 +1,32 @@
 #!/usr/bin/env node
 /**
  * palette-forge — derive a complete, contrast-clean Lattice palette from a
- * single brand colour.
+ * single brand colour, designed for BOTH light and dark canvases.
  *
  *   node tools/palette-forge.js <brand-hex> [options]
  *
  * Options:
- *   --name <name>        @theme name + filename stem (default: "forged")
- *   --scheme light|dark  canvas the palette is authored for (default: light)
- *   -o <path>            write a themes/<name>.css file (default: stdout)
- *   --audit              self-check the generated tokens (WCAG + OKLab ΔE)
- *                        and print a report; non-zero exit on any failure
+ *   --name <name>     @theme name + filename stem (default: "forged")
+ *   -o <path>         write a themes/<name>.css file (default: stdout)
+ *   --audit           self-check generated tokens (WCAG + OKLab ΔE), BOTH
+ *                     modes; print report; non-zero exit on any failure
  *
  * Design contract (engineering/decisions/2026-05-29-palette-recuration.md):
  *   - Universal token NAMES/roles are fixed; this tool fills the VALUES.
- *   - Every text-bearing token clears AA (4.5:1); state discs + strokes
- *     clear the graphical floor (3:1); decorative tokens are exempt.
- *   - The 12 categorical slots and the 8 chart series both derive from the
- *     brand hue, so charts and diagrams share one visual family (cohesion
- *     via shared anchors). The deep tier and the chart series vary lightness
- *     per hue (natural-luminance curve) to maximise categorical distinctness
- *     — the looser lightness contract that the rigid L≈32 lockstep lacked.
+ *   - LIGHT + DARK as one object. Surface/ink/accent/state tokens are
+ *     `light-dark()` pairs. The categorical + semantic fills follow the
+ *     band-flip contract: a fill's "light" slot is pale+dark-ink on a light
+ *     canvas and deep+light-ink on a dark canvas — the paired ink flips with
+ *     it, so AA holds in both modes (this is how indaco works).
+ *   - Mermaid stays cohesive for free: the DIAGRAM OVERRIDES in lattice.css
+ *     are palette-blind and consume these same tokens (--cN-light pale fills,
+ *     --c-stroke, --c-line, --c-warm/cool/alarm/mark/note). A diagram and a
+ *     chart of "category 1" are two tuned expressions of one brand anchor.
+ *   - Contrast: AA (4.5) text-bearing, 3:1 graphical (state discs, strokes,
+ *     chart marks), decorative exempt. Chart series target OKLab ΔE ≥ 0.10.
  *
- * The output is a KNOWN-GOOD STARTING POINT, in the spirit of the audit's
- * rank-1 proposals: contrast-safe and cohesive, then hand-tuned to taste.
+ * Output is a KNOWN-GOOD STARTING POINT (the audit's rank-1 spirit):
+ * contrast-safe and cohesive, then hand-tuned to taste.
  */
 
 'use strict';
@@ -104,16 +107,14 @@ function deltaE(h1, h2) {
   return Math.hypot(a.L - b.L, a1 - a2, b1 - b2);
 }
 
-// Find an OKLCH colour at hue H, chroma C, whose lightness gives AT LEAST
-// `target` contrast against `against`, searching from the `prefer` side
-// ('dark' = below the reference, 'light' = above). Returns the hex closest
-// to the reference that still clears the bar (most chroma-preserving).
+// Lightness search: a colour at (C,H) whose L gives AT LEAST `target`
+// contrast vs `against`, scanning from the `prefer` side toward the
+// reference; returns the chroma-preserving hex closest to the boundary.
 function solveForContrast(against, C, H, target, prefer = 'dark') {
   const refL = hexToOklch(against).L;
   const lo = prefer === 'dark' ? 0 : refL;
   const hi = prefer === 'dark' ? refL : 1;
   let best = prefer === 'dark' ? oklch(0, C, H) : oklch(1, C, H);
-  // Scan inward from the extreme toward the reference; keep the last that passes.
   const steps = 100;
   for (let i = 0; i <= steps; i++) {
     const L = prefer === 'dark' ? lo + ((hi - lo) * i) / steps : hi - ((hi - lo) * i) / steps;
@@ -123,116 +124,122 @@ function solveForContrast(against, C, H, target, prefer = 'dark') {
   return best;
 }
 
-// ── Hue + lightness curves for distinctness ───────────────────────────────
-// Evenly spread N hues from the brand hue. Natural-luminance curve: yellow/
-// green register light, blue/violet register dark — varying L with hue
-// maximises perceptual separation at constant chroma (the categorical-palette
-// recipe). Returns L multiplier 0.78..1.06 keyed by hue.
-function naturalL(H) {
-  // peak ~100° (yellow-green) lightest, trough ~280° (blue-violet) darkest
-  return 0.92 + 0.14 * Math.cos(((H - 100) * Math.PI) / 180);
-}
+const ld = (a, b) => `light-dark(${a}, ${b})`;
+// Natural-luminance curve: yellow-green registers light, blue-violet dark.
+// Varying L with hue maximises perceptual separation (categorical recipe).
+const naturalL = H => 0.92 + 0.14 * Math.cos(((H - 100) * Math.PI) / 180);
 
 // ── Palette derivation ─────────────────────────────────────────────────────
 function forge(brandHex, scheme) {
   const brand = hexToOklch(brandHex);
   const Hb = brand.H;
-  const dark = scheme === 'dark';
+  const nudge = base => base * 0.85 + Hb * 0.15; // 15% toward brand hue
 
-  // Surfaces (light-canvas authoring; dark-scheme inverts via the wrapper).
-  const bg     = dark ? oklch(0.16, 0.012, Hb) : oklch(0.992, 0.006, Hb);
-  const bgAlt  = dark ? oklch(0.22, 0.018, Hb) : oklch(0.965, 0.012, Hb);
+  // Surfaces — light canvas. Dark canvas via the --dark-* block below.
+  const bgL    = oklch(0.992, 0.006, Hb);
+  const bgAltL = oklch(0.965, 0.012, Hb);
   const bgDark = oklch(0.26, Math.min(brand.C, 0.09), Hb);
-  const border = dark ? oklch(0.32, 0.02, Hb)  : oklch(0.92, 0.018, Hb);
+  const borderL = oklch(0.92, 0.018, Hb);
 
-  // Ink ramp — verified AA against the binding (darker) surface.
-  const bindSurface = dark ? bg : bgAlt;
-  const heading = solveForContrast(bindSurface, 0.045, Hb, 8.0, dark ? 'light' : 'dark');
-  const body    = solveForContrast(bindSurface, 0.05,  Hb, 5.5, dark ? 'light' : 'dark');
-  const muted   = oklch(dark ? 0.62 : 0.55, 0.03, Hb); // decorative
-  // Accent — brand hue, lightness pushed until AA on the BINDING surface
-  // (bg-alt is darker than bg, so clearing it clears bg too; this is the
-  // bug that lets light-brand accents pass on white but fail on cards).
-  const accent  = solveForContrast(bindSurface, Math.max(brand.C, 0.10), Hb, 4.6, dark ? 'light' : 'dark');
-  const accentSoft = dark ? oklch(0.24, 0.05, Hb) : oklch(0.955, 0.03, Hb);
-  const label   = accent;
-
-  // Categorical cycle — 12 evenly-spread hues anchored on the brand.
-  // Pale tier (cN-light): uniform pale fill, holds dark ink (distinctness
-  // matters little; these are backgrounds). Deep tier (cN-dark): natural-L
-  // curve + high chroma, holds white ink (distinctness matters: charts/marks).
-  const inkLight = heading;                 // dark ink on pale fills
-  const inkDark  = dark ? heading : '#FFFFFF';
-  const cLight = [], cDeep = [];
-  for (let i = 0; i < 12; i++) {
-    const H = (Hb + i * 30) % 360;
-    cLight.push(oklch(0.87, 0.085, H));
-    // deep tier: lightness from the natural curve scaled into [0.42,0.56]
-    // so white ink stays AA, with per-hue variation for ΔE separation.
-    const Ld = 0.42 + (naturalL(H) - 0.78) * (0.14 / 0.28);
-    let hex = oklch(Math.min(Ld, 0.55), 0.16, H);
-    if (contrast(hex, inkDark) < 4.5) hex = solveForContrast(inkDark, 0.16, H, 4.5, 'dark');
-    cDeep.push(hex);
-  }
-
-  // Chart series — 8 saturated, maximally distinct data-ink colours sharing
-  // the brand anchor. Even 45° hue spread + a WIDE natural-L range (light
-  // yellows, dark blues) + max chroma — the spread in BOTH hue and lightness
-  // is what makes categorical slots pop. These are marks (bars/lines/slices),
-  // gated as graphical on the canvas; per-slice label ink is the consumer's
-  // job (pair light slices with ink-light, dark slices with ink-dark).
-  const chart = [];
-  for (let i = 0; i < 8; i++) {
-    const H = (Hb + i * 45) % 360;
-    const L = 0.42 + ((naturalL(H) - 0.78) / 0.28) * 0.30; // ~0.42..0.72 by hue
-    let hex = oklch(L, 0.24, H);
-    if (contrast(hex, bg) < 3.0) hex = solveForContrast(bg, 0.24, H, 3.0, dark ? 'light' : 'dark');
-    chart.push(hex);
-  }
-
-  // Semantic state — fixed meaning, brand-nudged hue, canvas-aware pairs.
-  // Light side clears 3:1 on bg; dark side clears 3:1 on bgDark.
-  const nudge = (base) => (base * 0.85 + Hb * 0.15);     // 15% toward brand
-  const statePair = (hue) => {
-    const lightHex = solveForContrast(bg, 0.14, nudge(hue), 3.2, dark ? 'light' : 'dark');
-    const darkHex  = solveForContrast(bgDark, 0.16, nudge(hue), 3.2, 'light');
-    return `light-dark(${lightHex}, ${darkHex})`;
-  };
-  const pass = statePair(145), warn = statePair(75), fail = statePair(28);
-
-  // Universal semantic palette — pale fill + its ink, brand-nudged.
-  const warmLight = oklch(dark ? 0.40 : 0.86, 0.07, nudge(55));
-  const coolLight = oklch(dark ? 0.40 : 0.87, 0.045, nudge(245));
-  const alarm     = solveForContrast(inkDark, 0.15, 28, 4.5, 'dark');
-  const mark      = oklch(dark ? 0.55 : 0.80, 0.14, 95);
-  const note      = oklch(dark ? 0.30 : 0.95, 0.05, 95);
-  const stroke    = oklch(0.42, Math.min(brand.C, 0.11), Hb); // reads on pale bands
-  const line      = dark ? oklch(0.85, 0.01, Hb) : oklch(0.12, 0.01, Hb);
-
-  // Dark-variant tokens (consumed by section.dark + light-dark pairs).
+  // Dark-canvas surfaces/ink (consumed by light-dark() + section.dark).
   const dk = {
     bg: oklch(0.13, 0.012, Hb), bgAlt: oklch(0.20, 0.02, Hb), border: oklch(0.30, 0.025, Hb),
     heading: '#FFFFFF', body: oklch(0.86, 0.02, Hb), muted: oklch(0.60, 0.02, Hb),
-    label: oklch(0.78, 0.04, Hb), display: '#FFFFFF',
+    label: oklch(0.78, 0.05, Hb), display: '#FFFFFF',
   };
+
+  // Ink — verified AA against the binding (darker) light surface; dark side
+  // is white/near-white on the dark canvas.
+  const headingL = solveForContrast(bgAltL, 0.045, Hb, 8.0, 'dark');
+  const bodyL    = solveForContrast(bgAltL, 0.05,  Hb, 5.5, 'dark');
+  const mutedL   = oklch(0.55, 0.03, Hb);
+  const accentL  = solveForContrast(bgAltL, Math.max(brand.C, 0.10), Hb, 4.6, 'dark');
+  const accentSoftL = oklch(0.955, 0.03, Hb);
+
+  // Ink tokens as pairs (heading flips dark→white; the c-ink pair flips too).
+  const textHeading = ld(headingL, dk.heading);
+  const cInkLight   = textHeading;            // dark ink on pale; white on deep
+  const cInkDark    = ld('#FFFFFF', headingL); // white on deep; dark ink on pale
+
+  // Categorical cycle — 12 hues from the brand. For each hue: a pale fill
+  // (holds dark ink) and a deep fill (holds white ink), both per-hue
+  // contrast-checked. The band-flip pairs:
+  //   --cN-light = light-dark(pale, deep)   band fill (light: pale, dark: deep)
+  //   --cN-dark  = light-dark(deep, pale)   mark     (light: deep, dark: pale)
+  const cLightPairs = [], cDarkPairs = [], paleSet = [], deepSet = [];
+  for (let i = 0; i < 12; i++) {
+    const H = (Hb + i * 30) % 360;
+    const pale = oklch(0.87, 0.085, H);
+    const deepL = Math.min(0.42 + ((naturalL(H) - 0.78) / 0.28) * 0.13, 0.55);
+    let deep = oklch(deepL, 0.16, H);
+    if (contrast(deep, '#FFFFFF') < 4.5) deep = solveForContrast('#FFFFFF', 0.16, H, 4.5, 'dark');
+    if (contrast(pale, headingL) < 4.5) continue; // pale always clears (L 0.87)
+    paleSet.push(pale); deepSet.push(deep);
+    cLightPairs.push(ld(pale, deep));
+    cDarkPairs.push(ld(deep, pale));
+  }
+
+  // Chart series — 8 distinct marks sharing the brand anchor. Wide hue+L
+  // spread for the light canvas; a brighter sibling for the dark canvas.
+  const chartPairs = [], chartL = [], chartD = [];
+  for (let i = 0; i < 8; i++) {
+    const H = (Hb + i * 45) % 360;
+    const Lc = 0.42 + ((naturalL(H) - 0.78) / 0.28) * 0.30; // ~0.42..0.72
+    let light = oklch(Lc, 0.24, H);
+    if (contrast(light, bgL) < 3.0) light = solveForContrast(bgL, 0.24, H, 3.0, 'dark');
+    let darkv = oklch(clamp01(Lc + 0.16), 0.22, H);
+    if (contrast(darkv, dk.bg) < 3.0) darkv = solveForContrast(dk.bg, 0.22, H, 3.0, 'light');
+    chartL.push(light); chartD.push(darkv);
+    chartPairs.push(ld(light, darkv));
+  }
+
+  // Semantic state — fixed meaning, brand-nudged hue, canvas-aware pairs.
+  const statePair = hue => ld(
+    solveForContrast(bgL, 0.14, nudge(hue), 3.2, 'dark'),
+    solveForContrast(dk.bg, 0.16, nudge(hue), 3.2, 'light'),
+  );
+  const pass = statePair(145), warn = statePair(75), fail = statePair(28);
+
+  // Universal semantic palette — pale fill (light) / deep fill (dark), each
+  // holding its paired ink, brand-nudged. Same band-flip shape as the cycle.
+  const semPair = (hue, C) => {
+    const pale = oklch(0.87, C * 0.6, nudge(hue));
+    let deep = oklch(0.44, C, nudge(hue));
+    if (contrast(deep, '#FFFFFF') < 4.5) deep = solveForContrast('#FFFFFF', C, nudge(hue), 4.5, 'dark');
+    return ld(pale, deep);
+  };
+  const warm = semPair(55, 0.11);
+  const cool = semPair(245, 0.09);
+  const alarm = ld(
+    solveForContrast('#FFFFFF', 0.16, 28, 4.5, 'dark'),       // deep red, holds white (light mode)
+    solveForContrast(headingL, 0.13, 28, 4.5, 'light'),       // bright red, holds dark ink (dark mode)
+  );
+  const mark = ld(oklch(0.80, 0.14, 95), oklch(0.58, 0.13, 95));
+  const note = ld(oklch(0.95, 0.05, 95), oklch(0.30, 0.045, 95));
+
+  // Structural — stroke reads on pale bands (light) / deep bands (dark).
+  const stroke = ld(oklch(0.42, Math.min(brand.C, 0.11), Hb), oklch(0.80, 0.05, Hb));
+  const line   = ld(oklch(0.12, 0.01, Hb), dk.body);
 
   return {
     brandHex, Hb, scheme,
-    bg, bgAlt, bgDark, border, heading, body, muted, label, accent, accentSoft,
-    cLight, cDeep, inkLight, inkDark, chart, pass, warn, fail,
-    warmLight, coolLight, alarm, mark, note, stroke, line, dk,
+    bgL, bgAltL, bgDark, borderL, headingL, bodyL, mutedL, accentL, accentSoftL,
+    textHeading, cInkLight, cInkDark, dk,
+    cLightPairs, cDarkPairs, chartPairs, paleSet, deepSet, chartL, chartD,
+    pass, warn, fail, warm, cool, alarm, mark, note, stroke, line,
   };
 }
 
 // ── Emit a themes/<name>.css file ──────────────────────────────────────────
 function emit(name, p) {
-  const list = (arr, stem) => arr.map((v, i) => `  --${stem}${i + 1}: ${v};`).join('\n');
+  const cycle = (pairs, stem) => pairs.map((v, i) => `  --${stem}${i + 1}: ${v};`).join('\n');
   return `/* @theme ${name}
  * @size 16:9 1280px 720px
  * @size 4K   3840px 2160px
  *
- * Forged by tools/palette-forge.js from brand ${p.brandHex} (hue ${p.Hb.toFixed(0)}°),
- * scheme: ${p.scheme}. A contrast-clean starting point — hand-tune to taste.
+ * Forged by tools/palette-forge.js from brand ${p.brandHex} (hue ${p.Hb.toFixed(0)}°).
+ * Designed for light AND dark canvases (light-dark() pairs throughout).
+ * A contrast-clean starting point — hand-tune to taste.
  * See engineering/decisions/2026-05-29-palette-recuration.md.
  */
 @import 'lattice';
@@ -240,21 +247,21 @@ function emit(name, p) {
 
 :root {
   /* Surfaces */
-  --bg:      light-dark(${p.bg}, var(--dark-bg));
-  --bg-alt:  light-dark(${p.bgAlt}, var(--dark-bg-alt));
+  --bg:      light-dark(${p.bgL}, var(--dark-bg));
+  --bg-alt:  light-dark(${p.bgAltL}, var(--dark-bg-alt));
   --bg-dark: ${p.bgDark};
-  --border:  light-dark(${p.border}, var(--dark-border));
+  --border:  light-dark(${p.borderL}, var(--dark-border));
 
   /* Ink */
-  --text-display: ${p.dk.display};
-  --text-heading: light-dark(${p.heading}, var(--dark-text-heading));
-  --text-body:    light-dark(${p.body}, var(--dark-text-body));
-  --text-label:   light-dark(${p.label}, var(--dark-text-label));
-  --text-muted:   ${p.muted};
+  --text-display: #FFFFFF;
+  --text-heading: ${p.textHeading};
+  --text-body:    light-dark(${p.bodyL}, var(--dark-text-body));
+  --text-label:   light-dark(${p.accentL}, var(--dark-text-label));
+  --text-muted:   ${p.mutedL};
 
   /* Accent */
-  --accent:      light-dark(${p.accent}, var(--dark-text-label));
-  --accent-soft: light-dark(${p.accentSoft}, ${p.dk.bgAlt});
+  --accent:      light-dark(${p.accentL}, var(--dark-text-label));
+  --accent-soft: light-dark(${p.accentSoftL}, ${p.dk.bgAlt});
   --on-accent:   light-dark(#FFFFFF, ${p.bgDark});
 
   /* Semantic state — fixed meaning, canvas-aware */
@@ -268,38 +275,38 @@ function emit(name, p) {
   --scale-500: var(--accent);
 }
 
-/* Dark-variant tokens */
+/* Dark-variant tokens (section.dark + the dark side of every light-dark()) */
 :root {
-  --dark-bg: ${p.dk.bg};        --dark-bg-alt: ${p.dk.bgAlt};   --dark-border: ${p.dk.border};
+  --dark-bg: ${p.dk.bg};            --dark-bg-alt: ${p.dk.bgAlt};   --dark-border: ${p.dk.border};
   --dark-text-heading: ${p.dk.heading}; --dark-text-body: ${p.dk.body};
   --dark-text-muted: ${p.dk.muted};     --dark-text-label: ${p.dk.label};
   --dark-text-display: ${p.dk.display};
 }
 
-/* Categorical cycle + chart series + structural */
+/* Categorical cycle + chart series + semantic + structural */
 :root {
-  /* Pale tier — diagram band fills (hold dark ink) */
-${list(p.cLight, 'c').replace(/--c(\d+):/g, '--c$1-light:')}
+  /* Band fills — light-dark(pale, deep); paired ink flips with them */
+${cycle(p.cLightPairs, 'c').replace(/--c(\d+):/g, '--c$1-light:')}
 
-  /* Deep tier — saturated marks / kanban / gantt (hold white ink) */
-${list(p.cDeep, 'c').replace(/--c(\d+):/g, '--c$1-dark:')}
+  /* Marks — light-dark(deep, pale), the inverse of the band fill */
+${cycle(p.cDarkPairs, 'c').replace(/--c(\d+):/g, '--c$1-dark:')}
 
-  --c-ink-light: ${p.inkLight};
-  --c-ink-dark:  ${p.inkDark};
+  --c-ink-light: ${p.cInkLight};
+  --c-ink-dark:  ${p.cInkDark};
 
-  /* Chart series — 8 distinct data-ink colours, brand-anchored */
-${list(p.chart, 'chart-')}
+  /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
+${cycle(p.chartPairs, 'chart-')}
 
   /* Universal semantic palette */
-  --c-warm-light: ${p.warmLight}; --c-warm-dark: var(--c-stroke);
-  --c-cool-light: ${p.coolLight}; --c-cool-dark: var(--c-stroke);
-  --c-alarm: ${p.alarm};          --c-alarm-dark: var(--c-stroke);
-  --c-mark: ${p.mark};            --c-note: ${p.note};
+  --c-warm-light: ${p.warm}; --c-warm-dark: var(--c-stroke);
+  --c-cool-light: ${p.cool}; --c-cool-dark: var(--c-stroke);
+  --c-alarm: ${p.alarm};     --c-alarm-dark: var(--c-stroke);
+  --c-mark: ${p.mark};       --c-note: ${p.note};
 
   /* Structural */
   --c-stroke: ${p.stroke};
-  --c-line:   light-dark(${p.line}, var(--dark-text-body));
-  --c-accent-warm: ${p.chart[5]};
+  --c-line:   ${p.line};
+  --c-accent-warm: ${p.chartL[5]};
 
   /* Quadrant (Q1→c1, Q2→c2, Q3→c7, Q4→c3) */
   --c-quadrant-1-fill: var(--c1-light); --c-quadrant-1-text: var(--c-ink-light);
@@ -310,30 +317,35 @@ ${list(p.chart, 'chart-')}
 `;
 }
 
-// ── Self-audit ──────────────────────────────────────────────────────────────
+// ── Self-audit (both modes) ──────────────────────────────────────────────────
+function side(pair, mode) {
+  const m = String(pair).match(/^light-dark\(\s*(.+?)\s*,\s*(.+?)\s*\)$/);
+  if (!m) return pair;
+  return mode === 'dark' ? m[2] : m[1];
+}
 function audit(p) {
   const fails = [];
-  const aa = (label, fill, text) => { const r = contrast(fill, text); if (r < 4.5) fails.push(`AA  ${label}: ${r.toFixed(2)} (${fill}/${text})`); };
-  const ui = (label, fill, text) => { const r = contrast(fill, text); if (r < 3.0) fails.push(`UI  ${label}: ${r.toFixed(2)} (${fill}/${text})`); };
-  aa('heading/bg-alt', p.bgAlt, p.heading);
-  aa('body/bg-alt', p.bgAlt, p.body);
-  aa('label/bg', p.bg, p.label);
-  aa('label/bg-alt', p.bgAlt, p.label);
-  aa('accent/bg-alt', p.bgAlt, p.accent);
-  p.cLight.forEach((c, i) => aa(`c${i + 1}-light/ink`, c, p.inkLight));
-  p.cDeep.forEach((c, i) => aa(`c${i + 1}-dark/ink`, c, p.inkDark));
-  p.chart.forEach((c, i) => ui(`chart-${i + 1}/bg`, p.bg, c)); // marks: graphical floor
-  // state light sides
-  for (const [n, v] of [['pass', p.pass], ['warn', p.warn], ['fail', p.fail]]) {
-    const lightHex = v.match(/light-dark\(([^,]+),/)[1].trim();
-    ui(`${n}/bg`, p.bg, lightHex);
+  const check = (bar, label, fill, text) => { const r = contrast(fill, text); if (r < bar) fails.push(`${bar === 4.5 ? 'AA' : 'UI'} [${label}] ${r.toFixed(2)} (${fill}/${text})`); };
+  for (const mode of ['light', 'dark']) {
+    const ink = side(p.cInkLight, mode), inkD = side(p.cInkDark, mode);
+    const bg = mode === 'dark' ? p.dk.bg : p.bgL;
+    const bgAlt = mode === 'dark' ? p.dk.bgAlt : p.bgAltL;
+    const heading = mode === 'dark' ? p.dk.heading : p.headingL;
+    const body = mode === 'dark' ? p.dk.body : p.bodyL;
+    const accent = mode === 'dark' ? p.dk.label : p.accentL;
+    check(4.5, `${mode} heading/bgAlt`, bgAlt, heading);
+    check(4.5, `${mode} body/bgAlt`, bgAlt, body);
+    check(4.5, `${mode} accent/bgAlt`, bgAlt, accent);
+    p.cLightPairs.forEach((pr, i) => check(4.5, `${mode} c${i + 1}-light/ink`, side(pr, mode), ink));
+    p.cDarkPairs.forEach((pr, i) => check(4.5, `${mode} c${i + 1}-dark/ink`, side(pr, mode), inkD));
+    for (const [n, v] of [['pass', p.pass], ['warn', p.warn], ['fail', p.fail]]) check(3.0, `${mode} ${n}/bg`, bg, side(v, mode));
+    for (const [n, v] of [['warm', p.warm], ['cool', p.cool], ['note', p.note]]) check(4.5, `${mode} ${n}/ink`, side(v, mode), ink);
+    check(4.5, `${mode} alarm/inkDark`, side(p.alarm, mode), inkD);
+    p.chartPairs.forEach((pr, i) => check(3.0, `${mode} chart${i + 1}/bg`, bg, side(pr, mode)));
   }
-  ui('stroke/c1-light', p.cLight[0], p.stroke);
-  // chart distinctness
-  let minDE = Infinity;
-  for (let i = 0; i < p.chart.length; i++)
-    for (let j = i + 1; j < p.chart.length; j++) minDE = Math.min(minDE, deltaE(p.chart[i], p.chart[j]));
-  return { fails, minDE };
+  // distinctness on both chart sets
+  const minDE = set => { let m = Infinity; for (let i = 0; i < set.length; i++) for (let j = i + 1; j < set.length; j++) m = Math.min(m, deltaE(set[i], set[j])); return m; };
+  return { fails, deLight: minDE(p.chartL), deDark: minDE(p.chartD) };
 }
 
 // ── CLI ─────────────────────────────────────────────────────────────────────
@@ -350,25 +362,21 @@ function main() {
     else pos.push(a);
   }
   if (!pos[0]) {
-    console.error('usage: node tools/palette-forge.js <brand-hex> [--name n] [--scheme light|dark] [-o path] [--audit]');
+    console.error('usage: node tools/palette-forge.js <brand-hex> [--name n] [-o path] [--audit]');
     process.exit(2);
   }
   const p = forge(pos[0], opt.scheme === 'dark' ? 'dark' : 'light');
   const css = emit(opt.name, p);
 
-  if (opt.out) {
-    require('fs').writeFileSync(opt.out, css);
-    console.error(`wrote ${opt.out}`);
-  } else if (!opt.audit) {
-    process.stdout.write(css);
-  }
+  if (opt.out) { require('fs').writeFileSync(opt.out, css); console.error(`wrote ${opt.out}`); }
+  else if (!opt.audit) process.stdout.write(css);
 
   if (opt.audit) {
-    const { fails, minDE } = audit(p);
-    console.error(`\n  palette-forge audit — ${opt.name} (brand ${p.brandHex}, ${opt.scheme})`);
-    console.error(`  chart-series min ΔE: ${minDE.toFixed(3)}  ${minDE >= 0.10 ? '✓' : '⚠ (<0.10, slots may confuse)'}`);
+    const { fails, deLight, deDark } = audit(p);
+    console.error(`\n  palette-forge audit — ${opt.name} (brand ${p.brandHex}, hue ${p.Hb.toFixed(0)}°)`);
+    console.error(`  chart ΔE  light ${deLight.toFixed(3)}  dark ${deDark.toFixed(3)}  ${Math.min(deLight, deDark) >= 0.10 ? '✓' : '⚠ <0.10'}`);
     if (fails.length) { console.error(`  ${fails.length} contrast failures:`); fails.forEach(f => console.error(`   ✗ ${f}`)); }
-    else console.error('  ✓ all gated contrast pairs pass');
+    else console.error('  ✓ all gated pairs pass in BOTH light and dark');
     process.exitCode = fails.length ? 1 : 0;
   }
 }
