@@ -419,6 +419,16 @@ html[data-mode='dark'] .mode-toggle::before {
 	grid-template-columns: repeat(4, 1fr);
 	gap: 16px;
 }
+/* Carousel chrome (arrows + dots) is mobile-only — on desktop the strip is a
+ * static grid, so the controls stay hidden. The mobile breakpoint reveals
+ * them; the script (scrollBy + active-dot tracking) is a no-op until then. */
+.showcase-viewport {
+	position: relative;
+}
+.carousel-arrow,
+.carousel-dots {
+	display: none;
+}
 .shot {
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
@@ -604,10 +614,74 @@ html[data-mode='dark'] .for-dark {
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		padding-bottom: 6px;
+		scrollbar-width: none; /* hide native bar; arrows + dots are the cue */
+	}
+	.showcase::-webkit-scrollbar {
+		display: none;
 	}
 	.shot {
 		flex: 0 0 78%;
+		min-width: 0; /* enforce the 78% basis so every card is the same width */
+		margin: 0; /* drop the <figure> UA margin so card advance == width + gap */
 		scroll-snap-align: start;
+	}
+	/* Prev/next chevrons overlaid on the strip edges. */
+	.carousel-arrow {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		top: 42%;
+		transform: translateY(-50%);
+		width: 38px;
+		height: 38px;
+		padding: 0;
+		border-radius: 50%;
+		border: 1px solid var(--border);
+		background: color-mix(in srgb, var(--bg) 88%, transparent);
+		backdrop-filter: saturate(180%) blur(8px);
+		color: var(--text-heading);
+		font-size: 22px;
+		line-height: 1;
+		box-shadow: var(--shadow-sm);
+		cursor: pointer;
+		z-index: 3;
+		transition: opacity 0.15s ease, border-color 0.15s ease;
+	}
+	.carousel-arrow.prev {
+		left: 6px;
+	}
+	.carousel-arrow.next {
+		right: 6px;
+	}
+	.carousel-arrow:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.carousel-arrow:disabled {
+		opacity: 0;
+		pointer-events: none;
+	}
+	/* Position dots under the strip. */
+	.carousel-dots {
+		display: flex;
+		justify-content: center;
+		gap: 7px;
+		margin-top: 14px;
+	}
+	.carousel-dots .dot {
+		width: 7px;
+		height: 7px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: var(--border);
+		cursor: pointer;
+		transition: background 0.15s ease, transform 0.15s ease;
+	}
+	.carousel-dots .dot.active {
+		background: var(--accent);
+		transform: scale(1.4);
 	}
 	.foot .legal {
 		margin-left: 0;
