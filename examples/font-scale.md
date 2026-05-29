@@ -109,6 +109,34 @@ One modifier bumps the readable fonts on a slide — or the whole deck — up in
 
 ---
 
+<!-- _class: compare-table scale-xl -->
+<!-- _footer: "Tables scale — cells and headers · compare-table scale-xl" -->
+
+## Tables scale too.
+
+| Surface | Token | At scale |
+| --- | --- | --- |
+| Cell text | `fs-body-compact` | Grows |
+| Column header | `fs-meta` | Grows |
+| Plain markdown table | `fs-body` | Grows |
+| Slide title | `fs-h1 / fs-h2` | Holds |
+
+---
+
+<!-- _class: cards-grid three -->
+<!-- _footer: "What moves, what holds, what's independent · cards-grid three" -->
+
+## What moves when you scale.
+
+- Scales
+  - Body, lists, cards, h3–h6, hero, chrome, table cells, code blocks, and KaTeX math all ride `--fs-scale`.
+- Holds
+  - Slide titles and the big display numbers that reuse h1/h2 — KPI and stats figures, quote marks.
+- Independent
+  - Mermaid diagrams render their own SVG text; the scale doesn't reach inside. Size those at the diagram level.
+
+---
+
 <!-- _class: cards-grid -->
 <!-- _footer: "Scope is native Marp class scoping · cards-grid" -->
 

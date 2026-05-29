@@ -419,8 +419,14 @@ class: scale-xl                        # whole deck (front-matter directive)
 
 Composes with any layout or variant (`dark`, `cards-grid`, …) since it
 only sets one custom property. If a slide overflows at a higher scale,
-it had too much content for that magnitude — split it or step down. Full
-contract: `engineering/typography.md` §7.
+it had too much content for that magnitude — split it or step down.
+
+Coverage: tables (cells + headers), code blocks, quote text, and KaTeX
+math all scale, alongside body, lists, and cards. The one structure it
+does **not** reach is a **Mermaid diagram** — mermaid renders its own SVG
+text at a fixed size, so a scaled slide grows the title and prose around
+the diagram but not the labels inside it. Full contract:
+`engineering/typography.md` §7.
 
 ### `with-period` / `no-period`
 

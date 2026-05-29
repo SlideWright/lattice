@@ -222,6 +222,29 @@ the small, readable stuff grows toward it.** At `scale-2xl` a 16 pt body
 but no longer by 12 pt. If you genuinely need a bigger *title*, that's a
 per-element token choice (h1 vs h2), not a job for the global scale.
 
+### What scales, what holds, what's independent
+
+Verified by rendering each structure at `scale-xl` (both the marp-cli and
+emulator paths):
+
+- **Scales** (rides `--fs-scale`): body prose, lists, cards; supporting
+  headings h3–h6; the hero / big-number tier (`--fs-hero`); chrome
+  (pagination, footer, eyebrow); **table** cells (`--fs-body-compact`) and
+  headers (`--fs-meta`), including plain markdown tables (`--fs-body`);
+  **code** blocks; **quote/blockquote** body text; **KaTeX math** (its
+  `em`-relative sizing is anchored to the scaling container font-size);
+  chart legends and token-styled labels.
+- **Holds its designed size** (the h1/h2 exemption above): slide titles;
+  the KPI/stats headline numbers and panel metrics that reuse
+  `--fs-h1`/`--fs-h2`; the decorative quote marks; `list-tabular`'s large
+  index numerals; a chart's big value.
+- **Independent of the scale** (rendered to SVG by its own engine):
+  **Mermaid diagrams.** Mermaid sizes its node/edge labels itself (px
+  baked into the emitted SVG via `themeVariables`), so a scaled slide
+  enlarges the title and surrounding prose but *not* the diagram's
+  internal text. If a diagram must read larger, size it at the Mermaid
+  level (fewer nodes, a width/height directive), not via `--fs-scale`.
+
 Three modifier steps set it (`lib/base/base.modifiers.css`):
 
 | Class | `--fs-scale` | Body lands at | Use |
