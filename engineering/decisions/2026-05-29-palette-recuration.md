@@ -261,3 +261,44 @@ PDF; keep `CHANGELOG.md` current as changes land.
 The forge is the mechanism that makes "full re-curate" tractable: the 13
 existing themes are re-derived from their brand anchors, then hand-tuned,
 rather than hand-built slot by slot.
+
+## 8. Settled palette strategy (2026-05-29, bake-off)
+
+A four-agent parallel bake-off ran three palette philosophies against a
+hardened Mermaid-constraints + boardroom spec, each generating indaco +
+cuoio (light+dark), rendering pie/kanban/flowchart, and self-scoring:
+
+- **A — analogous brand-arc:** tightest cohesion; lost 8-way distinctness
+  and mis-led cuoio with wine instead of gold.
+- **B — editorial qualitative (WINNER):** curated, muted "consulting-deck"
+  ring, re-anchored so slot 1 = brand hue, leaning to the brand's
+  temperature; most distinct *and* sophisticated, brand-faithful, strong
+  in both modes.
+- **C — dual-key duotone:** strongest brand identity but fails as an
+  8-category encoder (near-identical slices, esp. dark mode).
+
+**Decision: Pure B, one system everywhere** (no separate hero duotone).
+B's strategy is now the default in `tools/palette-forge.js`: two curated
+12-slot rings (COOL/WARM) selected by brand temperature, per-slot hue
+offset + lightness/chroma trims, disciplined chroma bands (pale 0.082,
+deep 0.118, chart 0.182), value-laddered so slots separate in BOTH hue
+and lightness. The first 8 ring slots are the chart series, so charts and
+the categorical cycle are literally one designed set.
+
+**Known residual (accepted):** the pale tier (Mermaid node fills) min ΔE
+sits ~0.03 across 12 slots — the physical limit of 12 distinct pales from
+one brand hue (research spec §2D). Mitigated by per-slot lightness trims;
+diagrams rarely need 12 simultaneous distinct pale fills, and the loop is
+principled. Not a blocker.
+
+### Remaining adoption steps (every-PDF; needs visual QA)
+1. Merge identity tokens the forge doesn't emit (hljs syntax, spectrum
+   ribbon, brand-axis names, containment tier, code-bg) into the forged
+   indaco/cuoio.
+2. Wire `--chart-1..8` into `chart-family.js` across all three render
+   paths (non-breaking; defaults to `var(--cN-dark)`).
+3. Overwrite `themes/indaco.css` + `themes/cuoio.css`; then roll the
+   remaining 11 themes through the forge + hand-tune.
+4. Extend `contrast.test.js` to all 13 themes × both modes.
+5. Rebuild all galleries/baseline decks; pixel-check + spot-check.
+6. CHANGELOG (`### Changed`, palette token values) + docs.

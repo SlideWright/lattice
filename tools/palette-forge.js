@@ -129,6 +129,76 @@ const ld = (a, b) => `light-dark(${a}, ${b})`;
 // Varying L with hue maximises perceptual separation (categorical recipe).
 const naturalL = H => 0.92 + 0.14 * Math.cos(((H - 100) * Math.PI) / 180);
 
+// ── EDITORIAL QUALITATIVE RINGS (the settled palette strategy) ─────────────
+// Philosophy: a curated, MUTED, harmonious qualitative set — the "expensive
+// consulting deck / Economist / FT" look. Not an auto-rainbow of evenly
+// spaced hues. Instead we hand-pick a hue RING (12 slots) and RE-ANCHOR it so
+// slot 1 = the brand hue and the whole set rotates with the brand, leaning
+// toward the brand's temperature. Chroma + lightness are held to tight,
+// consistent bands per tier so the colours sit together like one designed
+// family rather than a primary-bright spectrum.
+//
+// The ring is expressed as ANGULAR OFFSETS from the brand hue (deg). The
+// offsets are deliberately uneven — clustered where the eye separates well,
+// spread where it doesn't — and ORDERED colourblind-aware so no two adjacent
+// slots collapse to a red/green ambiguity. Two rings: a COOL-leaning ring for
+// cool brands (indigo) and a WARM-leaning ring for warm brands (leather-gold).
+//
+// Each offset carries a per-slot lightness + chroma trim so the muted jewel /
+// earthy character holds across the ring (some hues — yellow, cyan — must be
+// pulled darker/desaturated to avoid reading neon or washing out pale fills).
+//
+//   { d: hue offset°, lt: pale-L trim, ct: chroma scale, dt: deep-L trim }
+// The first EIGHT slots are the chart series AND the most-used categorical
+// slots, so they are spread widely around the wheel (≈ even coverage,
+// perturbed for editorial taste + a per-hue L offset so adjacent slots also
+// separate in lightness — the consulting-deck trick: distinct in BOTH hue and
+// value, never relying on hue alone). Slots 9–12 interleave in the gaps.
+// brand hue indaco ≈ 242°, leather-gold ≈ 83°.
+// The first EIGHT slots span the wheel at ~45° intervals (genuine categorical
+// coverage so 8 chart series separate), but the spacing is PERTURBED — wider
+// gaps on the brand's near side, tighter on the far side — and each slot
+// carries a value (L) offset so it also separates in lightness. This is the
+// editorial difference from auto-rainbow: deliberate, uneven, value-laddered
+// spacing + heavy muting, not a mechanical 30° sweep. Slots 9–12 fill the gaps
+// with the brand-temperature accents (jewel for cool, earth for warm).
+// indaco ≈ 242°; leather-gold ≈ 83°.
+// cdt = chart value (L) offset for the first-8 chart series — ring-specific so
+// hue-adjacent slots part in lightness without affecting the band tiers.
+// First 8 = 8 well-separated hues (≈36° min gap), COOL-WEIGHTED (indigo→teal
+// half the wheel) but with the warm anchors muted for the counterweight.
+// Order is colourblind-aware: orange (slot 7) and green (slot 4) never sit
+// adjacent. Value ladder (cdt) parts hue-near slots in lightness too.
+// indaco hue ≈ 242°. Resulting hues: 242,206,128,338,86,170,30,290.
+const COOL_RING = [
+  { d:   0, lt:  0.000, ct: 1.00, dt:  0.04, cdt:  0.02 }, // 1 indigo (brand) — anchor; H242
+  { d: 324, lt:  0.000, ct: 0.92, dt:  0.02, cdt:  0.14 }, // 2 blue (light); H206
+  { d: 246, lt:  0.008, ct: 0.82, dt:  0.05, cdt:  0.08 }, // 3 green; H128
+  { d:  96, lt: -0.012, ct: 0.84, dt: -0.03, cdt: -0.04 }, // 4 magenta-rose (dark); H338
+  { d: 204, lt:  0.006, ct: 0.84, dt:  0.06, cdt:  0.18 }, // 5 gold (light, warm cw); H86
+  { d: 288, lt:  0.006, ct: 0.80, dt:  0.04, cdt: -0.04 }, // 6 teal (dark, parts from c2); H170
+  { d: 148, lt: -0.004, ct: 0.88, dt:  0.00, cdt: -0.08 }, // 7 terracotta-orange (dark); H30
+  { d:  48, lt: -0.014, ct: 0.82, dt: -0.04, cdt: -0.06 }, // 8 violet (dark); H290
+  { d:  72, lt:  0.012, ct: 0.84, dt:  0.00 }, // 9 chartreuse-olive (light); light, gap-fill
+  { d:  16, lt: -0.028, ct: 0.92, dt:  0.02 }, // 10 deep steel-blue; H258 (pale pulled darker, parts from c1)
+  { d: 126, lt:  0.014, ct: 0.78, dt: -0.02 }, // 11 light sage; H8 (light)
+  { d: 222, lt: -0.010, ct: 0.86, dt:  0.04 }, // 12 deep gold; H104 (dark)
+];
+const WARM_RING = [
+  { d:   0, lt:  0.000, ct: 1.00, dt:  0.06, cdt:  0.04 }, // 1 brand leather-gold — anchor
+  { d:  52, lt:  0.010, ct: 0.92, dt:  0.08, cdt:  0.18 }, // 2 amber-brass (light)
+  { d: 110, lt:  0.006, ct: 0.84, dt:  0.04, cdt:  0.10 }, // 3 sage-olive
+  { d: 168, lt: -0.008, ct: 0.82, dt: -0.02, cdt: -0.02 }, // 4 slate-teal (cool counterweight)
+  { d: 224, lt: -0.012, ct: 0.80, dt: -0.04, cdt:  0.02 }, // 5 dusty indigo
+  { d: 280, lt: -0.010, ct: 0.80, dt: -0.03, cdt:  0.16 }, // 6 plum (light)
+  { d: 322, lt: -0.014, ct: 0.82, dt: -0.05, cdt: -0.06 }, // 7 burgundy-rose (dark)
+  { d:  28, lt:  0.006, ct: 0.96, dt:  0.05, cdt: -0.08 }, // 8 terracotta-rust (dark, parts from c2)
+  { d: 142, lt:  0.000, ct: 0.84, dt:  0.00 }, // 9 moss
+  { d: 196, lt: -0.006, ct: 0.80, dt: -0.02 }, // 10 deep teal
+  { d:  82, lt:  0.004, ct: 0.90, dt:  0.03 }, // 11 ochre
+  { d: 250, lt: -0.008, ct: 0.78, dt: -0.02 }, // 12 indigo-violet
+];
+
 // ── Palette derivation ─────────────────────────────────────────────────────
 function forge(brandHex, scheme) {
   const brand = hexToOklch(brandHex);
@@ -161,34 +231,63 @@ function forge(brandHex, scheme) {
   const cInkLight   = textHeading;            // dark ink on pale; white on deep
   const cInkDark    = ld('#FFFFFF', headingL); // white on deep; dark ink on pale
 
-  // Categorical cycle — 12 hues from the brand. For each hue: a pale fill
-  // (holds dark ink) and a deep fill (holds white ink), both per-hue
-  // contrast-checked. The band-flip pairs:
-  //   --cN-light = light-dark(pale, deep)   band fill (light: pale, dark: deep)
-  //   --cN-dark  = light-dark(deep, pale)   mark     (light: deep, dark: pale)
-  const cLightPairs = [], cDarkPairs = [], paleSet = [], deepSet = [];
+  // EDITORIAL QUALITATIVE categorical cycle — 12 CURATED hues, re-anchored on
+  // the brand. The ring is chosen by brand temperature: a cool brand (b-blue
+  // dominant) gets the COOL ring (jewel-muted, cool-leaning); a warm brand
+  // gets the WARM ring (earthy-muted). Slot 1 is always the brand hue exactly.
+  //
+  // DISCIPLINE (what makes it read as ONE designed set, not a rainbow):
+  //   - PALE tier (Mermaid node fills): tight L band ~0.885 ± per-slot trim,
+  //     muted chroma 0.072 × per-slot scale. The trims pull adjacent pale
+  //     fills apart in L so Mermaid nodes stay distinguishable near white.
+  //   - DEEP tier (chart-family pie/kanban + cScale marks): muted chroma
+  //     ~0.118 (vs the stock 0.16) for the consulting-deck restraint, L set by
+  //     a gentle natural-luminance curve trimmed per slot, capped so every
+  //     deep fill clears AA on white ink.
+  // Brand-temperature test: OKLab b<0 (cool, blue side) → cool ring.
+  const brandAB = (() => { const hr = (Hb * Math.PI) / 180; return { a: brand.C * Math.cos(hr), b: brand.C * Math.sin(hr) }; })();
+  const RING = brandAB.b < 0.02 ? COOL_RING : WARM_RING;
+
+  const PALE_L = 0.885, PALE_C = 0.082, DEEP_C = 0.118;
+  const cLightPairs = [], cDarkPairs = [], paleSet = [], deepSet = [], cycleH = [];
   for (let i = 0; i < 12; i++) {
-    const H = (Hb + i * 30) % 360;
-    const pale = oklch(0.87, 0.085, H);
-    const deepL = Math.min(0.42 + ((naturalL(H) - 0.78) / 0.28) * 0.13, 0.55);
-    let deep = oklch(deepL, 0.16, H);
-    if (contrast(deep, '#FFFFFF') < 4.5) deep = solveForContrast('#FFFFFF', 0.16, H, 4.5, 'dark');
-    if (contrast(pale, headingL) < 4.5) continue; // pale always clears (L 0.87)
+    const slot = RING[i];
+    const H = (Hb + slot.d) % 360;
+    cycleH.push(H);
+    // Pale fill — disciplined L band, per-slot L trim for Mermaid distinctness.
+    let pale = oklch(PALE_L + slot.lt, PALE_C * slot.ct, H);
+    if (contrast(pale, headingL) < 4.5) pale = solveForContrast(headingL, PALE_C * slot.ct, H, 4.5, 'light');
+    // Deep fill — muted chroma, gentle natural-L curve + per-slot trim.
+    const deepL = Math.min(0.40 + ((naturalL(H) - 0.78) / 0.28) * 0.12 + slot.dt, 0.52);
+    let deep = oklch(deepL, DEEP_C * slot.ct, H);
+    if (contrast(deep, '#FFFFFF') < 4.5) deep = solveForContrast('#FFFFFF', DEEP_C * slot.ct, H, 4.5, 'dark');
     paleSet.push(pale); deepSet.push(deep);
     cLightPairs.push(ld(pale, deep));
     cDarkPairs.push(ld(deep, pale));
   }
 
-  // Chart series — 8 distinct marks sharing the brand anchor. Wide hue+L
-  // spread for the light canvas; a brighter sibling for the dark canvas.
+  // Chart series — 8 marks drawn from the FIRST 8 curated ring slots (so the
+  // chart palette IS the categorical palette, one designed system). Same muted
+  // discipline, a touch more chroma than bands (charts are small marks that
+  // need a little more punch) and a wider L spread for separation. The dark
+  // sibling is a brighter, equally-muted version on the dark canvas.
+  // Charts get a touch MORE chroma than bands — data marks must read at a
+  // glance — but stay well below primary-bright. Editorial restraint lives in
+  // the bands/Mermaid; charts add the controlled punch a series legend needs.
+  // We lean on a deliberate per-slot value (L) spread so the 8 series separate
+  // in BOTH hue and lightness, which is what keeps a cool-leaning ramp legible.
+  const CHART_C = 0.182;
   const chartPairs = [], chartL = [], chartD = [];
   for (let i = 0; i < 8; i++) {
-    const H = (Hb + i * 45) % 360;
-    const Lc = 0.42 + ((naturalL(H) - 0.78) / 0.28) * 0.30; // ~0.42..0.72
-    let light = oklch(Lc, 0.24, H);
-    if (contrast(light, bgL) < 3.0) light = solveForContrast(bgL, 0.24, H, 3.0, 'dark');
-    let darkv = oklch(clamp01(Lc + 0.16), 0.22, H);
-    if (contrast(darkv, dk.bg) < 3.0) darkv = solveForContrast(dk.bg, 0.22, H, 3.0, 'light');
+    const slot = RING[i];
+    const H = (Hb + slot.d) % 360;
+    // Per-slot value ladder (ring-specific `cdt`) parts hue-adjacent series in
+    // lightness — distinct in BOTH hue and value, the consulting-deck recipe.
+    const Lc = 0.46 + ((naturalL(H) - 0.84) / 0.28) * 0.14 + (slot.cdt || 0); // muted, value-laddered
+    let light = oklch(clamp01(Lc), CHART_C * slot.ct, H);
+    if (contrast(light, bgL) < 3.0) light = solveForContrast(bgL, CHART_C * slot.ct, H, 3.0, 'dark');
+    let darkv = oklch(clamp01(Lc + 0.16), CHART_C * slot.ct, H);
+    if (contrast(darkv, dk.bg) < 3.0) darkv = solveForContrast(dk.bg, CHART_C * slot.ct, H, 3.0, 'light');
     chartL.push(light); chartD.push(darkv);
     chartPairs.push(ld(light, darkv));
   }
