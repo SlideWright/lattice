@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: verdict-grid -->\n\n## Which option meets the criteria.\n\n- **First option.**\n  - [x] First criterion\n  - [-] Second criterion\n  - [ ] Third criterion\n- **Second option.**\n  - [x] First criterion\n  - [x] Second criterion\n  - [-] Third criterion\n- **Third option.**\n  - [ ] First criterion\n  - [-] Second criterion\n  - [x] Third criterion\n",
   "anatomyBlock": "verdict-grid",
-  "sample": "<!-- _class: verdict-grid -->\n\n## Which data platform clears the bar.\n\n- **Vendor North.**\n  - [x] SOC 2 Type II, no exceptions\n  - [x] Data stays in-region\n  - [-] Export documented but support-gated\n- **Vendor West.**\n  - [x] SOC 2 Type II, no exceptions\n  - [ ] Residency limited to US regions\n  - [x] Self-serve export\n- **Build in-house.**\n  - [x] Full control of schema and roadmap\n  - [-] Residency achievable, not yet built\n  - [ ] Three engineer-quarters to parity\n",
+  "sample": "<!-- _class: verdict-grid -->\n\n## Which data platform clears the bar.\n\n- **Vendor North.**\n  - [x] SOC 2 Type II\n  - [x] In-region residency\n  - [-] Self-serve export\n- **Vendor West.**\n  - [x] SOC 2 Type II\n  - [ ] In-region residency\n  - [x] Self-serve export\n- **Build in-house.**\n  - [ ] SOC 2 Type II\n  - [-] In-region residency\n  - [ ] Self-serve export\n",
   "whenToUse": [
     {
       "title": "Two to four options",
