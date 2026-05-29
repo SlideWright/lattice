@@ -142,7 +142,10 @@ delivered by the `\`label\`` inline-code paragraph modifier in
   and h1), the split-list decorative watermark (11.46cqi = 110 pt, above
   hero), and the kpi.briefing supports (3.9583cqi = 38 pt, between h2 and
   h1). These are documented exceptions, not the norm. Undocumented
-  sub-token rawness in tokens.css is a bug.
+  sub-token rawness in tokens.css is a bug. Each of the three wraps its
+  literal in `calc(<n>cqi * var(--fs-scale))` so it tracks the global font
+  scale (§7) — the *only* reason a raw cqi value should mention
+  `--fs-scale`.
 
 ## 5 — History: the 16-token legacy and the rethink
 
@@ -186,4 +189,104 @@ are documented in their component CSS.
 - `lib/base/base.tokens.css` — the canonical declarations.
 - `lib/base/base.elements.css` — h1–h6 wiring.
 - `lib/base/base.modifiers.css` — eyebrow / subtitle / key-insight
-  visual treatments that use `--fs-meta` and `--fs-body`.
+  visual treatments that use `--fs-meta` and `--fs-body`; also the
+  `scale-l` / `scale-xl` / `scale-2xl` modifiers (§7).
+
+## 7 — Global font scale
+
+The 12 tokens are normalized to a **desk-distance** footprint — Lattice
+makes boardroom PDFs read at reading distance, not slides projected at
+20 ft. When a deck *is* going to a projector, a large room, or needs an
+accessibility bump, the whole scale can be raised in one move without
+re-picking sizes.
+
+A single unitless multiplier, **`--fs-scale`** (default `1`), is baked
+into the scaling tokens: `--fs-body: calc(1.67cqi * var(--fs-scale))`,
+and so on. The three documented between-token raw-cqi sites (§4) carry it
+too. Raising it scales the readable sizes **in lockstep** — body,
+supporting headings (h3–h6), hero, chrome (pagination / footer / eyebrow)
+— so the tuned proportions are preserved; only the magnitude moves.
+
+### `--fs-h1` and `--fs-h2` are exempt
+
+Ten of the twelve tokens scale. **`--fs-h1` (48 pt) and `--fs-h2` (28 pt)
+stay fixed** — they're left as plain literals, outside the multiplier.
+That tier is the *dominant display* role: the deck title, the standard
+slide title, and the KPI/stats headline numbers and table/chart column
+headers that reuse those two tokens (see §3 and the consumer list in the
+token CSS). It is already large enough to carry the back of the room, and
+scaling it too is what makes titles balloon past the safe area or wrap to
+a second line. So the rule is: **the big stuff holds its designed size;
+the small, readable stuff grows toward it.** At `scale-2xl` a 16 pt body
+(→ 24 pt) closes most of the gap to a 28 pt h2 — the title still leads,
+but no longer by 12 pt. If you genuinely need a bigger *title*, that's a
+per-element token choice (h1 vs h2), not a job for the global scale.
+
+### What scales, what holds, what's independent
+
+Verified by rendering each structure at `scale-xl` (both the marp-cli and
+emulator paths):
+
+- **Scales** (rides `--fs-scale`): body prose, lists, cards; supporting
+  headings h3–h6; the hero / big-number tier (`--fs-hero`); chrome
+  (pagination, footer, eyebrow); **table** cells (`--fs-body-compact`) and
+  headers (`--fs-meta`), including plain markdown tables (`--fs-body`);
+  **code** blocks; **quote/blockquote** body text; **KaTeX math** (its
+  `em`-relative sizing is anchored to the scaling container font-size);
+  chart legends and token-styled labels.
+- **Holds its designed size** (the h1/h2 exemption above): slide titles;
+  the KPI/stats headline numbers and panel metrics that reuse
+  `--fs-h1`/`--fs-h2`; the decorative quote marks; `list-tabular`'s large
+  index numerals; a chart's big value.
+- **Independent of the scale** (rendered to SVG by its own engine):
+  **Mermaid diagrams.** Mermaid sizes its node/edge labels itself (px
+  baked into the emitted SVG via `themeVariables`), so a scaled slide
+  enlarges the title and surrounding prose but *not* the diagram's
+  internal text. If a diagram must read larger, size it at the Mermaid
+  level (fewer nodes, a width/height directive), not via `--fs-scale`.
+
+Three modifier steps set it (`lib/base/base.modifiers.css`):
+
+| Class | `--fs-scale` | Body lands at | Use |
+|---|---|---|---|
+| `scale-l`   | 1.15 | ~18.4 pt | Gentle bump — slightly larger rooms. |
+| `scale-xl`  | 1.3  | ~20.8 pt | Strong — projection, back-of-room reading. |
+| `scale-2xl` | 1.5  | 24 pt    | Dramatic — large halls, low-vision accessibility. |
+
+### Why the calc lives on `:root, section`
+
+Custom-property `var()` substitution happens at the element where a
+property is **declared**, not where it's used. A `:root`-only
+`calc(… * var(--fs-scale))` would bake in `--fs-scale: 1` and never see a
+per-slide override. Declaring the 12 tokens on `:root, section` gives the
+`:root` copy for the Marp chrome bridges and a per-`section` copy that
+re-runs the calc against each slide's own `--fs-scale`.
+
+### Scope is native Marp class scoping
+
+No second mechanism — the same class works at both scopes through Marp's
+own directive grammar:
+
+```markdown
+<!-- _class: scale-xl -->   <!-- this slide only (spot directive) -->
+```
+
+```yaml
+---
+marp: true
+class: scale-xl            # whole deck (global front-matter directive)
+---
+```
+
+A slide-level `_class` also scales that slide's `::after` pagination and
+`header` / `footer` chrome, since they inherit `--fs-scale` from the
+section. The modifier composes with any layout or variant (`dark`,
+`cards-grid`, …) because it only sets one custom property.
+
+### When NOT to use it
+
+This is a magnitude knob, not a size picker. If one element is wrong,
+fix the element's token (§2) — don't scale the whole slide to fix one
+heading. And if a slide overflows at a higher scale, it had too much
+content for that magnitude: split it or step the scale back down, the
+same as any overflow (§4).

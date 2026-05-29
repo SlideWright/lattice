@@ -132,18 +132,20 @@
    *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
    *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
-  --fs-meta:     1.17cqi;     /* 11.25pt — chrome */
-  --fs-body-compact: 1.40cqi; /* 13.5pt — dense reference cells (tables, grids, glossary) */
-  --fs-body:     1.67cqi;     /* 16pt — container default */
-  --fs-message:  2.1875cqi;   /* 21pt — slide-level statement */
-  --fs-emphasis: 3.125cqi;    /* 30pt — lead callout */
-  --fs-h1:       5.0cqi;      /* 48pt — dominant slide title */
-  --fs-h2:       2.9167cqi;   /* 28pt — standard slide title */
-  --fs-h3:       2.3958cqi;   /* 23pt — subheading / column header */
-  --fs-h4:       2.1875cqi;   /* 21pt — = --fs-message; inline bold at message tier */
-  --fs-h5:       1.67cqi;     /* 16pt — = --fs-body; inline bold at body tier */
-  --fs-h6:       1.17cqi;     /* 11.25pt — = --fs-meta; chrome-sized heading */
-  --fs-hero:     8.9583cqi;   /* 86pt — KPI / watermark; class-driven */
+
+  /* Global scale multiplier. Default 1 (the normalized desk-distance
+   * footprint above). The `scale-l` / `scale-xl` / `scale-2xl` modifiers
+   * (base.modifiers.css) raise it per-slide or deck-wide to bump the
+   * readable sizes in lockstep — proportions hold, only the overall
+   * magnitude moves. Ten of the twelve tokens scale; --fs-h1 and --fs-h2
+   * are deliberately EXEMPT (the dominant display tier — slide titles and
+   * the KPI/stats headline numbers that reuse them are already big enough
+   * for the back row, and scaling them too balloons / wraps titles). The
+   * scaling tokens are computed on `:root, section` so a section-level
+   * override of --fs-scale re-resolves them per slide; a :root-level
+   * override (frontmatter style or all-slides `class:`) moves the whole
+   * deck. See engineering/typography.md §7. */
+  --fs-scale: 1;
 
   /* ── Radii / line-heights ─────────────────────────────────────────── */
   --radius-sm:0.625cqi; --radius-md:0.9375cqi; --radius-lg:1.09375cqi;
@@ -310,6 +312,39 @@
    * COLOUR + SHAPE both at full strength. Neither channel sacrificed
    * for the other. */
   --state-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='2' y1='14' x2='14' y2='2' stroke='black' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/></svg>");
+}
+
+/* ── The 12 typography tokens, scaled ──────────────────────────────────
+ * Each scaling token is `<base>cqi * var(--fs-scale)`. --fs-h1 and --fs-h2
+ * are EXEMPT — left as plain literals so the dominant display tier (slide
+ * titles + the KPI/stats numbers and table/chart headers that reuse those
+ * two tokens) holds its designed size while the readable sizes grow (§7).
+ * Computed on BOTH :root and section so the multiplier re-resolves
+ * wherever --fs-scale is overridden:
+ *   - :root copy  → base×1 by default; a frontmatter `:root{--fs-scale}`
+ *     or all-slides `class:` directive moves the whole deck, and keeps the
+ *     tokens defined at :root for the Marp chrome bridges below.
+ *   - section copy → re-runs the calc against each slide's own --fs-scale,
+ *     so a spot `_class: scale-xl` scales one slide (and its ::after
+ *     pagination / header / footer chrome, which inherit from the section).
+ * The base cqi literals are the single source of truth — the pt @ HD
+ * footprint documented in engineering/typography.md §1. Do not also pin
+ * these on :root above; CSS substitutes var(--fs-scale) at the element a
+ * custom property is *declared* on, so a :root-only calc would bake in ×1
+ * and never see a per-slide override. */
+:root, section {
+  --fs-meta:     calc(1.17cqi   * var(--fs-scale)); /* 11.25pt — chrome */
+  --fs-body-compact: calc(1.40cqi * var(--fs-scale)); /* 13.5pt — dense reference cells */
+  --fs-body:     calc(1.67cqi   * var(--fs-scale)); /* 16pt — container default */
+  --fs-message:  calc(2.1875cqi * var(--fs-scale)); /* 21pt — slide-level statement */
+  --fs-emphasis: calc(3.125cqi  * var(--fs-scale)); /* 30pt — lead callout */
+  --fs-h1:       5.0cqi;                            /* 48pt — dominant slide title; NOT scaled (§7) */
+  --fs-h2:       2.9167cqi;                         /* 28pt — standard slide title; NOT scaled (§7) */
+  --fs-h3:       calc(2.3958cqi * var(--fs-scale)); /* 23pt — subheading / column header */
+  --fs-h4:       calc(2.1875cqi * var(--fs-scale)); /* 21pt — = --fs-message, weight-differentiated */
+  --fs-h5:       calc(1.67cqi   * var(--fs-scale)); /* 16pt — = --fs-body, weight-differentiated */
+  --fs-h6:       calc(1.17cqi   * var(--fs-scale)); /* 11.25pt — = --fs-meta, weight-differentiated */
+  --fs-hero:     calc(8.9583cqi * var(--fs-scale)); /* 86pt — KPI / watermark; class-driven */
 }
 
 /* ── Universal theme defaults (zero specificity — any :root override wins) ─
@@ -3940,7 +3975,7 @@ section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) 
  * tier — the briefing grid can't fit three h1-sized rows beside the hero. */
 section.kpi.briefing > ol > li:not(:first-child) > strong,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li:not(:first-child) > strong {
-  font-size: 3.9583cqi;
+  font-size: calc(3.9583cqi * var(--fs-scale));
 }
 section.kpi.briefing > ol > li,
 section.kpi:where(:not(.ops):not(.compliance):not(.trajectory):not(.spotlight)) > ol > li {
@@ -7526,7 +7561,7 @@ section.split-list .panel-left::before { content:''; position:absolute; top:0; l
  * editorial / decorative role on this layout — it tints the panel like a
  * letterpress imprint and never competes with the content for reading
  * attention. Editorial signal, not legibility. */
-section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:11.46cqi; font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
 /* Code-only paragraph (eyebrow / section label) in the processed panel-left:
  * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
 section.split-list .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
@@ -7692,7 +7727,7 @@ section.split-statement .statement-left::before { content:'\201C'; position:abso
  * commanding like the dominant title (h1). No existing token captures
  * this tier; the size is layout-specific. */
 section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:3.9583cqi; font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-statement .statement-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
 section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
@@ -9183,6 +9218,24 @@ section.dark {
 }
 
 
+/* ── FONT SCALE ──
+ * Global "bump every font up" knob. Each step raises --fs-scale, which
+ * the 12 typography tokens multiply into (base.tokens.css). EVERYTHING
+ * sized through the tokens grows in lockstep — body, headings, hero,
+ * chrome, the three documented between-token raw-cqi sites — so the
+ * carefully-tuned proportions hold; only the overall magnitude moves.
+ * The normalized footprint targets desk-distance reading; these steps
+ * opt UP for projection, large rooms, or accessibility.
+ *
+ * Scope is native Marp class scoping — no separate mechanism:
+ *   one slide  → `<!-- _class: scale-xl -->`   (spot directive)
+ *   whole deck → `<!-- class: scale-xl -->`     (global front-matter directive)
+ * Composes with any layout/variant (dark, cards-grid, …) since it only
+ * sets a custom property. See engineering/typography.md §7 and
+ * lib/base/base.docs.md. */
+section.scale-l   { --fs-scale: 1.15; }
+section.scale-xl  { --fs-scale: 1.3;  }
+section.scale-2xl { --fs-scale: 1.5;  }
 
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────

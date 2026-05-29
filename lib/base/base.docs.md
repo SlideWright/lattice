@@ -386,6 +386,48 @@ Equivalent to writing all three Marp suppression directives
 (`<!-- _paginate: false -->`, `<!-- _header: "" -->`,
 `<!-- _footer: "" -->`) in one token.
 
+### `scale-l` / `scale-xl` / `scale-2xl`
+
+Bump the readable fonts on the slide up in lockstep. The typography
+tokens are normalized for desk-distance reading; these steps raise the
+global `--fs-scale` multiplier so body, supporting headings (h3–h6),
+hero, and chrome all grow together — proportions hold, only the magnitude
+moves. **The two largest headings (`h1`, `h2`) stay fixed** so slide
+titles don't balloon or wrap; the body grows toward them instead. Reach
+for these when a deck is headed to a projector, a large room, or needs an
+accessibility bump — not to fix one oversized element (use the right
+token for that).
+
+| Class | Scale | Body lands at |
+|---|---|---|
+| `scale-l`   | ×1.15 | ~18 pt |
+| `scale-xl`  | ×1.3  | ~21 pt |
+| `scale-2xl` | ×1.5  | 24 pt  |
+
+Scope is native Marp class scoping — the same class does both:
+
+```markdown
+<!-- _class: cards-grid scale-xl -->   <!-- this slide only -->
+```
+
+```yaml
+---
+marp: true
+class: scale-xl                        # whole deck (front-matter directive)
+---
+```
+
+Composes with any layout or variant (`dark`, `cards-grid`, …) since it
+only sets one custom property. If a slide overflows at a higher scale,
+it had too much content for that magnitude — split it or step down.
+
+Coverage: tables (cells + headers), code blocks, quote text, and KaTeX
+math all scale, alongside body, lists, and cards. The one structure it
+does **not** reach is a **Mermaid diagram** — mermaid renders its own SVG
+text at a fixed size, so a scaled slide grows the title and prose around
+the diagram but not the labels inside it. Full contract:
+`engineering/typography.md` §7.
+
 ### `with-period` / `no-period`
 
 Typography variant pair. Default behavior: layouts that end headings

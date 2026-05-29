@@ -309,6 +309,24 @@ section.dark {
 }
 
 
+/* ── FONT SCALE ──
+ * Global "bump every font up" knob. Each step raises --fs-scale, which
+ * the 12 typography tokens multiply into (base.tokens.css). EVERYTHING
+ * sized through the tokens grows in lockstep — body, headings, hero,
+ * chrome, the three documented between-token raw-cqi sites — so the
+ * carefully-tuned proportions hold; only the overall magnitude moves.
+ * The normalized footprint targets desk-distance reading; these steps
+ * opt UP for projection, large rooms, or accessibility.
+ *
+ * Scope is native Marp class scoping — no separate mechanism:
+ *   one slide  → `<!-- _class: scale-xl -->`   (spot directive)
+ *   whole deck → `<!-- class: scale-xl -->`     (global front-matter directive)
+ * Composes with any layout/variant (dark, cards-grid, …) since it only
+ * sets a custom property. See engineering/typography.md §7 and
+ * lib/base/base.docs.md. */
+section.scale-l   { --fs-scale: 1.15; }
+section.scale-xl  { --fs-scale: 1.3;  }
+section.scale-2xl { --fs-scale: 1.5;  }
 
 
 /* ── BELOW-NOTE fallback ─────────────────────────────────────────────────────
