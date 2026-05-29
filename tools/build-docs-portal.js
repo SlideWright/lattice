@@ -269,9 +269,12 @@ function galleryHref(m) {
 // ── HTML: per-component article ────────────────────────────────────────────
 function renderComponent(m) {
   const h = [];
-  h.push(`<article class="component" id="${componentId(m)}">`);
+  h.push(`<article class="component" data-name="${esc(m.name)}">`);
   h.push('  <header class="component-head">');
-  h.push(`    <h3>${esc(m.name)}</h3>`);
+  // id lives on the heading (not the article) so Pagefind emits a per-component
+  // sub-result that deep-links to #c-<name>. Sidebar/chip anchors target the
+  // same id; the scroll-spy + filter below read the article's data-name.
+  h.push(`    <h3 id="${componentId(m)}">${esc(m.name)}</h3>`);
   h.push('    <div class="ffs">');
   h.push(`      <span class="ffs-pill" title="Function">${esc(tc(m.function))}</span>`);
   h.push(`      <span class="ffs-pill" title="Form">${esc(tc(m.form))}</span>`);
@@ -424,7 +427,7 @@ ${buildStyle()}
 <body>
 <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.body.classList.toggle('nav-open')">☰</button>
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" data-pagefind-ignore>
     <div class="brand">
       <a href="#top" class="brand-mark">Lattice</a>
       <p class="brand-sub">Component Reference</p>
@@ -454,7 +457,7 @@ ${nav.join('\n')}
       <span class="gen">Generated from manifests — do not edit by hand.</span>
     </footer>
   </aside>
-  <main class="content" id="top">
+  <main class="content" id="top" data-pagefind-body>
     <header class="hero">
       <p class="eyebrow">Boardroom-quality slides from Markdown</p>
       <h1>Component Reference</h1>
@@ -941,9 +944,9 @@ const SCRIPT = `(function () {
   var THRESHOLD = 120;
 
   function updateSpy() {
-    var activeId = articles.length ? articles[0].id : null;
+    var activeId = articles.length ? articles[0].querySelector('h3').id : null;
     for (var i = 0; i < articles.length; i++) {
-      if (articles[i].getBoundingClientRect().top <= THRESHOLD) activeId = articles[i].id;
+      if (articles[i].getBoundingClientRect().top <= THRESHOLD) activeId = articles[i].querySelector('h3').id;
       else break;
     }
     if (!activeId || activeId === current) return;
@@ -974,7 +977,7 @@ const SCRIPT = `(function () {
     filter.addEventListener('input', function () {
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
-        var name = art.id.replace(/^c-/, '');
+        var name = art.dataset.name;
         var lead = art.querySelector('.lead');
         var desc = lead ? lead.textContent.toLowerCase() : '';
         var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
