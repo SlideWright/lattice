@@ -50,6 +50,21 @@ const showcase = manifests
 	.filter((m) => m.showcase && m.showcase.featured)
 	.sort((a, b) => FUNCTION_ORDER.indexOf(a.function) - FUNCTION_ORDER.indexOf(b.function))
 	.map((m) => ({ fn: titleCase(m.function), nm: m.name }));
+
+// Live-render data: client-side renders the hero (and, below, the showcase
+// tiles) through the playground runtime so they follow the selected palette
+// and light/dark, instead of being baked-in-indaco static images.
+const needsMermaid = (s) => /```mermaid/.test(s || '');
+const liveData = JSON.stringify({
+	hero: { name: heroComp.name, sample: heroComp.sample, mermaid: needsMermaid(heroComp.sample) },
+	tiles: showcase.reduce((acc, s) => {
+		const m = manifests.find((x) => x.name === s.nm);
+		acc[s.nm] = { sample: m.sample || m.skeleton, mermaid: needsMermaid(m.sample || m.skeleton) };
+		return acc;
+	}, {}),
+	themeBase: url('playground/themes/'),
+	runtimeUrl: url('playground/lattice-runtime.js'),
+});
 ---
 
 <!doctype html>
@@ -125,14 +140,17 @@ const showcase = manifests
 					</div>
 
 					<div class="proof">
-						<div class="proof-code">
-							<pre><code set:html={heroCodeHtml}></code></pre>
+						<div class="proof-tabs" role="tablist" aria-label="Hero view">
+							<button class="proof-tab is-active" type="button" id="hero-tab-preview" role="tab" aria-selected="true" aria-controls="hero-stage" data-view="preview">Preview</button>
+							<button class="proof-tab" type="button" id="hero-tab-source" role="tab" aria-selected="false" aria-controls="hero-source" data-view="source">Source</button>
 						</div>
-						<div class="proof-arrow">↓ renders to ↓</div>
-						<figure class="slide-frame">
+						<figure class="slide-frame" id="hero-stage" role="tabpanel" aria-labelledby="hero-tab-preview">
 							<img class="for-light" src={url(`showcase/${heroComp.name}.light.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice`} width="1600" height="900" loading="eager" />
 							<img class="for-dark" src={url(`showcase/${heroComp.name}.dark.webp`)} alt={`A ${heroComp.name} slide rendered by Lattice in dark mode`} width="1600" height="900" loading="eager" />
 						</figure>
+						<div class="proof-code" id="hero-source" role="tabpanel" aria-labelledby="hero-tab-source" hidden>
+							<pre><code set:html={heroCodeHtml}></code></pre>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -195,7 +213,7 @@ const showcase = manifests
 							<div class="showcase" id="showcase">
 								{showcase.map((s) => (
 									<figure class="shot">
-										<div class="shot-img">
+										<div class="shot-img" data-live={s.nm}>
 											<img class="for-light" src={url(`showcase/${s.nm}.light.webp`)} alt={`${s.nm} slide`} width="1600" height="900" loading="lazy" />
 											<img class="for-dark" src={url(`showcase/${s.nm}.dark.webp`)} alt={`${s.nm} slide (dark)`} width="1600" height="900" loading="lazy" />
 										</div>
@@ -331,6 +349,134 @@ const showcase = manifests
 					strip.scrollLeft = 0; // start on the first card, not a partial snap
 					render();
 				}
+			})();
+		</script>
+
+		<!-- Live preview: render the hero (and showcase tiles) through the
+		     playground runtime so they follow the selected palette + mode. -->
+		<script type="application/json" id="ll-data" is:inline set:html={liveData}></script>
+		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
+		<script is:inline>
+			(function () {
+				var dataEl = document.getElementById('ll-data');
+				if (!dataEl) return;
+				var D = JSON.parse(dataEl.textContent);
+				var root = document.documentElement;
+				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl;
+				var SVG_POLYFILL = 'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill@2.1.0/lib/polyfill.browser.js';
+				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+
+				// ── Theme fetching (shared with the playground) ──────────────
+				var fetched = {}, latticeReady = null;
+				function fetchTheme(n) {
+					if (!fetched[n]) fetched[n] = fetch(THEME_BASE + n + '.css').then(function (r) { if (!r.ok) throw new Error(n); return r.text(); });
+					return fetched[n];
+				}
+				function ensureThemes(p, m) {
+					var PG = window.LatticePlayground;
+					if (!latticeReady) latticeReady = fetchTheme('lattice').then(function (c) { PG.addThemes([c]); });
+					var jobs = [latticeReady];
+					if (!PG.hasTheme(p)) jobs.push(fetchTheme(p).then(function (c) { PG.addThemes([c]); }));
+					if (m === 'dark') jobs.push(fetchTheme(p + '-dark').then(function (c) { PG.addThemes([c]); }).catch(function () {}));
+					return Promise.all(jobs);
+				}
+				function srcdoc(html, css, mode, mermaid) {
+					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					var s = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:' + bg +
+						';overflow:hidden}.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:auto}' + css +
+						'</style></head><body>' + html +
+						'<scr' + 'ipt src="' + SVG_POLYFILL + '"></scr' + 'ipt><scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe()</scr' + 'ipt>';
+					if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
+					s += '<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt></body></html>';
+					return s;
+				}
+
+				// ── Render one slide into a container (creates/updates iframe) ─
+				function renderInto(host, sample, mermaid) {
+					var PG = window.LatticePlayground;
+					if (!PG) return Promise.resolve(false);
+					var p = root.getAttribute('data-palette') || 'indaco';
+					var m = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+					return ensureThemes(p, m).then(function () {
+						var theme = (m === 'dark' && PG.hasTheme(p + '-dark')) ? p + '-dark' : p;
+						var out = PG.render(sample, theme);
+						var fr = host.querySelector('iframe.live');
+						if (!fr) {
+							fr = document.createElement('iframe');
+							fr.className = 'live';
+							fr.setAttribute('title', 'Live-rendered Lattice slide');
+							fr.setAttribute('scrolling', 'no');
+							fr.setAttribute('tabindex', '-1');
+							host.appendChild(fr);
+						}
+						fr.srcdoc = srcdoc(out.html, out.css, m, mermaid);
+						host.classList.add('is-live');
+						return true;
+					}).catch(function (e) { console.error('live render failed', e); return false; });
+				}
+
+				function whenReady(cb) {
+					if (window.LatticePlayground) return cb();
+					var t = setInterval(function () { if (window.LatticePlayground) { clearInterval(t); cb(); } }, 50);
+				}
+
+				whenReady(function () {
+					// ── Hero: Source / Preview flip ──────────────────────────
+					var stage = document.getElementById('hero-stage');
+					var source = document.getElementById('hero-source');
+					var tabPreview = document.getElementById('hero-tab-preview');
+					var tabSource = document.getElementById('hero-tab-source');
+					var heroView = 'preview';
+					function renderHero() { if (stage && heroView === 'preview') renderInto(stage, D.hero.sample, D.hero.mermaid); }
+					function setHeroView(v) {
+						heroView = v;
+						var preview = v === 'preview';
+						if (stage) stage.hidden = !preview;
+						if (source) source.hidden = preview;
+						if (tabPreview) { tabPreview.classList.toggle('is-active', preview); tabPreview.setAttribute('aria-selected', preview ? 'true' : 'false'); }
+						if (tabSource) { tabSource.classList.toggle('is-active', !preview); tabSource.setAttribute('aria-selected', preview ? 'false' : 'true'); }
+						if (preview) renderHero();
+					}
+					if (tabPreview) tabPreview.addEventListener('click', function () { setHeroView('preview'); });
+					if (tabSource) tabSource.addEventListener('click', function () { setHeroView('source'); });
+					renderHero();
+
+					// ── Showcase tiles: live render with static fallback ─
+					// Render the WHOLE strip once it nears the viewport (not per-tile
+					// on intersection). On the mobile carousel the off-screen tiles
+					// never intersect until swiped, so per-tile lazy left them showing
+					// the indaco static fallback — the carousel read as "not live".
+					// One render pass when the strip approaches keeps it light (below
+					// the fold) while making every tile palette-correct up front.
+					var tiles = [].slice.call(document.querySelectorAll('.shot-img[data-live]'));
+					var rendered = [];
+					function renderTile(host) {
+						var name = host.getAttribute('data-live');
+						var t = D.tiles[name];
+						if (!t) return;
+						renderInto(host, t.sample, t.mermaid).then(function (ok) { if (ok && rendered.indexOf(host) < 0) rendered.push(host); });
+					}
+					function renderAllTiles() { tiles.forEach(renderTile); }
+					var strip = document.querySelector('.showcase-carousel') || document.querySelector('.showcase');
+					if ('IntersectionObserver' in window && strip) {
+						var io = new IntersectionObserver(function (entries) {
+							if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); renderAllTiles(); }
+						}, { rootMargin: '300px' });
+						io.observe(strip);
+					} else {
+						renderAllTiles();
+					}
+
+					// ── Re-render on palette / mode change (hero + visible tiles) ─
+					var reflow;
+					new MutationObserver(function () {
+						clearTimeout(reflow);
+						reflow = setTimeout(function () {
+							renderHero();
+							rendered.forEach(renderTile);
+						}, 80);
+					}).observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
+				});
 			})();
 		</script>
 	</body>
