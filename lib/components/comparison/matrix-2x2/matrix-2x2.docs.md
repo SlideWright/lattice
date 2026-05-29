@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** matrix · **Substance** structure
 
+**Tags** `two-by-two` · `prioritize` · `strategy` · `risk`
+
 Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.
 
 ## When to use

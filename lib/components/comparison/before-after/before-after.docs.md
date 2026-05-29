@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `transformation` · `contrast` · `retrospective`
+
 Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.
 
 ## When to use

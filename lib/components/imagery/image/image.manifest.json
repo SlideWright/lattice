@@ -4,6 +4,7 @@
   "function": "imagery",
   "form": "canvas",
   "substance": "prose",
+  "tags": ["visual", "showcase", "pitch"],
   "description": "Image as the slide's anchor, with optional text alongside.",
   "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
   "variants": [

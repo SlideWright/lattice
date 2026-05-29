@@ -4,7 +4,7 @@
   "title": "Lattice component manifest",
   "description": "Spec + prose source-of-truth for a Lattice layout. The engine reads name/function/form/substance/skeleton/slots/variants. The build-component-docs.js generator reads the prose fields (description, purpose, whenToUse, antiPatterns, related, variantDocs) to emit <name>.docs.md and <name>.gallery.md. See design/design-system.md.",
   "type": "object",
-  "required": ["name", "function", "form", "substance", "description", "skeleton"],
+  "required": ["name", "function", "form", "substance", "tags", "description", "skeleton"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -32,6 +32,17 @@
     },
     "substance": {
       "enum": ["prose", "structure", "series", "graph", "mixed"]
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "3-5 search tags from the controlled vocabulary (TAG_GROUPS in lib/components/index.js). The searcher's layer — complementary to Function/Form/Substance, never a restatement of the component's own name/function/form/substance/bucket. Feeds the docs-portal filter and the generated reference. The vocabulary-membership, complementary, and cross-component clustering rules are enforced by validate() and tools/check-ownership.js. See design/design-system.md §7 (Discovery)."
     },
     "description": {
       "type": "string",

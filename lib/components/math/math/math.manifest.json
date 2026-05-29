@@ -5,6 +5,7 @@
   "bucket": "math",
   "form": "canvas",
   "substance": "prose",
+  "tags": ["formula", "assessment", "reference"],
   "description": "Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround.",
   "purpose": "Use when the slide IS the equation. KaTeX renders `$$…$$` as centred display blocks and `$…$` inline. Variants surround the math with the structure each persona expects: hero + legend (feature), step + justification (derivation), Definition/Theorem/Proof cards (theorem), side-by-side comparison (compare), equation + plot (canvas), matrix + properties (matrix), estimate ± uncertainty + interpretation (stats).",
   "variants": [

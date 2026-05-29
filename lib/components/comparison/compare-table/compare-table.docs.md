@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** ledger · **Substance** prose
 
+**Tags** `tradeoff` · `ranking` · `assessment`
+
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
 ## When to use

@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** split · **Substance** structure
 
+**Tags** `process` · `planning` · `walkthrough`
+
 Use when a multi-step process needs a phase anchor (week N, sprint, milestone) alongside the ordered steps that compose it. Ordered list renders with auto-numbered discs; unordered list uses plain discs.
 
 ## When to use

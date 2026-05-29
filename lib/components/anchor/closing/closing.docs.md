@@ -4,6 +4,8 @@
 
 **Function** anchor · **Form** bookend · **Substance** prose
 
+**Tags** `summary` · `takeaway` · `board-deck`
+
 Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals "we're done."
 
 ## When to use

@@ -4,6 +4,8 @@
 
 **Function** anchor · **Form** bookend · **Substance** prose
 
+**Tags** `pitch` · `board-deck` · `showcase` · `kickoff`
+
 First slide of every deck. Sets the topic and the visual tone. Suppresses header, footer, and pagination (or use the universal `silent` modifier for the same effect in one token).
 
 ## When to use

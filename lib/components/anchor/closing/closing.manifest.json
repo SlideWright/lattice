@@ -4,6 +4,7 @@
   "function": "anchor",
   "form": "bookend",
   "substance": "prose",
+  "tags": ["summary", "takeaway", "board-deck"],
   "description": "Final slide. Dark canvas mirror of title.",
   "purpose": "Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals \"we're done.\"",
   "variants": [

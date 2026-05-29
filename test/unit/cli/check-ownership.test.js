@@ -24,6 +24,8 @@ const {
   parseThemeTokens,
   listBasePalettes,
   REQUIRED_THEME_TOKENS,
+  checkTagClustering,
+  SINGLETON_TAGS,
   run,
 } = require('../../../tools/check-ownership');
 
@@ -117,6 +119,34 @@ describe('check-ownership', () => {
         [...transformModifierTokens(src)].sort(),
         ['delta', 'target'], // 'dark' is universal, filtered out
       );
+    });
+  });
+
+  describe('tag clustering', () => {
+    test('flags an un-allow-listed singleton tag', () => {
+      const errors = [];
+      // 'overview' appears once here and is not in SINGLETON_TAGS.
+      checkTagClustering([{ name: 'a', tags: ['overview', 'metric'] }, { name: 'b', tags: ['metric'] }], errors);
+      assert.ok(errors.some((e) => /exactly one component/.test(e) && /overview/.test(e)), errors.join('\n'));
+    });
+
+    test('does not flag a singleton that is allow-listed', () => {
+      const sole = [...SINGLETON_TAGS][0];
+      const errors = [];
+      // Pair every other used tag so only the allow-listed sole-use remains.
+      checkTagClustering([{ name: 'a', tags: [sole, 'metric'] }, { name: 'b', tags: ['metric'] }], errors);
+      assert.ok(!errors.some((e) => new RegExp(`exactly one[^]*\\b${sole}\\b`).test(e)), errors.join('\n'));
+    });
+
+    test('flags dead vocabulary (a term no component uses)', () => {
+      const errors = [];
+      checkTagClustering([{ name: 'a', tags: ['metric', 'percentage'] }, { name: 'b', tags: ['metric', 'percentage'] }], errors);
+      assert.ok(errors.some((e) => /used by no component/.test(e)), errors.join('\n'));
+    });
+
+    test('the live tree clusters cleanly', () => {
+      const { errors } = run();
+      assert.ok(!errors.some((e) => /tag/.test(e)), errors.filter((e) => /tag/.test(e)).join('\n'));
     });
   });
 

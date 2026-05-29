@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** matrix · **Substance** structure
 
+**Tags** `compliance` · `regulation` · `stoplight`
+
 Use when many regimes need comparing across the same obligations. Cells carry the universal state-token grammar ([x] applies, [-] partial, [ ] exempt, [/] out of scope) shared with checklist / verdict-grid / roadmap.
 
 ## When to use

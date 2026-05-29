@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
+**Tags** `citation` · `reference` · `compliance`
+
 Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.
 
 ## When to use

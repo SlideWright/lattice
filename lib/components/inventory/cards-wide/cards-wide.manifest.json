@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["overview", "showcase", "reference"],
   "description": "Three or four wide rows, each a full-width card.",
   "purpose": "Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.",
   "slots": {

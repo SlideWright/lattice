@@ -4,6 +4,8 @@
 
 **Function** statement · **Form** canvas · **Substance** prose
 
+**Tags** `walkthrough` · `overview` · `summary`
+
 The catch-all for explanatory content that doesn't fit a more structured layout. Resist using it when a more specific component (cards-grid, stats, compare-prose) would shape the content better.
 
 ## When to use

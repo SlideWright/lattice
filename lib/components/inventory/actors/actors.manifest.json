@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",
+  "tags": ["ownership", "onboarding", "reference"],
   "description": "Roster of responsibilities owned by named actors.",
   "purpose": "Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.",
   "slots": {

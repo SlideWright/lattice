@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** structure
 
+**Tags** `milestones` · `planning` · `changelog`
+
 Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.
 
 ## When to use

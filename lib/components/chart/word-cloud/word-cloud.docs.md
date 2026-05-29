@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** series
 
+**Tags** `tag-cloud` · `themes` · `proportion`
+
 Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.
 
 ## When to use

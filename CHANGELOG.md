@@ -39,6 +39,18 @@ in patch versions.
   scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
   the front matter for the whole deck. Composes with any layout or
   variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.
+- **Searchable component tags.** Every component manifest now declares a
+  `tags` field (3–5 entries) — the *searcher's* vocabulary, complementary
+  to the Function/Form/Substance axes. Tags are drawn from a controlled
+  vocabulary (`TAG_GROUPS` in `lib/components/index.js`) across four
+  dimensions (idiom, occasion, material, task) and must not restate the
+  component's own axis values. They surface in each `<name>.docs.md`, the
+  aggregated `dist/docs/components.md`, and as chips + a live filter facet
+  in `dist/docs/components.html` (the portal filter now matches tags as
+  well as name and description). `tools/check-ownership.js` gains a
+  `checkTagClustering` guard that fails on un-allow-listed singleton tags
+  and dead vocabulary, so the facets stay clustered. See
+  `design/design-system.md` §7.
 - **`dist/` is now a self-contained distribution.** It ships the bundled
   emulator CLI (`dist/lattice-emulator.js`, esbuild bundle of the engine
   graph — the package `bin`/`main`/`.` now resolve to it) and a generated

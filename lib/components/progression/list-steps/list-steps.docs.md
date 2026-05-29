@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** structure
 
+**Tags** `process` · `walkthrough` · `planning`
+
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 
 ## When to use

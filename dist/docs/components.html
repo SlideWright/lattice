@@ -318,6 +318,17 @@ html[data-mode="dark"] .theme-toggle::before { content: '☀'; }
 .lead { font-size: 17px; color: var(--text-heading); margin: 12px 0 0; font-weight: 500; }
 .purpose { margin: 10px 0 0; color: var(--text-body); }
 
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 9px;
+  border-radius: 11px;
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
 .component h4 {
   font-size: 12px;
   text-transform: uppercase;
@@ -477,7 +488,7 @@ tbody tr:last-child td { border-bottom: none; }
       </label>
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
     </div>
-    <input type="search" class="filter" id="filter" placeholder="Filter components…" aria-label="Filter components">
+    <input type="search" class="filter" id="filter" placeholder="Filter by name, description, or tag…" aria-label="Filter components">
     <nav class="nav">
       <div class="nav-bucket">
         <a class="nav-bucket-head" href="#b-anchor"><span>Anchor</span><span class="count">4</span></a>
@@ -615,7 +626,7 @@ tbody tr:last-child td { border-bottom: none; }
         <h2>Anchor</h2>
         <p>where you are in the deck.</p>
       </header>
-<article class="component" data-name="closing">
+<article class="component" data-name="closing" data-tags="summary takeaway board-deck">
   <header class="component-head">
     <h3 id="c-closing">closing</h3>
     <div class="ffs">
@@ -626,6 +637,11 @@ tbody tr:last-child td { border-bottom: none; }
   </header>
   <p class="lead">Final slide. Dark canvas mirror of title.</p>
   <p class="purpose">Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals &quot;we're done.&quot;</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">summary</span>
+    <span class="tag">takeaway</span>
+    <span class="tag">board-deck</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -701,7 +717,7 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/closing/closing.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="divider">
+<article class="component" data-name="divider" data-tags="section-break agenda-setting walkthrough">
   <header class="component-head">
     <h3 id="c-divider">divider</h3>
     <div class="ffs">
@@ -712,6 +728,11 @@ tbody tr:last-child td { border-bottom: none; }
   </header>
   <p class="lead">Section boundary slide. Dark canvas with a single heading.</p>
   <p class="purpose">Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">section-break</span>
+    <span class="tag">agenda-setting</span>
+    <span class="tag">walkthrough</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -786,7 +807,7 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/divider/divider.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="subtopic">
+<article class="component" data-name="subtopic" data-tags="section-break walkthrough overview">
   <header class="component-head">
     <h3 id="c-subtopic">subtopic</h3>
     <div class="ffs">
@@ -797,6 +818,11 @@ tbody tr:last-child td { border-bottom: none; }
   </header>
   <p class="lead">Sub-section boundary — lighter than divider, no canvas reskin.</p>
   <p class="purpose">Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">section-break</span>
+    <span class="tag">walkthrough</span>
+    <span class="tag">overview</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -868,7 +894,7 @@ tbody tr:last-child td { border-bottom: none; }
     <a class="gallery-link" href="../../lib/components/anchor/subtopic/subtopic.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="title">
+<article class="component" data-name="title" data-tags="pitch board-deck showcase kickoff">
   <header class="component-head">
     <h3 id="c-title">title</h3>
     <div class="ffs">
@@ -879,6 +905,12 @@ tbody tr:last-child td { border-bottom: none; }
   </header>
   <p class="lead">Opening slide. Dark canvas, centered, no chrome.</p>
   <p class="purpose">First slide of every deck. Sets the topic and the visual tone. Suppresses header, footer, and pagination (or use the universal <code>silent</code> modifier for the same effect in one token).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">pitch</span>
+    <span class="tag">board-deck</span>
+    <span class="tag">showcase</span>
+    <span class="tag">kickoff</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -950,7 +982,7 @@ One-line subtitle that frames the deck.</code></pre>
         <h2>Statement</h2>
         <p>one declarative claim per slide.</p>
       </header>
-<article class="component" data-name="big-number">
+<article class="component" data-name="big-number" data-tags="hero-number metric pitch">
   <header class="component-head">
     <h3 id="c-big-number">big-number</h3>
     <div class="ffs">
@@ -961,6 +993,11 @@ One-line subtitle that frames the deck.</code></pre>
   </header>
   <p class="lead">Single oversized number as the focal claim.</p>
   <p class="purpose">Use to make one metric land. The number should be the headline — supporting text is one short caption. The whole slide is the chart.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">hero-number</span>
+    <span class="tag">metric</span>
+    <span class="tag">pitch</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1024,7 +1061,7 @@ One-line subtitle that frames the deck.</code></pre>
     <a class="gallery-link" href="../../lib/components/statement/big-number/big-number.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="content">
+<article class="component" data-name="content" data-tags="walkthrough overview summary">
   <header class="component-head">
     <h3 id="c-content">content</h3>
     <div class="ffs">
@@ -1035,6 +1072,11 @@ One-line subtitle that frames the deck.</code></pre>
   </header>
   <p class="lead">Generic prose slide — heading plus paragraphs or a short list.</p>
   <p class="purpose">The catch-all for explanatory content that doesn't fit a more structured layout. Resist using it when a more specific component (cards-grid, stats, compare-prose) would shape the content better.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">walkthrough</span>
+    <span class="tag">overview</span>
+    <span class="tag">summary</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1100,7 +1142,7 @@ The explanatory paragraph that develops the heading goes here. Keep the slide un
     <a class="gallery-link" href="../../lib/components/statement/content/content.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="quote">
+<article class="component" data-name="quote" data-tags="pull-quote quotation showcase">
   <header class="component-head">
     <h3 id="c-quote">quote</h3>
     <div class="ffs">
@@ -1111,6 +1153,11 @@ The explanatory paragraph that develops the heading goes here. Keep the slide un
   </header>
   <p class="lead">A pulled quotation, centered, with attribution.</p>
   <p class="purpose">Use to land a phrase verbatim — customer voice, expert claim, mission statement. Keep under ~25 words. The quote IS the slide; the attribution is the supporting credit.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">pull-quote</span>
+    <span class="tag">quotation</span>
+    <span class="tag">showcase</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1170,7 +1217,7 @@ Attribution — Person, Role</code></pre>
     <a class="gallery-link" href="../../lib/components/statement/quote/quote.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-brief">
+<article class="component" data-name="split-brief" data-tags="summary board-deck takeaway">
   <header class="component-head">
     <h3 id="c-split-brief">split-brief</h3>
     <div class="ffs">
@@ -1181,6 +1228,11 @@ Attribution — Person, Role</code></pre>
   </header>
   <p class="lead">Executive brief — dark left anchor, findings list on the right with left-rule chrome.</p>
   <p class="purpose">Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">summary</span>
+    <span class="tag">board-deck</span>
+    <span class="tag">takeaway</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1249,7 +1301,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/statement/split-brief/split-brief.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-list">
+<article class="component" data-name="split-list" data-tags="overview walkthrough showcase">
   <header class="component-head">
     <h3 id="c-split-list">split-list</h3>
     <div class="ffs">
@@ -1260,6 +1312,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Featured left panel + supporting list on the right.</p>
   <p class="purpose">Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">walkthrough</span>
+    <span class="tag">showcase</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1349,7 +1406,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/statement/split-list/split-list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-statement">
+<article class="component" data-name="split-statement" data-tags="pull-quote quotation takeaway">
   <header class="component-head">
     <h3 id="c-split-statement">split-statement</h3>
     <div class="ffs">
@@ -1360,6 +1417,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right.</p>
   <p class="purpose">Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from <code>quote</code> (which is the whole slide); split-statement gives equal room to quote and consequences.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">pull-quote</span>
+    <span class="tag">quotation</span>
+    <span class="tag">takeaway</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1430,7 +1492,7 @@ One-sentence framing paragraph explaining what the findings cover.
         <h2>Inventory</h2>
         <p>parallel sets of related items.</p>
       </header>
-<article class="component" data-name="actors">
+<article class="component" data-name="actors" data-tags="ownership onboarding reference">
   <header class="component-head">
     <h3 id="c-actors">actors</h3>
     <div class="ffs">
@@ -1441,6 +1503,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Roster of responsibilities owned by named actors.</p>
   <p class="purpose">Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">ownership</span>
+    <span class="tag">onboarding</span>
+    <span class="tag">reference</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1507,7 +1574,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/actors/actors.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="agenda">
+<article class="component" data-name="agenda" data-tags="agenda-setting overview onboarding kickoff">
   <header class="component-head">
     <h3 id="c-agenda">agenda</h3>
     <div class="ffs">
@@ -1518,6 +1585,12 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Auto-numbered table of contents for the deck.</p>
   <p class="purpose">Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">agenda-setting</span>
+    <span class="tag">overview</span>
+    <span class="tag">onboarding</span>
+    <span class="tag">kickoff</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1665,7 +1738,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/agenda/agenda.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="cards-grid">
+<article class="component" data-name="cards-grid" data-tags="overview showcase summary">
   <header class="component-head">
     <h3 id="c-cards-grid">cards-grid</h3>
     <div class="ffs">
@@ -1676,6 +1749,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">2–4 parallel items, similar weight, scannable in a grid.</p>
   <p class="purpose">Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">showcase</span>
+    <span class="tag">summary</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1815,7 +1893,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-grid/cards-grid.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="cards-side">
+<article class="component" data-name="cards-side" data-tags="overview contrast tradeoff">
   <header class="component-head">
     <h3 id="c-cards-side">cards-side</h3>
     <div class="ffs">
@@ -1826,6 +1904,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Two cards side-by-side, co-equal.</p>
   <p class="purpose">Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">contrast</span>
+    <span class="tag">tradeoff</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -1905,7 +1988,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-side/cards-side.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="cards-stack">
+<article class="component" data-name="cards-stack" data-tags="overview summary reference">
   <header class="component-head">
     <h3 id="c-cards-stack">cards-stack</h3>
     <div class="ffs">
@@ -1916,6 +1999,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Parallel items stacked vertically, full-width cards.</p>
   <p class="purpose">Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">summary</span>
+    <span class="tag">reference</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2015,7 +2103,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="cards-wide">
+<article class="component" data-name="cards-wide" data-tags="overview showcase reference">
   <header class="component-head">
     <h3 id="c-cards-wide">cards-wide</h3>
     <div class="ffs">
@@ -2026,6 +2114,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Three or four wide rows, each a full-width card.</p>
   <p class="purpose">Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">showcase</span>
+    <span class="tag">reference</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2095,7 +2188,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="checklist">
+<article class="component" data-name="checklist" data-tags="status stoplight process requirements">
   <header class="component-head">
     <h3 id="c-checklist">checklist</h3>
     <div class="ffs">
@@ -2106,6 +2199,12 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Items with state markers — done, partial, todo.</p>
   <p class="purpose">Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">status</span>
+    <span class="tag">stoplight</span>
+    <span class="tag">process</span>
+    <span class="tag">requirements</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2170,7 +2269,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/checklist/checklist.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="glossary">
+<article class="component" data-name="glossary" data-tags="definition reference onboarding">
   <header class="component-head">
     <h3 id="c-glossary">glossary</h3>
     <div class="ffs">
@@ -2181,6 +2280,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Two-column term/definition table with auto-derived alphabetic range pill.</p>
   <p class="purpose">Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">definition</span>
+    <span class="tag">reference</span>
+    <span class="tag">onboarding</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2247,7 +2351,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/glossary/glossary.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="list">
+<article class="component" data-name="list" data-tags="overview summary walkthrough">
   <header class="component-head">
     <h3 id="c-list">list</h3>
     <div class="ffs">
@@ -2258,6 +2362,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Plain bullet list under a heading.</p>
   <p class="purpose">Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">overview</span>
+    <span class="tag">summary</span>
+    <span class="tag">walkthrough</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2323,7 +2432,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/list/list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="list-tabular">
+<article class="component" data-name="list-tabular" data-tags="reference overview status">
   <header class="component-head">
     <h3 id="c-list-tabular">list-tabular</h3>
     <div class="ffs">
@@ -2334,6 +2443,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Hairline-ruled ledger of items — name on the left, body on the right.</p>
   <p class="purpose">Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">reference</span>
+    <span class="tag">overview</span>
+    <span class="tag">status</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2512,7 +2626,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/list-tabular/list-tabular.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="principles">
+<article class="component" data-name="principles" data-tags="strategy okr onboarding">
   <header class="component-head">
     <h3 id="c-principles">principles</h3>
     <div class="ffs">
@@ -2523,6 +2637,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Declared statements — short stated principles, each with a one-line justification.</p>
   <p class="purpose">Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">strategy</span>
+    <span class="tag">okr</span>
+    <span class="tag">onboarding</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2639,7 +2758,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/inventory/principles/principles.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="tldr">
+<article class="component" data-name="tldr" data-tags="summary takeaway overview">
   <header class="component-head">
     <h3 id="c-tldr">tldr</h3>
     <div class="ffs">
@@ -2650,6 +2769,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Single-line takeaways — the deck or section's headline points.</p>
   <p class="purpose">Use at the end of a section or deck to restate the takeaways in one line each. Each line should be a complete claim, not a category label.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">summary</span>
+    <span class="tag">takeaway</span>
+    <span class="tag">overview</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2736,7 +2860,7 @@ One-sentence framing paragraph explaining what the findings cover.
         <h2>Comparison</h2>
         <p>how two or more options differ.</p>
       </header>
-<article class="component" data-name="before-after">
+<article class="component" data-name="before-after" data-tags="transformation contrast retrospective">
   <header class="component-head">
     <h3 id="c-before-after">before-after</h3>
     <div class="ffs">
@@ -2747,6 +2871,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Explicit state-change comparison — what was, what is.</p>
   <p class="purpose">Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">transformation</span>
+    <span class="tag">contrast</span>
+    <span class="tag">retrospective</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2826,7 +2955,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/before-after/before-after.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="compare-prose">
+<article class="component" data-name="compare-prose" data-tags="tradeoff contrast recommendation">
   <header class="component-head">
     <h3 id="c-compare-prose">compare-prose</h3>
     <div class="ffs">
@@ -2837,6 +2966,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Two prose options side-by-side with a labeled corner tag on each.</p>
   <p class="purpose">Use to weigh two approaches against each other in body text. Add the <code>chosen</code> or <code>decision</code> modifier to mark the verdict; add <code>vertical</code> to stack top/bottom instead of side-by-side.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">tradeoff</span>
+    <span class="tag">contrast</span>
+    <span class="tag">recommendation</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -2981,7 +3115,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/compare-prose/compare-prose.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="compare-table">
+<article class="component" data-name="compare-table" data-tags="tradeoff ranking assessment">
   <header class="component-head">
     <h3 id="c-compare-table">compare-table</h3>
     <div class="ffs">
@@ -2992,6 +3126,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Multi-row comparison table with consistent columns.</p>
   <p class="purpose">Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">tradeoff</span>
+    <span class="tag">ranking</span>
+    <span class="tag">assessment</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3062,7 +3201,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/compare-table/compare-table.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="decision">
+<article class="component" data-name="decision" data-tags="recommendation tradeoff strategy">
   <header class="component-head">
     <h3 id="c-decision">decision</h3>
     <div class="ffs">
@@ -3073,6 +3212,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">The verdict slide — one chosen path, named explicitly.</p>
   <p class="purpose">Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">recommendation</span>
+    <span class="tag">tradeoff</span>
+    <span class="tag">strategy</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3155,7 +3299,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/decision/decision.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="matrix-2x2">
+<article class="component" data-name="matrix-2x2" data-tags="two-by-two prioritize strategy risk">
   <header class="component-head">
     <h3 id="c-matrix-2x2">matrix-2x2</h3>
     <div class="ffs">
@@ -3166,6 +3310,12 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Static 2×2 quadrant grid with author-placed items per cell.</p>
   <p class="purpose">Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">two-by-two</span>
+    <span class="tag">prioritize</span>
+    <span class="tag">strategy</span>
+    <span class="tag">risk</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3237,7 +3387,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/matrix-2x2/matrix-2x2.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="redline">
+<article class="component" data-name="redline" data-tags="contract contrast compliance transformation">
   <header class="component-head">
     <h3 id="c-redline">redline</h3>
     <div class="ffs">
@@ -3248,6 +3398,12 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Clause-by-clause comparison — verbatim language with inline &lt;ins&gt;/&lt;del&gt; tracking the amendment.</p>
   <p class="purpose">Use when an amendment's diff is the slide. The blockquote carries the redlined text with ins/del markers; the trailing list explains why the diff matters operationally.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">contract</span>
+    <span class="tag">contrast</span>
+    <span class="tag">compliance</span>
+    <span class="tag">transformation</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3380,7 +3536,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <a class="gallery-link" href="../../lib/components/comparison/redline/redline.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-compare">
+<article class="component" data-name="split-compare" data-tags="tradeoff recommendation contrast">
   <header class="component-head">
     <h3 id="c-split-compare">split-compare</h3>
     <div class="ffs">
@@ -3391,6 +3547,11 @@ One-sentence framing paragraph explaining what the findings cover.
   </header>
   <p class="lead">Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right.</p>
   <p class="purpose">Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">tradeoff</span>
+    <span class="tag">recommendation</span>
+    <span class="tag">contrast</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3465,7 +3626,7 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/comparison/split-compare/split-compare.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="verdict-grid">
+<article class="component" data-name="verdict-grid" data-tags="scorecard ranking prioritize assessment">
   <header class="component-head">
     <h3 id="c-verdict-grid">verdict-grid</h3>
     <div class="ffs">
@@ -3476,6 +3637,12 @@ One-sentence context paragraph explaining the stakes.
   </header>
   <p class="lead">Options scored against criteria as a verdict matrix.</p>
   <p class="purpose">Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">scorecard</span>
+    <span class="tag">ranking</span>
+    <span class="tag">prioritize</span>
+    <span class="tag">assessment</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3563,7 +3730,7 @@ One-sentence context paragraph explaining the stakes.
         <h2>Progression</h2>
         <p>ordered movement through stages or time.</p>
       </header>
-<article class="component" data-name="journey">
+<article class="component" data-name="journey" data-tags="process assessment walkthrough">
   <header class="component-head">
     <h3 id="c-journey">journey</h3>
     <div class="ffs">
@@ -3574,6 +3741,11 @@ One-sentence context paragraph explaining the stakes.
   </header>
   <p class="lead">Native user-journey chart — sections of tasks, each tagged with actor(s) and a 1-5 mood. Renders as section bars, task chips, plumb lines, and mood faces.</p>
   <p class="purpose">Use when a process or experience needs charting as a horizontal sequence of moments, each scored for affect. Five variants reshape the same source list: default (Mermaid-style classic), heatmap (mood-tinted chips), curve (mood polyline with axis), swimlane (per-actor rows), weighted (chip widths proportional to <code>+volume</code>).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">process</span>
+    <span class="tag">assessment</span>
+    <span class="tag">walkthrough</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3713,7 +3885,7 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/journey/journey.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="list-criteria">
+<article class="component" data-name="list-criteria" data-tags="requirements assessment okr">
   <header class="component-head">
     <h3 id="c-list-criteria">list-criteria</h3>
     <div class="ffs">
@@ -3724,6 +3896,11 @@ One-sentence context paragraph explaining the stakes.
   </header>
   <p class="lead">Numbered criteria list — each requirement is a row with rationale.</p>
   <p class="purpose">Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">requirements</span>
+    <span class="tag">assessment</span>
+    <span class="tag">okr</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3793,7 +3970,7 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/list-criteria/list-criteria.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="list-steps">
+<article class="component" data-name="list-steps" data-tags="process walkthrough planning">
   <header class="component-head">
     <h3 id="c-list-steps">list-steps</h3>
     <div class="ffs">
@@ -3804,6 +3981,11 @@ One-sentence context paragraph explaining the stakes.
   </header>
   <p class="lead">Vertical sequence of steps, each with full description body.</p>
   <p class="purpose">Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">process</span>
+    <span class="tag">walkthrough</span>
+    <span class="tag">planning</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -3986,7 +4168,7 @@ One-sentence context paragraph explaining the stakes.
     <a class="gallery-link" href="../../lib/components/progression/list-steps/list-steps.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="roadmap">
+<article class="component" data-name="roadmap" data-tags="planning swimlane milestones agile">
   <header class="component-head">
     <h3 id="c-roadmap">roadmap</h3>
     <div class="ffs">
@@ -3997,6 +4179,12 @@ One-sentence context paragraph explaining the stakes.
   </header>
   <p class="lead">Phased multi-workstream grid — phases across the top, workstreams down the side.</p>
   <p class="purpose">Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">planning</span>
+    <span class="tag">swimlane</span>
+    <span class="tag">milestones</span>
+    <span class="tag">agile</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4137,7 +4325,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
     <a class="gallery-link" href="../../lib/components/progression/roadmap/roadmap.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-steps">
+<article class="component" data-name="split-steps" data-tags="process planning walkthrough">
   <header class="component-head">
     <h3 id="c-split-steps">split-steps</h3>
     <div class="ffs">
@@ -4148,6 +4336,11 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
   </header>
   <p class="lead">Sequential process — phase label + heading on the left, numbered step timeline on the right with a connecting line.</p>
   <p class="purpose">Use when a multi-step process needs a phase anchor (week N, sprint, milestone) alongside the ordered steps that compose it. Ordered list renders with auto-numbered discs; unordered list uses plain discs.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">process</span>
+    <span class="tag">planning</span>
+    <span class="tag">walkthrough</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4220,7 +4413,7 @@ One-sentence summary describing what this phase produces.
     <a class="gallery-link" href="../../lib/components/progression/split-steps/split-steps.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="timeline">
+<article class="component" data-name="timeline" data-tags="milestones planning changelog">
   <header class="component-head">
     <h3 id="c-timeline">timeline</h3>
     <div class="ffs">
@@ -4231,6 +4424,11 @@ One-sentence summary describing what this phase produces.
   </header>
   <p class="lead">Horizontal ordered steps along a single axis, each a labeled dot.</p>
   <p class="purpose">Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">milestones</span>
+    <span class="tag">planning</span>
+    <span class="tag">changelog</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4305,7 +4503,7 @@ One-sentence summary describing what this phase produces.
         <h2>Evidence</h2>
         <p>data that supports the argument.</p>
       </header>
-<article class="component" data-name="kpi">
+<article class="component" data-name="kpi" data-tags="dashboard scorecard metric okr">
   <header class="component-head">
     <h3 id="c-kpi">kpi</h3>
     <div class="ffs">
@@ -4316,6 +4514,12 @@ One-sentence summary describing what this phase produces.
   </header>
   <p class="lead">Executive KPI system — one base, five layout modifiers.</p>
   <p class="purpose">Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare <code>kpi</code> resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">dashboard</span>
+    <span class="tag">scorecard</span>
+    <span class="tag">metric</span>
+    <span class="tag">okr</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4521,7 +4725,7 @@ Source · regulatory register · weekly export</code></pre>
     <a class="gallery-link" href="../../lib/components/evidence/kpi/kpi.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="split-metric">
+<article class="component" data-name="split-metric" data-tags="hero-number metric assessment">
   <header class="component-head">
     <h3 id="c-split-metric">split-metric</h3>
     <div class="ffs">
@@ -4532,6 +4736,11 @@ Source · regulatory register · weekly export</code></pre>
   </header>
   <p class="lead">One number owns the room — light left with the hero metric, dark right with supporting findings.</p>
   <p class="purpose">Use when a single KPI is the argument. The hero number is the headline; the right-side list explains why the number matters and what the trend implies.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">hero-number</span>
+    <span class="tag">metric</span>
+    <span class="tag">assessment</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4604,7 +4813,7 @@ Measurement window and qualifying detail in one short sentence.
     <a class="gallery-link" href="../../lib/components/evidence/split-metric/split-metric.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="stats">
+<article class="component" data-name="stats" data-tags="dashboard metric percentage">
   <header class="component-head">
     <h3 id="c-stats">stats</h3>
     <div class="ffs">
@@ -4615,6 +4824,11 @@ Measurement window and qualifying detail in one short sentence.
   </header>
   <p class="lead">Row of 3–5 stat tiles, each with a big number and a label.</p>
   <p class="purpose">Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">dashboard</span>
+    <span class="tag">metric</span>
+    <span class="tag">percentage</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4690,7 +4904,7 @@ Measurement window and qualifying detail in one short sentence.
         <h2>Imagery</h2>
         <p>visuals that carry their own meaning.</p>
       </header>
-<article class="component" data-name="featured">
+<article class="component" data-name="featured" data-tags="showcase pitch overview visual">
   <header class="component-head">
     <h3 id="c-featured">featured</h3>
     <div class="ffs">
@@ -4701,6 +4915,12 @@ Measurement window and qualifying detail in one short sentence.
   </header>
   <p class="lead">Featured card + sub-grid — one prominent item with supporting cards.</p>
   <p class="purpose">Use after a comparison or evaluation to land the recommendation: the featured card is the winner; the sub-grid shows the alternatives or context.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">showcase</span>
+    <span class="tag">pitch</span>
+    <span class="tag">overview</span>
+    <span class="tag">visual</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4790,7 +5010,7 @@ Measurement window and qualifying detail in one short sentence.
     <a class="gallery-link" href="../../lib/components/imagery/featured/featured.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="image">
+<article class="component" data-name="image" data-tags="visual showcase pitch">
   <header class="component-head">
     <h3 id="c-image">image</h3>
     <div class="ffs">
@@ -4801,6 +5021,11 @@ Measurement window and qualifying detail in one short sentence.
   </header>
   <p class="lead">Image as the slide's anchor, with optional text alongside.</p>
   <p class="purpose">Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: <code>full</code> for edge-to-edge, <code>contain</code> for letterboxed, <code>museum</code> for a matted/framed treatment.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">visual</span>
+    <span class="tag">showcase</span>
+    <span class="tag">pitch</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4919,7 +5144,7 @@ Text leads from the right; image anchors from the left. Use when the surrounding
         <h2>Chart</h2>
         <p>series-substance data visualizations (SVG kernel).</p>
       </header>
-<article class="component" data-name="gantt">
+<article class="component" data-name="gantt" data-tags="swimlane planning milestones agile">
   <header class="component-head">
     <h3 id="c-gantt">gantt</h3>
     <div class="ffs">
@@ -4930,6 +5155,12 @@ Text leads from the right; image anchors from the left. Use when the surrounding
   </header>
   <p class="lead">Gantt chart — task bars across a date axis.</p>
   <p class="purpose">Use for project plans with overlapping or staggered tasks. Each task is a bar on the time axis; bars can span multiple periods and carry status tints.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">swimlane</span>
+    <span class="tag">planning</span>
+    <span class="tag">milestones</span>
+    <span class="tag">agile</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -4999,7 +5230,7 @@ Text leads from the right; image anchors from the left. Use when the surrounding
     <a class="gallery-link" href="../../lib/components/chart/gantt/gantt.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="kanban">
+<article class="component" data-name="kanban" data-tags="swimlane workflow status agile ownership">
   <header class="component-head">
     <h3 id="c-kanban">kanban</h3>
     <div class="ffs">
@@ -5010,6 +5241,13 @@ Text leads from the right; image anchors from the left. Use when the surrounding
   </header>
   <p class="lead">Kanban board — columns of cards by stage.</p>
   <p class="purpose">Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">swimlane</span>
+    <span class="tag">workflow</span>
+    <span class="tag">status</span>
+    <span class="tag">agile</span>
+    <span class="tag">ownership</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5083,7 +5321,7 @@ Text leads from the right; image anchors from the left. Use when the surrounding
     <a class="gallery-link" href="../../lib/components/chart/kanban/kanban.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="piechart">
+<article class="component" data-name="piechart" data-tags="donut proportion percentage">
   <header class="component-head">
     <h3 id="c-piechart">piechart</h3>
     <div class="ffs">
@@ -5094,6 +5332,11 @@ Text leads from the right; image anchors from the left. Use when the surrounding
   </header>
   <p class="lead">Pie or donut chart with legend — proportional wedges.</p>
   <p class="purpose">Use for part-to-whole breakdowns with three to six slices. Add the <code>donut</code> modifier for a hole in the middle — visually cleaner for executive decks.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">donut</span>
+    <span class="tag">proportion</span>
+    <span class="tag">percentage</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5180,7 +5423,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
     <a class="gallery-link" href="../../lib/components/chart/piechart/piechart.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="progress">
+<article class="component" data-name="progress" data-tags="percentage stoplight status">
   <header class="component-head">
     <h3 id="c-progress">progress</h3>
     <div class="ffs">
@@ -5191,6 +5434,11 @@ Wedges drawn proportionally; legend reads in author order with raw values.
   </header>
   <p class="lead">Horizontal progress bars — one row per item, percentage filled.</p>
   <p class="purpose">Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">percentage</span>
+    <span class="tag">stoplight</span>
+    <span class="tag">status</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5258,7 +5506,7 @@ Wedges drawn proportionally; legend reads in author order with raw values.
     <a class="gallery-link" href="../../lib/components/chart/progress/progress.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="quadrant">
+<article class="component" data-name="quadrant" data-tags="two-by-two positioning prioritize risk">
   <header class="component-head">
     <h3 id="c-quadrant">quadrant</h3>
     <div class="ffs">
@@ -5269,6 +5517,12 @@ Wedges drawn proportionally; legend reads in author order with raw values.
   </header>
   <p class="lead">Native 2×2 scatter chart — items plotted on two continuous axes.</p>
   <p class="purpose">Use to position items by two numeric attributes (cost × value, effort × impact). Data-driven; for static categorical 2×2 grids, use matrix-2x2.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">two-by-two</span>
+    <span class="tag">positioning</span>
+    <span class="tag">prioritize</span>
+    <span class="tag">risk</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5468,7 +5722,7 @@ Effort estimated in story-points; reach as percent of addressable users.
     <a class="gallery-link" href="../../lib/components/chart/quadrant/quadrant.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="radar">
+<article class="component" data-name="radar" data-tags="spider assessment positioning">
   <header class="component-head">
     <h3 id="c-radar">radar</h3>
     <div class="ffs">
@@ -5479,6 +5733,11 @@ Effort estimated in story-points; reach as percent of addressable users.
   </header>
   <p class="lead">Native radar / spider chart — items rated across multiple axes.</p>
   <p class="purpose">Use to compare 2–4 options across the same 4–8 criteria. Each option becomes a polygon; overlap shows where strengths align.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">spider</span>
+    <span class="tag">assessment</span>
+    <span class="tag">positioning</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5729,7 +5988,7 @@ Effort estimated in story-points; reach as percent of addressable users.
     <a class="gallery-link" href="../../lib/components/chart/radar/radar.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="state-chart">
+<article class="component" data-name="state-chart" data-tags="flowchart states workflow">
   <header class="component-head">
     <h3 id="c-state-chart">state-chart</h3>
     <div class="ffs">
@@ -5740,6 +5999,11 @@ Effort estimated in story-points; reach as percent of addressable users.
   </header>
   <p class="lead">Native state machine diagram — states as a numbered list, transitions as nested inline-code refs.</p>
   <p class="purpose">Use to show a finite-state machine — the discrete states a system can be in and the events that move between them. Authors write a numbered list; each state's index becomes its stable ref so transitions cite numbers, not names. The numbering is the layout: state i renders at row i, so there is no auto-layout problem to solve.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">flowchart</span>
+    <span class="tag">states</span>
+    <span class="tag">workflow</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5863,7 +6127,7 @@ How a draft moves from author to archive.
     <a class="gallery-link" href="../../lib/components/chart/state-chart/state-chart.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="timeline-list">
+<article class="component" data-name="timeline-list" data-tags="changelog milestones status retrospective">
   <header class="component-head">
     <h3 id="c-timeline-list">timeline-list</h3>
     <div class="ffs">
@@ -5874,6 +6138,12 @@ How a draft moves from author to archive.
   </header>
   <p class="lead">Date-stamped event list — spine with date pills, status pills, and body.</p>
   <p class="purpose">Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">changelog</span>
+    <span class="tag">milestones</span>
+    <span class="tag">status</span>
+    <span class="tag">retrospective</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -5942,7 +6212,7 @@ How a draft moves from author to archive.
     <a class="gallery-link" href="../../lib/components/chart/timeline-list/timeline-list.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="word-cloud">
+<article class="component" data-name="word-cloud" data-tags="tag-cloud themes proportion">
   <header class="component-head">
     <h3 id="c-word-cloud">word-cloud</h3>
     <div class="ffs">
@@ -5953,6 +6223,11 @@ How a draft moves from author to archive.
   </header>
   <p class="lead">Spiral-packed word cloud — items sized by weight.</p>
   <p class="purpose">Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">tag-cloud</span>
+    <span class="tag">themes</span>
+    <span class="tag">proportion</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6092,7 +6367,7 @@ How a draft moves from author to archive.
         <h2>Diagram</h2>
         <p>graph-substance network visuals (external renderer).</p>
       </header>
-<article class="component" data-name="diagram">
+<article class="component" data-name="diagram" data-tags="flowchart org-chart sequence process">
   <header class="component-head">
     <h3 id="c-diagram">diagram</h3>
     <div class="ffs">
@@ -6103,6 +6378,12 @@ How a draft moves from author to archive.
   </header>
   <p class="lead">Mermaid diagram as the slide's centerpiece.</p>
   <p class="purpose">Use for relational or topological visuals — flowcharts, sequence diagrams, state machines, ER diagrams. The diagram should occupy at least half the slide.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">flowchart</span>
+    <span class="tag">org-chart</span>
+    <span class="tag">sequence</span>
+    <span class="tag">process</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6178,7 +6459,7 @@ flowchart LR
         <h2>Math</h2>
         <p>typeset equations and proofs.</p>
       </header>
-<article class="component" data-name="math">
+<article class="component" data-name="math" data-tags="formula assessment reference">
   <header class="component-head">
     <h3 id="c-math">math</h3>
     <div class="ffs">
@@ -6189,6 +6470,11 @@ flowchart LR
   </header>
   <p class="lead">Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround.</p>
   <p class="purpose">Use when the slide IS the equation. KaTeX renders <code>$$…$$</code> as centred display blocks and <code>$…$</code> inline. Variants surround the math with the structure each persona expects: hero + legend (feature), step + justification (derivation), Definition/Theorem/Proof cards (theorem), side-by-side comparison (compare), equation + plot (canvas), matrix + properties (matrix), estimate ± uncertainty + interpretation (stats).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">formula</span>
+    <span class="tag">assessment</span>
+    <span class="tag">reference</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6407,7 +6693,7 @@ $$
         <h2>Code</h2>
         <p>syntax-highlighted source code blocks.</p>
       </header>
-<article class="component" data-name="code">
+<article class="component" data-name="code" data-tags="snippet walkthrough reference">
   <header class="component-head">
     <h3 id="c-code">code</h3>
     <div class="ffs">
@@ -6418,6 +6704,11 @@ $$
   </header>
   <p class="lead">Single fenced code block as the slide's centerpiece.</p>
   <p class="purpose">Use when the code IS the slide — an API snippet, a config example, a migration. For comparing two versions, use compare-code.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">snippet</span>
+    <span class="tag">walkthrough</span>
+    <span class="tag">reference</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6485,7 +6776,7 @@ app.post('/api/v2/auth', async (req, res) =&gt; {
     <a class="gallery-link" href="../../lib/components/code/code/code.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="compare-code">
+<article class="component" data-name="compare-code" data-tags="snippet contrast tradeoff">
   <header class="component-head">
     <h3 id="c-compare-code">compare-code</h3>
     <div class="ffs">
@@ -6496,6 +6787,11 @@ app.post('/api/v2/auth', async (req, res) =&gt; {
   </header>
   <p class="lead">Two fenced code blocks side-by-side, each with a label.</p>
   <p class="purpose">Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">snippet</span>
+    <span class="tag">contrast</span>
+    <span class="tag">tradeoff</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6614,7 +6910,7 @@ function loadOne(name) {
         <h2>Legal</h2>
         <p>citation-aware layouts for statutes, obligations, and regulatory change.</p>
       </header>
-<article class="component" data-name="authority-chain">
+<article class="component" data-name="authority-chain" data-tags="regulation citation sequence">
   <header class="component-head">
     <h3 id="c-authority-chain">authority-chain</h3>
     <div class="ffs">
@@ -6625,6 +6921,11 @@ function loadOne(name) {
   </header>
   <p class="lead">Provenance chain — statute to regulation to guidance to case, walked in order.</p>
   <p class="purpose">Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">regulation</span>
+    <span class="tag">citation</span>
+    <span class="tag">sequence</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6774,7 +7075,7 @@ function loadOne(name) {
     <a class="gallery-link" href="../../lib/components/legal/authority-chain/authority-chain.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="citation-card">
+<article class="component" data-name="citation-card" data-tags="citation quotation contract">
   <header class="component-head">
     <h3 id="c-citation-card">citation-card</h3>
     <div class="ffs">
@@ -6785,6 +7086,11 @@ function loadOne(name) {
   </header>
   <p class="lead">Single authoritative reference — heading + citation + verbatim quote + plain-English gloss.</p>
   <p class="purpose">Use when one citation IS the slide. The blockquote carries the verbatim language; the trailing list explains what it means and what we must do about it.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">citation</span>
+    <span class="tag">quotation</span>
+    <span class="tag">contract</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -6914,7 +7220,7 @@ function loadOne(name) {
     <a class="gallery-link" href="../../lib/components/legal/citation-card/citation-card.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="obligation-matrix">
+<article class="component" data-name="obligation-matrix" data-tags="compliance regulation stoplight">
   <header class="component-head">
     <h3 id="c-obligation-matrix">obligation-matrix</h3>
     <div class="ffs">
@@ -6925,6 +7231,11 @@ function loadOne(name) {
   </header>
   <p class="lead">Regulation × obligation grid — state-marker cells encode applies / partial / exempt at a glance.</p>
   <p class="purpose">Use when many regimes need comparing across the same obligations. Cells carry the universal state-token grammar ([x] applies, [-] partial, [ ] exempt, [/] out of scope) shared with checklist / verdict-grid / roadmap.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">compliance</span>
+    <span class="tag">regulation</span>
+    <span class="tag">stoplight</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -7031,7 +7342,7 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     <a class="gallery-link" href="../../lib/components/legal/obligation-matrix/obligation-matrix.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="regulatory-update">
+<article class="component" data-name="regulatory-update" data-tags="changelog compliance regulation">
   <header class="component-head">
     <h3 id="c-regulatory-update">regulatory-update</h3>
     <div class="ffs">
@@ -7042,6 +7353,11 @@ Each row promotes to a card with body-level breathing room.</code></pre>
   </header>
   <p class="lead">Change log against a baseline — numbered list of statutes/cases/rules with citation, summary, and effective date.</p>
   <p class="purpose">Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">changelog</span>
+    <span class="tag">compliance</span>
+    <span class="tag">regulation</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -7224,7 +7540,7 @@ Each row promotes to a card with body-level breathing room.</code></pre>
     <a class="gallery-link" href="../../lib/components/legal/regulatory-update/regulatory-update.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
-<article class="component" data-name="statute-stack">
+<article class="component" data-name="statute-stack" data-tags="citation reference compliance">
   <header class="component-head">
     <h3 id="c-statute-stack">statute-stack</h3>
     <div class="ffs">
@@ -7235,6 +7551,11 @@ Each row promotes to a card with body-level breathing room.</code></pre>
   </header>
   <p class="lead">Citation hierarchy — federal / state / local rows with citation, headline obligation, and status.</p>
   <p class="purpose">Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">citation</span>
+    <span class="tag">reference</span>
+    <span class="tag">compliance</span>
+  </div>
   <section class="guidance use">
     <h4>When to use</h4>
     <ul>
@@ -7473,9 +7794,10 @@ Each row promotes to a card with body-level breathing room.</code></pre>
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
         var name = art.dataset.name;
+        var tags = (art.dataset.tags || '').toLowerCase();
         var lead = art.querySelector('.lead');
         var desc = lead ? lead.textContent.toLowerCase() : '';
-        var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+        var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1 || tags.indexOf(q) !== -1;
         art.classList.toggle('hidden', !match);
         var navLi = byId['c-' + name] ? byId['c-' + name].parentElement : null;
         if (navLi) navLi.classList.toggle('hidden', !match);

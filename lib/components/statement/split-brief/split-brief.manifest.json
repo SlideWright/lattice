@@ -4,6 +4,7 @@
   "function": "statement",
   "form": "split",
   "substance": "structure",
+  "tags": ["summary", "board-deck", "takeaway"],
   "description": "Executive brief — dark left anchor, findings list on the right with left-rule chrome.",
   "purpose": "Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.",
   "slots": {

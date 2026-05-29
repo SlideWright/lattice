@@ -4,6 +4,8 @@
 
 **Function** statement · **Form** canvas · **Substance** prose
 
+**Tags** `hero-number` · `metric` · `pitch`
+
 Use to make one metric land. The number should be the headline — supporting text is one short caption. The whole slide is the chart.
 
 ## When to use

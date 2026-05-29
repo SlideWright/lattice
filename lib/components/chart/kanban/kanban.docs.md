@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** series
 
+**Tags** `swimlane` · `workflow` · `status` · `agile` · `ownership`
+
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.
 
 ## When to use

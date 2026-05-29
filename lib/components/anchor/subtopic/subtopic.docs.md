@@ -4,6 +4,8 @@
 
 **Function** anchor · **Form** divider · **Substance** prose
 
+**Tags** `section-break` · `walkthrough` · `overview`
+
 Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.
 
 ## When to use

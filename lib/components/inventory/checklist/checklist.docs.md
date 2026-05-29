@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `status` · `stoplight` · `process` · `requirements`
+
 Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.
 
 ## When to use

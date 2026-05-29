@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["agenda-setting", "overview", "onboarding", "kickoff"],
   "description": "Auto-numbered table of contents for the deck.",
   "purpose": "Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.",
   "variants": [

@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** prose
 
+**Tags** `citation` · `quotation` · `contract`
+
 Use when one citation IS the slide. The blockquote carries the verbatim language; the trailing list explains what it means and what we must do about it.
 
 ## When to use

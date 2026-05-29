@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "split",
   "substance": "structure",
+  "tags": ["overview", "contrast", "tradeoff"],
   "description": "Two cards side-by-side, co-equal.",
   "purpose": "Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.",
   "variants": [

@@ -148,6 +148,10 @@ function renderDocs(m) {
   lines.push('');
   lines.push(`**Function** ${m.function} · **Form** ${m.form} · **Substance** ${m.substance}`);
   lines.push('');
+  if (Array.isArray(m.tags) && m.tags.length) {
+    lines.push(`**Tags** ${m.tags.map((t) => `\`${t}\``).join(' · ')}`);
+    lines.push('');
+  }
   if (m.purpose) {
     lines.push(m.purpose);
     lines.push('');

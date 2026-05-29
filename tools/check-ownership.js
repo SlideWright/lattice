@@ -55,7 +55,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {
   loadAll, manifestBucket, BUCKETS,
-  UNIVERSAL_VARIANTS, SEMI_UNIVERSAL_VARIANTS,
+  UNIVERSAL_VARIANTS, SEMI_UNIVERSAL_VARIANTS, TAGS,
 } = require('../lib/components');
 const { TRANSFORMERS } = require('../lib/transformers/registry');
 
@@ -107,6 +107,23 @@ const VARIANT_DECL_IGNORE = new Map([
 // section (section.<chart>.chart-frame); it is engine chrome, present on
 // every chart regardless of variant.
 const STRUCTURAL_ROOT_CLASSES = new Set(['chart-frame']);
+
+// Search tags that legitimately apply to exactly ONE component — a
+// genuinely-unique idiom or material with no sibling that shares it
+// (`spider` is radar's alone; `formula` is math's alone). Every OTHER tag
+// must be used by ≥2 components so the search facets cluster; a new
+// singleton is almost always a typo or a tag that should be reused. Add an
+// entry here only with that justification. The default expectation is reuse.
+const SINGLETON_TAGS = new Set([
+  'formula',    // math — typeset equations
+  'donut',      // piechart — the donut idiom
+  'spider',     // radar — the spider/radar idiom
+  'tag-cloud',  // word-cloud — the tag-cloud idiom
+  'org-chart',  // diagram — org-chart idiom
+  'themes',     // word-cloud — recurring themes/terms
+  'definition', // glossary — term definitions
+  'states',     // state-chart — state machine states
+]);
 
 // Core token contract every base palette must define directly. These are
 // the surface tokens the portal and base layout consume without an engine
@@ -374,6 +391,50 @@ function checkVariantDeclaration(manifests, errors) {
   }
 }
 
+/**
+ * Cross-check the search-tag vocabulary CLUSTERS. Per-manifest validity
+ * (membership in the controlled vocabulary, the complementary rule, the
+ * 3-5 count) is already enforced by validate() at load time; this guard
+ * adds the cross-component property that vocabulary alone can't express:
+ *
+ *   - Every tag used by exactly one component must be allow-listed in
+ *     SINGLETON_TAGS. An un-allow-listed singleton is the tag-equivalent
+ *     of the invisible-variant drift — a one-off term that fragments
+ *     search instead of clustering it (the author searches `roadmap` and
+ *     finds nothing because the lone tag was `roadmapping`).
+ *   - No vocabulary term may be DEAD (used by zero components). Dead
+ *     vocabulary is noise the next author has to wade through; prune it
+ *     from TAG_GROUPS or assign it.
+ */
+function checkTagClustering(manifests, errors) {
+  const usage = new Map();
+  for (const t of TAGS) usage.set(t, 0);
+  for (const m of manifests) {
+    if (!Array.isArray(m.tags)) continue;
+    for (const t of m.tags) usage.set(t, (usage.get(t) || 0) + 1);
+  }
+  const singletons = [];
+  const dead = [];
+  for (const [t, n] of usage) {
+    if (n === 0) dead.push(t);
+    else if (n === 1 && !SINGLETON_TAGS.has(t)) singletons.push(t);
+  }
+  if (singletons.length) {
+    errors.push(
+      `search tag(s) used by exactly one component: ${singletons.sort().join(', ')}. ` +
+      `A tag must cluster (≥2 components) so the docs-portal filter groups, not fragments. ` +
+      `Reuse the tag on a sibling component, or — if it is genuinely unique to one layout — ` +
+      `add it to SINGLETON_TAGS in tools/check-ownership.js with a one-line justification.`,
+    );
+  }
+  if (dead.length) {
+    errors.push(
+      `tag vocabulary term(s) used by no component: ${dead.sort().join(', ')}. ` +
+      `Dead vocabulary is search noise — assign each term to a component or remove it from TAG_GROUPS in lib/components/index.js.`,
+    );
+  }
+}
+
 // ── Theme token parsing ────────────────────────────────────────────────────
 
 function parseThemeTokens(css) {
@@ -515,6 +576,7 @@ function run() {
   checkComponentNames(manifests, errors);
   checkComponentCss(manifests, errors);
   checkVariantDeclaration(manifests, errors);
+  checkTagClustering(manifests, errors);
   checkThemeTokenParity(errors);
   return {
     errors,
@@ -557,9 +619,11 @@ module.exports = {
   cssRootModifierTokens,
   transformModifierTokens,
   checkVariantDeclaration,
+  checkTagClustering,
   parseThemeTokens,
   listBasePalettes,
   CO_OWNED_LAYOUTS,
   SHARED_SELECTORS,
   REQUIRED_THEME_TOKENS,
+  SINGLETON_TAGS,
 };

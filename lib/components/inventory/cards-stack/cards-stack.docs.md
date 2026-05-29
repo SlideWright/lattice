@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `overview` · `summary` · `reference`
+
 Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.
 
 ## When to use

@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** ledger · **Substance** structure
 
+**Tags** `changelog` · `compliance` · `regulation`
+
 Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).
 
 ## When to use

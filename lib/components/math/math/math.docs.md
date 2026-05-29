@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** prose
 
+**Tags** `formula` · `assessment` · `reference`
+
 Use when the slide IS the equation. KaTeX renders `$$…$$` as centred display blocks and `$…$` inline. Variants surround the math with the structure each persona expects: hero + legend (feature), step + justification (derivation), Definition/Theorem/Proof cards (theorem), side-by-side comparison (compare), equation + plot (canvas), matrix + properties (matrix), estimate ± uncertainty + interpretation (stats).
 
 ## When to use

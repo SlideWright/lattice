@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `agenda-setting` · `overview` · `onboarding` · `kickoff`
+
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.
 
 ## When to use

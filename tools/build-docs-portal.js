@@ -269,7 +269,8 @@ function galleryHref(m) {
 // ── HTML: per-component article ────────────────────────────────────────────
 function renderComponent(m) {
   const h = [];
-  h.push(`<article class="component" data-name="${esc(m.name)}">`);
+  const tagList = Array.isArray(m.tags) ? m.tags : [];
+  h.push(`<article class="component" data-name="${esc(m.name)}" data-tags="${esc(tagList.join(' '))}">`);
   h.push('  <header class="component-head">');
   // id lives on the heading (not the article) so Pagefind emits a per-component
   // sub-result that deep-links to #c-<name>. Sidebar/chip anchors target the
@@ -283,6 +284,11 @@ function renderComponent(m) {
   h.push('  </header>');
   h.push(`  <p class="lead">${inline(m.description)}</p>`);
   if (m.purpose) h.push(`  <p class="purpose">${inline(m.purpose)}</p>`);
+  if (tagList.length) {
+    h.push('  <div class="tags" data-pagefind-ignore>');
+    for (const t of tagList) h.push(`    <span class="tag">${esc(t)}</span>`);
+    h.push('  </div>');
+  }
 
   if (Array.isArray(m.whenToUse) && m.whenToUse.length) {
     h.push('  <section class="guidance use">');
@@ -448,7 +454,7 @@ ${options}
       </label>
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
     </div>
-    <input type="search" class="filter" id="filter" placeholder="Filter components…" aria-label="Filter components">
+    <input type="search" class="filter" id="filter" placeholder="Filter by name, description, or tag…" aria-label="Filter components">
     <nav class="nav">
 ${nav.join('\n')}
     </nav>
@@ -768,6 +774,17 @@ html[data-mode="dark"] .theme-toggle::before { content: '☀'; }
 .lead { font-size: 17px; color: var(--text-heading); margin: 12px 0 0; font-weight: 500; }
 .purpose { margin: 10px 0 0; color: var(--text-body); }
 
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 9px;
+  border-radius: 11px;
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
 .component h4 {
   font-size: 12px;
   text-transform: uppercase;
@@ -978,9 +995,10 @@ const SCRIPT = `(function () {
       var q = filter.value.trim().toLowerCase();
       document.querySelectorAll('article.component').forEach(function (art) {
         var name = art.dataset.name;
+        var tags = (art.dataset.tags || '').toLowerCase();
         var lead = art.querySelector('.lead');
         var desc = lead ? lead.textContent.toLowerCase() : '';
-        var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+        var match = !q || name.indexOf(q) !== -1 || desc.indexOf(q) !== -1 || tags.indexOf(q) !== -1;
         art.classList.toggle('hidden', !match);
         var navLi = byId['c-' + name] ? byId['c-' + name].parentElement : null;
         if (navLi) navLi.classList.toggle('hidden', !match);

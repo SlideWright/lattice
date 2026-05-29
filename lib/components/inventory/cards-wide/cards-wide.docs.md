@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `overview` · `showcase` · `reference`
+
 Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.
 
 ## When to use

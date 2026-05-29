@@ -4,6 +4,7 @@
   "function": "evidence",
   "form": "split",
   "substance": "structure",
+  "tags": ["hero-number", "metric", "assessment"],
   "description": "One number owns the room — light left with the hero metric, dark right with supporting findings.",
   "purpose": "Use when a single KPI is the argument. The hero number is the headline; the right-side list explains why the number matters and what the trend implies.",
   "slots": {

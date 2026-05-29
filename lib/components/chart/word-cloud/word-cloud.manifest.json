@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "canvas",
   "substance": "series",
+  "tags": ["tag-cloud", "themes", "proportion"],
   "description": "Spiral-packed word cloud — items sized by weight.",
   "purpose": "Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.",
   "slots": {

@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `tradeoff` · `contrast` · `recommendation`
+
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 
 ## When to use

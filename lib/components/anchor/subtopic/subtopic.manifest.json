@@ -4,6 +4,7 @@
   "function": "anchor",
   "form": "divider",
   "substance": "prose",
+  "tags": ["section-break", "walkthrough", "overview"],
   "description": "Sub-section boundary — lighter than divider, no canvas reskin.",
   "purpose": "Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.",
   "variants": [

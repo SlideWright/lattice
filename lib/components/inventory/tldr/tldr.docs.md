@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `summary` · `takeaway` · `overview`
+
 Use at the end of a section or deck to restate the takeaways in one line each. Each line should be a complete claim, not a category label.
 
 ## When to use

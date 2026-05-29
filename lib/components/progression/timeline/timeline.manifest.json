@@ -4,6 +4,7 @@
   "function": "progression",
   "form": "timeline",
   "substance": "structure",
+  "tags": ["milestones", "planning", "changelog"],
   "description": "Horizontal ordered steps along a single axis, each a labeled dot.",
   "purpose": "Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.",
   "slots": {

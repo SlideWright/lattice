@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** stack · **Substance** structure
 
+**Tags** `dashboard` · `metric` · `percentage`
+
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
 ## When to use

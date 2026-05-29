@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `strategy` · `okr` · `onboarding`
+
 Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.
 
 ## When to use

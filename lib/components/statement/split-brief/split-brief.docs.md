@@ -4,6 +4,8 @@
 
 **Function** statement · **Form** split · **Substance** structure
 
+**Tags** `summary` · `board-deck` · `takeaway`
+
 Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.
 
 ## When to use
