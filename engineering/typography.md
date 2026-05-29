@@ -201,11 +201,26 @@ accessibility bump, the whole scale can be raised in one move without
 re-picking sizes.
 
 A single unitless multiplier, **`--fs-scale`** (default `1`), is baked
-into every token: `--fs-body: calc(1.67cqi * var(--fs-scale))`, and so
-on for all 12. The three documented between-token raw-cqi sites (§4)
-carry it too. Raising it scales **everything in lockstep** — content,
-headings, hero, chrome (pagination / footer / eyebrow) — so the tuned
-proportions are preserved; only the overall magnitude moves.
+into the scaling tokens: `--fs-body: calc(1.67cqi * var(--fs-scale))`,
+and so on. The three documented between-token raw-cqi sites (§4) carry it
+too. Raising it scales the readable sizes **in lockstep** — body,
+supporting headings (h3–h6), hero, chrome (pagination / footer / eyebrow)
+— so the tuned proportions are preserved; only the magnitude moves.
+
+### `--fs-h1` and `--fs-h2` are exempt
+
+Ten of the twelve tokens scale. **`--fs-h1` (48 pt) and `--fs-h2` (28 pt)
+stay fixed** — they're left as plain literals, outside the multiplier.
+That tier is the *dominant display* role: the deck title, the standard
+slide title, and the KPI/stats headline numbers and table/chart column
+headers that reuse those two tokens (see §3 and the consumer list in the
+token CSS). It is already large enough to carry the back of the room, and
+scaling it too is what makes titles balloon past the safe area or wrap to
+a second line. So the rule is: **the big stuff holds its designed size;
+the small, readable stuff grows toward it.** At `scale-2xl` a 16 pt body
+(→ 24 pt) closes most of the gap to a 28 pt h2 — the title still leads,
+but no longer by 12 pt. If you genuinely need a bigger *title*, that's a
+per-element token choice (h1 vs h2), not a job for the global scale.
 
 Three modifier steps set it (`lib/base/base.modifiers.css`):
 

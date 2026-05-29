@@ -15,7 +15,7 @@ header: "Lattice · Global Font Scale"
 
 `Typography · Global Font Scale`
 
-One modifier bumps every font on a slide — or the whole deck — up in lockstep.
+One modifier bumps the readable fonts on a slide — or the whole deck — up in lockstep.
 
 ---
 
@@ -31,7 +31,7 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 - `scale-2xl` — ×1.5
   - Dramatic. Large halls and low-vision accessibility; body at 24 pt.
 - One multiplier
-  - `--fs-scale` feeds all 12 tokens, so proportions hold — only the magnitude moves.
+  - `--fs-scale` feeds 10 of the 12 tokens. The two largest headings (h1, h2) stay fixed, so titles never balloon.
 
 ---
 
@@ -41,13 +41,13 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 ## Default — tuned for desk distance.
 
 - Body
-  - Cards, lists, and prose at the baseline 16 pt.
-- Headings
-  - Every h-level at its normalized size.
-- Chrome
-  - Footer, pagination, and eyebrow labels.
+  - Cards, lists, and prose scale up.
+- Titles
+  - h1 and h2 hold steady — the title above is the same size on every step.
+- Subheads & chrome
+  - h3–h6, footer, and pagination scale.
 - Hero
-  - The one big number, when a slide has one.
+  - The one big number scales.
 
 ---
 
@@ -57,13 +57,13 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 ## scale-l — a gentle lift.
 
 - Body
-  - Cards, lists, and prose at the baseline 16 pt.
-- Headings
-  - Every h-level at its normalized size.
-- Chrome
-  - Footer, pagination, and eyebrow labels.
+  - Cards, lists, and prose scale up.
+- Titles
+  - h1 and h2 hold steady — the title above is the same size on every step.
+- Subheads & chrome
+  - h3–h6, footer, and pagination scale.
 - Hero
-  - The one big number, when a slide has one.
+  - The one big number scales.
 
 ---
 
@@ -73,13 +73,13 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 ## scale-xl — projection size.
 
 - Body
-  - Cards, lists, and prose at the baseline 16 pt.
-- Headings
-  - Every h-level at its normalized size.
-- Chrome
-  - Footer, pagination, and eyebrow labels.
+  - Cards, lists, and prose scale up.
+- Titles
+  - h1 and h2 hold steady — the title above is the same size on every step.
+- Subheads & chrome
+  - h3–h6, footer, and pagination scale.
 - Hero
-  - The one big number, when a slide has one.
+  - The one big number scales.
 
 ---
 
@@ -89,13 +89,13 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 ## scale-2xl — the back row.
 
 - Body
-  - Prose at 24 pt.
-- Headings
-  - Lifted in lockstep.
+  - Prose grows to 24 pt.
+- Titles
+  - This title is unchanged.
 - Chrome
-  - Footer and page number grow too.
+  - Footer and page number grow.
 - Hero
-  - Scales with everything.
+  - Scales too.
 
 ---
 
@@ -105,7 +105,7 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 `Across the Board`
 
 - 1.3×
-  - Even the display tier rides `--fs-scale`. The hero, the headings, and the chrome all move together — nothing is left behind at the original size.
+  - The hero, the body, the eyebrow, and the chrome all ride `--fs-scale` together. Only the two largest headings sit it out — and this slide has none.
 
 ---
 
@@ -134,4 +134,4 @@ One modifier bumps every font on a slide — or the whole deck — up in lockste
 
 ## Same deck, two distances.
 
-`Author once at desk-distance, then scale up for the projector — the proportions you tuned come along for free.`
+`Author once at desk-distance, then scale up for the projector — the proportions you tuned come along for free, and the titles stay put.`

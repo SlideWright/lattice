@@ -28,11 +28,14 @@ in patch versions.
 ### Added
 
 - **Global font-scale modifiers `scale-l` / `scale-xl` / `scale-2xl`.**
-  Bump every font on a slide up in lockstep (×1.15 / ×1.3 / ×1.5) without
-  re-picking sizes. A new unitless `--fs-scale` multiplier (default `1`)
-  is baked into all 12 typography tokens and the three documented
-  between-token raw-cqi sites, so content, headings, hero, and chrome all
-  grow together and the tuned proportions hold. Scope is native Marp class
+  Bump the readable fonts on a slide up in lockstep (×1.15 / ×1.3 / ×1.5)
+  without re-picking sizes. A new unitless `--fs-scale` multiplier
+  (default `1`) is baked into ten of the twelve typography tokens and the
+  three documented between-token raw-cqi sites, so body, supporting
+  headings (h3–h6), hero, and chrome all grow together and the tuned
+  proportions hold. `--fs-h1` and `--fs-h2` are exempt — slide titles (and
+  the KPI/stats numbers and table/chart headers that reuse those tokens)
+  hold their designed size so titles don't balloon. Scope is native Marp class
   scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
   the front matter for the whole deck. Composes with any layout or
   variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.

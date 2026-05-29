@@ -388,11 +388,13 @@ Equivalent to writing all three Marp suppression directives
 
 ### `scale-l` / `scale-xl` / `scale-2xl`
 
-Bump **every** font on the slide up in lockstep. The 12 typography
+Bump the readable fonts on the slide up in lockstep. The typography
 tokens are normalized for desk-distance reading; these steps raise the
-global `--fs-scale` multiplier so content, headings, hero, and chrome
-all grow together — proportions hold, only the magnitude moves. Reach
-for them when a deck is headed to a projector, a large room, or needs an
+global `--fs-scale` multiplier so body, supporting headings (h3–h6),
+hero, and chrome all grow together — proportions hold, only the magnitude
+moves. **The two largest headings (`h1`, `h2`) stay fixed** so slide
+titles don't balloon or wrap; the body grows toward them instead. Reach
+for these when a deck is headed to a projector, a large room, or needs an
 accessibility bump — not to fix one oversized element (use the right
 token for that).
 
