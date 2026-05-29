@@ -42,20 +42,17 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Reference',
-					items: [
-						{ label: 'Component reference', slug: 'reference/components' },
-					],
-				},
-				{
 					// Standalone routes that live outside Starlight's page tree (the
 					// landing-styled playground and the generated component portal).
 					// Surfacing them here keeps the docs zone from dead-ending — a
-					// reader in the guides can reach the interactive tools in one click.
+					// reader in the guides can reach the interactive tools in one
+					// click. "Components" is the single canonical pointer to the
+					// reference (the portal); the topbar/header use the same label
+					// and destination, so there's one "Components" everywhere.
 					label: 'Tools',
 					items: [
 						{ label: 'Playground', link: '/playground/' },
-						{ label: 'Component portal', link: '/components.html' },
+						{ label: 'Components', link: '/components.html' },
 					],
 				},
 			],

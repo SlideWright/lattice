@@ -40,17 +40,18 @@ h1#_top {
 }
 
 /* Global nav links injected into the header via the SocialIcons override.
- * Hidden below 72rem, where the sidebar (with its Tools group) and the
+ * Hidden below 64rem, where the sidebar (with its Tools group) and the
  * mobile menu carry the same destinations — avoids crowding the header
- * against the search box on narrow viewports. */
+ * against the search box on narrow viewports. The link for the current
+ * section gets aria-current="page" (set in SocialIcons.astro). */
 .lattice-headernav {
 	display: none;
 }
-@media (min-width: 72rem) {
+@media (min-width: 64rem) {
 	.lattice-headernav {
 		display: flex;
 		align-items: center;
-		gap: 1.25rem;
+		gap: 1.15rem;
 		margin-inline-end: 0.5rem;
 	}
 	.lattice-headernav a {
@@ -62,5 +63,9 @@ h1#_top {
 	}
 	.lattice-headernav a:hover {
 		color: var(--sl-color-text-accent);
+	}
+	.lattice-headernav a[aria-current='page'] {
+		color: var(--sl-color-text-accent);
+		font-weight: 600;
 	}
 }
