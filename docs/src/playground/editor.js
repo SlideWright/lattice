@@ -49,107 +49,76 @@ const ARROW_PREV = [/[{}|o.\-]/, /[<>ox.=\-]/, /[<>()x\-]/, /[<>|*o.\-]/];
 const mermaidParser = {
 	startState: () => ({ lineStart: true }),
 	token(stream, state) {
-		const atLineStart = state.lineStart;
-		// Track whether the *next* token is at logical line start (after leading
-		// indent). Used for the m-flag keyword/style patterns.
+		// Logical line start = beginning of line after any indent. Set it on sol,
+		// keep it across the indent-eating call, THEN read it — so a non-indented
+		// keyword line isn't misjudged from the previous line's trailing state.
 		if (stream.sol()) state.lineStart = true;
 		if (stream.eatSpace()) return null;
+		const atLineStart = state.lineStart;
 		const prev = stream.string.charAt(stream.start - 1);
+		const emit = (tok) => {
+			state.lineStart = false;
+			return tok;
+		};
 
 		// comment
-		if (stream.match(/^%%.*/)) return 'comment';
-
-		// style / classDef / linkStyle line (only at line start)
-		if (atLineStart && stream.match(/^(?:classDef|linkStyle|style)(?![\w$-])/)) {
-			state.lineStart = false;
-			return 'keyword';
-		}
+		if (stream.match(/^%%.*/)) return emit('comment');
 
 		// "string"
-		if (stream.match(/^"[^"\r\n]*"/)) {
-			state.lineStart = false;
-			return 'string';
-		}
+		if (stream.match(/^"[^"\r\n]*"/)) return emit('string');
 
 		// annotation  <<interface>>  [[fork]]
-		if (stream.match(ANNOTATION)) {
-			state.lineStart = false;
-			return 'meta';
-		}
+		if (stream.match(ANNOTATION)) return emit('meta');
 
-		// arrows — try each family, honoring the prev-char guard
+		// arrows — try each family, honoring Prism's prev-char guard. Run before
+		// the node-id matcher so a bare id (e.g. `A`) can't swallow the dashes of
+		// `A-->B`; the id matcher below also refuses to eat `--` runs.
 		for (let i = 0; i < ARROWS.length; i++) {
 			if (prev && ARROW_PREV[i].test(prev)) continue;
-			if (stream.match(ARROWS[i])) {
-				state.lineStart = false;
-				return 'operator';
-			}
+			if (stream.match(ARROWS[i])) return emit('operator');
 		}
 
 		// |edge label|
 		if (prev !== '|' && prev !== '<' && stream.match(/^\|(?:[^\r\n"|]|"[^"\r\n]*")+\|/)) {
-			state.lineStart = false;
-			return 'labelName';
+			return emit('labelName');
 		}
 
 		// node text:  [text]  (text)  {shape}  >flag
 		if (stream.match(/^(?:[([{]+|\b>)(?:[^\r\n"()[\]{}]|"[^"\r\n]*")+(?:[)\]}]+|>)/)) {
-			state.lineStart = false;
-			return 'string';
+			return emit('string');
 		}
 
-		// keywords (declarative, case-sensitive) then flow (case-insensitive)
+		// keywords — Prism anchors these to line start (lookbehind on ^[ \t]*), so
+		// match only at logical line start. This avoids colouring node ids that
+		// happen to be keyword words mid-line (`A --> end`, a node called `state`).
+		// KW_DECLARE includes classDef/linkStyle/style, so style lines are covered.
 		if (atLineStart && (stream.match(KW_DECLARE) || stream.match(KW_FLOW))) {
-			state.lineStart = false;
-			return 'keyword';
-		}
-		// keywords can also appear mid-line in places Prism's ^ anchor allowed
-		// via the m-flag on each statement; approximate by also matching when the
-		// token boundary is clean (not after an identifier char).
-		if (!/[\w$-]/.test(prev) && (stream.match(KW_DECLARE) || stream.match(KW_FLOW))) {
-			state.lineStart = false;
-			return 'keyword';
+			return emit('keyword');
 		}
 
 		// entity  #1f2c3d;  #amp;
-		if (stream.match(/^#[a-z0-9]+;/i)) {
-			state.lineStart = false;
-			return 'meta';
-		}
+		if (stream.match(/^#[a-z0-9]+;/i)) return emit('meta');
 
 		// operators  :::  :  &
-		if (stream.match(/^(?::::|:|&)/)) {
-			state.lineStart = false;
-			return 'operator';
-		}
+		if (stream.match(/^(?::::|:|&)/)) return emit('operator');
 
 		// numbers
-		if (stream.match(/^\b\d+\b/)) {
-			state.lineStart = false;
-			return 'number';
-		}
+		if (stream.match(/^\b\d+\b/)) return emit('number');
 
-		// punctuation
-		if (stream.match(/^[(){};]/)) {
-			state.lineStart = false;
-			return 'punctuation';
-		}
+		// punctuation (`,` included for classDef/style value lists, per Prism)
+		if (stream.match(/^[(){};,]/)) return emit('punctuation');
 
-		// style-line property:value — after a style keyword, colour `prop:`
-		// identifiers as properties (Prism's `style.inside.property`).
-		if (stream.match(/^\w[\w-]*(?=[ \t]*:)/)) {
-			state.lineStart = false;
-			return 'propertyName';
-		}
+		// style-line property:value — colour `prop:` identifiers as properties
+		// (Prism's style.inside.property).
+		if (stream.match(/^\w[\w-]*(?=[ \t]*:)/)) return emit('propertyName');
 
-		// default: consume one identifier/char as a node id (variableName)
-		if (stream.match(/^[\w$-]+/)) {
-			state.lineStart = false;
-			return 'variableName';
-		}
+		// default: a node id (variableName). Allow internal hyphens (mermaid ids
+		// may contain them) but NOT a `--` run, so arrows like `A-->B` tokenize as
+		// id + arrow + id rather than the id eating `A--`.
+		if (stream.match(/^[\w$]+(?:-[\w$]+)*/)) return emit('variableName');
+
 		stream.next();
-		state.lineStart = false;
-		return null;
+		return emit(null);
 	},
 };
 // A Language (not LanguageSupport): lang-markdown's codeLanguages function form
