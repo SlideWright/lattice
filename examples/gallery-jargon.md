@@ -943,8 +943,8 @@ Set `header:` and `footer:` in frontmatter for deck-level labels. The header alw
 
 ---
 
-<!-- _class: image-full dark -->
-<!-- _footer: "Full-bleed image, dark canvas · image-full dark" -->
+<!-- _class: image full dark -->
+<!-- _footer: "Full-bleed image, dark canvas · image full dark" -->
 <!-- _paginate: false -->
 
 ## [ Signal Pipeline · Portrait Asset — Dark ]
@@ -1019,8 +1019,8 @@ The `mirror` modifier is the canonical cross-cutting orientation flag. The `left
 
 ---
 
-<!-- _class: image-full -->
-<!-- _footer: "Full-bleed image · image-full" -->
+<!-- _class: image full -->
+<!-- _footer: "Full-bleed image · image full" -->
 <!-- _paginate: false -->
 
 ## Signal Pipeline · Reference Visualization
@@ -1101,7 +1101,7 @@ Trailing blockquote becomes a key insight; trailing paragraph becomes a below-no
 - When to reach for it
   - You have one more card than fits, or your prose runs the section by 1–2 lines, or you want a denser visual rhythm without rewriting copy.
 - Composition
-  - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
+  - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image full`.
 
 ---
 

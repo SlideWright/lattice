@@ -27,22 +27,6 @@ section.piechart .piechart-svg .wedge {
   stroke: var(--bg);
   stroke-width: 2;
 }
-section.piechart .piechart-svg .donut-hole {
-  fill: var(--bg);
-}
-section.piechart .piechart-total {
-  font-family: var(--font-display);
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  fill: var(--text-heading);
-}
-section.piechart .piechart-total-label {
-  font-family: var(--font-mono);
-  font-size: 0.859375cqi;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  fill: var(--text-muted);
-}
 section.piechart .piechart-legend {
   flex: 0 1 auto;
   display: flex;

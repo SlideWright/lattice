@@ -24,11 +24,11 @@ Horizontal progress bars — one row per item, percentage filled.
 
 Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- Framework `92%` `on-track`
+- Adoption & enablement `68%` `at-risk`
+- Decision log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Board reporting `12%` `blocked`
 
 
 ---
@@ -61,11 +61,11 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- Framework `92%` `on-track`
+- Adoption & enablement `68%` `at-risk`
+- Decision log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Board reporting `12%` `blocked`
 
 
 ---
@@ -79,11 +79,11 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- Framework `92%` `on-track`
+- Adoption & enablement `68%` `at-risk`
+- Decision log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Board reporting `12%` `blocked`
 
 
 ---
@@ -97,11 +97,11 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- Framework `92%` `on-track`
+- Adoption & enablement `68%` `at-risk`
+- Decision log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Board reporting `12%` `blocked`
 
 
 ---

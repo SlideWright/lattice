@@ -18,20 +18,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 -->
 <!-- _footer: "Default · matrix-2x2" -->
 
-## Where the H2 bets land on effort and impact.
+## Where the transformation bets land on effort and impact.
 
 - **High impact · Low effort.**
-  - Automated key rotation
-  - Examiner audit pack
+  - Weekly signal review
+  - Decision-log template
 - **High impact · High effort.**
-  - Multi-tenant codebooks
-  - Polyglot SDK parity
+  - Scoring-model rewrite
+  - Org-wide rollout
 - **Low impact · Low effort.**
-  - Status-page polish
-  - Dependency dashboard
+  - Renaming the framework, again
+  - A new Confluence space
 - **Low impact · High effort.**
-  - Bespoke per-tenant audit UI
-  - Custom SCIM connector
+  - Dashboards nobody opens
+  - The maturity-model self-assessment
 
 
 ---
@@ -39,20 +39,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 dark -->
 <!-- _footer: "Composition: dark · matrix-2x2 dark" -->
 
-## Where the H2 bets land on effort and impact.
+## Where the transformation bets land on effort and impact.
 
 - **High impact · Low effort.**
-  - Automated key rotation
-  - Examiner audit pack
+  - Weekly signal review
+  - Decision-log template
 - **High impact · High effort.**
-  - Multi-tenant codebooks
-  - Polyglot SDK parity
+  - Scoring-model rewrite
+  - Org-wide rollout
 - **Low impact · Low effort.**
-  - Status-page polish
-  - Dependency dashboard
+  - Renaming the framework, again
+  - A new Confluence space
 - **Low impact · High effort.**
-  - Bespoke per-tenant audit UI
-  - Custom SCIM connector
+  - Dashboards nobody opens
+  - The maturity-model self-assessment
 
 
 ---
@@ -60,20 +60,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 compact -->
 <!-- _footer: "Composition: compact · matrix-2x2 compact" -->
 
-## Where the H2 bets land on effort and impact.
+## Where the transformation bets land on effort and impact.
 
 - **High impact · Low effort.**
-  - Automated key rotation
-  - Examiner audit pack
+  - Weekly signal review
+  - Decision-log template
 - **High impact · High effort.**
-  - Multi-tenant codebooks
-  - Polyglot SDK parity
+  - Scoring-model rewrite
+  - Org-wide rollout
 - **Low impact · Low effort.**
-  - Status-page polish
-  - Dependency dashboard
+  - Renaming the framework, again
+  - A new Confluence space
 - **Low impact · High effort.**
-  - Bespoke per-tenant audit UI
-  - Custom SCIM connector
+  - Dashboards nobody opens
+  - The maturity-model self-assessment
 
 
 ---
@@ -81,20 +81,20 @@ Static 2×2 quadrant grid with author-placed items per cell.
 <!-- _class: matrix-2x2 accent -->
 <!-- _footer: "Composition: accent · matrix-2x2 accent" -->
 
-## Where the H2 bets land on effort and impact.
+## Where the transformation bets land on effort and impact.
 
 - **High impact · Low effort.**
-  - Automated key rotation
-  - Examiner audit pack
+  - Weekly signal review
+  - Decision-log template
 - **High impact · High effort.**
-  - Multi-tenant codebooks
-  - Polyglot SDK parity
+  - Scoring-model rewrite
+  - Org-wide rollout
 - **Low impact · Low effort.**
-  - Status-page polish
-  - Dependency dashboard
+  - Renaming the framework, again
+  - A new Confluence space
 - **Low impact · High effort.**
-  - Bespoke per-tenant audit UI
-  - Custom SCIM connector
+  - Dashboards nobody opens
+  - The maturity-model self-assessment
 
 
 ---

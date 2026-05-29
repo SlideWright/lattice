@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: matrix-2x2 -->\n\n## Where each option lives.\n\n- **High value · Low cost.**\n  - First item in this quadrant\n  - Second item\n- **High value · High cost.**\n  - First item in this quadrant\n- **Low value · Low cost.**\n  - First item in this quadrant\n- **Low value · High cost.**\n  - First item in this quadrant\n",
   "anatomyBlock": "matrix-2x2",
-  "sample": "<!-- _class: matrix-2x2 -->\n\n## Where the H2 bets land on effort and impact.\n\n- **High impact · Low effort.**\n  - Automated key rotation\n  - Examiner audit pack\n- **High impact · High effort.**\n  - Multi-tenant codebooks\n  - Polyglot SDK parity\n- **Low impact · Low effort.**\n  - Status-page polish\n  - Dependency dashboard\n- **Low impact · High effort.**\n  - Bespoke per-tenant audit UI\n  - Custom SCIM connector\n",
+  "sample": "<!-- _class: matrix-2x2 -->\n\n## Where the transformation bets land on effort and impact.\n\n- **High impact · Low effort.**\n  - Weekly signal review\n  - Decision-log template\n- **High impact · High effort.**\n  - Scoring-model rewrite\n  - Org-wide rollout\n- **Low impact · Low effort.**\n  - Renaming the framework, again\n  - A new Confluence space\n- **Low impact · High effort.**\n  - Dashboards nobody opens\n  - The maturity-model self-assessment\n",
   "whenToUse": [
     {
       "title": "Categorical 2×2 reasoning",

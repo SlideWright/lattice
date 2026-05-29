@@ -8,7 +8,6 @@
  */
 section.split-list { padding:0; flex-direction:row; }
 section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
-section.split-list h5 { font-size:var(--fs-meta); color:var(--on-accent-secondary); margin-bottom:var(--sp-xs); }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
 /* Decorative letterform watermark: explicit 11.46cqi (= 110pt). Sized

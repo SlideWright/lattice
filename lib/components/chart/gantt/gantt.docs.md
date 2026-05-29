@@ -27,20 +27,13 @@ Use for project plans with overlapping or staggered tasks. Each task is a bar on
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters. Status pills tint each bar.
-
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- First workstream
+  - First task `Q1 → Q2` `done`
+  - Second task `Q2 → Q3` `live`
+  - Third task `Q3 → Q4` `at-risk`
+- Second workstream
+  - First task `Q1 → Q2` `done`
+  - Second task `Q2 → Q3`
 ```
 
 ## Slots
@@ -48,7 +41,7 @@ Three workstreams across four quarters. Status pills tint each bar.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the plan. |
-| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries inline-code tokens for span (`Q1 → Q2`) and optional status (`done` / `live` / `at-risk` / `blocked`). |
+| `tasks` | `ul > li` | yes | Outer li per workstream lane; nested bullets per task. Each task carries inline-code tokens for span (`Q1 → Q2`, or an en-dash / -> delimiter) and an optional status pill; the two pills may appear in any order. Status vocabulary: on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision. The range axis recognises quarters (Q1–Q4) or months (Jan–Dec); other vocabularies fall back to a four-column axis with no ticks. |
 
 ## Anatomy
 

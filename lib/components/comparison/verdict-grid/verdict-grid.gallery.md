@@ -20,18 +20,21 @@ Options scored against criteria as a verdict matrix.
 
 ## Which data platform clears the bar.
 
-- **Vendor North.**
-  - [x] SOC 2 Type II, no exceptions
-  - [x] Data stays in-region
-  - [-] Export documented but support-gated
-- **Vendor West.**
-  - [x] SOC 2 Type II, no exceptions
-  - [ ] Residency limited to US regions
-  - [x] Self-serve export
 - **Build in-house.**
-  - [x] Full control of schema and roadmap
-  - [-] Residency achievable, not yet built
-  - [ ] Three engineer-quarters to parity
+  - [ ] Certified
+  - [-] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- **Vendor North.**
+  - [x] Certified
+  - [x] Residency
+  - [-] Export
+  - Certified and in-region, but data export is support-gated, not self-serve.
+- **Vendor West.**
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
 
 
 ---
@@ -41,18 +44,21 @@ Options scored against criteria as a verdict matrix.
 
 ## Which data platform clears the bar.
 
-- **Vendor North.**
-  - [x] SOC 2 Type II, no exceptions
-  - [x] Data stays in-region
-  - [-] Export documented but support-gated
-- **Vendor West.**
-  - [x] SOC 2 Type II, no exceptions
-  - [ ] Residency limited to US regions
-  - [x] Self-serve export
 - **Build in-house.**
-  - [x] Full control of schema and roadmap
-  - [-] Residency achievable, not yet built
-  - [ ] Three engineer-quarters to parity
+  - [ ] Certified
+  - [-] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- **Vendor North.**
+  - [x] Certified
+  - [x] Residency
+  - [-] Export
+  - Certified and in-region, but data export is support-gated, not self-serve.
+- **Vendor West.**
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
 
 
 ---
@@ -62,18 +68,21 @@ Options scored against criteria as a verdict matrix.
 
 ## Which data platform clears the bar.
 
-- **Vendor North.**
-  - [x] SOC 2 Type II, no exceptions
-  - [x] Data stays in-region
-  - [-] Export documented but support-gated
-- **Vendor West.**
-  - [x] SOC 2 Type II, no exceptions
-  - [ ] Residency limited to US regions
-  - [x] Self-serve export
 - **Build in-house.**
-  - [x] Full control of schema and roadmap
-  - [-] Residency achievable, not yet built
-  - [ ] Three engineer-quarters to parity
+  - [ ] Certified
+  - [-] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- **Vendor North.**
+  - [x] Certified
+  - [x] Residency
+  - [-] Export
+  - Certified and in-region, but data export is support-gated, not self-serve.
+- **Vendor West.**
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
 
 
 ---
@@ -83,18 +92,21 @@ Options scored against criteria as a verdict matrix.
 
 ## Which data platform clears the bar.
 
-- **Vendor North.**
-  - [x] SOC 2 Type II, no exceptions
-  - [x] Data stays in-region
-  - [-] Export documented but support-gated
-- **Vendor West.**
-  - [x] SOC 2 Type II, no exceptions
-  - [ ] Residency limited to US regions
-  - [x] Self-serve export
 - **Build in-house.**
-  - [x] Full control of schema and roadmap
-  - [-] Residency achievable, not yet built
-  - [ ] Three engineer-quarters to parity
+  - [ ] Certified
+  - [-] Residency
+  - [ ] Export
+  - Full control of every axis, and three engineer-quarters from having any of it.
+- **Vendor North.**
+  - [x] Certified
+  - [x] Residency
+  - [-] Export
+  - Certified and in-region, but data export is support-gated, not self-serve.
+- **Vendor West.**
+  - [x] Certified
+  - [x] Residency
+  - [x] Export
+  - Certified, in-region, and self-serve on every axis. Recommended.
 
 
 ---
@@ -105,7 +117,8 @@ Options scored against criteria as a verdict matrix.
 ## When NOT to reach for verdict-grid.
 
 - **Exactly two options.** Two options with shared criteria belong in `compare-prose` or `split-compare`. verdict-grid earns its layout at 3+ options.
-- **Free-form text on the badge line.** Each inner bullet starts with a state marker, not a sentence. Naked prose breaks the badge chrome and the criteria stop scanning as a row.
+- **Missing the rationale line.** Every option must end with a marker-less prose line — the verdict for that card. Omit it and the card renders empty below the badges, and the focal last card has nothing to recommend. The rationale is required, not optional.
+- **Badge longer than two words.** The text after the marker is a badge, not a sentence — two words at most (`Residency`, `Self-serve`). A sentence on a badge line breaks the row scan; prose belongs only on the final rationale line.
 - **Cards with different criteria.** When each option needs its own criteria list, the comparison fails — use `cards-stack` so each card has full prose breathing room instead.
 
 ---

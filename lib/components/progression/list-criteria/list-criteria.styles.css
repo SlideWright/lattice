@@ -40,46 +40,6 @@ section.list-criteria .crit-body ul li {
 }
 section.list-criteria .crit-body ul li::before { display:none; content:none; }
 
-/* ════════════════════════════════════════════════════════════════════════
- * UNIVERSAL STATE TOKEN — the contract shared by every state-bearing
- * layout in Lattice (checklist, verdict-grid, obligation-matrix, roadmap).
- *
- * Authoring grammar (markdown, four states):
- *   [x] → state-full     filled disc        present / done / applies
- *   [-] → state-half     half-filled disc   partial / in flight
- *   [ ] → state-empty    outline disc       absent / not done / exempt
- *   [/] → state-slashed  filled disc + slash  skipped / out of scope / N/A
- *
- * The shape grammar is the universal channel — readable in greyscale,
- * unambiguous for colour-blind viewers. Colour reinforces shape and
- * resolves from --state-color, which each layout binds to a semantic
- * class on the token's element:
- *   pass / state-shipped / state-applies   → var(--pass)
- *   warn / state-wip                       → var(--warn)
- *   fail / state-planned / state-exempt    → var(--text-muted) | var(--fail)
- *   skip / state-skipped                   → var(--text-muted)
- *
- * Two SVG masks total (--state-mask-half, --state-mask-slash, in :root)
- * paint the half-disc and slash. No fonts, no Unicode, no OS quirks.
- *
- * Section modifier `.heat` (universal) flips the palette to a load/risk
- * axis: full = alarm, half = caution, empty = relief. Any layout can opt
- * in; obligation-matrix additionally tints cell backgrounds under heat
- * (chrome-layer responsibility, not the token's).
- *
- * Three render paths emit shape + semantic classes from the markdown
- * grammar (kept in sync per the cross-renderer parity rule in CLAUDE.md):
- *   - lattice-emulator.js  (build CLI)
- *   - marp.config.js + lib/roadmap.js  (marp-cli engine)
- *   - lattice-runtime.js  (marp-vscode preview / DOM mirror)
- * ──────────────────────────────────────────────────────────────────────── */
-
-/* The universal `.heat` overlay rules are placed AFTER the layout blocks
- * below (see the "UNIVERSAL HEAT OVERLAY" block following the obligation-matrix
- * section) so source-order wins where specificity ties with per-layout
- * default --state-color assignments. The author-facing pattern stays
- * uniform: add `heat` after any state-bearing layout class. */
-
 /* ── CRITERIA ────────────────────────────────────────────────────────────────
  * li > strong + ul siblings (no .crit-body wrapper) — VS Code fallback.
  * li is flex row; ::before is left cell; strong + ul stack in right cell via grid. */

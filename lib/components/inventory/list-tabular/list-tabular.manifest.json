@@ -30,7 +30,7 @@
   },
   "skeleton": "<!-- _class: list-tabular -->\n\n## Slide heading.\n\n- **First entry.** Description or value for the first entry.\n- **Second entry.** Description or value for the second entry.\n- **Third entry.** Description or value for the third entry.\n- **Fourth entry.** Description or value for the fourth entry.\n",
   "anatomyBlock": "list-tabular",
-  "sample": "<!-- _class: list-tabular -->\n\n## The four workstreams carrying the H2 platform plan.\n\n1. Platform\n   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.\n   - _Two engineers · ships Q3_\n2. Operations\n   - Automated rotation and crypto-shred, retiring the manual maintenance window.\n   - _One engineer · ships Q3_\n3. Compliance\n   - Centralised audit log and the examiner-ready export pack.\n   - _One engineer · ships Q4_\n4. SDK\n   - Polyglot parity so every client team adopts the same path.\n   - _Contractor · ships Q4_\n",
+  "sample": "<!-- _class: list-tabular -->\n\n## The five workstreams carrying the transformation.\n\n1. Framework\n   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.\n   - _Two analysts · ships Q3_\n2. Adoption\n   - Onboarding every team to the weekly ritual and the decision log.\n   - _One enablement lead · ships Q3_\n3. Governance\n   - The operating rhythm, the review cadence, and the escalation path.\n   - _One chief of staff · ships Q4_\n4. Tooling\n   - The intake form, the dashboards, and the exports for the board.\n   - _One PM · ships Q4_\n5. Change\n   - Comms, exec sponsorship, and the people who preferred the old way.\n   - _One comms partner · ships Q4_\n",
   "whenToUse": [
     {
       "title": "Compact reference rows",

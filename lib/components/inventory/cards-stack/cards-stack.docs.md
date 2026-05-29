@@ -25,9 +25,12 @@ Use when the items want vertical reading order — sequential exploration rather
 
 ## Slide heading.
 
-- **First card title.** Body text for the first stacked card, two short sentences max.
-- **Second card title.** Body text for the second stacked card.
-- **Third card title.** Body text for the third stacked card.
+- First card title
+  - Body text for the first stacked card, two short sentences max.
+- Second card title
+  - Body text for the second stacked card.
+- Third card title
+  - Body text for the third stacked card.
 ```
 
 ## Slots

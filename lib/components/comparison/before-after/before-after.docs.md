@@ -25,8 +25,10 @@ Use to show the transformation produced by a change. Left = the prior state; rig
 
 ## What the change did.
 
-- **Before.** How the system or process worked before the change, in one or two sentences.
-- **After.** How the system or process works now, in one or two sentences.
+- Before
+  - How the system or process worked before the change, in one or two sentences.
+- After
+  - How the system or process works now, in one or two sentences.
 ```
 
 ## Slots
@@ -61,14 +63,12 @@ Flips each card from a flush-corner label tag into a full-width header strip. Us
 ```markdown
 <!-- _class: before-after banner-tag -->
 
-## Three reasons we are building.
+## What the operating review changed.
 
-- BUILD
-  - The platform is the product. Owning it owns the roadmap.
-- WHY NOT BUY
-  - No vendor matches our compliance posture without surrender of control.
-- WHY NOT DELAY
-  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.
+- BEFORE
+  - Status arrived as a 40-slide deck nobody finished; the real decision happened in the hallway afterward.
+- AFTER
+  - One scorecard, one page; the call is logged in the room before anyone leaves.
 ```
 
 ## Universal modifiers

@@ -14,7 +14,7 @@ Statement — one declarative claim per slide.
 `Net new ARR · FY26 through Q3`
 
 - $48M
-  - booked against a $42M full-year plan, with the enterprise segment driving two-thirds of the gain and one quarter still to close.
+  - booked against a $42M full-year plan, with a quarter still to close.
 
 ---
 
@@ -24,7 +24,7 @@ Statement — one declarative claim per slide.
 
 ## The window for differentiation is narrowing.
 
-Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years are the ones that can tell signal from noise before the window closes.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising switching costs — have cut the average durable-advantage window from 36 months to under 14. The teams that win the next two years can tell signal from noise inside it.
 
 ---
 
@@ -65,6 +65,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
   - The moment a user first succeeds sets the frame for everything that follows.
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
+
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
 
 ---
 

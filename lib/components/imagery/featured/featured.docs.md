@@ -23,12 +23,16 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 ```markdown
 <!-- _class: featured -->
 
-## Applying the criteria, here is where the evidence points.
+## Slide heading framing the recommendation.
 
-- **Featured recommendation.** One to two sentences making the case.
-- **Supporting card.** Short context on a related option.
-- **Supporting card.** Short context on another option.
-- **Supporting card.** Short context on another option.
+- Featured recommendation
+  - One to two sentences making the case.
+- Supporting card
+  - Short context on a related option.
+- Supporting card
+  - Short context on another option.
+- Supporting card
+  - Short context on another option.
 ```
 
 ## Slots

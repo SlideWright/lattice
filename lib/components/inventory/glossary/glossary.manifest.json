@@ -15,12 +15,12 @@
     "entries": {
       "selector": "ul > li",
       "required": true,
-      "description": "Nested bullets: outer li is the term, inner li is the definition."
+      "description": "Nested bullets: outer li is the term, inner li is its one-line definition. A runtime transform converts the list into a two-column table and derives the alphabetic range pill from the first and last terms, so terms should be authored in alphabetical order; without the Lattice runtime the raw nested list renders unstyled."
     }
   },
   "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
   "anatomyBlock": "glossary",
-  "sample": "<!-- _class: glossary -->\n\n## Glossary\n\n- Consent\n  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.\n- Controller\n  - The party that decides why and how personal data is processed, and carries the legal accountability for it.\n- DSAR\n  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.\n- PII\n  - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.\n- Processor\n  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.\n",
+  "sample": "<!-- _class: glossary -->\n\n## Glossary\n\n- Consent\n  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.\n- Controller\n  - The party that decides why and how personal data is processed, and carries the legal accountability for it.\n- DSAR\n  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.\n- PII\n  - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.\n- Processor\n  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.\n",
   "whenToUse": [
     {
       "title": "Jargon-heavy decks",

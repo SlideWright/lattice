@@ -25,8 +25,10 @@ Use for an explicit pair — two options, two phases, two artifacts presented wi
 
 ## Slide heading.
 
-- **Left card title.** Body text for the left card, two short sentences.
-- **Right card title.** Body text for the right card, two short sentences.
+- Left card title
+  - Body text for the left card, two short sentences.
+- Right card title
+  - Body text for the right card, two short sentences.
 ```
 
 ## Slots

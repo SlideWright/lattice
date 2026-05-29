@@ -35,7 +35,7 @@
       "description": "Optional plain-English interpretation. Use **What we must do** for the actionable item."
     }
   },
-  "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- **What we must do.** The concrete action this citation argues for.\n",
+  "skeleton": "<!-- _class: citation-card -->\n\n## Headline framing what this citation establishes.\n\n`Citation reference · short name`\n\n> Verbatim quotation of the cited language.\n\n- Plain-English interpretation of what the language covers.\n- What we must do.\n  - The concrete action this citation argues for.\n",
   "anatomyBlock": "citation-card",
   "sample": "<!-- _class: citation-card -->\n\n## What counts as \"personal information\" under CCPA.\n\n`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`\n\n> \"Personal information\" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.\n\n- In plain English: any data tied to a household or device, not just a named person — IP addresses, cookie IDs, and device fingerprints are all in scope.\n- What we must do.\n  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.\n",
   "whenToUse": [
@@ -64,6 +64,10 @@
     {
       "title": "Gloss longer than the quote",
       "body": "When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a `What we must do` action, or move to content."
+    },
+    {
+      "title": "Plain gloss under the pull-quote variant",
+      "body": "The `pull-quote` variant hides any gloss line that does not lead with **bold** — it shows only the `**What we must do**` action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant."
     }
   ],
   "related": [

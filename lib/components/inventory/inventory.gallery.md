@@ -11,13 +11,18 @@ Inventory — parallel sets of related items.
 
 <!-- _class: actors -->
 
-## Who owns what when an incident is live.
+## Who owns each part of the framework.
 
-- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.
-- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.
-- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.
-- **Scribe.** Logs every action with a timestamp for the post-incident review.
-- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.
+- **Owns the scoring model** `Head of Product`
+  - Sets the weights and signs off changes after each calibration.
+- **Runs the weekly signal review** `Chief of Staff`
+  - Chairs the thirty minutes and keeps the decision log current.
+- **Maintains the decision log** `Program Manager`
+  - Every call recorded with its bet; chases the missing predicted outcomes.
+- **Owns adoption** `Enablement Lead`
+  - Onboards each team — the reason attendance is merely aspirational.
+- **Clears blockers** `Executive Sponsor`
+  - Approves the operating rhythm; stays out of the scoring debates.
 
 ---
 
@@ -87,15 +92,15 @@ Inventory — parallel sets of related items.
 
 <!-- _class: checklist -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [/] Per-team weighting UI, descoped to next half
 
 ---
 
@@ -104,15 +109,15 @@ Inventory — parallel sets of related items.
 ## Glossary
 
 - Consent
-  - A freely given, specific, informed agreement to processing. Pre-ticked boxes do not count.
+  - A freely given, specific, informed agreement to processing — pre-ticked boxes don't count.
 - Controller
   - The party that decides why and how personal data is processed, and carries the legal accountability for it.
 - DSAR
-  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them. A 45-day clock under CCPA.
+  - Data Subject Access Request — a person's demand to see, correct, or delete the data held on them, on a 45-day clock under CCPA.
 - PII
   - Personal information that identifies a person, now read broadly enough to cover device IDs, cookies, and IP addresses.
 - Processor
-  - A party that processes data on the controller's instructions. A vendor, not the decision-maker.
+  - A party that processes data on the controller's instructions — a vendor, not the decision-maker.
 
 ---
 
@@ -130,20 +135,23 @@ Inventory — parallel sets of related items.
 
 <!-- _class: list-tabular -->
 
-## The four workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 ---
 
@@ -151,20 +159,20 @@ Inventory — parallel sets of related items.
 
 ## How we make calls when the spec is silent.
 
-- **Default to the cheaper-to-reverse choice.** Reversible decisions don't need a meeting; only the irreversible ones do.
-- **Name the actor, never the system.** "The PM decides" lands; "the process decides" hides who is accountable.
-- **Write the bet down next to the choice.** A decision recorded without its predicted outcome can't be learned from later.
-- **Disagree in the room, commit outside it.** Dissent is cheap before the call and expensive after.
-- **Optimise for the reader who wasn't there.** If the log needs a translator, it isn't a log.
+1. Default to the choice that is cheaper to reverse.
+2. Name the actor, never the system.
+3. Write the bet on the same slide as the choice.
+4. Disagree in the room, then commit outside it.
+5. Optimise for the reader who wasn't there.
 
 ---
 
 <!-- _class: tldr -->
 
-## What this review will tell you, in five lines.
+## What this review showed, in five lines.
 
 - Q2 revenue missed plan by 9%, and three structural factors explain almost all of it.
 - The shortfall is in enterprise renewals, not new logos.
 - Every one of the three causes is fixable before the Q4 close.
 - The Q3 plan moves two engineers and one rep onto the gaps.
-- We are not asking for more headcount — we are asking to move what we have.
+- We are not asking for more headcount — only to move what we have.

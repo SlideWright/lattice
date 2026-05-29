@@ -22,28 +22,28 @@ Kanban board — columns of cards by stage.
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
 
 - Backlog
-  - Per-purpose codebooks `S`
-    - compliance
-  - Crypto-shred runbook `M`
-    - platform
-  - Dependency dashboard `S`
-    - platform
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
 - Review
-  - Centralised log `S`
-    - compliance
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Codebook signing `M`
-    - platform
-  - Manual rotation `S`
-    - operations
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
 
 
 ---
@@ -100,28 +100,28 @@ Eight items across four stages; multi-tenant DEKs is the only card flagged at-ri
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
 
 - Backlog
-  - Per-purpose codebooks `S`
-    - compliance
-  - Crypto-shred runbook `M`
-    - platform
-  - Dependency dashboard `S`
-    - platform
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
 - Review
-  - Centralised log `S`
-    - compliance
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Codebook signing `M`
-    - platform
-  - Manual rotation `S`
-    - operations
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
 
 
 ---
@@ -133,28 +133,28 @@ Eight items across four stages; multi-tenant DEKs is the only card flagged at-ri
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
 
 - Backlog
-  - Per-purpose codebooks `S`
-    - compliance
-  - Crypto-shred runbook `M`
-    - platform
-  - Dependency dashboard `S`
-    - platform
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
 - Review
-  - Centralised log `S`
-    - compliance
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Codebook signing `M`
-    - platform
-  - Manual rotation `S`
-    - operations
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
 
 
 ---
@@ -166,28 +166,28 @@ Eight items across four stages; multi-tenant DEKs is the only card flagged at-ri
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
 
 - Backlog
-  - Per-purpose codebooks `S`
-    - compliance
-  - Crypto-shred runbook `M`
-    - platform
-  - Dependency dashboard `S`
-    - platform
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
 - Review
-  - Centralised log `S`
-    - compliance
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Codebook signing `M`
-    - platform
-  - Manual rotation `S`
-    - operations
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
 
 
 ---

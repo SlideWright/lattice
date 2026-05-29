@@ -40,8 +40,9 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `panel-heading` | `h2` | yes | Heading shown in the dark left panel. |
-| `panel-eyebrow` | `h3` | no | Optional rubric label below the panel heading. |
+| `panel-eyebrow` | `h3` | no | Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow). |
 | `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
+| `meta` | `section :is(ul,ol) + ul` | no | Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels. |
 
 ## Anatomy
 

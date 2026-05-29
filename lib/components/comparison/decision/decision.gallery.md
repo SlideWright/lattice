@@ -21,9 +21,9 @@ The verdict slide — one chosen path, named explicitly.
 ## Buy the platform; build the differentiation.
 
 - Buy and configure.
-  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+  - Adopt the vendor's data infrastructure — live in six weeks, freeing three engineer-quarters for the product layer where the differentiation actually lives.
 - Build in-house.
-  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later.
 
 
 ---
@@ -49,9 +49,9 @@ The verdict slide — one chosen path, named explicitly.
 ## Buy the platform; build the differentiation.
 
 - Buy and configure.
-  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+  - Adopt the vendor's data infrastructure — live in six weeks, freeing three engineer-quarters for the product layer where the differentiation actually lives.
 - Build in-house.
-  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later.
 
 
 ---
@@ -62,9 +62,9 @@ The verdict slide — one chosen path, named explicitly.
 ## Buy the platform; build the differentiation.
 
 - Buy and configure.
-  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+  - Adopt the vendor's data infrastructure — live in six weeks, freeing three engineer-quarters for the product layer where the differentiation actually lives.
 - Build in-house.
-  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later.
 
 
 ---
@@ -75,9 +75,9 @@ The verdict slide — one chosen path, named explicitly.
 ## Buy the platform; build the differentiation.
 
 - Buy and configure.
-  - Adopt the vendor's data infrastructure. Ships in six weeks and frees three engineer-quarters for the product layer, where the differentiation actually lives.
+  - Adopt the vendor's data infrastructure — live in six weeks, freeing three engineer-quarters for the product layer where the differentiation actually lives.
 - Build in-house.
-  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later if we must.
+  - Full control of schema and roadmap, but two to three engineer-quarters to reach parity with a platform we could adopt now and replace later.
 
 
 ---
@@ -87,7 +87,7 @@ The verdict slide — one chosen path, named explicitly.
 
 ## When NOT to reach for decision.
 
-- **No clear chosen path.** If the cards don't name one focal verdict, the slide is back to being a comparison. Use `compare-prose` or `split-compare`; reserve decision for the resolved call.
+- **No clear chosen path.** If the cards don't resolve to a single verdict, the slide is back to being a comparison. Use `compare-prose` or `split-compare`; reserve decision for the resolved call.
 - **Long body per card.** Each card is one sentence of rationale. Paragraphs belong on the comparison slide upstream, not on the verdict slide.
 - **Generic heading.** The h2 carries the decision verb — Build, not buy. Adopt the framework. Pause the rollout. A heading like Next steps wastes the focal real estate.
 

@@ -25,10 +25,12 @@ Use to show 'who owns what' across a process, codebook, or org chart. Two-column
 
 ## Who owns each part of the process.
 
-- **First actor.** Owns the first part of the lifecycle.
-- **Second actor.** Owns the second part.
-- **Third actor.** Owns the third part.
-- **Fourth actor.** Owns the fourth part.
+- **Owns the first part** `First actor`
+  - One-line note on what that ownership covers.
+- **Owns the second part** `Second actor`
+  - One-line note.
+- **Owns the third part** `Third actor`
+  - One-line note.
 ```
 
 ## Slots
@@ -36,7 +38,7 @@ Use to show 'who owns what' across a process, codebook, or org chart. Two-column
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `rows` | `ul > li` | yes | One row per actor. Lead each li with **Actor Name.** then a short responsibility summary. |
+| `rows` | `ul > li` | yes | One row per responsibility. Each li leads with a **bold responsibility**, then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body. |
 
 ## Anatomy
 

@@ -15,20 +15,20 @@ Chart — series-substance data visualizations (SVG kernel).
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the at-risk bars gate the GA date.
+Three workstreams across four quarters; the one at-risk bar gates the full rollout.
 
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Framework
+  - Signal taxonomy `Q1 → Q2` `done`
+  - Scoring model v2 `Q2 → Q3` `live`
+  - Per-team weighting `Q3 → Q4` `at-risk`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Weekly signal review `Q2 → Q3` `live`
+  - Org-wide rollout `Q3 → Q4`
+- Governance
+  - Decision log `Q1 → Q2` `done`
+  - Calibration cadence `Q2 → Q3`
+  - Board reporting `Q3 → Q4`
 
 ---
 
@@ -38,28 +38,28 @@ Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; multi-tenant DEKs is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
 
 - Backlog
-  - Per-purpose codebooks `S`
-    - compliance
-  - Crypto-shred runbook `M`
-    - platform
-  - Dependency dashboard `S`
-    - platform
+  - Per-team weighting `S`
+    - framework
+  - Calibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Scoring model v2 `M`
+    - framework `at-risk`
+  - Board reporting pack `L`
+    - governance
 - Review
-  - Centralised log `S`
-    - compliance
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Codebook signing `M`
-    - platform
-  - Manual rotation `S`
-    - operations
+  - Signal taxonomy `M`
+    - framework
+  - Pilot onboarding `S`
+    - adoption
 
 ---
 
@@ -67,15 +67,15 @@ Eight items across four stages; multi-tenant DEKs is the only card flagged at-ri
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the planning quarter actually went.
 
-Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
+Nearly half went to producing decks; the deciding itself was the smallest slice.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
 
 ---
 
@@ -87,11 +87,11 @@ Nearly half the quarter went to the codebook platform; on-call toil was the smal
 
 Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
-- Codebook platform `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
+- Framework `92%` `on-track`
+- Adoption & enablement `68%` `at-risk`
+- Decision log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Board reporting `12%` `blocked`
 
 ---
 
@@ -99,22 +99,22 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next quarter.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
-- Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
-  - Snapshot exports `9, 55`
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
 - Defer
-  - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
 - Time Sinks
-  - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
 
 ---
 
@@ -174,20 +174,20 @@ How a draft moves from author to archive.
 
 <!-- _class: timeline-list -->
 
-`Codebook architecture`
+`Decision framework`
 
-## How the codebook architecture arrived in production.
+## How the framework arrived in production.
 
-Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
+Four stages over eighteen months, from the first workshop to the operating rhythm.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model. Build approved.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
 ---
 

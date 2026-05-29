@@ -18,13 +18,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table -->
 <!-- _footer: "Default · compare-table" -->
 
-## How the three encryption models trade off.
+## How the three planning rituals compare.
 
-| Model | Latency p99 | Blast radius | Key rotation |
+| Ritual | Cadence | Output | Read after the meeting |
 | --- | --- | --- | --- |
-| Central vault | 60 ms | Every tenant | Offline window |
-| In-process codebook | < 5 ms | One tenant | Online |
-| Client-side envelope | < 2 ms | One record | Manual, per client |
+| Strategy offsite | Yearly | An 80-slide deck | The title slide |
+| Quarterly business review | Quarterly | A scorecard | The red cells |
+| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |
 
 
 ---
@@ -32,13 +32,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table dark -->
 <!-- _footer: "Composition: dark · compare-table dark" -->
 
-## How the three encryption models trade off.
+## How the three planning rituals compare.
 
-| Model | Latency p99 | Blast radius | Key rotation |
+| Ritual | Cadence | Output | Read after the meeting |
 | --- | --- | --- | --- |
-| Central vault | 60 ms | Every tenant | Offline window |
-| In-process codebook | < 5 ms | One tenant | Online |
-| Client-side envelope | < 2 ms | One record | Manual, per client |
+| Strategy offsite | Yearly | An 80-slide deck | The title slide |
+| Quarterly business review | Quarterly | A scorecard | The red cells |
+| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |
 
 
 ---
@@ -46,13 +46,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table compact -->
 <!-- _footer: "Composition: compact · compare-table compact" -->
 
-## How the three encryption models trade off.
+## How the three planning rituals compare.
 
-| Model | Latency p99 | Blast radius | Key rotation |
+| Ritual | Cadence | Output | Read after the meeting |
 | --- | --- | --- | --- |
-| Central vault | 60 ms | Every tenant | Offline window |
-| In-process codebook | < 5 ms | One tenant | Online |
-| Client-side envelope | < 2 ms | One record | Manual, per client |
+| Strategy offsite | Yearly | An 80-slide deck | The title slide |
+| Quarterly business review | Quarterly | A scorecard | The red cells |
+| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |
 
 
 ---
@@ -60,13 +60,13 @@ Multi-row comparison table with consistent columns.
 <!-- _class: compare-table accent -->
 <!-- _footer: "Composition: accent · compare-table accent" -->
 
-## How the three encryption models trade off.
+## How the three planning rituals compare.
 
-| Model | Latency p99 | Blast radius | Key rotation |
+| Ritual | Cadence | Output | Read after the meeting |
 | --- | --- | --- | --- |
-| Central vault | 60 ms | Every tenant | Offline window |
-| In-process codebook | < 5 ms | One tenant | Online |
-| Client-side envelope | < 2 ms | One record | Manual, per client |
+| Strategy offsite | Yearly | An 80-slide deck | The title slide |
+| Quarterly business review | Quarterly | A scorecard | The red cells |
+| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |
 
 
 ---

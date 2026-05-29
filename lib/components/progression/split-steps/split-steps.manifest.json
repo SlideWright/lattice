@@ -28,7 +28,7 @@
       "description": "Right-side steps. Use ordered list for numbered discs; lead each with **Title.** then nested body."
     }
   },
-  "skeleton": "<!-- _class: split-steps -->\n\n`02`\n\n## Phase name\n\nOne-sentence summary describing what this phase produces.\n\n1. **First step.** What happens and what gets produced.\n2. **Second step.** What follows and how it's validated.\n3. **Third step.** What closes the phase out.\n",
+  "skeleton": "<!-- _class: split-steps -->\n\n`02`\n\n## Phase name\n\nOne-sentence summary describing what this phase produces.\n\n1. First step\n   - What happens and what gets produced.\n2. Second step\n   - What follows and how it's validated.\n3. Third step\n   - What closes the phase out.\n",
   "anatomyBlock": "split-steps",
   "sample": "<!-- _class: split-steps -->\n\n`02`\n\n## Discovery and Scoping\n\nFour weeks. Shared definition of the problem before any solution work begins.\n\n1. Stakeholder Interviews\n   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.\n2. Current-State Audit\n   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.\n3. Problem Framing Workshop\n   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.\n4. Scope Confirmation\n   - Written sign-off on what is in, what is out, and what requires a separate decision.\n",
   "whenToUse": [

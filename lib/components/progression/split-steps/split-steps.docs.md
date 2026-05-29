@@ -29,9 +29,12 @@ Use when a multi-step process needs a phase anchor (week N, sprint, milestone) a
 
 One-sentence summary describing what this phase produces.
 
-1. **First step.** What happens and what gets produced.
-2. **Second step.** What follows and how it's validated.
-3. **Third step.** What closes the phase out.
+1. First step
+   - What happens and what gets produced.
+2. Second step
+   - What follows and how it's validated.
+3. Third step
+   - What closes the phase out.
 ```
 
 ## Slots

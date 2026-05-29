@@ -26,12 +26,12 @@
     "rows": {
       "selector": "ul > li",
       "required": true,
-      "description": "One li per item. Format: `Label — N% — status` where status is on-track / at-risk / blocked / done."
+      "description": "One li per item: label text then trailing inline-code pills — percent first, optional status second, e.g. - Adoption `68%` `at-risk`. Status vocabulary: on-track / live / at-risk / warn / blocked / fail / deferred / done. An optional nested bullet renders as a per-row note."
     }
   },
-  "skeleton": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot taken at 14:00 UTC. Status pills tint the bar fill.\n\n- Codebook platform `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n",
+  "skeleton": "<!-- _class: progress -->\n\n`Eyebrow · context`\n\n## Progress by item.\n\n- First item `80%` `on-track`\n- Second item `55%` `at-risk`\n- Third item `30%` `blocked`\n",
   "anatomyBlock": "progress-canvas",
-  "sample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.\n\n- Codebook platform `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n",
+  "sample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.\n\n- Framework `92%` `on-track`\n- Adoption & enablement `68%` `at-risk`\n- Decision log `81%` `on-track`\n- Calibration cadence `34%` `deferred`\n- Board reporting `12%` `blocked`\n",
   "whenToUse": [
     {
       "title": "Parallel workstreams at a glance",

@@ -29,7 +29,7 @@
       "description": "Optional key-insight panel above the cards."
     }
   },
-  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- **First card title.** Body text for the first card, one sentence.\n- **Second card title.** Body text for the second card, one sentence.\n- **Third card title.** Body text for the third card, one sentence.\n- **Fourth card title.** Body text for the fourth card, one sentence.\n",
+  "skeleton": "<!-- _class: cards-grid -->\n\n## Slide heading.\n\n- First card title\n  - Body text for the first card, one sentence.\n- Second card title\n  - Body text for the second card, one sentence.\n- Third card title\n  - Body text for the third card, one sentence.\n- Fourth card title\n  - Body text for the fourth card, one sentence.\n",
   "sample": "<!-- _class: cards-grid -->\n\n## The framework has four components.\n\n- Signal Intake.\n  - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.\n- Scoring Model.\n  - Each signal scored on three dimensions — confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.\n- Decision Log.\n  - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.\n- Calibration Loop.\n  - Monthly retrospective that compares predicted outcomes to actual outcomes and adjusts scoring weights accordingly.\n",
   "anatomyBlock": "T7-card-grid-2x2",
   "whenToUse": [

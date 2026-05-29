@@ -23,27 +23,21 @@ Use for status snapshots: what's in each lane (todo/doing/done or similar). Each
 ```markdown
 <!-- _class: kanban -->
 
-`Phase 2 · Sprint 14`
+`Eyebrow · context`
 
-## Where Phase 2 work stands today.
-
-Four columns, mixed card density. Size badge sits in the title row.
+## Board status today.
 
 - Backlog
-  - Per-purpose codebooks `S`
-  - Crypto-shred runbook `M`
-  - Dependency dashboard `S`
+  - First card `S`
+    - team-a
+  - Second card `M`
+    - team-b `at-risk`
 - In progress
-  - Multi-tenant DEKs `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
-- Review
-  - Centralised log `S`
-    - compliance
+  - Third card `M`
+    - team-a
 - Done
-  - Codebook signing `M`
-  - Manual rotation `S`
+  - Fourth card `S`
+    - team-b
 ```
 
 ## Slots
@@ -51,7 +45,7 @@ Four columns, mixed card density. Size badge sits in the title row.
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `lanes` | `ul > li` | yes | Outer li per lane (stage), lead with **Stage name.**. Inner bullets per card in that lane. |
+| `lanes` | `ul > li` | yes | Three levels. Outer li = column header as plain text (e.g. Backlog). Each inner li = a card: title then a trailing inline-code size badge (S/M/L/XL; other codes are left in the title). Each card may carry its own nested bullet = a categorical lane label, optionally with a trailing status pill, e.g. - platform `at-risk`. A column titled Done / Completed / Shipped / Closed dims its cards. Status vocabulary matches the shared chart set (on-track / done / live / at-risk / warn / blocked / fail / deferred / pilot / decision). |
 
 ## Anatomy
 

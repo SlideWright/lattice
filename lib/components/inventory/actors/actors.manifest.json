@@ -15,12 +15,12 @@
     "rows": {
       "selector": "ul > li",
       "required": true,
-      "description": "One row per actor. Lead each li with **Actor Name.** then a short responsibility summary."
+      "description": "One row per responsibility. Each li leads with a **bold responsibility**, then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body."
     }
   },
-  "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- **First actor.** Owns the first part of the lifecycle.\n- **Second actor.** Owns the second part.\n- **Third actor.** Owns the third part.\n- **Fourth actor.** Owns the fourth part.\n",
+  "skeleton": "<!-- _class: actors -->\n\n## Who owns each part of the process.\n\n- **Owns the first part** `First actor`\n  - One-line note on what that ownership covers.\n- **Owns the second part** `Second actor`\n  - One-line note.\n- **Owns the third part** `Third actor`\n  - One-line note.\n",
   "anatomyBlock": "actors",
-  "sample": "<!-- _class: actors -->\n\n## Who owns what when an incident is live.\n\n- **Incident Commander.** Directs the response, owns the timeline, makes the call to escalate.\n- **Operations Lead.** Drives mitigation hands-on — rollback, failover, load-shedding.\n- **Communications.** Posts the 30-minute status updates and briefs the customer-facing teams.\n- **Scribe.** Logs every action with a timestamp for the post-incident review.\n- **Executive Sponsor.** Clears blockers and approves customer comms; stays out of the debugging.\n",
+  "sample": "<!-- _class: actors -->\n\n## Who owns each part of the framework.\n\n- **Owns the scoring model** `Head of Product`\n  - Sets the weights and signs off changes after each calibration.\n- **Runs the weekly signal review** `Chief of Staff`\n  - Chairs the thirty minutes and keeps the decision log current.\n- **Maintains the decision log** `Program Manager`\n  - Every call recorded with its bet; chases the missing predicted outcomes.\n- **Owns adoption** `Enablement Lead`\n  - Onboards each team — the reason attendance is merely aspirational.\n- **Clears blockers** `Executive Sponsor`\n  - Approves the operating rhythm; stays out of the scoring debates.\n",
   "whenToUse": [
     {
       "title": "Who owns what",

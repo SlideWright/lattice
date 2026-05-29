@@ -25,9 +25,12 @@ Use when each item has enough body text to want its own row but the slide should
 
 ## Slide heading.
 
-- **First row title.** Body text for the first wide row, one or two sentences.
-- **Second row title.** Body text for the second wide row.
-- **Third row title.** Body text for the third wide row.
+- First row title
+  - Body text for the first wide row, one or two sentences.
+- Second row title
+  - Body text for the second wide row.
+- Third row title
+  - Body text for the third wide row.
 ```
 
 ## Slots

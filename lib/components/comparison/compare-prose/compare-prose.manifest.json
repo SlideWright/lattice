@@ -26,7 +26,7 @@
       "description": "Exactly two list items, each one option. Lead each with **Option label.** then 1–3 sentences."
     }
   },
-  "skeleton": "<!-- _class: compare-prose -->\n\n## Heading framing the comparison.\n\n- **First option.** Two-sentence description of the first option, including the strongest argument for it.\n- **Second option.** Two-sentence description of the second option, including the strongest argument for it.\n",
+  "skeleton": "<!-- _class: compare-prose -->\n\n## Heading framing the comparison.\n\n- First option\n  - Two-sentence description of the first option, including the strongest argument for it.\n- Second option\n  - Two-sentence description of the second option, including the strongest argument for it.\n",
   "anatomyBlock": "T11-comparison",
   "sample": "<!-- _class: compare-prose -->\n\n## Renew at list price, or hold the discount.\n\n- Hold the published rate\n  - Protect the list price and signal pricing discipline to the rest of the base. Risks four at-risk accounts worth $2.1M ARR walking at renewal.\n- Extend the legacy discount\n  - Keep the four accounts by carrying their 2023 pricing one more year. Buys retention now, but the discount has already leaked to two prospects in the same segment.\n",
   "whenToUse": [

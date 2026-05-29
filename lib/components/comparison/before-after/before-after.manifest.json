@@ -18,9 +18,9 @@
       "description": "Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description."
     }
   },
-  "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
+  "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- Before\n  - How the system or process worked before the change, in one or two sentences.\n- After\n  - How the system or process works now, in one or two sentences.\n",
   "anatomyBlock": "before-after",
-  "sample": "<!-- _class: before-after -->\n\n## What moving off the central vault changed.\n\n- Before.\n  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.\n- After.\n  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.\n",
+  "sample": "<!-- _class: before-after -->\n\n## What writing decisions down actually changed.\n\n- Before.\n  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.\n- After.\n  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.\n",
   "whenToUse": [
     {
       "title": "Story of a change",
@@ -74,7 +74,7 @@
     "banner-tag": {
       "label": "Banner tag — slot label as full-width header strip",
       "caption": "Flips each card from a flush-corner label tag into a full-width header strip. Use when the slot label is the architectural signal of the card (categorical case: BUILD / WHY NOT BUY / WHY NOT DELAY), not a quiet marker.",
-      "sample": "<!-- _class: before-after banner-tag -->\n\n## Three reasons we are building.\n\n- BUILD\n  - The platform is the product. Owning it owns the roadmap.\n- WHY NOT BUY\n  - No vendor matches our compliance posture without surrender of control.\n- WHY NOT DELAY\n  - Cost of waiting compounds: each quarter spent on workarounds is one fewer quarter on the platform.\n"
+      "sample": "<!-- _class: before-after banner-tag -->\n\n## What the operating review changed.\n\n- BEFORE\n  - Status arrived as a 40-slide deck nobody finished; the real decision happened in the hallway afterward.\n- AFTER\n  - One scorecard, one page; the call is logged in the room before anyone leaves.\n"
     }
   },
   "showcase": { "featured": true }

@@ -60,16 +60,16 @@ Progression — ordered movement through stages or time.
 
 <!-- _class: roadmap -->
 
-`H2 2026 · Platform plan`
+`H2 2026 · Rollout plan`
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | --------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |
-| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |
-| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |
+| Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
+| ---------- | ---------------------- | ------------------------ | ----------------------- |
+| Framework  | [x] Signal taxonomy    | [-] Scoring model v2     | [ ] Per-team weighting  |
+| Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |
+| Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |
+| Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |
 
 ---
 

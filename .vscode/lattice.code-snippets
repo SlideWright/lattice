@@ -10,10 +10,12 @@
       "",
       "## Who owns each part of the process.",
       "",
-      "- **First actor.** Owns the first part of the lifecycle.",
-      "- **Second actor.** Owns the second part.",
-      "- **Third actor.** Owns the third part.",
-      "- **Fourth actor.** Owns the fourth part."
+      "- **Owns the first part** `First actor`",
+      "  - One-line note on what that ownership covers.",
+      "- **Owns the second part** `Second actor`",
+      "  - One-line note.",
+      "- **Owns the third part** `Third actor`",
+      "  - One-line note."
     ],
     "description": "Roster of responsibilities owned by named actors."
   },
@@ -60,8 +62,10 @@
       "",
       "## What the change did.",
       "",
-      "- **Before.** How the system or process worked before the change, in one or two sentences.",
-      "- **After.** How the system or process works now, in one or two sentences."
+      "- Before",
+      "  - How the system or process worked before the change, in one or two sentences.",
+      "- After",
+      "  - How the system or process works now, in one or two sentences."
     ],
     "description": "Explicit state-change comparison — what was, what is."
   },
@@ -84,10 +88,14 @@
       "",
       "## Slide heading.",
       "",
-      "- **First card title.** Body text for the first card, one sentence.",
-      "- **Second card title.** Body text for the second card, one sentence.",
-      "- **Third card title.** Body text for the third card, one sentence.",
-      "- **Fourth card title.** Body text for the fourth card, one sentence."
+      "- First card title",
+      "  - Body text for the first card, one sentence.",
+      "- Second card title",
+      "  - Body text for the second card, one sentence.",
+      "- Third card title",
+      "  - Body text for the third card, one sentence.",
+      "- Fourth card title",
+      "  - Body text for the fourth card, one sentence."
     ],
     "description": "2–4 parallel items, similar weight, scannable in a grid."
   },
@@ -98,8 +106,10 @@
       "",
       "## Slide heading.",
       "",
-      "- **Left card title.** Body text for the left card, two short sentences.",
-      "- **Right card title.** Body text for the right card, two short sentences."
+      "- Left card title",
+      "  - Body text for the left card, two short sentences.",
+      "- Right card title",
+      "  - Body text for the right card, two short sentences."
     ],
     "description": "Two cards side-by-side, co-equal."
   },
@@ -110,9 +120,12 @@
       "",
       "## Slide heading.",
       "",
-      "- **First card title.** Body text for the first stacked card, two short sentences max.",
-      "- **Second card title.** Body text for the second stacked card.",
-      "- **Third card title.** Body text for the third stacked card."
+      "- First card title",
+      "  - Body text for the first stacked card, two short sentences max.",
+      "- Second card title",
+      "  - Body text for the second stacked card.",
+      "- Third card title",
+      "  - Body text for the third stacked card."
     ],
     "description": "Parallel items stacked vertically, full-width cards."
   },
@@ -123,9 +136,12 @@
       "",
       "## Slide heading.",
       "",
-      "- **First row title.** Body text for the first wide row, one or two sentences.",
-      "- **Second row title.** Body text for the second wide row.",
-      "- **Third row title.** Body text for the third wide row."
+      "- First row title",
+      "  - Body text for the first wide row, one or two sentences.",
+      "- Second row title",
+      "  - Body text for the second wide row.",
+      "- Third row title",
+      "  - Body text for the third wide row."
     ],
     "description": "Three or four wide rows, each a full-width card."
   },
@@ -155,7 +171,8 @@
       "> Verbatim quotation of the cited language.",
       "",
       "- Plain-English interpretation of what the language covers.",
-      "- **What we must do.** The concrete action this citation argues for."
+      "- What we must do.",
+      "  - The concrete action this citation argues for."
     ],
     "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss."
   },
@@ -221,8 +238,10 @@
       "",
       "## Heading framing the comparison.",
       "",
-      "- **First option.** Two-sentence description of the first option, including the strongest argument for it.",
-      "- **Second option.** Two-sentence description of the second option, including the strongest argument for it."
+      "- First option",
+      "  - Two-sentence description of the first option, including the strongest argument for it.",
+      "- Second option",
+      "  - Two-sentence description of the second option, including the strongest argument for it."
     ],
     "description": "Two prose options side-by-side with a labeled corner tag on each."
   },
@@ -262,8 +281,10 @@
       "",
       "## What we are doing.",
       "",
-      "- **Chosen path.** One-line rationale for the decision.",
-      "- **Rejected option.** One-line rationale for why this didn't fit."
+      "- Chosen path",
+      "  - One-line rationale for the decision.",
+      "- Rejected option",
+      "  - One-line rationale for why this didn't fit."
     ],
     "description": "The verdict slide — one chosen path, named explicitly."
   },
@@ -303,12 +324,16 @@
     "body": [
       "<!-- _class: featured -->",
       "",
-      "## Applying the criteria, here is where the evidence points.",
+      "## Slide heading framing the recommendation.",
       "",
-      "- **Featured recommendation.** One to two sentences making the case.",
-      "- **Supporting card.** Short context on a related option.",
-      "- **Supporting card.** Short context on another option.",
-      "- **Supporting card.** Short context on another option."
+      "- Featured recommendation",
+      "  - One to two sentences making the case.",
+      "- Supporting card",
+      "  - Short context on a related option.",
+      "- Supporting card",
+      "  - Short context on another option.",
+      "- Supporting card",
+      "  - Short context on another option."
     ],
     "description": "Featured card + sub-grid — one prominent item with supporting cards."
   },
@@ -321,20 +346,13 @@
       "",
       "## What ships in each phase, by workstream.",
       "",
-      "Three workstreams across four quarters. Status pills tint each bar.",
-      "",
-      "- Platform",
-      "  - Codebook signing `Q1 → Q2` `done`",
-      "  - Multi-tenant DEKs `Q2 → Q3` `live`",
-      "  - Per-purpose codebooks `Q3 → Q4` `at-risk`",
-      "- Operations",
-      "  - Manual rotation `Q1 → Q2` `done`",
-      "  - Automated rotation `Q2 → Q3` `live`",
-      "  - Crypto-shred `Q3 → Q4`",
-      "- Compliance",
-      "  - Audit trail `Q1 → Q2` `done`",
-      "  - Centralised log `Q2 → Q3`",
-      "  - Examiner pack `Q3 → Q4`"
+      "- First workstream",
+      "  - First task `Q1 → Q2` `done`",
+      "  - Second task `Q2 → Q3` `live`",
+      "  - Third task `Q3 → Q4` `at-risk`",
+      "- Second workstream",
+      "  - First task `Q1 → Q2` `done`",
+      "  - Second task `Q2 → Q3`"
     ],
     "description": "Gantt chart — task bars across a date axis."
   },
@@ -391,27 +409,21 @@
     "body": [
       "<!-- _class: kanban -->",
       "",
-      "`Phase 2 · Sprint 14`",
+      "`Eyebrow · context`",
       "",
-      "## Where Phase 2 work stands today.",
-      "",
-      "Four columns, mixed card density. Size badge sits in the title row.",
+      "## Board status today.",
       "",
       "- Backlog",
-      "  - Per-purpose codebooks `S`",
-      "  - Crypto-shred runbook `M`",
-      "  - Dependency dashboard `S`",
+      "  - First card `S`",
+      "    - team-a",
+      "  - Second card `M`",
+      "    - team-b `at-risk`",
       "- In progress",
-      "  - Multi-tenant DEKs `M`",
-      "    - platform `at-risk`",
-      "  - Examiner pack v2 `L`",
-      "    - compliance",
-      "- Review",
-      "  - Centralised log `S`",
-      "    - compliance",
+      "  - Third card `M`",
+      "    - team-a",
       "- Done",
-      "  - Codebook signing `M`",
-      "  - Manual rotation `S`"
+      "  - Fourth card `S`",
+      "    - team-b"
     ],
     "description": "Kanban board — columns of cards by stage."
   },
@@ -554,17 +566,14 @@
     "body": [
       "<!-- _class: piechart donut -->",
       "",
-      "`H1 2026 · 1,840 person-hours`",
+      "`Eyebrow · context`",
       "",
-      "## Where the engineering quarter went.",
+      "## What the breakdown shows.",
       "",
-      "Wedges drawn proportionally; legend reads in author order with raw values.",
-      "",
-      "- Codebook platform `46%`",
-      "- Operations runbook `22%`",
-      "- Compliance work `18%`",
-      "- Pilot support `9%`",
-      "- Toil and on-call `5%`"
+      "- First slice `40%`",
+      "- Second slice `30%`",
+      "- Third slice `20%`",
+      "- Fourth slice `10%`"
     ],
     "description": "Pie or donut chart with legend — proportional wedges."
   },
@@ -586,17 +595,13 @@
     "body": [
       "<!-- _class: progress -->",
       "",
-      "`H1 2026 · Phase 1 readiness`",
+      "`Eyebrow · context`",
       "",
-      "## Phase 1 readiness, by workstream.",
+      "## Progress by item.",
       "",
-      "Snapshot taken at 14:00 UTC. Status pills tint the bar fill.",
-      "",
-      "- Codebook platform `92%` `on-track`",
-      "- Operations runbook `68%` `at-risk`",
-      "- Compliance audit pack `81%` `on-track`",
-      "- SDK polyglot parity `34%` `deferred`",
-      "- Dependency dashboard `12%` `blocked`"
+      "- First item `80%` `on-track`",
+      "- Second item `55%` `at-risk`",
+      "- Third item `30%` `blocked`"
     ],
     "description": "Horizontal progress bars — one row per item, percentage filled."
   },
@@ -711,16 +716,14 @@
     "body": [
       "<!-- _class: roadmap -->",
       "",
-      "`Layout · roadmap`",
+      "`H2 2026 · Plan`",
       "",
       "## What ships in each phase, by workstream.",
       "",
-      "| Workstream | Foundation `Q2 2026`  | Hardening `Q3 2026`    | Scale `Q4 2026`           |",
-      "| ---------- | --------------------- | ---------------------- | ------------------------- |",
-      "| Platform   | [x] Codebook signing  | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |",
-      "| Operations | [x] Manual rotation   | [-] Automated rotation | [ ] Crypto-shred          |",
-      "| Compliance | [x] Audit trail       | [x] Centralised log    | [ ] Examiner pack         |",
-      "| SDK        | [x] Java              | [/] .NET               | [ ] Polyglot parity       |",
+      "| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026` | Scale `Q4 2026` |",
+      "| --- | --- | --- | --- |",
+      "| First workstream | [x] Shipped item | [-] In-flight item | [ ] Planned item |",
+      "| Second workstream | [x] Shipped item | [/] Out-of-scope item | [ ] Planned item |",
       "",
       "State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope."
     ],
@@ -794,9 +797,12 @@
       "",
       "Measurement window and qualifying detail in one short sentence.",
       "",
-      "- **First supporting point.** Why this metric matters and what's driving it.",
-      "- **Second supporting point.** What concentration or trend explains it.",
-      "- **Third supporting point.** What this number unlocks or threatens."
+      "- **First supporting point.**",
+      "  - Why this metric matters and what's driving it.",
+      "- **Second supporting point.**",
+      "  - What concentration or trend explains it.",
+      "- **Third supporting point.**",
+      "  - What this number unlocks or threatens."
     ],
     "description": "One number owns the room — light left with the hero metric, dark right with supporting findings."
   },
@@ -826,9 +832,12 @@
       "",
       "One-sentence summary describing what this phase produces.",
       "",
-      "1. **First step.** What happens and what gets produced.",
-      "2. **Second step.** What follows and how it's validated.",
-      "3. **Third step.** What closes the phase out."
+      "1. First step",
+      "   - What happens and what gets produced.",
+      "2. Second step",
+      "   - What follows and how it's validated.",
+      "3. Third step",
+      "   - What closes the phase out."
     ],
     "description": "Sequential process — phase label + heading on the left, numbered step timeline on the right with a connecting line."
   },
@@ -936,20 +945,16 @@
     "body": [
       "<!-- _class: timeline-list -->",
       "",
-      "`Codebook architecture`",
+      "`Eyebrow · context`",
       "",
-      "## How the codebook architecture arrived in production.",
+      "## How it unfolded.",
       "",
-      "Four stages over eighteen months. Date pill leads each item; status pill trails.",
-      "",
-      "1. `2024 Q3` Vault round-trip",
-      "   - First production tokenization shipped on a centralised vault. p99 60 ms.",
-      "2. `2025 Q1` Codebook proposal `decision`",
-      "   - Architecture review accepts the in-process model. Build approved.",
-      "3. `2025 Q3` Codebook GA `live`",
-      "   - Phase 1 rollout complete; 12 production tenants on the new path.",
-      "4. `2026 Q1` Multi-tenant DEKs `live`",
-      "   - Hardening shipped; codebook caching cut p99 below 5 ms."
+      "1. `2024 Q3` First milestone",
+      "   - One-sentence description of what shipped.",
+      "2. `2025 Q1` Second milestone `decision`",
+      "   - One-sentence description.",
+      "3. `2025 Q3` Third milestone `live`",
+      "   - One-sentence description."
     ],
     "description": "Date-stamped event list — spine with date pills, status pills, and body."
   },
@@ -991,17 +996,20 @@
       "## Which option meets the criteria.",
       "",
       "- **First option.**",
-      "  - [x] First criterion",
-      "  - [-] Second criterion",
-      "  - [ ] Third criterion",
+      "  - [x] First badge",
+      "  - [-] Second badge",
+      "  - [ ] Third badge",
+      "  - One-line rationale giving the verdict for this option.",
       "- **Second option.**",
-      "  - [x] First criterion",
-      "  - [x] Second criterion",
-      "  - [-] Third criterion",
+      "  - [x] First badge",
+      "  - [x] Second badge",
+      "  - [-] Third badge",
+      "  - One-line rationale giving the verdict for this option.",
       "- **Third option.**",
-      "  - [ ] First criterion",
-      "  - [-] Second criterion",
-      "  - [x] Third criterion"
+      "  - [x] First badge",
+      "  - [x] Second badge",
+      "  - [x] Third badge",
+      "  - One-line rationale; the last option is the focal verdict. Recommended."
     ],
     "description": "Options scored against criteria as a verdict matrix."
   },

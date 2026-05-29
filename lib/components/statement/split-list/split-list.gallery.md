@@ -29,6 +29,11 @@ Featured left panel + supporting list on the right.
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
+
 
 ---
 
@@ -63,6 +68,11 @@ Featured left panel + supporting list on the right.
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
+
 
 ---
 
@@ -80,6 +90,11 @@ Featured left panel + supporting list on the right.
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
 
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
+
 
 ---
 
@@ -96,6 +111,11 @@ Featured left panel + supporting list on the right.
   - The moment a user first succeeds sets the frame for everything that follows.
 - Comprehension drives retention
   - Users who understand the system's logic stay through friction; users who don't churn at the first one.
+
+<!-- -->
+
+- Product and growth leadership
+- Win on comprehension, not feature count
 
 
 ---
