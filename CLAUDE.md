@@ -81,10 +81,18 @@ Generated, committed artifacts live in **`dist/`**:
 cuoio, into one drop-in stylesheet with `@import 'lattice'` resolved —
 the zero-config / browser-droppable default; change `DEFAULT_THEME` in
 that generator to re-bless another palette), `dist/lattice-runtime.js`
-(esbuild runtime bundle), and `dist/docs/components.{md,html}` (the canonical
-single-file component reference). These are the shipped/public paths —
-decks load `dist/lattice.css` via `marp.config.js` `themeSet`, and the
-README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
+(esbuild runtime bundle), `dist/lattice-emulator.js` (the esbuild-bundled
+emulator CLI — the package `bin`/`main`; `build-emulator.js` inlines the
+local engine graph and leaves node_modules deps external, mirroring the
+runtime split of `lib/runtime/index.js` source → `dist/` bundle),
+`dist/docs/components.{md,html}` (the canonical single-file component
+reference), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
+runs last). These are the shipped/public paths — decks load
+`dist/lattice.css` via `marp.config.js` `themeSet`, and the README/jsdelivr
+URLs point into `dist/`. Do not hand-edit them. (The repo-root
+`lattice-emulator.js` is the **source** the bundle builds from — and the
+path tests/tools invoke directly; the bundle uses a package-root walk so it
+resolves `themes/` and `dist/lattice.css` from either location.)
 
 - `npm run build` — regenerate every artifact in dependency order,
   behind the collision gate. `npm run build:check` is the CI/stale gate.
@@ -95,23 +103,29 @@ README/jsdelivr URLs point into `dist/`. Do not hand-edit them.
   unlisted layout co-ownership, duplicate component CSS selectors,
   duplicate component names, missing core theme tokens — and forces the
   intentional cases into the allow-lists in `tools/check-ownership.js`.
-  Individual generators (`css:build`, `runtime:build`, `snippets:build`,
-  `docs:components`, `docs:portal`) still exist for targeted rebuilds.
+  Individual generators (`css:build`, `runtime:build`, `emulator:build`,
+  `snippets:build`, `docs:components`, `docs:portal`, `dist-readme:build`)
+  still exist for targeted rebuilds.
 
 **What ships to npm.** The package is `@slidewright/lattice`, consumed
 through named `exports` subpaths — `/css` (`dist/lattice.css`),
 `/runtime` (`dist/lattice-runtime.js`), `/config` (`marp.config.js`),
-`/themes/<name>.css`, plus the `lattice` `bin` (the emulator). The
+`/themes/<name>.css`, plus the `lattice` `bin` / `main` / `.` export, all
+now pointing at the bundled `dist/lattice-emulator.js` (not the repo-root
+source). The
 `files` allowlist ships engine source, `dist/`, `themes/`, and the two
 authoring docs (`design/skill.md`, `design/design-system.md`)
 only. **PDFs and `*.gallery.md` are excluded from the tarball** (the
 `!**/*.pdf` / `!**/*.gallery.md` negations) — they are regression
 baselines + reviewer deliverables, kept in git but never shipped. Don't
-widen `files` to drag them back in; the tarball is ~1.8 MB, not ~28 MB,
-for that reason. **npm publishing is not yet automated** — `RELEASE.md`
-is the spec (tag `v<version>` matching `package.json`, gated on
-`build:check` + tests) and holds the manual cut-a-release steps plus the
-`release.yml` workflow to implement later.
+widen `files` to drag them back in; the tarball is ~2.3 MB, not ~28 MB,
+for that reason. **Releases are automated but manually triggered** — the
+**Release** workflow (`.github/workflows/release.yml`, `workflow_dispatch`)
+derives the semver bump from `CHANGELOG.md` `## Unreleased` via
+`tools/changelog.js`, rolls the changelog, tags, pushes to `main`, and
+publishes a GitHub Release with notes + the showcase zip; **npm publish is
+opt-in** (off until an `NPM_TOKEN` is set). `npm run release` runs the same
+flow locally. See `RELEASE.md` for the full contract and `tools/release.js`.
 
 ## Tests and the regression baseline
 
@@ -262,6 +276,19 @@ caught by the hook instead of by reviewer eyeballs.
   for the bucket-survey reference and any per-component gallery for
   the component-doc reference.
 - **Commit messages are `area(scope): short summary`.** Match `git log`.
+- **Record every user-visible change in `CHANGELOG.md` `## Unreleased`
+  as it lands** — not at release time. The changelog is the source of
+  truth the release reads: `tools/changelog.js` derives the semver bump
+  from the Keep-a-Changelog categories there (`### Removed` /
+  `**Breaking:**` → major, `### Added`/`### Changed`/`### Deprecated` →
+  minor, `### Fixed`/`### Security` → patch). When a change alters a
+  shipped surface (a component, modifier, token, export, theme, CLI
+  flag, or render behavior), add or update the right `## Unreleased`
+  entry **in the same change** — pure-internal refactors/tests/docs need
+  no entry. Lead a bullet with `**Breaking:**` for any change that breaks
+  an existing deck or consumer, so it scores major even under
+  `### Changed`. The release workflow rolls `## Unreleased` into a dated
+  section; you keep it accurate. See `RELEASE.md`.
 - **No hex literals in layout rules.** Always `var(--token)`.
 - **Typography uses the 12-token system.** Three scales: content
   (`--fs-meta` 11.25 / `--fs-body-compact` 13.5 / `--fs-body` 16 /

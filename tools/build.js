@@ -17,11 +17,13 @@
  *   1. lattice.css            tools/build-css.js
  *   2. lattice-default.css    tools/build-default-bundle.js  (engine + default palette)
  *   3. lattice-runtime.js     tools/build-runtime.js
- *   4. VS Code snippets       tools/build-snippets.js
- *   5. per-component docs      tools/build-component-docs.js
- *   6. canonical doc portal    tools/build-docs-portal.js
- *   7. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
- *   8. playground bundle       tools/build-playground.js      (docs site browser engine)
+ *   4. lattice-emulator.js    tools/build-emulator.js    (bundled CLI bin)
+ *   5. VS Code snippets       tools/build-snippets.js
+ *   6. per-component docs      tools/build-component-docs.js
+ *   7. canonical doc portal    tools/build-docs-portal.js
+ *   8. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
+ *   9. playground bundle       tools/build-playground.js      (docs site browser engine)
+ *  10. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
  *
  * Gallery PDFs are NOT part of this build: they need Chromium, take tens
  * of seconds, and are regression artifacts rather than shipped source.
@@ -52,11 +54,15 @@ const STEPS = [
   { label: 'lattice.css', script: 'build-css.js' },
   { label: 'lattice-default.css', script: 'build-default-bundle.js' },
   { label: 'lattice-runtime.js', script: 'build-runtime.js' },
+  { label: 'lattice-emulator.js', script: 'build-emulator.js' },
   { label: 'VS Code snippets', script: 'build-snippets.js' },
   { label: 'per-component docs', script: 'build-component-docs.js' },
   { label: 'doc portal (components.md/.html)', script: 'build-docs-portal.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
+  // Last — it indexes the finished dist/ folder, so every other artifact
+  // must already be (re)written before it runs.
+  { label: 'dist README', script: 'build-dist-readme.js' },
 ];
 
 function runStep(step, check) {

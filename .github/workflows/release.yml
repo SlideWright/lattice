@@ -1,0 +1,76 @@
+name: Release
+
+# Manual trigger only. The bump level is derived deterministically from the
+# CHANGELOG `## Unreleased` section (tools/changelog.js) unless overridden.
+# See RELEASE.md.
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump (auto = read from CHANGELOG ## Unreleased)'
+        type: choice
+        default: auto
+        options: [auto, patch, minor, major]
+      publish_npm:
+        description: 'Also publish to npm (requires NPM_TOKEN)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # push the release commit + tag, create the GitHub Release
+  id-token: write   # npm provenance, when publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # full history + tags for archive + versioning
+          fetch-tags: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fast gate. The integration tier already ran on this commit via ci.yml;
+      # the release adds only a version bump + changelog roll + dist rebuild.
+      - name: Lint + unit + build gate
+        run: |
+          npm run lint
+          npm test
+          npm run build:check
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Cut release (bump, changelog, tag, zip)
+        run: node tools/release.js --bump=${{ inputs.bump }} --push --skip-checks
+
+      - name: Read released version
+        id: ver
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="${{ steps.ver.outputs.version }}"
+          gh release create "v$V" \
+            "release/lattice-v$V.zip" \
+            --title "v$V" \
+            --notes-file "release/notes-v$V.md" \
+            --verify-tag
+
+      - name: Publish to npm
+        if: ${{ inputs.publish_npm }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance

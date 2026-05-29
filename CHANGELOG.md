@@ -7,10 +7,38 @@ changes to either are major version bumps. New layouts and new themes are
 additive minor versions. Mermaid CSS overrides are internal and may change
 in patch versions.
 
+> **This file drives the release.** `## Unreleased` is the source of truth
+> for the next version. `tools/changelog.js` reads its Keep-a-Changelog
+> categories to pick the bump deterministically, and the release workflow
+> rolls `## Unreleased` into a dated `## <version> - <date>` section:
+>
+> | Category in `## Unreleased` | Bump |
+> |---|---|
+> | `### Removed`, or any `**Breaking:**` bullet / `BREAKING CHANGE` token | **major** |
+> | `### Added`, `### Changed`, `### Deprecated` | **minor** |
+> | `### Fixed`, `### Security` | **patch** |
+>
+> Keep entries here current **as changes land** (see `CLAUDE.md`) — an empty
+> `## Unreleased` means there is nothing to release. Flag a breaking change
+> by leading the bullet with `**Breaking:**` so it counts as major even
+> under `### Changed`.
+
 ## Unreleased
 
 ### Added
 
+- **`dist/` is now a self-contained distribution.** It ships the bundled
+  emulator CLI (`dist/lattice-emulator.js`, esbuild bundle of the engine
+  graph — the package `bin`/`main`/`.` now resolve to it) and a generated
+  `dist/README.md` indexing the folder, alongside the existing CSS/runtime
+  bundles and the canonical component reference. A `npm run release:zip`
+  target packages the full offline-browsable showcase (engine + themes +
+  examples + gallery PDFs) for GitHub Releases.
+- **Automated, changelog-driven releases.** The **Release** workflow
+  (`workflow_dispatch`) derives the semver bump from this `## Unreleased`
+  section (`tools/changelog.js`), rolls it into a dated section, tags,
+  pushes, and publishes a GitHub Release with notes + the showcase zip
+  (`tools/release.js`). `npm run release` / `release:dry` run it locally.
 - **Documentation site.** A public Astro Starlight site under `docs/`
   (intro, getting started, authoring and theming guides) deployed to
   GitHub Pages via `.github/workflows/docs.yml`. Branded with the

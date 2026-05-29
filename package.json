@@ -24,12 +24,12 @@
   },
   "license": "MIT",
   "author": "SlideWright",
-  "main": "lattice-emulator.js",
+  "main": "dist/lattice-emulator.js",
   "bin": {
-    "lattice": "lattice-emulator.js"
+    "lattice": "dist/lattice-emulator.js"
   },
   "exports": {
-    ".": "./lattice-emulator.js",
+    ".": "./dist/lattice-emulator.js",
     "./runtime": "./dist/lattice-runtime.js",
     "./css": "./dist/lattice.css",
     "./default": "./dist/lattice-default.css",
@@ -70,9 +70,17 @@
     "runtime:build": "node tools/build-runtime.js",
     "runtime:check": "node tools/build-runtime.js --check",
     "runtime:watch": "node tools/build-runtime.js --watch",
+    "emulator:build": "node tools/build-emulator.js",
+    "emulator:check": "node tools/build-emulator.js --check",
     "playground:build": "node tools/build-playground.js",
     "playground:check": "node tools/build-playground.js --check",
     "playground:watch": "node tools/build-playground.js --watch",
+    "dist-readme:build": "node tools/build-dist-readme.js",
+    "dist-readme:check": "node tools/build-dist-readme.js --check",
+    "release": "node tools/release.js",
+    "release:dry": "node tools/release.js --dry-run",
+    "release:zip": "node tools/build-release-zip.js",
+    "changelog:bump": "node tools/changelog.js --bump",
     "docs:components": "node tools/build-component-docs.js",
     "docs:components:check": "node tools/build-component-docs.js --check",
     "docs:portal": "node tools/build-docs-portal.js",

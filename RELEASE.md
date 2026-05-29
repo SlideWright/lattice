@@ -1,16 +1,21 @@
 # Releasing `@slidewright/lattice`
 
-> **Status: not yet automated.** Publishing to npm is deferred. This
-> document is the spec for how a release *will* work, plus the manual
-> steps to cut one today. Implement the GitHub Actions workflow in the
-> "Automation (to implement)" section when we're ready to publish.
+> **Status: automated, manually triggered.** The **Release** GitHub Action
+> (`.github/workflows/release.yml`, `workflow_dispatch`) cuts a release
+> end-to-end: it reads the bump from the changelog, bumps the version, rolls
+> `## Unreleased`, tags, and publishes a GitHub Release with notes + the
+> showcase zip. **npm publish is opt-in** (off by default until an
+> `NPM_TOKEN` is configured). You can also run the same flow locally with
+> `npm run release`.
 
 ## What a release is
 
-A release is a git tag `v<x.y.z>` whose number matches
-`package.json` `version`, pointing at a commit with a freshly built,
-in-sync `dist/`. The tag is the source of truth; npm publish (manual
-for now, automated later) follows from it.
+A release is a git tag `v<x.y.z>` whose number matches `package.json`
+`version`, pointing at a commit with a freshly built, in-sync `dist/` and a
+`CHANGELOG.md` whose `## Unreleased` items have been rolled into a dated
+section. The tag is the source of truth; the GitHub Release (and, when
+enabled, npm publish) follows from it. **The bump level is derived
+deterministically from `## Unreleased`** — see Versioning.
 
 ## The distribution contract
 
@@ -24,7 +29,8 @@ it at release time:
   and the two authoring docs (`design/skill.md`,
   `design/design-system.md`). PDFs and `*.gallery.md` are excluded
   via negation — they're regression baselines and reviewer
-  deliverables, kept in git but never shipped. Tarball is ~1.8 MB.
+  deliverables, kept in git but never shipped. Tarball is ~2.3 MB
+  (the bundled `dist/lattice-emulator.js` is the bulk of it).
 
 Verify before any release:
 
@@ -34,59 +40,134 @@ npm pack --dry-run        # inspect file list + size; no .pdf should appear
 
 ## Versioning
 
-Semver. `package.json` `version` is the single source of truth; the tag
-must match it (the automation will hard-fail on a mismatch).
+Semver. `package.json` `version` is the single source of truth. **The bump
+level is computed from `CHANGELOG.md` `## Unreleased`** by
+`tools/changelog.js`, mapping Keep-a-Changelog categories to semver:
 
-- **patch** — fixes, doc-only, baseline regen with no contract change.
-- **minor** — new components/themes/modifiers; additive `exports`.
-- **major** — removed/renamed `exports` subpaths, dropped themes,
-  Node-floor bumps, or any change that breaks an existing consumer.
+| Category in `## Unreleased` | Bump |
+|---|---|
+| `### Removed`, or any `**Breaking:**` bullet / `BREAKING CHANGE` token | **major** |
+| `### Added`, `### Changed`, `### Deprecated` | **minor** |
+| `### Fixed`, `### Security` | **patch** |
 
-The current Node floor is **>=22** (`engines`). Bumping it is a major.
+This is why `## Unreleased` must be kept accurate **as changes land** (the
+`CLAUDE.md` convention) — the changelog *is* the release input. The
+semantic policy behind the categories: removed/renamed `exports`, dropped
+themes, a raised Node floor (currently **>=22**), or any break to a stable
+layout/token surface ⇒ major (flag with `**Breaking:`**); new
+components/themes/modifiers or additive `exports` ⇒ minor; fixes and
+internal (Mermaid CSS) churn ⇒ patch. An empty `## Unreleased` means there
+is nothing to release.
 
-## Cutting a release manually (today)
+> **No contract-diff backstop (yet).** The bump trusts the changelog. A
+> structural break (e.g. a removed `exports` key) mis-filed under
+> `### Changed` without a `**Breaking:`** marker would under-bump. If that
+> ever bites, add a `tools/check-version-bump.js` that diffs
+> `exports`/`themes`/`engines` since the last tag and fails when the
+> computed bump is lower than the diff requires.
+
+## How to cut a release
+
+**Primary path — the Release workflow** (Actions → **Release** → *Run
+workflow*):
+
+- `bump`: leave as **`auto`** to use the changelog-derived level, or force
+  `patch`/`minor`/`major`.
+- `publish_npm`: leave **off** unless npm publishing is enabled.
+
+The workflow gates (lint + unit + `build:check`), then runs
+`tools/release.js`, which: computes the bump, `npm version`s, rolls
+`## Unreleased` → `## <version> - <date>`, rebuilds `dist/`, commits
+`release: v<version>`, tags it, **pushes to `main`**, and creates the
+GitHub Release with the `## Unreleased` notes + the showcase zip.
+
+**Local fallback** — identical flow on a clean `main`:
 
 ```sh
-# 1. Clean tree on main, up to date.
-git switch main && git pull
-
-# 2. Regenerate + gate dist/ and run the suite (must be green).
-npm run build:check
-npm test
-
-# 3. Bump version (writes package.json, creates the matching tag).
-npm version <patch|minor|major>
-
-# 4. Sanity-check the tarball.
-npm pack --dry-run
-
-# 5. Publish + push the tag.
-npm publish --access public
-git push origin main --follow-tags
+npm run release:dry          # preview: bump level, version, notes — changes nothing
+npm run release -- --push    # cut it for real and push the commit + tag
+# then attach the zip + notes to the Release (the workflow does this for you):
+# gh release create v<version> release/lattice-v<version>.zip \
+#   --notes-file release/notes-v<version>.md
 ```
 
-`prepublishOnly` re-runs `npm test` as a backstop before the registry
+`prepublishOnly` re-runs `npm test` as a backstop before any registry
 upload.
 
-## Automation (to implement)
+## The GitHub release zip
 
-When we're ready to stop publishing by hand, add
-`.github/workflows/release.yml` triggered on `push` tags `v*`. It should
-mirror the manual steps as a gate before `npm publish`:
+Three artifacts ship from a tag, each for a different audience — don't
+conflate them:
 
-1. `actions/checkout@v4` + `actions/setup-node@v4` (node 22, `cache: npm`,
-   `registry-url: https://registry.npmjs.org`).
-2. `npm ci`
-3. `npm run build:check` — fail on stale `dist/` or ownership collision.
-4. `npm test`
-5. Verify the tag matches `package.json` version; fail if not.
-6. `npm publish --access public --provenance`.
+| Artifact | Built by | For |
+|---|---|---|
+| **npm tarball** | `npm publish` (`files` allowlist) | `npm install` consumers; engine source + `dist/`, no PDFs. ~1.8 MB. |
+| **Source code (zip/tar.gz)** | GitHub, automatically | the whole repo at the tag — clone-and-build. |
+| **`lattice-v<x.y.z>.zip`** | `npm run release:zip` | download-and-use: the curated, offline-browsable **full showcase**. |
 
-Prerequisites before enabling:
+The release zip is the only one that carries the **gallery + example
+PDFs** (npm drops them, the source zip buries them in the tree). It is a
+`git archive` of HEAD under a `lattice-v<x.y.z>/` prefix, so it is
+tracked-only and deterministic per commit. Contents (full showcase):
 
-- **`NPM_TOKEN`** repo secret (automation token with publish rights),
-  exposed as `NODE_AUTH_TOKEN`.
-- **`permissions: { contents: read, id-token: write }`** on the job —
-  required for `--provenance`.
-- Confirm the npm org/scope `@slidewright` exists and the token can
-  publish to it.
+- `dist/` — the engine: `lattice.css`, `lattice-default.css`,
+  `lattice-runtime.js`, the bundled `lattice-emulator.js`, `README.md`,
+  and `docs/components.{md,html}`.
+- `lib/` — the `marp.config.js` runtime deps (transformers, core,
+  component transforms, integrations) **and** every per-component,
+  per-bucket, and integration gallery PDF the component reference links
+  to (~140), so `dist/docs/components.html` resolves its
+  `../../lib/components/…` links inside the unzipped tree.
+- `themes/` — all palette files.
+- `marp.config.js` — the marp-cli config.
+- `examples/` — showcase decks + their PDFs.
+- `design/skill.md`, `design/design-system.md`, `README.md`, `LICENSE`,
+  `CHANGELOG.md`.
+
+Deliberately excluded: `test/`, `tools/`, `engineering/`, editor/CI
+config, `node_modules/`, and the repo-root `lattice-emulator.js` source
+(the bundle supersedes it).
+
+The tool gates on a clean tree (it archives HEAD, not the working tree —
+pass `--allow-dirty` to override) and on `build:check` (pass `--skip-check`
+to override). Output lands in the gitignored `release/` dir; it is
+uploaded to the Release, never committed.
+
+> **Standalone-ness caveat.** PDF *export* (the emulator / marp-cli) shells
+> out to Chromium (puppeteer) + `mmdc`, which a zip can't carry. The
+> genuinely unzip-and-go surface is the CSS/runtime drop-in (browser /
+> Marp-theme use) and the offline HTML + PDF reference. Rendering new decks
+> to PDF from the zip still needs `npm install puppeteer
+> @mermaid-js/mermaid-cli katex function-plot` (or a global marp-cli).
+
+## How the workflow works
+
+`.github/workflows/release.yml` (`workflow_dispatch`) runs on
+`ubuntu-latest`, node 22:
+
+1. `checkout` (`fetch-depth: 0`, `fetch-tags: true`) + `setup-node` +
+   `npm ci`.
+2. Gate: `npm run lint`, `npm test`, `npm run build:check`. (The
+   integration tier already ran on the commit via `ci.yml`; the release
+   only adds a version bump + changelog roll + dist rebuild.)
+3. Set the `github-actions[bot]` git identity.
+4. `node tools/release.js --bump=<input> --push --skip-checks` — the bump,
+   changelog roll, dist rebuild, commit, tag, zip, and push to `main`.
+5. `gh release create v<version>` with `--notes-file release/notes-v<version>.md`
+   and the `release/lattice-v<version>.zip` asset (`--verify-tag`).
+6. **If `publish_npm`** — `npm publish --access public --provenance`.
+
+Prerequisites:
+
+- **Branch protection on `main` must allow the `github-actions` bot to
+  push.** The release commit + tag go straight to `main` (the chosen
+  direct-push flow); a protected branch without a bypass rule will reject
+  the push. Add an allowance for the Actions bot, or switch the workflow
+  to open a PR instead.
+- The job already declares `permissions: { contents: write, id-token: write }`
+  (write to push + create the Release; id-token for npm `--provenance`).
+- **To enable npm publish:** add an **`NPM_TOKEN`** repo secret (publish
+  rights, exposed as `NODE_AUTH_TOKEN`), confirm the `@slidewright` scope
+  exists and the token can publish to it, then run the workflow with
+  `publish_npm` checked. Until then leave it off — the GitHub Release +
+  zip still ship.
