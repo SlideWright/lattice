@@ -531,22 +531,22 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-`Implementation · Token Pipeline`
+`Implementation · Decision Log`
 
-## The tokenization call is three lines of application code.
+## Logging a scored decision is three lines of application code.
 
 `JavaScript · SDK v2 interface`
 
 ```javascript
-import { TokenVault } from "@company/token-sdk";
+import { DecisionLog } from "@company/framework-sdk";
 
-const vault = new TokenVault({ keyFile: "./vault.key" });
+const log = new DecisionLog({ workspace: "./framework.config" });
 
-// Tokenize at ingestion
-const token = await vault.tokenize(ssn, { field: "ssn", tenant: "acme" });
+// Score and record at decision time
+const entry = await log.record(decision, { signals, criteria, team: "acme" });
 
-// Detokenize only at point of use — every call is logged
-const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
+// Recall at review time — every read is logged
+const history = await log.recall(entry.id, { reviewer: "calibration-svc" });
 ```
 
 ---
@@ -554,34 +554,32 @@ const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 <!-- _class: compare-code -->
 <!-- _footer: "Two code blocks · compare-code" -->
 
-`Before & After · Key Distribution`
+`Before & After · Where the weights live`
 
-## File-distributed keys versus vault-integrated keys.
+## Per-team spreadsheets versus the shared model service.
 
-`Before · File-distributed`
+`Before · Local spreadsheet`
 
 ```python
-# Key material on disk — anyone with
-# filesystem access can read it
-with open('./vault.key', 'rb') as f:
-    key = f.read()
+# Each team keeps its own copy — they
+# drift, and nobody knows which is current
+import json
 
-cipher = AES(key)
-token = cipher.encrypt(ssn)
+with open('./weights.local.json') as f:
+    weights = json.load(f)
+
+score = dot(signal_vector, weights)
 ```
 
-`After · HSM / KMS integrated`
+`After · Model service`
 
 ```python
-# Key never leaves the HSM —
-# every operation is audited
-import boto3
+# One model, versioned and audited —
+# every score is reproducible
+from framework import models
 
-kms = boto3.client('kms')
-token = kms.encrypt(
-    KeyId='alias/tokenization',
-    Plaintext=ssn
-)['CiphertextBlob']
+weights = models.get(team='acme', version='v2')
+score = models.score(signal_vector, weights)
 ```
 
 ---
@@ -746,12 +744,12 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
-1. Codebook signing in production
-   - The HSM-anchored signing pipeline runs end-to-end. The first signed codebook installs cleanly on a real client.
-2. Multi-tenant DEKs
-   - One codebook can carry distinct DEKs per tenant without per-tenant rebuilds. Crypto-shred is a single HSM op.
-3. Per-purpose codebooks
-   - Authoring a codebook scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
+1. Model sign-off in production
+   - The the registry-anchored signing pipeline runs end-to-end. The first signed framework installs cleanly on a real client.
+2. Per-team weighting
+   - One framework can carry distinct weighting models per team without per-team rebuilds. Log purge is a single the registry op.
+3. Per-team weighting
+   - Authoring a framework scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
 
 ---
 
@@ -778,10 +776,10 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Chosen flags the right-hand card as the winner.
 
-- Vault round-trip
-  - Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.
-- In-process codebook
-  - Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.
+- Spreadsheet round-trip
+  - Every rescore is a network call to a central spreadsheet. Latency is a function of distance, not code. a 6-week decision cycle, spreadsheet outages cascade.
+- In-process framework
+  - Descore is a local function call against an SDK-resident framework. cycle time 8 ms, spreadsheet outages do not affect scored-record reads.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
 
@@ -795,7 +793,7 @@ The right card carries an accent left-edge and accent-tinted background — the 
 ## Decision composes chosen + rejected with a labelled connector.
 
 - Buy a vendor
-  - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.
+  - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-team licensing.
 - Build in-house
   - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
 
@@ -810,10 +808,10 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
-- Before — manual rotation
-  - Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.
+- Before — manual recalibration
+  - Operators schedule a rotation window, freeze writes on the affected scope, swap scoring models, run a verification pass, lift the freeze. Average outage 18 minutes.
 - After — version-floor rotation
-  - The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.
+  - The signing pipeline emits a new framework with an incremented version. Clients install the new framework on next refresh. No write freeze. No coordinated cutover.
 
 ---
 
@@ -824,12 +822,12 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Three switches the grid from 2 columns to 3 columns.
 
-- Codebook
-  - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry. The codebook is the unit of distribution.
-- DEK
+- Framework
+  - The signed envelope an SDK installs. Carries policy, wrapped weighting model, version, expiry. The framework is the unit of distribution.
+- weighting model
   - Data encryption key. Wrapped by a KEK; lives plaintext only inside native SDK memory. Never leaves the host.
 - KEK
-  - Key encryption key. Lives in the HSM, never exported. The crypto-shred operation on a tenant is a single HSM op against its KEK.
+  - Key encryption key. Lives in the the registry, never exported. The log purge operation on a team is a single the registry op against its KEK.
 
 ---
 
@@ -858,8 +856,8 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
-- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
-- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+- **Claim.** The framework model gets in-process latency with spreadsheet-grade model ownership. We do not pay round-trip latency on every read.
+- **Evidence.** The pilot ran six months across four product teams. decision cycle time landed at 8 ms; spreadsheet outages did not cascade into application outages.
 - **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
 
 ---
@@ -1000,16 +998,16 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 <!-- _class: before-after -->
 <!-- _footer: "New layout — before-after · before-after" -->
 
-## Detokenize used to require a vault round-trip.
+## Descore used to require a spreadsheet round-trip.
 
 `Latency story · before vs after`
 
 - **Before**
-  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
+  - Every rescore call: network round-trip to the central spreadsheet, average 18 ms, a 6-week decision cycle. Spreadsheet outages cascaded into application outages.
 - **After**
-  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
+  - Descore is a local function call. cycle time 8 ms. Spreadsheet outages do not affect scored-record reads.
 
-The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
+The architecture change is the framework model — local, signed, time-bound key material — not a spreadsheet optimisation.
 
 ---
 
@@ -1031,9 +1029,9 @@ The architecture change is the codebook model — local, signed, time-bound key 
 
 | Workstream | Phase 01          | Phase 02              | Phase 03              |
 | ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
+| Platform   | Model sign-off  | Per-team weighting     | Per-team weighting |
+| Operations | Manual recalibration   | Automated recalibration    | Log purge          |
+| Compliance | Audit trail (the registry) | Centralised log       | Board pack         |
 | SDK        | Java              |                       | Polyglot parity       |
 
 The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
@@ -1049,13 +1047,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
    - Token-issuance success
    - target 99%, +2pp QoQ
 2. **8 ms**
-   - p99 detokenize
+   - decision cycle time
    - target 10 ms, -3 ms QoQ
 3. **0**
-   - Examiner findings
+   - Board reviewer findings
    - target 0, flat
 4. **3.2×**
-   - Detokenize headroom
+   - Descore headroom
    - target 2×, +0.4× QoQ
 
 ---
@@ -1076,16 +1074,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: actors -->
 <!-- _footer: "New layout — actors · actors" -->
 
-## Who owns each part of the codebook lifecycle.
+## Who owns each part of the framework lifecycle.
 
-- **Key custody** `HSM admin`
-  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+- **Model ownership** `model owner`
+  - Manages KEK ceremonies and rotation. Never holds plaintext weighting models.
 - **Policy** `Platform operator`
-  - Owns codebook policy, signing keys, version floors, and revocation playbooks.
+  - Owns framework policy, scoring weights, version floors, and revocation playbooks.
 - **Consumption** `Application team`
-  - Holds time-bound codebooks; tokenizes and detokenizes in-process.
-- **Oversight** `Examiner`
-  - Reads the HSM audit trail; cannot read plaintext.
+  - Holds time-bound scoring models; scores and rescores in-process.
+- **Oversight** `Board reviewer`
+  - Reads the the registry audit trail; cannot read plaintext.
 
 ---
 
@@ -1096,9 +1094,9 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this section will tell you, in five lines.
 
-- The codebook model gets in-process latency with vault-grade key custody. → slide 8
+- The framework model gets in-process latency with spreadsheet-grade model ownership. → slide 8
 - Rotation is a version-floor increment, not a coordinated cutover. → slide 12
-- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
+- Per-team KEKs make log purge a single the registry op. → slide 18
 - Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
 - Five questions stay open until Phase 1 closes them on the record. → slide 27
 
