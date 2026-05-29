@@ -241,11 +241,23 @@ PDF; keep `CHANGELOG.md` current as changes land.
 - **Stable-surface contract:** palette tokens are versioned; co-ordinate
   the bump and call out any deck-breaking value shifts.
 
-## 7. Open questions to settle before §1
+## 7. Resolved (2026-05-29, round 2)
 
-- Chart ramp size: 6 or 8 series? (8 matches current pie cycle; 6 is the
-  audit-era count and easier to keep distinct.)
-- Do we keep `--cN-dark` as chart source for a deprecation window, or cut
-  over atomically? (Affects whether step 2 is breaking.)
-- Forge tool: standalone `tools/palette-forge.js` vs. extending
-  `new-theme.js`'s scaffolder.
+1. **Chart ramp size: 8 series** (`--chart-1..8`), matching today's pie cycle.
+2. **Non-breaking cutover.** `--chart-N` defaults to `var(--cN-dark)` in
+   `base.tokens.css`, so any theme that hasn't defined a curated ramp
+   renders byte-identical to today. `chart-family.js` reads `--chart-N`;
+   themes opt in by curating the ramp. Scores `### Changed` (minor), not
+   `**Breaking:**`.
+3. **Standalone `tools/palette-forge.js`**, designed to also be the
+   new-theme generator: **give it one brand colour and it derives the
+   whole palette** — surfaces, ink ramp, accent, the 12 categorical slots
+   (both tiers), the 8 chart series, semantic state (canvas-aware), warm/
+   cool/alarm/mark/note, quadrant, stroke/line, and the dark-variant
+   tokens — all contrast-verified before it emits. Replaces the hand-edit
+   path in `new-theme.js` (which keeps the file-scaffolding/registration
+   role; the forge fills in the colour math).
+
+The forge is the mechanism that makes "full re-curate" tractable: the 13
+existing themes are re-derived from their brand anchors, then hand-tuned,
+rather than hand-built slot by slot.

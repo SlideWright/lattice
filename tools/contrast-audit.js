@@ -212,11 +212,15 @@ for (const theme of themes) {
       decoNotes.push({ label, ratio: contrastRatio(f, t), f, t });
     }
 
-    // Categorical distinctness (OKLab) across the 8 CHART series slots
-    // (c1-dark..c8-dark — what charts actually cycle). Summarise: the
-    // global min ΔE and any genuinely confusable pairs (ΔE < 0.10).
+    // Categorical distinctness (OKLab) across the 8 CHART series slots.
+    // Prefer the curated --chart-N ramp; fall back to --cN-dark for themes
+    // that haven't opted in yet (deprecation window). Summarise the global
+    // min ΔE and any genuinely confusable pairs (ΔE < 0.10).
     const series = [];
-    for (let i = 1; i <= 8; i++) { const h = vars[`c${i}-dark`]; if (parseHex(h)) series.push([i, h]); }
+    for (let i = 1; i <= 8; i++) {
+      const h = vars[`chart-${i}`] || vars[`c${i}-dark`];
+      if (parseHex(h)) series.push([i, h]);
+    }
     let minDE = Infinity; const confusable = [];
     for (let i = 0; i < series.length; i++)
       for (let j = i + 1; j < series.length; j++) {
