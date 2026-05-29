@@ -319,7 +319,10 @@ html[data-mode='dark'] .mode-toggle::before {
 	appearance: none;
 	border: 0;
 	border-radius: 6px;
-	padding: 6px 16px;
+	/* min-height keeps the tap target >= 44px on touch (iOS/Android
+	 * guideline); padding alone left it at ~28px. */
+	min-height: 44px;
+	padding: 6px 18px;
 	font-family: var(--font-body);
 	font-size: 13px;
 	font-weight: 600;
