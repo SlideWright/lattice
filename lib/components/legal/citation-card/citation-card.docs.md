@@ -30,7 +30,8 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 > Verbatim quotation of the cited language.
 
 - Plain-English interpretation of what the language covers.
-- **What we must do.** The concrete action this citation argues for.
+- What we must do.
+  - The concrete action this citation argues for.
 ```
 
 ## Slots

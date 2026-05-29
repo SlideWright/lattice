@@ -2212,8 +2212,10 @@ Use to show the transformation produced by a change. Left = the prior state; rig
 
 ## What the change did.
 
-- **Before.** How the system or process worked before the change, in one or two sentences.
-- **After.** How the system or process works now, in one or two sentences.
+- Before
+  - How the system or process worked before the change, in one or two sentences.
+- After
+  - How the system or process works now, in one or two sentences.
 ```
 
 #### Slots
@@ -6303,7 +6305,8 @@ Use when one citation IS the slide. The blockquote carries the verbatim language
 > Verbatim quotation of the cited language.
 
 - Plain-English interpretation of what the language covers.
-- **What we must do.** The concrete action this citation argues for.
+- What we must do.
+  - The concrete action this citation argues for.
 ```
 
 #### Slots

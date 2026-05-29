@@ -18,7 +18,7 @@
       "description": "Exactly two list items. Authoring contract: a top-level bullet is the state label (Before / After); an indented bullet underneath carries the 1-2 sentence description."
     }
   },
-  "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- **Before.** How the system or process worked before the change, in one or two sentences.\n- **After.** How the system or process works now, in one or two sentences.\n",
+  "skeleton": "<!-- _class: before-after -->\n\n## What the change did.\n\n- Before\n  - How the system or process worked before the change, in one or two sentences.\n- After\n  - How the system or process works now, in one or two sentences.\n",
   "anatomyBlock": "before-after",
   "sample": "<!-- _class: before-after -->\n\n## What writing decisions down actually changed.\n\n- Before.\n  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.\n- After.\n  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.\n",
   "whenToUse": [

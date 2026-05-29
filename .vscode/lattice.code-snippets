@@ -60,8 +60,10 @@
       "",
       "## What the change did.",
       "",
-      "- **Before.** How the system or process worked before the change, in one or two sentences.",
-      "- **After.** How the system or process works now, in one or two sentences."
+      "- Before",
+      "  - How the system or process worked before the change, in one or two sentences.",
+      "- After",
+      "  - How the system or process works now, in one or two sentences."
     ],
     "description": "Explicit state-change comparison — what was, what is."
   },
@@ -167,7 +169,8 @@
       "> Verbatim quotation of the cited language.",
       "",
       "- Plain-English interpretation of what the language covers.",
-      "- **What we must do.** The concrete action this citation argues for."
+      "- What we must do.",
+      "  - The concrete action this citation argues for."
     ],
     "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss."
   },
