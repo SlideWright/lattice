@@ -103,7 +103,7 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --c-stroke:          #1E2A38;
+  --c-stroke:          light-dark(#1E2A38, #C0CFE2);
   --c-accent-warm:     #BD5000;
   /* cScale / gitgraph — slot 0 anchors band-1 steel-blue (BRAND); slot 1
    * brass echoes band-2 warm-tan. Slot 3 swapped from cool-gray-blue
@@ -122,10 +122,10 @@
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-text: var(--c-ink-light);
 }
 
 section pre.hljs {
@@ -149,33 +149,33 @@ section pre.hljs {
 }
 
 :root {
-  --c1-light:  light-dark(#DAE6EE, #00668D);
-  --c1-dark:   light-dark(#DAE6EE, #00668D);
-  --c2-light:  light-dark(#B5CDDA, #A03314);
-  --c2-dark:   light-dark(#B5CDDA, #A03314);
-  --c3-light:  light-dark(#F0ECD5, #4B6900);
-  --c3-dark:   light-dark(#F0ECD5, #4B6900);
-  --c4-light:  light-dark(#E0D8EC, #8D357F);
-  --c4-dark:   light-dark(#E0D8EC, #8D357F);
-  --c5-light:  light-dark(#F0DDE0, #4951B0);
-  --c5-dark:   light-dark(#F0DDE0, #4951B0);
-  --c6-light:  light-dark(#E8E0EE, #9E2D50);
-  --c6-dark:   light-dark(#E8E0EE, #9E2D50);
-  --c7-light:  light-dark(#D8E0EA, #006C67);
-  --c7-dark:   light-dark(#D8E0EA, #006C67);
-  --c8-light:  light-dark(#E5EAF0, #864E00);
-  --c8-dark:   light-dark(#E5EAF0, #864E00);
-  --c9-light:  light-dark(#D5E5E8, #6F43A2);
-  --c9-dark:   light-dark(#D5E5E8, #6F43A2);
-  --c10-light: light-dark(#F2E5D5, #007043);
-  --c10-dark:  light-dark(#F2E5D5, #007043);
-  --c11-light: light-dark(#DAE6EE, #0060A4);
-  --c11-dark:  light-dark(#DAE6EE, #0060A4);
-  --c12-light: light-dark(#D0E5E8, #6F5D00);
-  --c12-dark:  light-dark(#D0E5E8, #6F5D00);
+  --c1-light:  light-dark(#C5E7FB, #146F96);
+  --c1-dark:   light-dark(#055D80, #97C9E5);
+  --c2-light:  light-dark(#FDD8CD, #9A4C37);
+  --c2-dark:   light-dark(#873B26, #E7B3A4);
+  --c3-light:  light-dark(#D9E7C8, #557123);
+  --c3-dark:   light-dark(#45600B, #B6C99C);
+  --c4-light:  light-dark(#F5D7EE, #8B4C80);
+  --c4-dark:   light-dark(#793B6E, #DCB2D2);
+  --c5-light:  light-dark(#D9E0FF, #555FA4);
+  --c5-dark:   light-dark(#454E91, #B5BEEC);
+  --c6-light:  light-dark(#FDD6DD, #99485C);
+  --c6-dark:   light-dark(#86374C, #E7B0BA);
+  --c7-light:  light-dark(#C0EBE7, #157570);
+  --c7-dark:   light-dark(#03635E, #8FCFCA);
+  --c8-light:  light-dark(#F7DCC3, #905711);
+  --c8-dark:   light-dark(#7B4702, #DFB995);
+  --c9-light:  light-dark(#E7DBFB, #73559A);
+  --c9-dark:   light-dark(#624487, #C9B7E4);
+  --c10-light: light-dark(#CAEBD6, #1C784C);
+  --c10-dark:  light-dark(#03663D, #9FCEB1);
+  --c11-light: light-dark(#CBE5FF, #2B6AA2);
+  --c11-dark:  light-dark(#17588F, #A1C5EA);
+  --c12-light: light-dark(#EAE2C0, #776510);
+  --c12-dark:  light-dark(#645403, #CDC191);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
+  --c-ink-light: light-dark(#14110E, #FFFFFF);
+  --c-ink-dark:  light-dark(#FFFFFF, #14110E);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
@@ -185,7 +185,7 @@ section pre.hljs {
   --c-warm-dark:   var(--c-stroke);
   --c-cool-light:  light-dark(#AED0E8, #006494);
   --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#DD656C, #9A2735);
+  --c-alarm:       light-dark(#A91C2A, #F87171);
   --c-alarm-dark:  var(--c-stroke);
   --c-mark:        light-dark(#D8BE1E, #796900);
   --c-note:        light-dark(#D7D2B1, #71640B);
@@ -204,8 +204,8 @@ section pre.hljs {
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-text: var(--c-ink-light);
 }

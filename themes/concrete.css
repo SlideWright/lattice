@@ -109,7 +109,7 @@
   --dark-text-display: #ECECE8;
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --c-stroke:          #2A2A28;
+  --c-stroke:          light-dark(#2A2A28, #CECECB);
   --c-accent-warm:     var(--brand-alt);
   /* cScale / gitgraph — warm gray with one oxblood pop */
 }
@@ -153,12 +153,12 @@ section pre.hljs {
 :root {
   --c1-light:  light-dark(#F2F2F2, #333333);
   --c1-dark:   light-dark(#F2F2F2, #333333);
-  --c2-light:  light-dark(#D4D4D4, #707070);
-  --c2-dark:   light-dark(#D4D4D4, #707070);
+  --c2-light:  light-dark(#D4D4D4, #646464);
+  --c2-dark:   light-dark(#D4D4D4, #646464);
   --c3-light:  light-dark(#EDEDED, #383838);
   --c3-dark:   light-dark(#EDEDED, #383838);
-  --c4-light:  light-dark(#CFCFCF, #6B6B6B);
-  --c4-dark:   light-dark(#CFCFCF, #6B6B6B);
+  --c4-light:  light-dark(#CFCFCF, #606060);
+  --c4-dark:   light-dark(#CFCFCF, #606060);
   --c5-light:  light-dark(#E8E8E8, #3D3D3D);
   --c5-dark:   light-dark(#E8E8E8, #3D3D3D);
   --c6-light:  light-dark(#C9C9C9, #666666);

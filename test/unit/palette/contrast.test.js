@@ -175,7 +175,17 @@ describe('contrast', () => {
   }
   const STATUS_DE = 0.10;
 
-  for (const name of ['indaco', 'cuoio']) {
+  // Every shipped palette is held to the contract. Categorical hue-cohesion
+  // (pale fill == deep mark hue) applies to CHROMATIC themes; the achromatic
+  // family (ardesia/atelier/concrete/onyx/carbone) encodes categories by
+  // lightness, not hue, so the slot-hue assertion is skipped for them.
+  const ALL_THEMES = [
+    'indaco', 'cuoio', 'laguna', 'burgundy', 'magnolia', 'brina',
+    'crepuscolo', 'mustard', 'ardesia', 'atelier', 'concrete', 'onyx', 'carbone',
+  ];
+  const ACHROMATIC = new Set(['ardesia', 'atelier', 'concrete', 'onyx', 'carbone']);
+
+  for (const name of ALL_THEMES) {
     for (const mode of ['light', 'dark']) {
       test(`contrast: ${name} (${mode}) every --cN-light / --c-ink-light pair clears AA`, () => {
         const vars = loadPaletteWithImports(name, mode);
@@ -293,7 +303,7 @@ describe('contrast', () => {
           // hue so a Mermaid node and a chart wedge at category N read as
           // the same colour. Generated themes clear this structurally;
           // hand-tuned themes are exempt until re-curated (rollout).
-          if (name !== 'indaco') return; // indaco is the re-curated reference
+          if (ACHROMATIC.has(name)) return; // categories by lightness, not hue
           const vars = loadPaletteWithImports(name, mode);
           const hue = (hex) => {
             const o = oklab(hex);

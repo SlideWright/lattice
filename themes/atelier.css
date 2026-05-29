@@ -66,7 +66,7 @@
   --text-display: #F0EDE6;
   --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading)); /* L:16.85:1 / D:16.50:1 AAA */
   --text-body:    light-dark(#42403A, var(--dark-text-body));                    /* L:9.95:1 / D:10.42:1 AAA  */
-  --text-label:   light-dark(#75705F, var(--dark-text-label));                   /* L:5.18:1 / D:7.04:1 AA+   */
+  --text-label:   light-dark(#655F4E, var(--dark-text-label));                   /* L:5.18:1 / D:7.04:1 AA+   */
   --text-muted:   #75705F;
 
   /* ── Brand accent — warm achromatic ────────────────────────────────── */
@@ -108,7 +108,7 @@
   --dark-text-display: #F0EDE6;
 
   /* ── Mermaid extensions — amber pop on second curve ────────────────── */
-  --c-stroke:          #38332A;
+  --c-stroke:          light-dark(#38332A, #D3CDC2);
   --c-accent-warm:     var(--brand-alt); /* the amber pop */
   /* cScale / gitgraph — warm achromatic with amber pop */
 }

@@ -105,7 +105,7 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions kept on-theme ──────────────────────────────── */
-  --c-stroke:          #2A2A2A;
+  --c-stroke:          light-dark(#2A2A2A, #CECECE);
   /* Warm-gold pop — the deliberate "coolness break" on second curve.
    * Same trick Boardroom's Graphite uses to give an achromatic palette
    * one chromatic axis without compromising the neutral identity. */

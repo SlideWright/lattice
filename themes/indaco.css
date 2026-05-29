@@ -18,28 +18,28 @@
  *
  * Design contract
  * ───────────────
- *   1. Single text color (#0A1628) on every light surface. No auto-
- *      inversion logic is relied upon; every text variable below is
- *      set explicitly.
+ *   1. Single dark ink on every light surface; single light ink on dark.
+ *      No auto-inversion is relied upon — every text variable is set
+ *      explicitly, and the categorical ink (--c-ink-light/-dark) is one
+ *      colour per canvas mode (Mermaid applies one ink to every band).
  *
- *   2. Two lightness bands for fills:
- *        Tinted band (L≈83)    — --diagram-band-1..12, used directly by
- *                                 flowchart, sequence, class, state, ER,
- *                                 quadrant, and most layouts.
- *        Mid-tone band (L≈60)  — --cat-*, fed at L≈60 because Mermaid's
- *                                 kanban renderer applies a lighten step
- *                                 that brings emitted fills to L≈68-73
- *                                 (pale enough for dark text).
+ *   2. Categorical = twelve curated hue ANCHORS (--c1-anchor..--c12-anchor).
+ *      tools/build-categorical.js derives, per slot, a pale fill + a deep
+ *      mark at the SAME hue, tuned independently for light and dark canvas,
+ *      into the generated block (between the CATEGORICAL sentinels). Charts
+ *      paint the deep tier, Mermaid the pale — one hue per slot means
+ *      category N reads as one colour across both. Edit the anchors, run
+ *      `npm run build`; never hand-edit the generated block.
  *
- *   3. Saturation reserved for two purposes:
- *        a. Borders. Saturated brand navy #1F4A6E reads on every fill.
- *        b. Alarm signal. Saturated red #C20000 only on diagram-state-
- *           critical and diagram-error-bg — never on routine fills.
+ *   3. Saturation is disciplined (low chroma caps = the restrained,
+ *      boardroom look). The categorical anchors are CB-aware-spaced; the
+ *      curated status trio (--pass/--warn/--fail) stays ΔE-distinct and AA.
+ *      --c-stroke flips on canvas so diagram outlines read in BOTH modes.
  *
  *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
- *      surface it appears on, asserted by test/unit/contrast.test.js.
- *      Decorative tokens (borders, hairlines, muted chrome, spectrum
- *      gradient) are WCAG-exempt per design.
+ *      surface it appears on, asserted by test/unit/palette/contrast.test.js
+ *      and reported across all themes by tools/contrast-audit.js. Decorative
+ *      hairlines (--border) are intentionally near-invisible.
  *
  * Layout consumption
  * ──────────────────
@@ -122,7 +122,12 @@
    * modes). --pass is overridden to indaco's brand-forest-green so the
    * "done / shipped" tone stays in the brand family; dark mode lifts
    * to a brighter forest variant for AA contrast on dark canvas. */
-  --pass: light-dark(#2F6B12, #6FCC4D);
+  /* Curated muted status trio (full-freedom contract): brick / amber-ochre
+   * / forest — danger still reads pre-attentively, none neon, all OKLab
+   * ΔE-distinct + AA both modes. */
+  --pass: light-dark(#2F6314, #78C44C);
+  --warn: light-dark(#7B5F08, #D4A030);
+  --fail: light-dark(#823232, #E07070);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
   --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
@@ -202,7 +207,10 @@
    * Universal stroke for any band fill; reads on every pale tint
    * including white. Line is for edges/arrows; light-dark() picks
    * near-black on light canvas and muted light on dark. */
-  --c-stroke: #1F4A6E;  /* saturated brand navy */
+  /* Stroke flips on canvas: deep navy reads on pale fills (light), a pale
+   * blue-grey reads on the deep fills (dark) — fixes the vanishing-stroke
+   * defect where a fixed deep stroke sat ~1.37:1 on dark-canvas band fills. */
+  --c-stroke: light-dark(#1F4A6E, #C6D4E2);
   --c-line:   light-dark(#1A1A1A, var(--dark-text-body));
 
   /* Cross-deck contrast accent — radar's second curve, where a single
@@ -245,49 +253,50 @@
    * Edit these anchors and run `npm run build`; never hand-edit between
    * the CATEGORICAL sentinels. Indaco leads on its brand blue, then a
    * brand-affine spread across the wheel. */
-  --c1-anchor:  #2E608A;  /* blue — brand lead   */
-  --c2-anchor:  #863236;  /* garnet              */
-  --c3-anchor:  #7B772D;  /* olive               */
-  --c4-anchor:  #323686;  /* indigo              */
-  --c5-anchor:  #30827E;  /* teal                */
-  --c6-anchor:  #865832;  /* sienna              */
-  --c7-anchor:  #583880;  /* violet              */
-  --c8-anchor:  #80385F;  /* magenta             */
-  --c9-anchor:  #5F8038;  /* leaf green          */
-  --c10-anchor: #388058;  /* emerald             */
-  --c11-anchor: #3057B1;  /* bright blue         */
-  --c12-anchor: #5C6400;  /* deep olive          */
+  /* CATEGORICAL-CFG paleLLight=0.91 deepLLight=0.45 deepLDark=0.51 paleLDark=0.81 paleChroma=0.045 deepChroma=0.11 */
+  --c1-anchor:  #2E5E8E;  /* slate-blue — brand lead ~251° */
+  --c2-anchor:  #8B4B3C;  /* terracotta ~34°               */
+  --c3-anchor:  #2E6E68;  /* deep teal ~187°               */
+  --c4-anchor:  #6E3A60;  /* aubergine-magenta ~338°       */
+  --c5-anchor:  #7A6B2E;  /* ochre ~96°                    */
+  --c6-anchor:  #3D5C30;  /* forest-sage ~137°             */
+  --c7-anchor:  #863A4C;  /* oxblood-rose ~10°             */
+  --c8-anchor:  #7A4E2A;  /* bronze ~58°                   */
+  --c9-anchor:  #2E5870;  /* steel-blue ~230°              */
+  --c10-anchor: #2E6E55;  /* sea-green ~165°               */
+  --c11-anchor: #5A4A7E;  /* violet-slate ~295°            */
+  --c12-anchor: #6E6B2E;  /* moss-olive ~108°              */
 
   /* CATEGORICAL:START */
   /* GENERATED by tools/build-categorical.js — edit --cN-anchor, not these.
-   * cfg: paleLLight=0.9 deepLLight=0.47 deepLDark=0.49 paleLDark=0.82 paleChroma=0.05 deepChroma=0.13
+   * cfg: paleLLight=0.91 deepLLight=0.45 deepLDark=0.51 paleLDark=0.81 paleChroma=0.045 deepChroma=0.11
    * Each slot is ONE hue; light/dark canvas tuned independently. FILL
    * token --cN-light, MARK token --cN-dark. */
-  --c1-light: light-dark(#C4E2FE, #33658F);
-  --c2-light: light-dark(#FED2D0, #974144);
-  --c3-light: light-dark(#E2E1BB, #686315);
-  --c4-light: light-dark(#D5DCFF, #4E57A9);
-  --c5-light: light-dark(#B9E9E6, #166E6B);
-  --c6-light: light-dark(#F8D7BE, #82542E);
-  --c7-light: light-dark(#E4D7FA, #6D4E98);
-  --c8-light: light-dark(#F9D1E3, #8D436A);
-  --c9-light: light-dark(#D3E5C3, #4C6C23);
-  --c10-light: light-dark(#C4E9D1, #277049);
-  --c11-light: light-dark(#CEDEFF, #395CA9);
-  --c12-light: light-dark(#DCE3BD, #5F6706);
+  --c1-light: light-dark(#CCE4FF, #39699A);
+  --c2-light: light-dark(#FED7CE, #925242);
+  --c3-light: light-dark(#C1ECE6, #33726C);
+  --c4-light: light-dark(#F6D6EC, #875178);
+  --c5-light: light-dark(#EAE2C0, #746628);
+  --c6-light: light-dark(#D4E9CC, #517144);
+  --c7-light: light-dark(#FDD6DC, #984A5B);
+  --c8-light: light-dark(#F9DBC4, #875A36);
+  --c9-light: light-dark(#C6E7FC, #426C85);
+  --c10-light: light-dark(#C7EBDA, #35745B);
+  --c11-light: light-dark(#E4DCFC, #6B5B91);
+  --c12-light: light-dark(#E4E4C2, #6C692C);
 
-  --c1-dark:  light-dark(#2D5F89, #9FC9EF);
-  --c2-dark:  light-dark(#903B3F, #EEB3B1);
-  --c3-dark:  light-dark(#625E0C, #C9C893);
-  --c4-dark:  light-dark(#4951A2, #B7C1F2);
-  --c5-dark:  light-dark(#0A6965, #8ED3CF);
-  --c6-dark:  light-dark(#7C4F29, #E7BA97);
-  --c7-dark:  light-dark(#684891, #CCBAEB);
-  --c8-dark:  light-dark(#863E65, #E8B2CB);
-  --c9-dark:  light-dark(#47661D, #B5CE9E);
-  --c10-dark:  light-dark(#206B44, #9FD2B2);
-  --c11-dark:  light-dark(#3456A3, #ADC4F2);
-  --c12-dark:  light-dark(#596100, #C2CA96);
+  --c1-dark:  light-dark(#285887, #A2C5EA);
+  --c2-dark:  light-dark(#804132, #E8B2A5);
+  --c3-dark:  light-dark(#1F615B, #90CFC8);
+  --c4-dark:  light-dark(#754066, #DEB1D0);
+  --c5-dark:  light-dark(#635514, #CDC191);
+  --c6-dark:  light-dark(#405F33, #AECBA2);
+  --c7-dark:  light-dark(#84394B, #E7B0B9);
+  --c8-dark:  light-dark(#754A26, #E2B798);
+  --c9-dark:  light-dark(#315B73, #9BC8E4);
+  --c10-dark:  light-dark(#21634A, #9ACFB7);
+  --c11-dark:  light-dark(#5A4A7E, #C5B9E7);
+  --c12-dark:  light-dark(#5B5819, #C6C494);
   /* CATEGORICAL:END */
 
   --c-ink-light: var(--text-heading);

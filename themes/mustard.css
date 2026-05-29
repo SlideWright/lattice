@@ -67,7 +67,7 @@
   --text-display: #F0E5C8;
   --text-heading: light-dark(#2A1A06, var(--dark-text-heading));     /* L:14.39:1 / D:14.62:1 */
   --text-body:    light-dark(#4F3D1C, var(--dark-text-body));        /* L:7.97:1 / D:8.36:1   */
-  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:5.36:1 / D:6.20:1 AA+ */
+  --text-label:   light-dark(#7C5D10, var(--dark-text-label)); /* darkened to clear AA on warm canvas */
   --text-muted:   #80704A;
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
@@ -109,7 +109,7 @@
   --dark-text-display: #F0E5C8;
 
   /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --c-stroke:          #3D2D14;
+  --c-stroke:          light-dark(#3D2D14, #DFCBAD);
   --c-accent-warm:     var(--brand-alt);
   /* cScale / gitgraph — slot 0 anchors band-1 mustard (BRAND); slot 1 sage
    * echoes band-2; slot 2 terracotta echoes band-3 peach. Slots 3-7 carry
@@ -127,10 +127,10 @@
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-text: var(--c-ink-light);
 }
 
 section pre.hljs {
@@ -154,33 +154,33 @@ section pre.hljs {
 }
 
 :root {
-  --c1-light:  light-dark(#E8D580, #785800);
-  --c1-dark:   light-dark(#E8D580, #785800);
-  --c2-light:  light-dark(#D8E5D5, #3955B1);
-  --c2-dark:   light-dark(#D8E5D5, #3955B1);
-  --c3-light:  light-dark(#F5E5A8, #9C2E5A);
-  --c3-dark:   light-dark(#F5E5A8, #9C2E5A);
-  --c4-light:  light-dark(#EDD5C8, #006F51);
-  --c4-dark:   light-dark(#EDD5C8, #006F51);
-  --c5-light:  light-dark(#F0E5C8, #A13121);
-  --c5-dark:   light-dark(#F0E5C8, #A13121);
-  --c6-light:  light-dark(#E5E0C8, #893786);
-  --c6-dark:   light-dark(#E5E0C8, #893786);
-  --c7-light:  light-dark(#E8D580, #5A6500);
-  --c7-dark:   light-dark(#E8D580, #5A6500);
-  --c8-light:  light-dark(#E0D8C5, #6A45A5);
-  --c8-dark:   light-dark(#E0D8C5, #6A45A5);
-  --c9-light:  light-dark(#F0E8D0, #8D4900);
-  --c9-dark:   light-dark(#F0E8D0, #8D4900);
-  --c10-light: light-dark(#D8E0CC, #00697C);
-  --c10-dark:  light-dark(#D8E0CC, #00697C);
-  --c11-light: light-dark(#F0E8C0, #795700);
-  --c11-dark:  light-dark(#F0E8C0, #795700);
-  --c12-light: light-dark(#F0D8CC, #006398);
-  --c12-dark:  light-dark(#F0D8CC, #006398);
+  --c1-light:  light-dark(#EAE2C0, #776508);
+  --c1-dark:   light-dark(#645400, #CDC291);
+  --c2-light:  light-dark(#D5E1FF, #4B62A5);
+  --c2-dark:   light-dark(#3B5192, #AFC0EC);
+  --c3-light:  light-dark(#FCD6E0, #974864);
+  --c3-dark:   light-dark(#843753, #E5B0C0);
+  --c4-light:  light-dark(#C6EBDA, #157859);
+  --c4-dark:   light-dark(#056549, #99CFB7);
+  --c5-light:  light-dark(#FED7CF, #9B4B3D);
+  --c5-dark:   light-dark(#883A2D, #E8B2A7);
+  --c6-light:  light-dark(#F3D7F0, #884D85);
+  --c6-dark:   light-dark(#763C73, #D9B2D6);
+  --c7-light:  light-dark(#DFE6C4, #626E13);
+  --c7-dark:   light-dark(#515C00, #BDC797);
+  --c8-light:  light-dark(#E5DBFC, #6F569C);
+  --c8-dark:   light-dark(#5E4589, #C6B8E6);
+  --c9-light:  light-dark(#F9DAC5, #94531A);
+  --c9-dark:   light-dark(#814302, #E2B798);
+  --c10-light: light-dark(#C1EAF4, #147285);
+  --c10-dark:  light-dark(#026071, #90CCDC);
+  --c11-light: light-dark(#F0DFC0, #826011);
+  --c11-dark:  light-dark(#6E4F04, #D6BE91);
+  --c12-light: light-dark(#C8E6FD, #1B6C9F);
+  --c12-dark:  light-dark(#035B8A, #9CC7E8);
 
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
+  --c-ink-light: light-dark(#14110E, #FFFFFF);
+  --c-ink-dark:  light-dark(#FFFFFF, #14110E);
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,
@@ -190,7 +190,7 @@ section pre.hljs {
   --c-warm-dark:   var(--c-stroke);
   --c-cool-light:  light-dark(#AAD1E5, #006789);
   --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#D66448, #9A2C0E);
+  --c-alarm:       light-dark(#A91C2A, #F87171);
   --c-alarm-dark:  var(--c-stroke);
   --c-mark:        light-dark(#DEBB18, #786400);
   --c-note:        light-dark(#D9D2B0, #746208);
@@ -209,8 +209,8 @@ section pre.hljs {
   --c-quadrant-2-fill: var(--c2-light);
   --c-quadrant-3-fill: var(--c3-light);
   --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
+  --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-text: var(--c-ink-light);
 }

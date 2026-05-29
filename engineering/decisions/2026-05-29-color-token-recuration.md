@@ -265,5 +265,77 @@ themes (`engineering/audits/contrast-2026-05-29.md`):
    fixed; promote the slot-hue assertion from indaco-only to all.
 5. Move the universal `--pass/--warn/--fail` defaults in
    `base.tokens.css` to an explicit per-theme curated trio.
+
+---
+
+## Addendum — the boardroom bake-off + system-wide rollout (same day)
+
+The reference proof was approved, then escalated: make it a *full* cohesive
+system, boardroom-grade in **both** modes, settled via competing agents.
+
+### Generator, now mode-aware
+
+`build-categorical.js` derives **four** tones per anchor — pale/deep ×
+light/dark — tuned independently (dark is not a literal inversion: deep-dark
+sits lighter for near-black-canvas legibility, pale-dark richer than the
+paper-pale light fill). All four clear AA against their ink by construction,
+which is how Mermaid's one-ink-per-diagram quirk is satisfied for twelve
+slots at once. Tunable via `/* CATEGORICAL-CFG … */` or CLI flags.
+
+### Three strategies, judged on real renders
+
+Three agents each built a complete candidate (12 anchors + CFG + status trio
++ dark-stroke fix), self-audited to 0 AA/0 hue-splits, and rendered the
+31-slide Mermaid gallery + chart gallery in light **and** dark:
+
+- **harmonic** — brand-led harmonic spread; most brand-faithful, two warm
+  near-adjacencies.
+- **spread** — perceptually-even, CB-safe ordering; most legible, white
+  strokes; blue-family crowding (c1/c10/c11).
+- **editorial** — muted jewel/earth, low chroma; most boardroom-refined;
+  a c6/c11 hue collision and a darker canvas departure.
+
+### The settled synthesis (now `indaco`)
+
+Editorial's chroma discipline + spread's CB-aware even spacing on the
+high-traffic first six + indaco's own canvas + a refined pale-tint dark
+stroke. Twelve muted anchors, `CATEGORICAL-CFG paleChroma=0.045
+deepChroma=0.11`, a muted brick/ochre/forest status trio. Verified on
+full-resolution dark renders (kanban, chart pie): jewel-toned, distinct,
+strokes read, chart↔Mermaid cohesive per category.
+
+### Rollout to the other twelve themes
+
+- **Chromatic** (cuoio, laguna, burgundy, magnolia, brina, crepuscolo,
+  mustard): anchor = the max-chroma value per slot (the slot's true hue);
+  regenerated same-hue mode-tuned tiers in place. Plus the ink contract —
+  band ink `--c-ink-light: light-dark(#14110E,#FFFFFF)`, mark ink
+  `--c-ink-dark: light-dark(#FFFFFF,#14110E)`, quadrant text → `var(--c-ink-light)`
+  — and `--c-alarm` pinned to a true flipping danger red (the one universal
+  signal).
+- **Achromatic** (ardesia, atelier, concrete, onyx): categories by
+  lightness, not hue — `cN` left as grey ladders, only the dark-stroke fix
+  + targeted AA nudges (concrete greys, atelier/mustard labels whose stale
+  comments claimed AA while measuring 4.2–4.4:1).
+- **carbone**: shipped with **no `cN` tokens at all** (latent bug the old
+  2-theme test never caught) — given a 12-step monochrome grey ladder.
+
+### Result
+
+`tools/contrast-audit.js`: **0 AA failures · 0 slot hue-splits · 0 status
+collisions across all 13 themes** (1008 pairs); the only below-floor pairs
+are the intentional hairlines. `test/unit/palette/contrast.test.js` widened
+from 2 → 13 themes, 183/183 green. The dark-stroke vanish defect is gone
+everywhere.
+
+### Still owed (mechanical)
+
+- The chromatic rollout rewrote `cN` *values* in place (no `--cN-anchor`
+  source), so `npm run build` can't yet regenerate them — add anchor blocks
+  to the twelve themes and fold `categorical:build` (looped) into the build
+  behind a stale-check.
+- **Rebuild the committed gallery/example PDFs** — every theme changed, so
+  every committed regression-baseline PDF is visually stale. Large render
+  job; do it batched/CI before the PR is review-ready.
 </content>
 </invoke>

@@ -126,7 +126,7 @@
   --dark-text-display: #F5F5F2;
 
   /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --c-stroke:          var(--brand-accent);
+  --c-stroke:          light-dark(#7DE38A, #B3DAB5);
   --c-accent-warm:     #FFD166;
   /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
   /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
@@ -155,6 +155,35 @@ section pre.hljs {
 :root {
   --c-ink-light: var(--text-heading);
   --c-ink-dark:  var(--text-heading);
+
+  /* Monochrome categorical ladder — 12 dark greys stepped by lightness
+   * (carbone has a single light ink, so categories read by tone, not hue).
+   * All clear AA against --c-ink (#F5F5F2). */
+  --c1-light: #585858;
+  --c2-light: #2E2E2E;
+  --c3-light: #4D4D4D;
+  --c4-light: #383838;
+  --c5-light: #262626;
+  --c6-light: #424242;
+  --c7-light: #525252;
+  --c8-light: #333333;
+  --c9-light: #484848;
+  --c10-light: #292929;
+  --c11-light: #3D3D3D;
+  --c12-light: #555555;
+
+  --c1-dark:  #585858;
+  --c2-dark:  #2E2E2E;
+  --c3-dark:  #4D4D4D;
+  --c4-dark:  #383838;
+  --c5-dark:  #262626;
+  --c6-dark:  #424242;
+  --c7-dark:  #525252;
+  --c8-dark:  #333333;
+  --c9-dark:  #484848;
+  --c10-dark:  #292929;
+  --c11-dark:  #3D3D3D;
+  --c12-dark:  #555555;
 
   /* Semantic palette — 5 roles, each a flipping fill. Curated per
    * theme: hue nudged toward the brand within its meaning band,

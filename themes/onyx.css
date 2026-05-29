@@ -109,7 +109,7 @@
   --dark-text-display: #FFFFFF;
 
   /* ── Mermaid extensions — saturated red is the only chroma ───────── */
-  --c-stroke:          #000000;
+  --c-stroke:          light-dark(#000000, #CECECE);
   --c-accent-warm:     var(--brand-alt);
   /* cScale / gitgraph — achromatic with one saturated red pop */
 }
