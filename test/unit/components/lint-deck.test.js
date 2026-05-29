@@ -76,14 +76,17 @@ describe('deck linter', () => {
     assert.equal(f.slide, 3);
   });
 
-  test('every committed deck is free of error-severity findings', () => {
-    // Locks in the fixes for the baseline gallery (cards-stack inline-title)
-    // and gallery-jargon (image-full) and guards against regressions. Warnings
-    // (unknown-class) are triage-only and not asserted here.
+  test('every committed deck is completely lint-clean (no errors, no warnings)', () => {
+    // The deck tree is clean and the gate is --strict, so warnings count too.
+    // Locks in the fixes for the baseline gallery (cards-stack inline-title),
+    // gallery-jargon (image-full), and legal.gallery.md (obligation-matrix
+    // pills/lanes now declared) and guards against any regression.
     const offenders = [];
     for (const deck of discoverDecks()) {
-      const errs = lintText(fs.readFileSync(deck, 'utf8'), { vocab }).filter((f) => f.severity === 'error');
-      if (errs.length) offenders.push(`${deck}: ${errs.map((e) => `${e.rule}@${e.slide}`).join(', ')}`);
+      const findings = lintText(fs.readFileSync(deck, 'utf8'), { vocab });
+      if (findings.length) {
+        offenders.push(`${deck}: ${findings.map((f) => `${f.severity}:${f.rule}[${f.classToken}]@${f.slide}`).join(', ')}`);
+      }
     }
     assert.deepEqual(offenders, [], offenders.join('\n'));
   });

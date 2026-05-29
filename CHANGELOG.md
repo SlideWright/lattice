@@ -39,6 +39,10 @@ in patch versions.
   scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
   the front matter for the whole deck. Composes with any layout or
   variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.
+- **`obligation-matrix` `pills` and `lanes` variants are now documented.**
+  The variants are declared in the manifest; this adds their `variantDocs`
+  so they render in the component gallery and surface in the reference and
+  search index instead of being declared-but-invisible.
 - **Agent authoring affordances.** Three additions help AI agents author
   decks correctly: a machine-readable catalog `dist/docs/components.json`
   (every component's axes, tags, slots, skeleton, and when/anti/related

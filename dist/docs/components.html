@@ -7328,6 +7328,42 @@ Red = applies (exposure), green = exempt (relief). Brackets frame the structure.
 
 Each row promotes to a card with body-level breathing room.</code></pre>
     </div>
+    <div class="variant">
+      <h5><code>pills</code> — Pills — neutral state chips</h5>
+      <p>Renders each cell's state marker as a discrete inline pill on neutral chrome — the default grammar without the heat palette's risk colouring. Use when the matrix should read as plain data, less assertive than heat.</p>
+      <pre class="code"><code>&lt;!-- _class: obligation-matrix pills --&gt;
+
+## Privacy obligations across regimes — same grammar, no heat.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Same data, neutral chrome — the state pills carry the meaning without the heat-map alarm.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>lanes</code> — Lanes — categorical row stripes</h5>
+      <p>Tints each regulation's row label with a categorical lane stripe so every regime reads as its own track. Use when the rows are independent regimes rather than a ranked or directly comparable set.</p>
+      <pre class="code"><code>&lt;!-- _class: obligation-matrix lanes --&gt;
+
+## Privacy obligations — categorical row stripes.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Each lane stripe signals that the row is its own regime, not a rank.</code></pre>
+    </div>
   </section>
   <section class="related">
     <h4>Related</h4>
