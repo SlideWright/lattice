@@ -22,20 +22,20 @@ Gantt chart — task bars across a date axis.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the at-risk bars gate the GA date.
+Three workstreams across four quarters; the one at-risk bar gates the full rollout.
 
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Framework
+  - Signal taxonomy `Q1 → Q2` `done`
+  - Scoring model v2 `Q2 → Q3` `live`
+  - Per-team weighting `Q3 → Q4` `at-risk`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Weekly signal review `Q2 → Q3` `live`
+  - Org-wide rollout `Q3 → Q4`
+- Governance
+  - Decision log `Q1 → Q2` `done`
+  - Calibration cadence `Q2 → Q3`
+  - Board reporting `Q3 → Q4`
 
 
 ---
@@ -74,20 +74,20 @@ Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the at-risk bars gate the GA date.
+Three workstreams across four quarters; the one at-risk bar gates the full rollout.
 
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Framework
+  - Signal taxonomy `Q1 → Q2` `done`
+  - Scoring model v2 `Q2 → Q3` `live`
+  - Per-team weighting `Q3 → Q4` `at-risk`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Weekly signal review `Q2 → Q3` `live`
+  - Org-wide rollout `Q3 → Q4`
+- Governance
+  - Decision log `Q1 → Q2` `done`
+  - Calibration cadence `Q2 → Q3`
+  - Board reporting `Q3 → Q4`
 
 
 ---
@@ -99,20 +99,20 @@ Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the at-risk bars gate the GA date.
+Three workstreams across four quarters; the one at-risk bar gates the full rollout.
 
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Framework
+  - Signal taxonomy `Q1 → Q2` `done`
+  - Scoring model v2 `Q2 → Q3` `live`
+  - Per-team weighting `Q3 → Q4` `at-risk`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Weekly signal review `Q2 → Q3` `live`
+  - Org-wide rollout `Q3 → Q4`
+- Governance
+  - Decision log `Q1 → Q2` `done`
+  - Calibration cadence `Q2 → Q3`
+  - Board reporting `Q3 → Q4`
 
 
 ---
@@ -124,20 +124,20 @@ Three workstreams across four quarters; the at-risk bars gate the GA date.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the at-risk bars gate the GA date.
+Three workstreams across four quarters; the one at-risk bar gates the full rollout.
 
-- Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2` `done`
-  - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Framework
+  - Signal taxonomy `Q1 → Q2` `done`
+  - Scoring model v2 `Q2 → Q3` `live`
+  - Per-team weighting `Q3 → Q4` `at-risk`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Weekly signal review `Q2 → Q3` `live`
+  - Org-wide rollout `Q3 → Q4`
+- Governance
+  - Decision log `Q1 → Q2` `done`
+  - Calibration cadence `Q2 → Q3`
+  - Board reporting `Q3 → Q4`
 
 
 ---

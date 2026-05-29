@@ -18,12 +18,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after -->
 <!-- _footer: "Default · before-after" -->
 
-## What moving off the central vault changed.
+## What writing decisions down actually changed.
 
 - Before.
-  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
 - After.
-  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 
 ---
@@ -46,12 +46,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after dark -->
 <!-- _footer: "Composition: dark · before-after dark" -->
 
-## What moving off the central vault changed.
+## What writing decisions down actually changed.
 
 - Before.
-  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
 - After.
-  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 
 ---
@@ -59,12 +59,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after compact -->
 <!-- _footer: "Composition: compact · before-after compact" -->
 
-## What moving off the central vault changed.
+## What writing decisions down actually changed.
 
 - Before.
-  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
 - After.
-  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 
 ---
@@ -72,12 +72,12 @@ Explicit state-change comparison — what was, what is.
 <!-- _class: before-after accent -->
 <!-- _footer: "Composition: accent · before-after accent" -->
 
-## What moving off the central vault changed.
+## What writing decisions down actually changed.
 
 - Before.
-  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
 - After.
-  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 
 ---

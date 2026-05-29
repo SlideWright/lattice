@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: checklist -->\n\n## Pre-launch readiness.\n\n- [x] First item that is fully done.\n- [x] Second item that is fully done.\n- [-] Third item that is partially complete with a caveat.\n- [ ] Fourth item that is not yet started.\n",
   "anatomyBlock": "checklist",
-  "sample": "<!-- _class: checklist -->\n\n## Go-live readiness for the codebook rollout.\n\n- [x] Load test passed at 3× projected peak throughput\n- [x] Key-rotation runbook signed off by security\n- [x] Tenant migration rehearsed end to end in staging\n- [-] Examiner audit pack drafted, pending compliance review\n- [-] On-call rotation staffed, one gap in the EU window\n- [ ] Customer comms scheduled with named owners\n- [ ] Rollback plan rehearsed against production data\n",
+  "sample": "<!-- _class: checklist -->\n\n## Go-live readiness for the framework rollout.\n\n- [x] Signal taxonomy ratified, in workshop four of three\n- [x] Scoring weights agreed by the steering committee\n- [x] Decision log live in staging\n- [-] Pilot teams trained, two still \"circling back\"\n- [-] Operating rhythm on the calendar, attendance optional in practice\n- [ ] Exec sponsor confirmed for the launch comms\n- [ ] Rollback plan, should we decide to stop deciding\n",
   "whenToUse": [
     {
       "title": "Completion reports",

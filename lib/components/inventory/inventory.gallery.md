@@ -87,15 +87,15 @@ Inventory — parallel sets of related items.
 
 <!-- _class: checklist -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [ ] Rollback plan, should we decide to stop deciding
 
 ---
 
@@ -130,23 +130,23 @@ Inventory — parallel sets of related items.
 
 <!-- _class: list-tabular -->
 
-## The five workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. Security
-   - Threat-model refresh and a third-party penetration test ahead of GA.
-   - _One engineer · ships Q4_
-5. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 ---
 

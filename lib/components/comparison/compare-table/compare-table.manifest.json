@@ -20,7 +20,7 @@
   },
   "skeleton": "<!-- _class: compare-table -->\n\n## Heading framing the comparison.\n\n| Criterion | Option A | Option B | Option C |\n| --- | --- | --- | --- |\n| First criterion | Value | Value | Value |\n| Second criterion | Value | Value | Value |\n| Third criterion | Value | Value | Value |\n",
   "anatomyBlock": "T22-compare-table",
-  "sample": "<!-- _class: compare-table -->\n\n## How the three encryption models trade off.\n\n| Model | Latency p99 | Blast radius | Key rotation |\n| --- | --- | --- | --- |\n| Central vault | 60 ms | Every tenant | Offline window |\n| In-process codebook | < 5 ms | One tenant | Online |\n| Client-side envelope | < 2 ms | One record | Manual, per client |\n",
+  "sample": "<!-- _class: compare-table -->\n\n## How the three planning rituals compare.\n\n| Ritual | Cadence | Output | Read after the meeting |\n| --- | --- | --- | --- |\n| Strategy offsite | Yearly | An 80-slide deck | The title slide |\n| Quarterly business review | Quarterly | A scorecard | The red cells |\n| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |\n",
   "whenToUse": [
     {
       "title": "Wider than compare-prose",

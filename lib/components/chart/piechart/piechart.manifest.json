@@ -24,7 +24,7 @@
   },
   "skeleton": "<!-- _class: piechart donut -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the engineering quarter went.\n\nWedges drawn proportionally; legend reads in author order with raw values.\n\n- Codebook platform `46%`\n- Operations runbook `22%`\n- Compliance work `18%`\n- Pilot support `9%`\n- Toil and on-call `5%`\n",
   "anatomyBlock": "piechart-canvas",
-  "sample": "<!-- _class: piechart -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the engineering quarter went.\n\nNearly half the quarter went to the codebook platform; on-call toil was the smallest slice.\n\n- Codebook platform `46%`\n- Operations runbook `22%`\n- Compliance work `18%`\n- Pilot support `9%`\n- Toil and on-call `5%`\n",
+  "sample": "<!-- _class: piechart -->\n\n`H1 2026 · 1,840 person-hours`\n\n## Where the planning quarter actually went.\n\nNearly half went to producing decks; the deciding itself was the smallest slice.\n\n- Deck production `46%`\n- Meetings about meetings `22%`\n- Realigning on priorities `18%`\n- Stakeholder management `9%`\n- Actually deciding `5%`\n",
   "whenToUse": [
     {
       "title": "Three to six parts of a whole",

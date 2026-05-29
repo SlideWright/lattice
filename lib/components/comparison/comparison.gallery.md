@@ -11,12 +11,12 @@ Comparison — how two or more options differ.
 
 <!-- _class: before-after -->
 
-## What moving off the central vault changed.
+## What writing decisions down actually changed.
 
 - Before.
-  - Every tokenization call round-tripped to a central vault. p99 latency 60 ms, a single regional outage took every tenant down, and key rotation meant a four-hour maintenance window.
+  - Decisions lived in the room they were made in. Six months on, nobody could say why we killed the project — only that someone senior had felt strongly. Every quarter relitigated the same three debates from memory.
 - After.
-  - Codebooks run in-process beside the service. p99 under 5 ms, an outage is scoped to one tenant, and rotation happens online with no window at all.
+  - Every decision is logged with its signals, its options, and the bet it made. We still relitigate, but now there is a record showing we already decided this in March. We ignore it, but faster.
 
 ---
 
@@ -33,13 +33,13 @@ Comparison — how two or more options differ.
 
 <!-- _class: compare-table -->
 
-## How the three encryption models trade off.
+## How the three planning rituals compare.
 
-| Model | Latency p99 | Blast radius | Key rotation |
+| Ritual | Cadence | Output | Read after the meeting |
 | --- | --- | --- | --- |
-| Central vault | 60 ms | Every tenant | Offline window |
-| In-process codebook | < 5 ms | One tenant | Online |
-| Client-side envelope | < 2 ms | One record | Manual, per client |
+| Strategy offsite | Yearly | An 80-slide deck | The title slide |
+| Quarterly business review | Quarterly | A scorecard | The red cells |
+| Weekly signal review | Weekly | A decision-log entry | Whoever wrote it |
 
 ---
 
@@ -56,20 +56,20 @@ Comparison — how two or more options differ.
 
 <!-- _class: matrix-2x2 -->
 
-## Where the H2 bets land on effort and impact.
+## Where the transformation bets land on effort and impact.
 
 - **High impact · Low effort.**
-  - Automated key rotation
-  - Examiner audit pack
+  - Weekly signal review
+  - Decision-log template
 - **High impact · High effort.**
-  - Multi-tenant codebooks
-  - Polyglot SDK parity
+  - Scoring-model rewrite
+  - Org-wide rollout
 - **Low impact · Low effort.**
-  - Status-page polish
-  - Dependency dashboard
+  - Renaming the framework, again
+  - A new Confluence space
 - **Low impact · High effort.**
-  - Bespoke per-tenant audit UI
-  - Custom SCIM connector
+  - Dashboards nobody opens
+  - The maturity-model self-assessment
 
 ---
 

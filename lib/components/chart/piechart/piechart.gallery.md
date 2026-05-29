@@ -20,15 +20,15 @@ Pie or donut chart with legend — proportional wedges.
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the planning quarter actually went.
 
-Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
+Nearly half went to producing decks; the deciding itself was the smallest slice.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
 
 
 ---
@@ -78,15 +78,15 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the planning quarter actually went.
 
-Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
+Nearly half went to producing decks; the deciding itself was the smallest slice.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
 
 
 ---
@@ -96,15 +96,15 @@ Nearly half the quarter went to the codebook platform; on-call toil was the smal
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the planning quarter actually went.
 
-Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
+Nearly half went to producing decks; the deciding itself was the smallest slice.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
 
 
 ---
@@ -114,15 +114,15 @@ Nearly half the quarter went to the codebook platform; on-call toil was the smal
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the planning quarter actually went.
 
-Nearly half the quarter went to the codebook platform; on-call toil was the smallest slice.
+Nearly half went to producing decks; the deciding itself was the smallest slice.
 
-- Codebook platform `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil and on-call `5%`
+- Deck production `46%`
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
 
 
 ---

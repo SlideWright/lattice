@@ -18,15 +18,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist -->
 <!-- _footer: "Default · checklist" -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [ ] Rollback plan, should we decide to stop deciding
 
 
 ---
@@ -34,15 +34,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist dark -->
 <!-- _footer: "Composition: dark · checklist dark" -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [ ] Rollback plan, should we decide to stop deciding
 
 
 ---
@@ -50,15 +50,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist compact -->
 <!-- _footer: "Composition: compact · checklist compact" -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [ ] Rollback plan, should we decide to stop deciding
 
 
 ---
@@ -66,15 +66,15 @@ Items with state markers — done, partial, todo.
 <!-- _class: checklist accent -->
 <!-- _footer: "Composition: accent · checklist accent" -->
 
-## Go-live readiness for the codebook rollout.
+## Go-live readiness for the framework rollout.
 
-- [x] Load test passed at 3× projected peak throughput
-- [x] Key-rotation runbook signed off by security
-- [x] Tenant migration rehearsed end to end in staging
-- [-] Examiner audit pack drafted, pending compliance review
-- [-] On-call rotation staffed, one gap in the EU window
-- [ ] Customer comms scheduled with named owners
-- [ ] Rollback plan rehearsed against production data
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [ ] Rollback plan, should we decide to stop deciding
 
 
 ---

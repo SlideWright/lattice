@@ -18,20 +18,20 @@ Date-stamped event list — spine with date pills, status pills, and body.
 <!-- _class: timeline-list -->
 <!-- _footer: "Default · timeline-list" -->
 
-`Codebook architecture`
+`Decision framework`
 
-## How the codebook architecture arrived in production.
+## How the framework arrived in production.
 
-Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
+Four stages over eighteen months, from the first workshop to the operating rhythm.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model. Build approved.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
 
 ---
@@ -62,20 +62,20 @@ Four stages over eighteen months, from the first vault round-trip to sub-5 ms co
 <!-- _class: timeline-list dark -->
 <!-- _footer: "Composition: dark · timeline-list dark" -->
 
-`Codebook architecture`
+`Decision framework`
 
-## How the codebook architecture arrived in production.
+## How the framework arrived in production.
 
-Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
+Four stages over eighteen months, from the first workshop to the operating rhythm.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model. Build approved.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
 
 ---
@@ -83,20 +83,20 @@ Four stages over eighteen months, from the first vault round-trip to sub-5 ms co
 <!-- _class: timeline-list compact -->
 <!-- _footer: "Composition: compact · timeline-list compact" -->
 
-`Codebook architecture`
+`Decision framework`
 
-## How the codebook architecture arrived in production.
+## How the framework arrived in production.
 
-Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
+Four stages over eighteen months, from the first workshop to the operating rhythm.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model. Build approved.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
 
 ---
@@ -104,20 +104,20 @@ Four stages over eighteen months, from the first vault round-trip to sub-5 ms co
 <!-- _class: timeline-list accent -->
 <!-- _footer: "Composition: accent · timeline-list accent" -->
 
-`Codebook architecture`
+`Decision framework`
 
-## How the codebook architecture arrived in production.
+## How the framework arrived in production.
 
-Four stages over eighteen months, from the first vault round-trip to sub-5 ms codebook caching.
+Four stages over eighteen months, from the first workshop to the operating rhythm.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process model. Build approved.
-3. `2025 Q3` Codebook GA `live`
-   - Phase 1 rollout complete; 12 production tenants on the new path.
-4. `2026 Q1` Multi-tenant DEKs `live`
-   - Hardening shipped; codebook caching cut p99 below 5 ms.
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model. Build approved.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
 
 ---

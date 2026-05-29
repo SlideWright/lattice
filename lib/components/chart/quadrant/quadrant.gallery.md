@@ -20,22 +20,22 @@ Native 2×2 scatter chart — items plotted on two continuous axes.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next quarter.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
-- Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
-  - Snapshot exports `9, 55`
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
 - Defer
-  - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
 - Time Sinks
-  - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
 
 
 ---
@@ -197,22 +197,22 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next quarter.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
-- Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
-  - Snapshot exports `9, 55`
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
 - Defer
-  - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
 - Time Sinks
-  - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
 
 
 ---
@@ -222,22 +222,22 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next quarter.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
-- Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
-  - Snapshot exports `9, 55`
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
 - Defer
-  - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
 - Time Sinks
-  - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
 
 
 ---
@@ -247,22 +247,22 @@ Effort estimated in story-points; reach as percent of addressable users.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next quarter.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
-- Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
-  - Snapshot exports `9, 55`
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
 - Defer
-  - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
 - Time Sinks
-  - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
 
 
 ---

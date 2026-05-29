@@ -18,23 +18,23 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular -->
 <!-- _footer: "Default · list-tabular" -->
 
-## The five workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. Security
-   - Threat-model refresh and a third-party penetration test ahead of GA.
-   - _One engineer · ships Q4_
-5. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 
 ---
@@ -160,23 +160,23 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular dark -->
 <!-- _footer: "Composition: dark · list-tabular dark" -->
 
-## The five workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. Security
-   - Threat-model refresh and a third-party penetration test ahead of GA.
-   - _One engineer · ships Q4_
-5. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 
 ---
@@ -184,23 +184,23 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular compact -->
 <!-- _footer: "Composition: compact · list-tabular compact" -->
 
-## The five workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. Security
-   - Threat-model refresh and a third-party penetration test ahead of GA.
-   - _One engineer · ships Q4_
-5. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 
 ---
@@ -208,23 +208,23 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 <!-- _class: list-tabular accent -->
 <!-- _footer: "Composition: accent · list-tabular accent" -->
 
-## The five workstreams carrying the H2 platform plan.
+## The five workstreams carrying the transformation.
 
-1. Platform
-   - Multi-tenant codebooks and per-purpose keys — the latency and isolation work.
-   - _Two engineers · ships Q3_
-2. Operations
-   - Automated rotation and crypto-shred, retiring the manual maintenance window.
-   - _One engineer · ships Q3_
-3. Compliance
-   - Centralised audit log and the examiner-ready export pack.
-   - _One engineer · ships Q4_
-4. Security
-   - Threat-model refresh and a third-party penetration test ahead of GA.
-   - _One engineer · ships Q4_
-5. SDK
-   - Polyglot parity so every client team adopts the same path.
-   - _Contractor · ships Q4_
+1. Framework
+   - The scoring model, the signal taxonomy, and the weights nobody quite agrees on.
+   - _Two analysts · ships Q3_
+2. Adoption
+   - Onboarding every team to the weekly ritual and the decision log.
+   - _One enablement lead · ships Q3_
+3. Governance
+   - The operating rhythm, the review cadence, and the escalation path.
+   - _One chief of staff · ships Q4_
+4. Tooling
+   - The intake form, the dashboards, and the exports for the board.
+   - _One PM · ships Q4_
+5. Change
+   - Comms, exec sponsorship, and the people who preferred the old way.
+   - _One comms partner · ships Q4_
 
 
 ---
