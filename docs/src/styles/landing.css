@@ -375,9 +375,15 @@ html[data-mode='dark'] .mode-toggle::before {
 .slide-frame iframe.live,
 .shot-img iframe.live {
 	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
+	top: 0;
+	left: 0;
+	/* Fixed intrinsic slide size; scaled to fit the 16:9 container via a CSS
+	 * transform set in JS (scaleFrame). transform-origin top-left so the
+	 * scaled box aligns to the container's corner. The container's
+	 * overflow:hidden + aspect-ratio:16/9 crop it to the right box. */
+	width: 1280px;
+	height: 720px;
+	transform-origin: top left;
 	border: 0;
 	display: block;
 	opacity: 0;

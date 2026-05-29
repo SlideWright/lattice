@@ -363,7 +363,6 @@ const liveData = JSON.stringify({
 				var D = JSON.parse(dataEl.textContent);
 				var root = document.documentElement;
 				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl;
-				var SVG_POLYFILL = 'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill@2.1.0/lib/polyfill.browser.js';
 				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 				// ── Theme fetching (shared with the playground) ──────────────
@@ -382,13 +381,29 @@ const liveData = JSON.stringify({
 				}
 				function srcdoc(html, css, mode, mermaid) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+					// Render the slide at its INTRINSIC 1280x720 and never scale the SVG
+					// itself. Scaling a viewBox SVG that contains <foreignObject> trips a
+					// Safari/WebKit bug, and the marpit-svg-polyfill that works around it
+					// runs a requestAnimationFrame loop that re-fits on every scroll — the
+					// "scales when you scroll" jank (a no-op on Chrome, which is why it
+					// wasn't caught). With a fixed intrinsic size the polyfill isn't
+					// needed; the iframe ELEMENT is CSS-transform-scaled to fit its
+					// container instead (see scaleFrame + .slide-frame iframe.live).
 					var s = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:' + bg +
-						';overflow:hidden;height:100%}.marpit{height:100%}.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:100%}' + css +
-						'</style></head><body>' + html +
-						'<scr' + 'ipt src="' + SVG_POLYFILL + '"></scr' + 'ipt><scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe()</scr' + 'ipt>';
+						';overflow:hidden;width:1280px;height:720px}.marpit{width:1280px;height:720px}.marpit>svg,svg[data-marpit-svg]{display:block;width:1280px;height:720px}' + css +
+						'</style></head><body>' + html;
 					if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
 					s += '<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt></body></html>';
 					return s;
+				}
+				// Scale the fixed 1280x720 iframe to fill its (16:9) container. Driven
+				// by the container's current width, so it stays correct as the layout
+				// reflows — fully responsive without touching the SVG.
+				function scaleFrame(host) {
+					var fr = host.querySelector('iframe.live');
+					if (!fr) return;
+					var w = host.clientWidth;
+					if (w > 0) fr.style.transform = 'scale(' + (w / 1280).toFixed(5) + ')';
 				}
 
 				// ── Render one slide into a container (creates/updates iframe) ─
@@ -408,8 +423,14 @@ const liveData = JSON.stringify({
 							fr.setAttribute('scrolling', 'no');
 							fr.setAttribute('tabindex', '-1');
 							host.appendChild(fr);
+							// Keep the scale correct as the container resizes (responsive).
+							if (typeof ResizeObserver !== 'undefined') {
+								new ResizeObserver(function () { scaleFrame(host); }).observe(host);
+							}
 						}
+						fr.onload = function () { scaleFrame(host); };
 						fr.srcdoc = srcdoc(out.html, out.css, m, mermaid);
+						scaleFrame(host);
 						host.classList.add('is-live');
 						return true;
 					}).catch(function (e) { console.error('live render failed', e); return false; });
