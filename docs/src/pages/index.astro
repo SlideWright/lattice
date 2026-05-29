@@ -383,7 +383,7 @@ const liveData = JSON.stringify({
 				function srcdoc(html, css, mode, mermaid) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
 					var s = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:' + bg +
-						';overflow:hidden}.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:auto}' + css +
+						';overflow:hidden;height:100%}.marpit{height:100%}.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:100%}' + css +
 						'</style></head><body>' + html +
 						'<scr' + 'ipt src="' + SVG_POLYFILL + '"></scr' + 'ipt><scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe()</scr' + 'ipt>';
 					if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
