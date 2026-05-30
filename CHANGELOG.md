@@ -129,6 +129,17 @@ in patch versions.
 
 ### Changed
 
+- **Charts cycle a dedicated `--chart-1..8` series ramp.** `chart-family`
+  (pie wedges, kanban lanes) now reads `var(--chart-N)` instead of
+  `var(--cN-dark)`. The ramp is data-ink optimised for 8-way series
+  separation, freed from the white-ink-AA lightness cap that compresses
+  the diagram deep tier — so an 8-slice pie is markedly more distinct
+  (OKLab ΔE ~0.06 → ~0.11+ on curated themes). **Non-breaking:**
+  `--chart-N` defaults to `var(--cN-dark)` in `base.tokens.css`, so any
+  theme that has not curated a ramp renders byte-identical to before.
+  Charts and diagrams stay cohesive via shared brand-hue anchors, not
+  shared tokens. See `engineering/decisions/2026-05-29-palette-recuration.md`.
+
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing

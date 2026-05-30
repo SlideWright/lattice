@@ -111,6 +111,25 @@
    * AA-safe; all --cN-dark/--c-ink-dark pairs are AA-safe. Hex values are
    * sourced from the Brand-triad rank-1 proposal in themes/palette-audit.md. */
 
+  /* ── Chart series ramp (--chart-1 .. --chart-8) ───────────────────────────
+   * The dedicated data-ink ramp charts cycle through (pie wedges, kanban
+   * lanes, xy plots). Distinct from the diagram categorical cycle: the deep
+   * tier (--cN-dark) is a text-bearing fill (kanban lane labels, gantt bars),
+   * so it is capped at L<=~0.52 for white-ink AA, which compresses its 8-way
+   * distinctness. A pie slice carries no text, so the chart ramp is freed to
+   * spread lightness wider for cleaner series separation. Cohesion is via
+   * SHARED ANCHORS, not shared tokens: a theme's --chart-N derives from the
+   * same brand-anchored hues as its --cN cycle (see palette-forge).
+   *
+   * DEFAULT = var(--cN-dark) so any theme that has NOT curated a ramp renders
+   * byte-identical to before this token existed (non-breaking). Themes opt in
+   * by defining --chart-1..8 (the forge emits them). See
+   * engineering/decisions/2026-05-29-palette-recuration.md §7. */
+  --chart-1: var(--c1-dark); --chart-2: var(--c2-dark);
+  --chart-3: var(--c3-dark); --chart-4: var(--c4-dark);
+  --chart-5: var(--c5-dark); --chart-6: var(--c6-dark);
+  --chart-7: var(--c7-dark); --chart-8: var(--c8-dark);
+
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
    * sequence-diagram notes, alarm fills, today markers — none of those
