@@ -129,18 +129,19 @@ in patch versions.
 
 ### Changed
 
-- **Chart series adopt an Apple system-colour palette.** Each theme's
-  `--chart-1..8` is now a curated set of Apple Human Interface Guidelines
-  system colours (red, orange, yellow, green, mint, teal, cyan, blue,
-  indigo, purple, pink, brown) as `light-dark()` pairs (Apple's own light
-  + dark values), led by the system colour nearest the theme's brand hue
-  and ordered colourblind-aware. Charts are decoupled from Mermaid's tier
-  constraints entirely — `chart-family` renders its own SVG, so the ramp
-  is free to be maximally vibrant and distinct (Apple values used verbatim
-  where they clear the 3:1 chart floor; deepened only for white-canvas
-  legibility). Diagram fills (`--cN-light/-dark`) are unchanged. Charts
-  and Mermaid are intentionally separate: vibrant Apple charts, editorial
-  diagrams, cohesive via shared brand-hue leads.
+- **Chart series adopt Apple-inspired, per-theme vivid palettes.** Each
+  theme's `--chart-1..8` is its own curated set — not literal Apple
+  swatches, but Apple's *principles*: high vividness, a deliberate
+  light↔dark relationship (dark variants lifted brighter to pop on the
+  dark canvas, not just darkened), and `light-dark()` pairs. Each set is
+  brand-anchored (its own hue ring led by the theme's signature hue), so
+  every theme has a unique take. **Monochrome themes (ardesia, atelier,
+  onyx, concrete) get quiet, theme-specific palettes** — colour is
+  present but low-chroma, never louder than the neutral theme,
+  distinguished by lightness. Charts are decoupled from Mermaid's tier
+  constraints (`chart-family` renders its own SVG); diagram fills
+  (`--cN-light/-dark`) are unchanged. Vivid charts + editorial diagrams,
+  intentionally separate, cohesive via each theme's signature-hue lead.
 
 - **All 13 palettes re-curated (editorial-qualitative system).** Every
   shipped theme's colour tokens are regenerated from its brand anchor via

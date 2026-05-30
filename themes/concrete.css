@@ -212,13 +212,13 @@ section pre.hljs {
   --c-quadrant-4-text: var(--text-heading);
 }
 
-:root{ --chart-1: light-dark(#524ECE, #5E5CE6); }
-:root{ --chart-2: light-dark(#005FCB, #0A84FF); }
-:root{ --chart-3: light-dark(#915200, #FF9F0A); }
-:root{ --chart-4: light-dark(#007128, #30D158); }
-:root{ --chart-5: light-dark(#9131BE, #BF5AF2); }
-:root{ --chart-6: light-dark(#C80006, #FF453A); }
-:root{ --chart-7: light-dark(#006B7B, #40C8E0); }
-:root{ --chart-8: light-dark(#C30038, #FF375F); }
+:root{ --chart-1: light-dark(#2C4D5B, #648696); }
+:root{ --chart-2: light-dark(#725F50, #BCA696); }
+:root{ --chart-3: light-dark(#2A3949, #607182); }
+:root{ --chart-4: light-dark(#6B634D, #A09881); }
+:root{ --chart-5: light-dark(#3F5761, #77919D); }
+:root{ --chart-6: light-dark(#705D4E, #C8B3A2); }
+:root{ --chart-7: light-dark(#212F3E, #58697A); }
+:root{ --chart-8: light-dark(#5F5742, #827A64); }
 /* grey-canvas state fix */
 :root { --warn: light-dark(#865400, #F97316); }

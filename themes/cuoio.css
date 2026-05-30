@@ -82,14 +82,14 @@
   --c-ink-dark:  light-dark(#FFFFFF, #55472C);
 
   /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
-  --chart-1: light-dark(#D67C00, #FF9F0A);
-  --chart-2: light-dark(#007AFF, #0A84FF);
-  --chart-3: light-dark(#00A73F, #30D158);
-  --chart-4: light-dark(#AF52DE, #BF5AF2);
-  --chart-5: light-dark(#FF3B30, #FF453A);
-  --chart-6: light-dark(#13A1B8, #40C8E0);
-  --chart-7: light-dark(#FF2D55, #FF375F);
-  --chart-8: light-dark(#B28E00, #FFD60A);
+  --chart-1: light-dark(#B47D00, #F5AC00);
+  --chart-2: light-dark(#619500, #8BD200);
+  --chart-3: light-dark(#00978F, #00B7AE);
+  --chart-4: light-dark(#008CDF, #008BDE);
+  --chart-5: light-dark(#AB61FF, #A148FB);
+  --chart-6: light-dark(#FE2992, #FF4197);
+  --chart-7: light-dark(#F05400, #FF885D);
+  --chart-8: light-dark(#918A00, #CDC300);
 
   /* Universal semantic palette */
   --c-warm-light: light-dark(#F6CBA9, #7B4100); --c-warm-dark: var(--c-stroke);
