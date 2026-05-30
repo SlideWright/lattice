@@ -4,6 +4,7 @@
   "function": "statement",
   "form": "split",
   "substance": "structure",
+  "tags": ["pull-quote", "quotation", "takeaway"],
   "description": "Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right.",
   "purpose": "Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from `quote` (which is the whole slide); split-statement gives equal room to quote and consequences.",
   "slots": {

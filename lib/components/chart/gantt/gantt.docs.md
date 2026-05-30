@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** series
 
+**Tags** `swimlane` · `planning` · `milestones` · `agile`
+
 Use for project plans with overlapping or staggered tasks. Each task is a bar on the time axis; bars can span multiple periods and carry status tints.
 
 ## When to use

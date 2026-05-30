@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** scatter · **Substance** series
 
+**Tags** `two-by-two` · `positioning` · `prioritize` · `risk`
+
 Use to position items by two numeric attributes (cost × value, effort × impact). Data-driven; for static categorical 2×2 grids, use matrix-2x2.
 
 ## When to use

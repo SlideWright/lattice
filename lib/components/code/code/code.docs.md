@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** prose
 
+**Tags** `snippet` · `walkthrough` · `reference`
+
 Use when the code IS the slide — an API snippet, a config example, a migration. For comparing two versions, use compare-code.
 
 ## When to use

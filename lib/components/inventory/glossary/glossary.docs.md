@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
+**Tags** `definition` · `reference` · `onboarding`
+
 Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
 
 ## When to use

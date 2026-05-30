@@ -57,7 +57,7 @@ const STEPS = [
   { label: 'lattice-emulator.js', script: 'build-emulator.js' },
   { label: 'VS Code snippets', script: 'build-snippets.js' },
   { label: 'per-component docs', script: 'build-component-docs.js' },
-  { label: 'doc portal (components.md/.html)', script: 'build-docs-portal.js' },
+  { label: 'doc portal (components.md/.html/.json)', script: 'build-docs-portal.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact

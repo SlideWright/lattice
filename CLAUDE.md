@@ -85,8 +85,9 @@ that generator to re-bless another palette), `dist/lattice-runtime.js`
 emulator CLI — the package `bin`/`main`; `build-emulator.js` inlines the
 local engine graph and leaves node_modules deps external, mirroring the
 runtime split of `lib/runtime/index.js` source → `dist/` bundle),
-`dist/docs/components.{md,html}` (the canonical single-file component
-reference), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
+`dist/docs/components.{md,html,json}` (the canonical single-file component
+reference — `.md`/`.html` human-readable, `.json` the machine catalog for
+agents/tooling), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
 runs last). These are the shipped/public paths — decks load
 `dist/lattice.css` via `marp.config.js` `themeSet`, and the README/jsdelivr
 URLs point into `dist/`. Do not hand-edit them. (The repo-root
@@ -250,6 +251,13 @@ caught by the hook instead of by reviewer eyeballs.
   decks ship with `**Label.** body` when the layout actually wants
   `- Label\n  - body`, or with prose describing an abandoned
   implementation, or with `tint-<em>` leaking into rendered output.
+- **Lint drafts with `npm run lint:deck -- <file>`.** The author-facing
+  linter (`tools/lint-deck.js` → `lib/authoring/lint.js`) flags the
+  card-style inline-title, ordered-list-bold, and class-typo footguns with
+  no render — run it before rendering. `dist/docs/components.json` is the
+  machine catalog (axes, tags, slots, skeletons, when/anti/related) an
+  agent loads to pick a component; `AGENTS.md` is the vendor-neutral
+  entrypoint. See `design/design-system.md` §7.
 - **Card-style layouts forbid inline `- **Title.** body`.** The
   CARD_STYLE_LAYOUTS set in `lib/components/index.js` lists 12
   layouts (cards-grid, cards-side, cards-stack, cards-wide, featured,

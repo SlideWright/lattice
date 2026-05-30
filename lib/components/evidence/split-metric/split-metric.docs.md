@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** split · **Substance** structure
 
+**Tags** `hero-number` · `metric` · `assessment`
+
 Use when a single KPI is the argument. The hero number is the headline; the right-side list explains why the number matters and what the trend implies.
 
 ## When to use

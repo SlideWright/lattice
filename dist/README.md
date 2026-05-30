@@ -17,6 +17,7 @@ files. See the repo `README.md` for the full entry-point table.
 | File | Purpose | Consume via |
 |---|---|---|
 | `docs/components.html` | Canonical single-file component reference as a themable two-panel HTML portal — the same content as components.md, browseable. | open in a browser |
+| `docs/components.json` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
 | `docs/components.md` | Canonical single-file component reference (plain Markdown): every component's slots, variants, when/why, anti-patterns. | read directly / link from docs |
 | `lattice-default.css` | Zero-config drop-in: the engine flattened together with the default palette (cuoio), `@import` resolved at build time. Browser-droppable. | `@slidewright/lattice/default` |
 | `lattice-emulator.js` | Bundled Marp-faithful renderer / PDF exporter CLI — the local engine graph inlined, node_modules deps left external. This is the package `bin` and `main`. | `lattice` bin / `@slidewright/lattice` |

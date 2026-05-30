@@ -4,6 +4,8 @@
 
 **Function** imagery · **Form** canvas · **Substance** prose
 
+**Tags** `visual` · `showcase` · `pitch`
+
 Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.
 
 ## When to use

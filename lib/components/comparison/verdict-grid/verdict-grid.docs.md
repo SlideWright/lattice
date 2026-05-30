@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** grid · **Substance** structure
 
+**Tags** `scorecard` · `ranking` · `prioritize` · `assessment`
+
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 
 ## When to use

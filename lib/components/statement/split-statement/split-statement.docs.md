@@ -4,6 +4,8 @@
 
 **Function** statement · **Form** split · **Substance** structure
 
+**Tags** `pull-quote` · `quotation` · `takeaway`
+
 Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from `quote` (which is the whole slide); split-statement gives equal room to quote and consequences.
 
 ## When to use

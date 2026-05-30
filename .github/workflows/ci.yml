@@ -28,6 +28,13 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Lint decks
+        # Author-facing footgun checks across every deck. --strict: both
+        # errors (card-style inline-title, ordered-list bold) and warnings
+        # (unknown _class tokens) fail the build — the deck tree is clean,
+        # so it stays clean.
+        run: npm run lint:deck:all
+
       - name: Unit tests
         run: npm test
 

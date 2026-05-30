@@ -4,6 +4,7 @@
   "function": "statement",
   "form": "panel",
   "substance": "structure",
+  "tags": ["overview", "walkthrough", "showcase"],
   "description": "Featured left panel + supporting list on the right.",
   "purpose": "Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.",
   "variants": [

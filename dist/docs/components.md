@@ -88,6 +88,8 @@
 
 **Function** anchor · **Form** bookend · **Substance** prose
 
+**Tags** `summary` · `takeaway` · `board-deck`
+
 Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals "we're done."
 
 #### When to use
@@ -172,6 +174,8 @@ See [closing.gallery.light.pdf](../../lib/components/anchor/closing/closing.gall
 
 **Function** anchor · **Form** divider · **Substance** prose
 
+**Tags** `section-break` · `agenda-setting` · `walkthrough`
+
 Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.
 
 #### When to use
@@ -255,6 +259,8 @@ See [divider.gallery.light.pdf](../../lib/components/anchor/divider/divider.gall
 
 **Function** anchor · **Form** divider · **Substance** prose
 
+**Tags** `section-break` · `walkthrough` · `overview`
+
 Introduces a specific topic within a section. Use between divider and content slides for finer orientation. Same light canvas as content slides, centered heading, no special background — a lighter cousin to the dark divider.
 
 #### When to use
@@ -335,6 +341,8 @@ See [subtopic.gallery.light.pdf](../../lib/components/anchor/subtopic/subtopic.g
 
 **Function** anchor · **Form** bookend · **Substance** prose
 
+**Tags** `pitch` · `board-deck` · `showcase` · `kickoff`
+
 First slide of every deck. Sets the topic and the visual tone. Suppresses header, footer, and pagination (or use the universal `silent` modifier for the same effect in one token).
 
 #### When to use
@@ -411,6 +419,8 @@ See [title.gallery.light.pdf](../../lib/components/anchor/title/title.gallery.li
 
 **Function** statement · **Form** canvas · **Substance** prose
 
+**Tags** `hero-number` · `metric` · `pitch`
+
 Use to make one metric land. The number should be the headline — supporting text is one short caption. The whole slide is the chart.
 
 #### When to use
@@ -480,6 +490,8 @@ See [big-number.gallery.light.pdf](../../lib/components/statement/big-number/big
 > Generic prose slide — heading plus paragraphs or a short list.
 
 **Function** statement · **Form** canvas · **Substance** prose
+
+**Tags** `walkthrough` · `overview` · `summary`
 
 The catch-all for explanatory content that doesn't fit a more structured layout. Resist using it when a more specific component (cards-grid, stats, compare-prose) would shape the content better.
 
@@ -553,6 +565,8 @@ See [content.gallery.light.pdf](../../lib/components/statement/content/content.g
 
 **Function** statement · **Form** canvas · **Substance** prose
 
+**Tags** `pull-quote` · `quotation` · `showcase`
+
 Use to land a phrase verbatim — customer voice, expert claim, mission statement. Keep under ~25 words. The quote IS the slide; the attribution is the supporting credit.
 
 #### When to use
@@ -618,6 +632,8 @@ See [quote.gallery.light.pdf](../../lib/components/statement/quote/quote.gallery
 > Executive brief — dark left anchor, findings list on the right with left-rule chrome.
 
 **Function** statement · **Form** split · **Substance** structure
+
+**Tags** `summary` · `board-deck` · `takeaway`
 
 Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.
 
@@ -693,6 +709,8 @@ See [split-brief.gallery.light.pdf](../../lib/components/statement/split-brief/s
 > Featured left panel + supporting list on the right.
 
 **Function** statement · **Form** panel · **Substance** structure
+
+**Tags** `overview` · `walkthrough` · `showcase`
 
 Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.
 
@@ -792,6 +810,8 @@ See [split-list.gallery.light.pdf](../../lib/components/statement/split-list/spl
 
 **Function** statement · **Form** split · **Substance** structure
 
+**Tags** `pull-quote` · `quotation` · `takeaway`
+
 Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from `quote` (which is the whole slide); split-statement gives equal room to quote and consequences.
 
 #### When to use
@@ -867,6 +887,8 @@ See [split-statement.gallery.light.pdf](../../lib/components/statement/split-sta
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
+**Tags** `ownership` · `onboarding` · `reference`
+
 Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 #### When to use
@@ -939,6 +961,8 @@ See [actors.gallery.light.pdf](../../lib/components/inventory/actors/actors.gall
 > Auto-numbered table of contents for the deck.
 
 **Function** inventory · **Form** stack · **Substance** structure
+
+**Tags** `agenda-setting` · `overview` · `onboarding` · `kickoff`
 
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles.
 
@@ -1111,6 +1135,8 @@ See [agenda.gallery.light.pdf](../../lib/components/inventory/agenda/agenda.gall
 
 **Function** inventory · **Form** grid · **Substance** structure
 
+**Tags** `overview` · `showcase` · `summary`
+
 Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.
 
 #### When to use
@@ -1268,6 +1294,8 @@ See [cards-grid.gallery.light.pdf](../../lib/components/inventory/cards-grid/car
 
 **Function** inventory · **Form** split · **Substance** structure
 
+**Tags** `overview` · `contrast` · `tradeoff`
+
 Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.
 
 #### When to use
@@ -1355,6 +1383,8 @@ See [cards-side.gallery.light.pdf](../../lib/components/inventory/cards-side/car
 > Parallel items stacked vertically, full-width cards.
 
 **Function** inventory · **Form** stack · **Substance** structure
+
+**Tags** `overview` · `summary` · `reference`
 
 Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.
 
@@ -1467,6 +1497,8 @@ See [cards-stack.gallery.light.pdf](../../lib/components/inventory/cards-stack/c
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `overview` · `showcase` · `reference`
+
 Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.
 
 #### When to use
@@ -1543,6 +1575,8 @@ See [cards-wide.gallery.light.pdf](../../lib/components/inventory/cards-wide/car
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `status` · `stoplight` · `process` · `requirements`
+
 Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.
 
 #### When to use
@@ -1613,6 +1647,8 @@ See [checklist.gallery.light.pdf](../../lib/components/inventory/checklist/check
 > Two-column term/definition table with auto-derived alphabetic range pill.
 
 **Function** inventory · **Form** ledger · **Substance** structure
+
+**Tags** `definition` · `reference` · `onboarding`
 
 Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
 
@@ -1687,6 +1723,8 @@ See [glossary.gallery.light.pdf](../../lib/components/inventory/glossary/glossar
 
 **Function** inventory · **Form** stack · **Substance** prose
 
+**Tags** `overview` · `summary` · `walkthrough`
+
 Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.
 
 #### When to use
@@ -1758,6 +1796,8 @@ See [list.gallery.light.pdf](../../lib/components/inventory/list/list.gallery.li
 > Hairline-ruled ledger of items — name on the left, body on the right.
 
 **Function** inventory · **Form** ledger · **Substance** structure
+
+**Tags** `reference` · `overview` · `status`
 
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
@@ -1967,6 +2007,8 @@ See [list-tabular.gallery.light.pdf](../../lib/components/inventory/list-tabular
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `strategy` · `okr` · `onboarding`
+
 Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.
 
 #### When to use
@@ -2101,6 +2143,8 @@ See [principles.gallery.light.pdf](../../lib/components/inventory/principles/pri
 
 **Function** inventory · **Form** stack · **Substance** structure
 
+**Tags** `summary` · `takeaway` · `overview`
+
 Use at the end of a section or deck to restate the takeaways in one line each. Each line should be a complete claim, not a category label.
 
 #### When to use
@@ -2194,6 +2238,8 @@ See [tldr.gallery.light.pdf](../../lib/components/inventory/tldr/tldr.gallery.li
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `transformation` · `contrast` · `retrospective`
+
 Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.
 
 #### When to use
@@ -2281,6 +2327,8 @@ See [before-after.gallery.light.pdf](../../lib/components/comparison/before-afte
 > Two prose options side-by-side with a labeled corner tag on each.
 
 **Function** comparison · **Form** split · **Substance** structure
+
+**Tags** `tradeoff` · `contrast` · `recommendation`
 
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 
@@ -2450,6 +2498,8 @@ See [compare-prose.gallery.light.pdf](../../lib/components/comparison/compare-pr
 
 **Function** comparison · **Form** ledger · **Substance** prose
 
+**Tags** `tradeoff` · `ranking` · `assessment`
+
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
 #### When to use
@@ -2526,6 +2576,8 @@ See [compare-table.gallery.light.pdf](../../lib/components/comparison/compare-ta
 > The verdict slide — one chosen path, named explicitly.
 
 **Function** comparison · **Form** canvas · **Substance** structure
+
+**Tags** `recommendation` · `tradeoff` · `strategy`
 
 Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 
@@ -2618,6 +2670,8 @@ See [decision.gallery.light.pdf](../../lib/components/comparison/decision/decisi
 
 **Function** comparison · **Form** matrix · **Substance** structure
 
+**Tags** `two-by-two` · `prioritize` · `strategy` · `risk`
+
 Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.
 
 #### When to use
@@ -2695,6 +2749,8 @@ See [matrix-2x2.gallery.light.pdf](../../lib/components/comparison/matrix-2x2/ma
 > Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracking the amendment.
 
 **Function** comparison · **Form** canvas · **Substance** prose
+
+**Tags** `contract` · `contrast` · `compliance` · `transformation`
 
 Use when an amendment's diff is the slide. The blockquote carries the redlined text with ins/del markers; the trailing list explains why the diff matters operationally.
 
@@ -2846,6 +2902,8 @@ See [redline.gallery.light.pdf](../../lib/components/comparison/redline/redline.
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `tradeoff` · `recommendation` · `contrast`
+
 Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.
 
 #### When to use
@@ -2926,6 +2984,8 @@ See [split-compare.gallery.light.pdf](../../lib/components/comparison/split-comp
 > Options scored against criteria as a verdict matrix.
 
 **Function** comparison · **Form** grid · **Substance** structure
+
+**Tags** `scorecard` · `ranking` · `prioritize` · `assessment`
 
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 
@@ -3018,6 +3078,8 @@ See [verdict-grid.gallery.light.pdf](../../lib/components/comparison/verdict-gri
 > Native user-journey chart — sections of tasks, each tagged with actor(s) and a 1-5 mood. Renders as section bars, task chips, plumb lines, and mood faces.
 
 **Function** progression · **Form** timeline · **Substance** structure
+
+**Tags** `process` · `assessment` · `walkthrough`
 
 Use when a process or experience needs charting as a horizontal sequence of moments, each scored for affect. Five variants reshape the same source list: default (Mermaid-style classic), heatmap (mood-tinted chips), curve (mood polyline with axis), swimlane (per-actor rows), weighted (chip widths proportional to `+volume`).
 
@@ -3176,6 +3238,8 @@ See [journey.gallery.light.pdf](../../lib/components/progression/journey/journey
 
 **Function** progression · **Form** ledger · **Substance** structure
 
+**Tags** `requirements` · `assessment` · `okr`
+
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 
 #### When to use
@@ -3251,6 +3315,8 @@ See [list-criteria.gallery.light.pdf](../../lib/components/progression/list-crit
 > Vertical sequence of steps, each with full description body.
 
 **Function** progression · **Form** timeline · **Substance** structure
+
+**Tags** `process` · `walkthrough` · `planning`
 
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 
@@ -3464,6 +3530,8 @@ See [list-steps.gallery.light.pdf](../../lib/components/progression/list-steps/l
 
 **Function** progression · **Form** matrix · **Substance** structure
 
+**Tags** `planning` · `swimlane` · `milestones` · `agile`
+
 Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).
 
 #### When to use
@@ -3622,6 +3690,8 @@ See [roadmap.gallery.light.pdf](../../lib/components/progression/roadmap/roadmap
 
 **Function** progression · **Form** split · **Substance** structure
 
+**Tags** `process` · `planning` · `walkthrough`
+
 Use when a multi-step process needs a phase anchor (week N, sprint, milestone) alongside the ordered steps that compose it. Ordered list renders with auto-numbered discs; unordered list uses plain discs.
 
 #### When to use
@@ -3701,6 +3771,8 @@ See [split-steps.gallery.light.pdf](../../lib/components/progression/split-steps
 
 **Function** progression · **Form** timeline · **Substance** structure
 
+**Tags** `milestones` · `planning` · `changelog`
+
 Use for sequential processes with 3–6 stages. Ordered list (ol) renders numbered circles; unordered (ul) renders plain dots.
 
 #### When to use
@@ -3779,6 +3851,8 @@ See [timeline.gallery.light.pdf](../../lib/components/progression/timeline/timel
 > Executive KPI system — one base, five layout modifiers.
 
 **Function** evidence · **Form** ledger · **Substance** structure
+
+**Tags** `dashboard` · `scorecard` · `metric` · `okr`
 
 Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).
 
@@ -4009,6 +4083,8 @@ See [kpi.gallery.light.pdf](../../lib/components/evidence/kpi/kpi.gallery.light.
 
 **Function** evidence · **Form** split · **Substance** structure
 
+**Tags** `hero-number` · `metric` · `assessment`
+
 Use when a single KPI is the argument. The hero number is the headline; the right-side list explains why the number matters and what the trend implies.
 
 #### When to use
@@ -4087,6 +4163,8 @@ See [split-metric.gallery.light.pdf](../../lib/components/evidence/split-metric/
 > Row of 3–5 stat tiles, each with a big number and a label.
 
 **Function** evidence · **Form** stack · **Substance** structure
+
+**Tags** `dashboard` · `metric` · `percentage`
 
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
@@ -4167,6 +4245,8 @@ See [stats.gallery.light.pdf](../../lib/components/evidence/stats/stats.gallery.
 > Featured card + sub-grid — one prominent item with supporting cards.
 
 **Function** imagery · **Form** panel · **Substance** mixed
+
+**Tags** `showcase` · `pitch` · `overview` · `visual`
 
 Use after a comparison or evaluation to land the recommendation: the featured card is the winner; the sub-grid shows the alternatives or context.
 
@@ -4265,6 +4345,8 @@ See [featured.gallery.light.pdf](../../lib/components/imagery/featured/featured.
 > Image as the slide's anchor, with optional text alongside.
 
 **Function** imagery · **Form** canvas · **Substance** prose
+
+**Tags** `visual` · `showcase` · `pitch`
 
 Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.
 
@@ -4400,6 +4482,8 @@ See [image.gallery.light.pdf](../../lib/components/imagery/image/image.gallery.l
 
 **Function** progression · **Form** timeline · **Substance** series
 
+**Tags** `swimlane` · `planning` · `milestones` · `agile`
+
 Use for project plans with overlapping or staggered tasks. Each task is a bar on the time axis; bars can span multiple periods and carry status tints.
 
 #### When to use
@@ -4475,6 +4559,8 @@ See [gantt.gallery.light.pdf](../../lib/components/chart/gantt/gantt.gallery.lig
 > Kanban board — columns of cards by stage.
 
 **Function** progression · **Form** timeline · **Substance** series
+
+**Tags** `swimlane` · `workflow` · `status` · `agile` · `ownership`
 
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item.
 
@@ -4555,6 +4641,8 @@ See [kanban.gallery.light.pdf](../../lib/components/chart/kanban/kanban.gallery.
 > Pie or donut chart with legend — proportional wedges.
 
 **Function** evidence · **Form** canvas · **Substance** series
+
+**Tags** `donut` · `proportion` · `percentage`
 
 Use for part-to-whole breakdowns with three to six slices. Add the `donut` modifier for a hole in the middle — visually cleaner for executive decks.
 
@@ -4651,6 +4739,8 @@ See [piechart.gallery.light.pdf](../../lib/components/chart/piechart/piechart.ga
 
 **Function** evidence · **Form** canvas · **Substance** series
 
+**Tags** `percentage` · `stoplight` · `status`
+
 Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.
 
 #### When to use
@@ -4724,6 +4814,8 @@ See [progress.gallery.light.pdf](../../lib/components/chart/progress/progress.ga
 > Native 2×2 scatter chart — items plotted on two continuous axes.
 
 **Function** evidence · **Form** scatter · **Substance** series
+
+**Tags** `two-by-two` · `positioning` · `prioritize` · `risk`
 
 Use to position items by two numeric attributes (cost × value, effort × impact). Data-driven; for static categorical 2×2 grids, use matrix-2x2.
 
@@ -4947,6 +5039,8 @@ See [quadrant.gallery.light.pdf](../../lib/components/chart/quadrant/quadrant.ga
 > Native radar / spider chart — items rated across multiple axes.
 
 **Function** evidence · **Form** scatter · **Substance** series
+
+**Tags** `spider` · `assessment` · `positioning`
 
 Use to compare 2–4 options across the same 4–8 criteria. Each option becomes a polygon; overlap shows where strengths align.
 
@@ -5222,6 +5316,8 @@ See [radar.gallery.light.pdf](../../lib/components/chart/radar/radar.gallery.lig
 
 **Function** progression · **Form** timeline · **Substance** graph
 
+**Tags** `flowchart` · `states` · `workflow`
+
 Use to show a finite-state machine — the discrete states a system can be in and the events that move between them. Authors write a numbered list; each state's index becomes its stable ref so transitions cite numbers, not names. The numbering is the layout: state i renders at row i, so there is no auto-layout problem to solve.
 
 #### When to use
@@ -5358,6 +5454,8 @@ See [state-chart.gallery.light.pdf](../../lib/components/chart/state-chart/state
 
 **Function** evidence · **Form** timeline · **Substance** series
 
+**Tags** `changelog` · `milestones` · `status` · `retrospective`
+
 Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.
 
 #### When to use
@@ -5432,6 +5530,8 @@ See [timeline-list.gallery.light.pdf](../../lib/components/chart/timeline-list/t
 > Spiral-packed word cloud — items sized by weight.
 
 **Function** evidence · **Form** canvas · **Substance** series
+
+**Tags** `tag-cloud` · `themes` · `proportion`
 
 Use for qualitative summaries — retrospective themes, survey verbatims. Word size encodes frequency or weight; not a precise data viz.
 
@@ -5588,6 +5688,8 @@ See [word-cloud.gallery.light.pdf](../../lib/components/chart/word-cloud/word-cl
 
 **Function** evidence · **Form** canvas · **Substance** graph
 
+**Tags** `flowchart` · `org-chart` · `sequence` · `process`
+
 Use for relational or topological visuals — flowcharts, sequence diagrams, state machines, ER diagrams. The diagram should occupy at least half the slide.
 
 #### When to use
@@ -5667,6 +5769,8 @@ See [diagram.gallery.light.pdf](../../lib/components/diagram/diagram/diagram.gal
 > Boardroom-quality math layouts for mathematicians, quants, ML researchers, physicists, statisticians, and economists. KaTeX-rendered equations with persona-appropriate surround.
 
 **Function** evidence · **Form** canvas · **Substance** prose
+
+**Tags** `formula` · `assessment` · `reference`
 
 Use when the slide IS the equation. KaTeX renders `$$…$$` as centred display blocks and `$…$` inline. Variants surround the math with the structure each persona expects: hero + legend (feature), step + justification (derivation), Definition/Theorem/Proof cards (theorem), side-by-side comparison (compare), equation + plot (canvas), matrix + properties (matrix), estimate ± uncertainty + interpretation (stats).
 
@@ -5914,6 +6018,8 @@ See [math.gallery.light.pdf](../../lib/components/math/math/math.gallery.light.p
 
 **Function** evidence · **Form** canvas · **Substance** prose
 
+**Tags** `snippet` · `walkthrough` · `reference`
+
 Use when the code IS the slide — an API snippet, a config example, a migration. For comparing two versions, use compare-code.
 
 #### When to use
@@ -5987,6 +6093,8 @@ See [code.gallery.light.pdf](../../lib/components/code/code/code.gallery.light.p
 > Two fenced code blocks side-by-side, each with a label.
 
 **Function** comparison · **Form** split · **Substance** structure
+
+**Tags** `snippet` · `contrast` · `tradeoff`
 
 Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.
 
@@ -6112,6 +6220,8 @@ See [compare-code.gallery.light.pdf](../../lib/components/code/compare-code/comp
 > Provenance chain — statute to regulation to guidance to case, walked in order.
 
 **Function** progression · **Form** timeline · **Substance** structure
+
+**Tags** `regulation` · `citation` · `sequence`
 
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 
@@ -6280,6 +6390,8 @@ See [authority-chain.gallery.light.pdf](../../lib/components/legal/authority-cha
 
 **Function** evidence · **Form** canvas · **Substance** prose
 
+**Tags** `citation` · `quotation` · `contract`
+
 Use when one citation IS the slide. The blockquote carries the verbatim language; the trailing list explains what it means and what we must do about it.
 
 #### When to use
@@ -6427,6 +6539,8 @@ See [citation-card.gallery.light.pdf](../../lib/components/legal/citation-card/c
 
 **Function** comparison · **Form** matrix · **Substance** structure
 
+**Tags** `compliance` · `regulation` · `stoplight`
+
 Use when many regimes need comparing across the same obligations. Cells carry the universal state-token grammar ([x] applies, [-] partial, [ ] exempt, [/] out of scope) shared with checklist / verdict-grid / roadmap.
 
 #### When to use
@@ -6524,6 +6638,48 @@ Promotes each regulation to its own card with the obligations rendered as inline
 Each row promotes to a card with body-level breathing room.
 ```
 
+##### `pills` — Pills — neutral state chips
+
+Renders each cell's state marker as a discrete inline pill on neutral chrome — the default grammar without the heat palette's risk colouring. Use when the matrix should read as plain data, less assertive than heat.
+
+```markdown
+<!-- _class: obligation-matrix pills -->
+
+## Privacy obligations across regimes — same grammar, no heat.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Same data, neutral chrome — the state pills carry the meaning without the heat-map alarm.
+```
+
+##### `lanes` — Lanes — categorical row stripes
+
+Tints each regulation's row label with a categorical lane stripe so every regime reads as its own track. Use when the rows are independent regimes rather than a ranked or directly comparable set.
+
+```markdown
+<!-- _class: obligation-matrix lanes -->
+
+## Privacy obligations — categorical row stripes.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Each lane stripe signals that the row is its own regime, not a rank.
+```
+
 #### Universal modifiers
 
 This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -6544,6 +6700,8 @@ See [obligation-matrix.gallery.light.pdf](../../lib/components/legal/obligation-
 > Change log against a baseline — numbered list of statutes/cases/rules with citation, summary, and effective date.
 
 **Function** progression · **Form** ledger · **Substance** structure
+
+**Tags** `changelog` · `compliance` · `regulation`
 
 Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).
 
@@ -6744,6 +6902,8 @@ See [regulatory-update.gallery.light.pdf](../../lib/components/legal/regulatory-
 > Citation hierarchy — federal / state / local rows with citation, headline obligation, and status.
 
 **Function** inventory · **Form** ledger · **Substance** structure
+
+**Tags** `citation` · `reference` · `compliance`
 
 Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.
 

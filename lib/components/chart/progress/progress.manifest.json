@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "canvas",
   "substance": "series",
+  "tags": ["percentage", "stoplight", "status"],
   "description": "Horizontal progress bars — one row per item, percentage filled.",
   "purpose": "Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.",
   "slots": {

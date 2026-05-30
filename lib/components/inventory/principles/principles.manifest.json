@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["strategy", "okr", "onboarding"],
   "description": "Declared statements — short stated principles, each with a one-line justification.",
   "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
   "variants": [

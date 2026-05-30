@@ -39,6 +39,35 @@ in patch versions.
   scoping: `<!-- _class: scale-xl -->` for one slide, `class: scale-xl` in
   the front matter for the whole deck. Composes with any layout or
   variant. See `engineering/typography.md` §7 and `lib/base/base.docs.md`.
+- **`obligation-matrix` `pills` and `lanes` variants are now documented.**
+  The variants are declared in the manifest; this adds their `variantDocs`
+  so they render in the component gallery and surface in the reference and
+  search index instead of being declared-but-invisible.
+- **Agent authoring affordances.** Three additions help AI agents author
+  decks correctly: a machine-readable catalog `dist/docs/components.json`
+  (every component's axes, tags, slots, skeleton, and when/anti/related
+  prose plus the controlled vocabularies, generated alongside
+  `components.md/.html`); a draft-deck linter `npm run lint:deck -- <file>`
+  (`tools/lint-deck.js` → `lib/authoring/lint.js`) that flags the markdown
+  footguns — card-style inline-title, ordered-list bold, class typos — as
+  structured, no-render diagnostics (wired into the pre-commit hook on
+  staged decks and into CI via `npm run lint:deck:all`; errors block,
+  unknown-class warnings are surfaced but non-blocking); and a
+  vendor-neutral `AGENTS.md` entrypoint pointing agents at
+  `design/skill.md`, the catalog, and the linter. See
+  `design/design-system.md` §7.
+- **Searchable component tags.** Every component manifest now declares a
+  `tags` field (3–5 entries) — the *searcher's* vocabulary, complementary
+  to the Function/Form/Substance axes. Tags are drawn from a controlled
+  vocabulary (`TAG_GROUPS` in `lib/components/index.js`) across four
+  dimensions (idiom, occasion, material, task) and must not restate the
+  component's own axis values. They surface in each `<name>.docs.md`, the
+  aggregated `dist/docs/components.md`, and as chips + a live filter facet
+  in `dist/docs/components.html` (the portal filter now matches tags as
+  well as name and description). `tools/check-ownership.js` gains a
+  `checkTagClustering` guard that fails on un-allow-listed singleton tags
+  and dead vocabulary, so the facets stay clustered. See
+  `design/design-system.md` §7.
 - **`dist/` is now a self-contained distribution.** It ships the bundled
   emulator CLI (`dist/lattice-emulator.js`, esbuild bundle of the engine
   graph — the package `bin`/`main`/`.` now resolve to it) and a generated

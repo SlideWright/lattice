@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** structure
 
+**Tags** `regulation` · `citation` · `sequence`
+
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 
 ## When to use

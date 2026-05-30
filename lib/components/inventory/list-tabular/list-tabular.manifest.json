@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",
+  "tags": ["reference", "overview", "status"],
   "description": "Hairline-ruled ledger of items — name on the left, body on the right.",
   "purpose": "Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.",
   "variants": [

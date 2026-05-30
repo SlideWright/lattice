@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** timeline · **Substance** series
 
+**Tags** `changelog` · `milestones` · `status` · `retrospective`
+
 Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.
 
 ## When to use

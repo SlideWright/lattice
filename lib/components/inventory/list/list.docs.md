@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** stack · **Substance** prose
 
+**Tags** `overview` · `summary` · `walkthrough`
+
 Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.
 
 ## When to use

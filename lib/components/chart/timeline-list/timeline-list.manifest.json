@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "timeline",
   "substance": "series",
+  "tags": ["changelog", "milestones", "status", "retrospective"],
   "description": "Date-stamped event list — spine with date pills, status pills, and body.",
   "purpose": "Use for milestone history or annotated timelines. Each item gets a date pill on the left, status pill on the right, body in the middle.",
   "slots": {

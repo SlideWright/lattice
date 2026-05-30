@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `snippet` · `contrast` · `tradeoff`
+
 Use to contrast a before/after refactor, two API styles, or two configurations. Each side gets an h3 label and one fenced block.
 
 ## When to use

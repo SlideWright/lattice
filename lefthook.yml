@@ -19,6 +19,18 @@ pre-commit:
       # (lattice-emulator.js, lattice.css, package.json, …). The full
       # suite still runs in pre-push as a safety net.
       run: node tools/affected-tests.js {staged_files}
+    - name: lint-deck
+      # Author-facing footgun checks on staged decks (--strict): card-style
+      # inline `- **Title.** body` and ordered-list `**bold**` (silent render
+      # corruption) and unknown `_class` tokens (typos / undeclared variants)
+      # all block the commit. The repo-wide pass runs in CI (lint:deck:all).
+      # Skippable via --no-verify only as last resort.
+      glob:
+        - 'examples/*.md'
+        - 'test/integration/baseline-decks/*.md'
+        - 'lib/components/**/*.gallery.md'
+        - 'lib/integrations/**/*.gallery.md'
+      run: node tools/lint-deck.js --strict {staged_files}
     - name: pdf-rebuild
       # Auto-rebuilds + re-stages the PDF for every staged deck markdown,
       # incrementally — only the decks whose source changed. Supersedes

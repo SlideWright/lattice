@@ -318,6 +318,62 @@ Storybook experience: every component with a thumbnail, description,
 variant list, and example. Not in scope for the initial foundation;
 the gallery decks fill this role partially today.
 
+### Search tags — the searcher's vocabulary
+
+Function/Form/Substance is the **designer's** taxonomy: it answers
+"what kind of thing is this." It is not the vocabulary an author types
+when they don't yet know the component's name. The `tags` field is that
+missing layer — the **searcher's vocabulary**. Every manifest declares
+3–5 tags drawn from a **controlled vocabulary** (`TAG_GROUPS` in
+`lib/components/index.js`), spanning four dimensions:
+
+| Dimension | What it captures | Examples |
+|---|---|---|
+| **idiom** | colloquial / visual name | `swimlane`, `two-by-two`, `stoplight`, `donut`, `pull-quote` |
+| **occasion** | meeting, phase, domain | `board-deck`, `qbr`-style `kickoff`, `okr`, `compliance` |
+| **material** | the input in hand | `percentage`, `milestones`, `quotation`, `citation`, `snippet` |
+| **task** | what the author is doing | `prioritize`, `tradeoff`, `summary`, `walkthrough` |
+
+Two rules keep tags valuable rather than noisy:
+
+1. **Controlled.** A tag must be a member of the vocabulary. New search
+   vocabulary is added to `TAG_GROUPS` deliberately — never coined
+   per-manifest — so facets cluster across components. Enforced by
+   `validate()`.
+2. **Strictly complementary.** A tag must **not** repeat the
+   component's own `name` / `function` / `form` / `substance` / `bucket`.
+   `gantt` is not tagged `gantt` or `timeline`; it carries `swimlane`,
+   `planning`, `milestones`, `agile` — the words the axes can't.
+   Enforced by `validate()`.
+
+A third, **cross-component** property — vocabulary alone can't express
+it — is enforced by `tools/check-ownership.js` (`checkTagClustering`):
+every tag must be used by **≥2 components** (so the facet clusters), and
+no vocabulary term may be **dead** (used by zero). Genuinely-unique
+idioms (`spider` for radar, `formula` for math) are knowingly
+allow-listed in `SINGLETON_TAGS`. Tags surface in the generated
+`<name>.docs.md`, the aggregated `dist/docs/components.md`, and as
+chips + a live filter facet in `dist/docs/components.html`.
+
+### For agents
+
+AI agents authoring decks get a discovery surface and a validation loop:
+
+- **`dist/docs/components.json`** — a machine-readable catalog: every
+  component's axes, tags, slots, skeleton, and when/anti/related prose,
+  plus the controlled vocabularies, in one deterministic document an agent
+  loads in a single read. Generated alongside `components.md/.html` by
+  `tools/build-docs-portal.js`.
+- **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
+  `lib/authoring/lint.js`) — runs the markdown footgun checks
+  (card-style inline-title, ordered-list bold, class typos) against a
+  *draft* deck and emits structured, fix-oriented diagnostics with no
+  Chromium render. The fast edit→check loop. The per-manifest equivalents
+  of the same rules run in `validate()`; the repo-wide commit gate is
+  `test/unit/components/deck-authoring.test.js`.
+- **`AGENTS.md`** (repo root) — the vendor-neutral entrypoint pointing any
+  agent at `design/skill.md`, the catalog, and the linter.
+
 ---
 
 ## 8. For each audience

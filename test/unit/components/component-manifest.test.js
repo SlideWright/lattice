@@ -28,6 +28,10 @@ const {
   UNIVERSAL_GROUPS,
   UNIVERSAL_VARIANTS,
   SEMI_UNIVERSAL_VARIANTS,
+  TAG_GROUPS,
+  TAGS,
+  TAGS_MIN,
+  TAGS_MAX,
   CARD_STYLE_LAYOUTS,
   STATEMENT_OL_LAYOUTS,
   validate,
@@ -46,6 +50,7 @@ const GOOD = Object.freeze({
   function: 'inventory',
   form: 'grid',
   substance: 'structure',
+  tags: ['overview', 'showcase', 'summary'],
   description: 'Cards in a grid.',
   skeleton: '<!-- _class: cards-grid -->\n\n## Heading.\n',
 });
@@ -250,6 +255,88 @@ describe('component-manifest', () => {
       };
       const errors = validate(m);
       assert.deepEqual(errors, []);
+    });
+  });
+
+  describe('tags', () => {
+    test('accepts 3-5 in-vocabulary, complementary tags', () => {
+      assert.deepEqual(validate({ ...GOOD, tags: ['overview', 'showcase', 'summary'] }), []);
+      assert.deepEqual(validate({ ...GOOD, tags: ['overview', 'showcase', 'summary', 'takeaway', 'walkthrough'] }), []);
+    });
+
+    test('rejects a missing tags field (required)', () => {
+      const m = { ...GOOD };
+      delete m.tags;
+      assert.match(validate(m).find((e) => /tags/.test(e)), /tags is required/);
+    });
+
+    test('rejects a non-array tags field', () => {
+      assert.match(validate({ ...GOOD, tags: 'overview' }).find((e) => /tags/.test(e)), /must be an array/);
+    });
+
+    test('rejects fewer than 3 or more than 5 tags', () => {
+      assert.match(validate({ ...GOOD, tags: ['overview', 'summary'] }).find((e) => /tags/.test(e)), /3-5 entries/);
+      assert.match(
+        validate({ ...GOOD, tags: ['overview', 'showcase', 'summary', 'takeaway', 'walkthrough', 'tradeoff'] }).find((e) => /tags/.test(e)),
+        /3-5 entries/,
+      );
+    });
+
+    test('rejects duplicate tags', () => {
+      assert.match(validate({ ...GOOD, tags: ['overview', 'overview', 'summary'] }).find((e) => /tags/.test(e)), /unique/);
+    });
+
+    test('rejects a tag outside the controlled vocabulary', () => {
+      const errors = validate({ ...GOOD, tags: ['overview', 'showcase', 'made-up-tag'] });
+      assert.match(errors.find((e) => /made-up-tag/.test(e)), /not in the controlled vocabulary/);
+    });
+
+    test('rejects an in-vocabulary tag that duplicates the component name (complementary rule)', () => {
+      // 'metric' IS a vocabulary tag; here it also equals the component name,
+      // so only the complementary rule should fire (not the vocabulary rule).
+      const errors = validate({ ...GOOD, name: 'metric', tags: ['metric', 'overview', 'summary'] });
+      assert.ok(errors.some((e) => /complementary/.test(e)), JSON.stringify(errors));
+      assert.ok(!errors.some((e) => /not in the controlled vocabulary/.test(e)), JSON.stringify(errors));
+    });
+
+    test('rejects a tag that duplicates the explicit bucket', () => {
+      // 'chart' is a bucket value (not in the vocabulary), so both rules fire;
+      // assert the complementary error is among them.
+      const m = { ...GOOD, function: 'evidence', bucket: 'chart', tags: ['chart', 'metric', 'dashboard'] };
+      assert.ok(validate(m).some((e) => /'chart'/.test(e) && /complementary/.test(e)));
+    });
+  });
+
+  describe('tag vocabulary', () => {
+    test('TAG_GROUPS has the four documented dimensions', () => {
+      assert.deepEqual(Object.keys(TAG_GROUPS).sort(), ['idiom', 'material', 'occasion', 'task']);
+    });
+
+    test('TAGS is the flat union of the groups', () => {
+      const expected = Object.values(TAG_GROUPS).flatMap((g) => [...g]);
+      assert.deepEqual([...TAGS], expected);
+    });
+
+    test('TAGS has no duplicates across dimensions', () => {
+      assert.equal(new Set(TAGS).size, TAGS.length);
+    });
+
+    test('TAGS_MIN / TAGS_MAX are 3 / 5', () => {
+      assert.equal(TAGS_MIN, 3);
+      assert.equal(TAGS_MAX, 5);
+    });
+
+    test('every shipped manifest carries 3-5 in-vocabulary, complementary tags', () => {
+      const vocab = new Set(TAGS);
+      for (const m of loadAll()) {
+        assert.ok(Array.isArray(m.tags), `${m.name} has no tags`);
+        assert.ok(m.tags.length >= TAGS_MIN && m.tags.length <= TAGS_MAX, `${m.name} has ${m.tags.length} tags`);
+        const own = new Set([m.name, m.function, m.form, m.substance, manifestBucket(m)]);
+        for (const t of m.tags) {
+          assert.ok(vocab.has(t), `${m.name}: tag "${t}" not in vocabulary`);
+          assert.ok(!own.has(t), `${m.name}: tag "${t}" duplicates an axis value`);
+        }
+      }
     });
   });
 

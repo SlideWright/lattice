@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["overview", "summary", "reference"],
   "description": "Parallel items stacked vertically, full-width cards.",
   "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.",
   "variants": [

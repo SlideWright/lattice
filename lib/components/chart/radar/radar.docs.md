@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** scatter · **Substance** series
 
+**Tags** `spider` · `assessment` · `positioning`
+
 Use to compare 2–4 options across the same 4–8 criteria. Each option becomes a polygon; overlap shows where strengths align.
 
 ## When to use

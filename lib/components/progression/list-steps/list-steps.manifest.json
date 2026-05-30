@@ -4,6 +4,7 @@
   "function": "progression",
   "form": "timeline",
   "substance": "structure",
+  "tags": ["process", "walkthrough", "planning"],
   "description": "Vertical sequence of steps, each with full description body.",
   "purpose": "Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.",
   "variants": [

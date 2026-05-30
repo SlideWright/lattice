@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** canvas · **Substance** prose
 
+**Tags** `contract` · `contrast` · `compliance` · `transformation`
+
 Use when an amendment's diff is the slide. The blockquote carries the redlined text with ins/del markers; the trailing list explains why the diff matters operationally.
 
 ## When to use

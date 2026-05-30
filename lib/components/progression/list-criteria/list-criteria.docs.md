@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** ledger · **Substance** structure
 
+**Tags** `requirements` · `assessment` · `okr`
+
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 
 ## When to use

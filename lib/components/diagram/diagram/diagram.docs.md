@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** graph
 
+**Tags** `flowchart` · `org-chart` · `sequence` · `process`
+
 Use for relational or topological visuals — flowcharts, sequence diagrams, state machines, ER diagrams. The diagram should occupy at least half the slide.
 
 ## When to use

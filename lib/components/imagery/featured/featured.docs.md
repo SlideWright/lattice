@@ -4,6 +4,8 @@
 
 **Function** imagery · **Form** panel · **Substance** mixed
 
+**Tags** `showcase` · `pitch` · `overview` · `visual`
+
 Use after a comparison or evaluation to land the recommendation: the featured card is the winner; the sub-grid shows the alternatives or context.
 
 ## When to use

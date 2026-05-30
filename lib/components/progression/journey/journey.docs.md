@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** timeline · **Substance** structure
 
+**Tags** `process` · `assessment` · `walkthrough`
+
 Use when a process or experience needs charting as a horizontal sequence of moments, each scored for affect. Five variants reshape the same source list: default (Mermaid-style classic), heatmap (mood-tinted chips), curve (mood polyline with axis), swimlane (per-actor rows), weighted (chip widths proportional to `+volume`).
 
 ## When to use

@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["status", "stoplight", "process", "requirements"],
   "description": "Items with state markers — done, partial, todo.",
   "purpose": "Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.",
   "slots": {

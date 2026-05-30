@@ -4,6 +4,8 @@
 
 **Function** statement · **Form** panel · **Substance** structure
 
+**Tags** `overview` · `walkthrough` · `showcase`
+
 Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.
 
 ## When to use

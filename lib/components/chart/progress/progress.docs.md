@@ -4,6 +4,8 @@
 
 **Function** evidence · **Form** canvas · **Substance** series
 
+**Tags** `percentage` · `stoplight` · `status`
+
 Use for status-tracking across multiple parallel items (project readiness, OKR progress, capacity utilization). Status colors via on-track/at-risk/blocked.
 
 ## When to use

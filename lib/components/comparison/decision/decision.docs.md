@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** canvas · **Substance** structure
 
+**Tags** `recommendation` · `tradeoff` · `strategy`
+
 Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 
 ## When to use

@@ -5,6 +5,7 @@
   "bucket": "chart",
   "form": "canvas",
   "substance": "series",
+  "tags": ["donut", "proportion", "percentage"],
   "description": "Pie or donut chart with legend — proportional wedges.",
   "purpose": "Use for part-to-whole breakdowns with three to six slices. Add the `donut` modifier for a hole in the middle — visually cleaner for executive decks.",
   "variants": [

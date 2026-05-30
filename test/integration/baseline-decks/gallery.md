@@ -142,8 +142,10 @@ flowchart LR
 
 ## Two failure modes the framework is designed to prevent.
 
-- **False signal amplification.** A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
-- **Signal hoarding.** Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
+- False signal amplification
+  - A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
+- Signal hoarding
+  - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
 
 ---
 
@@ -858,9 +860,12 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
-- **Claim.** The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
-- **Evidence.** The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
-- **Implication.** A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+- Claim
+  - The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
+- Evidence
+  - The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+- Implication
+  - A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
 
 ---
 

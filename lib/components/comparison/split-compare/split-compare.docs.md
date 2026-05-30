@@ -4,6 +4,8 @@
 
 **Function** comparison · **Form** split · **Substance** structure
 
+**Tags** `tradeoff` · `recommendation` · `contrast`
+
 Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.
 
 ## When to use

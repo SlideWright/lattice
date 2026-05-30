@@ -4,6 +4,8 @@
 
 **Function** progression · **Form** matrix · **Substance** structure
 
+**Tags** `planning` · `swimlane` · `milestones` · `agile`
+
 Use to show what ships in each phase across multiple parallel workstreams. Cells render as state-token discs (pass/warn/fail/skip).
 
 ## When to use

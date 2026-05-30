@@ -4,6 +4,7 @@
   "function": "progression",
   "form": "ledger",
   "substance": "structure",
+  "tags": ["requirements", "assessment", "okr"],
   "description": "Numbered criteria list — each requirement is a row with rationale.",
   "purpose": "Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.",
   "slots": {

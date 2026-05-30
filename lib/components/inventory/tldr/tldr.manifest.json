@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "structure",
+  "tags": ["summary", "takeaway", "overview"],
   "description": "Single-line takeaways — the deck or section's headline points.",
   "purpose": "Use at the end of a section or deck to restate the takeaways in one line each. Each line should be a complete claim, not a category label.",
   "variants": [

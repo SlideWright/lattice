@@ -4,6 +4,8 @@
 
 **Function** anchor · **Form** divider · **Substance** prose
 
+**Tags** `section-break` · `agenda-setting` · `walkthrough`
+
 Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.
 
 ## When to use

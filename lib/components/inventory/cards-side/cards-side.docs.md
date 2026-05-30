@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** split · **Substance** structure
 
+**Tags** `overview` · `contrast` · `tradeoff`
+
 Use for an explicit pair — two options, two phases, two artifacts presented with equal weight.
 
 ## When to use

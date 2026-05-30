@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "prose",
+  "tags": ["overview", "summary", "walkthrough"],
   "description": "Plain bullet list under a heading.",
   "purpose": "Use only when the items are genuinely a list (5–6 short points). For anything richer, prefer cards-grid, cards-stack, or list-tabular.",
   "slots": {

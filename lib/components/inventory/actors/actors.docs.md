@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
+**Tags** `ownership` · `onboarding` · `reference`
+
 Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 ## When to use

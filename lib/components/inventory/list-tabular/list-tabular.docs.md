@@ -4,6 +4,8 @@
 
 **Function** inventory · **Form** ledger · **Substance** structure
 
+**Tags** `reference` · `overview` · `status`
+
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
 ## When to use

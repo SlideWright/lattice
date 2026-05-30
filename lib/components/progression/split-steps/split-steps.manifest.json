@@ -4,6 +4,7 @@
   "function": "progression",
   "form": "split",
   "substance": "structure",
+  "tags": ["process", "planning", "walkthrough"],
   "description": "Sequential process — phase label + heading on the left, numbered step timeline on the right with a connecting line.",
   "purpose": "Use when a multi-step process needs a phase anchor (week N, sprint, milestone) alongside the ordered steps that compose it. Ordered list renders with auto-numbered discs; unordered list uses plain discs.",
   "slots": {

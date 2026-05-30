@@ -69,6 +69,44 @@ Each row promotes to a card with body-level breathing room.
 
 ---
 
+<!-- _class: obligation-matrix pills -->
+<!-- _footer: "Pills — neutral state chips · obligation-matrix pills" -->
+
+## Privacy obligations across regimes — same grammar, no heat.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Same data, neutral chrome — the state pills carry the meaning without the heat-map alarm.
+
+
+---
+
+<!-- _class: obligation-matrix lanes -->
+<!-- _footer: "Lanes — categorical row stripes · obligation-matrix lanes" -->
+
+## Privacy obligations — categorical row stripes.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+| GLBA       | [x]    | [-]     | [-]       | [x]    | [ ]   |
+
+Each lane stripe signals that the row is its own regime, not a rank.
+
+
+---
+
 <!-- _class: obligation-matrix dark -->
 <!-- _footer: "Composition: dark · obligation-matrix dark" -->
 

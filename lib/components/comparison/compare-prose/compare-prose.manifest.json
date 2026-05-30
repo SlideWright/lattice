@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
+  "tags": ["tradeoff", "contrast", "recommendation"],
   "description": "Two prose options side-by-side with a labeled corner tag on each.",
   "purpose": "Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.",
   "variants": [

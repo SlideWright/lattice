@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
+  "tags": ["transformation", "contrast", "retrospective"],
   "description": "Explicit state-change comparison — what was, what is.",
   "purpose": "Use to show the transformation produced by a change. Left = the prior state; right = the new state. Reads as a story, not a debate.",
   "slots": {
