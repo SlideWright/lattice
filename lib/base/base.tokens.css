@@ -123,12 +123,10 @@
    *
    * DEFAULT = var(--cN-dark) so any theme that has NOT curated a ramp renders
    * byte-identical to before this token existed (non-breaking). Themes opt in
-   * by defining --chart-1..8 (the forge emits them). See
+   * by defining --chart-1..8 (the forge emits them). The defaults live in the
+   * zero-specificity :where(:root) block below so a theme's :root override
+   * always wins regardless of @import/inline order. See
    * engineering/decisions/2026-05-29-palette-recuration.md §7. */
-  --chart-1: var(--c1-dark); --chart-2: var(--c2-dark);
-  --chart-3: var(--c3-dark); --chart-4: var(--c4-dark);
-  --chart-5: var(--c5-dark); --chart-6: var(--c6-dark);
-  --chart-7: var(--c7-dark); --chart-8: var(--c8-dark);
 
   /* ── Universal semantic palette ───────────────────────────────────────
    * Status-signaling colours shared by every theme. Gantt task lifecycle,
@@ -287,6 +285,13 @@
   --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
   --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);
   --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
+
+  /* Chart series ramp defaults (= the diagram deep tier). Zero specificity so
+     a theme's curated --chart-N :root override always wins. See above. */
+  --chart-1: var(--c1-dark); --chart-2: var(--c2-dark);
+  --chart-3: var(--c3-dark); --chart-4: var(--c4-dark);
+  --chart-5: var(--c5-dark); --chart-6: var(--c6-dark);
+  --chart-7: var(--c7-dark); --chart-8: var(--c8-dark);
 
   /* hljs fallbacks — Night Owl palette, overridden by each theme */
   --hljs-comment:    #637777;
