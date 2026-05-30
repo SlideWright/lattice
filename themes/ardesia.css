@@ -211,11 +211,11 @@ section pre.hljs {
   --c-quadrant-4-text: var(--text-heading);
 }
 
-:root{ --chart-1: light-dark(#004E6F, #1178A5); }
-:root{ --chart-2: light-dark(#5EB6E6, #ABE0FF); }
-:root{ --chart-3: light-dark(#01729F, #439CCC); }
-:root{ --chart-4: light-dark(#3C96C5, #6BC3F4); }
-:root{ --chart-5: light-dark(#006086, #2D8AB8); }
-:root{ --chart-6: light-dark(#50A9D9, #8CD5FF); }
-:root{ --chart-7: light-dark(#2584B2, #57AFE0); }
-:root{ --chart-8: light-dark(#003D58, #00658E); }
+:root{ --chart-1: light-dark(#007AFF, #0A84FF); }
+:root{ --chart-2: light-dark(#D07900, #FF9F0A); }
+:root{ --chart-3: light-dark(#00A73F, #30D158); }
+:root{ --chart-4: light-dark(#AF52DE, #BF5AF2); }
+:root{ --chart-5: light-dark(#FF3B30, #FF453A); }
+:root{ --chart-6: light-dark(#069DB4, #40C8E0); }
+:root{ --chart-7: light-dark(#FF2D55, #FF375F); }
+:root{ --chart-8: light-dark(#AE8A00, #FFD60A); }

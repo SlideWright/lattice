@@ -129,6 +129,19 @@ in patch versions.
 
 ### Changed
 
+- **Chart series adopt an Apple system-colour palette.** Each theme's
+  `--chart-1..8` is now a curated set of Apple Human Interface Guidelines
+  system colours (red, orange, yellow, green, mint, teal, cyan, blue,
+  indigo, purple, pink, brown) as `light-dark()` pairs (Apple's own light
+  + dark values), led by the system colour nearest the theme's brand hue
+  and ordered colourblind-aware. Charts are decoupled from Mermaid's tier
+  constraints entirely — `chart-family` renders its own SVG, so the ramp
+  is free to be maximally vibrant and distinct (Apple values used verbatim
+  where they clear the 3:1 chart floor; deepened only for white-canvas
+  legibility). Diagram fills (`--cN-light/-dark`) are unchanged. Charts
+  and Mermaid are intentionally separate: vibrant Apple charts, editorial
+  diagrams, cohesive via shared brand-hue leads.
+
 - **All 13 palettes re-curated (editorial-qualitative system).** Every
   shipped theme's colour tokens are regenerated from its brand anchor via
   `tools/palette-forge.js` (light + dark as one `light-dark()` object),
