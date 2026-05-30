@@ -337,5 +337,37 @@ everywhere.
 - **Rebuild the committed gallery/example PDFs** — every theme changed, so
   every committed regression-baseline PDF is visually stale. Large render
   job; do it batched/CI before the PR is review-ready.
-</content>
-</invoke>
+
+## Addendum — 2026-05-30: curate the light-mode fill + fix two audit gaps
+
+A review (design / architecture / accessibility) flagged that the pale FILL
+tier, while cohesive and a clear dark-mode win, was too restrained in light
+mode: `paleChroma=0.045` desaturated all twelve slots toward near-grey, so
+adjacent categories were barely separable (adjacent OKLab ΔE ≈ 0.04–0.08, vs
+≈ 0.19–0.29 for the deep palette the chart pies used before the convergence).
+
+**Curation.** The binding constraints are (a) the quadrant cohort uses the
+deep mark (`cN-dark`) as ink *on* the `cN-light` fill, so the fill must stay
+light enough to keep that AA; (b) Mermaid feeds one dark ink onto all twelve
+fills. Within that envelope the lever is *chroma*, not lightness. New CFG for
+the eight chromatic themes: `paleLLight 0.91 → 0.87`, `paleChroma 0.045 → 0.10`
+(gamut-clamped per hue). Adjacent ΔE recovers to ≈ 0.06 min / 0.12 mean
+(matching the old deep palette's separation) while quadrant deep-on-fill stays
+≥ 4.5:1 and the one dark ink keeps ~12:1. Dark mode is untouched (the dark
+fill is `deepDark`, a separate knob). 183/183 contrast tests stay green.
+
+**cuoio stroke.** The darker fills made cuoio's light taupe stroke (`#8B7E6D`)
+fail the 3:1 separator floor on the pale wedges (2.6:1) — a relationship that
+was already marginal at the old L (≈ 2.98:1) but went unaudited. Deepened to a
+cognac `#5C4A33` (5.5:1 worst case), in keeping with the leather palette.
+
+**Two audit/parity fixes.**
+- `contrast-audit.js` `floorPairs` checked `c-stroke` on slot 1 only; widened
+  to all twelve slots (this is what surfaced the cuoio stroke). 1066 → 1352
+  audited pairs.
+- The runtime bundle (`lib/runtime/index.js`) mapped `pieSectionTextColor`
+  (text *on* the wedge fill) to `text-heading` while the emulator used
+  `c-ink-light` — a cross-renderer drift that rendered pie-slice text below AA
+  (4.30:1 burgundy-dark) in the VS Code preview path only. Fixed to `c-ink-light`
+  in both; guarded by a new emulator↔runtime parity test in
+  `test/unit/mermaid/mermaid-var-map.test.js`.

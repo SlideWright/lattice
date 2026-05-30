@@ -115,7 +115,10 @@ const textPairs = (v) => [
 const floorPairs = () => [
   ['border', 'bg', 'hairline on canvas'],
   ['c-stroke', 'bg', 'stroke on canvas'],
-  ['c-stroke', 'c1-light', 'stroke on band fill'],
+  // Stroke-on-band-fill is the load-bearing relationship for the pale
+  // categorical fills (the wedge/node outline is what separates pale slices
+  // and reads them against the canvas) — audit it on EVERY slot, not just c1.
+  ...Array.from({ length: 12 }, (_, i) => ['c-stroke', `c${i + 1}-light`, `stroke on c${i + 1} band fill`]),
   ['c-line', 'bg', 'edge line on canvas'],
   ['accent', 'bg', 'accent rule on canvas'],
 ];

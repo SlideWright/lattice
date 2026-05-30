@@ -58,4 +58,41 @@ describe('mermaid-var-map', () => {
         `Either define the variable in the palette or change the map entry.`);
     });
   }
+
+  // The two build-time Mermaid maps (emulator MERMAID_VAR_MAP and the runtime
+  // bundle's buildMermaidThemeVars) must agree on the PIE TEXT colours. These
+  // sit ON the pale wedge fill, so they must resolve to the on-fill ink
+  // (c-ink-light), not the canvas text colour (text-heading) — otherwise the
+  // VS Code preview path renders pie-slice text below AA on darker fills while
+  // the CLI path renders it correctly. Regression guard for that drift.
+  describe('emulator ↔ runtime pie-text parity', () => {
+    const RUNTIME_SRC = fs.readFileSync(
+      path.join(__dirname, '..', '..', '..', 'lib', 'runtime', 'index.js'), 'utf8');
+
+    // emulator: `pieSectionTextColor: { var: 'c-ink-light' },`
+    const emuVar = (key) =>
+      (EMULATOR_SRC.match(new RegExp(`${key}:\\s*\\{\\s*var:\\s*['"]([a-z0-9-]+)['"]`)) || [])[1];
+    // runtime: `pieSectionTextColor: ink,` — resolve the local back to its vc() token
+    const rtToken = (key) => {
+      const local = (RUNTIME_SRC.match(new RegExp(`${key}:\\s*([a-zA-Z_$][\\w$]*)`)) || [])[1];
+      if (!local) return undefined;
+      const bind = RUNTIME_SRC.match(new RegExp(`const\\s+${local}\\s*=\\s*vc\\(['"]([a-z0-9-]+)['"]\\)`));
+      return bind ? bind[1] : local; // fall back to the literal if not a vc() local
+    };
+
+    for (const key of ['pieTitleTextColor', 'pieSectionTextColor', 'pieLegendTextColor']) {
+      test(`${key} resolves to the same token in both renderers`, () => {
+        const e = emuVar(key), r = rtToken(key);
+        assert.ok(e, `emulator MERMAID_VAR_MAP has no { var } for ${key}`);
+        assert.equal(r, e,
+          `${key} drift: emulator → ${e}, runtime → ${r}. ` +
+          `Pie-slice text sits on the fill; both must use the on-fill ink (c-ink-light).`);
+      });
+    }
+
+    test('pie section text uses the on-fill ink, not the canvas text colour', () => {
+      assert.equal(emuVar('pieSectionTextColor'), 'c-ink-light');
+      assert.equal(rtToken('pieSectionTextColor'), 'c-ink-light');
+    });
+  });
 });

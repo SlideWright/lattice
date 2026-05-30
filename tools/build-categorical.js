@@ -47,11 +47,15 @@ const path = require('path');
 
 // ── tunable defaults (a strategy tunes these) ───────────────────────────────
 const CFG = {
-  paleLLight: 0.90,  // band fill on light canvas → dark ink
+  paleLLight: 0.87,  // band fill on light canvas → dark ink
   deepLLight: 0.47,  // chart mark on light canvas → white
   deepLDark:  0.49,  // band fill on dark canvas → white (a touch lighter)
   paleLDark:  0.82,  // chart mark on dark canvas → dark ink (richer than paper-pale)
-  paleChroma: 0.050, // chroma cap for the pale tiers (restraint)
+  paleChroma: 0.100, // chroma cap for the pale tiers — curated for categorical
+                     // SEPARATION (adjacent ΔE) and hue identity, not max restraint.
+                     // L0.87 keeps the deep mark (quadrant ink) AA on the fill (4.5:1)
+                     // and the one dark ink AA on every slot, while the higher chroma
+                     // gives saturated pastels that read apart on the light canvas.
   deepChroma: 0.130, // chroma cap for the deep tiers
 };
 
