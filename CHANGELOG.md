@@ -129,6 +129,22 @@ in patch versions.
 
 ### Changed
 
+- **All 13 palettes re-curated (editorial-qualitative system).** Every
+  shipped theme's colour tokens are regenerated from its brand anchor via
+  `tools/palette-forge.js` (light + dark as one `light-dark()` object),
+  then hand-tuned. This fixes 16 latent WCAG failures the old CI never
+  saw (it gated only indaco+cuoio): cuoio strokes, mustard/atelier label,
+  carbone/concrete state discs, concrete's 6 dark-mode band fails. The
+  contrast test now gates **all 13 themes × both modes**. Categorical and
+  chart distinctness improve markedly (8-slice pies were ΔE ~0.00–0.06 on
+  several themes; now ~0.10+ via the `--chart-N` ramp). Identity is
+  preserved — brand axis, spectrum, syntax carried verbatim; the four
+  constraint-driven themes hand-corrected (onyx stays neutral with red
+  charts, carbone stays pinned-dark, mustard keeps its parchment, atelier
+  keeps a two-hue cycle). **Breaking:** decks that hard-coded specific
+  palette hex values, or relied on a slot's exact old colour, will shift.
+  See `engineering/decisions/2026-05-29-palette-recuration.md`.
+
 - **Charts cycle a dedicated `--chart-1..8` series ramp.** `chart-family`
   (pie wedges, kanban lanes) now reads `var(--chart-N)` instead of
   `var(--cN-dark)`. The ramp is data-ink optimised for 8-way series

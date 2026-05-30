@@ -151,8 +151,19 @@ describe('contrast', () => {
 
   const AA_THRESHOLD = 4.5;
 
-  for (const name of ['indaco', 'cuoio']) {
-    for (const mode of ['light', 'dark']) {
+  // All 13 shipped palettes are contrast-gated (was indaco+cuoio only, on a
+  // now-false "siblings inherit by cascade" assumption — every theme curates
+  // its own --cN/semantic values). carbone is dark-pinned (color-scheme:dark,
+  // static surfaces): it only renders the dark side, so it is gated in 'dark'
+  // mode only; its light-side light-dark() values never display.
+  const PALETTES = [
+    'indaco', 'cuoio', 'brina', 'burgundy', 'crepuscolo', 'laguna', 'magnolia',
+    'mustard', 'ardesia', 'atelier', 'onyx', 'concrete',
+  ];
+  // carbone is dark-pinned (color-scheme:dark): only the dark side renders.
+  const MODES_FOR = name => (name === 'carbone' ? ['dark'] : ['light', 'dark']);
+  for (const name of [...PALETTES, 'carbone']) {
+    for (const mode of MODES_FOR(name)) {
       test(`contrast: ${name} (${mode}) every --cN-light / --c-ink-light pair clears AA`, () => {
         const vars = loadPaletteWithImports(name, mode);
         const failures = [];

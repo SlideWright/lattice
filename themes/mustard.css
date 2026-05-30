@@ -1,216 +1,135 @@
 /* @theme mustard
- * @size hd       1280px 720px
- * @size HD       1280px 720px
- * @size 4K       3840px 2160px
- * @size 4k       3840px 2160px
- * @size standard 960px  720px
- * @size 16:9     1280px 720px
+ * @size 16:9 1280px 720px
+ * @size 4K   3840px 2160px
  *
- * Lattice · Mustard palette — apothecary library
- * ────────────────────────────────────────────────────────────────────────
- * Editorial archive, scholarly, vintage warmth. Aged-mustard yellow on
- * parchment with oxblood tag. The only yellow-family theme. Distinct
- * from cuoio (saddle-tan leather) by the desaturated dusty quality and
- * the oxblood pop. Reads as old apothecary cabinet labels.
- *
- * Design contract
- * ───────────────
- *   1. Single text-heading colour on every light surface (#2A1A06 deep
- *      sepia-near-black). Dark mode flips to warm cream on deep
- *      sepia-brown canvas.
- *
- *   2. Two lightness bands for fills:
- *        Pale band (L≈90)  — primary mermaid surfaces, accent-soft, card
- *                            fills. Dark text reads at AA+.
- *        Mid-tone band     — accent and text-label, aged mustard (L≈40
- *                            light, L≈65 dark).
- *
- *   3. Saturation reserved for two purposes:
- *        a. Borders. Aged mustard reads on every parchment fill.
- *        b. Oxblood pop on second mermaid curve via mermaid-accent-warm.
- *           The complementary partner that gives Mustard its vintage
- *           apothecary identity (mustard + oxblood is the historical
- *           palette of label / poison-bottle iconography).
- *
- *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
- *      surface it appears on, in both light and dark mode.
- *
- * Mechanism (mirrors indaco)
- * ──────────────────────────
- *   • Surfaces, ink, accent, and on-accent tokens use light-dark() so a
- *     single `color-scheme: dark` declaration flips every descendant
- *     lookup automatically.
- *   • Default scheme is light at zero specificity; author overrides via
- *     `style:` directive, `<!-- _class: dark -->`, or the mustard-dark
- *     variant theme always win the cascade.
- *   • Semantic signals (--pass/--fail/--warn) intentionally do not switch
- *     between modes: they back the white SVG strokes baked into checklist
- *     state markers, which require the colour to stay dark in both modes.
+ * Forged by tools/palette-forge.js from brand #8C6A18 (hue 84°).
+ * Designed for light AND dark canvases (light-dark() pairs throughout).
+ * A contrast-clean starting point — hand-tune to taste.
+ * See engineering/decisions/2026-05-29-palette-recuration.md.
  */
-
 @import 'lattice';
-
 :where(:root) { color-scheme: light; }
 
 :root {
-  /* ── Mustard brand axis ──────────────────────────────────────────── */
-  --brand-accent:    #8C6A18;  /* accent (light), text-label        */
-  --brand-alt:        #6E2A1F;  /* mermaid-accent-warm (light)       */
+  /* Surfaces */
+  --bg:      light-dark(#F5EFD8, var(--dark-bg));
+  --bg-alt:  light-dark(#ECE3C0, var(--dark-bg-alt));
+  --bg-dark: #302100;
+  --border:  light-dark(#EAE4D7, var(--dark-border));
 
-  /* ── Surfaces ──────────────────────────────────────────────────────── */
-  --bg:       light-dark(#F5EFD8, var(--dark-bg));      /* parchment       */
-  --bg-alt:   light-dark(#ECE3C0, var(--dark-bg-alt));
-  --bg-dark:  #0F0A03;
-  --border:   light-dark(#D5C896, var(--dark-border));
+  /* Ink */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(#55472C, #FFFFFF);
+  --text-body:    light-dark(#6E5F40, var(--dark-text-body));
+  --text-label:   light-dark(#716142, var(--dark-text-label));
+  --text-muted:   #7A705E;
 
-  /* ── Ink ramp ──────────────────────────────────────────────────────── */
-  --text-display: #F0E5C8;
-  --text-heading: light-dark(#2A1A06, var(--dark-text-heading));     /* L:14.39:1 / D:14.62:1 */
-  --text-body:    light-dark(#4F3D1C, var(--dark-text-body));        /* L:7.97:1 / D:8.36:1   */
-  --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:5.36:1 / D:6.20:1 AA+ */
-  --text-muted:   #80704A;
+  /* Accent */
+  --accent:      light-dark(#716142, var(--dark-text-label));
+  --accent-soft: light-dark(#FAEFDA, #1A150B);
+  --on-accent:   light-dark(#FFFFFF, #302100);
 
-  /* ── Brand accent ──────────────────────────────────────────────────── */
-  --accent:      light-dark(var(--brand-accent), #D4A848); /* L:5.36:1 / D:8.45:1 on bg */
-  --accent-soft: light-dark(#E8D580, var(--bg-warm-mid));
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));    /* L:5.61:1 / D:8.45:1 */
+  /* Semantic state — fixed meaning, canvas-aware */
+  --pass: light-dark(#44914A, #6FCC4D);
+  --warn: light-dark(#AF7600, #F2A24A);
+  --fail: light-dark(#CD6055, #F87171);
+  --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
 
-  /* ── Semantic signals — derived backgrounds only ───────────────────
-   * --pass/--warn/--fail are defined as light-dark() pairs in
-   * lattice.css :root (universal status palette). Themes can override
-   * by re-declaring with their own light-dark() pair; this theme
-   * inherits the defaults. The -bg soft tints stay theme-local so
-   * each palette can pick its own alpha. */
-  --pass-bg: color-mix(in srgb, var(--pass) 12%, transparent);
-  --fail-bg: color-mix(in srgb, var(--fail) 12%, transparent);
-  --warn-bg: color-mix(in srgb, var(--warn) 12%, transparent);
+  --scale-500: var(--accent);
+}
 
-  --scale-500: var(--brand-accent);
+/* Dark-variant tokens (section.dark + the dark side of every light-dark()) */
+:root {
+  --dark-bg: #090703;            --dark-bg-alt: #1A150B;   --dark-border: #342D1F;
+  --dark-text-heading: #FFFFFF; --dark-text-body: #D7D0C3;
+  --dark-text-muted: #867F73;     --dark-text-label: #C7B593;
+  --dark-text-display: #FFFFFF;
+}
 
-  /* Tag uses --chart-2 (oxblood) — the apothecary alarm/label pop. */
+/* Categorical cycle + chart series + semantic + structural */
+:root {
+  /* Band fills — light-dark(pale, deep); paired ink flips with them */
+  --c1-light: light-dark(#F3D59B, #866300);
+  --c2-light: light-dark(#C6E8B7, #4B7734);
+  --c3-light: light-dark(#A5EAE8, #007170);
+  --c4-light: light-dark(#BADAFF, #164576);
+  --c5-light: light-dark(#E1CAF7, #4D2F65);
+  --c6-light: light-dark(#FDC5D1, #773548);
+  --c7-light: light-dark(#FBC8B0, #7F4121);
+  --c8-light: light-dark(#DCE1A5, #6B6F06);
+  --c9-light: light-dark(#A9E3FC, #005770);
+  --c10-light: light-dark(#CFD4FF, #3A3B73);
+  --c11-light: light-dark(#ACEBCF, #017A59);
+  --c12-light: light-dark(#F2C7E8, #66345D);
 
-  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  /* Marks — light-dark(deep, pale), the inverse of the band fill */
+  --c1-dark: light-dark(#866300, #F3D59B);
+  --c2-dark: light-dark(#4B7734, #C6E8B7);
+  --c3-dark: light-dark(#007170, #A5EAE8);
+  --c4-dark: light-dark(#164576, #BADAFF);
+  --c5-dark: light-dark(#4D2F65, #E1CAF7);
+  --c6-dark: light-dark(#773548, #FDC5D1);
+  --c7-dark: light-dark(#7F4121, #FBC8B0);
+  --c8-dark: light-dark(#6B6F06, #DCE1A5);
+  --c9-dark: light-dark(#005770, #A9E3FC);
+  --c10-dark: light-dark(#3A3B73, #CFD4FF);
+  --c11-dark: light-dark(#017A59, #ACEBCF);
+  --c12-dark: light-dark(#66345D, #F2C7E8);
+
+  --c-ink-light: light-dark(#55472C, #FFFFFF);
+  --c-ink-dark:  light-dark(#FFFFFF, #55472C);
+
+  /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
+  --chart-1: light-dark(#A57B00, #E2A900);
+  --chart-2: light-dark(#5AA32D, #A8F682);
+  --chart-3: light-dark(#009191, #00C8C7);
+  --chart-4: light-dark(#004D8E, #297CCE);
+  --chart-5: light-dark(#6E3B94, #9E6BC8);
+  --chart-6: light-dark(#D76585, #FFA3B9);
+  --chart-7: light-dark(#993F00, #D46B33);
+  --chart-8: light-dark(#626500, #919600);
+
+  /* Universal semantic palette */
+  --c-warm-light: light-dark(#F6CBA9, #7B4200); --c-warm-dark: var(--c-stroke);
+  --c-cool-light: light-dark(#AEDDED, #005C72); --c-cool-dark: var(--c-stroke);
+  --c-alarm: light-dark(#C74C41, #FFA093);     --c-alarm-dark: var(--c-stroke);
+  --c-mark: light-dark(#DABC43, #917900);       --c-note: light-dark(#F9EFC9, #352E11);
+
+  /* Structural */
+  --c-stroke: light-dark(#634800, #CDBC9A);
+  --c-line:   light-dark(#070603, #D7D0C3);
+  --c-accent-warm: #D76585;
+
+  /* Quadrant (Q1→c1, Q2→c2, Q3→c7, Q4→c3) */
+  --c-quadrant-1-fill: var(--c1-light); --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-fill: var(--c2-light); --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-fill: var(--c7-light); --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-fill: var(--c3-light); --c-quadrant-4-text: var(--c-ink-light);
+}
+
+/* ── Carried identity (everything the forge does not colour-curate) ── */
+:root {
+  --brand-accent:    #8C6A18;
+  --brand-alt:        #6E2A1F;
   --bg-warm-mid:   #0F0A03;
   --bg-warm-light: #2A1F0E;
   --code-text:     #BDAC78;
-
-  /* ── Spectrum — sepia → mustard → oxblood pop ──────────────────────── */
   --spectrum: linear-gradient(90deg, #0F0A03 0%, #8C6A18 55%, var(--brand-alt) 100%);
   --spectrum-vertical: linear-gradient(180deg, #0F0A03 0%, #8C6A18 55%, var(--brand-alt) 100%);
-
-  /* ── Dark-variant tokens ──────────────────────────────────────────── */
-  --dark-bg:           #0F0A03;
-  --dark-bg-alt:       #2A1F0E;
-  --dark-border:       #3D2D14;
-  --dark-text-heading: #F0E5C8;
-  --dark-text-body:    #BDAC78;
-  --dark-text-muted:   #85734A;
-  --dark-text-label:   #D4A848;
-  --dark-text-display: #F0E5C8;
-
-  /* ── Mermaid extensions — oxblood pop on second curve ──────────────── */
-  --c-stroke:          #3D2D14;
-  --c-accent-warm:     var(--brand-alt);
-  /* cScale / gitgraph — slot 0 anchors band-1 mustard (BRAND); slot 1 sage
-   * echoes band-2; slot 2 terracotta echoes band-3 peach. Slots 3-7 carry
-   * mustard's chart palette (amber, deep teal, oxblood, sepia, plum) for
-   * categorical distinction. All values ≥4.5:1 on --bg #FCF8F0. */
-}
-/* Completion tokens — band-text pairs, line, gantt state, note, error,
- * quadrant. References earlier palette tokens so this block stays a single
- * source of truth per palette. */
-:root {
-
-  --c-line:                  var(--text-heading);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
-}
-
-section pre.hljs {
-  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
-}
-
-/* ── highlight.js syntax tokens ────────────────────────────────────────── */
-:root {
-  --hljs-comment:    #584830;  /* dark amber — muted                         */
-  --hljs-keyword:    #D4A840;  /* bright mustard — control flow, italic      */
-  --hljs-built_in:   #78B8A8;  /* sage teal — functions, italic              */
-  --hljs-number:     #E8C870;  /* bright gold — numeric literals             */
-  --hljs-literal:    #C09070;  /* warm amber — booleans/null                 */
-  --hljs-string:     #A8C888;  /* sage — strings                             */
-  --hljs-title:      #E0B840;  /* deep gold — function names, italic         */
-  --hljs-type:       #98C0B0;  /* pale teal — types/annotations              */
-  --hljs-variable:   #C8A850;  /* warm gold — variables                      */
-  --hljs-params:     #B8A070;  /* warm buff — parameters                     */
-  --hljs-tag:        #C87868;  /* oxblood rose — HTML tags                   */
-  --hljs-punctuation:#786040;  /* dark amber — operators                     */
-}
-
-:root {
-  --c1-light:  light-dark(#E8D580, #785800);
-  --c1-dark:   light-dark(#E8D580, #785800);
-  --c2-light:  light-dark(#D8E5D5, #3955B1);
-  --c2-dark:   light-dark(#D8E5D5, #3955B1);
-  --c3-light:  light-dark(#F5E5A8, #9C2E5A);
-  --c3-dark:   light-dark(#F5E5A8, #9C2E5A);
-  --c4-light:  light-dark(#EDD5C8, #006F51);
-  --c4-dark:   light-dark(#EDD5C8, #006F51);
-  --c5-light:  light-dark(#F0E5C8, #A13121);
-  --c5-dark:   light-dark(#F0E5C8, #A13121);
-  --c6-light:  light-dark(#E5E0C8, #893786);
-  --c6-dark:   light-dark(#E5E0C8, #893786);
-  --c7-light:  light-dark(#E8D580, #5A6500);
-  --c7-dark:   light-dark(#E8D580, #5A6500);
-  --c8-light:  light-dark(#E0D8C5, #6A45A5);
-  --c8-dark:   light-dark(#E0D8C5, #6A45A5);
-  --c9-light:  light-dark(#F0E8D0, #8D4900);
-  --c9-dark:   light-dark(#F0E8D0, #8D4900);
-  --c10-light: light-dark(#D8E0CC, #00697C);
-  --c10-dark:  light-dark(#D8E0CC, #00697C);
-  --c11-light: light-dark(#F0E8C0, #795700);
-  --c11-dark:  light-dark(#F0E8C0, #795700);
-  --c12-light: light-dark(#F0D8CC, #006398);
-  --c12-dark:  light-dark(#F0D8CC, #006398);
-
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
-
-  /* Semantic palette — 5 roles, each a flipping fill. Curated per
-   * theme: hue nudged toward the brand within its meaning band,
-   * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
-  --c-warm-light:  light-dark(#E1C69F, #7D5500);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#AAD1E5, #006789);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#D66448, #9A2C0E);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#DEBB18, #786400);
-  --c-note:        light-dark(#D9D2B0, #746208);
-
-  /* Containment tier — two nested structural surfaces. A monotonic
-   * luminance ladder away from the canvas: light deck steps down,
-   * dark deck steps up, one step per nesting level. Brand-hue-tinted
-   * at a barely-there chroma — surfaces, not accents; they never
-   * compete with the --cN fills that sit on them.
-   *   --c-container     flowchart cluster, sankey area, kanban column
-   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --hljs-comment:    #584830;
+  --hljs-keyword:    #D4A840;
+  --hljs-built_in:   #78B8A8;
+  --hljs-number:     #E8C870;
+  --hljs-literal:    #C09070;
+  --hljs-string:     #A8C888;
+  --hljs-title:      #E0B840;
+  --hljs-type:       #98C0B0;
+  --hljs-variable:   #C8A850;
+  --hljs-params:     #B8A070;
+  --hljs-tag:        #C87868;
+  --hljs-punctuation:#786040;
   --c-container:     light-dark(#E0DED5, #1E1D16);
   --c-subcontainer:  light-dark(#D2D0C6, #2F2E26);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }

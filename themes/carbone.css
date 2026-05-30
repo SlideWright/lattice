@@ -1,190 +1,122 @@
 /* @theme carbone
- * @size hd       1280px 720px
- * @size HD       1280px 720px
- * @size 4K       3840px 2160px
- * @size 4k       3840px 2160px
- * @size standard 960px  720px
- * @size 16:9     1280px 720px
+ * @size 16:9 1280px 720px
+ * @size 4K   3840px 2160px
  *
- * Lattice · Carbone palette — dark editorial with electric lime accent
- * ────────────────────────────────────────────────────────────────────────
- * Tech reveal, dramatic dark, "we ship product" deck. The lone palette
- * in the set whose identity is the dark canvas itself — every other new
- * theme follows the light-dark() switch contract. Carbone pins to dark
- * always, regardless of the active color-scheme.
- *
- * Design contract
- * ───────────────
- *   1. Single text-heading colour on every surface (#F5F5F2 bone). The
- *      canvas does not switch; light-mode and dark-mode resolve to the
- *      same dark values.
- *
- *   2. Two lightness bands for fills:
- *        Card band (L≈14)  — primary mermaid surfaces (--bg-alt = #26262A
- *                            lifted graphite). Bone text reads at AAA.
- *        Accent band       — electric lime #7DE38A. Used as foreground
- *                            (text-label, accent text/borders) and as
- *                            background of corner tags / small chips,
- *                            where --on-accent flips dark to compensate.
- *
- *   3. Saturation: the accent IS the chroma. Everything else is
- *      monochromatic graphite. Semantic signals stay at deep mid-tones
- *      (#357849 / #A02323 / #9E5018) so checklist white-stroke icons
- *      remain readable on top.
- *
- *   4. Every text-bearing token clears WCAG AA (4.5:1) against the
- *      surface it appears on. Bone text on graphite clears AAA;
- *      lime accent on graphite clears AAA; --on-accent (graphite) on
- *      lime clears AAA.
- *
- * Mechanism — pinned-dark, deliberately
- * ─────────────────────────────────────
- *   Carbone is the *one* palette that does not use light-dark() switching.
- *   The default color-scheme is set to dark (at zero specificity), and all
- *   tokens are static. This makes the palette intentionally one-mode —
- *   if an author needs a light variant of carbone they should pick a
- *   different palette rather than override color-scheme.
- *
- *   Per-slide `<!-- _class: dark -->` is inert here (canvas is already dark);
- *   no carbone-dark wrapper is shipped because the palette is already dark.
- *
- *   Semantic signals (--pass/--fail/--warn) match the rest of the new-theme
- *   set: kept dark for the white-stroke checklist icons.
+ * Forged by tools/palette-forge.js from brand #7DE38A (hue 147°).
+ * Designed for light AND dark canvases (light-dark() pairs throughout).
+ * A contrast-clean starting point — hand-tune to taste.
+ * See engineering/decisions/2026-05-29-palette-recuration.md.
  */
-
 @import 'lattice';
-
-/* Zero-specificity dark default — same pattern indaco uses for light, but
- * inverted. Carbone's identity is dark canvas; if an author flips
- * color-scheme to light at higher specificity they get an unstyled deck
- * (no light values defined), which is the correct failure mode for "this
- * palette doesn't support light mode." */
 :where(:root) { color-scheme: dark; }
 
 :root {
-  /* ── Carbone brand axis ────────────────────────────────────────────── */
-  --brand-accent:            #7DE38A;  /* electric accent                       */
+  /* Surfaces */
+  --bg:      #1A1A1C;
+  --bg-alt:  #26262A;
+  --bg-dark: #0E0E10;
+  --border:  #3A3A3F;
 
-  /* ── Surfaces — pinned dark (no light-dark wrapping) ──────────────── */
-  --bg:       #1A1A1C;
-  --bg-alt:   #26262A;
-  --bg-dark:  #0E0E10;
-  --border:   #3A3A3F;
+  /* Ink */
+  --text-display: #FFFFFF;
+  --text-heading: #F5F5F2;
+  --text-body:    #DCDCD7;
+  --text-label:   #7DE38A;
+  --text-muted:   #677767;
 
-  /* ── Ink ramp ──────────────────────────────────────────────────────── */
-  --text-display: #F5F5F2;
-  --text-heading: #F5F5F2;       /* L:15.91:1 on bg AAA */
-  --text-body:    #DCDCD7;       /* L:12.63:1 on bg AAA */
-  --text-label:   var(--brand-accent); /* L:10.95:1 on bg AAA */
-  --text-muted:   #757A82;       /* decorative — WCAG-exempt */
+  /* Accent */
+  --accent:      #7DE38A;
+  --accent-soft: light-dark(#E4F6E5, #101911);
+  --on-accent:   #0E0E10;
 
-  /* ── Brand accent — electric lime ──────────────────────────────────── */
-  --accent:      var(--brand-accent);          /* L:10.95:1 on bg AAA */
-  --accent-soft: #2C3D2F;                    /* lifted card with green tint */
-  /* Accent is always bright; corner-tag text needs dark bg-tinted ink. */
-  --on-accent:   var(--bg-dark);             /* D:10.95:1 on accent AAA */
+  /* Semantic state — fixed meaning, canvas-aware */
+  --pass: light-dark(#489D50, #00711D);
+  --warn: light-dark(#B28600, #7B5C00);
+  --fail: light-dark(#D57240, #A24300);
+  --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
+  --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
 
-  /* ── Semantic signals ─────────────────────────────────────────────────
-   * Carbone's industrial-grey trio. Each is a light-dark() pair: light
-   * values are AA+ on the off-white canvas; dark values lift to AA+ on
-   * the deep charcoal canvas. The white-stroke checklist icon
-   * constraint from the legacy design is gone — the universal state-
-   * token recipe relies on shape, not inner glyphs, so brighter dark-
-   * mode values are safe. Warn is bumped clear of fail in hue and
-   * luminance (fixes "warn and fail look alike"). */
-  --pass: light-dark(#357849, #5BC772);
-  --fail: light-dark(#A02323, #F87171);
-  --warn: light-dark(#C2570C, #F97316);
-  --pass-bg: color-mix(in srgb, var(--pass) 18%, transparent);
-  --fail-bg: color-mix(in srgb, var(--fail) 18%, transparent);
-  --warn-bg: color-mix(in srgb, var(--warn) 18%, transparent);
+  --scale-500: var(--accent);
+}
 
-  --scale-500: var(--brand-accent);
+/* Dark-variant tokens (section.dark + the dark side of every light-dark()) */
+:root {
+  --dark-bg: #050805;            --dark-bg-alt: #101911;   --dark-border: #263127;
+  --dark-text-heading: #FFFFFF; --dark-text-body: #C9D5C9;
+  --dark-text-muted: #798479;     --dark-text-label: #A3C1A5;
+  --dark-text-display: #FFFFFF;
+}
 
-  /* Tag uses --chart-2 (amber) — the lime/amber duotone gives carbone's
-   * status badges a cyber-warm pop against the cold graphite. */
+/* Categorical cycle + chart series + semantic + structural */
+:root {
+  /* Band fills — light-dark(pale, deep); paired ink flips with them */
+  --c1-light: light-dark(#B6E8BA, #327B3E);
+  --c2-light: light-dark(#A0ECEF, #00787C);
+  --c3-light: light-dark(#C5DDFF, #2D548A);
+  --c4-light: light-dark(#E7CAF6, #583368);
+  --c5-light: light-dark(#FDC4CB, #783541);
+  --c6-light: light-dark(#F4CEA8, #815218);
+  --c7-light: light-dark(#D8D9A6, #5F5E0C);
+  --c8-light: light-dark(#A3EDD8, #007B65);
+  --c9-light: light-dark(#D7D3FF, #473D79);
+  --c10-light: light-dark(#F7C7E3, #6D3459);
+  --c11-light: light-dark(#ABE4FF, #005F7D);
+  --c12-light: light-dark(#FDC9B9, #854633);
 
-  /* ── Dark-panel ramp ───────────────────────────────────────────────── */
+  /* Marks — light-dark(deep, pale), the inverse of the band fill */
+  --c1-dark: light-dark(#327B3E, #B6E8BA);
+  --c2-dark: light-dark(#00787C, #A0ECEF);
+  --c3-dark: light-dark(#2D548A, #C5DDFF);
+  --c4-dark: light-dark(#583368, #E7CAF6);
+  --c5-dark: light-dark(#783541, #FDC4CB);
+  --c6-dark: light-dark(#815218, #F4CEA8);
+  --c7-dark: light-dark(#5F5E0C, #D8D9A6);
+  --c8-dark: light-dark(#007B65, #A3EDD8);
+  --c9-dark: light-dark(#473D79, #D7D3FF);
+  --c10-dark: light-dark(#6D3459, #F7C7E3);
+  --c11-dark: light-dark(#005F7D, #ABE4FF);
+  --c12-dark: light-dark(#854633, #FDC9B9);
+
+  --c-ink-light: light-dark(#364D38, #FFFFFF);
+  --c-ink-dark:  light-dark(#FFFFFF, #364D38);
+
+  /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
+  --chart-1: light-dark(#009734, #4CCB63);
+  --chart-2: light-dark(#00A2A7, #00E2E9);
+  --chart-3: light-dark(#296CC4, #5B9EFA);
+  --chart-4: light-dark(#6B2C84, #9B5CB7);
+  --chart-5: light-dark(#AC3D54, #E36E82);
+  --chart-6: light-dark(#CE7F07, #FFCC98);
+  --chart-7: light-dark(#6C6A00, #9D9B00);
+  --chart-8: light-dark(#00614F, #00957C);
+
+  /* Universal semantic palette */
+  --c-warm-light: light-dark(#F2CDA6, #744700); --c-warm-dark: var(--c-stroke);
+  --c-cool-light: light-dark(#B1DCF1, #005B7A); --c-cool-dark: var(--c-stroke);
+  --c-alarm: light-dark(#C74C41, #FF9A8D);     --c-alarm-dark: var(--c-stroke);
+  --c-mark: light-dark(#DABC43, #917900);       --c-note: light-dark(#F9EFC9, #352E11);
+
+  /* Structural */
+  --c-stroke: light-dark(#175C26, #A9C7AB);
+  --c-line:   light-dark(#040704, #C9D5C9);
+  --c-accent-warm: #CE7F07;
+
+  /* Quadrant (Q1→c1, Q2→c2, Q3→c7, Q4→c3) */
+  --c-quadrant-1-fill: var(--c1-light); --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-fill: var(--c2-light); --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-fill: var(--c7-light); --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-fill: var(--c3-light); --c-quadrant-4-text: var(--c-ink-light);
+}
+
+/* ── carried identity ── */
+:root {
+  --brand-accent:            #7DE38A;
   --bg-warm-mid:   #0E0E10;
   --bg-warm-light: #2A2A2E;
   --code-text:     #DCDCD7;
-
-  /* ── Spectrum — black → graphite → lime ────────────────────────────── */
   --spectrum: linear-gradient(90deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-accent) 100%);
   --spectrum-vertical: linear-gradient(180deg, #0E0E10 0%, #3A3A3F 55%, var(--brand-accent) 100%);
-
-  /* ── Dark-variant tokens — kept for any explicit consumer (Marp chrome,
-   * theming code paths). Carbone resolves to these whether color-scheme is
-   * light or dark, since surface tokens above don't switch. ─────────── */
-  --dark-bg:           #0E0E10;
-  --dark-bg-alt:       #1A1A1C;
-  --dark-border:       #3A3A3F;
-  --dark-text-heading: #F5F5F2;
-  --dark-text-body:    #DCDCD7;
-  --dark-text-muted:   #757A82;
-  --dark-text-label:   var(--brand-accent);
-  --dark-text-display: #F5F5F2;
-
-  /* ── Mermaid extensions ────────────────────────────────────────────── */
-  --c-stroke:          var(--brand-accent);
-  --c-accent-warm:     #FFD166;
-  /* Dark-canvas fills — slightly tinted graphite rather than pale pastels */
-  /* cScale / gitgraph — mid-brightness brand palette on dark canvas */
-}
-/* Completion tokens — band-text pairs, line, gantt state, note, error,
- * quadrant. References earlier palette tokens so this block stays a single
- * source of truth per palette. */
-:root {
-
-  --c-line:                  var(--text-heading);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c7-light);
-  --c-quadrant-4-fill: var(--c3-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
-}
-
-section pre.hljs {
-  background: var(--spectrum) bottom / 100% 3px no-repeat, var(--bg-warm-mid);
-}
-
-:root {
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  var(--text-heading);
-
-  /* Semantic palette — 5 roles, each a flipping fill. Curated per
-   * theme: hue nudged toward the brand within its meaning band,
-   * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke. */
-  --c-warm-light:  light-dark(#91450E, #91450E);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#2A5F9A, #2A5F9A);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#9A2735, #9A2735);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#856300, #856300);
-  --c-note:        light-dark(#7B5F06, #7B5F06);
-
-  /* Containment tier — two nested structural surfaces. A monotonic
-   * luminance ladder away from the canvas: light deck steps down,
-   * dark deck steps up, one step per nesting level. Brand-hue-tinted
-   * at a barely-there chroma — surfaces, not accents; they never
-   * compete with the --cN fills that sit on them.
-   *   --c-container     flowchart cluster, sankey area, kanban column
-   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#202026, #202026);
   --c-subcontainer:  light-dark(#313138, #313138);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }
