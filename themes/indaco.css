@@ -299,6 +299,25 @@
   --c12-dark:  light-dark(#5B5819, #C7C586);
   /* CATEGORICAL:END */
 
+  /* ── Chart categorical palette ─────────────────────────────────────
+   * DECOUPLED from the cN tokens above. The cN set is constrained by
+   * Mermaid (one ink per diagram → pale fills). Our own chart engine has
+   * no such limit, so charts get an Apple-HIG-grounded vivid set: two
+   * hand-tuned variants per slot (light deepened for the white canvas,
+   * dark brightened to pop), perceptually distinct, self-sufficient on
+   * the canvas. Indaco is cool/blue-led. Consumed via var(--chart-N) by
+   * the chart-family components only; Mermaid never sees these. */
+  --chart-1: light-dark(#007AFF, #0A84FF);  /* blue — brand lead */
+  --chart-2: light-dark(#FF9500, #FF9F0A);  /* orange           */
+  --chart-3: light-dark(#34C759, #30D158);  /* green            */
+  --chart-4: light-dark(#AF52DE, #BF5AF2);  /* purple           */
+  --chart-5: light-dark(#30B0C7, #40CBE0);  /* teal             */
+  --chart-6: light-dark(#FF2D55, #FF375F);  /* pink             */
+  --chart-7: light-dark(#5856D6, #5E5CE6);  /* indigo           */
+  --chart-8: light-dark(#E0A400, #FFD60A);  /* gold (deepened)  */
+  --chart-ink:    #FFFFFF;                       /* label on a vivid fill */
+  --chart-stroke: light-dark(#FFFFFF, var(--dark-bg)); /* segment gap */
+
   --c-ink-light: var(--text-heading);
   --c-ink-dark:  light-dark(#FFFFFF, #0A1628);
 

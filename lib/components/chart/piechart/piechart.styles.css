@@ -27,8 +27,8 @@ section.piechart .piechart-svg .wedge {
   /* Pale wedge fills get a deep outline (matches the Mermaid pie's outlined
    * pale look) so adjacent pale slices read against each other and the rim
    * reads against the canvas. */
-  stroke: var(--c-stroke);
-  stroke-width: 1.25;
+  stroke: var(--chart-stroke, var(--c-stroke));
+  stroke-width: 1.5;
 }
 section.piechart .piechart-svg .donut-hole {
   fill: var(--bg);
