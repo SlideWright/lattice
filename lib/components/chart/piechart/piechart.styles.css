@@ -82,23 +82,23 @@ section.piechart .piechart-legend .legend-pct {
  * perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon);
  * pies that need >6 categories should consolidate "Other" or split. */
 section.piechart .wedge:nth-child(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--c1-dark); background: var(--c1-dark); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-1); background: var(--chart-1); }
 section.piechart .wedge:nth-child(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--c2-dark); background: var(--c2-dark); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-2); background: var(--chart-2); }
 section.piechart .wedge:nth-child(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--c3-dark); background: var(--c3-dark); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-3); background: var(--chart-3); }
 section.piechart .wedge:nth-child(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--c4-dark); background: var(--c4-dark); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-4); background: var(--chart-4); }
 section.piechart .wedge:nth-child(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--c5-dark); background: var(--c5-dark); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-5); background: var(--chart-5); }
 section.piechart .wedge:nth-child(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--c6-dark); background: var(--c6-dark); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-6); background: var(--chart-6); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--c1-dark); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--c2-dark); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--c3-dark); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--c4-dark); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--c5-dark); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-1); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-2); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-3); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-4); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--c6-dark); }
 

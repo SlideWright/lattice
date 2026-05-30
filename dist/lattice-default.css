@@ -5671,24 +5671,24 @@ section.piechart .piechart-legend .legend-pct {
  * perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon);
  * pies that need >6 categories should consolidate "Other" or split. */
 section.piechart .wedge:nth-child(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--c1-dark); background: var(--c1-dark); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--chart-1); background: var(--chart-1); }
 section.piechart .wedge:nth-child(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--c2-dark); background: var(--c2-dark); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--chart-2); background: var(--chart-2); }
 section.piechart .wedge:nth-child(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--c3-dark); background: var(--c3-dark); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--chart-3); background: var(--chart-3); }
 section.piechart .wedge:nth-child(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--c4-dark); background: var(--c4-dark); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--chart-4); background: var(--chart-4); }
 section.piechart .wedge:nth-child(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--c5-dark); background: var(--c5-dark); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--chart-5); background: var(--chart-5); }
 section.piechart .wedge:nth-child(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--c6-dark); background: var(--c6-dark); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--chart-6); background: var(--chart-6); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--c1-dark); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--c2-dark); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--c3-dark); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--c4-dark); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--c5-dark); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--chart-1); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--chart-2); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--chart-3); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--chart-4); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--chart-5); }
 section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--c6-dark); }
 
 /* === lib/components/inventory/principles/principles.styles.css === */
@@ -11708,94 +11708,117 @@ section g.row-rect-even > path { fill: var(--bg-alt) !important; }
 section g.row-rect-odd > path  { fill: var(--bg) !important; }
 
 /* === default palette: themes/cuoio.css (engine import resolved) === */
-/* Zero-specificity light default — see the long comment in the next
- * :root block. Author overrides via `style: ":root{color-scheme:dark}"`
- * always win because plain :root is (0,0,1) and :where() is (0,0,0). */
 :where(:root) { color-scheme: light; }
 
 :root {
-  /* ── Color scheme ─────────────────────────────────────────────────────
-   * Default to light. Authors can flip to dark via Marp's native
-   * front-matter `style:` directive — no engine plugins, no class
-   * surgery, works in marp-cli, the emulator, AND the VS Code preview
-   * (because `style:` injects CSS that survives Marpit's directive
-   * pipeline). One-line incantations:
-   *
-   *   style: ":root{color-scheme:dark}"        // force whole-deck dark
-   *   style: ":root{color-scheme:light dark}"  // follow OS / viewer pref
-   *
-   * Per-slide override is unaffected: `<!-- _class: dark -->` on a
-   * single slide flips just that section via lattice.css's section.dark
-   * rule (which sets color-scheme:dark on the section, so light-dark()
-   * descendants resolve to the dark side).
-   *
-   * The default `color-scheme: light` lives in a sibling :where(:root)
-   * rule below so its specificity is zero — any author-authored
-   * `:root { color-scheme: ... }` (whether from a style: directive or a
-   * theme variant like cuoio-dark) wins the cascade automatically. */
+  /* Surfaces */
+  --bg:      light-dark(#FEFCF8, var(--dark-bg));
+  --bg-alt:  light-dark(#F7F3EB, var(--dark-bg-alt));
+  --bg-dark: #312100;
+  --border:  light-dark(#EAE4D7, var(--dark-border));
 
-  /* ── Cuoio brand axis (single source of truth for brand color) ─────── */
-  --brand-canvas:  #1E1A15;  /* dark espresso — bg-dark            */
-  --brand-accent:       #7A5A10;  /* saddle gold — accent, 5.96:1 on bg */
+  /* Ink */
+  --text-display: #FFFFFF;
+  --text-heading: light-dark(#55472C, #FFFFFF);
+  --text-body:    light-dark(#6F5F40, var(--dark-text-body));
+  --text-label:   light-dark(#8B681C, var(--dark-text-label));
+  --text-muted:   #7A705E;
 
-  /* ── Surfaces ──────────────────────────────────────────────────────────
-   * Surface tokens use light-dark() so a single `color-scheme: dark`
-   * declaration (at :root or on a section) flips every descendant
-   * lookup without touching the layout CSS. WCAG annotations refer to
-   * the light pair; dark pair clears AAA on its own surface. */
-  --bg:       light-dark(#FAF7F2, var(--dark-bg));      /* parchment / espresso */
-  --bg-alt:   light-dark(#F3EDE4, var(--dark-bg-alt));  /* card fill            */
-  --bg-dark:  var(--brand-canvas); /* dark panels / title / divider */
-  --border:   light-dark(#E0D8CC, var(--dark-border));  /* hairline rule        */
+  /* Accent */
+  --accent:      light-dark(#8B681C, var(--dark-text-label));
+  --accent-soft: light-dark(#FAEFDA, #1A150B);
+  --on-accent:   light-dark(#FFFFFF, #312100);
 
-  /* ── Ink ramp ──────────────────────────────────────────────────────── */
-  --text-display: #FAF7F2;      /* on dark surfaces — 16.19:1 on bg-dark         */
-  --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading)); /* 16.19:1 / 17.58:1 */
-  --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
-  --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
-  --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE                */
-
-  /* ── Brand accent ──────────────────────────────────────────────────────
-   * The accent is text-bearing on multiple surfaces (inline code chips,
-   * eyebrows, link colour, card headings), so it follows light-dark()
-   * too. Light pair: saddle gold on cream — 5.96:1 on bg, 5.55:1 on
-   * accent-soft. Dark pair: bright gold on dark-bg-alt — 7.05:1 on the
-   * inline-code surface, 5.38:1 on accent-soft (mid-leather panel). */
-  --accent:      light-dark(var(--brand-accent), #C8A040);
-  --accent-soft: light-dark(#F5EFE0, var(--bg-warm-mid));
-  /* Text on top of --accent. Light: white on saddle gold (5.96:1).
-   * Dark: espresso on bright gold (~9:1) — fixes corner-tag contrast
-   * which would otherwise be white on bright gold (~2.3:1, fails AA). */
-  --on-accent:   light-dark(#FFFFFF, var(--bg-dark));
-
-  /* ── Semantic signals ─────────────────────────────────────────────────
-   * Cuoio's leather-toned variants of the universal status trio. Each
-   * is a light-dark() pair: light values are AA+ on the cream canvas;
-   * dark values lift to AA+ on the espresso canvas. Warn stays in
-   * cuoio's saddle-gold family (clearly separated from fail's crimson —
-   * fixes the "warn and fail look alike" issue the original burnt-
-   * amber introduced). */
-  --pass: light-dark(#2D6A3F, #6FCC4D);
-  --fail: light-dark(#9B1C1C, #F87171);
-  --warn: light-dark(#B47200, #F2A24A);
+  /* Semantic state — fixed meaning, canvas-aware */
+  --pass: light-dark(#5F9A3D, #367000);
+  --warn: light-dark(#BC8000, #835800);
+  --fail: light-dark(#D76E51, #AF3916);
   --pass-bg: color-mix(in srgb, var(--pass) 10%, transparent);
-  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
   --warn-bg: color-mix(in srgb, var(--warn) 10%, transparent);
+  --fail-bg: color-mix(in srgb, var(--fail) 10%, transparent);
 
-  --scale-500: var(--brand-accent);
+  --scale-500: var(--accent);
+}
 
-  /* Tag uses --chart-2 (deep teal) by default — the saddle/teal duotone
-   * gives cuoio's corner tags a complementary cool pop. */
+/* Dark-variant tokens (section.dark + the dark side of every light-dark()) */
+:root {
+  --dark-bg: #090703;            --dark-bg-alt: #1A150B;   --dark-border: #342D1F;
+  --dark-text-heading: #FFFFFF; --dark-text-body: #D7D0C3;
+  --dark-text-muted: #867F73;     --dark-text-label: #C7B594;
+  --dark-text-display: #FFFFFF;
+}
 
-  /* ── Dark-panel ramp ──────────────────────────────────────────────── */
-  --bg-warm-mid:   #3A2E20;     /* divider panels (deep) — decorative     */
-  --bg-warm-light: #5B4A30; /* accent panels (lighter)   */
-  --code-text:     #C4B8A8;     /* code text on dark — 8.87:1 on bg-dark  */
+/* Categorical cycle + chart series + semantic + structural */
+:root {
+  /* Band fills — light-dark(pale, deep); paired ink flips with them */
+  --c1-light: light-dark(#F4D59B, #876200);
+  --c2-light: light-dark(#C8E8B6, #4D7632);
+  --c3-light: light-dark(#A5EAE7, #00716F);
+  --c4-light: light-dark(#B8DAFF, #134676);
+  --c5-light: light-dark(#E0CBF8, #4C2F65);
+  --c6-light: light-dark(#FCC5D2, #763549);
+  --c7-light: light-dark(#FBC7B1, #7F4022);
+  --c8-light: light-dark(#DDE0A4, #6D6E02);
+  --c9-light: light-dark(#A8E4FB, #00576F);
+  --c10-light: light-dark(#CED4FF, #383B73);
+  --c11-light: light-dark(#ADEACE, #0B7A58);
+  --c12-light: light-dark(#F1C8E9, #65345E);
 
-  /* ── Spectrum ribbon — earth pigment cycle ────────────────────────── */
-  /* Decorative only (code block bottom border, dark canvas top hairline);
-   * not derived from the brand axis so the warm spectrum reads against
-   * dark surfaces without losing chromatic separation. */
+  /* Marks — light-dark(deep, pale), the inverse of the band fill */
+  --c1-dark: light-dark(#876200, #F4D59B);
+  --c2-dark: light-dark(#4D7632, #C8E8B6);
+  --c3-dark: light-dark(#00716F, #A5EAE7);
+  --c4-dark: light-dark(#134676, #B8DAFF);
+  --c5-dark: light-dark(#4C2F65, #E0CBF8);
+  --c6-dark: light-dark(#763549, #FCC5D2);
+  --c7-dark: light-dark(#7F4022, #FBC7B1);
+  --c8-dark: light-dark(#6D6E02, #DDE0A4);
+  --c9-dark: light-dark(#00576F, #A8E4FB);
+  --c10-dark: light-dark(#383B73, #CED4FF);
+  --c11-dark: light-dark(#0B7A58, #ADEACE);
+  --c12-dark: light-dark(#65345E, #F1C8E9);
+
+  --c-ink-light: light-dark(#55472C, #FFFFFF);
+  --c-ink-dark:  light-dark(#FFFFFF, #55472C);
+
+  /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
+  --chart-1: light-dark(#A77A00, #E4A800);
+  --chart-2: light-dark(#5EA228, #ADF57F);
+  --chart-3: light-dark(#009290, #00C9C6);
+  --chart-4: light-dark(#004E8B, #227DCE);
+  --chart-5: light-dark(#6C3B96, #9C6BC9);
+  --chart-6: light-dark(#D66587, #FFA2BB);
+  --chart-7: light-dark(#9A3C00, #D46936);
+  --chart-8: light-dark(#646500, #949600);
+
+  /* Universal semantic palette */
+  --c-warm-light: light-dark(#F6CBA9, #7B4100); --c-warm-dark: var(--c-stroke);
+  --c-cool-light: light-dark(#AEDDED, #005C71); --c-cool-dark: var(--c-stroke);
+  --c-alarm: light-dark(#C74C41, #FFA093);     --c-alarm-dark: var(--c-stroke);
+  --c-mark: light-dark(#DABC43, #917900);       --c-note: light-dark(#F9EFC9, #352E11);
+
+  /* Structural */
+  --c-stroke: light-dark(#644800, #CEBB9A);
+  --c-line:   light-dark(#070503, #D7D0C3);
+  --c-accent-warm: #D66587;
+
+  /* Quadrant (Q1→c1, Q2→c2, Q3→c7, Q4→c3) */
+  --c-quadrant-1-fill: var(--c1-light); --c-quadrant-1-text: var(--c-ink-light);
+  --c-quadrant-2-fill: var(--c2-light); --c-quadrant-2-text: var(--c-ink-light);
+  --c-quadrant-3-fill: var(--c7-light); --c-quadrant-3-text: var(--c-ink-light);
+  --c-quadrant-4-fill: var(--c3-light); --c-quadrant-4-text: var(--c-ink-light);
+}
+
+/* ── Carried identity (everything the forge does not colour-curate) ────────
+ * Brand axis, spectrum ribbon, code syntax, containment tier, chrome maps —
+ * preserved verbatim from the shipped theme so identity stays intact. */
+:root {
+  --bg-dark: var(--brand-canvas);   /* keep exact brand title/divider canvas */
+  --brand-canvas:  #1E1A15;
+  --brand-accent:       #7A5A10;
+  --bg-warm-mid:   #3A2E20;
+  --bg-warm-light: #5B4A30;
+  --code-text:     #C4B8A8;
   --spectrum: linear-gradient(
     90deg,
     #5B86B8,
@@ -11814,164 +11837,26 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
     #D08C42,
     #B8A032
   );
-
-  /* ── Derived on-dark tints ────────────────────────────────────────── */
   --on-dark-primary:   color-mix(in srgb, white 90%, transparent);
   --on-dark-secondary: color-mix(in srgb, white 65%, transparent);
   --on-dark-ghost:     color-mix(in srgb, white 30%, transparent);
   --on-dark-watermark: color-mix(in srgb, white 12%, transparent);
-
-  /* Marp chrome mappings */
   --marp-slide-pagination-color:     var(--text-muted);
   --marp-slide-pagination-font-size: var(--fs-meta);
   --marp-slide-header-color: var(--text-muted);
   --marp-slide-footer-color: var(--text-muted);
-}
-
-/* ── Dark-variant tokens ───────────────────────────────────────────────
- * Used by section.dark in lattice.css to reskin the slide canvas
- * for cover/divider/closing layouts that need a dark canvas. The slide
- * rule remaps the main tokens to these dark values so the same layout
- * structure works on either canvas. All ratios verified against
- * --dark-bg as the active surface. */
-:root {
-  --dark-bg:           #15110D;  /* deeper than bg-dark — canvas dark     */
-  --dark-bg-alt:       #1E1A15;  /* same as light bg-dark — card on dark  */
-  --dark-border:       #3A2E20;
-  --dark-text-heading: #FAF7F2;  /* 17.58:1 on dark-bg AAA                */
-  --dark-text-body:    #D6C4A8;  /* warm tan — 11.02:1 on dark-bg AAA     */
-  --dark-text-muted:   #A69882;
-  --dark-text-label:   #C4B8A8;  /* pale tan — 9.63:1 on dark-bg AAA      */
-  --dark-text-display: #FAF7F2;
-}
-
-/* ── highlight.js syntax tokens ────────────────────────────────────────
- * Warm earth palette adapted for Cuoio's dark code block background
- * (--bg-dark: #1e1a15, dark brown + earthy spectrum ribbon at bottom).
- * Warm ambers, terracottas, and muted teals provide contrast against
- * the dark brown without importing the cool Night Owl palette used by
- * the indaco theme. */
-:root {
-  --hljs-comment:    #7A6A58;  /* muted warm brown, italic               */
-  --hljs-keyword:    #D4A04A;  /* warm amber-gold, italic                */
-  --hljs-built_in:   #8EBA6A;  /* warm lime-green — built-ins            */
-  --hljs-number:     #D48A6A;  /* warm orange-rust                       */
-  --hljs-literal:    #C05A6A;  /* warm rose-pink — booleans/null         */
-  --hljs-string:     #C8885A;  /* warm terracotta                        */
-  --hljs-title:      #D4B868;  /* warm amber-yellow, italic              */
-  --hljs-type:       #7ABAB0;  /* muted teal — cool contrast on warm bg  */
-  --hljs-variable:   #8EBA6A;  /* warm lime-green — variables            */
-  --hljs-params:     #7ABAB0;  /* muted teal-mint — parameters           */
-  --hljs-tag:        #7ABAB0;  /* muted teal — HTML tags / names         */
-  --hljs-punctuation:#C8B8A0;  /* warm taupe — operators, punctuation    */
-}
-
-
-/* ── Diagram tokens ────────────────────────────────────────────────────
- * Role-named, palette-blind tokens consumed by lattice-diagram.css and
- * the renderer bridges (lattice-runtime.js, lattice-emulator.js). The
- * structural shape — which slot is band, stroke, state, etc. — is the
- * same across every palette; this file supplies cuoio's warm-earth
- * values. */
-:root {
-
-  /* ── Structural ───────────────────────────────────────────────────
-   * Universal stroke for any band fill; deep taupe reads on every
-   * cream tint. Line is for edges/arrows — warm brown ink. */
-  --c-stroke: #8B7E6D;  /* deep taupe */
-  --c-line:   #6B5D4F;  /* warm brown ink */
-
-  /* Cross-deck contrast accent — radar's second curve, where a single
-   * warm hue against the cream band reads better than a second pale
-   * tint. */
-  --c-accent-warm: var(--brand-accent);
-
-  /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
-   * Cuoio is monochrome warm by identity, but the band cycle pulls in
-   * two subtle cool accents (band-3 iris, band-5 petrol). The quadrant
-   * needs four visually distinct fills with no adjacent pair too close,
-   * so pull from both warm and the two cool accents — the warm-leather
-   * voice still dominates (Q1 cream + Q3 wheat) and the two cool pulls
-   * supply distinction without competing with the brand. Hue mapping:
-   *   Q1 strategic   → c1-light (cream)
-   *   Q2 quick-wins  → c3-light (iris pull, cool)
-   *   Q3 defer       → c7-light (wheat)
-   *   Q4 time-sinks  → c5-light (petrol pull, cool)
-   * Text stays the universal cuoio ink — all four pairs clear AA. */
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: #1E1A15;
-  --c-quadrant-2-text: #1E1A15;
-  --c-quadrant-3-text: #1E1A15;
-  --c-quadrant-4-text: #1E1A15;
-
-}
-
-:root {
-  --c1-light:  light-dark(#E6DAC8, #795700);
-  --c1-dark:   light-dark(#8A672E, #E7E0D5);
-  --c2-light:  light-dark(#D2CAE1, #544DAE);
-  --c2-dark:   light-dark(#327C86, #D5E4E6);
-  --c3-light:  light-dark(#D1C5B3, #97306A);
-  --c3-dark:   light-dark(#3B3286, #D7D5E6);
-  --c4-light:  light-dark(#C7D9DC, #006D61);
-  --c4-dark:   light-dark(#727B2D, #E4E6D5);
-  --c5-light:  light-dark(#E3C5C5, #A03313);
-  --c5-dark:   light-dark(#863B32, #E6D7D5);
-  --c6-light:  light-dark(#D2DCBD, #007225);
-  --c6-dark:   light-dark(#325286, #D5DCE6);
-  --c7-light:  light-dark(#EDD5B8, #7D3C95);
-  --c7-dark:   light-dark(#538038, #DCE5D7);
-  --c8-light:  light-dark(#D7D0C6, #5D6400);
-  --c8-dark:   light-dark(#388064, #D7E5E0);
-  --c9-light:  light-dark(#EBDBC1, #A02D45);
-  --c9-dark:   light-dark(#643880, #E0D7E5);
-  --c10-light: light-dark(#E1CCD9, #00697C);
-  --c10-dark:  light-dark(#803853, #E5D7DC);
-  --c11-light: light-dark(#DDD1BD, #805300);
-  --c11-dark:  light-dark(#388040, #D7E5D8);
-  --c12-light: light-dark(#D5CCE1, #0060A5);
-  --c12-dark:  light-dark(#803877, #E5D7E3);
-
-  --c-ink-light: var(--text-heading);
-  --c-ink-dark:  light-dark(#FFFFFF, #1E1A15);
-
-  /* Semantic palette — 5 roles, each a flipping fill. Curated per
-   * theme: hue nudged toward the brand within its meaning band,
-   * AA-verified both canvas modes, chroma-capped for restraint.
-   * The -dark companions are strokes → universal --c-stroke.
-   *
-   * --c-alarm pairs with --c-ink-dark above: alarm fill lifts bright
-   * in dark mode, ink flips dark to compensate (both pass AA either
-   * way). Decoupled from the state-token --fail, which has its own
-   * light-dark() pair tuned for canvas contrast, not band-text. */
-  --c-warm-light:  light-dark(#EBDBC1, #825200);
-  --c-warm-dark:   var(--c-stroke);
-  --c-cool-light:  light-dark(#E0D8CC, #6B5B40);
-  --c-cool-dark:   var(--c-stroke);
-  --c-alarm:       light-dark(#9B1C1C, #F87171);
-  --c-alarm-dark:  var(--c-stroke);
-  --c-mark:        light-dark(#7A5A10, #C8A040);
-  --c-note:        light-dark(#F5EFE0, #4A3A28);
-
-  /* Containment tier — two nested structural surfaces. A monotonic
-   * luminance ladder away from the canvas: light deck steps down,
-   * dark deck steps up, one step per nesting level. Brand-hue-tinted
-   * at a barely-there chroma — surfaces, not accents; they never
-   * compete with the --cN fills that sit on them.
-   *   --c-container     flowchart cluster, sankey area, kanban column
-   *   --c-subcontainer  kanban ticket, a box nested in a cluster */
+  --hljs-comment:    #7A6A58;
+  --hljs-keyword:    #D4A04A;
+  --hljs-built_in:   #8EBA6A;
+  --hljs-number:     #D48A6A;
+  --hljs-literal:    #C05A6A;
+  --hljs-string:     #C8885A;
+  --hljs-title:      #D4B868;
+  --hljs-type:       #7ABAB0;
+  --hljs-variable:   #8EBA6A;
+  --hljs-params:     #7ABAB0;
+  --hljs-tag:        #7ABAB0;
+  --hljs-punctuation:#C8B8A0;
   --c-container:     light-dark(#ECE6DD, #28241D);
   --c-subcontainer:  light-dark(#DDD7CF, #39352E);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }
