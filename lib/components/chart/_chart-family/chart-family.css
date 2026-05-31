@@ -241,9 +241,19 @@ section.chart-frame .chart-body {
  * clipped edge. (word-cloud is free-floating and not a chart-frame member at
  * all, so it never matches this rule.) */
 section.chart-frame:not(.state-chart) .chart-body {
-  background: radial-gradient(125% 110% at 50% 0%,
-    color-mix(in oklab, var(--text-heading) 6%, var(--bg)) 0%, var(--bg) 72%);
-  border: 1px solid color-mix(in oklab, var(--text-heading) 9%, transparent);
+  /* The whole panel sits lifted off the slide: a flat base tint (≈5-6% of
+   * --text-heading mixed into --bg, the lowest stop) keeps the entire surface
+   * a touch lighter than the slide on dark themes / a touch deeper on light,
+   * so it reads as a card rather than vanishing into the background. On top of
+   * that, a soft top-glow (the brighter 15% stop, centred above the panel)
+   * gives the gentle Apple-Stocks sheen. Subtle, but unmistakably a surface —
+   * the earlier single faint stop faded to pure --bg and disappeared. */
+  background:
+    radial-gradient(135% 115% at 50% -12%,
+      color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
+      color-mix(in oklab, var(--text-heading) 7%, var(--bg)) 55%,
+      color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
+  border: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
   border-radius: 1.25cqi;
 }
 
