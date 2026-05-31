@@ -222,14 +222,3 @@ section pre.hljs {
 :root{ --chart-8: light-dark(#5F5742, #827A64); }
 /* grey-canvas state fix */
 :root { --warn: light-dark(#865400, #F97316); }
-
-:root{ /* chart-ink */
-  --chart-1-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-2-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-3-ink: light-dark(#FFFFFF, #FFFFFF);
-  --chart-4-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-5-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-6-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-7-ink: light-dark(#FFFFFF, #FFFFFF);
-  --chart-8-ink: light-dark(#FFFFFF, #0B0B0B);
-}

@@ -219,14 +219,3 @@ section pre.hljs {
 :root{ --chart-6: light-dark(#91865E, #C9BE94); }
 :root{ --chart-7: light-dark(#4B2919, #865E4D); }
 :root{ --chart-8: light-dark(#705A37, #947C59); }
-
-:root{ /* chart-ink */
-  --chart-1-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-2-ink: light-dark(#0B0B0B, #0B0B0B);
-  --chart-3-ink: light-dark(#FFFFFF, #FFFFFF);
-  --chart-4-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-5-ink: light-dark(#FFFFFF, #0B0B0B);
-  --chart-6-ink: light-dark(#0B0B0B, #0B0B0B);
-  --chart-7-ink: light-dark(#FFFFFF, #FFFFFF);
-  --chart-8-ink: light-dark(#FFFFFF, #0B0B0B);
-}
