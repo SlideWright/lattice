@@ -65,6 +65,39 @@ section.word-cloud .word-cloud-canvas {
   flex: 0 0 auto;
 }
 
+/* Surface panel — word-cloud isn't a chart-frame member (its words are
+ * free-positioned, not a .chart-body figure), so the family panel rule never
+ * reaches it. Mirror that treatment here instead: a ::before painted BEHIND
+ * the words (generated content sits first in the canvas's stacking context,
+ * the absolutely-positioned spans paint on top) with the same three-stop
+ * radial + hairline as section.chart-frame .chart-body. The negative inset
+ * pushes the panel OUT past the word extent so the cloud sits ON the surface
+ * with breathing room, and — because the packer fully bounds every word
+ * inside the 1100×320 canvas — there is no clip risk. */
+section.word-cloud .word-cloud-canvas::before {
+  content: "";
+  position: absolute;
+  /* Keep the top inset shallow so the panel starts BELOW the h2 (the header
+   * sits above the surface, mirroring chart-frame where the header is outside
+   * .chart-body). Wider horizontal inset for side breathing; the cloud's own
+   * internal whitespace supplies the vertical margin. */
+  inset: -0.5cqi -3cqi;
+  z-index: 0;
+  background:
+    radial-gradient(135% 115% at 50% -12%,
+      color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
+      color-mix(in oklab, var(--text-heading) 7%, var(--bg)) 55%,
+      color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
+  border: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
+  border-radius: 1.25cqi;
+  pointer-events: none;
+}
+
+/* Keep the words above the panel ::before. */
+section.word-cloud .wc-word {
+  z-index: 1;
+}
+
 section.word-cloud .wc-word {
   position: absolute;
   left: var(--wc-x);

@@ -36,7 +36,7 @@
     }
   },
   "skeleton": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to archive.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 6`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `live`\n   - `archive => 6`\n6. Archived `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
-  "sample": "<!-- _class: state-chart -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to archive.\n\n1. Draft `start`\n   - `submit => 2`\n   - `discard => 6`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `live`\n   - `archive => 6`\n6. Archived `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
+  "sample": "<!-- _class: state-chart lr -->\n\n`Submission lifecycle`\n\n## Document approval flow.\n\nHow a draft moves from author to publication.\n\n1. Draft `start`\n   - `submit => 2`\n2. Submitted `on-track`\n   - `review => 3`\n3. In Review\n   - `approve => 4`\n   - `reject => 1`\n   - `revise => self`\n4. Approved `done`\n   - `publish => 5`\n5. Published `end`\n\n*Rejected drafts return to the author; revisions stay in review.*\n",
   "whenToUse": [
     {
       "title": "Finite, named states with discrete events",

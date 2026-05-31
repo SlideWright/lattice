@@ -35,9 +35,16 @@ in patch versions.
   pinned to `.chart-body` — the one fixed-width container every member shares —
   so the panel is the **same size on every chart** rather than hugging each
   figure. Covers radar, quadrant, piechart, progress, gantt, kanban, and
-  timeline-list; **state-chart is excluded** (its vertical flow fills the full
-  chart-body height, leaving no room for a panel inset) and **word-cloud** is
-  unaffected (free-floating, not a chart-frame member).
+  timeline-list. **word-cloud** gets the same surface via a `::before` painted
+  behind its free-positioned words (it isn't a chart-frame member, so the
+  family rule can't reach it). **state-chart is excluded** — its state flow
+  fills the full chart-body height, leaving no room for a panel inset.
+- **state-chart gallery defaults to `lr`.** The default / dark / compact /
+  accent demos now render left-to-right at five states (was a six-state
+  top-to-bottom flow that overran the slide). The `lr` direction reads the
+  machine as a horizontal pipeline and fits comfortably; the gallery and the
+  manifest `sample` (which drives the chart bucket survey) are updated to
+  match. No engine change — `lr` was already a supported modifier.
 - **Apple-inspired categorical chart spectrum, decoupled from `cN`.** The
   chart-family (quadrant, piechart, radar, progress) now draws from its own
   vivid, well-spaced 8-hue spectrum — `--catN-hue` with an Apple-style master
