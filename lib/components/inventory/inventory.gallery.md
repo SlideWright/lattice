@@ -22,7 +22,7 @@ Inventory — parallel sets of related items.
 - **Owns adoption** `Enablement Lead`
   - Onboards each team — the reason attendance is merely aspirational.
 - **Clears blockers** `Executive Sponsor`
-  - Approves the operating rhythm; stays out of the scoring debates.
+  - Approves the operating rhythm; stays out of the scoring debates, and out of the room when the outcomes are reviewed.
 
 ---
 

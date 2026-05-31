@@ -752,7 +752,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 1. Scoring policy in production
    - The signed scoring policy runs end-to-end. The first calibrated brief lands in leadership's inbox, which we are calling general availability.
 2. Per-team weights
-   - One framework carries distinct scoring weights per team with no per-team fork. Recalibration is a single policy update — demoed once, never yet run in anger.
+   - One framework carries distinct scoring weights per team with no per-team fork. Recalibration is a single policy update. Each team will still want its own anyway.
 3. Per-decision-class profiles
    - A scoring profile scoped to a single decision class takes minutes to author and a workshop series to agree on. Audit trails distinguish the classes nobody disputes.
 
@@ -828,9 +828,9 @@ The left card is struck through to read as the option considered then dropped; t
 ## Three switches the grid from 2 columns to 3 columns.
 
 - Signal
-  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake, and frequently confused with "things the VP heard at a conference."
+  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake, and frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
 - Decision
-  - A signal plus a deadline, logged with rationale and predicted outcome. In theory traceable to its signals; in practice the signal is often "we discussed it at the offsite."
+  - A signal plus a deadline, logged with rationale and predicted outcome. In theory traceable to its signals; in practice the signal is often "we discussed it at the offsite," logged after the fact, if at all.
 - Outcome
   - The observed result, compared at retrospective to what we predicted. The unit of calibration. Eighteen logged so far, against roughly three hundred forty that occurred.
 
@@ -1085,13 +1085,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Who owns each part of the framework lifecycle.
 
 - **Signal custody** `Signal owner`
-  - Runs intake quality and source diversity. Never tunes the weights directly, and opens every review by saying so.
+  - Runs intake quality. Never tunes the weights — only picks which signals surface.
 - **Policy** `Framework operator`
-  - Owns scoring policy, calibration cadence, version floors, and the rollback playbook nobody has had to run.
+  - Owns scoring policy, calibration cadence, and the rollback playbook nobody has run. One person.
 - **Consumption** `Product team`
-  - Holds time-bound scoring profiles; runs intake and decision-logging; finds the bugs first.
+  - Holds scoring profiles; runs intake and decision-logging; finds the bugs first.
 - **Oversight** `Auditor`
-  - Reads the Decision Log audit trail, cannot edit weights, and is the only role anyone actually fears.
+  - Reads the audit trail, cannot edit weights, and is the only role anyone fears — having read it once.
 
 ---
 
