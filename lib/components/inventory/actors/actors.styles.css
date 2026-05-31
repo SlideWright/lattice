@@ -4,10 +4,10 @@
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **Key custody** `HSM admin`
- *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Policy custody** `Governance`
+ *   - Manages base-policy ceremonies and rotation. Never holds unwrapped adapters.
  * - **Policy** `Platform operator`
- *   - Owns codebook policy, signing keys, version floors.
+ *   - Owns pack policy, signing keys, version floors.
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,

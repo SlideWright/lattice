@@ -533,22 +533,22 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-`Implementation · Token Pipeline`
+`Implementation · Orchestration Pipeline`
 
-## The tokenization call is three lines of application code.
+## The orchestration call is three lines of application code.
 
 `JavaScript · SDK v2 interface`
 
 ```javascript
-import { TokenVault } from "@company/token-sdk";
+import { Mesh } from "@company/agentic-sdk";
 
-const vault = new TokenVault({ keyFile: "./vault.key" });
+const mesh = new Mesh({ policyFile: "./policy.pack" });
 
-// Tokenize at ingestion
-const token = await vault.tokenize(ssn, { field: "ssn", tenant: "acme" });
+// Orchestrate at ingestion
+const handle = await mesh.orchestrate(prompt, { field: "prompt", tenant: "acme" });
 
-// Detokenize only at point of use — every call is logged
-const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
+// Resolve only at point of use — every call is logged
+const outcome = await mesh.resolve(handle, { requestor: "claims-copilot" });
 ```
 
 ---
@@ -556,34 +556,34 @@ const plaintext = await vault.detokenize(token, { requestor: "claims-svc" });
 <!-- _class: compare-code -->
 <!-- _footer: "Two code blocks · compare-code" -->
 
-`Before & After · Key Distribution`
+`Before & After · Model Distribution`
 
-## File-distributed keys versus vault-integrated keys.
+## File-distributed weights versus plane-governed weights.
 
 `Before · File-distributed`
 
 ```python
-# Key material on disk — anyone with
-# filesystem access can read it
-with open('./vault.key', 'rb') as f:
-    key = f.read()
+# Model weights on disk — anyone with
+# filesystem access can read them
+with open('./tenant.adapter', 'rb') as f:
+    weights = f.read()
 
-cipher = AES(key)
-token = cipher.encrypt(ssn)
+model = Engine(weights)
+handle = model.run(prompt)
 ```
 
-`After · HSM / KMS integrated`
+`After · Control-plane governed`
 
 ```python
-# Key never leaves the HSM —
-# every operation is audited
-import boto3
+# Weights never leave the registry —
+# every inference is audited
+import mesh
 
-kms = boto3.client('kms')
-token = kms.encrypt(
-    KeyId='alias/tokenization',
-    Plaintext=ssn
-)['CiphertextBlob']
+plane = mesh.ControlPlane()
+handle = plane.orchestrate(
+    pack='tenant/acme',
+    prompt=prompt,
+)['handle']
 ```
 
 ---
@@ -720,7 +720,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Two-card layouts work equally well inverted to dark.
 
-- The architecture introduces a single key distribution question: what protects the file containing key material, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
+- The architecture introduces a single model-distribution question: what protects the file containing the weights, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
 - The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
 ---
@@ -748,12 +748,12 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
-1. Codebook signing in production
-   - The HSM-anchored signing pipeline runs end-to-end. The first signed codebook installs cleanly on a real client.
-2. Multi-tenant DEKs
-   - One codebook can carry distinct DEKs per tenant without per-tenant rebuilds. Crypto-shred is a single HSM op.
-3. Per-purpose codebooks
-   - Authoring a codebook scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
+1. Capability-pack signing in production
+   - The registry-anchored signing pipeline runs end-to-end. The first signed capability pack installs cleanly on a real client.
+2. Multi-tenant adapters
+   - One capability pack can carry distinct adapters per tenant without per-tenant rebuilds. Deprovisioning is a single control-plane op.
+3. Per-purpose capability packs
+   - Authoring a pack scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
 
 ---
 
@@ -780,10 +780,10 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Chosen flags the right-hand card as the winner.
 
-- Vault round-trip
-  - Every detokenize is a network call to a central vault. Latency is a function of distance, not code. p99 60 ms, vault outages cascade.
-- In-process codebook
-  - Detokenize is a local function call against an SDK-resident codebook. p99 8 ms, vault outages do not affect tokenized-record reads.
+- Gateway round-trip
+  - Every resolve is a network call to a central inference gateway. Latency is a function of distance, not code. p99 60 ms, gateway outages cascade.
+- In-process capability pack
+  - Resolve is a local function call against an SDK-resident pack. p99 8 ms, gateway outages do not affect in-process inference.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
 
@@ -797,7 +797,7 @@ The right card carries an accent left-edge and accent-tinted background — the 
 ## Decision composes chosen + rejected with a labelled connector.
 
 - Buy a vendor
-  - Three vendors evaluated; none cover the regulatory boundary in-process. Time-to-integrate is six months at best; ongoing per-tenant licensing.
+  - Three managed-inference vendors evaluated; none run inference in-process inside the residency boundary. Time-to-integrate is six months at best; ongoing per-tenant licensing.
 - Build in-house
   - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
 
@@ -813,9 +813,9 @@ The left card is struck through to read as the option considered then dropped; t
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
 - Before — manual rotation
-  - Operators schedule a rotation window, freeze writes on the affected scope, swap codebooks, run a verification pass, lift the freeze. Average outage 18 minutes.
+  - Operators schedule a rotation window, freeze the value stream on the affected scope, swap capability packs, run a verification pass, lift the freeze. Average outage 18 minutes.
 - After — version-floor rotation
-  - The signing pipeline emits a new codebook with an incremented version. Clients install the new codebook on next refresh. No write freeze. No coordinated cutover.
+  - The signing pipeline emits a new capability pack with an incremented version. Clients install the new pack on next refresh. No freeze. No coordinated cutover.
 
 ---
 
@@ -826,12 +826,12 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Three switches the grid from 2 columns to 3 columns.
 
-- Codebook
-  - The signed envelope an SDK installs. Carries policy, wrapped DEK, version, expiry. The codebook is the unit of distribution.
-- DEK
-  - Data encryption key. Wrapped by a KEK; lives plaintext only inside native SDK memory. Never leaves the host.
-- KEK
-  - Key encryption key. Lives in the HSM, never exported. The crypto-shred operation on a tenant is a single HSM op against its KEK.
+- Capability pack
+  - The signed envelope an SDK installs. Carries policy, wrapped tenant adapter, version, expiry. The pack is the unit of distribution.
+- Tenant adapter
+  - The per-tenant fine-tune. Wrapped by the base policy; resident only inside native SDK memory. Never leaves the host.
+- Base policy
+  - The governance root. Lives in the control plane, never exported. Deprovisioning a tenant is a single control-plane op against its adapter.
 
 ---
 
@@ -861,9 +861,9 @@ The left card is struck through to read as the option considered then dropped; t
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
 - Claim
-  - The codebook model gets in-process latency with vault-grade key custody. We do not pay round-trip latency on every read.
+  - The capability-pack model gets in-process latency with gateway-grade policy custody. We do not pay round-trip latency on every inference.
 - Evidence
-  - The pilot ran six months across four product teams. p99 detokenize landed at 8 ms; vault outages did not cascade into application outages.
+  - The pilot ran six months across four product teams. p99 resolve landed at 8 ms; gateway outages did not cascade into application outages.
 - Implication
   - A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
 
@@ -980,7 +980,7 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 - High coverage / High cost
   - Vendor C — full coverage, premium pricing, niche differentiators we do not need.
 - Low coverage / Low cost
-  - Vendor D — cheap, but leaves three regulatory boundaries uncovered.
+  - Vendor D — cheap, but leaves three residency boundaries uncovered.
 - Low coverage / High cost
   - _none — and that is the signal._
 
@@ -996,7 +996,7 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 - **Build**
   - Owns the architecture, owns the operating model, owns the timeline.
 - **Why not buy**
-  - Three vendors evaluated; none cover the regulatory boundary in-process.
+  - Three managed-inference vendors evaluated; none run in-process inside the residency boundary.
 - **Why not delay**
   - The compliance window closes in 18 months.
 
@@ -1005,16 +1005,16 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 <!-- _class: before-after -->
 <!-- _footer: "New layout — before-after · before-after" -->
 
-## Detokenize used to require a vault round-trip.
+## Resolve used to require a gateway round-trip.
 
 `Latency story · before vs after`
 
 - **Before**
-  - Every detokenize call: network round-trip to the central vault, average 18 ms, p99 60 ms. Vault outages cascaded into application outages.
+  - Every resolve call: network round-trip to the central inference gateway, average 18 ms, p99 60 ms. Gateway outages cascaded into application outages.
 - **After**
-  - Detokenize is a local function call. p99 8 ms. Vault outages do not affect tokenized-record reads.
+  - Resolve is a local function call. p99 8 ms. Gateway outages do not affect in-process inference.
 
-The architecture change is the codebook model — local, signed, time-bound key material — not a vault optimisation.
+The architecture change is the capability-pack model — local, signed, time-bound model weights — not a gateway optimisation.
 
 ---
 
@@ -1036,9 +1036,9 @@ The architecture change is the codebook model — local, signed, time-bound key 
 
 | Workstream | Phase 01          | Phase 02              | Phase 03              |
 | ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Codebook signing  | Multi-tenant DEKs     | Per-purpose codebooks |
-| Operations | Manual rotation   | Automated rotation    | Crypto-shred          |
-| Compliance | Audit trail (HSM) | Centralised log       | Examiner pack         |
+| Platform   | Pack signing      | Multi-tenant adapters | Per-purpose packs     |
+| Operations | Manual rotation   | Automated rotation    | Deprovision           |
+| Compliance | Audit trail (reg) | Centralised log       | Examiner pack         |
 | SDK        | Java              |                       | Polyglot parity       |
 
 The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
@@ -1051,16 +1051,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Where we are against quarter targets.
 
 1. **94%**
-   - Token-issuance success
+   - Orchestration success
    - target 99%, +2pp QoQ
 2. **8 ms**
-   - p99 detokenize
+   - p99 resolve
    - target 10 ms, -3 ms QoQ
 3. **0**
    - Examiner findings
    - target 0, flat
 4. **3.2×**
-   - Detokenize headroom
+   - Resolve headroom
    - target 2×, +0.4× QoQ
 
 ---
@@ -1081,16 +1081,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: actors -->
 <!-- _footer: "New layout — actors · actors" -->
 
-## Who owns each part of the codebook lifecycle.
+## Who owns each part of the capability-pack lifecycle.
 
-- **Key custody** `HSM admin`
-  - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+- **Policy custody** `Governance`
+  - Manages base-policy ceremonies and rotation. Never holds unwrapped adapters.
 - **Policy** `Platform operator`
-  - Owns codebook policy, signing keys, version floors, and revocation playbooks.
-- **Consumption** `Application team`
-  - Holds time-bound codebooks; tokenizes and detokenizes in-process.
+  - Owns pack policy, signing keys, version floors, and revocation playbooks.
+- **Consumption** `Product team`
+  - Holds time-bound capability packs; orchestrates and resolves in-process.
 - **Oversight** `Examiner`
-  - Reads the HSM audit trail; cannot read plaintext.
+  - Reads the registry audit trail; cannot read prompts.
 
 ---
 
@@ -1101,9 +1101,9 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this section will tell you, in five lines.
 
-- The codebook model gets in-process latency with vault-grade key custody. → slide 8
+- The capability-pack model gets in-process latency with gateway-grade policy custody. → slide 8
 - Rotation is a version-floor increment, not a coordinated cutover. → slide 12
-- Per-tenant KEKs make crypto-shred a single HSM op. → slide 18
+- Per-tenant base policies make deprovisioning a single control-plane op. → slide 18
 - Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
 - Five questions stay open until Phase 1 closes them on the record. → slide 27
 

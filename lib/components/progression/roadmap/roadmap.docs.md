@@ -76,8 +76,8 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |
+| Platform   | [x] Pack signing     | [-] Multi-tenant adapters    | [ ] Per-purpose packs |
+| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Deprovision          |
 | Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
@@ -97,8 +97,8 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Platform   | [x] Pack signing | [-] Multi-tenant adapters  | [ ] Per-purpose packs |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Deprovision          |
 | Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
 
@@ -118,8 +118,8 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
+| Operations | Manual rotation      | Automated rotation     | Deprovision              |
 | Compliance | Audit trail          | Centralised log        | Examiner pack             |
 | SDK        | Java                 | .NET                   | Polyglot parity           |
 ```
@@ -137,8 +137,8 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
+| Operations | Manual rotation      | Automated rotation     | Deprovision              |
 | Compliance | Audit trail          | Centralised log        | Examiner pack             |
 ```
 

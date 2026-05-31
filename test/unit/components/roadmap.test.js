@@ -35,7 +35,7 @@ describe('roadmap', () => {
     '<table>' +
       '<thead><tr><th>Workstream</th><th>Phase 01</th><th>Phase 02</th></tr></thead>' +
       '<tbody>' +
-        '<tr><td>Platform</td><td>[x] Codebook signing</td><td>[-] Multi-tenant DEKs</td></tr>' +
+        '<tr><td>Platform</td><td>[x] Pack signing</td><td>[-] Multi-tenant adapters</td></tr>' +
         '<tr><td>SDK</td><td>[ ] Java</td><td>[/] .NET</td></tr>' +
       '</tbody>' +
     '</table>'
@@ -92,7 +92,7 @@ describe('roadmap', () => {
     '<table>' +
       '<thead><tr><th>Workstream</th><th>Now · Q2</th><th>Next · Q3</th></tr></thead>' +
       '<tbody>' +
-        '<tr><td>Platform</td><td>Codebook signing</td><td>Multi-tenant DEKs</td></tr>' +
+        '<tr><td>Platform</td><td>Pack signing</td><td>Multi-tenant adapters</td></tr>' +
         '<tr><td>SDK</td><td>Java</td><td></td></tr>' +
       '</tbody>' +
     '</table>'
@@ -125,8 +125,8 @@ describe('roadmap', () => {
     const platformLabels = out.match(/<span class="row-label">Platform<\/span>/g) || [];
     assert.equal(platformLabels.length, 2);
     // Commitments routed to the right card
-    assert.match(out, /<span class="row-text">Codebook signing<\/span>/);
-    assert.match(out, /<span class="row-text">Multi-tenant DEKs<\/span>/);
+    assert.match(out, /<span class="row-text">Pack signing<\/span>/);
+    assert.match(out, /<span class="row-text">Multi-tenant adapters<\/span>/);
     assert.match(out, /<span class="row-text">Java<\/span>/);
   });
 
@@ -182,7 +182,7 @@ describe('roadmap', () => {
     // No horizons wrapper without the modifier
     assert.ok(!out.includes('class="horizons"'));
     // Markers are stripped from the rendered HTML
-    assert.ok(!out.includes('[x] Codebook signing'));
+    assert.ok(!out.includes('[x] Pack signing'));
   });
 
   test('dispatch: applies horizons transform only when the modifier is present', () => {
@@ -211,6 +211,6 @@ describe('roadmap', () => {
     assert.match(out, /cell-state state-shipped/);
     assert.match(out, /class="horizons"/);
     // Non-roadmap section's [x] markers still survive (not in scope)
-    assert.match(out, /\[x\] Codebook signing/);
+    assert.match(out, /\[x\] Pack signing/);
   });
 });

@@ -47,16 +47,16 @@ The user-visible promise is _"if you can write an outline, you have a timeline."
 ```markdown
 <!-- _class: timeline-list -->
 
-## How the codebook architecture arrived in production.
+## How the capability-pack architecture arrived in production.
 
-1. `2024 Q3` Vault round-trip
-   - First production tokenization shipped on a centralised vault. p99 60 ms; vault outages cascaded into application outages.
-2. `2025 Q1` Codebook proposal `decision`
-   - Architecture review accepts the in-process codebook model. Build approved over buy after a four-vendor evaluation.
+1. `2024 Q3` Gateway round-trip
+   - First production orchestration shipped on a centralised gateway. p99 60 ms; gateway outages cascaded into application outages.
+2. `2025 Q1` Capability-pack proposal `decision`
+   - Architecture review accepts the in-process capability-pack model. Build approved over buy after a four-vendor evaluation.
 3. `2025 Q3` Pilot `pilot`
-   - One internal team, one workload, one quarter. Detokenize p99 lands at 8 ms.
+   - One internal team, one workload, one quarter. Resolve p99 lands at 8 ms.
 4. `2026 Q1` Production `live`
-   - Codebook signing live across all production tenants. HSM-anchored audit trail readable by Examiner role.
+   - Pack signing live across all production tenants. Registry-anchored audit trail readable by Examiner role.
 ```
 
 **Reading the shape.**
@@ -103,13 +103,13 @@ The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axi
 `2026 Q1 → 2026 Q4`
 
 - Platform
-  - Codebook signing `Q1 → Q2` `done`
-  - Multi-tenant DEKs `Q2 → Q3` `live`
-  - Per-purpose codebooks `Q3 → Q4` `at-risk`
+  - Pack signing `Q1 → Q2` `done`
+  - Multi-tenant adapters `Q2 → Q3` `live`
+  - Per-purpose packs `Q3 → Q4` `at-risk`
 - Operations
   - Manual rotation `Q1 → Q2`
   - Automated rotation `Q2 → Q3` `live`
-  - Crypto-shred `Q3 → Q4`
+  - Deprovision `Q3 → Q4`
 - Compliance
   - Audit trail `Q1 → Q2` `done`
   - Centralised log `Q2 → Q3`
@@ -130,7 +130,7 @@ The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axi
 - `months` — column ticks at month boundaries. For shorter horizons.
 - `weeks` — column ticks at week boundaries. For sprint-scale schedules.
 - `today` — draws a vertical "now" rule at the current build date; bars whose end is before today render at full opacity, bars after today at 70%. Build-time only — no runtime clock.
-- `dependencies` — when a sub-bullet contains an inline-code reference to another bar's title (`` `after: Codebook signing` ``), the renderer draws a thin dependency arrow between bars. Strictly opt-in; quiet when absent.
+- `dependencies` — when a sub-bullet contains an inline-code reference to another bar's title (`` `after: Pack signing` ``), the renderer draws a thin dependency arrow between bars. Strictly opt-in; quiet when absent.
 - `compact` / `loose` — density.
 - `dark` — palette swap.
 
@@ -175,7 +175,7 @@ A pie / donut chart is a flat list where each item carries a numeric pill. The r
 
 `H1 2026 · 1,840 person-hours`
 
-- Codebook platform `46%`
+- Orchestration mesh `46%`
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`
@@ -208,7 +208,7 @@ Many decks need a "where are we?" panel: three or four labelled progress bars st
 
 ## Phase 1 readiness, by workstream.
 
-- Codebook platform `92%` `on-track`
+- Orchestration mesh `92%` `on-track`
 - Operations runbook `68%` `at-risk`
 - Compliance audit pack `81%` `on-track`
 - SDK polyglot parity `34%` `deferred`
@@ -247,13 +247,13 @@ A Kanban board is the natural cousin of `gantt`: top-level items are columns ins
 ## Where Phase 2 work stands today.
 
 - Backlog
-  - Per-purpose codebooks `S`
+  - Per-purpose packs `S`
     - compliance
-  - Crypto-shred runbook `M`
+  - Deprovision runbook `M`
     - platform
   - Dependency dashboard `S`
 - In progress
-  - Multi-tenant DEKs `M`
+  - Multi-tenant adapters `M`
     - platform `at-risk`
   - Examiner pack v2 `L`
     - compliance
@@ -261,9 +261,9 @@ A Kanban board is the natural cousin of `gantt`: top-level items are columns ins
   - Automated rotation `M`
     - platform
 - Done
-  - Codebook signing `L`
+  - Pack signing `L`
     - platform `done`
-  - HSM audit trail `M`
+  - Registry audit trail `M`
     - compliance `done`
 ```
 
@@ -347,10 +347,10 @@ Nested unordered list = tree. Reporting structures, system component hierarchies
 ```markdown
 <!-- _class: org -->
 
-## Who reports into the codebook platform org.
+## Who reports into the orchestration mesh org.
 
 - Platform Director `12 reports`
-  - Codebook engineering `5`
+  - Mesh engineering `5`
     - Cryptography lead
     - Signing pipeline lead
     - SDK lead × 3
@@ -400,10 +400,10 @@ Every meaningful deck ends with three or four expected questions and the team's 
 
 ## What we expect to be asked, and what we will say.
 
-- Why not extend the existing vault for two more years?
-  - The vault model adds 50 ms per detokenize. With per-record reads in the new claims pipeline, that adds 8 minutes to a single batch — outside the SLA. The architecture cannot absorb it.
-- What if the HSM vendor changes pricing in 2027?
-  - Our KEK material is portable across the three HSMs in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The codebook model insulates us.
+- Why not extend the existing gateway for two more years?
+  - The gateway model adds 50 ms per resolve. With per-record reads in the new claims pipeline, that adds 8 minutes to a single batch — outside the SLA. The architecture cannot absorb it.
+- What if the managed-inference vendor changes pricing in 2027?
+  - Our model weights are portable across the three control planes in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The capability-pack model insulates us.
 - How is this different from what Vendor X just announced?
   - Vendor X announced a hosted version of the same idea. We have the same architecture in-process, with no per-tenant licensing and no data leaving the boundary.
 ```
@@ -423,7 +423,7 @@ A horizontal axis with named endpoints and one or more markers. "Where does our 
 
 `Reactive ←——————————→ Anticipatory`
 
-- Codebook signing `0.9`
+- Pack signing `0.9`
 - Operations runbook `0.6`
 - Compliance audit `0.7`
 - SDK polyglot parity `0.3`

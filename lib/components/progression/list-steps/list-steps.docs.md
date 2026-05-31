@@ -121,7 +121,7 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 ## Three tracks for the next quarter.
 
 1. Platform hardening
-   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.
+   - Multi-tenant adapters, automated rotation, and the deprovision runbook land in this track.
 2. Compliance posture
    - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.
 3. Developer surface

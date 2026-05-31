@@ -10,9 +10,9 @@ Every H2 (`## ...`) is a complete declarative sentence. Not a noun phrase,
 not a fragment, not a question.
 
 ```md
-## The codebook is signed by the control plane.   ← yes
-## Codebook signing                                ← no
-## How does the codebook get signed?               ← no
+## The capability pack is signed by the control plane.  ← yes
+## Capability-pack signing                               ← no
+## How does the capability pack get signed?              ← no
 ```
 
 The reason: a deck is read at speed. A reader scans the H2 to know what
@@ -20,9 +20,9 @@ the slide is *about*. A noun phrase makes them work. A complete sentence
 delivers the slide's claim.
 
 A complete sentence in the H2 also forces the writer to figure out what
-the slide is actually saying. "Codebook signing" doesn't commit to
-anything. "The codebook is signed by the control plane" makes a claim,
-and now the body has to support it.
+the slide is actually saying. "Capability-pack signing" doesn't commit
+to anything. "The capability pack is signed by the control plane" makes
+a claim, and now the body has to support it.
 
 ## Speak-first writing
 
@@ -57,9 +57,9 @@ body delivers the support. Don't restate the claim in the body opening.
 ```md
 ## The audit log lives outside the platform's control.
 
-Every DEK unwrap operation is logged by CloudHSM itself, in a stream
-the platform cannot write to. A compromised application cannot forge
-or erase the trail.
+Every adapter unwrap operation is logged by the policy registry itself,
+in a stream the platform cannot write to. A compromised application
+cannot forge or erase the trail.
 ```
 
 The body doesn't open with "The audit log is external because..." —
@@ -70,10 +70,10 @@ claim with the specific mechanism.
 
 When you have a choice, prefer the concrete noun.
 
-- "AWS CloudHSM" beats "the key management infrastructure"
+- "The policy registry" beats "the governance infrastructure"
 - "Twelve weeks" beats "a meaningful timeline"
-- "The control plane signs the codebook" beats "Authorization happens
-  at the control-plane layer"
+- "The control plane signs the capability pack" beats "Authorization
+  happens at the control-plane layer"
 
 Concrete nouns are faster to read, easier to remember, and harder to
 fake. Abstract nouns let the writer hide behind ambiguity. A deck that
@@ -87,15 +87,15 @@ Most slide prose should be active voice with the actor named:
 - "Procurement files the request" beats "A request is filed"
 
 The exception is when the actor is genuinely irrelevant (passive: "The
-codebook is signed before issuance" — fine if the next sentence names
-who) or when the verb is the focus (passive: "The DEK is zeroed on
-close" — emphasizes the zeroing, not the zeroer).
+capability pack is signed before issuance" — fine if the next sentence
+names who) or when the verb is the focus (passive: "The adapter is
+evicted on close" — emphasizes the eviction, not the evictor).
 
-Named actors also make role-based prose work. "The HSM admin manages
-KEK lifecycle. The platform operator manages policy. The application
-holds time-bound codebooks." Three sentences, three actors, clear
-boundaries — the structure delivers the access-control story without
-any extra explanation.
+Named actors also make role-based prose work. "Platform Governance
+manages base-policy lifecycle. The platform operator manages policy. The
+application holds time-bound capability packs." Three sentences, three
+actors, clear boundaries — the structure delivers the access-control
+story without any extra explanation.
 
 ## Numbered lists, ordered or not
 
@@ -116,13 +116,13 @@ noun phrases and verb phrases.
 
 Good card title sets:
 
-- "Layer 1 · HSM audit" / "Layer 2 · Control plane audit" / "Layer 3 · SDK local audit"
+- "Layer 1 · Registry audit" / "Layer 2 · Control plane audit" / "Layer 3 · SDK local audit"
 - "Strategic Bets" / "Quick Wins" / "Defer" / "Time Sinks"
 - "What works" / "What requires tuning"
 
 Bad card title sets:
 
-- "Layer 1 · HSM audit" / "Validate the application" / "Bonus: SDK"
+- "Layer 1 · Registry audit" / "Validate the application" / "Bonus: SDK"
 
 Parallel structure helps the reader scan the cards as a set.
 

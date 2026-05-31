@@ -41,11 +41,11 @@ const {
 const UL_FOUR = (
   '<ul>' +
     '<li>Strategic Bets<ul>' +
-      '<li>Codebook caching <code>3, 70</code></li>' +
-      '<li>Multi-tenant DEKs <code>7, 85</code></li>' +
+      '<li>Pack caching <code>3, 70</code></li>' +
+      '<li>Multi-tenant adapters <code>7, 85</code></li>' +
     '</ul></li>' +
     '<li>Quick Wins<ul>' +
-      '<li>Per-purpose codebooks <code>8, 40</code></li>' +
+      '<li>Per-purpose packs <code>8, 40</code></li>' +
     '</ul></li>' +
     '<li>Defer<ul>' +
       '<li>Vendor scoping <code>4, 55</code></li>' +
