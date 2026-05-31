@@ -39,22 +39,22 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 <!-- _class: timeline-list -->
 <!-- _footer: "Stress test · timeline-list" -->
 
-`Mesh architecture`
+`Decision framework`
 
 ## Stress test — six milestones over three years, each described as inevitable in hindsight.
 
-1. `2023 Q4` Centralised gateway round-trip
-   - First production orchestration on a centralised gateway. p99 60 ms, and it browned out precisely when the board joined the demo.
-2. `2024 Q2` In-process capability-pack proposal `decision`
-   - Architecture review accepts the in-process model. The review board and the build team are the same six people.
-3. `2024 Q4` Capability-pack GA `live`
-   - Phase 1 rollout complete; twelve production tenants migrated, all of whom asked to migrate back once.
-4. `2025 Q2` Multi-tenant adapter rotation `live`
-   - Per-tenant adapter isolation shipped; caching cut p99 below 5 ms. The slide does not mention what the cold path costs.
-5. `2025 Q4` Cross-region replication `at-risk`
-   - Active-active pack replication enters pilot. "Active-active" remains a single region with ambitions.
-6. `2026 Q2` Deprovision tooling
-   - Per-purpose deletion and examiner evidence pack in build — demoed once, never yet run in anger.
+1. `2023 Q4` Quarterly re-litigation
+   - Every prioritisation argued from first principles in a recurring meeting. Average close 4 hours, and the worst one ran an entire offsite, precisely when the board joined.
+2. `2024 Q2` Framework proposal `decision`
+   - Architecture review accepts the scoring model. The review board and the build team are the same six people.
+3. `2024 Q4` Scoring policy GA `live`
+   - Phase 1 rollout complete; twelve product teams onboarded, all of whom asked to go back to the spreadsheet once.
+4. `2025 Q2` Per-team calibration `live`
+   - Per-team scoring weights shipped; the calibration loop cut p99 decision close to 18 minutes. The slide does not mention what the cold path costs.
+5. `2025 Q4` Org-wide enablement `at-risk`
+   - Org-wide adoption enters pilot. "Org-wide" remains one pilot team with ambitions.
+6. `2026 Q2` Auditor export
+   - Decision-log export and the auditor evidence pack in build — demoed once, never yet run in anger.
 
 
 ---

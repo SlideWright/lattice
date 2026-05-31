@@ -7,11 +7,11 @@
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Capability-pack signing in production
- * - [x] Registry-anchored audit trail
- * - [-] TTL refresh under cold-start load — _open, see slide 27_
- * - [ ] Multi-tenant operation — _Phase 2_
- * - [/] Cross-region replication — _deferred to Phase 3_
+ * - [x] Scoring policy live across all pilot teams
+ * - [x] Decision Log audit trail readable by Auditor role
+ * - [-] Examiner pack auto-generation — _open, see slide 27_
+ * - [ ] Multi-team calibration cadence — _Phase 2_
+ * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
  *   [x] → pass + state-full     (filled disc, --pass green)

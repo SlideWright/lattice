@@ -45,24 +45,24 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the en
 
 `2026 Q1 → 2026 Q4`
 
-## Stress test — four workstreams, twelve tasks, one deprovision bar nobody wants to own.
+## Stress test — four workstreams, twelve tasks, one recalibration bar nobody wants to own.
 
-- Platform Engineering
-  - Capability-pack signing service `Q1 → Q2` `done`
-  - Multi-tenant adapter rotation `Q2 → Q3` `live`
-  - Per-purpose pack caching `Q3 → Q4` `at-risk`
-- Operations & SRE
-  - Manual model rotation `Q1 → Q2` `done`
-  - Automated rotation pipeline `Q2 → Q3` `live`
-  - Deprovision tooling `Q3 → Q4` `blocked`
-- Compliance & Audit
-  - Continuous audit trail `Q1 → Q3` `done`
-  - Centralised examiner log `Q2 → Q4` `live`
-  - Examiner evidence pack `Q3 → Q4`
-- SDK & Integrations
-  - Java and .NET parity `Q1 → Q2` `done`
-  - Polyglot SDK parity `Q2 → Q4` `at-risk`
-  - Edge runtime bindings `Q3 → Q4`
+- Signal Intake
+  - Connector v1 `Q1 → Q2` `done`
+  - Multi-source dedupe `Q2 → Q3` `live`
+  - Anomaly auto-routing `Q3 → Q4` `at-risk`
+- Scoring
+  - Equal-weights model `Q1 → Q2` `done`
+  - Per-team calibration `Q2 → Q3` `live`
+  - Weight rollback tooling `Q3 → Q4` `blocked`
+- Decision Log
+  - Append-only schema `Q1 → Q3` `done`
+  - Outcome auto-pairing `Q2 → Q4` `live`
+  - Auditor evidence pack `Q3 → Q4`
+- Adoption
+  - Pilot onboarding `Q1 → Q2` `done`
+  - Org-wide enablement `Q2 → Q4` `at-risk`
+  - Per-decision profiles `Q3 → Q4`
 
 
 ---

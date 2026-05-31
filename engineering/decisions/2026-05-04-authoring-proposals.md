@@ -57,7 +57,7 @@ The system has 26 layouts and **two** modifiers (`dark` everywhere, `left` on `i
 
 Authors today work around the gap in three predictable ways:
 
-- **They overload `cards-grid` and `compare-prose`** for any mid-deck content slide. Look at any non-trivial deck (the orchestration-mesh deck on screen right now is a faithful sample): half the slides are one of these two layouts because nothing more specific exists.
+- **They overload `cards-grid` and `compare-prose`** for any mid-deck content slide. Look at any non-trivial deck (the decision-framework deck on screen right now is a faithful sample): half the slides are one of these two layouts because nothing more specific exists.
 - **They rebuild visual variations by hand** — duplicating `cards-stack` slides and tweaking one to feel "more important", or pasting `## STAGE 01` strings into `list-steps` because the layout only knows the word `STEP`.
 - **They mix presentation and prose** when a slide needs to feel different — putting `> blockquote` panels everywhere because that is the only "this matters more" primitive.
 
@@ -124,7 +124,7 @@ Each entry below is the layout, the modifiers I propose, and a one-line rational
 
 **`divider`**
 - `numbered` — auto-increments "01 / N" using a CSS counter scoped to `section.divider`. The author writes the title; the index is computed.
-- `appendix` — distinct treatment (lighter weight, `APPENDIX` label, no accent bar). Solves the user's orchestration-mesh-deck pattern (`Appendix A · Infrastructure`) without manual styling.
+- `appendix` — distinct treatment (lighter weight, `APPENDIX` label, no accent bar). Solves the user's decision-framework-deck pattern (`Appendix A · Infrastructure`) without manual styling.
 - `progress` — stamps tick marks for total sections with the current one filled. Makes "where am I in the deck" legible.
 
 **`subtopic` / `closing`**
@@ -225,7 +225,7 @@ This is the layout authors abuse most because there is no native "decision" layo
 - `three` — three-way comparison.
 - `vertical` — stack the cards vertically. For long-body comparisons where horizontal forces ellipsis.
 
-The author of the orchestration-mesh deck has eight `compare-prose` slides, every one of which is a "considered then chose" — `decision` would name that intent directly.
+The author of the decision-framework deck has eight `compare-prose` slides, every one of which is a "considered then chose" — `decision` would name that intent directly.
 
 **`compare-table`**
 - `striped` — zebra rows.
@@ -331,11 +331,11 @@ The "we picked X" slide. Heavier than `closing`, lighter than `featured`. Author
 `Decision · 2026 Q1`
 
 - **Build**
-  - Owns the architecture, the operating model, the timeline. And the pager.
+  - Owns the scoring policy, the calibration loop, the timeline. And the pager.
 - **Why not buy**
-  - Three vendors evaluated; none cover the residency boundary in-process. All three decks were the same deck.
+  - Three vendors evaluated; none expose calibration weights to the customer. All three decks were the same deck.
 - **Why not delay**
-  - The compliance window closes in 18 months. This sentence has been in the deck since Q1 2025.
+  - The competitive window closes in 18 months. This sentence has been in the deck since Q1 2025.
 ```
 
 A single decision verb in big display weight, three short justifications below. Modifiers: `build` / `buy` / `defer` / `pivot` (semantic colour treatment per verb).
@@ -351,11 +351,11 @@ A grid: rows = workstreams, columns = phases, cells = deliverables. Authors toda
 
 ## What ships in each phase, and what Phase 03 has been promising since 2024.
 
-| Workstream | Phase 01           | Phase 02              | Phase 03              |
-| ---------- | ------------------ | --------------------- | --------------------- |
-| Platform   | Pack signing       | Multi-tenant adapters | Per-purpose packs     |
-| Operations | Manual rotation    | Automated rotation    | Deprovision           |
-| Compliance | Audit trail (registry) | Centralised log   | Examiner pack         |
+| Workstream    | Phase 01            | Phase 02             | Phase 03              |
+| ------------- | ------------------- | -------------------- | --------------------- |
+| Signal Intake | Connector v1        | Multi-source dedupe  | Anomaly auto-routing  |
+| Scoring       | Equal-weights model | Per-team calibration | Per-decision profiles |
+| Decision Log  | Append-only schema  | Outcome auto-pairing | Auditor export        |
 ```
 
 The first column is treated as a workstream label (sticky). Phase columns get phase chrome (number badge, accent gradient progressing left-to-right). Empty cells render as a thin dash.
@@ -372,11 +372,11 @@ Like `stats`, but with trend signals. For business decks where every number has 
 ## Where we are against quarter targets, on the most generous reading.
 
 1. **94%**
-   - Orchestration success — _target 99%, +2pp QoQ, the last five points are described as "known"_
-2. **8 ms**
-   - p99 resolve — _target 10 ms, -3 ms QoQ, browns out precisely when the board joins the demo_
+   - Signal-classification success — _target 99%, +2pp QoQ, the last five points are described as "known"_
+2. **18 min**
+   - p99 decision close — _target 20 min, -2 hr QoQ, runs long precisely when the board joins the review_
 3. **0**
-   - Examiner findings — _target 0, flat, because the examiner has not yet read the audit trail_
+   - Auditor findings — _target 0, flat, because the auditor has not yet read the audit trail_
 ```
 
 Number, label, sub-line with target + trend. Trend arrows colour by direction. Modifiers: `target` (highlights gap), `trend` (sparkline placeholder).
@@ -390,14 +390,14 @@ Two halves with a big arrow between. Today authors use `compare-code before-afte
 ```markdown
 <!-- _class: before-after -->
 
-## Resolve used to require a gateway round-trip.
+## Decisions used to require a quarterly re-litigation.
 
-`Latency story · before vs after`
+`Decision story · before vs after`
 
 - **Before**
-  - Every resolve call: network round-trip to the central inference gateway, average 18 ms, p99 60 ms. Gateway outages cascaded into application outages, which was called "shared fate" in the architecture review.
+  - Every prioritization debate from first principles: a from-scratch quarterly review, average close 4 hours, p99 an entire offsite. Re-litigation cascaded into missed timing, which was called "shared fate" in the architecture review.
 - **After**
-  - Resolve is a local function call. p99 8 ms. Gateway outages do not affect handled-record reads. The gateway still browns out precisely when the board joins the demo.
+  - A decision closes against logged weights. p99 18 min. Re-litigation does not affect already-logged decisions. The review still runs long precisely when the board joins the demo.
 ```
 
 Renders left card, large arrow, right card. Modifier `vertical` stacks them with the arrow rotated.
@@ -429,14 +429,14 @@ A list of actors with their responsibilities, formatted as role-tag chips + body
 ```markdown
 <!-- _class: actors -->
 
-## Who owns each part of the capability-pack lifecycle.
+## Who owns each part of the framework lifecycle.
 
-- **Platform Governance** `policy custody`
-  - Manages base-policy ceremonies and rotation. Never holds raw tenant adapters, and is name-dropped in every architecture review by people who cannot find it.
-- **Platform operator** `policy`
-  - Owns capability-pack policy, signing keys, version floors. Currently one person. This is noted in the risk register.
-- **Application team** `consumption`
-  - Holds time-bound capability packs; orchestrates/resolves in-process. Primarily interacts with the mesh by asking the operator to adjust the policy.
+- **Signal custody** `Signal owner`
+  - Manages intake quality and source diversity, and is name-dropped in every architecture review by people who cannot find it.
+- **Policy** `Framework operator`
+  - Owns the scoring policy, calibration cadence, version floors. Currently one person. This is noted in the risk register.
+- **Consumption** `Product team`
+  - Holds time-bound scoring profiles; runs intake and decision-logging. Primarily interacts with the framework by asking the operator to adjust the weights.
 ```
 
 Strong = role name; inline-code = role tag (chip); body = responsibility.
@@ -454,9 +454,9 @@ A list of single-line takeaways with optional reference numbers ("→ slide 14")
 
 `Section 03 · Recap`
 
-- The capability-pack model gets in-process latency with gateway-grade policy custody. The unit of distribution, and the unit of incident. → slide 8
-- Rotation is a version-floor increment, not a coordinated cutover. Demoed once, never yet run in anger. → slide 12
-- Per-tenant base policies make deprovision a single control-plane op — the revocation playbook nobody has had to run. → slide 18
+- The decision framework gets calibrated prioritization with audit-grade decision custody. The unit of distribution, and the unit of incident. → slide 8
+- Recalibration is a version-floor increment, not a coordinated cutover. Demoed once, never yet run in anger. → slide 12
+- Per-team scoring weights make a weight rollback a single calibration-loop op — the revocation playbook nobody has had to run. → slide 18
 - Phase 1 ships the architecture, Phase 2 ships the operations, Phase 3 ships the apology. → slide 22
 - Five questions stay open until Phase 1 closes them on the record. Two of them will reopen in Phase 2. → slide 27
 ```
@@ -493,12 +493,12 @@ Term left, definition right, two-column. Useful for spec / protocol / jargon-hea
 
 ## The vocabulary used in this deck.
 
-- **Capability pack**
-  - The signed envelope an SDK installs. Carries policy, wrapped tenant adapter, version, expiry. The unit of distribution, and the unit of incident.
-- **Tenant adapter**
-  - Per-tenant fine-tune. Wrapped by a base policy; lives unwrapped only in native memory, never on disk, never in a screenshot.
-- **Base policy**
-  - The governance root. Lives in the control plane, never exported. Name-dropped in every architecture review by people who cannot find it.
+- **Scoring policy**
+  - The signed artifact an SDK installs. Carries weights, per-team calibration, version, expiry. The unit of distribution, and the unit of incident.
+- **Per-team weights**
+  - Per-team calibration. Rooted in the calibration policy; lives applied only in the live model, never on disk, never in a screenshot.
+- **Calibration policy**
+  - The scoring policy root. Lives in the calibration loop, never exported. Name-dropped in every architecture review by people who cannot find it.
 ```
 
 ### 3.11 `legend` — the explicit key
@@ -529,11 +529,11 @@ Pure checkbox list. Each item has a state (`[x]`, `[ ]`, `[-]`).
 
 ## Phase 1 acceptance, by item.
 
-- [x] Pack signing in production
-- [x] Registry-anchored audit trail
-- [x] One client integrated end-to-end
-- [-] TTL refresh under cold-start load — _open, see slide 27_
-- [ ] Multi-tenant operation — _Phase 2_
+- [x] Scoring policy in production
+- [x] Decision Log audit trail
+- [x] One team integrated end-to-end
+- [-] Auditor pack auto-generation — _open, see slide 27_
+- [ ] Multi-team calibration — _Phase 2_
 ```
 
 States colour-mapped: ✓ pass, – warn, ☐ pending. Reuses the `--pass`/`--warn`/`--fail` palette.

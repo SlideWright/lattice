@@ -889,7 +889,7 @@ See [split-statement.gallery.light.pdf](../../lib/components/statement/split-sta
 
 **Tags** `ownership` · `onboarding` · `reference`
 
-Use to show 'who owns what' across a process, capability pack, or org chart. Two-column layout: actor on left, responsibilities on right.
+Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 #### When to use
 
@@ -3432,12 +3432,12 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 
 ## Three tracks for the next quarter.
 
-1. Platform hardening
-   - Multi-tenant adapters, automated rotation, and the deprovision runbook nobody has had to run land in this track.
-2. Compliance posture
-   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window, give or take a window.
+1. Scoring hardening
+   - Per-team calibration, automated weight updates, and the recalibration playbook nobody has had to run land in this track.
+2. Audit posture
+   - Auditor evidence pack v2 and the decision-log audit trail ship for the Q3 audit window, give or take a window.
 3. Developer surface
-   - Polyglot SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.
+   - Signal-SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.
 ```
 
 ##### `stage` — Stage
@@ -3598,14 +3598,14 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 `Three-horizon planning`
 
-## Where the platform invests across horizons — Horizon 3 has lived there since 2024.
+## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
 
-| Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
-| ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Pack signing     | [-] Multi-tenant adapters    | [ ] Per-purpose packs |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Deprovision          |
-| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
-| SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
+| Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
+| ------------- | ------------------------ | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1     | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
+| Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
+| Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 ```
@@ -3621,12 +3621,12 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 ## Delivery status by workstream, as of the most flattering snapshot.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Pack signing | [-] Multi-tenant adapters  | [ ] Per-purpose packs |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Deprovision          |
-| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
-| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |
+| ------------- | -------------------- | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |
+| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
+| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 ```
@@ -3642,12 +3642,12 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 ## Each team's track across the year, momentum implied by the arrows.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
-| Operations | Manual rotation      | Automated rotation     | Deprovision              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
-| SDK        | Java                 | .NET                   | Polyglot parity           |
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
+| Adoption      | One pilot team       | Second team            | Org-wide enablement       |
 ```
 
 ##### `milestones` — Milestones — calendar-aware
@@ -3661,11 +3661,11 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 ## The dated path to GA, dates subject to the usual revision.
 
-| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
-| Operations | Manual rotation      | Automated rotation     | Deprovision              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Workstream    | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
 ```
 
 #### Universal modifiers
@@ -3945,21 +3945,21 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Orchestration · Q4 2026
+### Framework · Q4 2026
 ## One metric below target; remediation under way, as it has been for two quarters.
 
 1. **94%**
-   - Orchestration success
+   - Signal-classification success
    - target 99% · -5pp `At risk` `Board`
-2. **8 ms**
-   - p99 resolve
-   - target 10 ms `On plan` `SRE`
+2. **18 min**
+   - p99 decision close
+   - target 20 min `On plan` `Ops`
 3. **0**
-   - Examiner findings
+   - Auditor findings
    - target 0 — nobody has opened the log to check `On plan` `Audit`
 4. **3.2×**
-   - Resolve headroom
-   - target 2× `On plan` `Platform`
+   - Calibration headroom
+   - target 2× `On plan` `Framework`
 ```
 
 ##### `ops` — Ops — SLO / SLA grid
@@ -4711,10 +4711,10 @@ Hollows the pie into a donut. Visually cleaner for executive decks; the centre c
 
 Wedges drawn proportionally; the toil-and-on-call slice is the one nobody put in the roadmap.
 
-- Orchestration mesh `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
+- Signal Intake build `46%`
+- Scoring policy work `22%`
+- Decision Log integration `18%`
+- Explaining the framework to stakeholders `9%`
 - Toil and on-call `5%`
 ```
 
@@ -4803,7 +4803,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`stats`](#stats) — independent headline metrics, no completion scale
 - [`gantt`](#gantt) — the rows are time-bound and need a date axis
 - [`checklist`](#checklist) — binary done / not-done across a flat list
-- [`timeline-list`](#timeline-list) — the workstreams resolve in sequence, not in parallel
+- [`timeline-list`](#timeline-list) — the workstreams complete in sequence, not in parallel
 
 #### Demo deck
 
@@ -4840,20 +4840,20 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 
 ## Where to put the next dollar, having spent the last one on a workshop.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort estimated in story-points; reach as percent of addressable teams.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board export `9, 28`
 ```
 
 #### Slots
@@ -4895,10 +4895,10 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 ## Where to put the next dollar — sized by revenue nobody has booked yet.
 
 - Strategic Bets
-  - Pack caching `3, 70, 2.4`
-  - Multi-tenant adapters `5, 85, 4.1`
+  - Scoring model v2 `3, 70, 2.4`
+  - Per-team calibration `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose packs `8, 80, 0.9`
+  - Weekly signal brief `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -4918,8 +4918,8 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 ## How each bet moved after one quarter — mostly to the left, where the work is cheaper to describe.
 
 - Strategic Bets
-  - Pack caching `5, 60` `3, 78`
-  - Multi-tenant adapters `7, 70` `5, 88`
+  - Scoring model v2 `5, 60` `3, 78`
+  - Per-team calibration `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -4938,17 +4938,17 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 ## Where to put the next dollar — clustered by theme, themed by whoever owns the slide.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board export `9, 28`
 ```
 
 ##### `threshold` — Threshold — target lines + zones
@@ -4963,10 +4963,10 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 ## Against the go/no-go thresholds nobody has agreed to enforce.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -4982,17 +4982,17 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The agentic-platform Magic Quadrant, in which everyone is a Leader.
+## The decision-tooling Magic Quadrant, in which the tool we built is a Leader.
 
 - Challengers
-  - Legacy Inc `30, 82`
+  - Productboard `30, 82`
 - Leaders
-  - Lattice `85, 88`
-  - Gateway Corp `72, 76`
+  - Sprig + Log `85, 88`
+  - Chorus `72, 76`
 - Niche Players
-  - Boutique Inference `25, 28`
+  - Notion build-out `25, 28`
 - Visionaries
-  - Prompt Labs `82, 34`
+  - Spreadsheet `82, 34`
 ```
 
 ##### `minimal` — Minimal — no fill, faint grid
@@ -5007,10 +5007,10 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 ## Where to put the next dollar — unadorned, like the budget that funds it.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`

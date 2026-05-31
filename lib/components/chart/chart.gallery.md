@@ -87,11 +87,11 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
-- Framework `92%` `on-track`
-- Adoption & enablement `68%` `at-risk`
-- Decision log `81%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
 - Calibration cadence `34%` `deferred`
-- Board reporting `12%` `blocked`
+- Adoption `12%` `blocked`
 
 ---
 

@@ -29,20 +29,20 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 
 ## Where to put the next dollar, having spent the last one on a workshop.
 
-Effort estimated in story-points; reach as percent of addressable users.
+Effort estimated in story-points; reach as percent of addressable teams.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board export `9, 28`
 ```
 
 ## Slots
@@ -84,10 +84,10 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 ## Where to put the next dollar — sized by revenue nobody has booked yet.
 
 - Strategic Bets
-  - Pack caching `3, 70, 2.4`
-  - Multi-tenant adapters `5, 85, 4.1`
+  - Scoring model v2 `3, 70, 2.4`
+  - Per-team calibration `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose packs `8, 80, 0.9`
+  - Weekly signal brief `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -107,8 +107,8 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 ## How each bet moved after one quarter — mostly to the left, where the work is cheaper to describe.
 
 - Strategic Bets
-  - Pack caching `5, 60` `3, 78`
-  - Multi-tenant adapters `7, 70` `5, 88`
+  - Scoring model v2 `5, 60` `3, 78`
+  - Per-team calibration `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -127,17 +127,17 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 ## Where to put the next dollar — clustered by theme, themed by whoever owns the slide.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board export `9, 28`
 ```
 
 ### `threshold` — Threshold — target lines + zones
@@ -152,10 +152,10 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 ## Against the go/no-go thresholds nobody has agreed to enforce.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -171,17 +171,17 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The agentic-platform Magic Quadrant, in which everyone is a Leader.
+## The decision-tooling Magic Quadrant, in which the tool we built is a Leader.
 
 - Challengers
-  - Legacy Inc `30, 82`
+  - Productboard `30, 82`
 - Leaders
-  - Lattice `85, 88`
-  - Gateway Corp `72, 76`
+  - Sprig + Log `85, 88`
+  - Chorus `72, 76`
 - Niche Players
-  - Boutique Inference `25, 28`
+  - Notion build-out `25, 28`
 - Visionaries
-  - Prompt Labs `82, 34`
+  - Spreadsheet `82, 34`
 ```
 
 ### `minimal` — Minimal — no fill, faint grid
@@ -196,10 +196,10 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 ## Where to put the next dollar — unadorned, like the budget that funds it.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`

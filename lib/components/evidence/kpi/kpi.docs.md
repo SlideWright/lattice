@@ -97,21 +97,21 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Orchestration · Q4 2026
+### Framework · Q4 2026
 ## One metric below target; remediation under way, as it has been for two quarters.
 
 1. **94%**
-   - Orchestration success
+   - Signal-classification success
    - target 99% · -5pp `At risk` `Board`
-2. **8 ms**
-   - p99 resolve
-   - target 10 ms `On plan` `SRE`
+2. **18 min**
+   - p99 decision close
+   - target 20 min `On plan` `Ops`
 3. **0**
-   - Examiner findings
+   - Auditor findings
    - target 0 — nobody has opened the log to check `On plan` `Audit`
 4. **3.2×**
-   - Resolve headroom
-   - target 2× `On plan` `Platform`
+   - Calibration headroom
+   - target 2× `On plan` `Framework`
 ```
 
 ### `ops` — Ops — SLO / SLA grid

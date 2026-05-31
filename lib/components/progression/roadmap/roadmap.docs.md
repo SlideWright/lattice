@@ -72,14 +72,14 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 `Three-horizon planning`
 
-## Where the platform invests across horizons — Horizon 3 has lived there since 2024.
+## Where the framework invests across horizons — Horizon 3 has lived there since 2024.
 
-| Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
-| ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Pack signing     | [-] Multi-tenant adapters    | [ ] Per-purpose packs |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Deprovision          |
-| Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
-| SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
+| Workstream    | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
+| ------------- | ------------------------ | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1     | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights      | [-] Per-team calibration   | [ ] Per-decision profiles |
+| Decision Log  | [x] Append-only schema   | [x] Outcome auto-pairing | [ ] Auditor export        |
+| Adoption      | [x] One pilot team       | [/] Second team          | [ ] Org-wide enablement   |
 
 Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option set.
 ```
@@ -95,12 +95,12 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 ## Delivery status by workstream, as of the most flattering snapshot.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Pack signing | [-] Multi-tenant adapters  | [ ] Per-purpose packs |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Deprovision          |
-| Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
-| SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`      | Scale `Q4 2026`           |
+| ------------- | -------------------- | ------------------------ | ------------------------- |
+| Signal Intake | [x] Connector v1 | [-] Multi-source dedupe    | [ ] Anomaly auto-routing |
+| Scoring       | [x] Equal weights    | [-] Per-team calibration | [ ] Per-decision profiles |
+| Decision Log  | [x] Append schema    | [x] Outcome pairing      | [ ] Auditor export        |
+| Adoption      | [x] One pilot team   | [/] Second team          | [ ] Org-wide enablement   |
 
 State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ planned, ╱ out of scope.
 ```
@@ -116,12 +116,12 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 ## Each team's track across the year, momentum implied by the arrows.
 
-| Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
-| Operations | Manual rotation      | Automated rotation     | Deprovision              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
-| SDK        | Java                 | .NET                   | Polyglot parity           |
+| Workstream    | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
+| Adoption      | One pilot team       | Second team            | Org-wide enablement       |
 ```
 
 ### `milestones` — Milestones — calendar-aware
@@ -135,11 +135,11 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 ## The dated path to GA, dates subject to the usual revision.
 
-| Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
-| ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
-| Operations | Manual rotation      | Automated rotation     | Deprovision              |
-| Compliance | Audit trail          | Centralised log        | Examiner pack             |
+| Workstream    | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
+| ------------- | -------------------- | ---------------------- | ------------------------- |
+| Signal Intake | Connector v1     | Multi-source dedupe        | Anomaly auto-routing  |
+| Scoring       | Equal weights        | Per-team calibration   | Per-decision profiles    |
+| Decision Log  | Append schema        | Outcome pairing        | Auditor export            |
 ```
 
 ## Universal modifiers

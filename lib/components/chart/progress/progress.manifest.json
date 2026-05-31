@@ -32,7 +32,7 @@
   },
   "skeleton": "<!-- _class: progress -->\n\n`Eyebrow · context`\n\n## Progress by item.\n\n- First item `80%` `on-track`\n- Second item `55%` `at-risk`\n- Third item `30%` `blocked`\n",
   "anatomyBlock": "progress-canvas",
-  "sample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.\n\n- Framework `92%` `on-track`\n- Adoption & enablement `68%` `at-risk`\n- Decision log `81%` `on-track`\n- Calibration cadence `34%` `deferred`\n- Board reporting `12%` `blocked`\n",
+  "sample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Phase 1 readiness, by workstream.\n\nSnapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.\n\n- Signal Intake `92%` `on-track`\n- Scoring policy `68%` `at-risk`\n- Decision Log `81%` `on-track`\n- Calibration cadence `34%` `deferred`\n- Adoption `12%` `blocked`\n",
   "whenToUse": [
     {
       "title": "Parallel workstreams at a glance",
@@ -80,8 +80,8 @@
     },
     {
       "name": "timeline-list",
-      "when": "the workstreams resolve in sequence, not in parallel"
+      "when": "the workstreams complete in sequence, not in parallel"
     }
   ],
-  "stressSample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Stress test — eight workstreams, full status range, one honest pill.\n\n- Orchestration mesh `92%` `on-track`\n- Operations runbook `68%` `at-risk`\n- Compliance audit pack `81%` `on-track`\n- SDK polyglot parity `34%` `deferred`\n- Dependency dashboard `12%` `blocked`\n- Continuous audit trail `100%` `done`\n- Deprovision tooling `45%` `deferred`\n- Examiner log rollout `73%` `on-track`\n"
+  "stressSample": "<!-- _class: progress -->\n\n`H1 2026 · Phase 1 readiness`\n\n## Stress test — eight workstreams, full status range, one honest pill.\n\n- Signal Intake `92%` `on-track`\n- Scoring policy `68%` `at-risk`\n- Decision Log `81%` `on-track`\n- Per-team calibration `34%` `deferred`\n- Adoption `12%` `blocked`\n- Decision-log audit trail `100%` `done`\n- Recalibration playbook `45%` `deferred`\n- Auditor export rollout `73%` `on-track`\n"
 }

@@ -533,22 +533,22 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 <!-- _class: code -->
 <!-- _footer: "Single code block · code" -->
 
-`Implementation · Orchestration Pipeline`
+`Implementation · Decision Pipeline`
 
-## The orchestration call is three lines of code; the onboarding is three months.
+## Wiring a signal into the framework is three lines of code; the onboarding is three months.
 
-`JavaScript · SDK v2 interface`
+`JavaScript · DecisionFramework SDK v2 interface`
 
 ```javascript
-import { Mesh } from "@company/agentic-sdk";
+import { DecisionFramework } from "@company/signal-sdk";
 
-const mesh = new Mesh({ policyFile: "./policy.pack" });
+const framework = new DecisionFramework({ configFile: "./framework.config.json" });
 
-// Orchestrate at ingestion
-const handle = await mesh.orchestrate(prompt, { field: "prompt", tenant: "acme" });
+// Score a signal at intake
+const score = await framework.score(signal, { dimensions: ["confidence", "recency", "relevance"] });
 
-// Resolve only at point of use — every call is logged
-const outcome = await mesh.resolve(handle, { requestor: "claims-copilot" });
+// Log every decision — calibration depends on it (nobody calls this in prod)
+const entry = await framework.decisions.log(decision, { signals: [signal.id], rationale });
 ```
 
 ---
@@ -556,34 +556,35 @@ const outcome = await mesh.resolve(handle, { requestor: "claims-copilot" });
 <!-- _class: compare-code -->
 <!-- _footer: "Two code blocks · compare-code" -->
 
-`Before & After · Model Distribution`
+`Before & After · Scoring Mechanics`
 
-## File-distributed weights versus plane-governed weights.
+## Spreadsheet-driven scoring versus framework-driven scoring.
 
-`Before · File-distributed`
+`Before · The Honest Spreadsheet`
 
 ```python
-# Model weights on disk — anyone with
-# filesystem access is now a stakeholder
-with open('./tenant.adapter', 'rb') as f:
-    weights = f.read()
+# Manual scoring. Auditable in the
+# sense that you can see who edited it
+import pandas as pd
 
-model = Engine(weights)
-handle = model.run(prompt)
+signals = pd.read_csv('./signals.csv')
+signals['score'] = signals.apply(
+    lambda r: 0.33*r.confidence + 0.33*r.recency + 0.33*r.relevance,
+    axis=1,
+)
 ```
 
-`After · Control-plane governed`
+`After · The Framework`
 
 ```python
-# Weights never leave the registry —
-# every inference is audited, eventually
-import mesh
+# Calibrated weights, signed policy,
+# every score is audit-logged
+from decision_framework import Calibrator
 
-plane = mesh.ControlPlane()
-handle = plane.orchestrate(
-    pack='tenant/acme',
-    prompt=prompt,
-)['handle']
+calibrator = Calibrator.load('./policy.json')
+for signal in calibrator.intake.unscored():
+    calibrator.score(signal)
+    calibrator.decisions.log_if_relevant(signal)
 ```
 
 ---
@@ -720,7 +721,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Two-card layouts work equally well inverted to dark.
 
-- The architecture introduces exactly one model-distribution question — what protects the file holding the weights, and what is the blast radius the morning it leaves the host. The next forty slides are a confident, well-resourced exercise in deferring the answer.
+- The framework introduces exactly one hard question — who owns the scoring weights, and what happens to every past decision the morning someone changes them. The next forty slides are a confident, well-resourced exercise in deferring the answer.
 - The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
 ---
@@ -748,12 +749,12 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
-1. Capability-pack signing in production
-   - The registry-anchored signing pipeline runs end-to-end. The first signed pack installs cleanly on one real client, which we are calling general availability.
-2. Multi-tenant adapters
-   - One pack carries a distinct adapter per tenant with no per-tenant rebuild. Deprovisioning is a single control-plane op — demoed once, never yet run in anger.
-3. Per-purpose capability packs
-   - A pack scoped to a single business purpose takes minutes to author and a quarter to get approved. Audit trails distinguish the purposes nobody disputes.
+1. Scoring policy in production
+   - The signed scoring policy runs end-to-end. The first calibrated brief lands in leadership's inbox, which we are calling general availability.
+2. Per-team weights
+   - One framework carries distinct scoring weights per team with no per-team fork. Recalibration is a single policy update — demoed once, never yet run in anger.
+3. Per-decision-class profiles
+   - A scoring profile scoped to a single decision class takes minutes to author and a workshop series to agree on. Audit trails distinguish the classes nobody disputes.
 
 ---
 
@@ -780,10 +781,10 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Chosen flags the right-hand card as the winner.
 
-- Gateway round-trip
-  - Every resolve is a network hop to a central inference gateway. Latency is a function of distance, not code — p99 60 ms, and the gateway browns out precisely when the board joins the demo.
-- In-process capability pack
-  - Resolve is a local function call against an SDK-resident pack. p99 8 ms, and gateway outages stop cascading — a property we discovered after building the gateway, not before.
+- Quarterly re-litigation
+  - Every decision reopened from first principles each review. Close time is a function of seniority in the room, not evidence — average 4 hours, and the debate runs long precisely when the board joins.
+- Calibrated weights
+  - The decision resolves against logged weights and prior outcomes. Average 18 minutes, and the argument stops cascading into the next quarter — a property we discovered after building the loop, not before.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
 
@@ -797,7 +798,7 @@ The right card carries an accent left-edge and accent-tinted background — the 
 ## Decision composes chosen + rejected with a labelled connector.
 
 - Buy a vendor
-  - Three managed-inference vendors evaluated; none run inference in-process inside the residency boundary. Six months to integrate, then per-tenant licensing in perpetuity, renegotiated each year by whoever has not yet left.
+  - Three vendors evaluated; none expose the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
 - Build in-house
   - Owns the architecture, the operating model, and the timeline. Also owns the on-call rota, which is the line item nobody put in the business case.
 
@@ -812,10 +813,10 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
-- Before — manual rotation
-  - Operators book a rotation window, freeze the value stream, swap packs, run a verification pass, lift the freeze. Average outage 18 minutes; average post-mortem, ninety.
-- After — version-floor rotation
-  - The signing pipeline emits a new pack with an incremented version. Clients install on next refresh. No freeze, no cutover, no heroics worth a slide at all-hands.
+- Before — manual recalibration
+  - Operators book a recalibration window, freeze new decisions, swap weights, run a verification pass, lift the freeze. Average review pause 18 working hours; average post-mortem, ninety.
+- After — version-floor recalibration
+  - The calibration loop emits a new scoring policy with an incremented version. Teams pick it up on next refresh. No freeze, no cutover, no heroics worth a slide at all-hands.
 
 ---
 
@@ -826,12 +827,12 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Three switches the grid from 2 columns to 3 columns.
 
-- Capability pack
-  - The signed envelope an SDK installs — policy, a wrapped tenant adapter, version, expiry. The unit of distribution, and the unit of incident.
-- Tenant adapter
-  - The per-tenant fine-tune. Wrapped by the base policy, resident only in SDK memory, never on disk, never in a screenshot.
-- Base policy
-  - The governance root. Lives in the control plane, never exported, name-dropped in every architecture review by people who cannot find it.
+- Signal
+  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake, and frequently confused with "things the VP heard at a conference."
+- Decision
+  - A signal plus a deadline, logged with rationale and predicted outcome. In theory traceable to its signals; in practice the signal is often "we discussed it at the offsite."
+- Outcome
+  - The observed result, compared at retrospective to what we predicted. The unit of calibration. Eighteen logged so far, against roughly three hundred forty that occurred.
 
 ---
 
@@ -861,11 +862,11 @@ The left card is struck through to read as the option considered then dropped; t
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
 - Claim
-  - The capability-pack model buys in-process latency with gateway-grade policy custody — a sentence we will be repeating verbatim for two years.
+  - The framework buys calibrated prioritization with audit-grade decision custody — a sentence we will be repeating verbatim for two years.
 - Evidence
-  - Six-month pilot, four product teams, p99 resolve at 8 ms, zero cascading outages — measured by the team that predicted exactly this.
+  - Six-month pilot, four product teams, decision close-time down to 18 min, calibration run once — measured by the team that predicted exactly this.
 - Implication
-  - No vendor cutover. We keep funding the in-house build and ship the operational runbook "next phase," as is tradition.
+  - No vendor cutover. We keep funding the in-house build and ship org-wide enablement "next phase," as is tradition.
 
 ---
 
@@ -975,12 +976,12 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - Vendor A — strongest coverage, second-lowest TCO, and a roadmap slide that is mostly our logo.
-  - Vendor B — narrower coverage but the cheapest tier, which is the only number procurement read.
+  - Sprig + Log — strongest coverage, lowest TCO, and a roadmap slide that is mostly our logo. Built by the evaluation team.
+  - Productboard — narrower coverage but the cheapest tier, which is the only number procurement read.
 - High coverage / High cost
-  - Vendor C — full coverage, premium pricing, differentiators built for a market we are not in.
+  - Notion build-out — full coverage in theory, premium maintenance, and seven slightly different versions of the framework.
 - Low coverage / Low cost
-  - Vendor D — cheap, but leaves three residency boundaries uncovered.
+  - Chorus — cheap, but leaves three criteria uncovered, popular anyway.
 - Low coverage / High cost
   - _none — and that is the signal._
 
@@ -994,27 +995,27 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Decision · 2026 Q1`
 
 - **Build**
-  - Owns the architecture, the operating model, the timeline. And the pager.
+  - Owns the scoring policy, the calibration loop, the timeline. And the pager.
 - **Why not buy**
-  - Three managed-inference vendors evaluated; none run in-process inside the residency boundary, and all three decks were the same deck.
+  - Three vendors evaluated; none expose the calibration weights to the customer, and all three decks were the same deck.
 - **Why not delay**
-  - The compliance window closes in 18 months — two reorgs from now.
+  - The competitive window closes in 18 months — two reorgs from now.
 
 ---
 
 <!-- _class: before-after -->
 <!-- _footer: "New layout — before-after · before-after" -->
 
-## Resolve used to require a gateway round-trip.
+## Decisions used to require a quarterly re-litigation.
 
-`Latency story · before vs after`
+`Decision close-time · before vs after`
 
 - **Before**
-  - Every resolve: a network round-trip to the central gateway, average 18 ms, p99 60 ms, and an outage budget the gateway spent on our behalf.
+  - Every prioritization debate from first principles. Average close 4 hours, p99 an entire offsite, and the outcome was whatever the most senior person wanted, expressed as consensus.
 - **After**
-  - Resolve is a local function call. p99 8 ms. Gateway outages reach the status page, not the application.
+  - Decisions resolve against logged weights and prior outcomes. Average close 18 minutes. The argument reaches the retrospective, not the next quarter.
 
-The architecture change is the capability-pack model — local, signed, time-bound weights — not a gateway we tuned until everyone stopped asking.
+The architecture change is the calibration loop — logged, weighted, time-bound scoring — not a meeting we ran until everyone stopped arguing.
 
 ---
 
@@ -1034,12 +1035,12 @@ The architecture change is the capability-pack model — local, signed, time-bou
 
 ## What ships in each phase, by workstream.
 
-| Workstream | Phase 01          | Phase 02              | Phase 03              |
-| ---------- | ----------------- | --------------------- | --------------------- |
-| Platform   | Pack signing      | Multi-tenant adapters | Per-purpose packs     |
-| Operations | Manual rotation   | Automated rotation    | Deprovision           |
-| Compliance | Audit trail (reg) | Centralised log       | Examiner pack         |
-| SDK        | Java              |                       | Polyglot parity       |
+| Workstream    | Phase 01            | Phase 02             | Phase 03              |
+| ------------- | ------------------- | -------------------- | --------------------- |
+| Signal Intake | Connector v1        | Multi-source dedupe  | Anomaly auto-routing  |
+| Scoring       | Equal-weights model | Per-team calibration | Per-decision profiles |
+| Decision Log  | Append-only schema  | Outcome auto-pairing | Examiner export       |
+| Adoption      | One pilot team      |                      | Org-wide enablement   |
 
 The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
 
@@ -1051,17 +1052,17 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Where we are against the targets we set ourselves.
 
 1. **94%**
-   - Orchestration success
-   - target 99%, +2pp QoQ
-2. **8 ms**
-   - p99 resolve
-   - target 10 ms, -3 ms QoQ
-3. **0**
-   - Examiner findings
-   - target 0, flat
-4. **3.2×**
-   - Resolve headroom
-   - target 2×, +0.4× QoQ
+   - Signal-classification success
+   - target 99%, gap is "known issue"
+2. **18 min**
+   - p99 decision close
+   - target 20 min, beating target
+3. **18**
+   - Decisions logged
+   - target 340, gap is "cultural"
+4. **1**
+   - Calibration cycles run
+   - target 6, gap is "structural"
 
 ---
 
@@ -1081,16 +1082,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: actors -->
 <!-- _footer: "New layout — actors · actors" -->
 
-## Who owns each part of the capability-pack lifecycle.
+## Who owns each part of the framework lifecycle.
 
-- **Policy custody** `Governance`
-  - Runs base-policy ceremonies and rotation. Never holds an unwrapped adapter, and opens every review by saying so.
-- **Policy** `Platform operator`
-  - Owns pack policy, signing keys, version floors, and the revocation playbook nobody has had to run.
+- **Signal custody** `Signal owner`
+  - Runs intake quality and source diversity. Never tunes the weights directly, and opens every review by saying so.
+- **Policy** `Framework operator`
+  - Owns scoring policy, calibration cadence, version floors, and the rollback playbook nobody has had to run.
 - **Consumption** `Product team`
-  - Holds time-bound packs; orchestrates and resolves in-process; finds the bugs first.
-- **Oversight** `Examiner`
-  - Reads the registry audit trail, cannot read a prompt, and is the only role anyone actually fears.
+  - Holds time-bound scoring profiles; runs intake and decision-logging; finds the bugs first.
+- **Oversight** `Auditor`
+  - Reads the Decision Log audit trail, cannot edit weights, and is the only role anyone actually fears.
 
 ---
 
@@ -1101,9 +1102,9 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this section will tell you, in five lines.
 
-- The capability-pack model buys in-process latency with gateway-grade custody. → slide 8
-- Rotation is a version-floor increment, not a coordinated cutover, not a war room. → slide 12
-- Per-tenant base policies make deprovisioning a single control-plane op. → slide 18
+- The framework buys calibrated prioritization with audit-grade decision custody. → slide 8
+- Recalibration is a version-floor increment, not a coordinated freeze, not a war room. → slide 12
+- Per-team weights make recalibration a single policy update. → slide 18
 - Phase 1 ships the architecture, Phase 2 ships the operations, Phase 3 ships the apology. → slide 22
 - Five questions stay open until Phase 1 is forced to close them on the record. → slide 27
 

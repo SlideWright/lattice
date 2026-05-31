@@ -163,7 +163,7 @@
         "reference"
       ],
       "description": "Roster of responsibilities owned by named actors.",
-      "purpose": "Use to show 'who owns what' across a process, capability pack, or org chart. Two-column layout: actor on left, responsibilities on right.",
+      "purpose": "Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.",
       "variants": [],
       "effectiveVariants": [
         "accent",
@@ -4455,7 +4455,7 @@
         },
         {
           "name": "timeline-list",
-          "when": "the workstreams resolve in sequence, not in parallel"
+          "when": "the workstreams complete in sequence, not in parallel"
         }
       ],
       "galleryHref": "../../lib/components/chart/progress/progress.gallery.light.pdf"
@@ -4538,7 +4538,7 @@
           "description": "One li per item. Format: `Label — x, y[, size]`."
         }
       },
-      "skeleton": "<!-- _class: quadrant -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Where to put the next dollar, having spent the last one on a workshop.\n\nEffort estimated in story-points; reach as percent of addressable users.\n\n- Strategic Bets\n  - Pack caching `3, 70`\n  - Multi-tenant adapters `5, 85`\n- Quick Wins\n  - Per-purpose packs `8, 80`\n  - Snapshot exports `9, 55`\n- Defer\n  - Vendor scoping `2, 30`\n  - Manual rotation `1, 22`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n  - Bespoke SCIM `9, 28`\n",
+      "skeleton": "<!-- _class: quadrant -->\n\n`Effort 0–10 → Reach 0–100`\n\n## Where to put the next dollar, having spent the last one on a workshop.\n\nEffort estimated in story-points; reach as percent of addressable teams.\n\n- Strategic Bets\n  - Scoring model v2 `3, 70`\n  - Per-team calibration `5, 85`\n- Quick Wins\n  - Weekly signal brief `8, 80`\n  - Snapshot exports `9, 55`\n- Defer\n  - Vendor scoping `2, 30`\n  - Manual recalibration `1, 22`\n- Time Sinks\n  - Custom audit log UI `7, 18`\n  - Bespoke board export `9, 28`\n",
       "whenToUse": [
         {
           "title": "Two numeric axes carry the analysis",

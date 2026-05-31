@@ -84,12 +84,12 @@ Vertical sequence of steps, each with full description body.
 
 ## Three tracks for the next quarter.
 
-1. Platform hardening
-   - Multi-tenant adapters, automated rotation, and the deprovision runbook nobody has had to run land in this track.
-2. Compliance posture
-   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window, give or take a window.
+1. Scoring hardening
+   - Per-team calibration, automated weight updates, and the recalibration playbook nobody has had to run land in this track.
+2. Audit posture
+   - Auditor evidence pack v2 and the decision-log audit trail ship for the Q3 audit window, give or take a window.
 3. Developer surface
-   - Polyglot SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.
+   - Signal-SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.
 
 
 ---
