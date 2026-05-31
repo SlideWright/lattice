@@ -133,3 +133,14 @@
   --c-container:     light-dark(#D9E5E6, #20292A);
   --c-subcontainer:  light-dark(#CAD6D7, #313B3C);
 }
+
+:root{ /* chart-ink */
+  --chart-1-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-2-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-3-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-4-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-5-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-6-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-7-ink: light-dark(#0B0B0B, #0B0B0B);
+  --chart-8-ink: light-dark(#0B0B0B, #0B0B0B);
+}
