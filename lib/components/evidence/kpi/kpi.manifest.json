@@ -94,7 +94,7 @@
     "attention": {
       "label": "Attention — the slipping metric leads",
       "caption": "Promotes the one KPI in trouble to hero scale, with the supporting three holding their normal rank. Use when one number needs the room and the others provide reassurance.",
-      "sample": "<!-- _class: kpi attention -->\n\n### Authentication · Q4 2026\n## One metric below target; remediation under way.\n\n1. **94%**\n   - Token-issuance success\n   - target 99% · -5pp `At risk` `Board`\n2. **8 ms**\n   - p99 detokenize\n   - target 10 ms `On plan` `SRE`\n3. **0**\n   - Examiner findings\n   - target 0 `On plan` `Audit`\n4. **3.2×**\n   - Detokenize headroom\n   - target 2× `On plan` `Platform`\n"
+      "sample": "<!-- _class: kpi attention -->\n\n### Orchestration · Q4 2026\n## One metric below target; remediation under way.\n\n1. **94%**\n   - Orchestration success\n   - target 99% · -5pp `At risk` `Board`\n2. **8 ms**\n   - p99 resolve\n   - target 10 ms `On plan` `SRE`\n3. **0**\n   - Examiner findings\n   - target 0 `On plan` `Audit`\n4. **3.2×**\n   - Resolve headroom\n   - target 2× `On plan` `Platform`\n"
     },
     "ops": {
       "label": "Ops — SLO / SLA grid",

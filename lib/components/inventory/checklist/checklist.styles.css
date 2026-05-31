@@ -7,8 +7,8 @@
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Codebook signing in production
- * - [x] HSM-anchored audit trail
+ * - [x] Capability-pack signing in production
+ * - [x] Registry-anchored audit trail
  * - [-] TTL refresh under cold-start load — _open, see slide 27_
  * - [ ] Multi-tenant operation — _Phase 2_
  * - [/] Cross-region replication — _deferred to Phase 3_

@@ -73,7 +73,7 @@ Hollows the pie into a donut. Visually cleaner for executive decks; the centre c
 
 Wedges drawn proportionally; legend reads in author order with raw values.
 
-- Codebook platform `46%`
+- Orchestration mesh `46%`
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`

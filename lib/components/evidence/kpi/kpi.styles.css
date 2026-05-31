@@ -5,10 +5,10 @@
 /* ── KPI ───────────────────────────────────────────────────────────────
  * ## heading (with optional eyebrow h3 above)
  * 1. **94%**
- *    - Token-issuance success
+ *    - Orchestration success
  *    - target 99%, +2pp QoQ `On plan` `Board`
  * 2. **8 ms**
- *    - p99 detokenize
+ *    - p99 resolve
  *    - target 10 ms, -3 ms QoQ `On plan` `SRE`
  *
  * Executive KPI system. One cohesive base, five layout modifiers:

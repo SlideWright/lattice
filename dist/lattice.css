@@ -467,10 +467,10 @@ section::after {
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **Key custody** `HSM admin`
- *   - Manages KEK ceremonies and rotation. Never holds plaintext DEKs.
+ * - **Policy custody** `Governance`
+ *   - Manages base-policy ceremonies and rotation. Never holds unwrapped adapters.
  * - **Policy** `Platform operator`
- *   - Owns codebook policy, signing keys, version floors.
+ *   - Owns pack policy, signing keys, version floors.
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,
@@ -1522,8 +1522,8 @@ section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Codebook signing in production
- * - [x] HSM-anchored audit trail
+ * - [x] Capability-pack signing in production
+ * - [x] Registry-anchored audit trail
  * - [-] TTL refresh under cold-start load — _open, see slide 27_
  * - [ ] Multi-tenant operation — _Phase 2_
  * - [/] Cross-region replication — _deferred to Phase 3_
@@ -3780,10 +3780,10 @@ section .items .node .label-container {
 /* ── KPI ───────────────────────────────────────────────────────────────
  * ## heading (with optional eyebrow h3 above)
  * 1. **94%**
- *    - Token-issuance success
+ *    - Orchestration success
  *    - target 99%, +2pp QoQ `On plan` `Board`
  * 2. **8 ms**
- *    - p99 detokenize
+ *    - p99 resolve
  *    - target 10 ms, -3 ms QoQ `On plan` `SRE`
  *
  * Executive KPI system. One cohesive base, five layout modifiers:

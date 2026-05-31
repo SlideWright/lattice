@@ -97,20 +97,20 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Authentication · Q4 2026
+### Orchestration · Q4 2026
 ## One metric below target; remediation under way.
 
 1. **94%**
-   - Token-issuance success
+   - Orchestration success
    - target 99% · -5pp `At risk` `Board`
 2. **8 ms**
-   - p99 detokenize
+   - p99 resolve
    - target 10 ms `On plan` `SRE`
 3. **0**
    - Examiner findings
    - target 0 `On plan` `Audit`
 4. **3.2×**
-   - Detokenize headroom
+   - Resolve headroom
    - target 2× `On plan` `Platform`
 ```
 

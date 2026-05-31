@@ -60,12 +60,12 @@ Stable diagrams render with full theme control. Experimental ones marked 🔥 ma
 
 ```mermaid
 ---
-title: Codebook distribution
+title: Capability-pack distribution
 ---
 flowchart LR
-  A{{"AWS CloudHSM"}} --> B(["Control Plane"])
-  B -->|"signed codebook"| C["Consuming App"]
-  C -->|"tokenize / detokenize"| D[("Application DB")]
+  A{{"Policy Registry"}} --> B(["Control Plane"])
+  B -->|"signed pack"| C["Consuming App"]
+  C -->|"orchestrate / resolve"| D[("Application DB")]
   B -.->|"revocation"| C
 ```
 
@@ -81,18 +81,18 @@ flowchart LR
 
 ```mermaid
 ---
-title: Tokenize call sequence
+title: Orchestrate call sequence
 ---
 sequenceDiagram
   participant App
   participant SDK
-  participant HSM
-  App->>SDK: tokenize(SSN)
-  SDK->>SDK: verify codebook
-  SDK->>HSM: unwrap DEK
-  HSM-->>SDK: DEK plaintext
-  SDK-->>App: token
-  Note over SDK: DEK zeroed on close
+  participant Registry
+  App->>SDK: orchestrate(prompt)
+  SDK->>SDK: verify pack
+  SDK->>Registry: unwrap adapter
+  Registry-->>SDK: adapter weights
+  SDK-->>App: handle
+  Note over SDK: adapter evicted on close
 ```
 
 > Full theme support — actor backgrounds, signal colors, activation bars, note styling all themeable.
@@ -107,26 +107,26 @@ sequenceDiagram
 
 ```mermaid
 ---
-title: Tokenization SDK class model
+title: Agentic SDK class model
 ---
 classDiagram
-  class TokenizationSDK {
-    -Codebook codebook
-    -DEK dek
-    +tokenize(field, plaintext) Token
-    +detokenize(field, token, purpose) Plaintext
+  class AgenticSDK {
+    -CapabilityPack pack
+    -TenantAdapter adapter
+    +orchestrate(field, prompt) Handle
+    +resolve(field, handle, purpose) Outcome
   }
-  class Codebook {
+  class CapabilityPack {
     +String tenantId
     +int version
     +verify() boolean
   }
-  class DEK {
-    -byte[] keyMaterial
-    +zero() void
+  class TenantAdapter {
+    -byte[] weights
+    +evict() void
   }
-  TokenizationSDK *-- Codebook
-  TokenizationSDK *-- DEK
+  AgenticSDK *-- CapabilityPack
+  AgenticSDK *-- TenantAdapter
 ```
 
 > Themeable — `classText` controls label color; node fills inherit from `primaryColor`.
@@ -165,25 +165,25 @@ stateDiagram-v2
 
 ```mermaid
 ---
-title: Tenant codebook schema
+title: Tenant capability-pack schema
 ---
 erDiagram
-  TENANT ||--o{ CODEBOOK : "issues"
-  CODEBOOK ||--|{ DEK_VERSION : "wraps"
-  CODEBOOK ||--o{ AUDIT_EVENT : "emits"
+  TENANT ||--o{ CAPABILITY_PACK : "issues"
+  CAPABILITY_PACK ||--|{ ADAPTER_VERSION : "wraps"
+  CAPABILITY_PACK ||--o{ AUDIT_EVENT : "emits"
   TENANT {
     string tenantId PK
     string name
     timestamp createdAt
   }
-  CODEBOOK {
-    string codebookId PK
+  CAPABILITY_PACK {
+    string packId PK
     string tenantId FK
     int version
   }
-  DEK_VERSION {
+  ADAPTER_VERSION {
     int version PK
-    bytes wrappedKey
+    bytes wrappedAdapter
     timestamp expiresAt
   }
 ```
@@ -200,14 +200,14 @@ erDiagram
 
 ```mermaid
 journey
-  title Tokenization SDK Adoption
+  title Agentic SDK Adoption
   section Discovery
     Read architecture doc: 4: Engineer
     Talk to platform team: 5: Engineer, Platform
   section Integration
     Add SDK dependency: 4: Engineer
     Wire mTLS certs: 2: Engineer
-    First successful tokenize: 5: Engineer
+    First successful orchestration: 5: Engineer
   section Production
     Pass security review: 3: Engineer, Security
     Ship to prod: 5: Engineer
@@ -225,12 +225,12 @@ journey
 
 ```mermaid
 gantt
-  title Tokenization Platform Phase 1
+  title Orchestration Mesh Phase 1
   dateFormat YYYY-MM-DD
   section Foundation
-    HSM provisioning      :done,   hsm,   2025-01-06, 14d
-    Control plane MVP     :active, cp,    after hsm, 21d
-    SDK skeleton          :        sdk,   after hsm, 21d
+    Registry provisioning :done,   reg,   2025-01-06, 14d
+    Control plane MVP     :active, cp,    after reg, 21d
+    SDK skeleton          :        sdk,   after reg, 21d
   section Integration
     First app integration :        int1,  after cp, 14d
     Audit pipeline        :        audit, after int1, 10d
@@ -251,8 +251,8 @@ gantt
 ```mermaid
 pie showData
   title Audit log volume by source
-  "HSM unwrap events" : 12500
-  "Codebook issuance" : 4200
+  "Adapter unwrap events" : 12500
+  "Pack issuance" : 4200
   "Revocations" : 180
   "Policy changes" : 95
   "Cert provisioning" : 60
@@ -277,9 +277,9 @@ quadrantChart
   quadrant-2 Quick Wins
   quadrant-3 Defer
   quadrant-4 Time Sinks
-  Codebook caching: [0.3, 0.7]
-  Multi-tenant DEKs: [0.7, 0.85]
-  Per-purpose codebooks: [0.8, 0.4]
+  Pack caching: [0.3, 0.7]
+  Multi-tenant adapters: [0.7, 0.85]
+  Per-purpose packs: [0.8, 0.4]
   Vendor scoping: [0.4, 0.55]
   Manual rotation: [0.2, 0.2]
 ```
@@ -296,29 +296,29 @@ quadrantChart
 
 ```mermaid
 ---
-title: HSM custody requirements
+title: Policy custody requirements
 ---
 requirementDiagram
-  requirement non_exportable_kek {
+  requirement non_exportable_policy {
     id: 1
-    text: "KEK must never leave HSM hardware"
+    text: "Base policy must never leave the registry"
     risk: high
     verifymethod: inspection
   }
   requirement audit_trail {
     id: 2
-    text: "Every unwrap logged outside platform control"
+    text: "Every adapter unwrap logged outside platform control"
     risk: high
     verifymethod: test
   }
-  element cloudhsm {
+  element registry {
     type: hardware
   }
   element control_plane {
     type: service
   }
-  cloudhsm - satisfies -> non_exportable_kek
-  cloudhsm - satisfies -> audit_trail
+  registry - satisfies -> non_exportable_policy
+  registry - satisfies -> audit_trail
   control_plane - traces -> audit_trail
 ```
 
@@ -362,16 +362,16 @@ gitGraph
 
 ```mermaid
 C4Context
-  title Tokenization Platform
+  title Orchestration Mesh
   Person(eng, "Engineer", "Builds SDK")
-  Person(ops, "Operator", "Owns codebooks")
-  System(platform, "Platform", "SDK + control plane")
-  System_Ext(hsm, "AWS CloudHSM", "Holds KEKs")
+  Person(ops, "Operator", "Owns packs")
+  System(platform, "Mesh", "SDK + control plane")
+  System_Ext(reg, "Policy Registry", "Holds base policies")
   System_Ext(app, "Consumer", "Calls SDK")
   Rel(eng, app, "Builds")
-  Rel(app, platform, "Tokenize")
+  Rel(app, platform, "Orchestrate")
   Rel(ops, platform, "Manages")
-  Rel(platform, hsm, "Wrap DEKs")
+  Rel(platform, reg, "Wrap adapters")
 ```
 
 > Marked 🦺⚠️ in the docs — supported but the team flags it as work-in-progress. Theme support partial.
@@ -386,20 +386,20 @@ C4Context
 
 ```mermaid
 mindmap
-  root((Tokenization))
-    Keys
-      KEK
-        CloudHSM
+  root((Orchestration Mesh))
+    Policy
+      Base policy
+        Registry
         Non-exportable
-      DEK
+      Tenant adapter
         Wrapped
         Per-tenant
     Operations
-      Tokenize
-      Detokenize
+      Orchestrate
+      Resolve
       Rotate
     Audit
-      HSM stream
+      Registry stream
       Control plane
       SDK local
     Boundaries
@@ -420,22 +420,22 @@ mindmap
 
 ```mermaid
 timeline
-  title Tokenization Platform Roadmap
+  title Orchestration Mesh Roadmap
   section Phase 01 · Core
-    Q1 : Codebook model
-       : DEK versioning
-       : HSM-anchored KEK
+    Q1 : Capability-pack model
+       : Adapter versioning
+       : Registry-anchored policy
     Q2 : Signed distribution
        : Version-floor revocation
   section Phase 02 · Scale
     Q3 : Multi-tenant
-       : Per-field-class DEKs
-       : Transformation pipeline
+       : Per-field-class adapters
+       : Orchestration pipeline
     Q4 : Historical migration
        : Automated rotation
   section Phase 03 · Boundaries
-    Q1+1 : Non-prod codebooks
-         : Vendor-scoped codebooks
+    Q1+1 : Non-prod packs
+         : Vendor-scoped packs
 ```
 
 > Inherits from core. The section coloring uses the `cScale` palette.
@@ -507,7 +507,7 @@ Spending,Other,150
 
 ```mermaid
 xychart-beta
-    title "Quarterly tokenization volume (millions)"
+    title "Quarterly orchestration volume (millions)"
     x-axis [Q1, Q2, Q3, Q4]
     y-axis "Calls" 0 --> 100
     bar [42, 58, 67, 81]
@@ -565,16 +565,16 @@ title TLS Record header
 ```mermaid
 kanban
   Backlog
-    [Multi-tenant codebooks]
-    [Crypto-shred audit]
+    [Multi-tenant adapters]
+    [Deprovision audit]
   In Progress
     [Audit reconciler]
     [SDK Java port]
   Review
-    [Vendor codebook spec]
+    [Vendor pack spec]
   Done
     [Phase 1 launch]
-    [HSM provisioning]
+    [Registry provisioning]
 ```
 
 > Inherits from core. Per-card `[Title]@{ assigned: ..., priority: ... }` metadata supported but optional.
@@ -589,12 +589,12 @@ kanban
 
 ```mermaid
 architecture-beta
-  group platform(cloud)[Tokenization Platform]
-  service hsm(database)[CloudHSM] in platform
+  group platform(cloud)[Orchestration Mesh]
+  service reg(database)[Policy Registry] in platform
   service cp(server)[Control Plane] in platform
   service sdk(internet)[SDK Fleet] in platform
-  service store(disk)[Wrapped DEK Store] in platform
-  hsm:R -- L:cp
+  service store(disk)[Adapter Store] in platform
+  reg:R -- L:cp
   cp:R -- L:sdk
   cp:B -- T:store
 ```
@@ -613,8 +613,8 @@ architecture-beta
 radar-beta
   title Architecture review · scoring
   axis Speed, Resilience, Auditability, Cost, Simplicity
-  curve Codebook["Codebook model"]{85, 90, 95, 70, 60}
-  curve Vault["Vault-only"]{60, 70, 80, 50, 80}
+  curve Edge["Capability-pack model"]{85, 90, 95, 70, 60}
+  curve Gateway["Gateway-only"]{60, 70, 80, 50, 80}
 ```
 
 > Inherits from core. Multiple `curve` lines plot on the same axes.
@@ -629,7 +629,7 @@ radar-beta
 
 ```mermaid
 treemap-beta
-"Tokenization Platform"
+"Orchestration Mesh"
   "SDK"
     "Java": 4200
     "Python": 1800
@@ -638,7 +638,7 @@ treemap-beta
     "API": 2400
     "Signing": 1200
     "Audit": 900
-  "Wrapped DEK Store"
+  "Adapter Store"
     "Postgres": 600
     "Backup": 200
 ```
@@ -677,7 +677,7 @@ ishikawa-beta
 fishbone
     Effect: "Audit reconciliation drift"
     People:
-        Skill gap on crypto
+        Skill gap on inference ops
         On-call rotation thin
     Process:
         Manual rotation
@@ -704,7 +704,7 @@ treeView-beta
     "src/"
         "main.js"
         "lib/"
-            "tokenize.js"
+            "orchestrate.js"
             "verify.js"
     "package.json"
 ```

@@ -228,12 +228,12 @@ is consumed by a label.
 ```markdown
 <!-- _class: before-after -->
 
-## Detokenize used to require a vault round-trip.
+## Resolve used to require a gateway round-trip.
 
 - Before
-  - Every detokenize call: network round-trip to the central vault, p99 60 ms.
+  - Every resolve call: network round-trip to the central gateway, p99 60 ms.
 - After
-  - Local function call against an in-process codebook, p99 8 ms.
+  - Local function call against an in-process capability pack, p99 8 ms.
 ```
 
 **Layouts that support the labeled corner tag:** `before-after`,

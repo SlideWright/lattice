@@ -889,7 +889,7 @@ See [split-statement.gallery.light.pdf](../../lib/components/statement/split-sta
 
 **Tags** `ownership` · `onboarding` · `reference`
 
-Use to show 'who owns what' across a process, codebook, or org chart. Two-column layout: actor on left, responsibilities on right.
+Use to show 'who owns what' across a process, capability pack, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 #### When to use
 
@@ -3433,7 +3433,7 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 ## Three tracks for the next quarter.
 
 1. Platform hardening
-   - Multi-tenant DEKs, automated rotation, and the crypto-shred runbook land in this track.
+   - Multi-tenant adapters, automated rotation, and the deprovision runbook land in this track.
 2. Compliance posture
    - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.
 3. Developer surface
@@ -3602,8 +3602,8 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
-| Platform   | [x] Codebook signing     | [-] Multi-tenant DEKs    | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Crypto-shred          |
+| Platform   | [x] Pack signing     | [-] Multi-tenant adapters    | [ ] Per-purpose packs |
+| Operations | [x] Manual rotation      | [-] Automated rotation   | [ ] Deprovision          |
 | Compliance | [x] Audit trail          | [x] Centralised log      | [ ] Examiner pack         |
 | SDK        | [x] Java                 | [/] .NET                 | [ ] Polyglot parity       |
 
@@ -3623,8 +3623,8 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | [x] Codebook signing | [-] Multi-tenant DEKs  | [ ] Per-purpose codebooks |
-| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Crypto-shred          |
+| Platform   | [x] Pack signing | [-] Multi-tenant adapters  | [ ] Per-purpose packs |
+| Operations | [x] Manual rotation  | [-] Automated rotation | [ ] Deprovision          |
 | Compliance | [x] Audit trail      | [x] Centralised log    | [ ] Examiner pack         |
 | SDK        | [x] Java             | [/] .NET               | [ ] Polyglot parity       |
 
@@ -3644,8 +3644,8 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
+| Operations | Manual rotation      | Automated rotation     | Deprovision              |
 | Compliance | Audit trail          | Centralised log        | Examiner pack             |
 | SDK        | Java                 | .NET                   | Polyglot parity           |
 ```
@@ -3663,8 +3663,8 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
-| Platform   | Codebook signing     | Multi-tenant DEKs      | Per-purpose codebooks     |
-| Operations | Manual rotation      | Automated rotation     | Crypto-shred              |
+| Platform   | Pack signing     | Multi-tenant adapters      | Per-purpose packs     |
+| Operations | Manual rotation      | Automated rotation     | Deprovision              |
 | Compliance | Audit trail          | Centralised log        | Examiner pack             |
 ```
 
@@ -3945,20 +3945,20 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ```markdown
 <!-- _class: kpi attention -->
 
-### Authentication · Q4 2026
+### Orchestration · Q4 2026
 ## One metric below target; remediation under way.
 
 1. **94%**
-   - Token-issuance success
+   - Orchestration success
    - target 99% · -5pp `At risk` `Board`
 2. **8 ms**
-   - p99 detokenize
+   - p99 resolve
    - target 10 ms `On plan` `SRE`
 3. **0**
    - Examiner findings
    - target 0 `On plan` `Audit`
 4. **3.2×**
-   - Detokenize headroom
+   - Resolve headroom
    - target 2× `On plan` `Platform`
 ```
 
@@ -4711,7 +4711,7 @@ Hollows the pie into a donut. Visually cleaner for executive decks; the centre c
 
 Wedges drawn proportionally; legend reads in author order with raw values.
 
-- Codebook platform `46%`
+- Orchestration mesh `46%`
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`
@@ -4843,10 +4843,10 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 Effort estimated in story-points; reach as percent of addressable users.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Pack caching `3, 70`
+  - Multi-tenant adapters `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-purpose packs `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
@@ -4895,10 +4895,10 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 ## Where to put the next dollar — sized by revenue at stake.
 
 - Strategic Bets
-  - Codebook caching `3, 70, 2.4`
-  - Multi-tenant DEKs `5, 85, 4.1`
+  - Pack caching `3, 70, 2.4`
+  - Multi-tenant adapters `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose codebooks `8, 80, 0.9`
+  - Per-purpose packs `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -4918,8 +4918,8 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 ## How each bet moved after one quarter.
 
 - Strategic Bets
-  - Codebook caching `5, 60` `3, 78`
-  - Multi-tenant DEKs `7, 70` `5, 88`
+  - Pack caching `5, 60` `3, 78`
+  - Multi-tenant adapters `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -4938,10 +4938,10 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 ## Where to put the next dollar — clustered by theme.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Pack caching `3, 70`
+  - Multi-tenant adapters `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-purpose packs `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
@@ -4963,10 +4963,10 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 ## Against the go/no-go thresholds.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Pack caching `3, 70`
+  - Multi-tenant adapters `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-purpose packs `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -4982,17 +4982,17 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The codebook-tooling Magic Quadrant.
+## The agentic-platform Magic Quadrant.
 
 - Challengers
   - Legacy Inc `30, 82`
 - Leaders
   - Lattice `85, 88`
-  - Vault Corp `72, 76`
+  - Gateway Corp `72, 76`
 - Niche Players
-  - Boutique KMS `25, 28`
+  - Boutique Inference `25, 28`
 - Visionaries
-  - Cipher Labs `82, 34`
+  - Prompt Labs `82, 34`
 ```
 
 ##### `minimal` — Minimal — no fill, faint grid
@@ -5007,10 +5007,10 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 ## Where to put the next dollar — unadorned.
 
 - Strategic Bets
-  - Codebook caching `3, 70`
-  - Multi-tenant DEKs `5, 85`
+  - Pack caching `3, 70`
+  - Multi-tenant adapters `5, 85`
 - Quick Wins
-  - Per-purpose codebooks `8, 80`
+  - Per-purpose packs `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
