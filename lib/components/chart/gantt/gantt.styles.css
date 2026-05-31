@@ -12,7 +12,11 @@
  * and --gantt-col-span — no subgrid needed. */
 
 section.gantt.chart-frame .chart-body {
-  width: 100%;
+  /* Inherit the shared .chart-body width (calc(100cqi - 2*sp-2xl), centered)
+   * so the surface panel is the same size as every other chart — don't
+   * re-assert width:100%, which spanned edge-to-edge and made the gantt panel
+   * wider than the rest (and is the unbounded-growth footgun the base
+   * .chart-body comment warns against). gantt-chart still fills via stretch. */
   padding: var(--sp-md) var(--sp-2xl) var(--sp-sm);
   align-items: stretch;
 }
