@@ -70,53 +70,74 @@ section.chart-frame {
 }
 
 /* ── Categorical chart colour model ───────────────────────────────────────
- * One curated hue per slot, rendered as a fill/border pair that flips with
+ * One curated hue per slot, rendered as a fill/mark pair that flips with
  * the canvas, shared by every categorical chart (quadrant, piechart, radar,
- * progress). The contract:
+ * progress). The contract is symmetric — a restrained TINT fill plus a
+ * saturated, contrasting MARK in both modes:
  *
- *   light canvas → fill = pale tint of the hue, border/mark = the hue (deep)
- *   dark  canvas → fill = the hue (deep),        border/mark = pale wash
+ *   light canvas → fill = pale tint of the hue (24% on a light bg),
+ *                  mark/border = the hue at full depth (dark-on-light)
+ *   dark  canvas → fill = a muted DEEP tint of the hue (34% on a dark bg —
+ *                  NOT the hue at full strength, which paints garish
+ *                  primary blocks), mark/border = the hue lifted toward
+ *                  white so it pops (light-on-dark)
  *
- * so fill and border ALWAYS share a hue and the light-fill/dark-border
- * relationship (and its dark-canvas inverse) flips automatically.
+ * so fill and mark ALWAYS share a hue, and neither canvas is louder than
+ * the other — the dark side is the light side's restraint, inverted, not a
+ * saturation crank. (An earlier revision used `var(--catN-hue)` directly as
+ * the dark fill; at 8 categories that read as a clashing Excel-default
+ * palette. The 34% mix keeps each region a subdued, hue-true wash of the
+ * dark canvas.)
  *
- * Why it is built this way: the palette runs two independent cN cycles whose
- * per-index hues differ AND whose hues differ across canvas modes (a slot is
- * pink on a light canvas, green on a dark one). The *saturated* end also
- * lives on a different cycle per canvas (--cN-dark is the vivid mid-tone on
- * light; --cN-light is the vivid deep on dark). `light-dark(--cN-dark,
- * --cN-light)` therefore resolves to the saturated hue for the current
- * canvas, and both roles are derived from that single hue so they can never
- * drift apart. Components consume only --catN-fill / --catN-ink and stay
+ * Why it is built this way: each slot resolves to a single saturated hue for
+ * the current canvas via `light-dark(lightCanvasVivid, darkCanvasVivid)`, and
+ * BOTH roles (tint fill, contrasting mark) are derived from that one hue so
+ * they can never drift apart. The spectrum is the chart-family's own —
+ * decoupled from the engine-wide cN accents (which still drive roadmap /
+ * journey / legal / decision) — and Apple-inspired: vivid, well-spaced hues
+ * whose dark-canvas value is a brighter same-hue sibling, used as accents on a
+ * tint, never as flooded primaries. Themes flavour it by setting `--chart-catN`
+ * (see below). Components consume only --catN-fill / --catN-ink and stay
  * palette-blind. Eight slots — past ~6 categories perceptual distinction
  * collapses (Wong 2011), so charts should consolidate rather than cycle on. */
 section.chart-frame {
-  --cat1-hue: light-dark(var(--c1-dark), var(--c1-light));
-  --cat2-hue: light-dark(var(--c2-dark), var(--c2-light));
-  --cat3-hue: light-dark(var(--c3-dark), var(--c3-light));
-  --cat4-hue: light-dark(var(--c4-dark), var(--c4-light));
-  --cat5-hue: light-dark(var(--c5-dark), var(--c5-light));
-  --cat6-hue: light-dark(var(--c6-dark), var(--c6-light));
-  --cat7-hue: light-dark(var(--c7-dark), var(--c7-light));
-  --cat8-hue: light-dark(var(--c8-dark), var(--c8-light));
+  /* Apple-inspired categorical spectrum — the chart-family's OWN palette,
+   * decoupled from the engine-wide cN accents (which still drive roadmap /
+   * journey / legal / decision). Each slot is `light-dark(lightCanvasVivid,
+   * darkCanvasVivid)` where the dark-canvas value is a brighter same-hue
+   * sibling (Apple ships its system colours this way: blue #007AFF→#0A84FF,
+   * green #34C759→#30D158, …). The hues are well-spaced around the wheel and
+   * tuned a touch off Apple's exact values — inspired, not copied.
+   *
+   * Theme-overridable: a theme sets `--chart-catN` (same light-dark shape) at
+   * :root to flavour the spectrum to its character; the var() indirection lets
+   * the theme always win, and untuned themes inherit this master set. */
+  --cat1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
+  --cat2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
+  --cat3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
+  --cat4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
+  --cat5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
+  --cat6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
+  --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
+  --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), var(--cat1-hue));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), var(--cat2-hue));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), var(--cat3-hue));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), var(--cat4-hue));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), var(--cat5-hue));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), var(--cat6-hue));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), var(--cat7-hue));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), var(--cat8-hue));
+  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 34%, var(--bg)));
+  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 34%, var(--bg)));
+  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 34%, var(--bg)));
+  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 34%, var(--bg)));
+  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 34%, var(--bg)));
+  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 34%, var(--bg)));
+  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 34%, var(--bg)));
+  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 34%, var(--bg)));
 
-  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 42%, var(--text-heading)));
-  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 42%, var(--text-heading)));
-  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 42%, var(--text-heading)));
-  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 42%, var(--text-heading)));
-  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 42%, var(--text-heading)));
-  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 42%, var(--text-heading)));
-  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 42%, var(--text-heading)));
-  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 42%, var(--text-heading)));
+  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
+  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
+  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 78%, white));
+  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 78%, white));
+  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 78%, white));
+  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
+  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
+  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
 }
 
 section.chart-frame .chart-header {

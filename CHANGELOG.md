@@ -170,14 +170,18 @@ in patch versions.
 
 ### Changed
 
-- **Categorical charts recoloured onto a shared fill/border model.**
+- **Categorical charts recoloured onto a shared fill/mark model.**
   Quadrant, piechart, radar, and progress now draw from one chart-family
   colour contract (`--catN-fill` / `--catN-ink`, defined in
   `_chart-family.css`): each slot is a single curated hue rendered as a
-  pale-tint fill with a deep same-hue border on a light canvas, inverting
-  to a deep fill with a pale border on a dark canvas. Fill and border
-  always share a hue and the relationship flips automatically with the
-  canvas, so the charts stay vivid and on-palette in both modes. Quadrant
+  restrained *tint* fill plus a saturated, contrasting *mark* — pale tint
+  + deep same-hue mark on a light canvas, and a muted **deep** tint +
+  brighter (white-lifted) same-hue mark on a dark canvas. Both modes are
+  equally restrained: the dark side is the light side's tint model
+  inverted, not the hue painted at full strength (which read as a clashing
+  Excel-default palette across 8 categories). Fill and mark always share a
+  hue and the relationship flips automatically with the canvas, so the
+  charts stay refined and on-palette in both modes. Quadrant
   cells map reading-order to slots 1–4; piechart wedges/legend swatches
   gain coloured borders; radar curves use the canvas-vivid hue
   (`light-dark(--cN-dark, --cN-light)`) in both modes; progress's neutral
