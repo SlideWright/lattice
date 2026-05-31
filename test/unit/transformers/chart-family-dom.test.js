@@ -58,7 +58,7 @@ describe('chart-family.applyToDom', () => {
       'three legend entries');
   });
 
-  test('radar: builds polygons with per-series canvas-vivid colors from the unified cN scale', () => {
+  test('radar: builds polygons with per-series colours from the chart spectrum (--catN-hue)', () => {
     const doc = makeDoc(`
       <section class="radar">
         <h2>Skills</h2>
@@ -85,13 +85,19 @@ describe('chart-family.applyToDom', () => {
     assert.ok(sec.classList.contains('chart-frame'));
     const polys = sec.querySelectorAll('polygon.radar-poly');
     assert.equal(polys.length, 2, 'two series → two polygons');
-    // Regression guard for the radar --cat-* bug (now fixed): series colours
-    // must resolve through the real cN palette, never an undefined --cat-<name>
-    // token. The canvas-vivid form picks the saturated cycle per canvas.
+    // Radar now draws from the chart-family's own Apple-inspired spectrum
+    // (--catN-hue), decoupled from the engine-wide cN accents — same token the
+    // quadrant/pie/progress members consume. Guard against a regression back to
+    // the raw cN scale (or an undefined --cat-<name> token).
     const styles = [...polys].map(p => p.getAttribute('style') || '');
     for (const s of styles) {
-      assert.match(s, /--series-color:\s*light-dark\(var\(--c\d-dark\),\s*var\(--c\d-light\)\)/,
-        `series-color resolves through cN (light-dark vivid), not --cat-*; got "${s}"`);
+      assert.match(s, /--series-color:\s*var\(--cat\d-hue\)/,
+        `series-color resolves through the chart spectrum (--catN-hue); got "${s}"`);
+    }
+    // Each default-variant polygon also carries the area-fade gradient.
+    for (const s of styles) {
+      assert.match(s, /fill:url\(#radar-area-\d+\)/,
+        `radar-poly fills with its per-series area gradient; got "${s}"`);
     }
   });
 

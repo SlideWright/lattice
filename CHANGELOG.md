@@ -27,6 +27,24 @@ in patch versions.
 
 ### Added
 
+- **Apple-inspired categorical chart spectrum, decoupled from `cN`.** The
+  chart-family (quadrant, piechart, radar, progress) now draws from its own
+  vivid, well-spaced 8-hue spectrum — `--catN-hue` with an Apple-style master
+  set whose dark-canvas value is a brighter same-hue sibling — instead of the
+  engine-wide `cN` accents (which still drive roadmap / journey / legal /
+  decision). The spectrum is theme-overridable via `--chart-catN` (a `:root`
+  `light-dark()` pair); untuned themes inherit the master. Radar previously
+  hardwired its `RADAR_PALETTE` to `cN` and so missed the shared model — it
+  now consumes `--catN-hue` like its siblings.
+- **Area-fade gradients on categorical charts.** Radar polygons, piechart
+  wedges, and quadrant regions now carry a restrained SVG gradient — an
+  Apple-Stocks-style area fade (near-transparent at the centre, denser toward
+  the data rim on radar; glassy hub-to-rim depth on pie wedges; a continuous
+  top→bottom fade across quadrant regions). Built as per-shape
+  `<linearGradient>`/`<radialGradient>` defs (SVG `fill` can't take a CSS
+  gradient) with `stop-color` riding `--catN-hue`/`--catN-fill` so they still
+  flip with the canvas. Landed in all three render paths (marp-cli, emulator,
+  runtime) via the shared `lib/` transforms.
 - **Global font-scale modifiers `scale-l` / `scale-xl` / `scale-2xl`.**
   Bump the readable fonts on a slide up in lockstep (×1.15 / ×1.3 / ×1.5)
   without re-picking sizes. A new unitless `--fs-scale` multiplier
@@ -183,8 +201,8 @@ in patch versions.
   hue and the relationship flips automatically with the canvas, so the
   charts stay refined and on-palette in both modes. Quadrant
   cells map reading-order to slots 1–4; piechart wedges/legend swatches
-  gain coloured borders; radar curves use the canvas-vivid hue
-  (`light-dark(--cN-dark, --cN-light)`) in both modes; progress's neutral
+  gain coloured borders; radar curves now draw from the chart spectrum
+  (`--catN-hue`) like the other members, in both modes; progress's neutral
   bar uses the first slot hue (status bars still use pass/warn/fail).
   Quadrant text labels are neutral `--text-heading` ink (AA-safe) with a
   `--bg` halo. Both the native quadrant component and the Mermaid
