@@ -50,6 +50,7 @@ const GUARD = { label: 'ownership guard', script: 'check-ownership.js' };
 
 const STEPS = [
   { label: 'categorical tiers (themes/*.css)', script: 'build-categorical.js' },
+  { label: 'chart palette (themes/*.css)', script: 'build-chart-palette.js' },
   { label: 'lattice.css', script: 'build-css.js' },
   { label: 'lattice-default.css', script: 'build-default-bundle.js' },
   { label: 'lattice-runtime.js', script: 'build-runtime.js' },
