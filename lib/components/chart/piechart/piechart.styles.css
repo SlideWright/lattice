@@ -24,8 +24,11 @@ section.piechart .piechart-svg {
   display: block;
 }
 section.piechart .piechart-svg .wedge {
-  stroke: var(--bg);
-  stroke-width: 2;
+  /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
+   * wedge fill is the same hue's --catN-fill. Pale fill + deep border on a
+   * light canvas, deep fill + pale border on dark — the shared chart model. */
+  stroke-width: 1.5;
+  paint-order: stroke;
 }
 section.piechart .piechart-legend {
   flex: 0 1 auto;
@@ -60,29 +63,30 @@ section.piechart .piechart-legend .legend-pct {
   font-variant-numeric: tabular-nums;
 }
 
-/* Categorical wedge / swatch palette — six-rotation on --c1-dark..--c6-dark.
- * Shares the categorical cycle with decision/roadmap/kpi/actors (which
- * use the same slots at different rotation counts). Six is the cap for
+/* Categorical wedge / swatch palette — six-rotation on the shared chart
+ * category model (--catN-fill = wedge fill, --catN-ink = wedge border /
+ * swatch border). Pale fill + deep border on light, deep fill + pale border
+ * on dark; fill and border always the same hue. Six is the cap for
  * perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon);
  * pies that need >6 categories should consolidate "Other" or split. */
 section.piechart .wedge:nth-child(6n+1),
-section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--c1-dark); background: var(--c1-dark); }
+section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--cat1-fill); stroke: var(--cat1-ink); background: var(--cat1-fill); border: 1px solid var(--cat1-ink); }
 section.piechart .wedge:nth-child(6n+2),
-section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--c2-dark); background: var(--c2-dark); }
+section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--cat2-fill); stroke: var(--cat2-ink); background: var(--cat2-fill); border: 1px solid var(--cat2-ink); }
 section.piechart .wedge:nth-child(6n+3),
-section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--c3-dark); background: var(--c3-dark); }
+section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--cat3-fill); stroke: var(--cat3-ink); background: var(--cat3-fill); border: 1px solid var(--cat3-ink); }
 section.piechart .wedge:nth-child(6n+4),
-section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--c4-dark); background: var(--c4-dark); }
+section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--cat4-fill); stroke: var(--cat4-ink); background: var(--cat4-fill); border: 1px solid var(--cat4-ink); }
 section.piechart .wedge:nth-child(6n+5),
-section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--c5-dark); background: var(--c5-dark); }
+section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--cat5-fill); stroke: var(--cat5-ink); background: var(--cat5-fill); border: 1px solid var(--cat5-ink); }
 section.piechart .wedge:nth-child(6n),
-section.piechart .legend-swatch:nth-child(6n)   { fill: var(--c6-dark); background: var(--c6-dark); }
+section.piechart .legend-swatch:nth-child(6n)   { fill: var(--cat6-fill); stroke: var(--cat6-ink); background: var(--cat6-fill); border: 1px solid var(--cat6-ink); }
 
 /* The legend swatch has its own row indexing using li order. */
-section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--c1-dark); }
-section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--c2-dark); }
-section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--c3-dark); }
-section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--c4-dark); }
-section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--c5-dark); }
-section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--c6-dark); }
+section.piechart .piechart-legend li:nth-child(6n+1) .legend-swatch { background: var(--cat1-fill); border: 1px solid var(--cat1-ink); }
+section.piechart .piechart-legend li:nth-child(6n+2) .legend-swatch { background: var(--cat2-fill); border: 1px solid var(--cat2-ink); }
+section.piechart .piechart-legend li:nth-child(6n+3) .legend-swatch { background: var(--cat3-fill); border: 1px solid var(--cat3-ink); }
+section.piechart .piechart-legend li:nth-child(6n+4) .legend-swatch { background: var(--cat4-fill); border: 1px solid var(--cat4-ink); }
+section.piechart .piechart-legend li:nth-child(6n+5) .legend-swatch { background: var(--cat5-fill); border: 1px solid var(--cat5-ink); }
+section.piechart .piechart-legend li:nth-child(6n)   .legend-swatch { background: var(--cat6-fill); border: 1px solid var(--cat6-ink); }
 

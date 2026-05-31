@@ -46,7 +46,12 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  background: var(--fill, color-mix(in oklab, var(--accent) 70%, var(--bg-alt)));
+  /* Neutral bar (no status) draws the first slot of the shared chart
+   * category model — --cat1-hue is the canvas-vivid categorical colour
+   * (deep on light, bright on dark), so the bar reads on both canvases.
+   * Status variants below still override with the semantic health colours
+   * (pass/warn/fail). Authors can pin another colour with `--fill`. */
+  background: var(--fill, var(--cat1-hue));
   border-radius: 7px 0 0 7px;
   transition: none;
 }

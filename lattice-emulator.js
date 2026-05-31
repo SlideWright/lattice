@@ -573,14 +573,14 @@ const MERMAID_VAR_MAP = {
   tagLabelBorder:        { var: 'c-stroke' },       // from the colour-coded branch chips
 
   // Quadrant chart
-  quadrant1Fill:                    { var: 'c-quadrant-1-fill' },
-  quadrant2Fill:                    { var: 'c-quadrant-2-fill' },
-  quadrant3Fill:                    { var: 'c-quadrant-3-fill' },
-  quadrant4Fill:                    { var: 'c-quadrant-4-fill' },
-  quadrant1TextFill:                { var: 'c-quadrant-1-text' },
-  quadrant2TextFill:                { var: 'c-quadrant-2-text' },
-  quadrant3TextFill:                { var: 'c-quadrant-3-text' },
-  quadrant4TextFill:                { var: 'c-quadrant-4-text' },
+  quadrant1Fill:                    { var: 'c1-light' },
+  quadrant2Fill:                    { var: 'c2-light' },
+  quadrant3Fill:                    { var: 'c3-light' },
+  quadrant4Fill:                    { var: 'c4-light' },
+  quadrant1TextFill:                { var: 'c1-dark' },
+  quadrant2TextFill:                { var: 'c2-dark' },
+  quadrant3TextFill:                { var: 'c3-dark' },
+  quadrant4TextFill:                { var: 'c4-dark' },
   quadrantPointFill:                { var: 'c-stroke' },
   quadrantPointTextFill:            { var: 'c-ink-light' },
   quadrantXAxisTextFill:            { var: 'c-ink-light' },

@@ -170,6 +170,22 @@ in patch versions.
 
 ### Changed
 
+- **Categorical charts recoloured onto a shared fill/border model.**
+  Quadrant, piechart, radar, and progress now draw from one chart-family
+  colour contract (`--catN-fill` / `--catN-ink`, defined in
+  `_chart-family.css`): each slot is a single curated hue rendered as a
+  pale-tint fill with a deep same-hue border on a light canvas, inverting
+  to a deep fill with a pale border on a dark canvas. Fill and border
+  always share a hue and the relationship flips automatically with the
+  canvas, so the charts stay vivid and on-palette in both modes. Quadrant
+  cells map reading-order to slots 1–4; piechart wedges/legend swatches
+  gain coloured borders; radar curves use the canvas-vivid hue
+  (`light-dark(--cN-dark, --cN-light)`) in both modes; progress's neutral
+  bar uses the first slot hue (status bars still use pass/warn/fail).
+  Quadrant text labels are neutral `--text-heading` ink (AA-safe) with a
+  `--bg` halo. Both the native quadrant component and the Mermaid
+  `quadrantChart` theme map now read the `cN` palette directly (see the
+  removed `--c-quadrant-*` tokens below).
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing
@@ -247,6 +263,17 @@ in patch versions.
     `dependencies`. Lattice's runtime/preview path explicitly targets
     marp-cli output and the integration suite spawns it; there is no
     "lattice without marp" mode worth supporting.
+
+### Removed
+
+- **Breaking: the `--c-quadrant-N-fill` / `--c-quadrant-N-text` palette
+  tokens are removed from every theme.** Quadrant charts (native and the
+  Mermaid `quadrantChart` theme map) now read the `cN` categorical palette
+  directly through the shared chart-family colour model, so the bespoke
+  per-quadrant slot tokens — and their separate per-theme hue tuning — no
+  longer exist. Consumers that overrode `--c-quadrant-*` must tune the `cN`
+  palette instead. The `palette`/`contrast` unit suites no longer require
+  or assert these tokens.
 
 ### Fixed
 

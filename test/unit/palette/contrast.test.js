@@ -1,7 +1,7 @@
 /**
  * Unit: WCAG contrast on every shipped palette.
  *
- * Asserts AA (4.5:1) for the band/text pairs and quadrant fill/text pairs
+ * Asserts AA (4.5:1) for the band/text pairs and the heading/canvas pairs
  * defined by each canonical palette. WCAG 2.x sRGB luminance formula:
  *
  *   1. Convert hex → sRGB → linearized channel (piecewise gamma).
@@ -144,10 +144,10 @@ describe('contrast', () => {
     'c-ink-dark',
   ]);
 
-  const QUADRANT_PAIRS = [1, 2, 3, 4].map(n => [
-    `c-quadrant-${n}-fill`,
-    `c-quadrant-${n}-text`,
-  ]);
+  // (Quadrant charts read the cN palette directly now — fills are cN-light
+  // region tints, data marks are cN-dark graphical objects, and ALL text is
+  // neutral --text-heading, which is covered by the --text-heading/bg test
+  // below. No quadrant-specific text-contrast pair remains.)
 
   const AA_THRESHOLD = 4.5;
 
@@ -179,28 +179,6 @@ describe('contrast', () => {
         const vars = loadPaletteWithImports(name, mode);
         const failures = [];
         for (const [fillKey, textKey] of DEEP_PAIRS) {
-          const fill = vars[fillKey];
-          const text = vars[textKey];
-          if (!fill || !text) {
-            failures.push(`${fillKey} or ${textKey} not defined`);
-            continue;
-          }
-          try {
-            const ratio = contrastRatio(fill, text);
-            if (ratio < AA_THRESHOLD) {
-              failures.push(`${fillKey} (${fill}) / ${textKey} (${text}) = ${ratio.toFixed(2)}:1 (< ${AA_THRESHOLD})`);
-            }
-          } catch (e) {
-            failures.push(`${fillKey}=${fill} or ${textKey}=${text}: ${e.message}`);
-          }
-        }
-        assert.deepEqual(failures, [], `WCAG AA failures in ${name} (${mode}):\n  ${failures.join('\n  ')}`);
-      });
-
-      test(`contrast: ${name} (${mode}) every quadrant fill/text pair clears AA`, () => {
-        const vars = loadPaletteWithImports(name, mode);
-        const failures = [];
-        for (const [fillKey, textKey] of QUADRANT_PAIRS) {
           const fill = vars[fillKey];
           const text = vars[textKey];
           if (!fill || !text) {

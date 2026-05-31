@@ -224,7 +224,6 @@
   --hljs-punctuation:#C8B8A0;  /* warm taupe — operators, punctuation    */
 }
 
-
 /* ── Diagram tokens ────────────────────────────────────────────────────
  * Role-named, palette-blind tokens consumed by lattice-diagram.css and
  * the renderer bridges (lattice-runtime.js, lattice-emulator.js). The
@@ -243,28 +242,6 @@
    * warm hue against the cream band reads better than a second pale
    * tint. */
   --c-accent-warm: var(--brand-accent);
-
-  /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
-   * Cuoio is monochrome warm by identity, but the band cycle pulls in
-   * two subtle cool accents (band-3 iris, band-5 petrol). The quadrant
-   * needs four visually distinct fills with no adjacent pair too close,
-   * so pull from both warm and the two cool accents — the warm-leather
-   * voice still dominates (Q1 cream + Q3 wheat) and the two cool pulls
-   * supply distinction without competing with the brand. Hue mapping:
-   *   Q1 strategic   → c1-light (cream)
-   *   Q2 quick-wins  → c3-light (iris pull, cool)
-   *   Q3 defer       → c7-light (wheat)
-   *   Q4 time-sinks  → c5-light (petrol pull, cool)
-   * Text stays the universal cuoio ink — all four pairs clear AA. */
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: #1E1A15;
-  --c-quadrant-2-text: #1E1A15;
-  --c-quadrant-3-text: #1E1A15;
-  --c-quadrant-4-text: #1E1A15;
-
 }
 
 :root {
@@ -323,13 +300,4 @@
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#ECE6DD, #28241D);
   --c-subcontainer:  light-dark(#DDD7CF, #39352E);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }

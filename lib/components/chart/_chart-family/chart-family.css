@@ -69,6 +69,56 @@ section.chart-frame {
   background: var(--bg);
 }
 
+/* ── Categorical chart colour model ───────────────────────────────────────
+ * One curated hue per slot, rendered as a fill/border pair that flips with
+ * the canvas, shared by every categorical chart (quadrant, piechart, radar,
+ * progress). The contract:
+ *
+ *   light canvas → fill = pale tint of the hue, border/mark = the hue (deep)
+ *   dark  canvas → fill = the hue (deep),        border/mark = pale wash
+ *
+ * so fill and border ALWAYS share a hue and the light-fill/dark-border
+ * relationship (and its dark-canvas inverse) flips automatically.
+ *
+ * Why it is built this way: the palette runs two independent cN cycles whose
+ * per-index hues differ AND whose hues differ across canvas modes (a slot is
+ * pink on a light canvas, green on a dark one). The *saturated* end also
+ * lives on a different cycle per canvas (--cN-dark is the vivid mid-tone on
+ * light; --cN-light is the vivid deep on dark). `light-dark(--cN-dark,
+ * --cN-light)` therefore resolves to the saturated hue for the current
+ * canvas, and both roles are derived from that single hue so they can never
+ * drift apart. Components consume only --catN-fill / --catN-ink and stay
+ * palette-blind. Eight slots — past ~6 categories perceptual distinction
+ * collapses (Wong 2011), so charts should consolidate rather than cycle on. */
+section.chart-frame {
+  --cat1-hue: light-dark(var(--c1-dark), var(--c1-light));
+  --cat2-hue: light-dark(var(--c2-dark), var(--c2-light));
+  --cat3-hue: light-dark(var(--c3-dark), var(--c3-light));
+  --cat4-hue: light-dark(var(--c4-dark), var(--c4-light));
+  --cat5-hue: light-dark(var(--c5-dark), var(--c5-light));
+  --cat6-hue: light-dark(var(--c6-dark), var(--c6-light));
+  --cat7-hue: light-dark(var(--c7-dark), var(--c7-light));
+  --cat8-hue: light-dark(var(--c8-dark), var(--c8-light));
+
+  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), var(--cat1-hue));
+  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), var(--cat2-hue));
+  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), var(--cat3-hue));
+  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), var(--cat4-hue));
+  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), var(--cat5-hue));
+  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), var(--cat6-hue));
+  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), var(--cat7-hue));
+  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), var(--cat8-hue));
+
+  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 42%, var(--text-heading)));
+  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 42%, var(--text-heading)));
+  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 42%, var(--text-heading)));
+  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 42%, var(--text-heading)));
+  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 42%, var(--text-heading)));
+  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 42%, var(--text-heading)));
+  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 42%, var(--text-heading)));
+  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 42%, var(--text-heading)));
+}
+
 section.chart-frame .chart-header {
   /* Plain header — eyebrow + h2 + subtitle on the section background.
    * Decoration is opt-in via the universal `tint-*` / `mark-*`

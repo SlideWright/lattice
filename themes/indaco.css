@@ -152,7 +152,6 @@
     var(--brand-bright)      55%,
     var(--brand-alt)     100%
   );
-
 }
 
 /* ── Dark-variant tokens ───────────────────────────────────────────────
@@ -190,7 +189,6 @@
   --hljs-punctuation:#d6deeb;  /* base text — operators, punctuation     */
 }
 
-
 /* ── Diagram tokens ────────────────────────────────────────────────────
  * Role-named, palette-blind tokens consumed by lattice-diagram.css and
  * the renderer bridges (lattice-runtime.js, lattice-emulator.js). The
@@ -209,30 +207,6 @@
    * warm hue against the pale-blue band reads better than a second
    * pale tint. */
   --c-accent-warm: #BD5000;
-
-  /* ── Quadrant (4-slot, fill + text paired) ─────────────────────────
-   * Earlier values sat at L≈95 — visibly washed against the band cycle
-   * which was deepened to L≈83. Pin fills to the band tokens so the
-   * four corners read at the same lightness as every other coloured
-   * surface in the deck. Mermaid's quadrant numbering follows the math
-   * convention: Q1 top-right, Q2 top-left, Q3 bottom-left, Q4 bottom-
-   * right. Hue mapping picks a semantic that reads correctly under the
-   * canonical labels (Strategic Bets / Quick Wins / Defer / Time Sinks):
-   *   Q1 strategic → c1-light (brand blue — long-horizon work)
-   *   Q2 quick-wins → c2-light (green — do it now)
-   *   Q3 defer     → c7-light (yellow — hold)
-   *   Q4 time-sinks → c3-light (purple — drag)
-   * Text stays per-quadrant saturated so each label hue reinforces its
-   * quadrant's identity at AA on its band. */
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c7-light);
-  --c-quadrant-4-fill: var(--c3-light);
-  --c-quadrant-1-text: #004A8A;
-  --c-quadrant-2-text: #2D5E18;
-  --c-quadrant-3-text: #7A5200;
-  --c-quadrant-4-text: #3D2050;
-
 }
 
 :root {
@@ -294,13 +268,4 @@
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#E8F0F7, #292F35);
   --c-subcontainer:  light-dark(#D9E1E8, #3B4147);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }
