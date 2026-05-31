@@ -170,6 +170,21 @@ in patch versions.
   Charts and diagrams stay cohesive via shared brand-hue anchors, not
   shared tokens. See `engineering/decisions/2026-05-29-palette-recuration.md`.
 
+- **Every chart's *series* role now reads one ramp (`--chart-N`).**
+  Previously each chart-family member coloured its categories from a
+  different source (pie `--chart-N`, radar `--cN-dark`, word-cloud
+  `--cN-dark`, quadrant `--c-quadrant-N`), so a deck's charts looked
+  unrelated. They are unified under one model: **series →
+  `var(--chart-N)`**, status → `--pass/--warn/--fail`, single-value →
+  `--accent`. Radar and word-cloud category rotations repoint to
+  `--chart-N`. **The quadrant's data marks now carry the vivid
+  `--chart-N` ink** (dots, zone labels, strokes) while the four region
+  rects recede as faint 14% same-hue tints — colour moves off the
+  backdrop and onto the data, so a quadrant reads as vividly as a pie
+  instead of washed-out. Each zone is hue-coherent across mark and
+  field, and dark mode lifts the marks brighter (band-flip). The
+  `cohort` variant keeps its sequential `c1…c4` slots.
+
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing

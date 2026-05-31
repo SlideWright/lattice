@@ -5893,13 +5893,20 @@ section.quadrant {
   --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
 }
 
-/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-/* Quadrant regions = pale tints of the shared --chart ramp (cohesive with
- * every other chart), kept quiet as backgrounds; dark ink on the labels. */
-section.quadrant [data-cell="0"] { --cell-fill: color-mix(in oklab, var(--chart-1) 16%, var(--bg)); --cell-ink: var(--text-heading); }
-section.quadrant [data-cell="1"] { --cell-fill: color-mix(in oklab, var(--chart-2) 16%, var(--bg)); --cell-ink: var(--text-heading); }
-section.quadrant [data-cell="2"] { --cell-fill: color-mix(in oklab, var(--chart-3) 16%, var(--bg)); --cell-ink: var(--text-heading); }
-section.quadrant [data-cell="3"] { --cell-fill: color-mix(in oklab, var(--chart-4) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+/* Default routing — positional quadrant tokens (reading-order → Mermaid Q).
+ *
+ * Two-layer split, same as the pie's slice-vs-canvas relationship:
+ *   --cell-fill (region backdrop) = a quiet 14% tint of --chart-N, so the
+ *     four zones read as faint coloured fields the data sits ON.
+ *   --cell-ink (dots, labels, strokes) = the FULL vivid --chart-N mark —
+ *     the same colour the pie paints its slices with. The data marks are
+ *     where the energy belongs; the backdrop recedes.
+ * Both layers share one hue per zone, so each quadrant is colour-coherent
+ * and the chart matches the pie's vividness instead of looking washed out. */
+section.quadrant [data-cell="0"] { --cell-fill: color-mix(in oklab, var(--chart-1) 14%, var(--bg)); --cell-ink: var(--chart-1); }
+section.quadrant [data-cell="1"] { --cell-fill: color-mix(in oklab, var(--chart-2) 14%, var(--bg)); --cell-ink: var(--chart-2); }
+section.quadrant [data-cell="2"] { --cell-fill: color-mix(in oklab, var(--chart-3) 14%, var(--bg)); --cell-ink: var(--chart-3); }
+section.quadrant [data-cell="3"] { --cell-fill: color-mix(in oklab, var(--chart-4) 14%, var(--bg)); --cell-ink: var(--chart-4); }
 
 /* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
