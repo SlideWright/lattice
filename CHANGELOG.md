@@ -39,8 +39,9 @@ in patch versions.
 - **Area-fade gradients on categorical charts.** Radar polygons, piechart
   wedges, and quadrant regions now carry a restrained SVG gradient — an
   Apple-Stocks-style area fade (near-transparent at the centre, denser toward
-  the data rim on radar; glassy hub-to-rim depth on pie wedges; a continuous
-  top→bottom fade across quadrant regions). Built as per-shape
+  the data rim on radar; pie wedges deepen from a light hub toward a vivid rim;
+  quadrant regions share one radial centre at the axis crossing — faint where
+  the axes meet, richer toward the outer corners). Built as per-shape
   `<linearGradient>`/`<radialGradient>` defs (SVG `fill` can't take a CSS
   gradient) with `stop-color` riding `--catN-hue`/`--catN-fill` so they still
   flip with the canvas. Landed in all three render paths (marp-cli, emulator,
