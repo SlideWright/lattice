@@ -68,7 +68,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`stats`](../../evidence/stats/stats.docs.md) — independent headline metrics, no completion scale
 - [`gantt`](../../chart/gantt/gantt.docs.md) — the rows are time-bound and need a date axis
 - [`checklist`](../../inventory/checklist/checklist.docs.md) — binary done / not-done across a flat list
-- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — the workstreams resolve in sequence, not in parallel
+- [`timeline-list`](../../chart/timeline-list/timeline-list.docs.md) — the workstreams complete in sequence, not in parallel
 
 ## Demo deck
 

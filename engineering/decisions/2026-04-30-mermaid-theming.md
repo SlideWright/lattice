@@ -116,7 +116,7 @@ test before committing the swap.
 **Files changed**:
 - `examples/gallery.md` (+ regenerated `examples/gallery.html`)
 - `examples/mermaid-gallery.md`
-- (also: external orchestration-mesh decks, since moved out of the repo)
+- (also: external decision-framework decks, since moved out of the repo)
 
 ---
 

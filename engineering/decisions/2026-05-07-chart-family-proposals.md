@@ -47,16 +47,16 @@ The user-visible promise is _"if you can write an outline, you have a timeline."
 ```markdown
 <!-- _class: timeline-list -->
 
-## How the capability-pack architecture arrived in production.
+## How the decision framework arrived in production.
 
-1. `2024 Q3` Gateway round-trip
-   - First production orchestration shipped on a centralised gateway. p99 60 ms; gateway outages cascaded into application outages.
-2. `2025 Q1` Capability-pack proposal `decision`
-   - Architecture review accepts the in-process capability-pack model. Build approved over buy after a four-vendor evaluation.
+1. `2024 Q3` Pre-framework prioritization
+   - Decisions made in recurring meetings on a from-first-principles basis. p99 an entire offsite; re-litigation cascaded into missed timing. This was called "moving fast."
+2. `2025 Q1` Framework proposal `decision`
+   - Architecture review accepts the calibration model. Build approved over buy after a four-vendor evaluation; all four decks were the same deck.
 3. `2025 Q3` Pilot `pilot`
-   - One internal team, one workload, one quarter. Resolve p99 lands at 8 ms.
+   - One internal team, one decision class, one quarter. Decision close p99 lands at 18 min — on the decisions chosen to land at 18 min.
 4. `2026 Q1` Production `live`
-   - Pack signing live across all production tenants. Registry-anchored audit trail readable by Examiner role.
+   - Scoring policy live across all production teams. Decision Log audit trail readable by the Auditor role, who has not yet read it.
 ```
 
 **Reading the shape.**
@@ -98,22 +98,22 @@ The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axi
 ```markdown
 <!-- _class: gantt -->
 
-## What ships in each phase, by workstream.
+## What ships in each phase, before the bars quietly slide a quarter right.
 
 `2026 Q1 → 2026 Q4`
 
-- Platform
-  - Pack signing `Q1 → Q2` `done`
-  - Multi-tenant adapters `Q2 → Q3` `live`
-  - Per-purpose packs `Q3 → Q4` `at-risk`
-- Operations
-  - Manual rotation `Q1 → Q2`
-  - Automated rotation `Q2 → Q3` `live`
-  - Deprovision `Q3 → Q4`
-- Compliance
-  - Audit trail `Q1 → Q2` `done`
-  - Centralised log `Q2 → Q3`
-  - Examiner pack `Q3 → Q4`
+- Signal Intake
+  - Connector v1 `Q1 → Q2` `done`
+  - Multi-source dedupe `Q2 → Q3` `live`
+  - Anomaly auto-routing `Q3 → Q4` `at-risk`
+- Scoring
+  - Equal-weights model `Q1 → Q2`
+  - Per-team calibration `Q2 → Q3` `live`
+  - Per-decision profiles `Q3 → Q4`
+- Decision Log
+  - Append-only schema `Q1 → Q2` `done`
+  - Outcome auto-pairing `Q2 → Q3`
+  - Auditor export `Q3 → Q4`
 ```
 
 **Reading the shape.**
@@ -130,7 +130,7 @@ The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axi
 - `months` — column ticks at month boundaries. For shorter horizons.
 - `weeks` — column ticks at week boundaries. For sprint-scale schedules.
 - `today` — draws a vertical "now" rule at the current build date; bars whose end is before today render at full opacity, bars after today at 70%. Build-time only — no runtime clock.
-- `dependencies` — when a sub-bullet contains an inline-code reference to another bar's title (`` `after: Pack signing` ``), the renderer draws a thin dependency arrow between bars. Strictly opt-in; quiet when absent.
+- `dependencies` — when a sub-bullet contains an inline-code reference to another bar's title (`` `after: Connector v1` ``), the renderer draws a thin dependency arrow between bars. Strictly opt-in; quiet when absent.
 - `compact` / `loose` — density.
 - `dark` — palette swap.
 
@@ -171,15 +171,15 @@ A pie / donut chart is a flat list where each item carries a numeric pill. The r
 ```markdown
 <!-- _class: piechart -->
 
-## Where the engineering quarter went.
+## Where the engineering quarter actually went.
 
 `H1 2026 · 1,840 person-hours`
 
-- Orchestration mesh `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
-- Toil & on-call `5%`
+- Signal Intake build `46%`
+- Scoring policy work `22%`
+- Decision Log integration `18%`
+- Explaining the framework to stakeholders `9%`
+- Toil & on-call `5%`, the wedge nobody put in the roadmap
 ```
 
 **Reading the shape.**
@@ -206,12 +206,12 @@ Many decks need a "where are we?" panel: three or four labelled progress bars st
 ```markdown
 <!-- _class: progress -->
 
-## Phase 1 readiness, by workstream.
+## Phase 1 readiness, where the status pills reflect the most optimistic reading.
 
-- Orchestration mesh `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
 ```
 
 **Reading the shape.**
@@ -244,27 +244,27 @@ A Kanban board is the natural cousin of `gantt`: top-level items are columns ins
 ```markdown
 <!-- _class: kanban -->
 
-## Where Phase 2 work stands today.
+## Where Phase 2 work stands today, before standup moves three cards back.
 
 - Backlog
-  - Per-purpose packs `S`
-    - compliance
-  - Deprovision runbook `M`
-    - platform
+  - Per-decision profiles `S`
+    - decision-log
+  - Weight rollback runbook `M`
+    - scoring
   - Dependency dashboard `S`
 - In progress
-  - Multi-tenant adapters `M`
-    - platform `at-risk`
-  - Examiner pack v2 `L`
-    - compliance
+  - Per-team calibration `M`
+    - scoring `at-risk`
+  - Auditor pack v2 `L`
+    - decision-log
 - Review
-  - Automated rotation `M`
-    - platform
+  - Outcome auto-pairing `M`
+    - scoring
 - Done
-  - Pack signing `L`
-    - platform `done`
-  - Registry audit trail `M`
-    - compliance `done`
+  - Connector v1 `L`
+    - scoring `done`
+  - Decision Log audit trail `M`
+    - decision-log `done`
 ```
 
 **Reading the shape.**
@@ -325,7 +325,7 @@ Sales pipelines, conversion funnels, recruiting funnels, attention-to-action seq
 ```markdown
 <!-- _class: funnel -->
 
-## Where Phase 1 candidates fell out of the pipeline.
+## Where Phase 1 candidates quietly fell out of the pipeline.
 
 `Top of funnel · 12,400 · → 184 hires`
 
@@ -347,19 +347,19 @@ Nested unordered list = tree. Reporting structures, system component hierarchies
 ```markdown
 <!-- _class: org -->
 
-## Who reports into the orchestration mesh org.
+## Who reports into the decision-framework org, as of this reorg.
 
-- Platform Director `12 reports`
-  - Mesh engineering `5`
-    - Cryptography lead
-    - Signing pipeline lead
+- Framework Director `12 reports`
+  - Scoring engineering `5`
+    - Calibration lead
+    - Intake pipeline lead
     - SDK lead × 3
   - Operations `4`
     - Runbook owner
     - On-call lead × 3
-  - Compliance liaison `2`
+  - Decision Log liaison `2`
     - Audit lead
-    - Examiner contact
+    - Auditor contact
 ```
 
 Renderer walks the list, lays out a tree (top-down by default; left-right with the `flow` modifier), uses the trailing pill on each node as a count badge. Modifiers: `flow` (left-to-right), `radial` (centre-out, for ecosystem / partnership maps), `compact` / `dark`.
@@ -375,16 +375,16 @@ A two-axis grid where every cell carries a magnitude. Risk × impact, capability
 ```markdown
 <!-- _class: heatmap -->
 
-## Phase 2 risk register, by workstream and severity.
+## Phase 2 risk register, by workstream and the severity we are comfortable naming.
 
 `Likelihood × Impact`
 
-| Workstream  | Low      | Medium   | High      |
-| ----------- | -------- | -------- | --------- |
-| Platform    | `2`      | `1`      | `0`       |
-| Operations  | `3`      | `2` `at-risk` | `1` `blocked` |
-| Compliance  | `1`      | `0`      | `0`       |
-| SDK         | `2`      | `1`      | `1` `at-risk` |
+| Workstream    | Low      | Medium   | High      |
+| ------------- | -------- | -------- | --------- |
+| Signal Intake | `2`      | `1`      | `0`       |
+| Scoring       | `3`      | `2` `at-risk` | `1` `blocked` |
+| Decision Log  | `1`      | `0`      | `0`       |
+| Adoption      | `2`      | `1`      | `1` `at-risk` |
 ```
 
 Each cell is a count pill with an optional status pill. Renderer reads the count, maps it to a single shared colour ramp, and applies the status pill as a corner stamp. Modifiers: `diverging` (centre-zero ramp, for delta heatmaps), `binary` (on/off only), `compact` / `dark`.
@@ -400,12 +400,12 @@ Every meaningful deck ends with three or four expected questions and the team's 
 
 ## What we expect to be asked, and what we will say.
 
-- Why not extend the existing gateway for two more years?
-  - The gateway model adds 50 ms per resolve. With per-record reads in the new claims pipeline, that adds 8 minutes to a single batch — outside the SLA. The architecture cannot absorb it.
-- What if the managed-inference vendor changes pricing in 2027?
-  - Our model weights are portable across the three control planes in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The capability-pack model insulates us.
+- Why not keep the quarterly review for two more years?
+  - The quarterly review adds an offsite per decision close. With the volume of decisions in the new prioritization cadence, that adds weeks to a single quarter — outside the window. The process cannot absorb it, though the review will absorb the blame either way.
+- What if the eval-tool vendor changes pricing in 2027?
+  - Our scoring weights are portable across the three frameworks in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The decision framework insulates us. We have not yet had to test this claim.
 - How is this different from what Vendor X just announced?
-  - Vendor X announced a hosted version of the same idea. We have the same architecture in-process, with no per-tenant licensing and no data leaving the boundary.
+  - Vendor X announced a hosted version of the same idea. We have the same framework in-house, with no per-team licensing and no data leaving the audit boundary. Three vendor decks evaluated; all three were the same deck.
 ```
 
 The top-level bullet is the question (renders larger, with a leading `Q.` chip); the sub-bullet is the answer (renders smaller, with a leading `A.` chip). Modifiers: `decision` (frames the answer card with an emphasis edge — for the question that determines the meeting outcome), `compact`.
@@ -419,14 +419,14 @@ A horizontal axis with named endpoints and one or more markers. "Where does our 
 ```markdown
 <!-- _class: spectrum -->
 
-## Where each capability sits on the maturity axis.
+## Where each capability sits on the maturity axis, self-assessed.
 
 `Reactive ←——————————→ Anticipatory`
 
-- Pack signing `0.9`
-- Operations runbook `0.6`
-- Compliance audit `0.7`
-- SDK polyglot parity `0.3`
+- Signal Intake `0.9`
+- Scoring policy `0.6`
+- Decision Log audit `0.7`
+- Adoption `0.3`
 ```
 
 Eyebrow declares the axis with `←——→` markers between endpoint labels (renderer parses on `←` and `→` glyphs or `..`/`->` ascii equivalents). Each list item carries a position pill in `0.0–1.0`. Renderer draws the axis and stamps each marker. Modifiers: `vertical`, `dual` (two parallel axes for before / after placement), `compact`.

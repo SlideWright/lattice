@@ -38,14 +38,14 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the engineering quarter actually went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Wedges drawn proportionally; the toil-and-on-call slice is the one nobody put in the roadmap.
 
-- Orchestration mesh `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
+- Signal Intake build `46%`
+- Scoring policy work `22%`
+- Decision Log integration `18%`
+- Explaining the framework to stakeholders `9%`
 - Toil and on-call `5%`
 
 
@@ -56,17 +56,17 @@ Wedges drawn proportionally; legend reads in author order with raw values.
 
 `FY2026 · 1,840 person-hours`
 
-## Stress test — eleven slices, long-tail distribution.
+## Stress test — eleven slices, long-tail distribution, none of it on the roadmap.
 
-- Orchestration mesh engineering `28%`
-- Operations and on-call runbook `16%`
-- Compliance and audit work `13%`
-- Multi-tenant adapter rotation `11%`
-- SDK polyglot parity `9%`
-- Pilot and customer support `7%`
+- Signal Intake engineering `28%`
+- Scoring policy work `16%`
+- Decision Log integration `13%`
+- Per-team calibration `11%`
+- Explaining the framework to stakeholders `9%`
+- Pilot and team support `7%`
 - Documentation and gallery `5%`
-- Dependency dashboard `4%`
-- Edge runtime bindings `3%`
+- Adoption dashboard `4%`
+- Auditor export `3%`
 - Incident response `2%`
 - Miscellaneous toil `2%`
 

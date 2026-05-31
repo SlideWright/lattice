@@ -38,7 +38,7 @@ it is load-bearing.
 - Treat anything older than ~2 weeks as fair game to delete.
 - If a file is worth keeping, promote it: docs go under `engineering/decisions/`,
   source documents go to a sibling folder outside the repo (e.g. the
-  gitignored `mesh/` folder).
+  gitignored `framework/` folder).
 - Run `npm run clean:scratch` to delete `.scratch/` entries older than
   14 days. The script is opt-in — it never runs automatically.
 

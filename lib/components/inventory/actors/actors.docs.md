@@ -6,7 +6,7 @@
 
 **Tags** `ownership` · `onboarding` · `reference`
 
-Use to show 'who owns what' across a process, capability pack, or org chart. Two-column layout: actor on left, responsibilities on right.
+Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 ## When to use
 

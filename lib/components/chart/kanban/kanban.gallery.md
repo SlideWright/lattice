@@ -22,7 +22,7 @@ Kanban board — columns of cards by stage.
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -53,42 +53,42 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 `Phase 2 · Sprint 14`
 
-## Stress test — four lanes, fifteen cards, mixed sizes.
+## Stress test — four lanes, fifteen cards, and a Backlog that grows faster than Done.
 
 - Backlog
-  - Per-purpose pack caching `L`
-    - platform
-  - Deprovision runbook `M`
-    - operations
-  - Dependency dashboard `S`
-    - platform
-  - Edge runtime bindings `L`
-    - platform
+  - Per-decision profiles `L`
+    - scoring
+  - Recalibration playbook `M`
+    - governance
+  - Adoption dashboard `S`
+    - adoption
+  - Anomaly auto-routing `L`
+    - framework
 - In progress
-  - Multi-tenant adapter rotation `M`
-    - platform `at-risk`
-  - Examiner evidence pack v2 `L`
-    - compliance
-  - Polyglot SDK parity `M`
-    - platform
-  - Centralised examiner log `S`
-    - compliance `blocked`
+  - Per-team calibration `M`
+    - scoring `at-risk`
+  - Auditor evidence pack v2 `L`
+    - governance
+  - Org-wide enablement `M`
+    - adoption
+  - Decision-log audit trail `S`
+    - governance `blocked`
 - Review
-  - Automated rotation pipeline `M`
-    - operations
-  - Continuous audit trail `S`
-    - compliance
-  - Incident response runbook `S`
-    - operations
+  - Outcome auto-pairing `M`
+    - governance
+  - Multi-source signal dedupe `S`
+    - framework
+  - Weekly signal review `S`
+    - adoption
 - Done
-  - Capability-pack signing service `M`
-    - platform
-  - Manual model rotation `S`
-    - operations
-  - Java and .NET parity `M`
-    - platform
-  - Audit trail v1 `S`
-    - compliance
+  - Signal taxonomy `M`
+    - framework
+  - Equal-weights model `S`
+    - scoring
+  - Connector v1 `M`
+    - framework
+  - Append-only schema `S`
+    - governance
 
 
 ---
@@ -100,7 +100,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -133,7 +133,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -166,7 +166,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`

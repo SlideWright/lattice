@@ -60,13 +60,13 @@ Stable diagrams render with full theme control. Experimental ones marked 🔥 ma
 
 ```mermaid
 ---
-title: Capability-pack distribution
+title: Signal pipeline
 ---
 flowchart LR
-  A{{"Policy Registry"}} --> B(["Control Plane"])
-  B -->|"signed pack"| C["Consuming App"]
-  C -->|"orchestrate / resolve"| D[("Application DB")]
-  B -.->|"revocation"| C
+  A{{"Signal Intake"}} --> B(["Scoring Model"])
+  B -->|"scored signal"| C["Decision Log"]
+  C -->|"decide / close"| D[("Outcome Store")]
+  B -.->|"recalibration"| C
 ```
 
 > Full theme support — node fills, borders, edge colors, cluster fills, edge labels all controllable via themeVariables.
@@ -81,18 +81,18 @@ flowchart LR
 
 ```mermaid
 ---
-title: Orchestrate call sequence
+title: Score-and-decide sequence
 ---
 sequenceDiagram
   participant App
   participant SDK
-  participant Registry
-  App->>SDK: orchestrate(prompt)
-  SDK->>SDK: verify pack
-  SDK->>Registry: unwrap adapter
-  Registry-->>SDK: adapter weights
-  SDK-->>App: handle
-  Note over SDK: adapter evicted on close
+  participant Store
+  App->>SDK: score(signal)
+  SDK->>SDK: apply weights
+  SDK->>Store: load team weights
+  Store-->>SDK: calibrated weights
+  SDK-->>App: a score
+  Note over SDK: decision logged on close
 ```
 
 > Full theme support — actor backgrounds, signal colors, activation bars, note styling all themeable.
@@ -107,26 +107,26 @@ sequenceDiagram
 
 ```mermaid
 ---
-title: Agentic SDK class model
+title: Decision framework class model
 ---
 classDiagram
-  class AgenticSDK {
-    -CapabilityPack pack
-    -TenantAdapter adapter
-    +orchestrate(field, prompt) Handle
-    +resolve(field, handle, purpose) Outcome
+  class DecisionFramework {
+    -ScoringPolicy policy
+    -TeamWeights weights
+    +score(field, signal) Score
+    +decide(field, score, criteria) Outcome
   }
-  class CapabilityPack {
-    +String tenantId
+  class ScoringPolicy {
+    +String teamId
     +int version
     +verify() boolean
   }
-  class TenantAdapter {
-    -byte[] weights
-    +evict() void
+  class TeamWeights {
+    -float[] weights
+    +recalibrate() void
   }
-  AgenticSDK *-- CapabilityPack
-  AgenticSDK *-- TenantAdapter
+  DecisionFramework *-- ScoringPolicy
+  DecisionFramework *-- TeamWeights
 ```
 
 > Themeable — `classText` controls label color; node fills inherit from `primaryColor`.
@@ -165,25 +165,25 @@ stateDiagram-v2
 
 ```mermaid
 ---
-title: Tenant capability-pack schema
+title: Team scoring-policy schema
 ---
 erDiagram
-  TENANT ||--o{ CAPABILITY_PACK : "issues"
-  CAPABILITY_PACK ||--|{ ADAPTER_VERSION : "wraps"
-  CAPABILITY_PACK ||--o{ AUDIT_EVENT : "emits"
-  TENANT {
-    string tenantId PK
+  TEAM ||--o{ SCORING_POLICY : "issues"
+  SCORING_POLICY ||--|{ WEIGHT_VERSION : "carries"
+  SCORING_POLICY ||--o{ DECISION_ENTRY : "emits"
+  TEAM {
+    string teamId PK
     string name
     timestamp createdAt
   }
-  CAPABILITY_PACK {
-    string packId PK
-    string tenantId FK
+  SCORING_POLICY {
+    string policyId PK
+    string teamId FK
     int version
   }
-  ADAPTER_VERSION {
+  WEIGHT_VERSION {
     int version PK
-    bytes wrappedAdapter
+    bytes calibratedWeights
     timestamp expiresAt
   }
 ```
@@ -200,17 +200,17 @@ erDiagram
 
 ```mermaid
 journey
-  title Agentic SDK Adoption
+  title Decision Framework Adoption
   section Discovery
-    Read architecture doc: 4: Engineer
-    Talk to platform team: 5: Engineer, Platform
+    Read framework doc: 4: Product, Operator
+    Talk to framework operator: 5: Product, Operator
   section Integration
-    Add SDK dependency: 4: Engineer
-    Wire mTLS certs: 2: Engineer
-    First successful orchestration: 5: Engineer
+    Add signal-sdk dependency: 4: Product
+    Wire intake connectors: 2: Product
+    First scored signal: 5: Product
   section Production
-    Pass security review: 3: Engineer, Security
-    Ship to prod: 5: Engineer
+    Pass audit review: 3: Product, Auditor
+    Run weekly cadence: 5: Product
 ```
 
 > Themeable — eight `fillType0..7` variables for the section coloring.
@@ -225,17 +225,17 @@ journey
 
 ```mermaid
 gantt
-  title Orchestration Mesh Phase 1
+  title Decision Framework Phase 01
   dateFormat YYYY-MM-DD
   section Foundation
-    Registry provisioning :done,   reg,   2025-01-06, 14d
-    Control plane MVP     :active, cp,    after reg, 21d
+    Decision Log schema   :done,   reg,   2025-01-06, 14d
+    Scoring model MVP     :active, cp,    after reg, 21d
     SDK skeleton          :        sdk,   after reg, 21d
   section Integration
-    First app integration :        int1,  after cp, 14d
-    Audit pipeline        :        audit, after int1, 10d
+    First team onboarding :        int1,  after cp, 14d
+    Intake pipeline       :        audit, after int1, 10d
   section Cutover
-    Production rollout    :crit,   roll,  after audit, 7d
+    Production cadence    :crit,   roll,  after audit, 7d
 ```
 
 > Lots of dedicated themeVariables — task bar, active task, done task, critical, today line all separately controllable.
@@ -250,12 +250,12 @@ gantt
 
 ```mermaid
 pie showData
-  title Audit log volume by source
-  "Adapter unwrap events" : 12500
-  "Pack issuance" : 4200
-  "Revocations" : 180
-  "Policy changes" : 95
-  "Cert provisioning" : 60
+  title Decision-log events by source
+  "Signal scored" : 12500
+  "Decisions logged" : 4200
+  "Recalibrations" : 180
+  "Weight changes" : 95
+  "Outcome paired" : 60
 ```
 
 > Most theme-rich diagram — twelve `pie1..12` slot colors plus title, section, legend, stroke variables.
@@ -277,11 +277,11 @@ quadrantChart
   quadrant-2 Quick Wins
   quadrant-3 Defer
   quadrant-4 Time Sinks
-  Pack caching: [0.3, 0.7]
-  Multi-tenant adapters: [0.7, 0.85]
-  Per-purpose packs: [0.8, 0.4]
-  Vendor scoping: [0.4, 0.55]
-  Manual rotation: [0.2, 0.2]
+  Signal dedupe: [0.3, 0.7]
+  Per-team calibration: [0.7, 0.85]
+  Per-decision profiles: [0.8, 0.4]
+  Anomaly routing: [0.4, 0.55]
+  Manual recalibration: [0.2, 0.2]
 ```
 
 > Themeable — four quadrant fills and text colors, axis labels, point fill all controllable.
@@ -296,30 +296,30 @@ quadrantChart
 
 ```mermaid
 ---
-title: Policy custody requirements
+title: Decision custody requirements
 ---
 requirementDiagram
-  requirement non_exportable_policy {
+  requirement traceable_decision {
     id: 1
-    text: "Base policy must never leave the registry"
+    text: "Every decision must trace to its scored signals"
     risk: high
     verifymethod: inspection
   }
   requirement audit_trail {
     id: 2
-    text: "Every adapter unwrap logged outside platform control"
+    text: "Every score logged in the append-only Decision Log"
     risk: high
     verifymethod: test
   }
-  element registry {
+  element decision_log {
     type: hardware
   }
-  element control_plane {
+  element calibration_loop {
     type: service
   }
-  registry - satisfies -> non_exportable_policy
-  registry - satisfies -> audit_trail
-  control_plane - traces -> audit_trail
+  decision_log - satisfies -> traceable_decision
+  decision_log - satisfies -> audit_trail
+  calibration_loop - traces -> audit_trail
 ```
 
 > Inherits from core variables. No diagram-specific theme keys.
@@ -339,16 +339,16 @@ title: Release branch history
 gitGraph
   commit id: "inita"
   commit id: "add SDK"
-  branch feature/multi-tenant
-  checkout feature/multi-tenant
-  commit id: "tenant model"
-  commit id: "tenant tests"
+  branch feature/per-team
+  checkout feature/per-team
+  commit id: "weights model"
+  commit id: "weights tests"
   checkout main
-  merge feature/multi-tenant tag: "v1.1"
-  branch hotfix/audit
-  commit id: "audit fix"
+  merge feature/per-team tag: "v1.1"
+  branch hotfix/decision-log
+  commit id: "log fix"
   checkout main
-  merge hotfix/audit tag: "v1.1.1"
+  merge hotfix/decision-log tag: "v1.1.1"
   commit id: "phase 2"
 ```
 
@@ -362,16 +362,16 @@ gitGraph
 
 ```mermaid
 C4Context
-  title Orchestration Mesh
+  title Decision Framework
   Person(eng, "Engineer", "Builds SDK")
-  Person(ops, "Operator", "Owns packs")
-  System(platform, "Mesh", "SDK + control plane")
-  System_Ext(reg, "Policy Registry", "Holds base policies")
-  System_Ext(app, "Consumer", "Calls SDK")
+  Person(ops, "Framework operator", "Owns policy")
+  System(platform, "Framework", "SDK + calibration loop")
+  System_Ext(reg, "Decision Log", "Holds logged decisions")
+  System_Ext(app, "Product team", "Calls SDK")
   Rel(eng, app, "Builds")
-  Rel(app, platform, "Orchestrate")
+  Rel(app, platform, "Scores")
   Rel(ops, platform, "Manages")
-  Rel(platform, reg, "Wrap adapters")
+  Rel(platform, reg, "Logs decisions")
 ```
 
 > Marked 🦺⚠️ in the docs — supported but the team flags it as work-in-progress. Theme support partial.
@@ -386,26 +386,26 @@ C4Context
 
 ```mermaid
 mindmap
-  root((Orchestration Mesh))
-    Policy
-      Base policy
-        Registry
-        Non-exportable
-      Tenant adapter
-        Wrapped
-        Per-tenant
+  root((Decision Framework))
+    Scoring
+      Scoring policy
+        Decision Log
+        Append-only
+      Team weights
+        Calibrated
+        Per-team
     Operations
-      Orchestrate
-      Resolve
-      Rotate
+      Score
+      Decide
+      Recalibrate
     Audit
-      Registry stream
-      Control plane
+      Decision Log stream
+      Calibration loop
       SDK local
-    Boundaries
-      Prod
-      Non-prod
-      Vendor
+    Adoption
+      Pilot team
+      Org-wide
+      Eligible PMs
 ```
 
 > Inherits from core. Multiple shape syntaxes: `((round))`, `[square]`, `(rounded)`, `))cloud((`, `)hex(`.
@@ -420,22 +420,22 @@ mindmap
 
 ```mermaid
 timeline
-  title Orchestration Mesh Roadmap
+  title Decision Framework Roadmap
   section Phase 01 · Core
-    Q1 : Capability-pack model
-       : Adapter versioning
-       : Registry-anchored policy
+    Q1 : Scoring-policy model
+       : Weight versioning
+       : Decision-Log-anchored policy
     Q2 : Signed distribution
-       : Version-floor revocation
+       : Version-floor recalibration
   section Phase 02 · Scale
-    Q3 : Multi-tenant
-       : Per-field-class adapters
-       : Orchestration pipeline
+    Q3 : Per-team calibration
+       : Per-decision-class profiles
+       : Intake pipeline
     Q4 : Historical migration
-       : Automated rotation
-  section Phase 03 · Boundaries
-    Q1+1 : Non-prod packs
-         : Vendor-scoped packs
+       : Automated recalibration
+  section Phase 03 · Adoption
+    Q1+1 : Org-wide enablement
+         : Auditor exports
 ```
 
 > Inherits from core. The section coloring uses the `cScale` palette.
@@ -507,9 +507,9 @@ Spending,Other,150
 
 ```mermaid
 xychart-beta
-    title "Quarterly orchestration volume (millions)"
+    title "Quarterly signals scored (thousands)"
     x-axis [Q1, Q2, Q3, Q4]
-    y-axis "Calls" 0 --> 100
+    y-axis "Signals" 0 --> 100
     bar [42, 58, 67, 81]
     line [40, 55, 65, 80]
 ```
@@ -565,16 +565,16 @@ title TLS Record header
 ```mermaid
 kanban
   Backlog
-    [Multi-tenant adapters]
-    [Deprovision audit]
+    [Per-team calibration]
+    [Weight rollback audit]
   In Progress
-    [Audit reconciler]
+    [Outcome reconciler]
     [SDK Java port]
   Review
-    [Vendor pack spec]
+    [Scoring profile spec]
   Done
-    [Phase 1 launch]
-    [Registry provisioning]
+    [Phase 01 launch]
+    [Decision Log schema]
 ```
 
 > Inherits from core. Per-card `[Title]@{ assigned: ..., priority: ... }` metadata supported but optional.
@@ -589,11 +589,11 @@ kanban
 
 ```mermaid
 architecture-beta
-  group platform(cloud)[Orchestration Mesh]
-  service reg(database)[Policy Registry] in platform
-  service cp(server)[Control Plane] in platform
+  group platform(cloud)[Decision Framework]
+  service reg(database)[Decision Log] in platform
+  service cp(server)[Calibration Loop] in platform
   service sdk(internet)[SDK Fleet] in platform
-  service store(disk)[Adapter Store] in platform
+  service store(disk)[Weight Store] in platform
   reg:R -- L:cp
   cp:R -- L:sdk
   cp:B -- T:store
@@ -613,8 +613,8 @@ architecture-beta
 radar-beta
   title Architecture review · scoring
   axis Speed, Resilience, Auditability, Cost, Simplicity
-  curve Edge["Capability-pack model"]{85, 90, 95, 70, 60}
-  curve Gateway["Gateway-only"]{60, 70, 80, 50, 80}
+  curve Edge["Calibrated framework"]{85, 90, 95, 70, 60}
+  curve Gateway["Quarterly review"]{60, 70, 80, 50, 80}
 ```
 
 > Inherits from core. Multiple `curve` lines plot on the same axes.
@@ -629,16 +629,16 @@ radar-beta
 
 ```mermaid
 treemap-beta
-"Orchestration Mesh"
+"Decision Framework"
   "SDK"
     "Java": 4200
     "Python": 1800
     "Go": 800
-  "Control Plane"
+  "Calibration Loop"
     "API": 2400
     "Signing": 1200
     "Audit": 900
-  "Adapter Store"
+  "Weight Store"
     "Postgres": 600
     "Backup": 200
 ```
@@ -655,11 +655,11 @@ treemap-beta
 
 ```mermaid
 venn-beta
-  set A["Prod"]
-  set B["Non-prod"]
-  set V["Vendor"]
-  union A, B["shared schemas"]
-  union B, V["vendor pilot"]
+  set A["Pilot teams"]
+  set B["Eligible PMs"]
+  set V["Eval tools"]
+  union A, B["shared cadence"]
+  union B, V["tool pilot"]
 ```
 
 > Inherits from core. `union A, B` for two-set overlap; `set X["Label"]` to give a display name distinct from the identifier; `union A, B["..."]` to label an intersection region.
@@ -675,18 +675,18 @@ venn-beta
 ```mermaid
 ishikawa-beta
 fishbone
-    Effect: "Audit reconciliation drift"
+    Effect: "Outcome reconciliation drift"
     People:
-        Skill gap on inference ops
+        Skill gap on signal scoring
         On-call rotation thin
     Process:
-        Manual rotation
-        No drill cadence
+        Manual recalibration
+        No retrospective cadence
     Tooling:
         Log schema versioning
-        SIEM coverage gaps
+        Dashboard coverage gaps
     Environment:
-        Multi-region replication
+        Multi-team replication
 ```
 
 > Inherits from core. Branches default to four (people, process, tooling, environment) but any heading is allowed.
@@ -704,7 +704,7 @@ treeView-beta
     "src/"
         "main.js"
         "lib/"
-            "orchestrate.js"
+            "score.js"
             "verify.js"
     "package.json"
 ```

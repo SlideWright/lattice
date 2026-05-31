@@ -20,9 +20,9 @@ Native 2×2 scatter chart — items plotted on two continuous axes.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -45,13 +45,13 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — sized by revenue at stake.
+## Where to put the next dollar — sized by revenue nobody has booked yet.
 
 - Strategic Bets
-  - Pack caching `3, 70, 2.4`
-  - Multi-tenant adapters `5, 85, 4.1`
+  - Scoring model v2 `3, 70, 2.4`
+  - Per-team calibration `5, 85, 4.1`
 - Quick Wins
-  - Per-purpose packs `8, 80, 0.9`
+  - Weekly signal brief `8, 80, 0.9`
   - Snapshot exports `9, 55, 0.6`
 - Defer
   - Vendor scoping `2, 30, 0.4`
@@ -66,11 +66,11 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## How each bet moved after one quarter.
+## How each bet moved after one quarter — mostly to the left, where the work is cheaper to describe.
 
 - Strategic Bets
-  - Pack caching `5, 60` `3, 78`
-  - Multi-tenant adapters `7, 70` `5, 88`
+  - Scoring model v2 `5, 60` `3, 78`
+  - Per-team calibration `7, 70` `5, 88`
 - Quick Wins
   - Snapshot exports `9, 45` `8, 62`
 - Time Sinks
@@ -84,20 +84,20 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — clustered by theme.
+## Where to put the next dollar — clustered by theme, themed by whoever owns the slide.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
-  - Manual rotation `1, 22`
+  - Manual recalibration `1, 22`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM `9, 28`
+  - Bespoke board export `9, 28`
 
 
 ---
@@ -107,13 +107,13 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100 · targets 5, 50`
 
-## Against the go/no-go thresholds.
+## Against the go/no-go thresholds nobody has agreed to enforce.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
 - Defer
   - Vendor scoping `2, 30`
 - Time Sinks
@@ -127,17 +127,17 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The agentic-platform Magic Quadrant.
+## The decision-tooling Magic Quadrant, in which the tool we built is a Leader.
 
 - Challengers
-  - Legacy Inc `30, 82`
+  - Productboard `30, 82`
 - Leaders
-  - Lattice `85, 88`
-  - Gateway Corp `72, 76`
+  - Sprig + Log `85, 88`
+  - Chorus `72, 76`
 - Niche Players
-  - Boutique Inference `25, 28`
+  - Notion build-out `25, 28`
 - Visionaries
-  - Prompt Labs `82, 34`
+  - Spreadsheet `82, 34`
 
 
 ---
@@ -147,13 +147,13 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — unadorned.
+## Where to put the next dollar — unadorned, like the budget that funds it.
 
 - Strategic Bets
-  - Pack caching `3, 70`
-  - Multi-tenant adapters `5, 85`
+  - Scoring model v2 `3, 70`
+  - Per-team calibration `5, 85`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
 - Defer
   - Vendor scoping `2, 30`
@@ -168,26 +168,26 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Stress test — fourteen initiatives, dense labels.
+## Stress test — fourteen initiatives, dense labels, one owner.
 
 - Strategic Bets
-  - Pack caching layer `3, 72`
-  - Multi-tenant adapter rotation `5, 85`
-  - Cross-region replication `4, 78`
-  - Continuous audit trail `2, 66`
+  - Scoring model v2 `3, 72`
+  - Per-team calibration `5, 85`
+  - Multi-source signal dedupe `4, 78`
+  - Decision-log audit trail `2, 66`
 - Quick Wins
-  - Per-purpose packs `8, 80`
+  - Weekly signal brief `8, 80`
   - Snapshot exports `9, 55`
-  - Dependency dashboard `7, 62`
+  - Adoption dashboard `7, 62`
 - Defer
-  - Vendor security scoping `2, 30`
-  - Manual model rotation `1, 22`
-  - Legacy SDK shim `3, 14`
+  - Vendor scoping `2, 30`
+  - Manual recalibration `1, 22`
+  - Legacy intake shim `3, 14`
 - Time Sinks
   - Custom audit log UI `7, 18`
-  - Bespoke SCIM connector `9, 28`
-  - Edge runtime bindings `8, 12`
-  - Polyglot doc generator `6, 25`
+  - Bespoke board export `9, 28`
+  - Per-decision profiles `8, 12`
+  - Self-assessment generator `6, 25`
 
 
 ---
@@ -197,9 +197,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -222,9 +222,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -247,9 +247,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`

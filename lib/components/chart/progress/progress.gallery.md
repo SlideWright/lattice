@@ -22,13 +22,13 @@ Horizontal progress bars — one row per item, percentage filled.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
-- Framework `92%` `on-track`
-- Adoption & enablement `68%` `at-risk`
-- Decision log `81%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
 - Calibration cadence `34%` `deferred`
-- Board reporting `12%` `blocked`
+- Adoption `12%` `blocked`
 
 
 ---
@@ -38,16 +38,16 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 `H1 2026 · Phase 1 readiness`
 
-## Stress test — eight workstreams, full status range.
+## Stress test — eight workstreams, full status range, one honest pill.
 
-- Orchestration mesh `92%` `on-track`
-- Operations runbook `68%` `at-risk`
-- Compliance audit pack `81%` `on-track`
-- SDK polyglot parity `34%` `deferred`
-- Dependency dashboard `12%` `blocked`
-- Continuous audit trail `100%` `done`
-- Deprovision tooling `45%` `deferred`
-- Examiner log rollout `73%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Per-team calibration `34%` `deferred`
+- Adoption `12%` `blocked`
+- Decision-log audit trail `100%` `done`
+- Recalibration playbook `45%` `deferred`
+- Auditor export rollout `73%` `on-track`
 
 
 ---
@@ -59,13 +59,13 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
-- Framework `92%` `on-track`
-- Adoption & enablement `68%` `at-risk`
-- Decision log `81%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
 - Calibration cadence `34%` `deferred`
-- Board reporting `12%` `blocked`
+- Adoption `12%` `blocked`
 
 
 ---
@@ -77,13 +77,13 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
-- Framework `92%` `on-track`
-- Adoption & enablement `68%` `at-risk`
-- Decision log `81%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
 - Calibration cadence `34%` `deferred`
-- Board reporting `12%` `blocked`
+- Adoption `12%` `blocked`
 
 
 ---
@@ -95,13 +95,13 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
-- Framework `92%` `on-track`
-- Adoption & enablement `68%` `at-risk`
-- Decision log `81%` `on-track`
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
 - Calibration cadence `34%` `deferred`
-- Board reporting `12%` `blocked`
+- Adoption `12%` `blocked`
 
 
 ---
@@ -127,4 +127,4 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 - `stats` — independent headline metrics, no completion scale
 - `gantt` — the rows are time-bound and need a date axis
 - `checklist` — binary done / not-done across a flat list
-- `timeline-list` — the workstreams resolve in sequence, not in parallel
+- `timeline-list` — the workstreams complete in sequence, not in parallel

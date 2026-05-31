@@ -480,10 +480,10 @@ section::after {
 
 /* ── ACTORS ────────────────────────────────────────────────────────────
  * ## heading
- * - **Policy custody** `Governance`
- *   - Manages base-policy ceremonies and rotation. Never holds unwrapped adapters.
- * - **Policy** `Platform operator`
- *   - Owns pack policy, signing keys, version floors.
+ * - **Signal custody** `Signal owner`
+ *   - Manages intake quality and source diversity. Never tunes the weights directly.
+ * - **Policy** `Framework operator`
+ *   - Owns scoring policy, calibration cadence, version floors.
  *
  * Roster of responsibilities owned by named actors. Strong = the
  * responsibility (left header). Inline `code` = the actor name,
@@ -1535,11 +1535,11 @@ section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  *
  * ## Phase 1 acceptance, by item.
  *
- * - [x] Capability-pack signing in production
- * - [x] Registry-anchored audit trail
- * - [-] TTL refresh under cold-start load — _open, see slide 27_
- * - [ ] Multi-tenant operation — _Phase 2_
- * - [/] Cross-region replication — _deferred to Phase 3_
+ * - [x] Scoring policy live across all pilot teams
+ * - [x] Decision Log audit trail readable by Auditor role
+ * - [-] Examiner pack auto-generation — _open, see slide 27_
+ * - [ ] Multi-team calibration cadence — _Phase 2_
+ * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
  *   [x] → pass + state-full     (filled disc, --pass green)
@@ -3793,10 +3793,10 @@ section .items .node .label-container {
 /* ── KPI ───────────────────────────────────────────────────────────────
  * ## heading (with optional eyebrow h3 above)
  * 1. **94%**
- *    - Orchestration success
+ *    - Signal-classification success
  *    - target 99%, +2pp QoQ `On plan` `Board`
- * 2. **8 ms**
- *    - p99 resolve
+ * 2. **18 min**
+ *    - p99 decision close
  *    - target 10 ms, -3 ms QoQ `On plan` `SRE`
  *
  * Executive KPI system. One cohesive base, five layout modifiers:

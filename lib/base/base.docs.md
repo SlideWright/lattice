@@ -228,12 +228,12 @@ is consumed by a label.
 ```markdown
 <!-- _class: before-after -->
 
-## Resolve used to require a gateway round-trip.
+## Decisions used to require a quarterly re-litigation.
 
 - Before
-  - Every resolve call: network round-trip to the central gateway, p99 60 ms.
+  - Every prioritization debate from first principles, average close 4 hours, billed as agility.
 - After
-  - Local function call against an in-process capability pack, p99 8 ms.
+  - Resolved against logged weights and prior outcomes, average close 18 min, billed as rigor.
 ```
 
 **Layouts that support the labeled corner tag:** `before-after`,

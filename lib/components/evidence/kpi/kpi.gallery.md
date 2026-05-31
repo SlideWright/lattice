@@ -19,7 +19,7 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _footer: "Default · kpi" -->
 
 ### Financial · Q4 2026
-## Revenue ahead of plan; margin and cash both expanded.
+## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. **$2.4B**
    - Total revenue
@@ -61,21 +61,21 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _class: kpi attention -->
 <!-- _footer: "Attention — the slipping metric leads · kpi attention" -->
 
-### Orchestration · Q4 2026
-## One metric below target; remediation under way.
+### Framework · Q4 2026
+## One metric below target; remediation under way, as it has been for two quarters.
 
 1. **94%**
-   - Orchestration success
+   - Signal-classification success
    - target 99% · -5pp `At risk` `Board`
-2. **8 ms**
-   - p99 resolve
-   - target 10 ms `On plan` `SRE`
+2. **18 min**
+   - p99 decision close
+   - target 20 min `On plan` `Ops`
 3. **0**
-   - Examiner findings
-   - target 0 `On plan` `Audit`
+   - Auditor findings
+   - target 0 — nobody has opened the log to check `On plan` `Audit`
 4. **3.2×**
-   - Resolve headroom
-   - target 2× `On plan` `Platform`
+   - Calibration headroom
+   - target 2× `On plan` `Framework`
 
 
 ---
@@ -84,7 +84,7 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _footer: "Ops — SLO / SLA grid · kpi ops" -->
 
 ### Platform · Q4 2026
-## One latency target slipping; everything else inside SLO.
+## One latency target slipping; everything else inside SLO, for now.
 
 1. **99.92%**
    - API availability
@@ -106,7 +106,7 @@ Executive KPI system — one base, five layout modifiers.
 <!-- _footer: "Compliance — binary state · kpi compliance" -->
 
 ### Compliance · Q4 2026
-## Three frameworks clean; one open finding under remediation.
+## Three frameworks clean; one open finding under remediation since the last walk-through.
 
 1. **0**
    - SOC 2 Type II open findings
@@ -130,7 +130,7 @@ Source · regulatory register · weekly export
 <!-- _footer: "Trajectory — year-over-year cards · kpi trajectory" -->
 
 ### Growth · FY26 vs FY25
-## Every growth lever moved forward this year.
+## Every growth lever moved forward this year, in the cut of the data we are showing.
 
 1. **$420M**
    - ARR
@@ -152,11 +152,11 @@ Source · regulatory register · weekly export
 <!-- _footer: "Spotlight — monumentalised hero metric · kpi spotlight" -->
 
 ### Headline · Q4 2026
-## The number behind the quarter.
+## The number behind the quarter, and the one in every headline slide.
 
 1. **$420M**
    - Annual recurring revenue
-   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M.
+   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M, which is the figure we will quote until it stops flattering us.
    - `Headline` `Board` `Investor`
 2. **94%**
    - Net dollar retention
@@ -175,7 +175,7 @@ Source · regulatory register · weekly export
 <!-- _footer: "Composition: dark · kpi dark" -->
 
 ### Financial · Q4 2026
-## Revenue ahead of plan; margin and cash both expanded.
+## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. **$2.4B**
    - Total revenue
@@ -197,7 +197,7 @@ Source · regulatory register · weekly export
 <!-- _footer: "Composition: compact · kpi compact" -->
 
 ### Financial · Q4 2026
-## Revenue ahead of plan; margin and cash both expanded.
+## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. **$2.4B**
    - Total revenue
@@ -219,7 +219,7 @@ Source · regulatory register · weekly export
 <!-- _footer: "Composition: accent · kpi accent" -->
 
 ### Financial · Q4 2026
-## Revenue ahead of plan; margin and cash both expanded.
+## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
 
 1. **$2.4B**
    - Total revenue

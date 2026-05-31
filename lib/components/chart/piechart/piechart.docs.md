@@ -69,14 +69,14 @@ Hollows the pie into a donut. Visually cleaner for executive decks; the centre c
 
 `H1 2026 · 1,840 person-hours`
 
-## Where the engineering quarter went.
+## Where the engineering quarter actually went.
 
-Wedges drawn proportionally; legend reads in author order with raw values.
+Wedges drawn proportionally; the toil-and-on-call slice is the one nobody put in the roadmap.
 
-- Orchestration mesh `46%`
-- Operations runbook `22%`
-- Compliance work `18%`
-- Pilot support `9%`
+- Signal Intake build `46%`
+- Scoring policy work `22%`
+- Decision Log integration `18%`
+- Explaining the framework to stakeholders `9%`
 - Toil and on-call `5%`
 ```
 

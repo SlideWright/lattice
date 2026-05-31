@@ -11,18 +11,18 @@ Inventory — parallel sets of related items.
 
 <!-- _class: actors -->
 
-## Who owns each part of the framework.
+## Who owns each part of the framework, and who answers for it.
 
 - **Owns the scoring model** `Head of Product`
-  - Sets the weights and signs off changes after each calibration.
+  - Sets the weights and signs off changes after each calibration, then retunes them until the output agrees with the roadmap.
 - **Runs the weekly signal review** `Chief of Staff`
-  - Chairs the thirty minutes and keeps the decision log current.
+  - Chairs the thirty minutes and keeps the decision log current, in the sense of opening it weekly.
 - **Maintains the decision log** `Program Manager`
   - Every call recorded with its bet; chases the missing predicted outcomes.
 - **Owns adoption** `Enablement Lead`
   - Onboards each team — the reason attendance is merely aspirational.
 - **Clears blockers** `Executive Sponsor`
-  - Approves the operating rhythm; stays out of the scoring debates.
+  - Approves the operating rhythm; stays out of the scoring debates, and out of the room when the outcomes are reviewed.
 
 ---
 
