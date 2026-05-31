@@ -221,6 +221,31 @@ section.chart-frame .chart-body {
   overflow: hidden;
 }
 
+/* Chart surface panel — every member's content sits on its own quiet,
+ * neutral gradient surface (Apple-Stocks style): a faint top-glow tint
+ * fading to the canvas, a hairline border, soft corners, and pleasing
+ * internal padding so the chart never touches the panel edge. CSS-only and
+ * canvas-aware (mixes against --text-heading / --bg, so it flips light/dark).
+ * One rule covers every chart-family member because each wraps its content in
+ * a single direct child of .chart-body (radar-figure, piechart-figure,
+ * quadrant-figure, progress-bars, word-cloud-canvas, …) — content-width for
+ * the plot charts, full-width for the list charts, so the panel hugs each
+ * pleasingly. Kept deliberately faint so it reads as a surface, not a card
+ * that competes with the data or the editorial slide.
+ *
+ * Excluded: state-chart, whose vertical state flow already fills the full
+ * slide height — the panel's padding would push its top/bottom nodes past the
+ * clipped chart-body edge. (word-cloud is free-floating and not a chart-frame
+ * member at all, so it never matches this rule.) */
+section.chart-frame:not(.state-chart) .chart-body > * {
+  box-sizing: border-box;
+  padding: 1.8cqi 2.4cqi;
+  background: radial-gradient(125% 110% at 50% 0%,
+    color-mix(in oklab, var(--text-heading) 6%, var(--bg)) 0%, var(--bg) 72%);
+  border: 1px solid color-mix(in oklab, var(--text-heading) 9%, transparent);
+  border-radius: 1.25cqi;
+}
+
 section.chart-frame .chart-caption {
   flex: 0 0 auto;
   box-sizing: border-box;

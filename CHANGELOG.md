@@ -27,6 +27,16 @@ in patch versions.
 
 ### Added
 
+- **Chart surface panels.** Every framed chart-family member now sits on its
+  own quiet, neutral gradient surface (Apple-Stocks style): a faint top-glow
+  tint fading to the canvas, a hairline border, soft corners, and internal
+  padding so the chart never touches the panel edge. Pure CSS on
+  `section.chart-frame:not(.state-chart) .chart-body > *`, canvas-aware (mixes
+  against `--text-heading`/`--bg`, so it flips light/dark). Covers radar,
+  quadrant, piechart, progress, gantt, kanban, and timeline-list; **state-chart
+  is excluded** (its vertical flow fills the full slide height, leaving no room
+  for a padded panel) and **word-cloud** is unaffected (free-floating, not a
+  chart-frame member).
 - **Apple-inspired categorical chart spectrum, decoupled from `cN`.** The
   chart-family (quadrant, piechart, radar, progress) now draws from its own
   vivid, well-spaced 8-hue spectrum — `--catN-hue` with an Apple-style master
