@@ -59,10 +59,12 @@ section.quadrant {
 }
 
 /* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
+/* Quadrant regions = pale tints of the shared --chart ramp (cohesive with
+ * every other chart), kept quiet as backgrounds; dark ink on the labels. */
+section.quadrant [data-cell="0"] { --cell-fill: color-mix(in oklab, var(--chart-1) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="1"] { --cell-fill: color-mix(in oklab, var(--chart-2) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="2"] { --cell-fill: color-mix(in oklab, var(--chart-3) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="3"] { --cell-fill: color-mix(in oklab, var(--chart-4) 16%, var(--bg)); --cell-ink: var(--text-heading); }
 
 /* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }

@@ -5907,10 +5907,12 @@ section.quadrant {
 }
 
 /* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
+/* Quadrant regions = pale tints of the shared --chart ramp (cohesive with
+ * every other chart), kept quiet as backgrounds; dark ink on the labels. */
+section.quadrant [data-cell="0"] { --cell-fill: color-mix(in oklab, var(--chart-1) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="1"] { --cell-fill: color-mix(in oklab, var(--chart-2) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="2"] { --cell-fill: color-mix(in oklab, var(--chart-3) 16%, var(--bg)); --cell-ink: var(--text-heading); }
+section.quadrant [data-cell="3"] { --cell-fill: color-mix(in oklab, var(--chart-4) 16%, var(--bg)); --cell-ink: var(--text-heading); }
 
 /* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
 section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
@@ -11782,14 +11784,14 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
   --c-ink-dark:  light-dark(#FFFFFF, #55472C);
 
   /* Chart series — 8 distinct data-ink colours; brighter on dark canvas */
-  --chart-1: light-dark(#A77A00, #E4A800);
-  --chart-2: light-dark(#5EA228, #ADF57F);
-  --chart-3: light-dark(#009290, #00C9C6);
-  --chart-4: light-dark(#004E8B, #227DCE);
-  --chart-5: light-dark(#6C3B96, #9C6BC9);
-  --chart-6: light-dark(#D66587, #FFA2BB);
-  --chart-7: light-dark(#9A3C00, #D46936);
-  --chart-8: light-dark(#646500, #949600);
+  --chart-1: light-dark(#B47D00, #F5AC00);
+  --chart-2: light-dark(#619500, #8BD200);
+  --chart-3: light-dark(#00978F, #00B7AE);
+  --chart-4: light-dark(#008CDF, #008BDE);
+  --chart-5: light-dark(#AB61FF, #A148FB);
+  --chart-6: light-dark(#FE2992, #FF4197);
+  --chart-7: light-dark(#F05400, #FF885D);
+  --chart-8: light-dark(#918A00, #CDC300);
 
   /* Universal semantic palette */
   --c-warm-light: light-dark(#F6CBA9, #7B4100); --c-warm-dark: var(--c-stroke);
