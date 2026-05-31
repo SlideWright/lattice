@@ -22,7 +22,7 @@ Kanban board — columns of cards by stage.
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -53,7 +53,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 `Phase 2 · Sprint 14`
 
-## Stress test — four lanes, fifteen cards, mixed sizes.
+## Stress test — four lanes, fifteen cards, and a Backlog that grows faster than Done.
 
 - Backlog
   - Per-purpose pack caching `L`
@@ -100,7 +100,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -133,7 +133,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -166,7 +166,7 @@ Eight items across four stages; the scoring-model rewrite is the only card flagg
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`

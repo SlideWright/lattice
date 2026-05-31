@@ -22,7 +22,7 @@ Gantt chart — task bars across a date axis.
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar gates the full rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
 
 - Framework
   - Signal taxonomy `Q1 → Q2` `done`
@@ -45,7 +45,7 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 
 `2026 Q1 → 2026 Q4`
 
-## Stress test — four workstreams, twelve tasks, mixed status.
+## Stress test — four workstreams, twelve tasks, one deprovision bar nobody wants to own.
 
 - Platform Engineering
   - Capability-pack signing service `Q1 → Q2` `done`
@@ -74,7 +74,7 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar gates the full rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
 
 - Framework
   - Signal taxonomy `Q1 → Q2` `done`
@@ -99,7 +99,7 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar gates the full rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
 
 - Framework
   - Signal taxonomy `Q1 → Q2` `done`
@@ -124,7 +124,7 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar gates the full rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
 
 - Framework
   - Signal taxonomy `Q1 → Q2` `done`

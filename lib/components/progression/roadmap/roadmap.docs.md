@@ -72,7 +72,7 @@ Tints the phase columns as Horizon 1 / 2 / 3 (now / next / later) per the McKins
 
 `Three-horizon planning`
 
-## Where the platform invests across horizons.
+## Where the platform invests across horizons — Horizon 3 has lived there since 2024.
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
@@ -93,7 +93,7 @@ Promotes the state markers ([x]/[-]/[ ]/[/]) to the dominant read: tinted cell g
 
 `Layout · roadmap status`
 
-## Delivery status by workstream.
+## Delivery status by workstream, as of the most flattering snapshot.
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
@@ -114,7 +114,7 @@ Renders each workstream as a horizontal track across the phase columns, so a rea
 
 `Layout · roadmap swimlane`
 
-## Each team's track across the year.
+## Each team's track across the year, momentum implied by the arrows.
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
@@ -133,7 +133,7 @@ Treats the phase headers as dated milestones, carrying their date pill as a subt
 
 `Layout · roadmap milestones`
 
-## The dated path to GA.
+## The dated path to GA, dates subject to the usual revision.
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |

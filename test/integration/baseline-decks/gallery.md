@@ -535,7 +535,7 @@ Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-sli
 
 `Implementation · Orchestration Pipeline`
 
-## The orchestration call is three lines of application code.
+## The orchestration call is three lines of code; the onboarding is three months.
 
 `JavaScript · SDK v2 interface`
 
@@ -564,7 +564,7 @@ const outcome = await mesh.resolve(handle, { requestor: "claims-copilot" });
 
 ```python
 # Model weights on disk — anyone with
-# filesystem access can read them
+# filesystem access is now a stakeholder
 with open('./tenant.adapter', 'rb') as f:
     weights = f.read()
 
@@ -576,7 +576,7 @@ handle = model.run(prompt)
 
 ```python
 # Weights never leave the registry —
-# every inference is audited
+# every inference is audited, eventually
 import mesh
 
 plane = mesh.ControlPlane()
@@ -720,7 +720,7 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 
 ## Two-card layouts work equally well inverted to dark.
 
-- The architecture introduces a single model-distribution question: what protects the file containing the weights, and what is the blast radius if it leaves the host? Every other question in this document depends on the answer.
+- The architecture introduces exactly one model-distribution question — what protects the file holding the weights, and what is the blast radius the morning it leaves the host. The next forty slides are a confident, well-resourced exercise in deferring the answer.
 - The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
 
 ---
@@ -749,11 +749,11 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
 1. Capability-pack signing in production
-   - The registry-anchored signing pipeline runs end-to-end. The first signed capability pack installs cleanly on a real client.
+   - The registry-anchored signing pipeline runs end-to-end. The first signed pack installs cleanly on one real client, which we are calling general availability.
 2. Multi-tenant adapters
-   - One capability pack can carry distinct adapters per tenant without per-tenant rebuilds. Deprovisioning is a single control-plane op.
+   - One pack carries a distinct adapter per tenant with no per-tenant rebuild. Deprovisioning is a single control-plane op — demoed once, never yet run in anger.
 3. Per-purpose capability packs
-   - Authoring a pack scoped to a single business purpose takes minutes, not days. Audit trails distinguish purposes by default.
+   - A pack scoped to a single business purpose takes minutes to author and a quarter to get approved. Audit trails distinguish the purposes nobody disputes.
 
 ---
 
@@ -781,9 +781,9 @@ A tall asset on a wide canvas — `contain` replaces the lattice pattern with a 
 ## Chosen flags the right-hand card as the winner.
 
 - Gateway round-trip
-  - Every resolve is a network call to a central inference gateway. Latency is a function of distance, not code. p99 60 ms, gateway outages cascade.
+  - Every resolve is a network hop to a central inference gateway. Latency is a function of distance, not code — p99 60 ms, and the gateway browns out precisely when the board joins the demo.
 - In-process capability pack
-  - Resolve is a local function call against an SDK-resident pack. p99 8 ms, gateway outages do not affect in-process inference.
+  - Resolve is a local function call against an SDK-resident pack. p99 8 ms, and gateway outages stop cascading — a property we discovered after building the gateway, not before.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by featured cards.
 
@@ -797,9 +797,9 @@ The right card carries an accent left-edge and accent-tinted background — the 
 ## Decision composes chosen + rejected with a labelled connector.
 
 - Buy a vendor
-  - Three managed-inference vendors evaluated; none run inference in-process inside the residency boundary. Time-to-integrate is six months at best; ongoing per-tenant licensing.
+  - Three managed-inference vendors evaluated; none run inference in-process inside the residency boundary. Six months to integrate, then per-tenant licensing in perpetuity, renegotiated each year by whoever has not yet left.
 - Build in-house
-  - Owns the architecture, owns the operating model, owns the timeline. The compliance window closes in 18 months and a vendor cutover would consume nine of those.
+  - Owns the architecture, the operating model, and the timeline. Also owns the on-call rota, which is the line item nobody put in the business case.
 
 The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
 
@@ -813,9 +813,9 @@ The left card is struck through to read as the option considered then dropped; t
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
 - Before — manual rotation
-  - Operators schedule a rotation window, freeze the value stream on the affected scope, swap capability packs, run a verification pass, lift the freeze. Average outage 18 minutes.
+  - Operators book a rotation window, freeze the value stream, swap packs, run a verification pass, lift the freeze. Average outage 18 minutes; average post-mortem, ninety.
 - After — version-floor rotation
-  - The signing pipeline emits a new capability pack with an incremented version. Clients install the new pack on next refresh. No freeze. No coordinated cutover.
+  - The signing pipeline emits a new pack with an incremented version. Clients install on next refresh. No freeze, no cutover, no heroics worth a slide at all-hands.
 
 ---
 
@@ -827,11 +827,11 @@ The left card is struck through to read as the option considered then dropped; t
 ## Three switches the grid from 2 columns to 3 columns.
 
 - Capability pack
-  - The signed envelope an SDK installs. Carries policy, wrapped tenant adapter, version, expiry. The pack is the unit of distribution.
+  - The signed envelope an SDK installs — policy, a wrapped tenant adapter, version, expiry. The unit of distribution, and the unit of incident.
 - Tenant adapter
-  - The per-tenant fine-tune. Wrapped by the base policy; resident only inside native SDK memory. Never leaves the host.
+  - The per-tenant fine-tune. Wrapped by the base policy, resident only in SDK memory, never on disk, never in a screenshot.
 - Base policy
-  - The governance root. Lives in the control plane, never exported. Deprovisioning a tenant is a single control-plane op against its adapter.
+  - The governance root. Lives in the control plane, never exported, name-dropped in every architecture review by people who cannot find it.
 
 ---
 
@@ -861,11 +861,11 @@ The left card is struck through to read as the option considered then dropped; t
 ## Horizontal flips cards-stack from a vertical stack to a row.
 
 - Claim
-  - The capability-pack model gets in-process latency with gateway-grade policy custody. We do not pay round-trip latency on every inference.
+  - The capability-pack model buys in-process latency with gateway-grade policy custody — a sentence we will be repeating verbatim for two years.
 - Evidence
-  - The pilot ran six months across four product teams. p99 resolve landed at 8 ms; gateway outages did not cascade into application outages.
+  - Six-month pilot, four product teams, p99 resolve at 8 ms, zero cascading outages — measured by the team that predicted exactly this.
 - Implication
-  - A vendor cutover is unnecessary. We continue investing in the in-house architecture and ship the operational runbook in the next phase.
+  - No vendor cutover. We keep funding the in-house build and ship the operational runbook "next phase," as is tradition.
 
 ---
 
@@ -975,10 +975,10 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - Vendor A — strongest fit on coverage, second-lowest TCO of the four.
-  - Vendor B — narrower coverage but cheapest license tier.
+  - Vendor A — strongest coverage, second-lowest TCO, and a roadmap slide that is mostly our logo.
+  - Vendor B — narrower coverage but the cheapest tier, which is the only number procurement read.
 - High coverage / High cost
-  - Vendor C — full coverage, premium pricing, niche differentiators we do not need.
+  - Vendor C — full coverage, premium pricing, differentiators built for a market we are not in.
 - Low coverage / Low cost
   - Vendor D — cheap, but leaves three residency boundaries uncovered.
 - Low coverage / High cost
@@ -994,11 +994,11 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Decision · 2026 Q1`
 
 - **Build**
-  - Owns the architecture, owns the operating model, owns the timeline.
+  - Owns the architecture, the operating model, the timeline. And the pager.
 - **Why not buy**
-  - Three managed-inference vendors evaluated; none run in-process inside the residency boundary.
+  - Three managed-inference vendors evaluated; none run in-process inside the residency boundary, and all three decks were the same deck.
 - **Why not delay**
-  - The compliance window closes in 18 months.
+  - The compliance window closes in 18 months — two reorgs from now.
 
 ---
 
@@ -1010,11 +1010,11 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 `Latency story · before vs after`
 
 - **Before**
-  - Every resolve call: network round-trip to the central inference gateway, average 18 ms, p99 60 ms. Gateway outages cascaded into application outages.
+  - Every resolve: a network round-trip to the central gateway, average 18 ms, p99 60 ms, and an outage budget the gateway spent on our behalf.
 - **After**
-  - Resolve is a local function call. p99 8 ms. Gateway outages do not affect in-process inference.
+  - Resolve is a local function call. p99 8 ms. Gateway outages reach the status page, not the application.
 
-The architecture change is the capability-pack model — local, signed, time-bound model weights — not a gateway optimisation.
+The architecture change is the capability-pack model — local, signed, time-bound weights — not a gateway we tuned until everyone stopped asking.
 
 ---
 
@@ -1048,7 +1048,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: kpi target -->
 <!-- _footer: "New layout — kpi · kpi target" -->
 
-## Where we are against quarter targets.
+## Where we are against the targets we set ourselves.
 
 1. **94%**
    - Orchestration success
@@ -1084,13 +1084,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Who owns each part of the capability-pack lifecycle.
 
 - **Policy custody** `Governance`
-  - Manages base-policy ceremonies and rotation. Never holds unwrapped adapters.
+  - Runs base-policy ceremonies and rotation. Never holds an unwrapped adapter, and opens every review by saying so.
 - **Policy** `Platform operator`
-  - Owns pack policy, signing keys, version floors, and revocation playbooks.
+  - Owns pack policy, signing keys, version floors, and the revocation playbook nobody has had to run.
 - **Consumption** `Product team`
-  - Holds time-bound capability packs; orchestrates and resolves in-process.
+  - Holds time-bound packs; orchestrates and resolves in-process; finds the bugs first.
 - **Oversight** `Examiner`
-  - Reads the registry audit trail; cannot read prompts.
+  - Reads the registry audit trail, cannot read a prompt, and is the only role anyone actually fears.
 
 ---
 
@@ -1101,11 +1101,11 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## What this section will tell you, in five lines.
 
-- The capability-pack model gets in-process latency with gateway-grade policy custody. → slide 8
-- Rotation is a version-floor increment, not a coordinated cutover. → slide 12
+- The capability-pack model buys in-process latency with gateway-grade custody. → slide 8
+- Rotation is a version-floor increment, not a coordinated cutover, not a war room. → slide 12
 - Per-tenant base policies make deprovisioning a single control-plane op. → slide 18
-- Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
-- Five questions stay open until Phase 1 closes them on the record. → slide 27
+- Phase 1 ships the architecture, Phase 2 ships the operations, Phase 3 ships the apology. → slide 22
+- Five questions stay open until Phase 1 is forced to close them on the record. → slide 27
 
 ---
 

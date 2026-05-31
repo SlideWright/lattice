@@ -231,9 +231,9 @@ is consumed by a label.
 ## Resolve used to require a gateway round-trip.
 
 - Before
-  - Every resolve call: network round-trip to the central gateway, p99 60 ms.
+  - Every resolve call: a network round-trip to the central gateway, p99 60 ms, billed as resilience.
 - After
-  - Local function call against an in-process capability pack, p99 8 ms.
+  - Local function call against an in-process capability pack, p99 8 ms, billed as innovation.
 ```
 
 **Layouts that support the labeled corner tag:** `before-after`,

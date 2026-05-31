@@ -27,9 +27,9 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 1. `2024 Q3` First workshop
    - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
 2. `2025 Q1` Framework approved `decision`
-   - The steering committee accepts the scoring model. Build approved.
+   - The steering committee accepts the scoring model. Build approved; the build team is the steering committee.
 3. `2025 Q3` Pilot live `live`
-   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date, against roughly three hundred decisions made.
 4. `2026 Q1` Operating rhythm `live`
    - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
@@ -41,20 +41,20 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 
 `Mesh architecture`
 
-## Stress test — six milestones over three years.
+## Stress test — six milestones over three years, each described as inevitable in hindsight.
 
 1. `2023 Q4` Centralised gateway round-trip
-   - First production orchestration on a centralised gateway. p99 60 ms.
+   - First production orchestration on a centralised gateway. p99 60 ms, and it browned out precisely when the board joined the demo.
 2. `2024 Q2` In-process capability-pack proposal `decision`
-   - Architecture review accepts the in-process model.
+   - Architecture review accepts the in-process model. The review board and the build team are the same six people.
 3. `2024 Q4` Capability-pack GA `live`
-   - Phase 1 rollout complete; twelve production tenants migrated.
+   - Phase 1 rollout complete; twelve production tenants migrated, all of whom asked to migrate back once.
 4. `2025 Q2` Multi-tenant adapter rotation `live`
-   - Per-tenant adapter isolation shipped; caching cut p99 below 5 ms.
+   - Per-tenant adapter isolation shipped; caching cut p99 below 5 ms. The slide does not mention what the cold path costs.
 5. `2025 Q4` Cross-region replication `at-risk`
-   - Active-active pack replication enters pilot.
+   - Active-active pack replication enters pilot. "Active-active" remains a single region with ambitions.
 6. `2026 Q2` Deprovision tooling
-   - Per-purpose deletion and examiner evidence pack in build.
+   - Per-purpose deletion and examiner evidence pack in build — demoed once, never yet run in anger.
 
 
 ---
@@ -71,9 +71,9 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 1. `2024 Q3` First workshop
    - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
 2. `2025 Q1` Framework approved `decision`
-   - The steering committee accepts the scoring model. Build approved.
+   - The steering committee accepts the scoring model. Build approved; the build team is the steering committee.
 3. `2025 Q3` Pilot live `live`
-   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date, against roughly three hundred decisions made.
 4. `2026 Q1` Operating rhythm `live`
    - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
@@ -92,9 +92,9 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 1. `2024 Q3` First workshop
    - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
 2. `2025 Q1` Framework approved `decision`
-   - The steering committee accepts the scoring model. Build approved.
+   - The steering committee accepts the scoring model. Build approved; the build team is the steering committee.
 3. `2025 Q3` Pilot live `live`
-   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date, against roughly three hundred decisions made.
 4. `2026 Q1` Operating rhythm `live`
    - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 
@@ -113,9 +113,9 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 1. `2024 Q3` First workshop
    - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
 2. `2025 Q1` Framework approved `decision`
-   - The steering committee accepts the scoring model. Build approved.
+   - The steering committee accepts the scoring model. Build approved; the build team is the steering committee.
 3. `2025 Q3` Pilot live `live`
-   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date, against roughly three hundred decisions made.
 4. `2026 Q1` Operating rhythm `live`
    - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 

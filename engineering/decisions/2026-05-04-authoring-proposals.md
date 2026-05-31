@@ -331,11 +331,11 @@ The "we picked X" slide. Heavier than `closing`, lighter than `featured`. Author
 `Decision · 2026 Q1`
 
 - **Build**
-  - Owns the architecture, owns the operating model, owns the timeline.
+  - Owns the architecture, the operating model, the timeline. And the pager.
 - **Why not buy**
-  - Three vendors evaluated; none cover the residency boundary in-process.
+  - Three vendors evaluated; none cover the residency boundary in-process. All three decks were the same deck.
 - **Why not delay**
-  - The compliance window closes in 18 months.
+  - The compliance window closes in 18 months. This sentence has been in the deck since Q1 2025.
 ```
 
 A single decision verb in big display weight, three short justifications below. Modifiers: `build` / `buy` / `defer` / `pivot` (semantic colour treatment per verb).
@@ -349,7 +349,7 @@ A grid: rows = workstreams, columns = phases, cells = deliverables. Authors toda
 ```markdown
 <!-- _class: roadmap -->
 
-## What ships in each phase, by workstream.
+## What ships in each phase, and what Phase 03 has been promising since 2024.
 
 | Workstream | Phase 01           | Phase 02              | Phase 03              |
 | ---------- | ------------------ | --------------------- | --------------------- |
@@ -369,14 +369,14 @@ Like `stats`, but with trend signals. For business decks where every number has 
 ```markdown
 <!-- _class: kpi -->
 
-## Where we are against quarter targets.
+## Where we are against quarter targets, on the most generous reading.
 
 1. **94%**
-   - Orchestration success — _target 99%, +2pp QoQ_
+   - Orchestration success — _target 99%, +2pp QoQ, the last five points are described as "known"_
 2. **8 ms**
-   - p99 resolve — _target 10 ms, -3 ms QoQ_
+   - p99 resolve — _target 10 ms, -3 ms QoQ, browns out precisely when the board joins the demo_
 3. **0**
-   - Examiner findings — _target 0, flat_
+   - Examiner findings — _target 0, flat, because the examiner has not yet read the audit trail_
 ```
 
 Number, label, sub-line with target + trend. Trend arrows colour by direction. Modifiers: `target` (highlights gap), `trend` (sparkline placeholder).
@@ -395,9 +395,9 @@ Two halves with a big arrow between. Today authors use `compare-code before-afte
 `Latency story · before vs after`
 
 - **Before**
-  - Every resolve call: network round-trip to the central inference gateway, average 18 ms, p99 60 ms. Gateway outages cascaded into application outages.
+  - Every resolve call: network round-trip to the central inference gateway, average 18 ms, p99 60 ms. Gateway outages cascaded into application outages, which was called "shared fate" in the architecture review.
 - **After**
-  - Resolve is a local function call. p99 8 ms. Gateway outages do not affect handled-record reads.
+  - Resolve is a local function call. p99 8 ms. Gateway outages do not affect handled-record reads. The gateway still browns out precisely when the board joins the demo.
 ```
 
 Renders left card, large arrow, right card. Modifier `vertical` stacks them with the arrow rotated.
@@ -432,11 +432,11 @@ A list of actors with their responsibilities, formatted as role-tag chips + body
 ## Who owns each part of the capability-pack lifecycle.
 
 - **Platform Governance** `policy custody`
-  - Manages base-policy ceremonies and rotation. Never holds raw tenant adapters.
+  - Manages base-policy ceremonies and rotation. Never holds raw tenant adapters, and is name-dropped in every architecture review by people who cannot find it.
 - **Platform operator** `policy`
-  - Owns capability-pack policy, signing keys, version floors.
+  - Owns capability-pack policy, signing keys, version floors. Currently one person. This is noted in the risk register.
 - **Application team** `consumption`
-  - Holds time-bound capability packs; orchestrates/resolves in-process.
+  - Holds time-bound capability packs; orchestrates/resolves in-process. Primarily interacts with the mesh by asking the operator to adjust the policy.
 ```
 
 Strong = role name; inline-code = role tag (chip); body = responsibility.
@@ -454,11 +454,11 @@ A list of single-line takeaways with optional reference numbers ("→ slide 14")
 
 `Section 03 · Recap`
 
-- The capability-pack model gets in-process latency with gateway-grade policy custody. → slide 8
-- Rotation is a version-floor increment, not a coordinated cutover. → slide 12
-- Per-tenant base policies make deprovision a single control-plane op. → slide 18
-- Phase 1 ships the architecture, Phase 2 ships the operations. → slide 22
-- Five questions stay open until Phase 1 closes them on the record. → slide 27
+- The capability-pack model gets in-process latency with gateway-grade policy custody. The unit of distribution, and the unit of incident. → slide 8
+- Rotation is a version-floor increment, not a coordinated cutover. Demoed once, never yet run in anger. → slide 12
+- Per-tenant base policies make deprovision a single control-plane op — the revocation playbook nobody has had to run. → slide 18
+- Phase 1 ships the architecture, Phase 2 ships the operations, Phase 3 ships the apology. → slide 22
+- Five questions stay open until Phase 1 closes them on the record. Two of them will reopen in Phase 2. → slide 27
 ```
 
 Modifier: `numbered` adds `01.` prefix.
@@ -494,11 +494,11 @@ Term left, definition right, two-column. Useful for spec / protocol / jargon-hea
 ## The vocabulary used in this deck.
 
 - **Capability pack**
-  - The signed envelope an SDK installs. Carries policy, wrapped tenant adapter, version, expiry.
+  - The signed envelope an SDK installs. Carries policy, wrapped tenant adapter, version, expiry. The unit of distribution, and the unit of incident.
 - **Tenant adapter**
-  - Per-tenant fine-tune. Wrapped by a base policy; lives unwrapped only in native memory.
+  - Per-tenant fine-tune. Wrapped by a base policy; lives unwrapped only in native memory, never on disk, never in a screenshot.
 - **Base policy**
-  - The governance root. Lives in the control plane, never exported.
+  - The governance root. Lives in the control plane, never exported. Name-dropped in every architecture review by people who cannot find it.
 ```
 
 ### 3.11 `legend` — the explicit key

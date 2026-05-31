@@ -20,9 +20,9 @@ Native 2×2 scatter chart — items plotted on two continuous axes.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -45,7 +45,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — sized by revenue at stake.
+## Where to put the next dollar — sized by revenue nobody has booked yet.
 
 - Strategic Bets
   - Pack caching `3, 70, 2.4`
@@ -66,7 +66,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## How each bet moved after one quarter.
+## How each bet moved after one quarter — mostly to the left, where the work is cheaper to describe.
 
 - Strategic Bets
   - Pack caching `5, 60` `3, 78`
@@ -84,7 +84,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — clustered by theme.
+## Where to put the next dollar — clustered by theme, themed by whoever owns the slide.
 
 - Strategic Bets
   - Pack caching `3, 70`
@@ -107,7 +107,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100 · targets 5, 50`
 
-## Against the go/no-go thresholds.
+## Against the go/no-go thresholds nobody has agreed to enforce.
 
 - Strategic Bets
   - Pack caching `3, 70`
@@ -127,7 +127,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The agentic-platform Magic Quadrant.
+## The agentic-platform Magic Quadrant, in which everyone is a Leader.
 
 - Challengers
   - Legacy Inc `30, 82`
@@ -147,7 +147,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — unadorned.
+## Where to put the next dollar — unadorned, like the budget that funds it.
 
 - Strategic Bets
   - Pack caching `3, 70`
@@ -168,7 +168,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Stress test — fourteen initiatives, dense labels.
+## Stress test — fourteen initiatives, dense labels, one owner.
 
 - Strategic Bets
   - Pack caching layer `3, 72`
@@ -197,9 +197,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -222,9 +222,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -247,9 +247,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`

@@ -50,13 +50,13 @@ The user-visible promise is _"if you can write an outline, you have a timeline."
 ## How the capability-pack architecture arrived in production.
 
 1. `2024 Q3` Gateway round-trip
-   - First production orchestration shipped on a centralised gateway. p99 60 ms; gateway outages cascaded into application outages.
+   - First production orchestration shipped on a centralised gateway. p99 60 ms; gateway outages cascaded into application outages. This was called "moving fast."
 2. `2025 Q1` Capability-pack proposal `decision`
-   - Architecture review accepts the in-process capability-pack model. Build approved over buy after a four-vendor evaluation.
+   - Architecture review accepts the in-process capability-pack model. Build approved over buy after a four-vendor evaluation; all four decks were the same deck.
 3. `2025 Q3` Pilot `pilot`
-   - One internal team, one workload, one quarter. Resolve p99 lands at 8 ms.
+   - One internal team, one workload, one quarter. Resolve p99 lands at 8 ms — on the workload chosen to land at 8 ms.
 4. `2026 Q1` Production `live`
-   - Pack signing live across all production tenants. Registry-anchored audit trail readable by Examiner role.
+   - Pack signing live across all production tenants. Registry-anchored audit trail readable by the Examiner role, who has not yet read it.
 ```
 
 **Reading the shape.**
@@ -98,7 +98,7 @@ The natural sibling. A Gantt chart is two-dimensional — swimlanes on the y-axi
 ```markdown
 <!-- _class: gantt -->
 
-## What ships in each phase, by workstream.
+## What ships in each phase, before the bars quietly slide a quarter right.
 
 `2026 Q1 → 2026 Q4`
 
@@ -171,7 +171,7 @@ A pie / donut chart is a flat list where each item carries a numeric pill. The r
 ```markdown
 <!-- _class: piechart -->
 
-## Where the engineering quarter went.
+## Where the engineering quarter actually went.
 
 `H1 2026 · 1,840 person-hours`
 
@@ -179,7 +179,7 @@ A pie / donut chart is a flat list where each item carries a numeric pill. The r
 - Operations runbook `22%`
 - Compliance work `18%`
 - Pilot support `9%`
-- Toil & on-call `5%`
+- Toil & on-call `5%`, the wedge nobody put in the roadmap
 ```
 
 **Reading the shape.**
@@ -206,7 +206,7 @@ Many decks need a "where are we?" panel: three or four labelled progress bars st
 ```markdown
 <!-- _class: progress -->
 
-## Phase 1 readiness, by workstream.
+## Phase 1 readiness, where the status pills reflect the most optimistic reading.
 
 - Orchestration mesh `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -244,7 +244,7 @@ A Kanban board is the natural cousin of `gantt`: top-level items are columns ins
 ```markdown
 <!-- _class: kanban -->
 
-## Where Phase 2 work stands today.
+## Where Phase 2 work stands today, before standup moves three cards back.
 
 - Backlog
   - Per-purpose packs `S`
@@ -325,7 +325,7 @@ Sales pipelines, conversion funnels, recruiting funnels, attention-to-action seq
 ```markdown
 <!-- _class: funnel -->
 
-## Where Phase 1 candidates fell out of the pipeline.
+## Where Phase 1 candidates quietly fell out of the pipeline.
 
 `Top of funnel · 12,400 · → 184 hires`
 
@@ -347,7 +347,7 @@ Nested unordered list = tree. Reporting structures, system component hierarchies
 ```markdown
 <!-- _class: org -->
 
-## Who reports into the orchestration mesh org.
+## Who reports into the orchestration mesh org, as of this reorg.
 
 - Platform Director `12 reports`
   - Mesh engineering `5`
@@ -375,7 +375,7 @@ A two-axis grid where every cell carries a magnitude. Risk × impact, capability
 ```markdown
 <!-- _class: heatmap -->
 
-## Phase 2 risk register, by workstream and severity.
+## Phase 2 risk register, by workstream and the severity we are comfortable naming.
 
 `Likelihood × Impact`
 
@@ -401,11 +401,11 @@ Every meaningful deck ends with three or four expected questions and the team's 
 ## What we expect to be asked, and what we will say.
 
 - Why not extend the existing gateway for two more years?
-  - The gateway model adds 50 ms per resolve. With per-record reads in the new claims pipeline, that adds 8 minutes to a single batch — outside the SLA. The architecture cannot absorb it.
+  - The gateway model adds 50 ms per resolve. With per-record reads in the new claims pipeline, that adds 8 minutes to a single batch — outside the SLA. The architecture cannot absorb it, though the gateway will absorb the blame either way.
 - What if the managed-inference vendor changes pricing in 2027?
-  - Our model weights are portable across the three control planes in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The capability-pack model insulates us.
+  - Our model weights are portable across the three control planes in the procurement shortlist. A vendor swap is a 6-week project, not an architectural rewrite. The capability-pack model insulates us. We have not yet had to test this claim.
 - How is this different from what Vendor X just announced?
-  - Vendor X announced a hosted version of the same idea. We have the same architecture in-process, with no per-tenant licensing and no data leaving the boundary.
+  - Vendor X announced a hosted version of the same idea. We have the same architecture in-process, with no per-tenant licensing and no data leaving the boundary. Three vendor decks evaluated; all three were the same deck.
 ```
 
 The top-level bullet is the question (renders larger, with a leading `Q.` chip); the sub-bullet is the answer (renders smaller, with a leading `A.` chip). Modifiers: `decision` (frames the answer card with an emphasis edge — for the question that determines the meeting outcome), `compact`.
@@ -419,7 +419,7 @@ A horizontal axis with named endpoints and one or more markers. "Where does our 
 ```markdown
 <!-- _class: spectrum -->
 
-## Where each capability sits on the maturity axis.
+## Where each capability sits on the maturity axis, self-assessed.
 
 `Reactive ←——————————→ Anticipatory`
 

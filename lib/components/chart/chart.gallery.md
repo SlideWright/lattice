@@ -15,7 +15,7 @@ Chart — series-substance data visualizations (SVG kernel).
 
 ## What ships in each phase, by workstream.
 
-Three workstreams across four quarters; the one at-risk bar gates the full rollout.
+Three workstreams across four quarters; the one at-risk bar quietly gates the entire rollout.
 
 - Framework
   - Signal taxonomy `Q1 → Q2` `done`
@@ -38,7 +38,7 @@ Three workstreams across four quarters; the one at-risk bar gates the full rollo
 
 ## Where Phase 2 work stands today.
 
-Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk.
+Eight items across four stages; the scoring-model rewrite is the only card flagged at-risk, which is the polite way of saying it is the only one anyone has looked at.
 
 - Backlog
   - Per-team weighting `S`
@@ -85,7 +85,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
 - Framework `92%` `on-track`
 - Adoption & enablement `68%` `at-risk`
@@ -99,9 +99,9 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next quarter.
+## Where to put the next quarter, before someone reorganises the teams again.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -183,9 +183,9 @@ Four stages over eighteen months, from the first workshop to the operating rhyth
 1. `2024 Q3` First workshop
    - The one where we agreed to agree on a definition of "signal." Output: a fifth workshop.
 2. `2025 Q1` Framework approved `decision`
-   - The steering committee accepts the scoring model. Build approved.
+   - The steering committee accepts the scoring model. Build approved; the build team is the steering committee.
 3. `2025 Q3` Pilot live `live`
-   - Four product teams onboarded; the decision log opens. Eighteen entries to date.
+   - Four product teams onboarded; the decision log opens. Eighteen entries to date, against roughly three hundred decisions made.
 4. `2026 Q1` Operating rhythm `live`
    - The weekly review lands on every team's calendar. Attendance, like the calibration step, remains aspirational.
 

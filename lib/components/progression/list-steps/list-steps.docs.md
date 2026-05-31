@@ -68,11 +68,11 @@ Flips the step strip from a vertical stack into a horizontal row; arrow connecto
 ## Three phases, vertically arranged.
 
 1. Discover
-   - Interview eight stakeholders. Open questions only — listening for friction, not confirming assumptions.
+   - Interview eight stakeholders. Open questions only — listening for friction, not confirming the assumptions we arrived with.
 2. Frame
-   - Half-day workshop to align on root cause. Output is a ranked problem statement.
+   - Half-day workshop to align on root cause. Output is a ranked problem statement and a request for a second workshop.
 3. Decide
-   - Written sign-off on what is in scope, what is out, and what requires a separate decision.
+   - Written sign-off on what is in scope, what is out, and what requires a separate decision we will defer.
 ```
 
 ### `phase` — Phase — badge prefix becomes PHASE
@@ -85,13 +85,13 @@ Swaps the default `STEP` prefix for `PHASE`. Use when the process is a sequence 
 ## A four-phase engagement model.
 
 1. Discovery
-   - Eight weeks. Stakeholder interviews, current-state audit, and a problem-framing workshop produce a signed scope.
+   - Eight weeks. Stakeholder interviews, current-state audit, and a problem-framing workshop produce a signed scope nobody rereads.
 2. Design
-   - Six weeks. Two design partners co-build the operating model and the change-management plan.
+   - Six weeks. Two design partners co-build the operating model and the change-management plan that survives until contact with the org.
 3. Pilot
-   - Twelve weeks. One business unit runs the model end-to-end with weekly retrospectives.
+   - Twelve weeks. One business unit runs the model end-to-end with weekly retrospectives held biweekly.
 4. Rollout
-   - Phased by region. Pilot learnings shape the rollout cadence; central team owns the playbook.
+   - Phased by region. Pilot learnings shape the rollout cadence; the central team owns the playbook and the pager.
 ```
 
 ### `milestone` — Milestone — badge prefix becomes MILESTONE
@@ -104,11 +104,11 @@ Swaps the prefix to `MILESTONE`. Use when each row is a discrete delivery checkp
 ## Three milestones to GA.
 
 1. Closed beta
-   - Five design-partner accounts live on the platform. Daily standups; weekly retros.
+   - Five design-partner accounts live on the platform. Daily standups; weekly retros; one account that actually logs in.
 2. Open beta
-   - Self-serve signup at the marketing site. Pricing visible but not enforced.
+   - Self-serve signup at the marketing site. Pricing visible but not enforced, which everyone treats as the real pricing.
 3. GA
-   - Billing enforcement on. SLA enters effect. Support escalation paths published.
+   - Billing enforcement on. SLA enters effect. Support escalation paths published, then immediately bypassed by the Slack DM.
 ```
 
 ### `lettered` — Lettered — counter format becomes A, B, C
@@ -121,11 +121,11 @@ Replaces the leading-zero decimal counter with letters. Composes with any prefix
 ## Three tracks for the next quarter.
 
 1. Platform hardening
-   - Multi-tenant adapters, automated rotation, and the deprovision runbook land in this track.
+   - Multi-tenant adapters, automated rotation, and the deprovision runbook nobody has had to run land in this track.
 2. Compliance posture
-   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.
+   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window, give or take a window.
 3. Developer surface
-   - Polyglot SDK parity and the new CLI flags close out the API roadmap.
+   - Polyglot SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.
 ```
 
 ### `stage` — Stage
@@ -152,14 +152,14 @@ Badge prefix becomes `RANK 01`, `RANK 02`, … Use for ordered lists where each 
 ```markdown
 <!-- _class: list-steps rank -->
 
-## Top three risks, ranked by exposure.
+## Top three risks, ranked by exposure, owned by nobody in particular.
 
 1. Renewal cohort
-   - $2.1M ARR at risk if pricing comp gap persists.
+   - $2.1M ARR at risk if the pricing comp gap persists, which it has, comfortably.
 2. Pipeline conversion
-   - 11 pp below Q1; legal review is the chokepoint.
+   - 11 pp below Q1; legal review is the chokepoint, as it was last quarter.
 3. Competitive displacement
-   - Seven losses to one competitor in the $80-200K tier.
+   - Seven losses to one competitor in the $80-200K tier, all to the same deck.
 ```
 
 ### `tier` — Tier
@@ -172,11 +172,11 @@ Badge prefix becomes `TIER 01`, `TIER 02`, … Use for stratified groupings wher
 ## Three engagement tiers.
 
 1. Strategic
-   - Quarterly executive review, dedicated success manager.
+   - Quarterly executive review, dedicated success manager, and a roadmap they are shown but not promised.
 2. Growth
-   - Monthly check-in, shared success pool.
+   - Monthly check-in, shared success pool, success defined later.
 3. Self-serve
-   - Async docs, community support.
+   - Async docs, community support, and the hope that the docs are current.
 ```
 
 ### `roman` — Roman numerals

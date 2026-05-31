@@ -20,7 +20,7 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 
 `H2 2026 · Rollout plan`
 
-## What ships in each phase, by workstream.
+## What ships in each phase, assuming the phases survive the next planning offsite.
 
 | Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
 | ---------- | ---------------------- | ------------------------ | ----------------------- |
@@ -37,7 +37,7 @@ Phased multi-workstream grid — phases across the top, workstreams down the sid
 
 `Three-horizon planning`
 
-## Where the platform invests across horizons.
+## Where the platform invests across horizons — Horizon 3 has lived there since 2024.
 
 | Workstream | Horizon 1 `Now`          | Horizon 2 `Next`         | Horizon 3 `Later`         |
 | ---------- | ------------------------ | ------------------------ | ------------------------- |
@@ -56,7 +56,7 @@ Horizons frame the read: H1 is core business, H2 is emerging, H3 is the option s
 
 `Layout · roadmap status`
 
-## Delivery status by workstream.
+## Delivery status by workstream, as of the most flattering snapshot.
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
@@ -75,7 +75,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `Layout · roadmap swimlane`
 
-## Each team's track across the year.
+## Each team's track across the year, momentum implied by the arrows.
 
 | Workstream | Foundation `Q2 2026` | Hardening `Q3 2026`    | Scale `Q4 2026`           |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
@@ -92,7 +92,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `Layout · roadmap milestones`
 
-## The dated path to GA.
+## The dated path to GA, dates subject to the usual revision.
 
 | Workstream | Beta `Q2 2026`       | RC `Q3 2026`           | GA `Q4 2026`              |
 | ---------- | -------------------- | ---------------------- | ------------------------- |
@@ -108,7 +108,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `H2 2026 · Rollout plan`
 
-## What ships in each phase, by workstream.
+## What ships in each phase, assuming the phases survive the next planning offsite.
 
 | Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
 | ---------- | ---------------------- | ------------------------ | ----------------------- |
@@ -125,7 +125,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `H2 2026 · Rollout plan`
 
-## What ships in each phase, by workstream.
+## What ships in each phase, assuming the phases survive the next planning offsite.
 
 | Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
 | ---------- | ---------------------- | ------------------------ | ----------------------- |
@@ -142,7 +142,7 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 
 `H2 2026 · Rollout plan`
 
-## What ships in each phase, by workstream.
+## What ships in each phase, assuming the phases survive the next planning offsite.
 
 | Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
 | ---------- | ---------------------- | ------------------------ | ----------------------- |

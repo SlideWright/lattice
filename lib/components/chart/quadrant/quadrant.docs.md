@@ -27,7 +27,7 @@ Use to position items by two numeric attributes (cost × value, effort × impact
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar.
+## Where to put the next dollar, having spent the last one on a workshop.
 
 Effort estimated in story-points; reach as percent of addressable users.
 
@@ -81,7 +81,7 @@ A third number in each pill (`x, y, size`) scales the dot by honest √-area. Us
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — sized by revenue at stake.
+## Where to put the next dollar — sized by revenue nobody has booked yet.
 
 - Strategic Bets
   - Pack caching `3, 70, 2.4`
@@ -104,7 +104,7 @@ Two coordinate pills per item (`x, y` then `x2, y2`) draw a trail from the old p
 
 `Effort 0–10 → Reach 0–100`
 
-## How each bet moved after one quarter.
+## How each bet moved after one quarter — mostly to the left, where the work is cheaper to describe.
 
 - Strategic Bets
   - Pack caching `5, 60` `3, 78`
@@ -124,7 +124,7 @@ Tints a convex hull behind each top-level group so the clusters read as cohorts,
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — clustered by theme.
+## Where to put the next dollar — clustered by theme, themed by whoever owns the slide.
 
 - Strategic Bets
   - Pack caching `3, 70`
@@ -149,7 +149,7 @@ Replaces the centre midlines with target lines declared in the eyebrow (`· targ
 
 `Effort 0–10 → Reach 0–100 · targets 5, 50`
 
-## Against the go/no-go thresholds.
+## Against the go/no-go thresholds nobody has agreed to enforce.
 
 - Strategic Bets
   - Pack caching `3, 70`
@@ -171,7 +171,7 @@ A Gartner-style Magic Quadrant tribute: vendor labels and the iconic Leaders / C
 
 `Completeness of vision 0–100 → Ability to execute 0–100`
 
-## The agentic-platform Magic Quadrant.
+## The agentic-platform Magic Quadrant, in which everyone is a Leader.
 
 - Challengers
   - Legacy Inc `30, 82`
@@ -193,7 +193,7 @@ Composable modifier: drops the quadrant fills for a faint grid and bare dots. La
 
 `Effort 0–10 → Reach 0–100`
 
-## Where to put the next dollar — unadorned.
+## Where to put the next dollar — unadorned, like the budget that funds it.
 
 - Strategic Bets
   - Pack caching `3, 70`

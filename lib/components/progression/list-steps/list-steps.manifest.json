@@ -31,7 +31,7 @@
   },
   "skeleton": "<!-- _class: list-steps -->\n\n## How to roll this out.\n\n1. First step — a sentence describing what you do here.\n2. Second step — a sentence describing what you do here.\n3. Third step — a sentence describing what you do here.\n4. Fourth step — a sentence describing what you do here.\n",
   "anatomyBlock": "list-steps",
-  "sample": "<!-- _class: list-steps -->\n\n## What happens in the first hour of an incident.\n\n1. Declare and page\n   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.\n2. Assign a commander\n   - One person owns coordination and communication. They direct the response — they do not debug it.\n3. Stop the bleeding\n   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.\n4. Communicate on a clock\n   - A status update every 30 minutes, even when it is \"still investigating.\" Silence is what erodes trust.\n",
+  "sample": "<!-- _class: list-steps -->\n\n## What happens in the first hour of an incident, in theory.\n\n1. Declare and page\n   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is the line item in the post-mortem.\n2. Assign a commander\n   - One person owns coordination and communication. They direct the response — they do not debug it, though they will be asked why they aren't.\n3. Stop the bleeding\n   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe and the board has logged off.\n4. Communicate on a clock\n   - A status update every 30 minutes, even when it is \"still investigating.\" Silence is what the retrospective remembers.\n",
   "whenToUse": [
     {
       "title": "Steps need a sentence each",
@@ -86,22 +86,22 @@
     "vertical": {
       "label": "Vertical — strip flips column to row",
       "caption": "Flips the step strip from a vertical stack into a horizontal row; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.",
-      "sample": "<!-- _class: list-steps vertical compact -->\n\n## Three phases, vertically arranged.\n\n1. Discover\n   - Interview eight stakeholders. Open questions only — listening for friction, not confirming assumptions.\n2. Frame\n   - Half-day workshop to align on root cause. Output is a ranked problem statement.\n3. Decide\n   - Written sign-off on what is in scope, what is out, and what requires a separate decision.\n"
+      "sample": "<!-- _class: list-steps vertical compact -->\n\n## Three phases, vertically arranged.\n\n1. Discover\n   - Interview eight stakeholders. Open questions only — listening for friction, not confirming the assumptions we arrived with.\n2. Frame\n   - Half-day workshop to align on root cause. Output is a ranked problem statement and a request for a second workshop.\n3. Decide\n   - Written sign-off on what is in scope, what is out, and what requires a separate decision we will defer.\n"
     },
     "phase": {
       "label": "Phase — badge prefix becomes PHASE",
       "caption": "Swaps the default `STEP` prefix for `PHASE`. Use when the process is a sequence of phases rather than individual actions — common for rollout plans, release trains, and engagement models.",
-      "sample": "<!-- _class: list-steps phase -->\n\n## A four-phase engagement model.\n\n1. Discovery\n   - Eight weeks. Stakeholder interviews, current-state audit, and a problem-framing workshop produce a signed scope.\n2. Design\n   - Six weeks. Two design partners co-build the operating model and the change-management plan.\n3. Pilot\n   - Twelve weeks. One business unit runs the model end-to-end with weekly retrospectives.\n4. Rollout\n   - Phased by region. Pilot learnings shape the rollout cadence; central team owns the playbook.\n"
+      "sample": "<!-- _class: list-steps phase -->\n\n## A four-phase engagement model.\n\n1. Discovery\n   - Eight weeks. Stakeholder interviews, current-state audit, and a problem-framing workshop produce a signed scope nobody rereads.\n2. Design\n   - Six weeks. Two design partners co-build the operating model and the change-management plan that survives until contact with the org.\n3. Pilot\n   - Twelve weeks. One business unit runs the model end-to-end with weekly retrospectives held biweekly.\n4. Rollout\n   - Phased by region. Pilot learnings shape the rollout cadence; the central team owns the playbook and the pager.\n"
     },
     "milestone": {
       "label": "Milestone — badge prefix becomes MILESTONE",
       "caption": "Swaps the prefix to `MILESTONE`. Use when each row is a discrete delivery checkpoint rather than an ongoing activity. Pairs with `lettered` for milestones tracked by letter rather than number.",
-      "sample": "<!-- _class: list-steps milestone lettered -->\n\n## Three milestones to GA.\n\n1. Closed beta\n   - Five design-partner accounts live on the platform. Daily standups; weekly retros.\n2. Open beta\n   - Self-serve signup at the marketing site. Pricing visible but not enforced.\n3. GA\n   - Billing enforcement on. SLA enters effect. Support escalation paths published.\n"
+      "sample": "<!-- _class: list-steps milestone lettered -->\n\n## Three milestones to GA.\n\n1. Closed beta\n   - Five design-partner accounts live on the platform. Daily standups; weekly retros; one account that actually logs in.\n2. Open beta\n   - Self-serve signup at the marketing site. Pricing visible but not enforced, which everyone treats as the real pricing.\n3. GA\n   - Billing enforcement on. SLA enters effect. Support escalation paths published, then immediately bypassed by the Slack DM.\n"
     },
     "lettered": {
       "label": "Lettered — counter format becomes A, B, C",
       "caption": "Replaces the leading-zero decimal counter with letters. Composes with any prefix; useful when the rows are options or tracks rather than ordered work.",
-      "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant adapters, automated rotation, and the deprovision runbook land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out the API roadmap.\n"
+      "sample": "<!-- _class: list-steps lettered -->\n\n## Three tracks for the next quarter.\n\n1. Platform hardening\n   - Multi-tenant adapters, automated rotation, and the deprovision runbook nobody has had to run land in this track.\n2. Compliance posture\n   - Examiner pack v2 and the centralised audit log ship for the Q3 audit window, give or take a window.\n3. Developer surface\n   - Polyglot SDK parity and the new CLI flags close out an API roadmap that reopens every quarter.\n"
     },
     "stage": {
       "label": "Stage",
@@ -111,12 +111,12 @@
     "rank": {
       "label": "Rank",
       "caption": "Badge prefix becomes `RANK 01`, `RANK 02`, … Use for ordered lists where each position is a competitive rank.",
-      "sample": "<!-- _class: list-steps rank -->\n\n## Top three risks, ranked by exposure.\n\n1. Renewal cohort\n   - $2.1M ARR at risk if pricing comp gap persists.\n2. Pipeline conversion\n   - 11 pp below Q1; legal review is the chokepoint.\n3. Competitive displacement\n   - Seven losses to one competitor in the $80-200K tier.\n"
+      "sample": "<!-- _class: list-steps rank -->\n\n## Top three risks, ranked by exposure, owned by nobody in particular.\n\n1. Renewal cohort\n   - $2.1M ARR at risk if the pricing comp gap persists, which it has, comfortably.\n2. Pipeline conversion\n   - 11 pp below Q1; legal review is the chokepoint, as it was last quarter.\n3. Competitive displacement\n   - Seven losses to one competitor in the $80-200K tier, all to the same deck.\n"
     },
     "tier": {
       "label": "Tier",
       "caption": "Badge prefix becomes `TIER 01`, `TIER 02`, … Use for stratified groupings where each tier is qualitatively distinct.",
-      "sample": "<!-- _class: list-steps tier roman -->\n\n## Three engagement tiers.\n\n1. Strategic\n   - Quarterly executive review, dedicated success manager.\n2. Growth\n   - Monthly check-in, shared success pool.\n3. Self-serve\n   - Async docs, community support.\n"
+      "sample": "<!-- _class: list-steps tier roman -->\n\n## Three engagement tiers.\n\n1. Strategic\n   - Quarterly executive review, dedicated success manager, and a roadmap they are shown but not promised.\n2. Growth\n   - Monthly check-in, shared success pool, success defined later.\n3. Self-serve\n   - Async docs, community support, and the hope that the docs are current.\n"
     },
     "roman": {
       "label": "Roman numerals",

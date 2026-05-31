@@ -98,7 +98,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 <!-- _class: kpi attention -->
 
 ### Orchestration · Q4 2026
-## One metric below target; remediation under way.
+## One metric below target; remediation under way, as it has been for two quarters.
 
 1. **94%**
    - Orchestration success
@@ -108,7 +108,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
    - target 10 ms `On plan` `SRE`
 3. **0**
    - Examiner findings
-   - target 0 `On plan` `Audit`
+   - target 0 — nobody has opened the log to check `On plan` `Audit`
 4. **3.2×**
    - Resolve headroom
    - target 2× `On plan` `Platform`
@@ -122,7 +122,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 <!-- _class: kpi ops -->
 
 ### Platform · Q4 2026
-## One latency target slipping; everything else inside SLO.
+## One latency target slipping; everything else inside SLO, for now.
 
 1. **99.92%**
    - API availability
@@ -146,7 +146,7 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 <!-- _class: kpi compliance -->
 
 ### Compliance · Q4 2026
-## Three frameworks clean; one open finding under remediation.
+## Three frameworks clean; one open finding under remediation since the last walk-through.
 
 1. **0**
    - SOC 2 Type II open findings
@@ -172,7 +172,7 @@ Four-up cards with categorical stripes that read as period-over-period movement.
 <!-- _class: kpi trajectory -->
 
 ### Growth · FY26 vs FY25
-## Every growth lever moved forward this year.
+## Every growth lever moved forward this year, in the cut of the data we are showing.
 
 1. **$420M**
    - ARR
@@ -196,11 +196,11 @@ Hero KPI gets a paragraph of body copy and a row of context pills; the supportin
 <!-- _class: kpi spotlight -->
 
 ### Headline · Q4 2026
-## The number behind the quarter.
+## The number behind the quarter, and the one in every headline slide.
 
 1. **$420M**
    - Annual recurring revenue
-   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M.
+   - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M, which is the figure we will quote until it stops flattering us.
    - `Headline` `Board` `Investor`
 2. **94%**
    - Net dollar retention

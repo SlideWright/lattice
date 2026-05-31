@@ -22,7 +22,7 @@ Horizontal progress bars — one row per item, percentage filled.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
 - Framework `92%` `on-track`
 - Adoption & enablement `68%` `at-risk`
@@ -38,7 +38,7 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 `H1 2026 · Phase 1 readiness`
 
-## Stress test — eight workstreams, full status range.
+## Stress test — eight workstreams, full status range, one honest pill.
 
 - Orchestration mesh `92%` `on-track`
 - Operations runbook `68%` `at-risk`
@@ -59,7 +59,7 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
 - Framework `92%` `on-track`
 - Adoption & enablement `68%` `at-risk`
@@ -77,7 +77,7 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
 - Framework `92%` `on-track`
 - Adoption & enablement `68%` `at-risk`
@@ -95,7 +95,7 @@ Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
 
 ## Phase 1 readiness, by workstream.
 
-Snapshot at 14:00 UTC. One workstream is blocked and two more are behind plan.
+Snapshot at 14:00 UTC. Status pills reflect the most optimistic reading of the available data.
 
 - Framework `92%` `on-track`
 - Adoption & enablement `68%` `at-risk`

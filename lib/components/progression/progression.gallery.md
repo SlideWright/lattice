@@ -45,16 +45,16 @@ Progression — ordered movement through stages or time.
 
 <!-- _class: list-steps -->
 
-## What happens in the first hour of an incident.
+## What happens in the first hour of an incident, in theory.
 
 1. Declare and page
-   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is not.
+   - Whoever notices opens the incident channel and pages on-call. Declaring is cheap; a missed page is the line item in the post-mortem.
 2. Assign a commander
-   - One person owns coordination and communication. They direct the response — they do not debug it.
+   - One person owns coordination and communication. They direct the response — they do not debug it, though they will be asked why they aren't.
 3. Stop the bleeding
-   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe.
+   - Mitigate before diagnosing. Roll back, fail over, or shed load first; find the root cause once customers are safe and the board has logged off.
 4. Communicate on a clock
-   - A status update every 30 minutes, even when it is "still investigating." Silence is what erodes trust.
+   - A status update every 30 minutes, even when it is "still investigating." Silence is what the retrospective remembers.
 
 ---
 
@@ -62,7 +62,7 @@ Progression — ordered movement through stages or time.
 
 `H2 2026 · Rollout plan`
 
-## What ships in each phase, by workstream.
+## What ships in each phase, assuming the phases survive the next planning offsite.
 
 | Workstream | Foundation `Q2 2026`   | Hardening `Q3 2026`      | Scale `Q4 2026`         |
 | ---------- | ---------------------- | ------------------------ | ----------------------- |
