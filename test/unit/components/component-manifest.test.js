@@ -748,10 +748,14 @@ describe('component-manifest', () => {
       assert.ok(!SUBSTANCES.includes(MIXED_SUBSTANCE));
     });
 
-    test('UNIVERSAL_GROUPS has the six documented categories', () => {
+    test('UNIVERSAL_GROUPS has the seven documented categories', () => {
       assert.deepEqual(Object.keys(UNIVERSAL_GROUPS).sort(), [
-        'chrome', 'decoration', 'mood', 'state', 'tone', 'typography',
+        'bleed', 'chrome', 'decoration', 'mood', 'state', 'tone', 'typography',
       ]);
+    });
+
+    test('the bleed group is the full-bleed modifier', () => {
+      assert.deepEqual([...UNIVERSAL_GROUPS.bleed], ['full']);
     });
 
     test('UNIVERSAL_VARIANTS is the flat union of the groups, deduped', () => {

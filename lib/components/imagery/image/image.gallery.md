@@ -27,18 +27,6 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 
 ---
 
-<!-- _class: image full -->
-<!-- _footer: "Full — image fills the canvas edge to edge · image full" -->
-
-## Full bleed makes the photo the slide.
-
-Text overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
-
-![bg](sample-image-landscape.svg)
-
-
----
-
 <!-- _class: image contain -->
 <!-- _footer: "Contain — letterboxed for plots and screenshots · image contain" -->
 

@@ -42,6 +42,92 @@ section.no-paginate::after {
   content: none !important;
 }
 
+/* ── FULL-BLEED ── `full`: the content owns the slide ───────────────── */
+
+/* The de-facto full-bleed treatment for every layout (generalized from the
+ * radar prototype). The chrome steps back, the section goes edge-to-edge, and
+ * the slide heading + trailing paragraph reflow into a bottom caption band that
+ * carries the surface "sheen" material — a --text-heading→--bg radial wash with
+ * a hairline top edge, the same shelf the chart panels use. Palette-blind.
+ *
+ * A component decides HOW its body fills the bleed above the caption; a
+ * more-specific `section.<layout>.full` rule overrides any default here — image
+ * keeps its dark photo scrim, radar re-asserts the title past the chart-frame
+ * measure cap. Sheen tokens mirror chart-family.css. */
+section.full {
+  /* Body content (prose, lists — anything that isn't a fill component) gets
+   * breathing room so it doesn't collide with the edges; the caption band breaks
+   * back out to the slide edges by the same inset (--full-pad), so it still spans
+   * full width. MEDIA layouts fill the bleed instead — image and the chart family
+   * set `padding: 0` + `--full-pad: 0` so the photo / diagram reaches every edge. */
+  --full-pad: var(--sp-2xl);
+  position: relative;
+  padding: var(--sp-xl) var(--full-pad) 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+section.full > header,
+section.full > footer {
+  display: none;
+}
+
+/* CAPTION · TITLE — the heading becomes a bottom-anchored shelf. margin-top:auto
+ * pins the title+note block to the bottom when the body doesn't itself grow;
+ * order keeps it after body content that precedes it in the DOM. Descendant
+ * combinator (not >) so a heading nested in a component skeleton still matches. */
+section.full h2 {
+  order: 1;
+  margin-block: auto 0;                        /* pin the caption block to the bottom */
+  margin-inline: calc(-1 * var(--full-pad));   /* break the band out past body padding */
+  z-index: 2;
+  width: 100cqi;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 1.8cqi 6.25cqi 0.4cqi;
+  background: radial-gradient(150% 200% at 50% -25%,
+    color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
+    color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
+    color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
+  border-top: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: left;
+}
+
+/* CAPTION · NOTE — the trailing paragraph; flat base of the sheen so it joins
+ * the title seamlessly, clamped to two lines, content ink (legible, adaptive). */
+section.full > p:last-of-type {
+  order: 2;
+  margin-block: 0;
+  margin-inline: calc(-1 * var(--full-pad));   /* break out to match the title band */
+  z-index: 2;
+  width: 100cqi;
+  box-sizing: border-box;
+  padding: 0 6.25cqi 1.4cqi;
+  background: color-mix(in oklab, var(--text-heading) 5%, var(--bg));
+  color: var(--text-body);
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Pagination reads through the band — lifted above it (z) and recoloured to a
+ * heading-ink mix; the caption's side padding keeps title/note clear of the
+ * bottom-right corner so they never collide. */
+section.full::after {
+  z-index: 3;
+  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
+}
+
 /* ── TONE ── canvas-level reuse of the state-token color system ─────── */
 
 /* Each tone draws a vertical accent rail on the slide's left edge,

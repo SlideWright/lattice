@@ -270,6 +270,28 @@ section.image.contain p:last-of-type {
   text-shadow: 0 0.078125cqi 0.15625cqi rgba(0, 0, 0, 0.4);
 }
 
+/* `full` is a universal modifier (lib/base/base.variants.css) whose default
+ * caption band paints a sheen surface + hairline edge on the heading and
+ * trailing <p> and sizes them to a full-bleed flow band. Image overlays its
+ * text absolutely on a photo scrim instead, so neutralise the universal
+ * caption's surface + box properties that would otherwise leak onto the
+ * overlay (the scrim, white text, and absolute insets above stay intact).
+ * Scoped to `full`; contain/museum are not `.full` and never receive them. */
+section.image.full h2,
+section.image.full p:last-of-type {
+  order: 0;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  background: none;
+  border-top: none;
+}
+/* Restore image's own block + max-height body clamp (the universal note uses a
+ * -webkit-box line-clamp that would otherwise hijack the photo-overlay body). */
+section.image.full p:last-of-type {
+  display: block;
+}
+
 /* Museum — image inset leaves a matte plate at the bottom for the
  * editorial label + caption (tighter than the scrim'd variants since
  * the matte itself provides contrast). All offsets in cqi so the plate

@@ -27,6 +27,18 @@ in patch versions.
 
 ### Added
 
+- **`full` is now a universal modifier.** Full-bleed is no longer per-component
+  — `full` joins the universal set (a new `bleed` group in `UNIVERSAL_GROUPS`),
+  so it composes on any layout via `<!-- _class: full -->`. The de-facto
+  implementation (generalized from the radar prototype, in `base.variants.css`)
+  hides the header/footer, takes the section edge-to-edge, and reflows the slide
+  heading + trailing paragraph into a bottom **caption band** carrying the chart
+  surface "sheen" (a `--text-heading`→`--bg` radial wash with a hairline edge),
+  with the page number recoloured to read through it. Components refine the body
+  fill via more-specific `section.<layout>.full` rules: `radar` scales the
+  diagram up and centres it with a responsive legend column; `image` keeps its
+  dark photo scrim. Documented under base.docs.md "Universal variants". Pure CSS
+  — no transform/render-path change.
 - **Chart surface panels.** Every framed chart-family member now sits on its
   own quiet, neutral gradient surface (Apple-Stocks style): a faint top-glow
   tint fading to the canvas, a hairline border, and soft corners. Pure CSS on

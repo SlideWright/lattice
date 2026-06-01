@@ -97,19 +97,23 @@ section.quadrant .quadrant-figure {
   justify-content: center;
   gap: var(--sp-xl);
   width: 100%;
+  /* Fill the canvas so the SVG scales to the height the slide grants —
+   * responsive: shrinks under a below-note/blockquote, grows under `full`. */
+  height: 100%;
+  min-height: 0;
 }
 
 section.quadrant .quadrant-svg {
-  /* Fixed pixel dimensions, matching radar's vertical extent (360 tall).
-   * chart-body's available height is ~440px and inherits overflow:hidden
-   * from the shared chart-frame rule; sizing at radar's height means the
-   * SVG fits with the same breathing-room above and below that other
-   * chart-family slides have. An earlier 540×412 SVG still clipped
-   * descenders on the x-axis name. Width follows the 420:320 viewBox
-   * aspect (= 472 wide). */
-  width: 472px;
-  height: 360px;
-  flex: 0 0 auto;
+  /* Responsive: scale to the figure's height, keeping the 420:320 viewBox
+   * aspect (= 1.3125). max-height caps it at the proven 360px footprint at
+   * standard size; below that the chart shrinks rather than clipping. The
+   * viewBox + aspect-ratio do the scaling math; overflow:visible lets the
+   * axis-name descenders paint outside the 320-unit box. */
+  height: 100%;
+  max-height: 360px;
+  width: auto;
+  aspect-ratio: 420 / 320;
+  flex: 0 1 auto;
   overflow: visible;
 }
 

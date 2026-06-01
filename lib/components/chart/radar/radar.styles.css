@@ -57,12 +57,24 @@ section.radar .radar-figure {
   align-items: center;
   justify-content: center;
   gap: var(--sp-xl);
+  /* Fill the canvas (.chart-body) so the SVG can scale to the height the
+   * slide actually grants — responsive: shrinks when a below-note/blockquote
+   * eats vertical space, grows under the `full` modifier. */
+  height: 100%;
+  width: 100%;
+  min-height: 0;
 }
 
 section.radar .radar-svg {
-  width: 360px;
-  height: 360px;
-  flex: 0 0 auto;
+  /* Responsive square: scale to the figure's height (viewBox 0 0 300 300 +
+   * aspect-ratio keeps it square and centered). max-height caps it at the
+   * proven ~360px footprint at standard size; the gutter below 100% reserves
+   * room for the rim labels, which paint outside the 300-unit viewBox. */
+  height: 100%;
+  max-height: 360px;
+  width: auto;
+  aspect-ratio: 1 / 1;
+  flex: 0 1 auto;
   overflow: visible;   /* rim labels paint outside the 300-unit viewBox */
 }
 
@@ -311,6 +323,117 @@ section.radar.dark {
   --radar-grid-soft:  color-mix(in srgb, var(--text-muted) 32%, transparent);
   --radar-spoke:      color-mix(in srgb, var(--text-muted) 52%, transparent);
   --radar-fill:       24%;
+}
+
+/* ── RADAR · FULL ──────────────────────────────────────────────────────
+ * `full` is now a UNIVERSAL modifier (lib/base/base.variants.css): the section
+ * bleed, hidden chrome, and the bottom title/note caption band (sheen surface)
+ * plus pagination-through-the-band all come from `section.full`. This block
+ * adds only what's specific to a chart: drop the chart-frame eyebrow/subtitle,
+ * expose the title to the universal caption rules, fill the bleed with a
+ * scaled-up centred diagram + a responsive legend column, lift the scale ticks,
+ * and re-assert the title past the chart-frame measure cap. Pure CSS — no
+ * transform/render-path changes. Caption sources (chart-family DOM): h2 =
+ * title; the trailing note is a bare class-less <p>, a direct section child. */
+
+/* A chart is a MEDIA full: the diagram fills the bleed, so opt out of the
+ * universal body padding (padding:0) and zero the caption breakout inset
+ * (--full-pad:0) — the chart-body manages its own inset, and the caption band
+ * spans edge-to-edge with no negative margin needed. */
+section.radar.full {
+  padding: 0;
+  --full-pad: 0px;
+}
+
+/* Drop the chart-frame chrome the universal `full` doesn't know about. */
+section.radar.full .chart-eyebrow,
+section.radar.full .chart-subtitle {
+  display: none;
+}
+
+/* chart-header → display:contents so its h2 becomes a direct flex child the
+ * universal caption rules can order into the bottom band. */
+section.radar.full .chart-header {
+  display: contents;
+}
+
+/* Radar fills the space above the caption (order 0, grows). The repeated
+ * .chart-frame out-specifies the shared surface-panel rule, stripping the
+ * panel background/border for a true full-bleed. position:relative makes it
+ * the containing block for the absolute legend. */
+section.radar.full.chart-frame .chart-body {
+  order: 0;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  display: grid;
+  align-content: center;     /* vertical-centre the figure row; figure stretches
+                                to full width so its gutters span the slide */
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Three-column track: equal 1fr gutters flank the auto-width diagram, so the
+ * DIAGRAM centres on the slide (not the diagram-plus-legend group); the legend
+ * gets its own right column with room to hold and wrap longer series names —
+ * responsive, unlike the old absolute right-pin. */
+section.radar.full .radar-figure {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+/* Explicit cqi size scales the diagram up (the base max-height:360px cap and
+ * flex-height both fail here); aspect-ratio 1/1 from the base rule keeps it
+ * square, max-height guards against a tall two-line caption. */
+section.radar.full .radar-svg {
+  grid-column: 2;
+  justify-self: center;
+  height: 36cqi;
+  width: auto;
+  max-height: 100%;
+  max-width: 100%;
+}
+/* Legend in the right column: fills the column (so long series names WRAP
+ * inside it instead of overflowing or clipping — responsive), left-aligned a
+ * comfortable gap off the diagram rather than jammed to the slide edge,
+ * vertically centred on it. position:static undoes the earlier absolute pin. */
+section.radar.full .radar-legend {
+  position: static;
+  grid-column: 3;
+  justify-self: stretch;
+  align-self: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding-left: var(--sp-lg);
+}
+
+/* Title caption: the sheen / padding / colour / order come from the universal
+ * `section.full h2`. The chart-frame skeleton centres and measure-caps the
+ * title at higher specificity, so re-assert the full-bleed measure, the left
+ * alignment, the bottom-anchoring margin, and the fs-h3 caption size here. */
+section.radar.full .chart-header h2 {
+  width: 100cqi;
+  max-width: none;
+  margin: auto 0 0;
+  text-align: left;
+  font-size: var(--fs-h3);
+}
+
+/* Scale ticks read too faint at full-bleed size — lift them off --text-muted
+ * to a stronger heading mix and add weight so the 0–10 scale stays legible. */
+section.radar.full .radar-tick {
+  fill: color-mix(in srgb, var(--text-heading) 80%, transparent);
+  font-weight: 600;
 }
 
 
