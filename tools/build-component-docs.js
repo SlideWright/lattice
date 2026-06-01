@@ -354,6 +354,15 @@ ${m.description}`);
     if (slide) slides.push(slide);
   }
 
+  // Opt-in composition showcases with component-tailored content — for
+  // universal modifiers (e.g. `full`) whose slide needs custom markup the bare
+  // sample can't supply (full's caption wants a trailing note). Keyed by modifier.
+  if (m.compositionSamples && typeof m.compositionSamples === 'object') {
+    for (const [mod, sample] of Object.entries(m.compositionSamples)) {
+      slides.push(injectFooter(sample, `Composition: ${mod} · ${m.name} ${mod}`));
+    }
+  }
+
   if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) {
     slides.push(renderAntiPatternsSlide(m));
   }
@@ -426,6 +435,10 @@ function expectedGallerySlideCount(m) {
   if (m.stressSample) n += 1;
   // Composition slides — emitted only if there's a sample to compose from.
   if (m.sample) n += compositionModifiersFor(m).length;
+  // Opt-in tailored composition showcases (e.g. `full`).
+  if (m.compositionSamples && typeof m.compositionSamples === 'object') {
+    n += Object.keys(m.compositionSamples).length;
+  }
   if (Array.isArray(m.antiPatterns) && m.antiPatterns.length) n += 1;
   if (Array.isArray(m.related) && m.related.length) n += 1;
   return n;

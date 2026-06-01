@@ -343,3 +343,12 @@ section.quadrant.dark {
 }
 
 
+
+/* cover: explicit diagram height so the plot doesn't collapse in the bled
+ * chart-body — quadrant's responsive height:100% has no definite parent under
+ * `section.chart-frame.cover` (same reason radar pins an explicit cqi height). */
+section.quadrant.cover .quadrant-svg {
+  height: 40cqi;
+  max-height: 100%;
+  width: auto;
+}

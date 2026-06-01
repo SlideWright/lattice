@@ -391,3 +391,57 @@ section.progress.dark .progress-fill[data-s="deferred"] {
 
 
 
+
+/* ── COVER ── `cover` on the chart family ────────────────────────────────────
+ * `cover` is the global full-bleed-with-caption modifier (base.variants.css).
+ * Charts are its focus: the diagram fills the canvas and the slide title +
+ * trailing note become the bottom caption band. This block generalizes the
+ * radar prototype to EVERY chart-frame member — the chrome drops, the section
+ * bleeds (padding:0, --cover-pad:0 so the caption band needs no negative
+ * margin), the chart-header collapses so its h2 joins the universal caption
+ * stack, and the chart-body grows to fill above the band, stripped of the
+ * surface panel. Each chart's own figure rules size the diagram; per-member
+ * cover overrides (e.g. radar's legend column) layer on top. */
+section.chart-frame.cover {
+  padding: 0;
+  --cover-pad: 0px;
+}
+section.chart-frame.cover .chart-eyebrow,
+section.chart-frame.cover .chart-subtitle {
+  display: none;
+}
+/* chart-header → display:contents so its h2 becomes a direct flex child the
+ * universal `section.cover h2` caption rules can order into the bottom band. */
+section.chart-frame.cover .chart-header {
+  display: contents;
+}
+/* The diagram fills the space above the caption (order 0, grows). The repeated
+ * .chart-frame out-specifies the shared surface-panel rule, stripping the panel
+ * background/border for a true bleed. position:relative makes it the containing
+ * block for any absolutely-positioned figure chrome. */
+section.chart-frame.cover .chart-body {
+  order: 0;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  display: grid;
+  align-content: center;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* Title caption: the sheen / padding / colour / order come from the universal
+ * `section.cover h2`. The chart-frame skeleton centres and measure-caps the
+ * title at higher specificity, so re-assert the full-bleed measure, the left
+ * alignment, the bottom-anchoring margin, and the fs-h3 caption size here. */
+section.chart-frame.cover .chart-header h2 {
+  max-width: none;
+  margin: auto 0 0;
+  text-align: left;
+  font-size: var(--fs-h3);
+}

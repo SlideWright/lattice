@@ -329,29 +329,33 @@ same layout structure works on either canvas. The dark bookend layouts
 <!-- _class: content dark -->
 ```
 
-### `full`
+### `cover`
 
-Full-bleed: the content owns the slide. The running header and footer
-drop away, the section goes edge-to-edge (no padding/border), and the
-slide heading plus the trailing paragraph reflow into a bottom **caption
-band** that carries the surface "sheen" material — a
-`--text-heading`→`--bg` radial wash with a hairline top edge, the same
-shelf the chart panels use — with the page number reading through it.
-The note is clamped to two lines; the heading is the title.
+Full-bleed-with-caption, **focused on charts**. The running header and
+footer drop away, the section goes edge-to-edge, and the slide heading
+plus the trailing paragraph reflow into a bottom **caption band** that
+carries the surface "sheen" material — a `--text-heading`→`--bg` radial
+wash with a hairline top edge, the same shelf the chart panels use — with
+the page number reading through it. The note is clamped to two lines; the
+heading is the title.
 
 ```markdown
-<!-- _class: full -->
-<!-- _class: radar full -->
-<!-- _class: image full -->
+<!-- _class: radar cover -->
+<!-- _class: piechart cover -->
+<!-- _class: cover -->
 ```
 
-A component decides *how* its body fills the bleed above the caption,
-and a more-specific `section.<layout>.full` rule overrides the universal
-defaults: `radar` (and the chart family) scale the diagram up and re-assert
-the title past the chart-frame measure cap; `image` keeps its dark photo
-scrim and absolutely-positioned overlay text instead of the sheen band.
-On a bare slide (`full` with no component) the body content fills the
-top and the title/note caption sits at the bottom.
+The **chart family** is the focus: every `chart-frame` member fills the
+canvas with the diagram and gets the caption band
+(`section.chart-frame.cover` in `chart-family.css`); per-chart rules tune
+the figure (e.g. radar's centred diagram + legend column). On a plain
+content slide the body keeps its standard padding and only the caption
+band bleeds — so `cover` reads cohesively next to regular slides.
+
+> `cover` is distinct from image's **`full`** variant — `full` is image's
+> own edge-to-edge photo treatment (scrim + overlay text); `cover` is the
+> chart/content caption-band treatment. Use `image full` for photos,
+> `<chart> cover` for charts.
 
 ### `mirror`
 

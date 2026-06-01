@@ -58,6 +58,20 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 
 ## Variants (layout-specific)
 
+### `full` — Full — image fills the canvas edge to edge
+
+The image covers the entire slide. Heading and body text overlay the lower portion on a dark contrast scrim (full slide width, content padded inside). Use for high-impact opener or closer slides where the photograph is the message.
+
+```markdown
+<!-- _class: image full -->
+
+## Full bleed makes the photo the slide.
+
+Text overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.
+
+![bg](sample-image-landscape.svg)
+```
+
 ### `contain` — Contain — letterboxed for plots and screenshots
 
 Full-bleed variant: the image preserves its aspect inside the slide and the surrounding area fills with the matte token. Text overlay uses the same bottom-scrim treatment as `full`. Default pick for plots, screenshots, and any non-photographic asset where every pixel of the image matters.

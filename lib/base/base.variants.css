@@ -42,50 +42,56 @@ section.no-paginate::after {
   content: none !important;
 }
 
-/* ── FULL-BLEED ── `full`: the content owns the slide ───────────────── */
+/* ── COVER ── `cover`: a chart-focused full-bleed treatment ─────────── */
 
-/* The de-facto full-bleed treatment for every layout (generalized from the
- * radar prototype). The chrome steps back, the section goes edge-to-edge, and
+/* `cover` is the global full-bleed-with-caption modifier (distinct from image's
+ * own `full` variant). The chrome steps back, the section goes edge-to-edge, and
  * the slide heading + trailing paragraph reflow into a bottom caption band that
  * carries the surface "sheen" material — a --text-heading→--bg radial wash with
  * a hairline top edge, the same shelf the chart panels use. Palette-blind.
  *
- * A component decides HOW its body fills the bleed above the caption; a
- * more-specific `section.<layout>.full` rule overrides any default here — image
- * keeps its dark photo scrim, radar re-asserts the title past the chart-frame
- * measure cap. Sheen tokens mirror chart-family.css. */
-section.full {
-  /* Body content (prose, lists — anything that isn't a fill component) gets
-   * breathing room so it doesn't collide with the edges; the caption band breaks
-   * back out to the slide edges by the same inset (--full-pad), so it still spans
-   * full width. MEDIA layouts fill the bleed instead — image and the chart family
-   * set `padding: 0` + `--full-pad: 0` so the photo / diagram reaches every edge. */
-  --full-pad: var(--sp-2xl);
+ * Focus is on charts: the chart family generalizes this into a media bleed
+ * (chart-family.css `section.chart-frame.cover`), so radar / piechart / quadrant
+ * / kpi all fill the canvas with a caption. On a plain content slide the body
+ * keeps its margins and only the caption band bleeds. */
+section.cover {
+  /* Cohesive with regular slides: content-cover keeps the STANDARD slide padding
+   * (top + sides, matching base.elements `section`), only dropping the bottom so
+   * the caption band reaches the edge. --cover-pad drives the body inset and the
+   * band's break-out; --cover-gutter is the caption TEXT inset (always the regular
+   * side padding, even on media cover where --cover-pad is 0, so the title/note
+   * align with body prose and with regular slides). MEDIA layouts fill the bleed
+   * — the chart family sets `padding: 0` + `--cover-pad: 0`. */
+  --cover-gutter: calc(var(--_sec-1cqi, 1cqi) * 5);
+  --cover-pad: calc(var(--_sec-1cqi, 1cqi) * 5);
   position: relative;
-  padding: var(--sp-xl) var(--full-pad) 0;
+  padding: calc(var(--_sec-1cqi, 1cqi) * 6.875) var(--cover-pad) 0;
   border: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-section.full > header,
-section.full > footer {
+section.cover > header,
+section.cover > footer {
   display: none;
 }
 
-/* CAPTION · TITLE — the heading becomes a bottom-anchored shelf. margin-top:auto
- * pins the title+note block to the bottom when the body doesn't itself grow;
- * order keeps it after body content that precedes it in the DOM. Descendant
- * combinator (not >) so a heading nested in a component skeleton still matches. */
-section.full h2 {
+/* CAPTION · TITLE — the heading becomes a bottom-anchored shelf. margin-block
+ * auto pins the title+note block to the bottom when the body doesn't itself
+ * grow; order keeps it after body content that precedes it in the DOM. The band
+ * stretches to the section content box (flex align stretch) then breaks out by
+ * --cover-pad, so it spans the FULL slide width on every layout — padded content
+ * and bled media alike (100cqi can't be used: it resolves against the narrower
+ * content box once padding is added). Descendant combinator so a heading nested
+ * in a component skeleton still matches. */
+section.cover h2 {
   order: 1;
-  margin-block: auto 0;                        /* pin the caption block to the bottom */
-  margin-inline: calc(-1 * var(--full-pad));   /* break the band out past body padding */
+  margin-block: auto 0;
+  margin-inline: calc(-1 * var(--cover-pad));
   z-index: 2;
-  width: 100cqi;
   max-width: none;
   box-sizing: border-box;
-  padding: 1.8cqi 6.25cqi 0.4cqi;
+  padding: 1.8cqi var(--cover-gutter) 0.4cqi;
   background: radial-gradient(150% 200% at 50% -25%,
     color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
     color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
@@ -101,16 +107,16 @@ section.full h2 {
 
 /* CAPTION · NOTE — the trailing paragraph; flat base of the sheen so it joins
  * the title seamlessly, clamped to two lines, content ink (legible, adaptive). */
-section.full > p:last-of-type {
+section.cover > p:last-of-type {
   order: 2;
   margin-block: 0;
-  margin-inline: calc(-1 * var(--full-pad));   /* break out to match the title band */
+  margin-inline: calc(-1 * var(--cover-pad));
   z-index: 2;
-  width: 100cqi;
   box-sizing: border-box;
-  padding: 0 6.25cqi 1.4cqi;
+  padding: 0 var(--cover-gutter) 1.4cqi;
   background: color-mix(in oklab, var(--text-heading) 5%, var(--bg));
   color: var(--text-body);
+  font-family: var(--font-body);   /* a chart note arrives as .chart-caption (mono) — reset to body */
   font-size: var(--fs-body);
   line-height: 1.3;
   text-align: left;
@@ -123,7 +129,7 @@ section.full > p:last-of-type {
 /* Pagination reads through the band — lifted above it (z) and recoloured to a
  * heading-ink mix; the caption's side padding keeps title/note clear of the
  * bottom-right corner so they never collide. */
-section.full::after {
+section.cover::after {
   z-index: 3;
   color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
 }

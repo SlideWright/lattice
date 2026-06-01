@@ -8,6 +8,7 @@
   "description": "Image as the slide's anchor, with optional text alongside.",
   "purpose": "Use when a visual carries meaning on its own. Modifiers control how the image fills the slide: `full` for edge-to-edge, `contain` for letterboxed, `museum` for a matted/framed treatment.",
   "variants": [
+    "full",
     "contain",
     "museum",
     "mirror"
@@ -83,6 +84,11 @@
     }
   ],
   "variantDocs": {
+    "full": {
+      "label": "Full — image fills the canvas edge to edge",
+      "caption": "The image covers the entire slide. Heading and body text overlay the lower portion on a dark contrast scrim (full slide width, content padded inside). Use for high-impact opener or closer slides where the photograph is the message.",
+      "sample": "<!-- _class: image full -->\n\n## Full bleed makes the photo the slide.\n\nText overlays the lower portion on a contrast scrim. Use for openers, closers, or any moment when the image deserves the whole canvas.\n\n![bg](sample-image-landscape.svg)\n"
+    },
     "contain": {
       "label": "Contain — letterboxed for plots and screenshots",
       "caption": "Full-bleed variant: the image preserves its aspect inside the slide and the surrounding area fills with the matte token. Text overlay uses the same bottom-scrim treatment as `full`. Default pick for plots, screenshots, and any non-photographic asset where every pixel of the image matters.",

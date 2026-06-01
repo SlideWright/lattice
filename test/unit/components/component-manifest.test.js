@@ -754,8 +754,8 @@ describe('component-manifest', () => {
       ]);
     });
 
-    test('the bleed group is the full-bleed modifier', () => {
-      assert.deepEqual([...UNIVERSAL_GROUPS.bleed], ['full']);
+    test('the bleed group is the cover modifier', () => {
+      assert.deepEqual([...UNIVERSAL_GROUPS.bleed], ['cover']);
     });
 
     test('UNIVERSAL_VARIANTS is the flat union of the groups, deduped', () => {
