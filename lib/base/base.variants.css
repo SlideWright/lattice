@@ -42,97 +42,10 @@ section.no-paginate::after {
   content: none !important;
 }
 
-/* ── COVER ── `cover`: a chart-focused full-bleed treatment ─────────── */
-
-/* `cover` is the global full-bleed-with-caption modifier (distinct from image's
- * own `full` variant). The chrome steps back, the section goes edge-to-edge, and
- * the slide heading + trailing paragraph reflow into a bottom caption band that
- * carries the surface "sheen" material — a --text-heading→--bg radial wash with
- * a hairline top edge, the same shelf the chart panels use. Palette-blind.
- *
- * Focus is on charts: the chart family generalizes this into a media bleed
- * (chart-family.css `section.chart-frame.cover`), so radar / piechart / quadrant
- * / kpi all fill the canvas with a caption. On a plain content slide the body
- * keeps its margins and only the caption band bleeds. */
-section.cover {
-  /* Cohesive with regular slides: content-cover keeps the STANDARD slide padding
-   * (top + sides, matching base.elements `section`), only dropping the bottom so
-   * the caption band reaches the edge. --cover-pad drives the body inset and the
-   * band's break-out; --cover-gutter is the caption TEXT inset (always the regular
-   * side padding, even on media cover where --cover-pad is 0, so the title/note
-   * align with body prose and with regular slides). MEDIA layouts fill the bleed
-   * — the chart family sets `padding: 0` + `--cover-pad: 0`. */
-  --cover-gutter: calc(var(--_sec-1cqi, 1cqi) * 5);
-  --cover-pad: calc(var(--_sec-1cqi, 1cqi) * 5);
-  position: relative;
-  padding: calc(var(--_sec-1cqi, 1cqi) * 6.875) var(--cover-pad) 0;
-  border: none;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-section.cover > header,
-section.cover > footer {
-  display: none;
-}
-
-/* CAPTION · TITLE — the heading becomes a bottom-anchored shelf. margin-block
- * auto pins the title+note block to the bottom when the body doesn't itself
- * grow; order keeps it after body content that precedes it in the DOM. The band
- * stretches to the section content box (flex align stretch) then breaks out by
- * --cover-pad, so it spans the FULL slide width on every layout — padded content
- * and bled media alike (100cqi can't be used: it resolves against the narrower
- * content box once padding is added). Descendant combinator so a heading nested
- * in a component skeleton still matches. */
-section.cover h2 {
-  order: 1;
-  margin-block: auto 0;
-  margin-inline: calc(-1 * var(--cover-pad));
-  z-index: 2;
-  max-width: none;
-  box-sizing: border-box;
-  padding: 1.8cqi var(--cover-gutter) 0.4cqi;
-  background: radial-gradient(150% 200% at 50% -25%,
-    color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
-    color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
-    color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
-  border-top: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
-  color: var(--text-heading);
-  font-family: var(--font-display);
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  line-height: 1.1;
-  text-align: left;
-}
-
-/* CAPTION · NOTE — the trailing paragraph; flat base of the sheen so it joins
- * the title seamlessly, clamped to two lines, content ink (legible, adaptive). */
-section.cover > p:last-of-type {
-  order: 2;
-  margin-block: 0;
-  margin-inline: calc(-1 * var(--cover-pad));
-  z-index: 2;
-  box-sizing: border-box;
-  padding: 0 var(--cover-gutter) 1.4cqi;
-  background: color-mix(in oklab, var(--text-heading) 5%, var(--bg));
-  color: var(--text-body);
-  font-family: var(--font-body);   /* a chart note arrives as .chart-caption (mono) — reset to body */
-  font-size: var(--fs-body);
-  line-height: 1.3;
-  text-align: left;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-/* Pagination reads through the band — lifted above it (z) and recoloured to a
- * heading-ink mix; the caption's side padding keeps title/note clear of the
- * bottom-right corner so they never collide. */
-section.cover::after {
-  z-index: 3;
-  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
-}
+/* `cover` is NOT a universal modifier — it is scoped to the chart family.
+ * Its full treatment lives in chart-family.css (`section.chart-frame.cover`),
+ * registered as a `cover` variant on the charts that support it (radar,
+ * piechart). There is deliberately no `section.cover` here. */
 
 /* ── TONE ── canvas-level reuse of the state-token color system ─────── */
 

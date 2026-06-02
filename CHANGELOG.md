@@ -27,18 +27,19 @@ in patch versions.
 
 ### Added
 
-- **New `cover` modifier — chart-focused full-bleed with a caption band.**
-  `cover` is a global modifier (a `bleed` group in `UNIVERSAL_GROUPS`) that takes
-  the section edge-to-edge, hides the header/footer, and reflows the slide
-  heading + trailing paragraph into a bottom **caption band** carrying the chart
+- **New `cover` modifier — a chart-family full-bleed with a caption band.**
+  `cover` is a **chart-scoped** modifier (registered as a `cover` variant on the
+  charts that support it — radar, piechart — *not* an all-layout universal). It
+  takes the chart edge-to-edge, hides the header/footer, and reflows the slide
+  heading + a one-line takeaway into a bottom **caption band** carrying the chart
   surface "sheen" (a `--text-heading`→`--bg` radial wash with a hairline edge),
-  the page number reading through it. The focus is charts: every `chart-frame`
-  member fills the canvas with its diagram and gets the band
-  (`section.chart-frame.cover`), with per-chart tuning (radar centres the diagram
-  + keeps a responsive legend column). On a plain content slide the body keeps
-  its standard padding and only the band bleeds. Distinct from image's `full`
-  variant (which is unchanged — see below). Documented in base.docs.md
-  "Universal variants". Pure CSS — no transform/render-path change.
+  the page number reading through it. The generic treatment lives in
+  `section.chart-frame.cover` (chart-family.css); per-chart rules tune the figure
+  (radar centres the diagram + keeps a responsive legend column). Other
+  chart-frame members can opt in as they're given an explicit cover figure size.
+  Distinct from image's `full` photo variant (unchanged — see below). Documented
+  via the radar/piechart `variantDocs`. Pure CSS — no transform/render-path
+  change.
 - **Chart surface panels.** Every framed chart-family member now sits on its
   own quiet, neutral gradient surface (Apple-Stocks style): a faint top-glow
   tint fading to the canvas, a hairline border, and soft corners. Pure CSS on

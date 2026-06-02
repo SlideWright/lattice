@@ -392,26 +392,35 @@ section.progress.dark .progress-fill[data-s="deferred"] {
 
 
 
-/* ── COVER ── `cover` on the chart family ────────────────────────────────────
- * `cover` is the global full-bleed-with-caption modifier (base.variants.css).
- * Charts are its focus: the diagram fills the canvas and the slide title +
- * trailing note become the bottom caption band. This block generalizes the
- * radar prototype to EVERY chart-frame member — the chrome drops, the section
- * bleeds (padding:0, --cover-pad:0 so the caption band needs no negative
- * margin), the chart-header collapses so its h2 joins the universal caption
- * stack, and the chart-body grows to fill above the band, stripped of the
- * surface panel. Each chart's own figure rules size the diagram; per-member
- * cover overrides (e.g. radar's legend column) layer on top. */
+/* ── COVER ── `cover`, a CHART-FAMILY modifier ───────────────────────────────
+ * `cover` is NOT an all-layout universal modifier — it is scoped to the chart
+ * family (registered as a `cover` variant on the charts that support it, e.g.
+ * radar, piechart). The diagram fills the whole slide and the slide title + a
+ * one-line takeaway reflow into a bottom caption band carrying the chart sheen
+ * (a --text-heading→--bg radial wash with a hairline edge), the page number
+ * reading through it. Generalized from the radar prototype to every chart-frame
+ * member: the chrome drops, the section bleeds, the chart-header collapses so
+ * its h2 joins the caption stack, and the chart-body grows to fill above the
+ * band, stripped of the surface panel. Per-chart rules (radar's centred diagram
+ * + legend column) layer on top; an untuned chart still bleeds + captions but
+ * may need an explicit figure size (cf. radar's 36cqi). Palette-blind. */
 section.chart-frame.cover {
+  --cover-gutter: calc(var(--_sec-1cqi, 1cqi) * 5);   /* caption text inset */
+  position: relative;
   padding: 0;
-  --cover-pad: 0px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
+section.chart-frame.cover > header,
+section.chart-frame.cover > footer,
 section.chart-frame.cover .chart-eyebrow,
 section.chart-frame.cover .chart-subtitle {
   display: none;
 }
 /* chart-header → display:contents so its h2 becomes a direct flex child the
- * universal `section.cover h2` caption rules can order into the bottom band. */
+ * caption rules below can order into the bottom band. */
 section.chart-frame.cover .chart-header {
   display: contents;
 }
@@ -435,13 +444,50 @@ section.chart-frame.cover .chart-body {
   border-radius: 0;
   box-shadow: none;
 }
-/* Title caption: the sheen / padding / colour / order come from the universal
- * `section.cover h2`. The chart-frame skeleton centres and measure-caps the
- * title at higher specificity, so re-assert the full-bleed measure, the left
- * alignment, the bottom-anchoring margin, and the fs-h3 caption size here. */
+/* CAPTION · TITLE — the heading becomes a bottom-anchored sheen shelf. The
+ * chart bleeds, so the band already spans the full slide (no breakout needed).
+ * margin:auto pins it to the bottom; the chart-frame skeleton measure-caps the
+ * title at higher specificity, so re-assert measure / align / size here. */
 section.chart-frame.cover .chart-header h2 {
-  max-width: none;
+  order: 1;
   margin: auto 0 0;
-  text-align: left;
+  z-index: 2;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 1.8cqi var(--cover-gutter) 0.4cqi;
+  background: radial-gradient(150% 200% at 50% -25%,
+    color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
+    color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
+    color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
+  border-top: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
+  color: var(--text-heading);
+  font-family: var(--font-display);
   font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: left;
+}
+/* CAPTION · NOTE — the trailing paragraph (a bare class-less <p>, direct
+ * section child); flat base of the sheen, content ink, clamped to two lines. */
+section.chart-frame.cover > p:last-of-type {
+  order: 2;
+  margin: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  padding: 0 var(--cover-gutter) 1.4cqi;
+  background: color-mix(in oklab, var(--text-heading) 5%, var(--bg));
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* Pagination reads through the band — lifted above it and recoloured. */
+section.chart-frame.cover::after {
+  z-index: 3;
+  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
 }
