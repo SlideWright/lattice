@@ -47,9 +47,11 @@ in patch versions.
   shadow lifting the pane off the slide, and a larger Apple-squircle-ish
   corner. Pure CSS on `section.chart-frame:not(.state-chart) .chart-body`,
   canvas-aware (mixes against `--text-heading`/`--bg`, so it flips light/dark);
-  the two glass cues are complementary across canvases (the float shadow
-  carries the read on light, the white specular rim + gloss carry it on dark),
-  so one rule covers both modes. No `backdrop-filter` blur — unreliable in
+  the two glass cues are complementary across canvases (the always-dark float
+  shadow carries the read on light, the white specular rim + gloss carry it on
+  dark), so one rule covers both modes. The float shadow is black-based, **not**
+  `--text-heading` — that token flips to white on dark canvases, which cast a
+  white glow / double-frame around the pane that bled over the footer. No `backdrop-filter` blur — unreliable in
   print-to-PDF and there's only flat `--bg` behind the pane, so it would cost
   risk for no payoff. The decoration is pinned to `.chart-body` — the one
   fixed-width container every member shares — so the panel is the **same size

@@ -272,15 +272,18 @@ section.chart-frame:not(.state-chart) .chart-body {
   border: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
   /* Apple-squircle-ish corner — larger, continuous-feeling radius. */
   border-radius: 2.25cqi;
-  /* Float + specular rim. Outer: a soft wide elevation shadow (whisper-low
-   * opacity) lifts the pane on light canvases. Inset: a bright top rim (glass
-   * catching light, carries the dark-canvas read) + a hairline bottom shade
+  /* Float + specular rim. The elevation shadow is always DARK (black-based,
+   * not --text-heading — that token flips to white on dark canvases, which
+   * casts a white glow / double-frame around the pane and bleeds over the
+   * footer). On dark the dark shadow recedes into the canvas and the white
+   * rim + lighter fill carry the lift instead. Inset: a bright white top rim
+   * (specular highlight, correct on both modes) + a dark hairline bottom shade
    * to seat the lower edge. */
   box-shadow:
-    0 1.6cqi 3.4cqi -1.4cqi color-mix(in oklab, var(--text-heading) 24%, transparent),
-    0 0.4cqi 1cqi -0.6cqi color-mix(in oklab, var(--text-heading) 14%, transparent),
+    0 1.2cqi 2.6cqi -1.4cqi color-mix(in oklab, black 30%, transparent),
+    0 0.3cqi 0.8cqi -0.6cqi color-mix(in oklab, black 18%, transparent),
     inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
-    inset 0 -1px 0 color-mix(in oklab, var(--text-heading) 7%, transparent);
+    inset 0 -1px 0 color-mix(in oklab, black 10%, transparent);
 }
 
 section.chart-frame .chart-caption {
