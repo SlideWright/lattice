@@ -83,13 +83,25 @@ section.word-cloud .word-cloud-canvas::before {
    * internal whitespace supplies the vertical margin. */
   inset: -0.5cqi -3cqi;
   z-index: 0;
+  /* Liquid-glass material — mirrors section.chart-frame .chart-body exactly
+   * (gloss line over the Apple-Stocks top-glow, float shadow + specular rim,
+   * squircle-ish radius) so word-cloud's surface stays identical to the framed
+   * members. See chart-family.css for the rationale. */
   background:
+    linear-gradient(180deg,
+      color-mix(in oklab, white 16%, transparent) 0%,
+      transparent 9%),
     radial-gradient(135% 115% at 50% -12%,
       color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
       color-mix(in oklab, var(--text-heading) 7%, var(--bg)) 55%,
       color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
   border: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
-  border-radius: 1.25cqi;
+  border-radius: 2.25cqi;
+  box-shadow:
+    0 1.6cqi 3.4cqi -1.4cqi color-mix(in oklab, var(--text-heading) 24%, transparent),
+    0 0.4cqi 1cqi -0.6cqi color-mix(in oklab, var(--text-heading) 14%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--text-heading) 7%, transparent);
   pointer-events: none;
 }
 

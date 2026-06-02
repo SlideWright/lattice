@@ -40,18 +40,25 @@ in patch versions.
   Distinct from image's `full` photo variant (unchanged — see below). Documented
   via the radar/piechart `variantDocs`. Pure CSS — no transform/render-path
   change.
-- **Chart surface panels.** Every framed chart-family member now sits on its
-  own quiet, neutral gradient surface (Apple-Stocks style): a faint top-glow
-  tint fading to the canvas, a hairline border, and soft corners. Pure CSS on
-  `section.chart-frame:not(.state-chart) .chart-body`, canvas-aware (mixes
-  against `--text-heading`/`--bg`, so it flips light/dark). The decoration is
-  pinned to `.chart-body` — the one fixed-width container every member shares —
-  so the panel is the **same size on every chart** rather than hugging each
-  figure. Covers radar, quadrant, piechart, progress, gantt, kanban, and
-  timeline-list. **word-cloud** gets the same surface via a `::before` painted
-  behind its free-positioned words (it isn't a chart-frame member, so the
-  family rule can't reach it). **state-chart is excluded** — its state flow
-  fills the full chart-body height, leaving no room for a panel inset.
+- **Chart surface panels — Apple "Liquid Glass" material.** Every framed
+  chart-family member now sits on its own glass surface, Apple Liquid-Glass
+  inspired at editorial-whisper intensity: a translucent base with a faint
+  top-glow tint, a specular top gloss line, a bright inset rim, a soft float
+  shadow lifting the pane off the slide, and a larger Apple-squircle-ish
+  corner. Pure CSS on `section.chart-frame:not(.state-chart) .chart-body`,
+  canvas-aware (mixes against `--text-heading`/`--bg`, so it flips light/dark);
+  the two glass cues are complementary across canvases (the float shadow
+  carries the read on light, the white specular rim + gloss carry it on dark),
+  so one rule covers both modes. No `backdrop-filter` blur — unreliable in
+  print-to-PDF and there's only flat `--bg` behind the pane, so it would cost
+  risk for no payoff. The decoration is pinned to `.chart-body` — the one
+  fixed-width container every member shares — so the panel is the **same size
+  on every chart** rather than hugging each figure. Covers radar, quadrant,
+  piechart, progress, gantt, kanban, and timeline-list. **word-cloud** gets the
+  same surface via a `::before` painted behind its free-positioned words (it
+  isn't a chart-frame member, so the family rule can't reach it). **state-chart
+  is excluded** — its state flow fills the full chart-body height, leaving no
+  room for a panel inset.
 - **state-chart gallery defaults to `lr`.** The default / dark / compact /
   accent demos now render left-to-right at five states (was a six-state
   top-to-bottom flow that overran the slide). The `lr` direction reads the

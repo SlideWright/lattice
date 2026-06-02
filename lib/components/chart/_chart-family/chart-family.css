@@ -221,12 +221,21 @@ section.chart-frame .chart-body {
   overflow: hidden;
 }
 
-/* Chart surface panel — every chart sits on its own quiet, neutral gradient
- * surface (Apple-Stocks style): a faint top-glow tint fading to the canvas, a
- * hairline border, and soft corners. CSS-only and canvas-aware (mixes against
- * --text-heading / --bg, so it flips light/dark). Kept deliberately faint so
- * it reads as a surface, not a card that competes with the data or the
- * editorial slide.
+/* Chart surface panel — every chart sits on its own quiet glass surface,
+ * Apple "Liquid Glass" inspired at editorial-whisper intensity: a faint
+ * top-glow tint over a translucent base, a specular top gloss, a bright
+ * inset rim, and a soft float shadow lifting the pane off the slide. CSS-only
+ * and canvas-aware (mixes against --text-heading / --bg, so it flips
+ * light/dark). Kept deliberately faint so it reads as a premium surface, not
+ * chrome that competes with the data or the editorial slide.
+ *
+ * The two glass cues are complementary across canvases, so the material reads
+ * in BOTH modes from a single rule: on LIGHT the float shadow (a deep
+ * --text-heading wash under the pane) does the lifting; on DARK that shadow
+ * vanishes into the canvas but the white specular rim + top gloss pop and
+ * carry the glass read. No backdrop-filter blur — it's unreliable in
+ * print-to-PDF and there's only the flat slide --bg behind the pane, so it
+ * would cost risk for zero payoff.
  *
  * The decoration goes on .chart-body itself — not the per-member figure — so
  * the panel is the SAME SIZE on every chart. .chart-body is the one container
@@ -241,20 +250,31 @@ section.chart-frame .chart-body {
  * clipped edge. (word-cloud is free-floating and not a chart-frame member at
  * all, so it never matches this rule.) */
 section.chart-frame:not(.state-chart) .chart-body {
-  /* The whole panel sits lifted off the slide: a flat base tint (≈5-6% of
-   * --text-heading mixed into --bg, the lowest stop) keeps the entire surface
-   * a touch lighter than the slide on dark themes / a touch deeper on light,
-   * so it reads as a card rather than vanishing into the background. On top of
-   * that, a soft top-glow (the brighter 15% stop, centred above the panel)
-   * gives the gentle Apple-Stocks sheen. Subtle, but unmistakably a surface —
-   * the earlier single faint stop faded to pure --bg and disappeared. */
+  /* Layered glass fill: a thin specular gloss line catching light at the top
+   * edge (white, fading by ~9% height), over the Apple-Stocks top-glow — a
+   * flat base tint (≈5-6% of --text-heading into --bg) lifting to a brighter
+   * 15% stop centred above the panel. The base keeps the surface a touch
+   * lighter than the slide on dark / deeper on light so it reads as a pane. */
   background:
+    linear-gradient(180deg,
+      color-mix(in oklab, white 16%, transparent) 0%,
+      transparent 9%),
     radial-gradient(135% 115% at 50% -12%,
       color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
       color-mix(in oklab, var(--text-heading) 7%, var(--bg)) 55%,
       color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
   border: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
-  border-radius: 1.25cqi;
+  /* Apple-squircle-ish corner — larger, continuous-feeling radius. */
+  border-radius: 2.25cqi;
+  /* Float + specular rim. Outer: a soft wide elevation shadow (whisper-low
+   * opacity) lifts the pane on light canvases. Inset: a bright top rim (glass
+   * catching light, carries the dark-canvas read) + a hairline bottom shade
+   * to seat the lower edge. */
+  box-shadow:
+    0 1.6cqi 3.4cqi -1.4cqi color-mix(in oklab, var(--text-heading) 24%, transparent),
+    0 0.4cqi 1cqi -0.6cqi color-mix(in oklab, var(--text-heading) 14%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--text-heading) 7%, transparent);
 }
 
 section.chart-frame .chart-caption {
