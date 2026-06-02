@@ -163,10 +163,12 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
-/* Category colour rides the region tint + dots (cN); the label TEXT is
- * neutral --text-heading, like .quadrant-dot-label. cN-dark ink can't clear
- * AA as text on its own same-hue cN-light tint, so text never uses cell-ink.
- * The --bg halo isolates the glyphs from the tint underneath. */
+/* Category colour rides the region tint + dots (cN); the label TEXT is the
+ * standard mode ink (--text-heading), which already flips light/dark — no
+ * --bg halo. cN-dark ink can't clear AA as text on its own tint, so text
+ * never uses cell-ink. (A halo is the workaround for text on a busy/saturated
+ * field; it reads as a visible outline on the vivid zones, so the standard
+ * ink carries the labels on its own.) */
 section.quadrant .quadrant-label {
   fill: var(--text-heading);
   font-family: var(--font-body);
@@ -174,13 +176,6 @@ section.quadrant .quadrant-label {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  /* Minimal --bg halo. The zone tints ride the pie's vivid hue, so a halo is
-   * needed to isolate on-field labels — but kept thin (a fat stroke floods
-   * the small glyphs and reads as bloated outlines on the saturated field). */
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
 }
 /* Magic variant: heavier, more ceremonial labels with extra tracking. */
 section.quadrant .quadrant-label--magic {
@@ -204,10 +199,6 @@ section.quadrant .quadrant-dot-label {
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 1.75;
-  stroke-linejoin: round;
 }
 
 /* ── Bubble variant: √-area bubble + smart label position ─────────────── */
@@ -230,10 +221,6 @@ section.quadrant .quadrant-bubble-label {
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
 }
 
 /* ── Trail variant: faded before + dashed connector + solid after ─────── */
@@ -277,10 +264,6 @@ section.quadrant .quadrant-cohort-label {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 3;
-  stroke-linejoin: round;
 }
 section.quadrant .quadrant-figure[data-variant="cohort"] {
   gap: var(--sp-lg);

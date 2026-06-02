@@ -251,12 +251,12 @@ in patch versions.
   zone fills now match the pie wedges exactly — the SAME opaque hub→rim mix
   of `--catN-hue` with `--bg` (42% at the axis crossing → 82% at the outer
   corners), replacing the former translucent wash, so the four zones read
-  as vivid as the pie. Because the quadrant carries dots and labels on top
-  of those fills (the pie's labels live in a side legend), the on-field
-  label halos and dot rings are tuned (thin `--bg` halos — kept minimal so
-  they isolate the glyphs without flooding them) so labels stay legible
-  above the saturated field. All three charts share the same `--catN-hue`
-  source and
+  as vivid as the pie. The on-field labels use the standard mode ink
+  (`--text-heading`, which flips light/dark) with no halo — a `--bg` halo
+  reads as a visible outline on the saturated zones, so the standard ink
+  carries the labels on its own; only the dot/bubble marker rings keep a
+  thin `--bg` ring (to stay visible on their same-hue zone). All three
+  charts share the same `--catN-hue` source and
   hub→rim fade, so radar, pie, and quadrant read as one family on both
   canvases. Render-path + CSS only (no token or authoring change).
 - **Documentation reorganized into two trees.** The internal engineering
