@@ -174,11 +174,12 @@ section.quadrant .quadrant-label {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  /* Heavier --bg halo: the zone tints now ride the pie's vivid hue mix, so
-   * on-field labels need a thicker isolating halo to float above them. */
+  /* Minimal --bg halo. The zone tints ride the pie's vivid hue, so a halo is
+   * needed to isolate on-field labels — but kept thin (a fat stroke floods
+   * the small glyphs and reads as bloated outlines on the saturated field). */
   paint-order: stroke;
   stroke: var(--bg);
-  stroke-width: 4;
+  stroke-width: 2.5;
   stroke-linejoin: round;
 }
 /* Magic variant: heavier, more ceremonial labels with extra tracking. */
@@ -196,7 +197,7 @@ section.quadrant .quadrant-label--zone {
 section.quadrant .quadrant-dot {
   fill: var(--cell-ink);
   stroke: var(--bg);
-  stroke-width: 2.5;
+  stroke-width: 2;
 }
 section.quadrant .quadrant-dot-label {
   fill: var(--text-heading);
@@ -205,7 +206,7 @@ section.quadrant .quadrant-dot-label {
   font-weight: 500;
   paint-order: stroke;
   stroke: var(--bg);
-  stroke-width: 3.5;
+  stroke-width: 1.75;
   stroke-linejoin: round;
 }
 
