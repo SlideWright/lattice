@@ -240,6 +240,19 @@ in patch versions.
   `--bg` halo. Both the native quadrant component and the Mermaid
   `quadrantChart` theme map now read the `cN` palette directly (see the
   removed `--c-quadrant-*` tokens below).
+- **Piechart and quadrant fills unified onto radar's vivid area-fade
+  model.** The three categorical charts now share one fill language. Pie/
+  donut wedges previously rode the pale `--catN-fill` tint (which read
+  pastel/washed-out); they now ride the vivid slot hue (`--catN-hue` — the
+  canvas-saturated end radar strokes its curves with) as a hub→rim radial
+  area-fade (lighter at the hub, vivid toward the rim), denser than radar's
+  translucent overlay because wedges are opaque part-to-whole areas. Legend
+  swatches become solid vivid chips matching the wedge identity. Quadrant
+  zone tints are dialled to a quieter, cleaner background wash
+  (0.08→0.28 → 0.04→0.18) so the field stays an unobtrusive backdrop while
+  the vivid dots carry the colour. All three share the same `--catN-hue`
+  source and hub→rim fade, so radar, pie, and quadrant read as one family
+  on both canvases. Pure render-path change (no token or authoring change).
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing
