@@ -58,7 +58,9 @@ in patch versions.
   same surface via a `::before` painted behind its free-positioned words (it
   isn't a chart-frame member, so the family rule can't reach it). **state-chart
   is excluded** — its state flow fills the full chart-body height, leaving no
-  room for a panel inset.
+  room for a panel inset. The panel also takes a top margin so the
+  `.chart-header::after` accent divider floats in the whitespace above the card
+  instead of colliding with the lifted card's top edge.
 - **state-chart gallery defaults to `lr`.** The default / dark / compact /
   accent demos now render left-to-right at five states (was a six-state
   top-to-bottom flow that overran the slide). The `lr` direction reads the

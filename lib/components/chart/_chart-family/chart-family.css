@@ -250,6 +250,12 @@ section.chart-frame .chart-body {
  * clipped edge. (word-cloud is free-floating and not a chart-frame member at
  * all, so it never matches this rule.) */
 section.chart-frame:not(.state-chart) .chart-body {
+  /* Float the panel clear of the header divider. The .chart-header::after
+   * accent hairline sits at the header's bottom edge; without this gap the
+   * lifted glass card's top edge lands right on it and the two separators
+   * collide ("hugging"). A top margin drops the card so the hairline floats
+   * in the whitespace above it. */
+  margin-top: var(--sp-lg);
   /* Layered glass fill: a thin specular gloss line catching light at the top
    * edge (white, fading by ~9% height), over the Apple-Stocks top-glow — a
    * flat base tint (≈5-6% of --text-heading into --bg) lifting to a brighter
