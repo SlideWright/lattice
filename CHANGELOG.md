@@ -248,11 +248,15 @@ in patch versions.
   area-fade (lighter at the hub, vivid toward the rim), denser than radar's
   translucent overlay because wedges are opaque part-to-whole areas. Legend
   swatches become solid vivid chips matching the wedge identity. Quadrant
-  zone tints are dialled to a quieter, cleaner background wash
-  (0.08→0.28 → 0.04→0.18) so the field stays an unobtrusive backdrop while
-  the vivid dots carry the colour. All three share the same `--catN-hue`
-  source and hub→rim fade, so radar, pie, and quadrant read as one family
-  on both canvases. Pure render-path change (no token or authoring change).
+  zone fills now match the pie wedges exactly — the SAME opaque hub→rim mix
+  of `--catN-hue` with `--bg` (42% at the axis crossing → 82% at the outer
+  corners), replacing the former translucent wash, so the four zones read
+  as vivid as the pie. Because the quadrant carries dots and labels on top
+  of those fills (the pie's labels live in a side legend), the on-field
+  label halos and dot rings are thickened so they stay legible above the
+  saturated field. All three charts share the same `--catN-hue` source and
+  hub→rim fade, so radar, pie, and quadrant read as one family on both
+  canvases. Render-path + CSS only (no token or authoring change).
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing
