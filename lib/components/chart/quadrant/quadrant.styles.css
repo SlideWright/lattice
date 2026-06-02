@@ -52,6 +52,12 @@ section.quadrant {
   --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
   --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+  /* On-field labels sit on the vivid pie-matched zone fills, so they take
+   * maximum-contrast ink rather than the softened --text-heading: true black
+   * on the light canvas, true white on dark. light-dark() flips it off the
+   * same color-scheme that drives every other token, so dark decks get white
+   * labels automatically. */
+  --quadrant-label-ink: light-dark(black, white);
 }
 
 /* Categorical routing — reading-order cN, mapped onto the shared chart
@@ -163,14 +169,13 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
-/* Category colour rides the region tint + dots (cN); the label TEXT is the
- * standard mode ink (--text-heading), which already flips light/dark — no
- * --bg halo. cN-dark ink can't clear AA as text on its own tint, so text
- * never uses cell-ink. (A halo is the workaround for text on a busy/saturated
- * field; it reads as a visible outline on the vivid zones, so the standard
- * ink carries the labels on its own.) */
+/* Category colour rides the region tint + dots (cN); the label TEXT is
+ * maximum-contrast ink (--quadrant-label-ink: black on light / white on
+ * dark) — no --bg halo. cN-dark ink can't clear AA as text on its own tint,
+ * so text never uses cell-ink; and softened --text-heading reads a touch
+ * light on the vivid zones, so the labels take true black/white instead. */
 section.quadrant .quadrant-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -195,7 +200,7 @@ section.quadrant .quadrant-dot {
   stroke-width: 2;
 }
 section.quadrant .quadrant-dot-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
@@ -217,7 +222,7 @@ section.quadrant .quadrant-bubble-value {
   font-weight: 700;
 }
 section.quadrant .quadrant-bubble-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
@@ -258,7 +263,7 @@ section.quadrant .quadrant-hull-line {
   opacity: 0.65;
 }
 section.quadrant .quadrant-cohort-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
