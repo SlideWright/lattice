@@ -43,11 +43,11 @@ in patch versions.
   move onto `--state-pass-ink` / `--state-fail-ink` too. Theme-overridable via
   `--chart-state-*`. The old per-`.dark` status overrides collapse into single
   canvas-aware rules.
-- **Kanban cards are now swim-lane tiles.** Each card's background is a subtle
+- **Kanban cards are now swim-lane tiles.** Each card's background is a
   depth gradient of its own lane colour (same hue-into-bg language as the bars/
-  zones, dialed down for text), so a card softly reads as its lane. The lane
-  tag drops its chip fill and becomes a quiet dot + colour-coded label, leaving
-  the gradient status pill as the one loud chip on the card.
+  zones, in the same richness band so kanban no longer reads pale), so a card
+  reads as its lane. The lane tag drops its chip fill and becomes a quiet dot +
+  neutral label, leaving the gradient status pill as the one loud chip on the card.
 - **Status pills + gantt/progress bars share one depth-gradient recipe.** A
   status reads identically as a pill or a bar (hue-into-bg gradient, vivid ink
   border, `--text-heading` label).

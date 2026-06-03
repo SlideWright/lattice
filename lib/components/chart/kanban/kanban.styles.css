@@ -76,10 +76,10 @@ section.kanban.chart-frame .chart-body {
 .kanban-card {
   --lane: var(--lane-color, var(--cat1-ink));
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--lane) 9%, var(--bg)) 0%,
-    color-mix(in oklab, var(--lane) 18%, var(--bg)) 100%);
-  border: 1px solid color-mix(in oklab, var(--lane) 22%, var(--border));
-  border-left: 3px solid var(--lane-color, var(--border));
+    color-mix(in oklab, var(--lane) 20%, var(--bg)) 0%,
+    color-mix(in oklab, var(--lane) 38%, var(--bg)) 100%);
+  border: 1px solid color-mix(in oklab, var(--lane) 38%, var(--border));
+  border-left: 4px solid var(--lane-color, var(--border));
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
   display: flex;
@@ -143,7 +143,7 @@ section.kanban.chart-frame .chart-body {
   align-items: center;
   gap: 0.39cqi;
   background: none;
-  color: var(--lane-color, var(--accent));
+  color: var(--text-body);  /* neutral label — the dot + card carry the colour */
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 600;
