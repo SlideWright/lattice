@@ -117,7 +117,14 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  background: color-mix(in oklab, var(--accent) 55%, var(--bg-alt));
+  /* Default (unstatused) bar — calm info/blue. Same fill+ink language as pie
+   * wedges / quadrant zones, plus a subtle top sheen for the gradient style. */
+  --bar-fill: var(--state-info-fill);
+  --bar-ink:  var(--state-info-ink);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, white 9%, transparent) 0%, transparent 50%),
+    var(--bar-fill);
+  border: 1px solid color-mix(in oklab, var(--bar-ink) 42%, transparent);
   color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-meta);
@@ -131,59 +138,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status fills — tinted with the same formula as the default bar.
- * All use --text-heading (dark ink) inherited from .gantt-bar. */
+/* Status fills — each just re-points --bar-fill / --bar-ink at a semantic
+ * --state-* token; the base rule's gradient + border + text pick them up.
+ * Canvas-aware via light-dark(), so one rule per status serves both modes. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { background: color-mix(in oklab, var(--pass) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="live"]     { --bar-fill: var(--state-pass-fill); --bar-ink: var(--state-pass-ink); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { background: color-mix(in oklab, var(--warn) 70%, var(--bg-alt)); }
+.gantt-bar[data-s="warn"]     { --bar-fill: var(--state-warn-fill); --bar-ink: var(--state-warn-ink); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { background: color-mix(in oklab, var(--fail) 70%, var(--bg-alt)); }
-/* Deferred — muted grey fill; --text-body ink (more legible than --text-muted
- * on this surface while still conveying the "inactive" register). */
-.gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 35%, var(--bg-alt));
-  color: var(--text-body);
-}
-/* Pilot / decision — softer accent tint; accent ink matches the timeline-pill
- * and chart-eyebrow register. --accent-soft + --accent: 7.9:1 light, 8.6:1 dark. */
+.gantt-bar[data-s="fail"]     { --bar-fill: var(--state-fail-fill); --bar-ink: var(--state-fail-ink); }
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { background: var(--accent-soft); color: var(--accent); }
-
-/* Dark canvas — --bg-alt is dark navy so the tinted mixes resolve too dark.
- * Use the same lifted-pastel approach as section.progress.dark (40–45% on white)
- * with --bg-dark text. Default bar uses raw --accent (sky blue in dark) + --bg-dark. */
-section.gantt.dark .gantt-bar {
-  background: var(--accent);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="on-track"],
-section.gantt.dark .gantt-bar[data-s="done"],
-section.gantt.dark .gantt-bar[data-s="live"]     {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="at-risk"],
-section.gantt.dark .gantt-bar[data-s="warn"]     {
-  background: color-mix(in oklab, var(--warn) 45%, white);
-  color: var(--bg-dark);
-}
-section.gantt.dark .gantt-bar[data-s="blocked"],
-section.gantt.dark .gantt-bar[data-s="fail"]     {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-  color: var(--bg-dark);
-}
-/* Deferred dark: bg-alt (dark navy) with ghost text — intentionally recedes. */
-section.gantt.dark .gantt-bar[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 25%, var(--bg-alt));
-  color: var(--on-dark-secondary);
-}
-/* Pilot / decision dark: --accent-soft = #002847 dark, --accent = sky blue — handled
- * by light-dark() on those tokens; no explicit override needed. */
-
-/* Axis / lane structural tokens use light-dark() and need no dark overrides. */
-section.gantt.dark .gantt-lane-label { color: var(--text-heading); }
+.gantt-bar[data-s="decision"] { --bar-fill: var(--state-info-fill); --bar-ink: var(--state-info-ink); }
+.gantt-bar[data-s="deferred"] { --bar-fill: var(--state-mute-fill); --bar-ink: var(--state-mute-ink); color: var(--text-body); }
 
 
 

@@ -56,16 +56,16 @@ section.progress .progress-fill {
   border-radius: 7px 0 0 7px;
   transition: none;
 }
+/* Thin fills take the saturated --state-*-ink (canvas-aware: deep hue on
+ * light, bright pastel on dark), so one rule each — no `.dark` overrides. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { background: var(--pass); }
+section.progress .progress-fill[data-s="live"] { background: var(--state-pass-ink); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { background: var(--warn); }
+section.progress .progress-fill[data-s="warn"]   { background: var(--state-warn-ink); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { background: var(--fail); }
-section.progress .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt));
-}
+section.progress .progress-fill[data-s="fail"]   { background: var(--state-fail-ink); }
+section.progress .progress-fill[data-s="deferred"] { background: var(--state-mute-ink); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

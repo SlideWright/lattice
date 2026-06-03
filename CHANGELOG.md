@@ -27,6 +27,22 @@ in patch versions.
 
 ### Added
 
+- **Chart-family semantic colour system (`--state-*`).** Status-driven charts
+  — gantt bars, progress fills, the shared status pills, kanban's "done"
+  column, and the state-chart / timeline-list pills — now draw from a
+  chart-exclusive semantic palette (`--state-{pass,warn,fail,info,mute}-{hue,
+  fill,ink}`) instead of the engine-wide `--pass/--warn/--fail`. Curated to
+  convey meaning (green / amber / red / blue / gray) and built like the catN
+  spectrum: canvas-aware fill + ink via `light-dark()`, vivid on both modes,
+  with dark fills deepened toward black so amber-on-navy doesn't muddy. Gantt
+  bars gain a subtle gradient sheen + ink border, matching the pie/quadrant
+  fill language. Theme-overridable via `--chart-state-*`. The old per-`.dark`
+  status overrides collapse into single canvas-aware rules.
+- **Kanban lanes + word-cloud now ride the vivid catN spectrum.** Both moved
+  off the engine `--cN` palette onto `--catN-ink`, so categorical colour reads
+  consistently with pie / quadrant / radar across the whole chart family.
+  (catN tokens are now also defined on `section.word-cloud`, which isn't a
+  chart-frame member.)
 - **New `canvas` modifier — opt into the chart surface panel.** Charts now sit
   directly on the slide by **default** (bare); add `canvas` to lift the chart
   onto its surface panel (`<!-- _class: piechart canvas -->`). Lets a deck mix

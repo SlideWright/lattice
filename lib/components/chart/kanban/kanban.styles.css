@@ -56,8 +56,8 @@ section.kanban.chart-frame .chart-body {
 
 /* "Done" column: header turns pass-green, cards dim to signal completion */
 .kanban-column[data-done] .kanban-column-header {
-  color: var(--pass);
-  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+  color: var(--state-pass-ink);
+  border-bottom-color: color-mix(in oklab, var(--state-pass-ink) 40%, transparent);
 }
 .kanban-column[data-done] .kanban-card { opacity: 0.52; }
 
@@ -167,11 +167,8 @@ section.kanban.chart-frame .chart-body {
 }
 
 /* Dark canvas — --text-label uses light-dark() so column headers adapt
- * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
- * explicit because --pass doesn't use light-dark(). */
-section.kanban.dark .kanban-column[data-done] .kanban-column-header {
-  color: color-mix(in oklab, var(--pass) 35%, white);
-}
+ * automatically (#A0B8D0 on dark, 6.95:1 AA). The done-column colour now
+ * rides --state-pass-ink (canvas-aware), so no explicit dark override. */
 section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }
