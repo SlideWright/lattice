@@ -30,6 +30,34 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ---
 
+## Charts
+
+### Pie wedge borders off-by-one (`nth-child` vs `<defs>`)
+
+- **Symptom:** A pie wedge's border doesn't match its fill — most
+  visibly, the small teal slice rendered a rose/red border, drawing a
+  stray red line at the 12-o'clock seam. Every wedge border was actually
+  one slot ahead of its fill (blue wedge → orange border, etc.).
+- **Cause:** The piechart SVG is `<svg><defs>…gradients…</defs><path
+  class="wedge"/>…</svg>`. The `<defs>` block is the SVG's **first
+  child**, so the wedge paths are children 2…N+1. Wedge fills are set
+  inline per slice (correct), but wedge *borders* were assigned by
+  `.wedge:nth-child(6n+k)` — and `nth-child` counts `<defs>` as #1, so
+  every wedge picked up the *next* slot's `--catN-ink`. The 5th wedge
+  landed on `nth-child(6)` → `--cat6` (rose).
+- **Mitigation:** Wedge borders count by `nth-of-type` instead, which
+  considers only `<path>` siblings and ignores `<defs>`
+  (`lib/components/chart/piechart/piechart.styles.css`). Legend swatches
+  keep `nth-child` — their flex container has no leading non-swatch
+  sibling.
+- **Triggered by:** Any piechart render (the `<defs>` is always emitted
+  for the per-wedge radial gradients).
+- **Removable when:** Never, while the gradients live in an in-SVG
+  `<defs>`. (Moving wedges into a `<g>` wrapper would also fix it.)
+- **Commits:** the per-color-mode audit fix.
+
+---
+
 ## Marp / Marpit
 
 ### Marp Preview emits `<marp-pre>`, marp-cli emits `<pre is="marp-pre">`

@@ -67,18 +67,25 @@ section.piechart .piechart-legend .legend-pct {
  * swatch border). Pale fill + deep border on light, deep fill + pale border
  * on dark; fill and border always the same hue. Six is the cap for
  * perceptual distinction (Wong 2011, Cleveland-McGill, IBM Carbon);
- * pies that need >6 categories should consolidate "Other" or split. */
-section.piechart .wedge:nth-child(6n+1),
+ * pies that need >6 categories should consolidate "Other" or split.
+ *
+ * Wedges count by nth-of-TYPE, not nth-child: the SVG's first child is the
+ * <defs> block (gradient definitions), which would offset nth-child by one and
+ * shift every wedge's border to the NEXT slot's hue (the teal wedge picking up
+ * --cat6 rose was the visible tell). nth-of-type(<path>) ignores <defs>. The
+ * legend swatches keep nth-child — their container has no such leading sibling.
+ * See engineering/gotchas.md "Pie wedge borders off-by-one". */
+section.piechart .wedge:nth-of-type(6n+1),
 section.piechart .legend-swatch:nth-child(6n+1) { fill: var(--cat1-fill); stroke: var(--cat1-ink); background: var(--cat1-fill); border: 1px solid var(--cat1-ink); }
-section.piechart .wedge:nth-child(6n+2),
+section.piechart .wedge:nth-of-type(6n+2),
 section.piechart .legend-swatch:nth-child(6n+2) { fill: var(--cat2-fill); stroke: var(--cat2-ink); background: var(--cat2-fill); border: 1px solid var(--cat2-ink); }
-section.piechart .wedge:nth-child(6n+3),
+section.piechart .wedge:nth-of-type(6n+3),
 section.piechart .legend-swatch:nth-child(6n+3) { fill: var(--cat3-fill); stroke: var(--cat3-ink); background: var(--cat3-fill); border: 1px solid var(--cat3-ink); }
-section.piechart .wedge:nth-child(6n+4),
+section.piechart .wedge:nth-of-type(6n+4),
 section.piechart .legend-swatch:nth-child(6n+4) { fill: var(--cat4-fill); stroke: var(--cat4-ink); background: var(--cat4-fill); border: 1px solid var(--cat4-ink); }
-section.piechart .wedge:nth-child(6n+5),
+section.piechart .wedge:nth-of-type(6n+5),
 section.piechart .legend-swatch:nth-child(6n+5) { fill: var(--cat5-fill); stroke: var(--cat5-ink); background: var(--cat5-fill); border: 1px solid var(--cat5-ink); }
-section.piechart .wedge:nth-child(6n),
+section.piechart .wedge:nth-of-type(6n),
 section.piechart .legend-swatch:nth-child(6n)   { fill: var(--cat6-fill); stroke: var(--cat6-ink); background: var(--cat6-fill); border: 1px solid var(--cat6-ink); }
 
 /* The legend swatch has its own row indexing using li order. */

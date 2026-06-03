@@ -25,6 +25,15 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Pie wedge borders were off-by-one from their fills.** The piechart SVG
+  emits `<defs>` (per-wedge gradients) as its first child, so the
+  `nth-child`-based border palette counted from the wrong slot — every wedge's
+  border took the *next* hue, and the 5th wedge landed on `--cat6` rose,
+  painting a stray red line at the 12-o'clock seam. Wedge borders now count by
+  `nth-of-type` (paths only). See `engineering/gotchas.md`.
+
 ### Added
 
 - **Chart-family semantic colour system (`--state-*`).** Status-driven charts
