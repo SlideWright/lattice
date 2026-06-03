@@ -27,6 +27,12 @@ in patch versions.
 
 ### Added
 
+- **New `flat` modifier — drop the chart canvas.** `flat` is a chart-scoped
+  modifier that removes the surface panel (no fill, border, shadow, or float
+  margin) so the chart sits directly on the slide instead of on a lifted pane.
+  Lets a deck mix canvas and non-canvas charts per slide
+  (`<!-- _class: piechart flat -->`); composes with `dark`. Pure CSS on
+  `section.chart-frame.flat .chart-body`.
 - **New `cover` modifier — a chart-family full-bleed with a caption band.**
   `cover` is a **chart-scoped** modifier (registered as a `cover` variant on the
   charts that support it — radar, piechart — *not* an all-layout universal). It

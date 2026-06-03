@@ -289,6 +289,19 @@ section.chart-frame:not(.state-chart) .chart-body {
     inset 0 1px 0 color-mix(in oklab, white 30%, transparent);
 }
 
+/* `flat` modifier — drop the canvas. The chart sits directly on the slide with
+ * no surface panel (no fill, border, shadow, or float margin). Opt-in
+ * comparison/authoring choice for decks that want the chart to read as part of
+ * the slide rather than on a lifted pane. Same specificity as the panel rule,
+ * declared after it, so it wins. */
+section.chart-frame.flat .chart-body {
+  margin-top: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 section.chart-frame .chart-caption {
   flex: 0 0 auto;
   box-sizing: border-box;
