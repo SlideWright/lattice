@@ -15,18 +15,17 @@ Native state machine diagram — states as a numbered list, transitions as neste
 
 ---
 
-<!-- _class: state-chart -->
+<!-- _class: state-chart lr -->
 <!-- _footer: "Default · state-chart" -->
 
 `Submission lifecycle`
 
 ## Document approval flow.
 
-How a draft moves from author to archive.
+How a draft moves from author to publication.
 
 1. Draft `start`
    - `submit => 2`
-   - `discard => 6`
 2. Submitted `on-track`
    - `review => 3`
 3. In Review
@@ -35,9 +34,7 @@ How a draft moves from author to archive.
    - `revise => self`
 4. Approved `done`
    - `publish => 5`
-5. Published `live`
-   - `archive => 6`
-6. Archived `end`
+5. Published `end`
 
 *Rejected drafts return to the author; revisions stay in review.*
 
@@ -124,18 +121,17 @@ How a draft moves from author to archive.
 
 ---
 
-<!-- _class: state-chart dark -->
+<!-- _class: state-chart lr dark -->
 <!-- _footer: "Composition: dark · state-chart dark" -->
 
 `Submission lifecycle`
 
 ## Document approval flow.
 
-How a draft moves from author to archive.
+How a draft moves from author to publication.
 
 1. Draft `start`
    - `submit => 2`
-   - `discard => 6`
 2. Submitted `on-track`
    - `review => 3`
 3. In Review
@@ -144,27 +140,24 @@ How a draft moves from author to archive.
    - `revise => self`
 4. Approved `done`
    - `publish => 5`
-5. Published `live`
-   - `archive => 6`
-6. Archived `end`
+5. Published `end`
 
 *Rejected drafts return to the author; revisions stay in review.*
 
 
 ---
 
-<!-- _class: state-chart compact -->
+<!-- _class: state-chart lr compact -->
 <!-- _footer: "Composition: compact · state-chart compact" -->
 
 `Submission lifecycle`
 
 ## Document approval flow.
 
-How a draft moves from author to archive.
+How a draft moves from author to publication.
 
 1. Draft `start`
    - `submit => 2`
-   - `discard => 6`
 2. Submitted `on-track`
    - `review => 3`
 3. In Review
@@ -173,27 +166,24 @@ How a draft moves from author to archive.
    - `revise => self`
 4. Approved `done`
    - `publish => 5`
-5. Published `live`
-   - `archive => 6`
-6. Archived `end`
+5. Published `end`
 
 *Rejected drafts return to the author; revisions stay in review.*
 
 
 ---
 
-<!-- _class: state-chart accent -->
+<!-- _class: state-chart lr accent -->
 <!-- _footer: "Composition: accent · state-chart accent" -->
 
 `Submission lifecycle`
 
 ## Document approval flow.
 
-How a draft moves from author to archive.
+How a draft moves from author to publication.
 
 1. Draft `start`
    - `submit => 2`
-   - `discard => 6`
 2. Submitted `on-track`
    - `review => 3`
 3. In Review
@@ -202,9 +192,7 @@ How a draft moves from author to archive.
    - `revise => self`
 4. Approved `done`
    - `publish => 5`
-5. Published `live`
-   - `archive => 6`
-6. Archived `end`
+5. Published `end`
 
 *Rejected drafts return to the author; revisions stay in review.*
 

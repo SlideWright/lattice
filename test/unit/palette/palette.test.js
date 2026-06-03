@@ -3,7 +3,7 @@
  *
  * Every palette must define the categorical cycle (--cN-light/--cN-dark
  * for N=1..12) and the structural diagram tokens (stroke, line, state,
- * note, error, quadrant) consumed by the renderer bridges and the
+ * note, error) consumed by the renderer bridges and the
  * palette-blind overrides in lattice-diagram.css.
  *
  * test/unit/mermaid-var-map.test.js cross-checks the emulator's
@@ -37,12 +37,8 @@ describe('palette', () => {
     // warm accent)
     'c-stroke', 'c-line', 'c-accent-warm',
 
-    // Quadrant (4-slot, fill + text paired — theme-defined slot mapping
-    // onto --cN-light)
-    'c-quadrant-1-fill', 'c-quadrant-2-fill',
-    'c-quadrant-3-fill', 'c-quadrant-4-fill',
-    'c-quadrant-1-text', 'c-quadrant-2-text',
-    'c-quadrant-3-text', 'c-quadrant-4-text',
+    // (Quadrant charts — native + Mermaid — now read the cN categorical
+    // palette directly; the former --c-quadrant-* slot tokens are retired.)
 
     // Universal semantic palette (status-signaling — defaults in lattice.css,
     // themes override as needed)

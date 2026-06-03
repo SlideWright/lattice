@@ -329,6 +329,12 @@ same layout structure works on either canvas. The dark bookend layouts
 <!-- _class: content dark -->
 ```
 
+> **Not universal:** `cover` (the chart full-bleed-with-caption modifier)
+> is **not** a universal variant — it is scoped to the chart family,
+> registered as a `cover` variant on the charts that support it (radar,
+> piechart). See those components' docs. Don't confuse it with image's
+> own **`full`** photo variant.
+
 ### `mirror`
 
 Flips the asymmetric half of a layout left/right. Applies only where

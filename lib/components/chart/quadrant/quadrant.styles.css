@@ -37,47 +37,46 @@
 
 /* Palette routing — two contexts, one custom-property pair:
  *
- *   --cell-fill   pale L≈85 background tint (region rect, hull, bubble)
- *   --cell-ink    deep AA-paired ink (dot, label, stroke, text)
+ *   --cell-fill   pale -light background tint (region rect, hull, bubble)
+ *   --cell-ink    deep -dark AA-paired ink (dot, label, stroke, text)
  *
- * Positional variants (default/bubble/trail/threshold/magic) pull the
- * theme's `--c-quadrant-N-fill` / `--c-quadrant-N-text` aliases — these
- * are hue-tuned per the theme's boardroom semantics (e.g. brand blue
- * in the top-right "strategic" zone). My kernel uses reading-order
- * indices (cell 0=TL, 1=TR, 2=BL, 3=BR) while the theme's aliases use
- * Mermaid math convention (Q1=TR, Q2=TL, Q3=BL, Q4=BR) — the mapping
- * below translates.
- *
- * Cohort variant cycles c1…c4 instead: cohort groups have no semantic
- * quadrant position, so a vanilla categorical sequence is correct.
- *
- * Themes can override either set without touching the kernel. */
+ * Every variant draws straight from the curated categorical palette in
+ * reading order — cell 0=TL→c1, 1=TR→c2, 2=BL→c3, 3=BR→c4 — exactly like
+ * the other chart-family members (piechart, radar) cycle cN. There is no
+ * per-quadrant semantic hue routing and no `--c-quadrant-*` alias layer:
+ * the four corners are categories, coloured c1…c4, fill paired with ink
+ * from the same slot (`--cN-light` / `--cN-dark`). Cohort inherits the
+ * same `[data-cell]` routing — its groups are categories too. Themes tune
+ * the look by tuning cN, not a quadrant-only token set. */
 section.quadrant {
   --quadrant-frame:   color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-split:   color-mix(in srgb, var(--text-muted) 28%, transparent);
   --quadrant-target:  color-mix(in srgb, var(--text-muted) 78%, transparent);
+  /* On-field labels sit on the vivid pie-matched zone fills, so they take
+   * maximum-contrast ink rather than the softened --text-heading: true black
+   * on the light canvas, true white on dark. light-dark() flips it off the
+   * same color-scheme that drives every other token, so dark decks get white
+   * labels automatically. */
+  --quadrant-label-ink: light-dark(black, white);
 }
 
-/* Default routing — positional quadrant tokens (reading-order → Mermaid Q). */
-section.quadrant [data-cell="0"] { --cell-fill: var(--c-quadrant-2-fill); --cell-ink: var(--c-quadrant-2-text); }
-section.quadrant [data-cell="1"] { --cell-fill: var(--c-quadrant-1-fill); --cell-ink: var(--c-quadrant-1-text); }
-section.quadrant [data-cell="2"] { --cell-fill: var(--c-quadrant-3-fill); --cell-ink: var(--c-quadrant-3-text); }
-section.quadrant [data-cell="3"] { --cell-fill: var(--c-quadrant-4-fill); --cell-ink: var(--c-quadrant-4-text); }
-
-/* Cohort override — sequential c1…c4 brand slots, AA-paired per slot. */
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="0"] { --cell-fill: var(--c1-light); --cell-ink: var(--c1-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="1"] { --cell-fill: var(--c2-light); --cell-ink: var(--c2-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="2"] { --cell-fill: var(--c3-light); --cell-ink: var(--c3-dark); }
-section.quadrant .quadrant-figure[data-variant="cohort"] [data-cell="3"] { --cell-fill: var(--c4-light); --cell-ink: var(--c4-dark); }
+/* Categorical routing — reading-order cN, mapped onto the shared chart
+ * category model (fill = --catN-fill, ink/border = --catN-ink). That model
+ * lives in _chart-family.css and guarantees fill + border share a hue and
+ * flip with the canvas (pale fill / deep border on light, deep fill / pale
+ * border on dark). The quadrant just assigns slots 1-4 in reading order. */
+section.quadrant [data-cell="0"] { --cell-fill: var(--cat1-fill); --cell-ink: var(--cat1-ink); }
+section.quadrant [data-cell="1"] { --cell-fill: var(--cat2-fill); --cell-ink: var(--cat2-ink); }
+section.quadrant [data-cell="2"] { --cell-fill: var(--cat3-fill); --cell-ink: var(--cat3-ink); }
+section.quadrant [data-cell="3"] { --cell-fill: var(--cat4-fill); --cell-ink: var(--cat4-ink); }
 
 /* quadrant is a chart-family member — section layout, header/body/caption
  * skeleton and h2 styling all come from section.chart-frame. The figure
  * just slots into .chart-body as a centred flex row of svg (+ optional
  * legend, for the cohort variant). */
-section.quadrant.chart-frame .chart-body {
-  width: 100%;
-  padding: var(--sp-md) var(--sp-2xl);
-}
+/* .chart-body inherits the shared width + padding (sp-lg / sp-2xl) so the
+ * surface panel matches every other chart's size and inset — no
+ * quadrant-specific override. */
 
 /* Title area: drop the lucent gradient strip and use the .minimal
  * treatment instead — a centred header with a short accent hairline.
@@ -104,19 +103,23 @@ section.quadrant .quadrant-figure {
   justify-content: center;
   gap: var(--sp-xl);
   width: 100%;
+  /* Fill the canvas so the SVG scales to the height the slide grants —
+   * responsive: shrinks under a below-note/blockquote, grows under `full`. */
+  height: 100%;
+  min-height: 0;
 }
 
 section.quadrant .quadrant-svg {
-  /* Fixed pixel dimensions, matching radar's vertical extent (360 tall).
-   * chart-body's available height is ~440px and inherits overflow:hidden
-   * from the shared chart-frame rule; sizing at radar's height means the
-   * SVG fits with the same breathing-room above and below that other
-   * chart-family slides have. An earlier 540×412 SVG still clipped
-   * descenders on the x-axis name. Width follows the 420:320 viewBox
-   * aspect (= 472 wide). */
-  width: 472px;
-  height: 360px;
-  flex: 0 0 auto;
+  /* Responsive: scale to the figure's height, keeping the 420:320 viewBox
+   * aspect (= 1.3125). max-height caps it at the proven 360px footprint at
+   * standard size; below that the chart shrinks rather than clipping. The
+   * viewBox + aspect-ratio do the scaling math; overflow:visible lets the
+   * axis-name descenders paint outside the 320-unit box. */
+  height: 100%;
+  max-height: 360px;
+  width: auto;
+  aspect-ratio: 420 / 320;
+  flex: 0 1 auto;
   overflow: visible;
 }
 
@@ -166,8 +169,13 @@ section.quadrant .quadrant-tick {
 }
 
 /* ── Quadrant corner labels ───────────────────────────────────────────── */
+/* Category colour rides the region tint + dots (cN); the label TEXT is
+ * maximum-contrast ink (--quadrant-label-ink: black on light / white on
+ * dark) — no --bg halo. cN-dark ink can't clear AA as text on its own tint,
+ * so text never uses cell-ink; and softened --text-heading reads a touch
+ * light on the vivid zones, so the labels take true black/white instead. */
 section.quadrant .quadrant-label {
-  fill: var(--cell-ink);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -189,17 +197,13 @@ section.quadrant .quadrant-label--zone {
 section.quadrant .quadrant-dot {
   fill: var(--cell-ink);
   stroke: var(--bg);
-  stroke-width: 1.5;
+  stroke-width: 2;
 }
 section.quadrant .quadrant-dot-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
 }
 
 /* ── Bubble variant: √-area bubble + smart label position ─────────────── */
@@ -208,27 +212,20 @@ section.quadrant .quadrant-bubble {
   stroke: var(--cell-ink);
   stroke-width: 1.5;
 }
+/* Value text is neutral heading ink — high-contrast both inside the pale
+ * cN-light bubble fill and above it on the canvas (cN-dark would not clear
+ * AA on its own same-hue tint). */
 section.quadrant .quadrant-bubble-value {
+  fill: var(--text-heading);
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 700;
 }
-/* Inside a pale bubble fill, dark ink is the AA pairing. */
-section.quadrant .quadrant-bubble-value[data-pos="inside"] {
-  fill: var(--cell-ink);
-}
-section.quadrant .quadrant-bubble-value[data-pos="above"] {
-  fill: var(--cell-ink);
-}
 section.quadrant .quadrant-bubble-label {
-  fill: var(--text-heading);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 8.5px;
   font-weight: 500;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 2.5;
-  stroke-linejoin: round;
 }
 
 /* ── Trail variant: faded before + dashed connector + solid after ─────── */
@@ -266,16 +263,12 @@ section.quadrant .quadrant-hull-line {
   opacity: 0.65;
 }
 section.quadrant .quadrant-cohort-label {
-  fill: var(--cell-ink);
+  fill: var(--quadrant-label-ink);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 3;
-  stroke-linejoin: round;
 }
 section.quadrant .quadrant-figure[data-variant="cohort"] {
   gap: var(--sp-lg);
@@ -339,5 +332,3 @@ section.quadrant.dark {
   --quadrant-split:  color-mix(in srgb, var(--text-muted) 42%, transparent);
   --quadrant-target: color-mix(in srgb, var(--text-muted) 88%, transparent);
 }
-
-

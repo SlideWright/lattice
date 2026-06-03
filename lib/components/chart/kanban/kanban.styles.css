@@ -10,8 +10,10 @@
  * via --lane-color inherited from the card's own style attribute. */
 
 section.kanban.chart-frame .chart-body {
-  width: 100%;
-  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  /* Inherit the base width (calc(100cqi - 2*sp-2xl), centered) and padding
+   * (sp-lg / sp-2xl) so the surface panel matches every other chart — the old
+   * width:100% pushed it full-bleed (no side margin) and the sp-xs bottom let
+   * the cards touch the hairline. Columns still stretch + top-align. */
   align-items: stretch;
   justify-content: flex-start;
 }
@@ -45,7 +47,7 @@ section.kanban.chart-frame .chart-body {
   text-transform: uppercase;
   color: var(--text-label);
   padding: 0 var(--sp-xs) 0.78125cqi;
-  border-bottom: 2px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  border-bottom: 2px solid var(--chart-rule);
   margin-bottom: var(--sp-sm);
   white-space: nowrap;
   overflow: hidden;
@@ -54,8 +56,8 @@ section.kanban.chart-frame .chart-body {
 
 /* "Done" column: header turns pass-green, cards dim to signal completion */
 .kanban-column[data-done] .kanban-column-header {
-  color: var(--pass);
-  border-bottom-color: color-mix(in oklab, var(--pass) 40%, transparent);
+  color: var(--state-pass-ink);
+  border-bottom-color: color-mix(in oklab, var(--state-pass-ink) 40%, transparent);
 }
 .kanban-column[data-done] .kanban-card { opacity: 0.52; }
 
@@ -66,14 +68,18 @@ section.kanban.chart-frame .chart-body {
   overflow: hidden;
 }
 
-/* Card — bg-alt panel with 3px left stripe coloured by --lane-color.
- * --c-subcontainer is a theme hook for containment-aware themes (e.g.
- * indaco) that define a dedicated card surface token. Falls back to
- * --bg-alt so all other themes are unaffected. */
+/* Card — a SWIM-LANE tile: the background is a subtle depth gradient of the
+ * card's own lane colour (same hue-into-bg language as the bars/zones, just
+ * dialed way down since the card carries text), so each card softly reads as
+ * its lane. The 3px left stripe stays as the strong lane marker; --text-heading
+ * titles still clear the pale tint. Falls back to --bg-alt when no lane. */
 .kanban-card {
-  background: var(--c-subcontainer, var(--bg-alt));
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--lane-color, var(--border));
+  --lane: var(--lane-color, var(--cat1-ink));
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--lane) 20%, var(--bg)) 0%,
+    color-mix(in oklab, var(--lane) 38%, var(--bg)) 100%);
+  border: 1px solid color-mix(in oklab, var(--lane) 38%, var(--border));
+  border-left: 4px solid var(--lane-color, var(--border));
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
   display: flex;
@@ -128,19 +134,29 @@ section.kanban.chart-frame .chart-body {
 }
 
 /* Lane tag — small pill tinted with the lane colour */
+/* Lane tag — demoted to a quiet colour-coded LABEL (no chip fill): the card
+ * background + left stripe already carry the lane colour, so the tag only needs
+ * to name it. Keeping it fill-less leaves the gradient status pill as the one
+ * loud chip on the card. A small leading dot anchors the colour. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
-  height: 1.5625cqi;
-  padding: 0 0.546875cqi;
-  border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
-  color: var(--lane-color, var(--accent));
+  gap: 0.39cqi;
+  background: none;
+  color: var(--text-body);  /* neutral label — the dot + card carry the colour */
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  flex: 0 0 auto;
+}
+.kanban-lane::before {
+  content: '';
+  width: 0.55cqi;
+  height: 0.55cqi;
+  border-radius: 50%;
+  background: var(--lane-color, var(--accent));
   flex: 0 0 auto;
 }
 
@@ -165,11 +181,8 @@ section.kanban.chart-frame .chart-body {
 }
 
 /* Dark canvas — --text-label uses light-dark() so column headers adapt
- * automatically (#A0B8D0 on dark, 6.95:1 AA). Done column override stays
- * explicit because --pass doesn't use light-dark(). */
-section.kanban.dark .kanban-column[data-done] .kanban-column-header {
-  color: color-mix(in oklab, var(--pass) 35%, white);
-}
+ * automatically (#A0B8D0 on dark, 6.95:1 AA). The done-column colour now
+ * rides --state-pass-ink (canvas-aware), so no explicit dark override. */
 section.kanban.dark .kanban-size {
   background: color-mix(in oklab, var(--bg-alt) 60%, var(--border));
 }

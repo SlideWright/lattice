@@ -91,10 +91,6 @@ The engine reads the file once. Authors edit one file.
 │     --c-line                ─ edges, arrows (light-dark)         │
 │     --c-accent-warm         ─ secondary warm accent (radar etc.) │
 │                                                                  │
-│   /* quadrant slot mapping */                                    │
-│     --c-quadrant-1..4-fill  ─ aliases onto --cN-light slots      │
-│     --c-quadrant-1..4-text  ─ paired text colour                 │
-│                                                                  │
 │   /* optional universal-semantic overrides */                    │
 │     --c-warm-{light,dark}   ─ inherit lattice.css defaults if    │
 │     --c-cool-{light,dark}     omitted (most themes do); override │
@@ -226,17 +222,12 @@ What to change, in order of impact:
    The saturated brand stroke (reads on every pale fill including
    white), the edge/arrow line, and a secondary warm accent for
    radar's second curve and similar.
-5. **Quadrant slot mapping** (`--c-quadrant-1..4-fill` / `-text`). Each
-   theme picks which `--cN-light` slot maps to each quadrant — indaco
-   uses Q1→c1, Q2→c2, Q3→c7 (yellow = "hold"), Q4→c3, but a theme can
-   re-map the semantics if its palette puts e.g. yellow in a different
-   slot.
-6. **Universal semantic palette** (`--c-warm-light` / `--c-warm-dark`
+5. **Universal semantic palette** (`--c-warm-light` / `--c-warm-dark`
    / `--c-cool-light` / `--c-cool-dark` / `--c-alarm` / `--c-alarm-dark`
    / `--c-mark` / `--c-note`). The deck's status-signaling colours.
    Inherit lattice.css defaults (cuoio is the one theme that overrides
    for its leather aesthetic).
-7. **Dark variant tokens** (`--dark-*`). Used by `section.dark` and by
+6. **Dark variant tokens** (`--dark-*`). Used by `section.dark` and by
    the dark sides of every `light-dark(…)` pair.
 
 You can ignore everything else on a first pass. The DIAGRAM OVERRIDES

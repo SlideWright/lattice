@@ -42,6 +42,11 @@ section.no-paginate::after {
   content: none !important;
 }
 
+/* `cover` is NOT a universal modifier — it is scoped to the chart family.
+ * Its full treatment lives in chart-family.css (`section.chart-frame.cover`),
+ * registered as a `cover` variant on the charts that support it (radar,
+ * piechart). There is deliberately no `section.cover` here. */
+
 /* ── TONE ── canvas-level reuse of the state-token color system ─────── */
 
 /* Each tone draws a vertical accent rail on the slide's left edge,

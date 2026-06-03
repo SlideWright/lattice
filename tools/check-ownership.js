@@ -99,6 +99,7 @@ const VARIANT_DECL_IGNORE = new Map([
   ['kpi', new Set(['briefing'])],            // bare default appearance, documented as such
   ['image', new Set(['left'])],              // legacy alias of `mirror` (base.modifiers.css)
   ['state-chart', new Set(['horizontal'])],  // documented back-compat alias of `lr inline`
+  ['word-cloud', new Set(['canvas'])],        // chart-family-wide surface modifier, not a word-cloud-specific variant
 ]);
 
 // Class tokens that may appear chained onto a component's root element

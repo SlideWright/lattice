@@ -25,8 +25,117 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Pie wedge borders were off-by-one from their fills.** The piechart SVG
+  emits `<defs>` (per-wedge gradients) as its first child, so the
+  `nth-child`-based border palette counted from the wrong slot — every wedge's
+  border took the *next* hue, and the 5th wedge landed on `--cat6` rose,
+  painting a stray red line at the 12-o'clock seam. Wedge borders now count by
+  `nth-of-type` (paths only). See `engineering/gotchas.md`.
+
 ### Added
 
+- **Chart-family semantic colour system (`--state-*`).** Status-driven charts
+  — gantt bars, progress fills, the shared status pills, kanban's "done"
+  column, and the state-chart / timeline-list pills — now draw from a
+  chart-exclusive semantic palette (`--state-{pass,warn,fail,info,mute}-{hue,
+  fill,ink}`) instead of the engine-wide `--pass/--warn/--fail`. Curated to
+  convey meaning (green / amber / red / blue / gray) and built like the catN
+  spectrum: canvas-aware fill + ink via `light-dark()`, vivid on both modes.
+  Gantt + progress bars fill with the same **hue-into-`bg` depth gradient** the
+  pie / quadrant / radar SVG charts use (those read rich precisely because they
+  gradient-fill ~42–82%, not a flat 24% tint — which is why the bars used to
+  look muted). The gradient is capped where the shared `--text-heading` label
+  still reads, so on-bar text flips the normal way (dark on light, light on
+  dark), coherent with every chart in each mode. Radar's gap / delta segments
+  move onto `--state-pass-ink` / `--state-fail-ink` too. Theme-overridable via
+  `--chart-state-*`. The old per-`.dark` status overrides collapse into single
+  canvas-aware rules.
+- **Kanban cards are now swim-lane tiles.** Each card's background is a
+  depth gradient of its own lane colour (same hue-into-bg language as the bars/
+  zones, in the same richness band so kanban no longer reads pale), so a card
+  reads as its lane. The lane tag drops its chip fill and becomes a quiet dot +
+  neutral label, leaving the gradient status pill as the one loud chip on the card.
+- **Status pills + gantt/progress bars share one depth-gradient recipe.** A
+  status reads identically as a pill or a bar (hue-into-bg gradient, vivid ink
+  border, `--text-heading` label).
+- **Kanban lanes + word-cloud now ride the vivid catN spectrum.** Both moved
+  off the engine `--cN` palette onto `--catN-ink`, so categorical colour reads
+  consistently with pie / quadrant / radar across the whole chart family.
+  (catN tokens are now also defined on `section.word-cloud`, which isn't a
+  chart-frame member.)
+- **New `canvas` modifier — opt into the chart surface panel.** Charts now sit
+  directly on the slide by **default** (bare); add `canvas` to lift the chart
+  onto its surface panel (`<!-- _class: piechart canvas -->`). Lets a deck mix
+  canvas and non-canvas charts per slide; composes with `dark`. Pure CSS on
+  `section.chart-frame.canvas:not(.state-chart) .chart-body` (and
+  `section.word-cloud.canvas` for the free-floating word-cloud).
+- **New `cover` modifier — a chart-family full-bleed with a caption band.**
+  `cover` is a **chart-scoped** modifier (registered as a `cover` variant on the
+  charts that support it — radar, piechart — *not* an all-layout universal). It
+  takes the chart edge-to-edge, hides the header/footer, and reflows the slide
+  heading + a one-line takeaway into a bottom **caption band** carrying the chart
+  surface "sheen" (a `--text-heading`→`--bg` radial wash with a hairline edge),
+  the page number reading through it. The generic treatment lives in
+  `section.chart-frame.cover` (chart-family.css); per-chart rules tune the figure
+  (radar centres the diagram + keeps a responsive legend column). Other
+  chart-frame members can opt in as they're given an explicit cover figure size.
+  Distinct from image's `full` photo variant (unchanged — see below). Documented
+  via the radar/piechart `variantDocs`. Pure CSS — no transform/render-path
+  change.
+- **Chart surface panels — opt-in `canvas`, real glass not a tinted box.**
+  Charts are **bare by default** (sit directly on the slide); the `canvas`
+  modifier lifts a framed chart-family member onto a glass surface at
+  editorial-whisper intensity. The fill is **never** a `--text-heading` mix:
+  that token is a
+  neutral gray, so mixing it into `--bg` painted a muddy gray box that read as
+  a second background on the slide, not glass. Instead the pane tints toward
+  white-frost and the form is carried by light on the edges + a shadow: on a
+  LIGHT slide the pane is left **clear** (the slide shows straight through —
+  no second background — read from a soft dark float shadow + a crisp hairline
+  edge + a white top rim), and on a DARK slide it's a translucent **white
+  frost veil** (lighter than the canvas) with a luminous edge. `light-dark()`
+  picks the right one. Pure CSS on
+  `section.chart-frame.canvas:not(.state-chart) .chart-body`. The float shadow is
+  always black-based — `--text-heading` flips to white on dark and would cast
+  a white glow / double-frame that bleeds over the footer. No `backdrop-filter` blur — unreliable in
+  print-to-PDF and there's only flat `--bg` behind the pane, so it would cost
+  risk for no payoff. The decoration is pinned to `.chart-body` — the one
+  fixed-width container every member shares — so the panel is the **same size
+  on every chart** rather than hugging each figure. Covers radar, quadrant,
+  piechart, progress, gantt, kanban, and timeline-list. **word-cloud** gets the
+  same surface via a `::before` painted behind its free-positioned words (it
+  isn't a chart-frame member, so the family rule can't reach it). **state-chart
+  is excluded** — its state flow fills the full chart-body height, leaving no
+  room for a panel inset. The panel also takes a top margin so the
+  `.chart-header::after` accent divider floats in the whitespace above the card
+  instead of colliding with the lifted card's top edge.
+- **state-chart gallery defaults to `lr`.** The default / dark / compact /
+  accent demos now render left-to-right at five states (was a six-state
+  top-to-bottom flow that overran the slide). The `lr` direction reads the
+  machine as a horizontal pipeline and fits comfortably; the gallery and the
+  manifest `sample` (which drives the chart bucket survey) are updated to
+  match. No engine change — `lr` was already a supported modifier.
+- **Apple-inspired categorical chart spectrum, decoupled from `cN`.** The
+  chart-family (quadrant, piechart, radar, progress) now draws from its own
+  vivid, well-spaced 8-hue spectrum — `--catN-hue` with an Apple-style master
+  set whose dark-canvas value is a brighter same-hue sibling — instead of the
+  engine-wide `cN` accents (which still drive roadmap / journey / legal /
+  decision). The spectrum is theme-overridable via `--chart-catN` (a `:root`
+  `light-dark()` pair); untuned themes inherit the master. Radar previously
+  hardwired its `RADAR_PALETTE` to `cN` and so missed the shared model — it
+  now consumes `--catN-hue` like its siblings.
+- **Area-fade gradients on categorical charts.** Radar polygons, piechart
+  wedges, and quadrant regions now carry a restrained SVG gradient — an
+  Apple-Stocks-style area fade (near-transparent at the centre, denser toward
+  the data rim on radar; pie wedges deepen from a light hub toward a vivid rim;
+  quadrant regions share one radial centre at the axis crossing — faint where
+  the axes meet, richer toward the outer corners). Built as per-shape
+  `<linearGradient>`/`<radialGradient>` defs (SVG `fill` can't take a CSS
+  gradient) with `stop-color` riding `--catN-hue`/`--catN-fill` so they still
+  flip with the canvas. Landed in all three render paths (marp-cli, emulator,
+  runtime) via the shared `lib/` transforms.
 - **Global font-scale modifiers `scale-l` / `scale-xl` / `scale-2xl`.**
   Bump the readable fonts on a slide up in lockstep (×1.15 / ×1.3 / ×1.5)
   without re-picking sizes. A new unitless `--fs-scale` multiplier
@@ -170,6 +279,46 @@ in patch versions.
 
 ### Changed
 
+- **Categorical charts recoloured onto a shared fill/mark model.**
+  Quadrant, piechart, radar, and progress now draw from one chart-family
+  colour contract (`--catN-fill` / `--catN-ink`, defined in
+  `_chart-family.css`): each slot is a single curated hue rendered as a
+  restrained *tint* fill plus a saturated, contrasting *mark* — pale tint
+  + deep same-hue mark on a light canvas, and a muted **deep** tint +
+  brighter (white-lifted) same-hue mark on a dark canvas. Both modes are
+  equally restrained: the dark side is the light side's tint model
+  inverted, not the hue painted at full strength (which read as a clashing
+  Excel-default palette across 8 categories). Fill and mark always share a
+  hue and the relationship flips automatically with the canvas, so the
+  charts stay refined and on-palette in both modes. Quadrant
+  cells map reading-order to slots 1–4; piechart wedges/legend swatches
+  gain coloured borders; radar curves now draw from the chart spectrum
+  (`--catN-hue`) like the other members, in both modes; progress's neutral
+  bar uses the first slot hue (status bars still use pass/warn/fail).
+  Quadrant text labels are neutral `--text-heading` ink (AA-safe) with a
+  `--bg` halo. Both the native quadrant component and the Mermaid
+  `quadrantChart` theme map now read the `cN` palette directly (see the
+  removed `--c-quadrant-*` tokens below).
+- **Piechart and quadrant fills unified onto radar's vivid area-fade
+  model.** The three categorical charts now share one fill language. Pie/
+  donut wedges previously rode the pale `--catN-fill` tint (which read
+  pastel/washed-out); they now ride the vivid slot hue (`--catN-hue` — the
+  canvas-saturated end radar strokes its curves with) as a hub→rim radial
+  area-fade (lighter at the hub, vivid toward the rim), denser than radar's
+  translucent overlay because wedges are opaque part-to-whole areas. Legend
+  swatches become solid vivid chips matching the wedge identity. Quadrant
+  zone fills now match the pie wedges exactly — the SAME opaque hub→rim mix
+  of `--catN-hue` with `--bg` (42% at the axis crossing → 82% at the outer
+  corners), replacing the former translucent wash, so the four zones read
+  as vivid as the pie. The on-field labels take maximum-contrast ink
+  (`--quadrant-label-ink`: true black on light, true white on dark via
+  `light-dark()`) with no halo — a `--bg` halo reads as a visible outline on
+  the saturated zones, and softened `--text-heading` reads a touch light, so
+  pure black/white carries the labels on its own; only the dot/bubble marker
+  rings keep a thin `--bg` ring (to stay visible on their same-hue zone). All
+  three charts share the same `--catN-hue` source and
+  hub→rim fade, so radar, pie, and quadrant read as one family on both
+  canvases. Render-path + CSS only (no token or authoring change).
 - **Documentation reorganized into two trees.** The internal engineering
   and design references moved from `docs/` to `reference/` (with the
   former `docs/references/` becoming `engineering/`), freeing
@@ -247,6 +396,17 @@ in patch versions.
     `dependencies`. Lattice's runtime/preview path explicitly targets
     marp-cli output and the integration suite spawns it; there is no
     "lattice without marp" mode worth supporting.
+
+### Removed
+
+- **Breaking: the `--c-quadrant-N-fill` / `--c-quadrant-N-text` palette
+  tokens are removed from every theme.** Quadrant charts (native and the
+  Mermaid `quadrantChart` theme map) now read the `cN` categorical palette
+  directly through the shared chart-family colour model, so the bespoke
+  per-quadrant slot tokens — and their separate per-theme hue tuning — no
+  longer exist. Consumers that overrode `--c-quadrant-*` must tune the `cN`
+  palette instead. The `palette`/`contrast` unit suites no longer require
+  or assert these tokens.
 
 ### Fixed
 

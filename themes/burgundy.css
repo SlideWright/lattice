@@ -123,21 +123,12 @@
    * + dusty-plum, giving a green break and a cool-violet anchor. All
    * values ≥4.5:1 on --bg #FAF2F2. */
 }
-/* Completion tokens — band-text pairs, line, gantt state, note, error,
- * quadrant. References earlier palette tokens so this block stays a single
+/* Completion tokens — band-text pairs, line, gantt state, note, error.
+ * References earlier palette tokens so this block stays a single
  * source of truth per palette. */
 :root {
 
   --c-line:                  var(--text-heading);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c5-light);
-  --c-quadrant-4-fill: var(--c3-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }
 
 section pre.hljs {
@@ -211,13 +202,4 @@ section pre.hljs {
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#EADFE1, #241C1D);
   --c-subcontainer:  light-dark(#DBD0D2, #352C2E);
-
-  --c-quadrant-1-fill: var(--c1-light);
-  --c-quadrant-2-fill: var(--c2-light);
-  --c-quadrant-3-fill: var(--c3-light);
-  --c-quadrant-4-fill: var(--c4-light);
-  --c-quadrant-1-text: var(--text-heading);
-  --c-quadrant-2-text: var(--text-heading);
-  --c-quadrant-3-text: var(--text-heading);
-  --c-quadrant-4-text: var(--text-heading);
 }

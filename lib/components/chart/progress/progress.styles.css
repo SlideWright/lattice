@@ -7,11 +7,12 @@
  * a bar (filled to --pct), a numeric readout, and an optional status pill.
  * The fill colour tints with the status. */
 section.progress.chart-frame .chart-body {
-  width: 100%;
+  /* Inherit the base width (calc(100cqi - 2*sp-2xl), centered) and padding so
+   * the surface panel matches every other chart — the old width:100% +
+   * max-width:76.5cqi made the progress panel noticeably narrower (big side
+   * margins) than the rest. Bars still stretch + gap within the shared width. */
   align-items: stretch;
   gap: var(--sp-md);
-  max-width: 76.5625cqi;
-  margin: 0 auto;
 }
 /* Every row uses the SAME fixed grid template, so the 1fr track is
  * identical across rows. `auto` columns would size to per-row content
@@ -46,20 +47,29 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  background: var(--fill, color-mix(in oklab, var(--accent) 70%, var(--bg-alt)));
+  /* Same hue-into-bg depth gradient as the gantt bar and the pie / quadrant /
+   * radar SVG charts — so every data fill in the family reads with the same
+   * richness and dimension. A ratio gauge with no on-bar text, so it runs a
+   * touch richer than gantt (48 → 72%) for a crisp filled-vs-track read.
+   * Neutral bar (no status) = the categorical cat1 slot; status variants
+   * re-point --fill-hue at a semantic --state-*-hue. Authors pin with `--fill`. */
+  --fill-hue: var(--fill, var(--cat1-hue));
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--fill-hue) 48%, var(--bg)) 0%,
+    color-mix(in oklab, var(--fill-hue) 72%, var(--bg)) 100%);
   border-radius: 7px 0 0 7px;
   transition: none;
 }
+/* Each status re-points --fill-hue at a semantic --state-*-hue; the base
+ * rule's depth gradient picks it up. Canvas-aware, so one rule each. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { background: var(--pass); }
+section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { background: var(--warn); }
+section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { background: var(--fail); }
-section.progress .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 60%, var(--bg-alt));
-}
+section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); }
+section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

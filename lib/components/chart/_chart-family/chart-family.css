@@ -69,6 +69,129 @@ section.chart-frame {
   background: var(--bg);
 }
 
+/* ── Categorical chart colour model ───────────────────────────────────────
+ * One curated hue per slot, rendered as a fill/mark pair that flips with
+ * the canvas, shared by every categorical chart (quadrant, piechart, radar,
+ * progress). The contract is symmetric — a restrained TINT fill plus a
+ * saturated, contrasting MARK in both modes:
+ *
+ *   light canvas → fill = pale tint of the hue (24% on a light bg),
+ *                  mark/border = the hue at full depth (dark-on-light)
+ *   dark  canvas → fill = a muted DEEP tint of the hue (34% on a dark bg —
+ *                  NOT the hue at full strength, which paints garish
+ *                  primary blocks), mark/border = the hue lifted toward
+ *                  white so it pops (light-on-dark)
+ *
+ * so fill and mark ALWAYS share a hue, and neither canvas is louder than
+ * the other — the dark side is the light side's restraint, inverted, not a
+ * saturation crank. (An earlier revision used `var(--catN-hue)` directly as
+ * the dark fill; at 8 categories that read as a clashing Excel-default
+ * palette. The 34% mix keeps each region a subdued, hue-true wash of the
+ * dark canvas.)
+ *
+ * Why it is built this way: each slot resolves to a single saturated hue for
+ * the current canvas via `light-dark(lightCanvasVivid, darkCanvasVivid)`, and
+ * BOTH roles (tint fill, contrasting mark) are derived from that one hue so
+ * they can never drift apart. The spectrum is the chart-family's own —
+ * decoupled from the engine-wide cN accents (which still drive roadmap /
+ * journey / legal / decision) — and Apple-inspired: vivid, well-spaced hues
+ * whose dark-canvas value is a brighter same-hue sibling, used as accents on a
+ * tint, never as flooded primaries. Themes flavour it by setting `--chart-catN`
+ * (see below). Components consume only --catN-fill / --catN-ink and stay
+ * palette-blind. Eight slots — past ~6 categories perceptual distinction
+ * collapses (Wong 2011), so charts should consolidate rather than cycle on. */
+section.chart-frame,
+section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a chart-frame member */
+  /* Apple-inspired categorical spectrum — the chart-family's OWN palette,
+   * decoupled from the engine-wide cN accents (which still drive roadmap /
+   * journey / legal / decision). Each slot is `light-dark(lightCanvasVivid,
+   * darkCanvasVivid)` where the dark-canvas value is a brighter same-hue
+   * sibling (Apple ships its system colours this way: blue #007AFF→#0A84FF,
+   * green #34C759→#30D158, …). The hues are well-spaced around the wheel and
+   * tuned a touch off Apple's exact values — inspired, not copied.
+   *
+   * Theme-overridable: a theme sets `--chart-catN` (same light-dark shape) at
+   * :root to flavour the spectrum to its character; the var() indirection lets
+   * the theme always win, and untuned themes inherit this master set. */
+  --cat1-hue: var(--chart-cat1, light-dark(#0A6CE0, #2E8BFF));  /* blue   */
+  --cat2-hue: var(--chart-cat2, light-dark(#C2670A, #FFA630));  /* orange */
+  --cat3-hue: var(--chart-cat3, light-dark(#1E9E48, #34D058));  /* green  */
+  --cat4-hue: var(--chart-cat4, light-dark(#9333D6, #BE5AF2));  /* purple */
+  --cat5-hue: var(--chart-cat5, light-dark(#0E96AE, #3FC8E0));  /* teal   */
+  --cat6-hue: var(--chart-cat6, light-dark(#E11D48, #FF4D6A));  /* rose   */
+  --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
+  --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
+
+  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 34%, var(--bg)));
+  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 34%, var(--bg)));
+  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 34%, var(--bg)));
+  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 34%, var(--bg)));
+  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 34%, var(--bg)));
+  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 34%, var(--bg)));
+  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 34%, var(--bg)));
+  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 34%, var(--bg)));
+
+  --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
+  --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
+  --cat3-ink: light-dark(var(--cat3-hue), color-mix(in oklab, var(--cat3-hue) 78%, white));
+  --cat4-ink: light-dark(var(--cat4-hue), color-mix(in oklab, var(--cat4-hue) 78%, white));
+  --cat5-ink: light-dark(var(--cat5-hue), color-mix(in oklab, var(--cat5-hue) 78%, white));
+  --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
+  --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
+  --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+}
+
+/* ── Chart SEMANTIC / status colour model ─────────────────────────────────
+ * The status counterpart to the catN categorical spectrum. Charts that
+ * encode MEANING (gantt bars, progress fills, status pills, state-chart,
+ * timeline-list) draw from this set — NOT the engine-wide --pass / --warn /
+ * --fail (those serve the whole engine; charts get their own curated,
+ * boardroom-tuned semantic palette so the family reads as one coherent
+ * system, vivid and on-brand, chart to chart).
+ *
+ * Same construction as catN, so bars/wedges/pills share a visual language:
+ *   --state-X-hue   curated semantic hue (green=good, amber=caution,
+ *                   red=stop, blue=info/pilot/decision, gray=deferred),
+ *                   `light-dark(lightVivid, darkVivid)` so it flips canvas.
+ *   --state-X-fill  pale tint on light / muted-deep tint on dark — the
+ *                   bar/zone/pill FILL (same 24% / 34% mix as catN-fill).
+ *   --state-X-ink   the saturated mark — bar border, pill text, the
+ *                   thin progress fill — lifted toward white on dark.
+ *
+ * Theme-overridable: a theme sets --chart-state-{pass,warn,fail,info,mute}
+ * at :root to curate the semantics to its character; untuned themes inherit
+ * this master set. One rule per state now serves both canvases (the old
+ * per-`.dark` overrides collapse into the light-dark() pairs). */
+section.chart-frame {
+  --state-pass-hue: var(--chart-state-pass, light-dark(#1E9E48, #34D058));  /* green  — done/on-track/live   */
+  --state-warn-hue: var(--chart-state-warn, light-dark(#C2790A, #FFB02E));  /* amber  — at-risk/warn         */
+  --state-fail-hue: var(--chart-state-fail, light-dark(#CE2F2F, #FF5B52));  /* red    — blocked/fail         */
+  --state-info-hue: var(--chart-state-info, light-dark(#0A6CE0, #2E8BFF));  /* blue   — pilot/decision/info  */
+  --state-mute-hue: var(--chart-state-mute, light-dark(#6B7480, #9AA7B6));  /* gray   — deferred             */
+
+  /* Light: a 24% tint into the canvas (proven, like catN). Dark: deepen the
+   * hue toward BLACK, not the navy --bg — mixing amber/orange into a blue
+   * canvas neutralizes to brown (near-complementary). Toward black the hue
+   * stays true and vivid for every status, so the bar/pill reads as its
+   * colour, not mud. ~58% keeps it rich but dark enough for white text. */
+  --state-pass-fill: light-dark(color-mix(in oklab, var(--state-pass-hue) 24%, var(--bg)), color-mix(in oklab, var(--state-pass-hue) 58%, black));
+  --state-warn-fill: light-dark(color-mix(in oklab, var(--state-warn-hue) 24%, var(--bg)), color-mix(in oklab, var(--state-warn-hue) 58%, black));
+  --state-fail-fill: light-dark(color-mix(in oklab, var(--state-fail-hue) 24%, var(--bg)), color-mix(in oklab, var(--state-fail-hue) 58%, black));
+  --state-info-fill: light-dark(color-mix(in oklab, var(--state-info-hue) 24%, var(--bg)), color-mix(in oklab, var(--state-info-hue) 58%, black));
+  --state-mute-fill: light-dark(color-mix(in oklab, var(--state-mute-hue) 22%, var(--bg)), color-mix(in oklab, var(--state-mute-hue) 46%, black));
+
+  --state-pass-ink: light-dark(var(--state-pass-hue), color-mix(in oklab, var(--state-pass-hue) 78%, white));
+  --state-warn-ink: light-dark(var(--state-warn-hue), color-mix(in oklab, var(--state-warn-hue) 78%, white));
+  --state-fail-ink: light-dark(var(--state-fail-hue), color-mix(in oklab, var(--state-fail-hue) 78%, white));
+  --state-info-ink: light-dark(var(--state-info-hue), color-mix(in oklab, var(--state-info-hue) 78%, white));
+  --state-mute-ink: light-dark(var(--state-mute-hue), color-mix(in oklab, var(--state-mute-hue) 72%, white));
+
+  /* Shared accent header-rule — the hairline under a data header (gantt quarter
+   * axis, kanban column headers). One token so every chart's header underline
+   * reads at the same weight, matching the chart eyebrow's accent register. */
+  --chart-rule: color-mix(in oklab, var(--accent) 24%, transparent);
+}
+
 section.chart-frame .chart-header {
   /* Plain header — eyebrow + h2 + subtitle on the section background.
    * Decoration is opt-in via the universal `tint-*` / `mark-*`
@@ -150,6 +273,78 @@ section.chart-frame .chart-body {
   overflow: hidden;
 }
 
+/* Chart surface panel — every chart sits on its own quiet glass surface,
+ * Apple "Liquid Glass" inspired at editorial-whisper intensity: a faint
+ * top-glow tint over a translucent base, a specular top gloss, a bright
+ * inset rim, and a soft float shadow lifting the pane off the slide. CSS-only
+ * and canvas-aware (mixes against --text-heading / --bg, so it flips
+ * light/dark). Kept deliberately faint so it reads as a premium surface, not
+ * chrome that competes with the data or the editorial slide.
+ *
+ * The two glass cues are complementary across canvases, so the material reads
+ * in BOTH modes from a single rule: on LIGHT the float shadow (a deep
+ * --text-heading wash under the pane) does the lifting; on DARK that shadow
+ * vanishes into the canvas but the white specular rim + top gloss pop and
+ * carry the glass read. No backdrop-filter blur — it's unreliable in
+ * print-to-PDF and there's only the flat slide --bg behind the pane, so it
+ * would cost risk for zero payoff.
+ *
+ * The decoration goes on .chart-body itself — not the per-member figure — so
+ * the panel is the SAME SIZE on every chart. .chart-body is the one container
+ * every framed member shares at a fixed width (calc(100cqi - 2*sp-2xl),
+ * centered); its existing padding (sp-lg / sp-2xl) becomes the panel's uniform
+ * internal inset, so content never touches the edge. Hugging the figure made
+ * the surface vary chart-to-chart (narrow under a centered radar, full-width
+ * under progress); pinning it to .chart-body makes it consistent.
+ *
+ * Excluded: state-chart, whose vertical state flow already fills the full
+ * chart-body height — the panel inset would push its top/bottom nodes past the
+ * clipped edge. (word-cloud is free-floating and not a chart-frame member at
+ * all, so it never matches this rule.)
+ *
+ * OPT-IN: the canvas is now off by default — a chart sits directly on the
+ * slide unless the slide adds the `canvas` modifier. So this rule is gated on
+ * `.canvas`; the bare chart is the baseline. */
+section.chart-frame.canvas:not(.state-chart) .chart-body {
+  /* Float the panel clear of the header divider. The .chart-header::after
+   * accent hairline sits at the header's bottom edge; without this gap the
+   * lifted glass card's top edge lands right on it and the two separators
+   * collide ("hugging"). A top margin drops the card so the hairline floats
+   * in the whitespace above it. */
+  margin-top: var(--sp-lg);
+  /* Real glass, not a tinted box. ROOT-CAUSE FIX: the fill must never be a
+   * --text-heading mix — that token is a neutral gray, so mixing it into --bg
+   * paints a muddy GRAY BOX that reads as "a second background" on the slide,
+   * not glass. Glass tints toward WHITE-frost (or stays clear), and the form
+   * is carried by light on the edges + a shadow, not by a fill.
+   *
+   * The medium decides per canvas: on a LIGHT slide any opaque fill goes gray,
+   * so the pane is left essentially CLEAR — the slide shows straight through
+   * (no second background) and the glass is read from the soft dark float
+   * shadow + a crisp hairline edge + the white top rim. On a DARK slide a
+   * translucent WHITE frost veil reads cleanly (lighter than the canvas), so
+   * the fill is a faint white gradient. light-dark() picks the right one. */
+  background: light-dark(
+    transparent,
+    linear-gradient(180deg,
+      color-mix(in oklab, white 13%, transparent) 0%,
+      color-mix(in oklab, white 5%, transparent) 100%));
+  /* The glass EDGE: a faint cool hairline on light, a luminous edge on dark. */
+  border: 1px solid light-dark(
+    color-mix(in oklab, var(--text-heading) 10%, transparent),
+    color-mix(in oklab, white 14%, transparent));
+  /* Apple-squircle-ish corner — larger, continuous-feeling radius. */
+  border-radius: 2.25cqi;
+  /* Float + specular rim. The elevation shadow is always DARK (black-based);
+   * on light it lifts the clear pane off the slide, on dark it recedes and the
+   * white top rim + frost veil carry the lift. The inset top rim is the
+   * specular highlight — correctly white on both modes. */
+  box-shadow:
+    0 1.2cqi 2.6cqi -1.4cqi color-mix(in oklab, black 24%, transparent),
+    0 0.3cqi 0.8cqi -0.6cqi color-mix(in oklab, black 14%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 30%, transparent);
+}
+
 section.chart-frame .chart-caption {
   flex: 0 0 auto;
   box-sizing: border-box;
@@ -194,93 +389,143 @@ section.chart-frame .chart-status {
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  border: 1px solid transparent;
+  /* Same depth-gradient recipe as the gantt bar so a status reads identically
+   * as a pill or a bar: hue-into-bg gradient + vivid ink border + the shared
+   * --text-heading label (flips dark-on-light / light-on-dark). Defaults to
+   * info; each status below re-points --pill-hue / --pill-ink. */
+  --pill-hue: var(--state-info-hue);
+  --pill-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--pill-hue) 33%, var(--bg)) 0%,
+    color-mix(in oklab, var(--pill-hue) 54%, var(--bg)) 100%);
+  border: 1px solid var(--pill-ink);
+  color: var(--text-heading);
 }
+/* One rule per status — canvas-aware --state-* tokens, no `.dark` overrides. */
 section.chart-frame .chart-status[data-s="on-track"],
 section.chart-frame .chart-status[data-s="done"],
 section.chart-frame .chart-status[data-s="live"] {
-  color: var(--pass);
-  background: var(--pass-bg);
-  border-color: color-mix(in oklab, var(--pass) 30%, transparent);
+  --pill-hue: var(--state-pass-hue); --pill-ink: var(--state-pass-ink);
 }
 section.chart-frame .chart-status[data-s="at-risk"],
-section.chart-frame .chart-status[data-s="warn"],
-section.chart-frame .chart-status[data-s="pilot"] {
-  color: var(--warn);
-  background: var(--warn-bg);
-  border-color: color-mix(in oklab, var(--warn) 30%, transparent);
+section.chart-frame .chart-status[data-s="warn"] {
+  --pill-hue: var(--state-warn-hue); --pill-ink: var(--state-warn-ink);
 }
 section.chart-frame .chart-status[data-s="blocked"],
 section.chart-frame .chart-status[data-s="fail"] {
-  color: var(--fail);
-  background: var(--fail-bg);
-  border-color: color-mix(in oklab, var(--fail) 30%, transparent);
+  --pill-hue: var(--state-fail-hue); --pill-ink: var(--state-fail-ink);
 }
+section.chart-frame .chart-status[data-s="pilot"],
 section.chart-frame .chart-status[data-s="decision"] {
-  color: var(--accent);
-  background: color-mix(in oklab, var(--accent) 12%, transparent);
-  border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  --pill-hue: var(--state-info-hue); --pill-ink: var(--state-info-ink);
 }
 section.chart-frame .chart-status[data-s="deferred"] {
-  color: var(--text-muted);
-  background: color-mix(in oklab, var(--text-muted) 10%, transparent);
-  border-color: color-mix(in oklab, var(--text-muted) 25%, transparent);
+  --pill-hue: var(--state-mute-hue); --pill-ink: var(--state-mute-ink);
 }
 
-/* Dark-canvas status overrides — the dark version uses brighter chip
- * colours and white-ish text so the pill reads against a dark backdrop.
- * The same data-s vocabulary; only the colour stops change. */
-section.chart-frame.dark .chart-status[data-s="on-track"],
-section.chart-frame.dark .chart-status[data-s="done"],
-section.chart-frame.dark .chart-status[data-s="live"] {
-  color: color-mix(in oklab, var(--pass) 30%, white);
-  background: color-mix(in oklab, var(--pass) 38%, transparent);
-  border-color: color-mix(in oklab, var(--pass) 60%, transparent);
-}
-section.chart-frame.dark .chart-status[data-s="at-risk"],
-section.chart-frame.dark .chart-status[data-s="warn"],
-section.chart-frame.dark .chart-status[data-s="pilot"] {
-  color: color-mix(in oklab, var(--warn) 30%, white);
-  background: color-mix(in oklab, var(--warn) 40%, transparent);
-  border-color: color-mix(in oklab, var(--warn) 60%, transparent);
-}
-section.chart-frame.dark .chart-status[data-s="blocked"],
-section.chart-frame.dark .chart-status[data-s="fail"] {
-  color: color-mix(in oklab, var(--fail) 35%, white);
-  background: color-mix(in oklab, var(--fail) 40%, transparent);
-  border-color: color-mix(in oklab, var(--fail) 65%, transparent);
-}
-section.chart-frame.dark .chart-status[data-s="decision"] {
-  color: color-mix(in oklab, var(--accent) 25%, white);
-  background: color-mix(in oklab, var(--accent) 25%, transparent);
-  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
-}
-section.chart-frame.dark .chart-status[data-s="deferred"] {
-  color: var(--text-muted);
-  background: color-mix(in oklab, var(--text-muted) 18%, transparent);
-  border-color: color-mix(in oklab, var(--text-muted) 38%, transparent);
-}
-
-/* Dark-canvas progress fill — the same brand greens/ambers/reds read
- * darker on a dark canvas; lift them with a partial white mix so the
- * fill ratio is visually obvious. */
-section.progress.dark .progress-fill[data-s="on-track"],
-section.progress.dark .progress-fill[data-s="done"],
-section.progress.dark .progress-fill[data-s="live"] {
-  background: color-mix(in oklab, var(--pass) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="at-risk"],
-section.progress.dark .progress-fill[data-s="warn"] {
-  background: color-mix(in oklab, var(--warn) 40%, white);
-}
-section.progress.dark .progress-fill[data-s="blocked"],
-section.progress.dark .progress-fill[data-s="fail"] {
-  background: color-mix(in oklab, var(--fail) 45%, white);
-}
-section.progress.dark .progress-fill[data-s="deferred"] {
-  background: color-mix(in oklab, var(--text-muted) 75%, var(--dark-bg-alt));
-}
+/* (Dark-canvas progress-fill overrides removed — the --state-*-ink tokens are
+ * canvas-aware, so the single progress-fill rules cover both modes.) */
 
 
 
 
+
+/* ── COVER ── `cover`, a CHART-FAMILY modifier ───────────────────────────────
+ * `cover` is NOT an all-layout universal modifier — it is scoped to the chart
+ * family (registered as a `cover` variant on the charts that support it, e.g.
+ * radar, piechart). The diagram fills the whole slide and the slide title + a
+ * one-line takeaway reflow into a bottom caption band carrying the chart sheen
+ * (a --text-heading→--bg radial wash with a hairline edge), the page number
+ * reading through it. Generalized from the radar prototype to every chart-frame
+ * member: the chrome drops, the section bleeds, the chart-header collapses so
+ * its h2 joins the caption stack, and the chart-body grows to fill above the
+ * band, stripped of the surface panel. Per-chart rules (radar's centred diagram
+ * + legend column) layer on top; an untuned chart still bleeds + captions but
+ * may need an explicit figure size (cf. radar's 36cqi). Palette-blind. */
+section.chart-frame.cover {
+  --cover-gutter: calc(var(--_sec-1cqi, 1cqi) * 5);   /* caption text inset */
+  position: relative;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+section.chart-frame.cover > header,
+section.chart-frame.cover > footer,
+section.chart-frame.cover .chart-eyebrow,
+section.chart-frame.cover .chart-subtitle {
+  display: none;
+}
+/* chart-header → display:contents so its h2 becomes a direct flex child the
+ * caption rules below can order into the bottom band. */
+section.chart-frame.cover .chart-header {
+  display: contents;
+}
+/* The diagram fills the space above the caption (order 0, grows). The repeated
+ * .chart-frame out-specifies the shared surface-panel rule, stripping the panel
+ * background/border for a true bleed. position:relative makes it the containing
+ * block for any absolutely-positioned figure chrome. */
+section.chart-frame.cover .chart-body {
+  order: 0;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-md) var(--sp-2xl) var(--sp-xs);
+  display: grid;
+  align-content: center;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* CAPTION · TITLE — the heading becomes a bottom-anchored sheen shelf. The
+ * chart bleeds, so the band already spans the full slide (no breakout needed).
+ * margin:auto pins it to the bottom; the chart-frame skeleton measure-caps the
+ * title at higher specificity, so re-assert measure / align / size here. */
+section.chart-frame.cover .chart-header h2 {
+  order: 1;
+  margin: auto 0 0;
+  z-index: 2;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 1.8cqi var(--cover-gutter) 0.4cqi;
+  background: radial-gradient(150% 200% at 50% -25%,
+    color-mix(in oklab, var(--text-heading) 15%, var(--bg)) 0%,
+    color-mix(in oklab, var(--text-heading) 8%, var(--bg)) 55%,
+    color-mix(in oklab, var(--text-heading) 5%, var(--bg)) 100%);
+  border-top: 1px solid color-mix(in oklab, var(--text-heading) 13%, transparent);
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: left;
+}
+/* CAPTION · NOTE — the trailing paragraph (a bare class-less <p>, direct
+ * section child); flat base of the sheen, content ink, clamped to two lines. */
+section.chart-frame.cover > p:last-of-type {
+  order: 2;
+  margin: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  padding: 0 var(--cover-gutter) 1.4cqi;
+  background: color-mix(in oklab, var(--text-heading) 5%, var(--bg));
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* Pagination reads through the band — lifted above it and recoloured. */
+section.chart-frame.cover::after {
+  z-index: 3;
+  color: color-mix(in oklab, var(--text-heading) 62%, transparent) !important;
+}
