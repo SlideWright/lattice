@@ -117,14 +117,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  /* Quadrant treatment, so gantt is coherent with the rest of the family:
-   * a pale tint FILL + a crisp vivid ink BORDER (the border carries the hue
-   * so the tint never reads as washed), and the SHARED --text-heading ink for
-   * the label. Text therefore flips the normal way every other chart does —
-   * dark on light, white on dark — never inverted. */
-  --bar-fill: var(--state-info-fill);
-  --bar-ink:  var(--state-info-ink);
-  background: var(--bar-fill);
+  /* Match the pie / quadrant / radar depth-gradient language. Those three read
+   * rich because they fill with a hue-into-bg gradient (~42–82%), NOT the flat
+   * 24% --state-*-fill tint the bars used to use (which is why the bars looked
+   * muted / "not gradient"). A vertical hue-into-bg gradient gives the bar the
+   * same richness and dimension; it mixes into --bg so it's canvas-aware just
+   * like the SVG charts. Capped at ~54% so the shared --text-heading label
+   * still reads — dark on light, white on dark, coherent with every chart. The
+   * vivid ink border reinforces the hue at the bar edge. */
+  --bar-hue: var(--state-info-hue);
+  --bar-ink: var(--state-info-ink);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--bar-hue) 33%, var(--bg)) 0%,
+    color-mix(in oklab, var(--bar-hue) 54%, var(--bg)) 100%);
   border: 1px solid var(--bar-ink);
   color: var(--text-heading);
   font-family: var(--font-body);
@@ -139,19 +144,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status — each re-points --bar-fill / --bar-ink at a semantic --state-* pair
- * (tint fill + ink border); the base rule's --text-heading label is unchanged.
- * Canvas-aware via light-dark(), so one rule per status serves both modes. */
+/* Status — each re-points --bar-hue (gradient) + --bar-ink (border) at a
+ * semantic --state-* pair; the base rule's gradient + --text-heading label are
+ * unchanged. Canvas-aware via light-dark(), so one rule per status, both modes. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { --bar-fill: var(--state-pass-fill); --bar-ink: var(--state-pass-ink); }
+.gantt-bar[data-s="live"]     { --bar-hue: var(--state-pass-hue); --bar-ink: var(--state-pass-ink); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { --bar-fill: var(--state-warn-fill); --bar-ink: var(--state-warn-ink); }
+.gantt-bar[data-s="warn"]     { --bar-hue: var(--state-warn-hue); --bar-ink: var(--state-warn-ink); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { --bar-fill: var(--state-fail-fill); --bar-ink: var(--state-fail-ink); }
+.gantt-bar[data-s="fail"]     { --bar-hue: var(--state-fail-hue); --bar-ink: var(--state-fail-ink); }
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { --bar-fill: var(--state-info-fill); --bar-ink: var(--state-info-ink); }
-.gantt-bar[data-s="deferred"] { --bar-fill: var(--state-mute-fill); --bar-ink: var(--state-mute-ink); }
+.gantt-bar[data-s="decision"] { --bar-hue: var(--state-info-hue); --bar-ink: var(--state-info-ink); }
+.gantt-bar[data-s="deferred"] { --bar-hue: var(--state-mute-hue); --bar-ink: var(--state-mute-ink); }
 
 
 

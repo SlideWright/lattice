@@ -47,29 +47,29 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  /* Same vivid gradient language as the gantt bar: --fill-ink is the
-   * saturated canvas-aware hue, and the bar draws a lit-top / deepened-foot
-   * gradient off it. Neutral bar (no status) = the categorical cat1 slot;
-   * status variants below re-point --fill-ink at a semantic --state-*-ink.
-   * Authors can pin another colour with `--fill`. */
-  --fill-ink: var(--fill, var(--cat1-hue));
+  /* Same hue-into-bg depth gradient as the gantt bar and the pie / quadrant /
+   * radar SVG charts — so every data fill in the family reads with the same
+   * richness and dimension. A ratio gauge with no on-bar text, so it runs a
+   * touch richer than gantt (48 → 72%) for a crisp filled-vs-track read.
+   * Neutral bar (no status) = the categorical cat1 slot; status variants
+   * re-point --fill-hue at a semantic --state-*-hue. Authors pin with `--fill`. */
+  --fill-hue: var(--fill, var(--cat1-hue));
   background: linear-gradient(180deg,
-    color-mix(in oklab, white 16%, var(--fill-ink)) 0%,
-    var(--fill-ink) 52%,
-    color-mix(in oklab, black 12%, var(--fill-ink)) 100%);
+    color-mix(in oklab, var(--fill-hue) 48%, var(--bg)) 0%,
+    color-mix(in oklab, var(--fill-hue) 72%, var(--bg)) 100%);
   border-radius: 7px 0 0 7px;
   transition: none;
 }
-/* Thin fills take the saturated --state-*-ink (canvas-aware: deep hue on
- * light, bright pastel on dark), so one rule each — no `.dark` overrides. */
+/* Each status re-points --fill-hue at a semantic --state-*-hue; the base
+ * rule's depth gradient picks it up. Canvas-aware, so one rule each. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { --fill-ink: var(--state-pass-ink); }
+section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { --fill-ink: var(--state-warn-ink); }
+section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { --fill-ink: var(--state-fail-ink); }
-section.progress .progress-fill[data-s="deferred"] { --fill-ink: var(--state-mute-ink); }
+section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); }
+section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

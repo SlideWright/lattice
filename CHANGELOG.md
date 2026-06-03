@@ -33,12 +33,14 @@ in patch versions.
   chart-exclusive semantic palette (`--state-{pass,warn,fail,info,mute}-{hue,
   fill,ink}`) instead of the engine-wide `--pass/--warn/--fail`. Curated to
   convey meaning (green / amber / red / blue / gray) and built like the catN
-  spectrum: canvas-aware fill + ink via `light-dark()`, vivid on both modes,
-  with dark fills deepened toward black so amber-on-navy doesn't muddy. Gantt
-  bars use the quadrant recipe — tint fill + vivid ink border + the shared
-  `--text-heading` label — so on-bar text flips the normal way (dark on light,
-  light on dark), coherent with every other chart label in each mode. Progress
-  fills stay saturated (a ratio mark, no on-bar text). Theme-overridable via
+  spectrum: canvas-aware fill + ink via `light-dark()`, vivid on both modes.
+  Gantt + progress bars fill with the same **hue-into-`bg` depth gradient** the
+  pie / quadrant / radar SVG charts use (those read rich precisely because they
+  gradient-fill ~42–82%, not a flat 24% tint — which is why the bars used to
+  look muted). The gradient is capped where the shared `--text-heading` label
+  still reads, so on-bar text flips the normal way (dark on light, light on
+  dark), coherent with every chart in each mode. Radar's gap / delta segments
+  move onto `--state-pass-ink` / `--state-fail-ink` too. Theme-overridable via
   `--chart-state-*`. The old per-`.dark` status overrides collapse into single
   canvas-aware rules.
 - **Kanban lanes + word-cloud now ride the vivid catN spectrum.** Both moved
