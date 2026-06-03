@@ -4124,13 +4124,15 @@
       "description": "Pie or donut chart with legend — proportional wedges.",
       "purpose": "Use for part-to-whole breakdowns with three to six slices. Add the `donut` modifier for a hole in the middle — visually cleaner for executive decks.",
       "variants": [
-        "donut"
+        "donut",
+        "cover"
       ],
       "effectiveVariants": [
         "accent",
         "archived",
         "compact",
         "confidential",
+        "cover",
         "dark",
         "donut",
         "draft",
@@ -4714,7 +4716,8 @@
         "benchmark",
         "quadrant",
         "small-multiples",
-        "minimal"
+        "minimal",
+        "cover"
       ],
       "effectiveVariants": [
         "accent",
@@ -4722,6 +4725,7 @@
         "benchmark",
         "compact",
         "confidential",
+        "cover",
         "dark",
         "delta",
         "draft",
