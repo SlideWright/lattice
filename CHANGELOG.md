@@ -40,18 +40,20 @@ in patch versions.
   Distinct from image's `full` photo variant (unchanged — see below). Documented
   via the radar/piechart `variantDocs`. Pure CSS — no transform/render-path
   change.
-- **Chart surface panels — Apple "Liquid Glass" material.** Every framed
-  chart-family member now sits on its own glass surface, Apple Liquid-Glass
-  inspired at editorial-whisper intensity: a translucent base with a faint
-  top-glow tint, a specular top gloss line, a bright inset rim, a soft float
-  shadow lifting the pane off the slide, and a larger Apple-squircle-ish
-  corner. Pure CSS on `section.chart-frame:not(.state-chart) .chart-body`,
-  canvas-aware (mixes against `--text-heading`/`--bg`, so it flips light/dark);
-  the two glass cues are complementary across canvases (the always-dark float
-  shadow carries the read on light, the white specular rim + gloss carry it on
-  dark), so one rule covers both modes. The float shadow is black-based, **not**
-  `--text-heading` — that token flips to white on dark canvases, which cast a
-  white glow / double-frame around the pane that bled over the footer. No `backdrop-filter` blur — unreliable in
+- **Chart surface panels — real glass, not a tinted box.** Every framed
+  chart-family member sits on its own glass surface at editorial-whisper
+  intensity. The fill is **never** a `--text-heading` mix: that token is a
+  neutral gray, so mixing it into `--bg` painted a muddy gray box that read as
+  a second background on the slide, not glass. Instead the pane tints toward
+  white-frost and the form is carried by light on the edges + a shadow: on a
+  LIGHT slide the pane is left **clear** (the slide shows straight through —
+  no second background — read from a soft dark float shadow + a crisp hairline
+  edge + a white top rim), and on a DARK slide it's a translucent **white
+  frost veil** (lighter than the canvas) with a luminous edge. `light-dark()`
+  picks the right one. Pure CSS on
+  `section.chart-frame:not(.state-chart) .chart-body`. The float shadow is
+  always black-based — `--text-heading` flips to white on dark and would cast
+  a white glow / double-frame that bleeds over the footer. No `backdrop-filter` blur — unreliable in
   print-to-PDF and there's only flat `--bg` behind the pane, so it would cost
   risk for no payoff. The decoration is pinned to `.chart-body` — the one
   fixed-width container every member shares — so the panel is the **same size
