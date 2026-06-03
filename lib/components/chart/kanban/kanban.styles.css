@@ -68,13 +68,17 @@ section.kanban.chart-frame .chart-body {
   overflow: hidden;
 }
 
-/* Card — bg-alt panel with 3px left stripe coloured by --lane-color.
- * --c-subcontainer is a theme hook for containment-aware themes (e.g.
- * indaco) that define a dedicated card surface token. Falls back to
- * --bg-alt so all other themes are unaffected. */
+/* Card — a SWIM-LANE tile: the background is a subtle depth gradient of the
+ * card's own lane colour (same hue-into-bg language as the bars/zones, just
+ * dialed way down since the card carries text), so each card softly reads as
+ * its lane. The 3px left stripe stays as the strong lane marker; --text-heading
+ * titles still clear the pale tint. Falls back to --bg-alt when no lane. */
 .kanban-card {
-  background: var(--c-subcontainer, var(--bg-alt));
-  border: 1px solid var(--border);
+  --lane: var(--lane-color, var(--cat1-ink));
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--lane) 9%, var(--bg)) 0%,
+    color-mix(in oklab, var(--lane) 18%, var(--bg)) 100%);
+  border: 1px solid color-mix(in oklab, var(--lane) 22%, var(--border));
   border-left: 3px solid var(--lane-color, var(--border));
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
@@ -130,19 +134,29 @@ section.kanban.chart-frame .chart-body {
 }
 
 /* Lane tag — small pill tinted with the lane colour */
+/* Lane tag — demoted to a quiet colour-coded LABEL (no chip fill): the card
+ * background + left stripe already carry the lane colour, so the tag only needs
+ * to name it. Keeping it fill-less leaves the gradient status pill as the one
+ * loud chip on the card. A small leading dot anchors the colour. */
 .kanban-lane {
   display: inline-flex;
   align-items: center;
-  height: 1.5625cqi;
-  padding: 0 0.546875cqi;
-  border-radius: 0.78125cqi;
-  background: color-mix(in oklab, var(--lane-color, var(--accent)) 12%, transparent);
+  gap: 0.39cqi;
+  background: none;
   color: var(--lane-color, var(--accent));
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  flex: 0 0 auto;
+}
+.kanban-lane::before {
+  content: '';
+  width: 0.55cqi;
+  height: 0.55cqi;
+  border-radius: 50%;
+  background: var(--lane-color, var(--accent));
   flex: 0 0 auto;
 }
 
