@@ -117,20 +117,16 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   left:  calc((var(--gantt-col-start) - 1) / var(--gantt-cols) * 100% + 3px);
   width: calc( var(--gantt-col-span)       / var(--gantt-cols) * 100% - 6px);
   border-radius: 0.46875cqi;
-  /* VIVID gradient bar — rides --state-*-ink (the full saturated, canvas-aware
-   * hue, same token the progress fill uses), NOT the pale --state-*-fill tint.
-   * The only colour-mixes are the intentional gradient stops: a lit top, the
-   * pure hue in the middle, a deepened foot — a glossy, dimensional bar that
-   * reads as its colour, vivid and cohesive with the progress chart. */
-  --bar-ink: var(--state-info-ink);
-  background: linear-gradient(180deg,
-    color-mix(in oklab, white 16%, var(--bar-ink)) 0%,
-    var(--bar-ink) 52%,
-    color-mix(in oklab, black 12%, var(--bar-ink)) 100%);
-  border: 1px solid color-mix(in oklab, black 14%, var(--bar-ink));
-  /* Contrast against the vivid fill: white on the deep light bar, near-black
-   * on the bright pastel dark bar. */
-  color: light-dark(white, #0B0F14);
+  /* Quadrant treatment, so gantt is coherent with the rest of the family:
+   * a pale tint FILL + a crisp vivid ink BORDER (the border carries the hue
+   * so the tint never reads as washed), and the SHARED --text-heading ink for
+   * the label. Text therefore flips the normal way every other chart does —
+   * dark on light, white on dark — never inverted. */
+  --bar-fill: var(--state-info-fill);
+  --bar-ink:  var(--state-info-ink);
+  background: var(--bar-fill);
+  border: 1px solid var(--bar-ink);
+  color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-meta);
   font-weight: 600;
@@ -143,19 +139,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status — each just re-points --bar-ink at a semantic --state-*-ink token;
- * the base rule's gradient + border + contrast text pick it up. Canvas-aware
- * via light-dark(), so one rule per status serves both modes. */
+/* Status — each re-points --bar-fill / --bar-ink at a semantic --state-* pair
+ * (tint fill + ink border); the base rule's --text-heading label is unchanged.
+ * Canvas-aware via light-dark(), so one rule per status serves both modes. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { --bar-ink: var(--state-pass-ink); }
+.gantt-bar[data-s="live"]     { --bar-fill: var(--state-pass-fill); --bar-ink: var(--state-pass-ink); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { --bar-ink: var(--state-warn-ink); }
+.gantt-bar[data-s="warn"]     { --bar-fill: var(--state-warn-fill); --bar-ink: var(--state-warn-ink); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { --bar-ink: var(--state-fail-ink); }
+.gantt-bar[data-s="fail"]     { --bar-fill: var(--state-fail-fill); --bar-ink: var(--state-fail-ink); }
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { --bar-ink: var(--state-info-ink); }
-.gantt-bar[data-s="deferred"] { --bar-ink: var(--state-mute-ink); }
+.gantt-bar[data-s="decision"] { --bar-fill: var(--state-info-fill); --bar-ink: var(--state-info-ink); }
+.gantt-bar[data-s="deferred"] { --bar-fill: var(--state-mute-fill); --bar-ink: var(--state-mute-ink); }
 
 
 

@@ -35,9 +35,12 @@ in patch versions.
   convey meaning (green / amber / red / blue / gray) and built like the catN
   spectrum: canvas-aware fill + ink via `light-dark()`, vivid on both modes,
   with dark fills deepened toward black so amber-on-navy doesn't muddy. Gantt
-  bars gain a subtle gradient sheen + ink border, matching the pie/quadrant
-  fill language. Theme-overridable via `--chart-state-*`. The old per-`.dark`
-  status overrides collapse into single canvas-aware rules.
+  bars use the quadrant recipe — tint fill + vivid ink border + the shared
+  `--text-heading` label — so on-bar text flips the normal way (dark on light,
+  light on dark), coherent with every other chart label in each mode. Progress
+  fills stay saturated (a ratio mark, no on-bar text). Theme-overridable via
+  `--chart-state-*`. The old per-`.dark` status overrides collapse into single
+  canvas-aware rules.
 - **Kanban lanes + word-cloud now ride the vivid catN spectrum.** Both moved
   off the engine `--cN` palette onto `--catN-ink`, so categorical colour reads
   consistently with pie / quadrant / radar across the whole chart family.
