@@ -74,7 +74,9 @@ section.word-cloud .word-cloud-canvas {
  * pushes the panel OUT past the word extent so the cloud sits ON the surface
  * with breathing room, and — because the packer fully bounds every word
  * inside the 1100×320 canvas — there is no clip risk. */
-section.word-cloud .word-cloud-canvas::before {
+/* OPT-IN: gated on `.canvas`, matching the chart-family default — bare unless
+ * the slide opts into the surface. */
+section.word-cloud.canvas .word-cloud-canvas::before {
   content: "";
   position: absolute;
   /* Keep the top inset shallow so the panel starts BELOW the h2 (the header

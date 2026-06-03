@@ -27,12 +27,12 @@ in patch versions.
 
 ### Added
 
-- **New `flat` modifier — drop the chart canvas.** `flat` is a chart-scoped
-  modifier that removes the surface panel (no fill, border, shadow, or float
-  margin) so the chart sits directly on the slide instead of on a lifted pane.
-  Lets a deck mix canvas and non-canvas charts per slide
-  (`<!-- _class: piechart flat -->`); composes with `dark`. Pure CSS on
-  `section.chart-frame.flat .chart-body`.
+- **New `canvas` modifier — opt into the chart surface panel.** Charts now sit
+  directly on the slide by **default** (bare); add `canvas` to lift the chart
+  onto its surface panel (`<!-- _class: piechart canvas -->`). Lets a deck mix
+  canvas and non-canvas charts per slide; composes with `dark`. Pure CSS on
+  `section.chart-frame.canvas:not(.state-chart) .chart-body` (and
+  `section.word-cloud.canvas` for the free-floating word-cloud).
 - **New `cover` modifier — a chart-family full-bleed with a caption band.**
   `cover` is a **chart-scoped** modifier (registered as a `cover` variant on the
   charts that support it — radar, piechart — *not* an all-layout universal). It
@@ -46,9 +46,11 @@ in patch versions.
   Distinct from image's `full` photo variant (unchanged — see below). Documented
   via the radar/piechart `variantDocs`. Pure CSS — no transform/render-path
   change.
-- **Chart surface panels — real glass, not a tinted box.** Every framed
-  chart-family member sits on its own glass surface at editorial-whisper
-  intensity. The fill is **never** a `--text-heading` mix: that token is a
+- **Chart surface panels — opt-in `canvas`, real glass not a tinted box.**
+  Charts are **bare by default** (sit directly on the slide); the `canvas`
+  modifier lifts a framed chart-family member onto a glass surface at
+  editorial-whisper intensity. The fill is **never** a `--text-heading` mix:
+  that token is a
   neutral gray, so mixing it into `--bg` painted a muddy gray box that read as
   a second background on the slide, not glass. Instead the pane tints toward
   white-frost and the form is carried by light on the edges + a shadow: on a
@@ -57,7 +59,7 @@ in patch versions.
   edge + a white top rim), and on a DARK slide it's a translucent **white
   frost veil** (lighter than the canvas) with a luminous edge. `light-dark()`
   picks the right one. Pure CSS on
-  `section.chart-frame:not(.state-chart) .chart-body`. The float shadow is
+  `section.chart-frame.canvas:not(.state-chart) .chart-body`. The float shadow is
   always black-based — `--text-heading` flips to white on dark and would cast
   a white glow / double-frame that bleeds over the footer. No `backdrop-filter` blur — unreliable in
   print-to-PDF and there's only flat `--bg` behind the pane, so it would cost
