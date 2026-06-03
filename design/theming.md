@@ -25,8 +25,7 @@ contains:
 5. A `:root` block defining `--hljs-*` tokens for code-block syntax colors.
 6. A `:root` block defining `--c-*` tokens — the categorical palette
    (12-slot paired light/dark cycle, paired ink, structural stroke/line,
-   quadrant slot mappings, plus optional overrides of the universal
-   semantic palette).
+   plus optional overrides of the universal semantic palette).
 
 Palettes are token-only. The per-diagram CSS overrides (`section .section-N
 rect { fill: var(--c3-light) }` and the rest) live in `lattice.css`'s
@@ -193,10 +192,10 @@ known-good starting point.
   curve, where a single warm hue against the cool band reads better
   than a second pale tint).
 
-**Quadrant chart** (4-slot tonal ladder, fill + text paired):
-`--c-quadrant-1-fill`..`-4-fill`, `--c-quadrant-1-text`..`-4-text`.
-The fill tokens are theme-defined slot mappings onto `--cN-light`;
-e.g. indaco picks Q1→c1, Q2→c2, Q3→c7 (yellow = "hold"), Q4→c3.
+**Quadrant chart** is now a native chart-family component, not a mermaid
+diagram — it draws from the chart-family's own `--catN-*` spectrum (tunable
+per theme via `--chart-catN`) and no longer uses theme-defined
+`--c-quadrant-*` slot tokens. See `lib/components/chart/quadrant/`.
 
 ### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 
@@ -266,7 +265,7 @@ The default `indaco` palette uses two distinct lightness tiers for the
 categorical cycle, plus a small universal semantic palette for status
 signals:
 
-- **Pale tier, L≈87.** `--c1-light`..`--c12-light`, quadrant fills,
+- **Pale tier, L≈87.** `--c1-light`..`--c12-light`,
   sequence actor backgrounds, pie slices, and most light surfaces.
   `--c-ink-light` reads on these with 10:1+ contrast.
 - **Deep tier, L≈32.** `--c1-dark`..`--c12-dark`. Saturated marks:
@@ -394,9 +393,8 @@ Then, in order of impact:
    Copy the rank-1 Brand-triad proposal from `themes/palette-audit.md`
    as a known-good starting point; AA against the paired ink is checked
    by the contrast suite.
-6. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`,
-   `--c-quadrant-N-{fill,text}`). Borders, edge lines, secondary warm
-   accent, quadrant slot mapping.
+6. **Structural tokens** (`--c-stroke`, `--c-line`, `--c-accent-warm`).
+   Borders, edge lines, and the secondary warm accent.
 7. **Universal semantic overrides** (optional — only if your theme has
    curated alternatives to lattice.css defaults for `--c-warm-*`,
    `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`). cuoio is the
@@ -446,9 +444,9 @@ If you prefer not to run the scaffolder:
 
 Two checks worth running:
 
-**Contrast**: `test/unit/contrast.test.js` parses every shipped palette
-and asserts AA on every `--cN-light` / `--c-ink-light` pair, every
-`--cN-dark` / `--c-ink-dark` pair, every quadrant pair, `--text-heading`
+**Contrast**: `test/unit/palette/contrast.test.js` parses every shipped
+palette and asserts AA on every `--cN-light` / `--c-ink-light` pair, every
+`--cN-dark` / `--c-ink-dark` pair, `--text-heading`
 on `--bg`/`--bg-alt`, and `--c-ink-dark` on `--c-alarm` — in both light
 and dark. Add your new palette to the test's loop (the `['indaco',
 'cuoio']` literal). If a pair fails, lift the text (darker on light,
