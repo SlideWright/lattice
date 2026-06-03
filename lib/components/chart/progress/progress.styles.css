@@ -47,12 +47,16 @@ section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  /* Neutral bar (no status) draws the first slot of the shared chart
-   * category model — --cat1-hue is the canvas-vivid categorical colour
-   * (deep on light, bright on dark), so the bar reads on both canvases.
-   * Status variants below still override with the semantic health colours
-   * (pass/warn/fail). Authors can pin another colour with `--fill`. */
-  background: var(--fill, var(--cat1-hue));
+  /* Same vivid gradient language as the gantt bar: --fill-ink is the
+   * saturated canvas-aware hue, and the bar draws a lit-top / deepened-foot
+   * gradient off it. Neutral bar (no status) = the categorical cat1 slot;
+   * status variants below re-point --fill-ink at a semantic --state-*-ink.
+   * Authors can pin another colour with `--fill`. */
+  --fill-ink: var(--fill, var(--cat1-hue));
+  background: linear-gradient(180deg,
+    color-mix(in oklab, white 16%, var(--fill-ink)) 0%,
+    var(--fill-ink) 52%,
+    color-mix(in oklab, black 12%, var(--fill-ink)) 100%);
   border-radius: 7px 0 0 7px;
   transition: none;
 }
@@ -60,12 +64,12 @@ section.progress .progress-fill {
  * light, bright pastel on dark), so one rule each — no `.dark` overrides. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { background: var(--state-pass-ink); }
+section.progress .progress-fill[data-s="live"] { --fill-ink: var(--state-pass-ink); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { background: var(--state-warn-ink); }
+section.progress .progress-fill[data-s="warn"]   { --fill-ink: var(--state-warn-ink); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { background: var(--state-fail-ink); }
-section.progress .progress-fill[data-s="deferred"] { background: var(--state-mute-ink); }
+section.progress .progress-fill[data-s="fail"]   { --fill-ink: var(--state-fail-ink); }
+section.progress .progress-fill[data-s="deferred"] { --fill-ink: var(--state-mute-ink); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
