@@ -47,7 +47,7 @@ section.kanban.chart-frame .chart-body {
   text-transform: uppercase;
   color: var(--text-label);
   padding: 0 var(--sp-xs) 0.78125cqi;
-  border-bottom: 2px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  border-bottom: 2px solid var(--chart-rule);
   margin-bottom: var(--sp-sm);
   white-space: nowrap;
   overflow: hidden;

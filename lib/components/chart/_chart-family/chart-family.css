@@ -185,6 +185,11 @@ section.chart-frame {
   --state-fail-ink: light-dark(var(--state-fail-hue), color-mix(in oklab, var(--state-fail-hue) 78%, white));
   --state-info-ink: light-dark(var(--state-info-hue), color-mix(in oklab, var(--state-info-hue) 78%, white));
   --state-mute-ink: light-dark(var(--state-mute-hue), color-mix(in oklab, var(--state-mute-hue) 72%, white));
+
+  /* Shared accent header-rule — the hairline under a data header (gantt quarter
+   * axis, kanban column headers). One token so every chart's header underline
+   * reads at the same weight, matching the chart eyebrow's accent register. */
+  --chart-rule: color-mix(in oklab, var(--accent) 24%, transparent);
 }
 
 section.chart-frame .chart-header {

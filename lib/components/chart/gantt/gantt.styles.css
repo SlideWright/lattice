@@ -45,7 +45,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   align-items: center;
   padding-bottom: var(--sp-xs);
   margin-bottom: 0.3125cqi;
-  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+  border-bottom: 1px solid var(--chart-rule);
 }
 
 .gantt-axis-spacer {
