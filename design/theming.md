@@ -228,6 +228,15 @@ its `--chart-state-*` reuses cuoio's own `--pass` / `--warn` / `--fail` so a
 gantt at-risk bar matches a `--warn` chip. See `themes/cuoio.css` and the
 ranked proposals in `themes/palette-audit.md`.
 
+**onyx is the achromatic counter-example.** Its identity forbids a chromatic
+spectrum, so `--chart-cat*` distinguishes categories by *value*, not hue: a
+grayscale ramp (ordered most-distinct-first, all in the dark half so every
+mark clears 3:1 on white) plus the signature red and two faint accents
+(slate, olive). `--chart-state-*` is left unset so status keeps the
+conventional green/amber/red default — the one place onyx trades a little
+purity for instant legibility. The rule of thumb: a theme whose categories
+can't differ by hue differs by value instead. See `themes/onyx.css`.
+
 ### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 
 Status-signaling colours shared across every theme. **Defined in
