@@ -36,6 +36,14 @@ in patch versions.
   Mermaid diagrams use, so a pie and a flowchart read as one palette; status
   colour reuses cuoio's `--pass` / `--warn` / `--fail` so a gantt at-risk bar
   matches a `--warn` chip. See `design/theming.md` and `themes/palette-audit.md`.
+- **onyx curates its charts the achromatic way.** onyx's identity is pure
+  black/white with one red pop, so a chromatic spectrum (and the palette
+  audit's onyx proposals, which collapse every category to one gray) would
+  betray it. Instead `--chart-cat*` distinguishes categories by *value* — a
+  grayscale ramp ordered most-distinct-first, plus the signature red and two
+  faint accents (slate, olive), every mark clearing 3:1 on both canvases.
+  `--chart-state-*` is deliberately left at the conventional green/amber/red
+  default so status still reads by colour.
 
 ### Fixed
 

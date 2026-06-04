@@ -193,3 +193,33 @@ section pre.hljs {
   --c-container:     light-dark(#EEEEEE, #020202);
   --c-subcontainer:  light-dark(#DFDFDF, #0B0B0B);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * onyx is achromatic by identity — pure black/white with one saturated red
+ * pop. A chromatic categorical spectrum (and the palette audit's onyx
+ * proposals, which collapse every category to the same gray) would betray
+ * that, so charts distinguish CATEGORIES by value, not hue: a grayscale
+ * value-ramp + the signature red + two heavily-desaturated accents (slate,
+ * olive) to keep 7–8 series separable. Each slot is
+ * `light-dark(whiteCanvasValue, blackCanvasValue)` so the ramp stays
+ * visible on both canvases (dark grays on white, light grays on black).
+ *
+ * STATUS charts are intentionally NOT overridden: --chart-state-* is left
+ * to the chart-family's conventional green/amber/red default, so good /
+ * at-risk / blocked still read by colour (the one place onyx trades a little
+ * purity for instant legibility). See design/theming.md. */
+:root {
+  /* Ordered most-distinct-first (charts cycle cat1,2,3…, and most use ≤5):
+   * red → near-black → slate → mid-gray → olive, then filler grays. All
+   * category grays stay in the dark half so every mark clears 3:1 on the
+   * white canvas (a light gray mark would vanish there); the dark-side
+   * values span wide so the ramp survives the canvas flip. */
+  --chart-cat1: light-dark(#C71F2D, #E5484D);  /* signature red — hero      */
+  --chart-cat2: light-dark(#2B2B2B, #E0E0E0);  /* near-black / near-white   */
+  --chart-cat3: light-dark(#4A5C7C, #93A6C4);  /* faint slate (accent 1)    */
+  --chart-cat4: light-dark(#8A8A8A, #8E8E8E);  /* mid gray                  */
+  --chart-cat5: light-dark(#696D48, #AEB386);  /* faint olive (accent 2)    */
+  --chart-cat6: light-dark(#555555, #BDBDBD);  /* dark-mid / light gray     */
+  --chart-cat7: light-dark(#404040, #707070);  /* dark gray                 */
+  --chart-cat8: light-dark(#707070, #D2D2D2);  /* mid / light gray          */
+}
