@@ -232,10 +232,22 @@ ranked proposals in `themes/palette-audit.md`.
 spectrum, so `--chart-cat*` distinguishes categories by *value*, not hue: a
 grayscale ramp (ordered most-distinct-first, all in the dark half so every
 mark clears 3:1 on white) plus the signature red and two faint accents
-(slate, olive). `--chart-state-*` is left unset so status keeps the
-conventional green/amber/red default — the one place onyx trades a little
-purity for instant legibility. The rule of thumb: a theme whose categories
-can't differ by hue differs by value instead. See `themes/onyx.css`.
+(slate, olive). `--chart-state-*` draws from that same red / olive / slate /
+grays, so a gantt and a progress bar read on-brand and identical (fail = red,
+warn = olive, info = slate, pass / mute = grays) — meaning carried by value +
+the pill's text label, not a chromatic status code. The rule of thumb: a
+theme whose categories can't differ by hue differs by value instead. See
+`themes/onyx.css`.
+
+**Curate assessment-first.** Score candidate `--chart-cat*` / `--chart-state-*`
+values *before* committing to them — resolve the full token chain (incl. each
+chart's gradient deep stop) and check, on **both** canvases: text-on-fill WCAG
+(AA on labels), marks vs canvas (≥3:1, WCAG 1.4.11), and adjacent-slot OKLab
+distinctness (≥0.15). It catches what the eye misses — a light-gray category
+that vanishes on white, or five status colours that collapse to one value at
+the bar's deep stop. The audit's score is text-contrast only; it does not
+prove categories are distinguishable (onyx's top audit proposal makes every
+slot one gray), so a passing audit score is a starting point, not the answer.
 
 ### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 

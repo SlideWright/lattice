@@ -42,8 +42,9 @@ in patch versions.
   betray it. Instead `--chart-cat*` distinguishes categories by *value* — a
   grayscale ramp ordered most-distinct-first, plus the signature red and two
   faint accents (slate, olive), every mark clearing 3:1 on both canvases.
-  `--chart-state-*` is deliberately left at the conventional green/amber/red
-  default so status still reads by colour.
+  `--chart-state-*` draws from that same red / olive / slate / grays, so gantt
+  and progress read on-brand and identical (fail = red, warn = olive, info =
+  slate, pass / mute = dark / light gray) instead of the engine's green/amber.
 
 ### Fixed
 
