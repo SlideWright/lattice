@@ -197,6 +197,37 @@ diagram — it draws from the chart-family's own `--catN-*` spectrum (tunable
 per theme via `--chart-catN`) and no longer uses theme-defined
 `--c-quadrant-*` slot tokens. See `lib/components/chart/quadrant/`.
 
+### Chart-family palette (`--chart-catN`, `--chart-state-*`)
+
+The chart bucket (pie, quadrant, radar, gantt, kanban, progress,
+state-chart, timeline-list, word-cloud) draws from its **own** two
+spectrums, defined in
+`lib/components/chart/_chart-family/chart-family.css` and decoupled from
+the engine-wide `--cN` accents:
+
+- **Categorical** — `--catN-*` (N = 1–8), the well-spaced hue set pie
+  wedges / radar curves / kanban lanes cycle through.
+- **Semantic** — `--state-{pass,warn,fail,info,mute}-*`, the status
+  colours gantt bars / progress fills / status pills use to encode meaning.
+
+Both ship a canvas-aware Apple-hue **default**, so an untuned theme gets a
+working chart palette for free. A theme **curates** charts to its own
+character by setting the override hooks at `:root`, each a
+`light-dark(lightCanvasVivid, darkCanvasVivid)` pair:
+
+| Hook | Overrides |
+|---|---|
+| `--chart-cat1` … `--chart-cat8` | the 8 categorical hues |
+| `--chart-state-pass` / `-warn` / `-fail` / `-info` / `-mute` | the 5 semantic hues |
+
+The `var()` indirection means a theme always wins, and it need only set the
+slots it wants to flavour. **cuoio is the worked example**: its
+`--chart-catN` is the palette audit's top-scored "Brand triad" earth
+spectrum (so charts share the `--cN` language of its Mermaid diagrams), and
+its `--chart-state-*` reuses cuoio's own `--pass` / `--warn` / `--fail` so a
+gantt at-risk bar matches a `--warn` chip. See `themes/cuoio.css` and the
+ranked proposals in `themes/palette-audit.md`.
+
 ### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 
 Status-signaling colours shared across every theme. **Defined in
