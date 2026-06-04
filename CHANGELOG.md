@@ -36,15 +36,19 @@ in patch versions.
   Mermaid diagrams use, so a pie and a flowchart read as one palette; status
   colour reuses cuoio's `--pass` / `--warn` / `--fail` so a gantt at-risk bar
   matches a `--warn` chip. See `design/theming.md` and `themes/palette-audit.md`.
-- **onyx curates its charts the achromatic way.** onyx's identity is pure
-  black/white with one red pop, so a chromatic spectrum (and the palette
-  audit's onyx proposals, which collapse every category to one gray) would
-  betray it. Instead `--chart-cat*` distinguishes categories by *value* — a
-  grayscale ramp ordered most-distinct-first, plus the signature red and two
-  faint accents (slate, olive), every mark clearing 3:1 on both canvases.
-  `--chart-state-*` draws from that same red / olive / slate / grays, so gantt
-  and progress read on-brand and identical (fail = red, warn = olive, info =
-  slate, pass / mute = dark / light gray) instead of the engine's green/amber.
+- **onyx curates its charts around a slate · red · green triad.** onyx stays
+  achromatic in its *chrome* (ink ramp, brand axis, mermaid, code) but its
+  *charts* now carry a restrained three-colour identity — the signature red
+  plus a slate and a green — over a grayscale value tail, so colour does the
+  separating where it earns legibility (pie wedges, status) instead of every
+  category collapsing to a gray. `--chart-cat*` leads red → slate → green →
+  near-black → grays → olive; `--chart-state-*` draws from the same hues
+  (pass = green, fail = the signature red, info = slate, warn = olive, mute =
+  gray) so categorical and status read as one palette and a gantt at-risk bar
+  matches a warn pill. Fills sit at the engine's readable depth, so the
+  `--text-heading` label reads directly on every fill — measured ≥ 8:1 on both
+  canvases — with no glow or plate behind the text. onyx-only; cuoio, indaco,
+  and the shared engine are untouched.
 
 ### Fixed
 
