@@ -25,6 +25,18 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **cuoio ships a curated chart palette — the first theme to flavour the
+  chart family.** cuoio's charts no longer inherit the engine's default
+  Apple-hue spectrum (which read as "indaco's charts" on the warm canvas);
+  they now use cuoio's own earth pigments through the `--chart-catN` /
+  `--chart-state-*` override hooks. Categorical colour adopts the palette
+  audit's top-scored "Brand triad" set — the same `--cN` pigments cuoio's
+  Mermaid diagrams use, so a pie and a flowchart read as one palette; status
+  colour reuses cuoio's `--pass` / `--warn` / `--fail` so a gantt at-risk bar
+  matches a `--warn` chip. See `design/theming.md` and `themes/palette-audit.md`.
+
 ### Fixed
 
 - **Pie wedge borders were off-by-one from their fills.** The piechart SVG

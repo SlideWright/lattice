@@ -301,3 +301,43 @@
   --c-container:     light-dark(#ECE6DD, #28241D);
   --c-subcontainer:  light-dark(#DDD7CF, #39352E);
 }
+
+/* ── Chart-family palette ───────────────────────────────────────────────
+ * Cuoio's curation of the chart-family's two colour spectrums (defined in
+ * lib/components/chart/_chart-family/chart-family.css). The engine ships a
+ * canvas-aware Apple-hue default; untuned themes inherit it. Cuoio overrides
+ * both spectrums with its warm-earth pigments so charts read native to the
+ * "ink on vellum" brand instead of borrowing the cool system palette.
+ *
+ * Each hook is the `light-dark(lightCanvasVivid, darkCanvasVivid)` shape the
+ * chart-family expects: on cream the value is a saturated earth pigment (it
+ * drives the wedge/bar border at full strength and a 24% tint for the fill);
+ * on espresso it lifts to a brighter same-hue sibling. See design/theming.md
+ * (chart palette) and the chart-family.css token block for the contract. */
+:root {
+  /* Categorical spectrum — cuoio's #1 audited proposal, "Brand triad"
+   * (themes/palette-audit.md, 99/100: AA 12/12 both canvases, min adjacent
+   * ΔH 60°, hue coverage 330°). These are cuoio's own --cN earth pigments,
+   * so charts share the exact categorical language as its Mermaid diagrams.
+   * Light side = the audited pigment (drives the border at full strength + a
+   * 24% tint for the fill); dark side = the same hue lifted toward white so
+   * it stays vivid on espresso. */
+  --chart-cat1: light-dark(#8A672E, color-mix(in oklab, #8A672E, white 30%));  /* bronze    */
+  --chart-cat2: light-dark(#327C86, color-mix(in oklab, #327C86, white 30%));  /* teal      */
+  --chart-cat3: light-dark(#3B3286, color-mix(in oklab, #3B3286, white 30%));  /* indigo    */
+  --chart-cat4: light-dark(#727B2D, color-mix(in oklab, #727B2D, white 30%));  /* olive     */
+  --chart-cat5: light-dark(#863B32, color-mix(in oklab, #863B32, white 30%));  /* rust      */
+  --chart-cat6: light-dark(#325286, color-mix(in oklab, #325286, white 30%));  /* slate     */
+  --chart-cat7: light-dark(#538038, color-mix(in oklab, #538038, white 30%));  /* green     */
+  --chart-cat8: light-dark(#388064, color-mix(in oklab, #388064, white 30%));  /* teal-green*/
+
+  /* Semantic spectrum — charts that encode meaning (gantt bars, progress,
+   * status pills, state-chart, timeline). pass/warn/fail reuse cuoio's own
+   * status trio so a gantt at-risk bar matches a --warn chip; info takes the
+   * slate blue, mute a warm taupe (not the engine's cool gray). */
+  --chart-state-pass: var(--pass);                  /* leather green */
+  --chart-state-warn: var(--warn);                  /* saddle amber  */
+  --chart-state-fail: var(--fail);                  /* crimson alarm */
+  --chart-state-info: light-dark(#3E6A9E, #79A6D6); /* dusty slate   */
+  --chart-state-mute: light-dark(#6F6354, #A69882); /* warm taupe    */
+}
