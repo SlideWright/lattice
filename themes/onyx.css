@@ -204,10 +204,13 @@ section pre.hljs {
  * `light-dark(whiteCanvasValue, blackCanvasValue)` so the ramp stays
  * visible on both canvases (dark grays on white, light grays on black).
  *
- * STATUS charts are intentionally NOT overridden: --chart-state-* is left
- * to the chart-family's conventional green/amber/red default, so good /
- * at-risk / blocked still read by colour (the one place onyx trades a little
- * purity for instant legibility). See design/theming.md. */
+ * STATUS charts (gantt bars, progress fills, pills, state-chart) draw from
+ * the SAME on-brand vocabulary so they read like the rest of onyx's charts —
+ * not the engine's green/amber/gray default: fail = the signature red, warn =
+ * olive, info = slate, with pass / mute the dark / light grays. Meaning is
+ * carried by value + the pill's text label, not a chromatic status code, so
+ * gantt and progress read on-brand and identical to each other.
+ * See design/theming.md. */
 :root {
   /* Ordered most-distinct-first (charts cycle cat1,2,3…, and most use ≤5):
    * red → near-black → slate → mid-gray → olive, then filler grays. All
@@ -222,4 +225,12 @@ section pre.hljs {
   --chart-cat6: light-dark(#555555, #BDBDBD);  /* dark-mid / light gray     */
   --chart-cat7: light-dark(#404040, #707070);  /* dark gray                 */
   --chart-cat8: light-dark(#707070, #D2D2D2);  /* mid / light gray          */
+
+  /* Status — drawn from the same red / slate / olive / grays as the
+   * categories, so gantt + progress read on-brand (no green/amber). */
+  --chart-state-pass: light-dark(#2E2E2E, #D0D0D0);  /* done — near-black/white */
+  --chart-state-warn: light-dark(#6B6F48, #AEB386);  /* at-risk — olive         */
+  --chart-state-fail: light-dark(#C71F2D, #E5484D);  /* blocked — signature red */
+  --chart-state-info: light-dark(#4A5C7C, #93A6C4);  /* decision — slate        */
+  --chart-state-mute: light-dark(#AEAEAE, #6E6E6E);  /* deferred — light/dark   */
 }
