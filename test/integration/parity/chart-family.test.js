@@ -55,8 +55,8 @@ describe('chart-family', () => {
     // Status data attribute carries the pill token through to the fill
     assert.match(firstProgress[0], /<div class="progress-fill" data-s="on-track"/);
     assert.match(firstProgress[0], /<div class="progress-fill" data-s="blocked"/);
-    // Numeric percentage extracted into progress-pct
-    assert.match(firstProgress[0], /<div class="progress-pct">92%<\/div>/);
+    // Numeric percentage rides the fill's leading edge as an in-bar span
+    assert.match(firstProgress[0], /<span class="progress-pct">92%<\/span>/);
   });
 
   test('progress dark + minimal modifiers compose with chart-frame', { timeout: 180000 }, () => {

@@ -131,8 +131,14 @@ section.quadrant .quadrant-svg {
  */
 
 /* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
+/* PROTOTYPE (kanban-finish standardization): the region blocks were the
+ * loudest fill in the family (the salmon-red Quick Wins quadrant read far
+ * stronger than the same hue's airy radar wash). fill-opacity drops the four
+ * tints ~40% into the family's quiet register so identity is carried by the
+ * vivid white-ringed dots at the edge, not by shouting region blocks. */
 section.quadrant .quadrant-tint {
   fill: var(--cell-fill);
+  fill-opacity: 0.6;
   stroke: none;
 }
 

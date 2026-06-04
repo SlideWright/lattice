@@ -94,13 +94,32 @@ section.state-chart .state-node {
   gap: var(--sp-sm);
   max-width: 320px;
   padding: 10px 16px;
-  background: var(--state-node-fill);
+  /* THE CANONICAL CHART FILL (chart-family.css): every node is a tile, exactly
+   * like a kanban card. A node WITHOUT a status is a quiet neutral slate tile;
+   * a node WITH a status (the [data-s] rules below) re-points the --fill-* pair
+   * at that status's semantic hue — so colour reads as meaning while every node
+   * shares the one material. */
+  --fill-hue: var(--text-muted);
+  --fill-ink: var(--c-stroke);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--state-node-ink);
-  border: 1px solid var(--state-node-stroke);
   border-radius: 6px;
   font-weight: 500;
   line-height: 1.25;
 }
+
+/* Nodes stay NEUTRAL — a kanban card with no lane. Status is deliberately NOT
+ * painted onto the node: a green "on-track" node behind its green pill would
+ * blend, and would overload green's fixed semantic. Colour lives in the
+ * .chart-status pill — the one loud chip that pops against the neutral tile,
+ * exactly the kanban card ↔ pill relationship. (data-s is kept on the node for
+ * the pill and the start/terminal cues.) */
 
 section.state-chart .state-node .state-label {
   min-width: 0;
@@ -122,9 +141,11 @@ section.state-chart .state-node .chart-status {
   flex: 0 0 auto;
 }
 
-/* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. */
+/* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. Every node now
+ * carries a 4px accent; the start node reads heavier (keeps its neutral/status
+ * stripe colour), the terminal keeps its outline ring. */
 section.state-chart .state-node[data-kind="start"] {
-  border-left-width: 3px;
+  border-left-width: 7px;
 }
 
 section.state-chart .state-node[data-kind="terminal"] {
@@ -227,15 +248,24 @@ section.state-chart.horizontal .state-node-row {
   gap: var(--sp-sm);
   padding: var(--sp-sm) var(--sp-md);
   margin: 4px 0;
-  background: var(--state-node-fill);
+  /* Same canonical tile as the SVG-variant nodes above. */
+  --fill-hue: var(--text-muted);
+  --fill-ink: var(--c-stroke);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--state-node-ink);
-  border: 1px solid var(--state-node-stroke);
   border-radius: 6px;
 }
+/* Neutral rows too — the pill carries the status colour (see the SVG-node note). */
 
 section.state-chart.inline .state-node-row[data-kind="start"],
 section.state-chart.horizontal .state-node-row[data-kind="start"] {
-  border-left-width: 3px;
+  border-left-width: 7px;
 }
 
 section.state-chart.inline .state-node-row[data-kind="terminal"],

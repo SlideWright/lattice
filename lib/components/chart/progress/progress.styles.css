@@ -25,7 +25,10 @@ section.progress .progress-bars {
 }
 section.progress .progress-row {
   display: grid;
-  grid-template-columns: 18.75cqi 1fr 4.6875cqi 7.5cqi;
+  /* label · track · pill — the % readout now lives INSIDE the fill (right-
+   * aligned on the colored bar, like a gantt bar's in-bar label), so it no
+   * longer needs its own column. */
+  grid-template-columns: 18.75cqi 1fr 7.5cqi;
   align-items: center;
   column-gap: var(--sp-md);
 }
@@ -37,47 +40,74 @@ section.progress .progress-label {
 }
 section.progress .progress-track {
   position: relative;
-  height: 1.09375cqi;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: 0.546875cqi;
+  /* NO rail. The track is a transparent positioning context only — the fill is
+   * a self-contained bordered tile that "shoots forward" on the bare canvas
+   * (like a gantt bar floating on its lane). A gray rail behind it diluted the
+   * row and washed the fill out; the magnitude is carried by the bar's length,
+   * its leading-edge intensity (see the fill), and the printed %. overflow:hidden
+   * + radius clip the fill's rounded corners. */
+  height: 2.5cqi;
+  background: transparent;
+  border-radius: 0.46875cqi;
   overflow: hidden;
 }
 section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  /* Same hue-into-bg depth gradient as the gantt bar and the pie / quadrant /
-   * radar SVG charts — so every data fill in the family reads with the same
-   * richness and dimension. A ratio gauge with no on-bar text, so it runs a
-   * touch richer than gantt (48 → 72%) for a crisp filled-vs-track read.
-   * Neutral bar (no status) = the categorical cat1 slot; status variants
-   * re-point --fill-hue at a semantic --state-*-hue. Authors pin with `--fill`. */
+  /* CHART-FAMILY MATERIAL, progress-SPECIALIZED GEOMETRY. Progress shares the
+   * family's hue/ink palette (--fill-* below), 1px hue-tint border, and 4px
+   * vivid left accent — the same MATERIAL as the kanban card / gantt bar /
+   * state node. What it specializes is the GRADIENT: progress is the only
+   * family member with a magnitude (--pct), so it encodes that magnitude in the
+   * fill rather than wearing the shared vertical wash. The gradient runs
+   * HORIZONTALLY (the direction the bar grows) and "shoots forward" — pale/dark
+   * tail at the origin ramping to a saturated LEADING-EDGE head whose intensity
+   * scales with --pct: a 92% bar ramps to a vivid head, a 12% bar stays dim and
+   * stalled. So value is double-encoded (length AND intensity). The head mix %
+   * is calc(base + --pct * k); canvas-aware via light-dark() — mixes into --bg
+   * on light, toward black on dark (mirrors --state-*-fill, mud-free). The other
+   * members keep the shared --chart-fill-* vertical wash (they have no --pct).
+   * A bar with no status is the categorical cat1 slot; status variants re-point
+   * the --fill-* pair. Authors pin a categorical hue with `--fill`. */
   --fill-hue: var(--fill, var(--cat1-hue));
-  background: linear-gradient(180deg,
-    color-mix(in oklab, var(--fill-hue) 48%, var(--bg)) 0%,
-    color-mix(in oklab, var(--fill-hue) 72%, var(--bg)) 100%);
-  border-radius: 7px 0 0 7px;
+  --fill-ink: var(--cat1-ink);
+  background: linear-gradient(90deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) 12%, var(--bg)),
+               color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) calc(20% + var(--pct) * 0.52%), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) calc(38% + var(--pct) * 0.58%), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
+  border-radius: 0.46875cqi;
   transition: none;
+  /* The % readout rides the bar's leading edge: right-aligned ON the colored
+   * fill, like a gantt bar's in-bar label. --text-heading clears the wash on
+   * both canvases. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.625cqi;
+  overflow: hidden;
 }
-/* Each status re-points --fill-hue at a semantic --state-*-hue; the base
- * rule's depth gradient picks it up. Canvas-aware, so one rule each. */
+/* Each status re-points the --fill-* pair; the canonical recipe picks it up.
+ * Canvas-aware via light-dark(), so one rule each. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); }
+section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); }
+section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); }
-section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); }
+section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-heading);
-  min-width: 3.75cqi;
-  text-align: left;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  line-height: 1;
 }
 /* Pills right-align in their column so all pill right edges line up. */
 section.progress .progress-row > .chart-status,
@@ -86,7 +116,7 @@ section.progress .progress-row > .chart-status-empty {
 }
 /* Optional row sub-bullet — rendered as a small footnote under the bar. */
 section.progress .progress-note {
-  grid-column: 2 / 4;
+  grid-column: 2 / 3;
   margin-top: -0.3125cqi;
   font-size: var(--fs-meta);
   color: var(--text-muted);
