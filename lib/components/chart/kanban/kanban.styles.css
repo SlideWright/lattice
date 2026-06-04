@@ -74,12 +74,17 @@ section.kanban.chart-frame .chart-body {
  * its lane. The 3px left stripe stays as the strong lane marker; --text-heading
  * titles still clear the pale tint. Falls back to --bg-alt when no lane. */
 .kanban-card {
-  --lane: var(--lane-color, var(--cat1-ink));
+  /* THE CANONICAL CHART FILL (defined in chart-family.css). Kanban is the
+   * reference: a card's hue is its lane colour, its edge the same lane ink. */
+  --fill-hue: var(--lane-color, var(--cat1-ink));
+  --fill-ink: var(--lane-color, var(--border));
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--lane) 20%, var(--bg)) 0%,
-    color-mix(in oklab, var(--lane) 38%, var(--bg)) 100%);
-  border: 1px solid color-mix(in oklab, var(--lane) 38%, var(--border));
-  border-left: 4px solid var(--lane-color, var(--border));
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
   display: flex;

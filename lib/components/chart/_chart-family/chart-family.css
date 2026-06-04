@@ -190,6 +190,42 @@ section.chart-frame {
    * axis, kanban column headers). One token so every chart's header underline
    * reads at the same weight, matching the chart eyebrow's accent register. */
   --chart-rule: color-mix(in oklab, var(--accent) 24%, transparent);
+
+  /* ── THE CANONICAL CHART FILL ──────────────────────────────────────────────
+   * Kanban set the family's fill language; these four constants make it the
+   * SINGLE SOURCE OF TRUTH so every rectangular data fill — kanban card, gantt
+   * bar, progress bar, state-chart node — paints identically and cannot drift.
+   * A member supplies only --fill-hue (the gradient hue) and --fill-ink (the
+   * saturated edge), drawn from its own palette (catN categorical / --state-*
+   * semantic), then paints the shared recipe. Each gradient stop is a
+   * light-dark() pair — LIGHT mixes the hue into the canvas --bg; DARK mixes
+   * toward BLACK at a higher ratio (mirrors --state-*-fill) so warm hues stay
+   * true on the navy dark canvas instead of mudding into it:
+   *
+   *   --fill-hue: <hue>;  --fill-ink: <ink>;
+   *   background: linear-gradient(180deg,
+   *     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+   *                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+   *     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+   *                color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+   *   border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+   *   border-left: var(--chart-fill-accent) solid var(--fill-ink);
+   *
+   * Per-shape variation is allowed where the geometry demands it (the pie wedge
+   * uses a RADIAL gradient with these same stops) — the stops and edge stay
+   * shared, only the gradient axis changes. Colour rides the edge; the wash
+   * only tints, so --text-heading labels clear it on both canvases.
+   *
+   * One member specializes further: PROGRESS is the only chart with a magnitude
+   * (--pct), so it replaces this vertical wash with a HORIZONTAL gradient whose
+   * leading-edge intensity scales with --pct (calc(base + --pct * k)) — the bar
+   * "shoots forward", double-encoding value as length AND intensity. It keeps
+   * the shared material (palette, edge, accent); only the gradient is bespoke.
+   * See progress.styles.css. The others have no --pct and wear the wash. */
+  --chart-fill-top-l: 20%;     --chart-fill-top-d: 48%;
+  --chart-fill-bottom-l: 38%;  --chart-fill-bottom-d: 64%;
+  --chart-fill-edge: 38%;
+  --chart-fill-accent: 4px;
 }
 
 section.chart-frame .chart-header {

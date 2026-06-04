@@ -125,12 +125,18 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
    * like the SVG charts. Capped at ~54% so the shared --text-heading label
    * still reads — dark on light, white on dark, coherent with every chart. The
    * vivid ink border reinforces the hue at the bar edge. */
-  --bar-hue: var(--state-info-hue);
-  --bar-ink: var(--state-info-ink);
+  /* THE CANONICAL CHART FILL (defined in chart-family.css) — identical recipe
+   * and stops as the kanban card / progress bar / state node. A bar supplies
+   * only its semantic --fill-hue / --fill-ink (per status, below). */
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--bar-hue) 33%, var(--bg)) 0%,
-    color-mix(in oklab, var(--bar-hue) 54%, var(--bg)) 100%);
-  border: 1px solid var(--bar-ink);
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-meta);
@@ -144,19 +150,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status — each re-points --bar-hue (gradient) + --bar-ink (border) at a
- * semantic --state-* pair; the base rule's gradient + --text-heading label are
- * unchanged. Canvas-aware via light-dark(), so one rule per status, both modes. */
+/* Status — each re-points --fill-hue (gradient) + --fill-ink (edge) at a
+ * semantic --state-* pair; the canonical fill recipe picks them up.
+ * Canvas-aware via light-dark(), so one rule per status, both modes. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { --bar-hue: var(--state-pass-hue); --bar-ink: var(--state-pass-ink); }
+.gantt-bar[data-s="live"]     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { --bar-hue: var(--state-warn-hue); --bar-ink: var(--state-warn-ink); }
+.gantt-bar[data-s="warn"]     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { --bar-hue: var(--state-fail-hue); --bar-ink: var(--state-fail-ink); }
+.gantt-bar[data-s="fail"]     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { --bar-hue: var(--state-info-hue); --bar-ink: var(--state-info-ink); }
-.gantt-bar[data-s="deferred"] { --bar-hue: var(--state-mute-hue); --bar-ink: var(--state-mute-ink); }
+.gantt-bar[data-s="decision"] { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-bar[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 
 
 

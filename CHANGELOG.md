@@ -27,6 +27,20 @@ in patch versions.
 
 ### Changed
 
+- **Chart-family fills now share one canvas-aware recipe, and warm hues no
+  longer mud on the dark canvas.** kanban cards, gantt bars, progress fills,
+  and state-chart nodes paint from a single shared fill recipe (the `--fill-*`
+  hue/ink pair + a 1px hue-tint border + a vivid left accent). On dark the wash
+  now mixes the hue toward `black` rather than the navy `--bg` (mirroring
+  `--state-*-fill`), so amber / gold / red fills stay true instead of turning
+  muddy. Two members specialize the geometry: **state-chart nodes are now
+  neutral slate tiles** with the status carried entirely by the pill — a green
+  "on-track" node no longer sits behind a green pill (no blend, and green keeps
+  its one semantic), matching the kanban card ↔ pill relationship; and
+  **progress bars now encode magnitude in the fill** — a horizontal gradient
+  that "shoots forward" from a pale/dark origin to a saturated leading-edge head
+  whose intensity scales with the percentage, with the track rail dropped so
+  each bar floats like a gantt tile and the `%` readout riding the leading edge.
 - **cuoio ships a curated chart palette — the first theme to flavour the
   chart family.** cuoio's charts no longer inherit the engine's default
   Apple-hue spectrum (which read as "indaco's charts" on the warm canvas);
