@@ -36,6 +36,14 @@ in patch versions.
   Mermaid diagrams use, so a pie and a flowchart read as one palette; status
   colour reuses cuoio's `--pass` / `--warn` / `--fail` so a gantt at-risk bar
   matches a `--warn` chip. See `design/theming.md` and `themes/palette-audit.md`.
+- **Categorical chart fills and status pills no longer mud on the dark canvas.**
+  The pie wedge and quadrant zone SVG gradients (which mix `--catN-hue` inline),
+  the `--catN-fill` token (quadrant dots, word-cloud), and the shared status
+  pill now mix toward a new `--chart-cat-base` token —
+  `light-dark(var(--bg), black)` — instead of the navy `--bg`, which neutralized
+  warm hues to brown. On dark every category and status stays hue-true (a warm
+  wedge reads gold, not brown); the light canvas is unchanged. Mirrors the
+  toward-black dark recipe of `--state-*-fill`.
 
 ### Fixed
 
