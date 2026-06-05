@@ -155,7 +155,7 @@ section.list-tabular.def ol > li > code {
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:600;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   letter-spacing:0.1em;
   text-transform:uppercase;
   text-align:left;

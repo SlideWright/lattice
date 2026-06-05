@@ -47,7 +47,7 @@ section.kpi h3 {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {
@@ -114,7 +114,7 @@ section.kpi > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
 section.kpi > :where(ol, ul) > li > :where(ul, ol) > li + li {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-top: var(--sp-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -299,7 +299,7 @@ section.kpi.compliance > ol > li:nth-child(3) {
 section.kpi.compliance > p:last-of-type {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   margin: var(--sp-md) 0 0 0;
@@ -374,7 +374,7 @@ section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
   font-style: italic;
   font-size: var(--fs-body);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   letter-spacing: 0;
   text-transform: none;
   margin-top: var(--sp-sm);

@@ -254,7 +254,7 @@ section.statute-stack.lane td:last-child {
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   letter-spacing:0.04em;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   white-space:nowrap;
 }
 

@@ -101,7 +101,8 @@
   --text-heading: light-dark(#0A1628, var(--dark-text-heading)); /* 18.13:1 / 17.12:1 */
   --text-body:    light-dark(#1E3A5F, var(--dark-text-body));    /* 11.50:1 / 9.04:1  */
   --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* 5.47:1 / 6.95:1 AA */
-  --text-muted:   #6B7F9A;      /* chrome / secondary — DECORATIVE        */
+  --text-secondary: light-dark(#455C7A, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#6B7F9A, var(--dark-text-muted));      /* chrome only (pagination/header/footer) — DECORATIVE, WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,
@@ -166,6 +167,7 @@
   --dark-text-heading: #FFFFFF;
   --dark-text-body:    #CBD9E8;
   --dark-text-muted:   #6B7F9A;
+  --dark-text-secondary: #96A8B9;
   --dark-text-label:   #A0B8D0;
   --dark-text-display: #FFFFFF;
 }

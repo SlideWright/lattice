@@ -19,7 +19,7 @@ section.compare-prose .compare-prose-inner .card > ul,
 section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
 section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
@@ -37,7 +37,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
   content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-size:var(--fs-h3); color:var(--text-muted);
+  font-size:var(--fs-h3); color:var(--text-secondary);
   background:var(--bg); padding:2px 0.625cqi; border-radius:0.3125cqi; z-index:1;
 }
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,

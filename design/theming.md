@@ -55,8 +55,9 @@ to spot during palette development.
 | `--text-display` | Text on dark surfaces |
 | `--text-heading` | Primary text on light surfaces |
 | `--text-body` | Body prose |
-| `--text-label` | Mono eyebrows, small labels |
-| `--text-muted` | Footnotes, chrome, decorative |
+| `--text-secondary` | Secondary **content** text — subtitle, caption, eyebrow, table header, sub-label, attribution. AA (≥4.5:1) on both canvases. |
+| `--text-label` | Accent-hued labels / kickers. AA on both canvases. |
+| `--text-muted` | **Chrome only** — pagination, header, footer. DECORATIVE / WCAG-exempt; never for content text (use `--text-secondary`). |
 | `--accent` | Saturated brand color used for emphasis text and borders |
 | `--accent-soft` | Pale brand-tinted panel fill |
 | `--code-text` | Code text on dark code surface |
@@ -84,7 +85,8 @@ for the authoring contract.
 |---|---|
 | `--dark-bg`, `--dark-bg-alt`, `--dark-border` | Surfaces |
 | `--dark-text-heading`, `--dark-text-body`, `--dark-text-display` | Ink |
-| `--dark-text-label`, `--dark-text-muted` | Chrome |
+| `--dark-text-secondary` | Dark side of the secondary content tier |
+| `--dark-text-label`, `--dark-text-muted` | Label / chrome |
 
 These tokens are inputs to the surface tokens via `light-dark()` — see
 the [Dark mode](#dark-mode) section below. They also remain available
@@ -426,9 +428,14 @@ Then, in order of impact:
    all derive from these.
 2. **Surfaces** (`--bg`, `--bg-alt`, `--border`). Use `light-dark(…)`
    pairs so the dark variant works automatically.
-3. **Ink ramp** (`--text-heading`, `-body`, `-label`, `-muted`,
-   `--text-display`). Every text-bearing token must clear WCAG AA
-   (4.5:1) against the surface it appears on.
+3. **Ink ramp** (`--text-heading`, `-body`, `-secondary`, `-label`,
+   `-muted`, `--text-display`). Every **content** text token must clear
+   WCAG AA (4.5:1) against the surface it appears on — `--text-secondary`
+   and `--text-label` included. `--text-muted` is the one exception: it
+   is chrome-only (pagination/header/footer) and WCAG-exempt. Author the
+   content tiers as `light-dark()` pairs (`--text-secondary` →
+   `var(--dark-text-secondary)`) so the dark variant resolves
+   automatically. Run `node tools/contrast-audit.js` to verify.
 4. **Accent** (`--accent`, `--accent-soft`, `--on-accent`). Most-seen
    colour after ink. Must clear contrast against `--bg` *and* against
    `--accent-soft`.

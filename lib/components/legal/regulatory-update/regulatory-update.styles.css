@@ -126,7 +126,7 @@ section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > l
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:600;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   background:none; border:none; padding:0;
 }
 /* Prose body — middle nested items. Row 2 spans cols 2-4. */

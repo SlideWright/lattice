@@ -51,7 +51,7 @@ section h2 + p:has(> code:only-child),
 section h3 + p:has(> code:only-child),
 section h4 + p:has(> code:only-child),
 section h5 + p:has(> code:only-child) {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: var(--fs-message);
 }
 section h1 + p:has(> code:only-child) > code,
@@ -76,7 +76,11 @@ section.divider h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
 section.closing h1 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
-/* .dark modifier: --text-muted is already remapped by section.dark, no extra rule needed */
+/* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
+ * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value
+ * automatically. No extra rule needed. (The bookends above hardcode
+ * --on-dark-secondary because they paint a dark bg WITHOUT flipping
+ * color-scheme; see engineering/decisions/2026-06-05-token-structure-audit.md.) */
 /* Centered subtitle for subtopic */
 section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
 
@@ -127,7 +131,7 @@ section p:has(> code:only-child):has(+ pre) > code {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   background: none;
   border: none;
   padding: 0;
@@ -468,7 +472,7 @@ section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
   font-size:var(--fs-meta);
-  color:var(--text-muted);
+  color:var(--text-secondary);
   line-height:var(--lh-snug);
 }
 /* Marp-preview raw form: rule lives on the <p> directly (no wrapper). */

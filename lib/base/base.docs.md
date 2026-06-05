@@ -50,9 +50,13 @@ The CSS pattern is `p:has(> code:only-child) + h1/h2/…`. Eyebrows are
 so the eyebrow pattern can never violate heading-order rules.
 
 Styling: `--font-mono`, 13px (`--fs-label`), 600 weight, 0.18em
-letter-spacing, uppercase, `--text-muted`. Dark bookend slides (title,
-divider, closing) override the color to `--on-dark-secondary` /
-`--on-dark-ghost` automatically.
+letter-spacing, uppercase, `--text-secondary` (the AA-tuned secondary
+content tier — a `light-dark()` pair, so it resolves correctly on `.dark`
+slides and dark themes). Dark bookend slides (title, divider, closing)
+override the color to `--on-dark-secondary` / `--on-dark-ghost`
+automatically. (Before the 2026-06-05 token-structure audit the eyebrow
+rode the decorative `--text-muted`, which dropped below AA in several
+themes — see `engineering/decisions/2026-06-05-token-structure-audit.md`.)
 
 **Exception — `title` layout.** Placing an inline-code paragraph
 before `h1` triggers markdownlint MD041 (_first-heading-h1_) because
@@ -68,7 +72,7 @@ it to the left dark panel automatically.
 ### Subtitle labels
 
 A paragraph containing only a single inline-code span, placed **below**
-a heading, renders as body-font italic in `--text-muted` — no pill, no
+a heading, renders as body-font italic in `--text-secondary` — no pill, no
 mono, no uppercase.
 
 ```markdown
