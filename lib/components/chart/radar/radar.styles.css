@@ -162,7 +162,7 @@ section.radar .radar-legend li[data-kind="band"] .radar-swatch {
   border: 1.5px dashed var(--text-muted);
 }
 section.radar .radar-legend li[data-kind] {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── target: actual vs a reference polygon, per-axis gap segments ─────── */

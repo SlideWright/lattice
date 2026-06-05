@@ -64,7 +64,8 @@
   --text-heading: light-dark(#0E2F33, var(--dark-text-heading));     /* L:14.36:1 / D:13.30:1 */
   --text-body:    light-dark(#3D5559, var(--dark-text-body));        /* L:7.61:1 / D:8.72:1   */
   --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:5.69:1 / D:7.59:1 AA+ */
-  --text-muted:   #6F7C7F;
+  --text-secondary: light-dark(#54686A, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#6F7C7F, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #5BBDC4); /* L:5.69:1 / D:7.50:1 on bg AAA */
@@ -101,6 +102,7 @@
   --dark-text-heading: #EFE8D7;
   --dark-text-body:    #A9B7B9;
   --dark-text-muted:   #6F7C7F;
+  --dark-text-secondary: #89989A;
   --dark-text-label:   #5BBDC4;
   --dark-text-display: #EFE8D7;
 

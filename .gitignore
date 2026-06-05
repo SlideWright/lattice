@@ -50,3 +50,6 @@ test/integration/**/*.html
 !examples/**/*.pdf
 !lib/components/**/*.pdf
 !lib/base/**/*.pdf
+
+# emulator render sidecars next to the palette-audit deck
+themes/*.html

@@ -46,7 +46,7 @@ section.math h3:first-child {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0;
 }
 section.math > h2 {
@@ -70,7 +70,7 @@ section.math h3 {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 section.math p { margin: 0 0 var(--sp-xs) 0; }
@@ -163,7 +163,7 @@ section.math.feature > :is(ul, ol)::before {
   font-size: var(--fs-meta);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-bottom: var(--sp-sm);
 }
 
@@ -216,7 +216,7 @@ section.math.derivation td:first-child {
   color: var(--text-heading);
 }
 section.math.derivation td:last-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
   border-left: 2px solid var(--border);
 }
@@ -317,7 +317,7 @@ section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
 }
 section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 section.math.theorem blockquote .katex-display {
   margin: var(--sp-xs) 0;
@@ -378,7 +378,7 @@ section.math.compare > p:has(> .katex-display) .katex-display > .katex {
   font-size: 1.4em;
 }
 section.math.compare > p:not(:has(.katex-display)) {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 
@@ -423,7 +423,7 @@ section.math.canvas > p:has(.katex-display) .katex-display > .katex {
 }
 section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   grid-area: cap;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   margin: var(--sp-sm) 0 0 0;
 }
@@ -495,7 +495,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   font-size: var(--fs-meta);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   margin-right: 0.5em;
 }
@@ -586,7 +586,7 @@ section.math.stats > blockquote {
   margin: 0 0 var(--sp-md) 0;
   text-align: center;
   font-style: normal;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   letter-spacing: 0.12em;

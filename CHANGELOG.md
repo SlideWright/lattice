@@ -27,6 +27,24 @@ in patch versions.
 
 ### Added
 
+- **`--text-secondary` — an independent, on-brand, light/dark token for
+  secondary content text.** Subtitles, eyebrows, captions, table headers,
+  sub-labels and attributions previously borrowed the decorative
+  `--text-muted` chrome token; they now ride a dedicated `light-dark()` pair
+  curated from each theme's own ink, tuned to WCAG AA (≥4.5:1) on **both**
+  the light and dark canvas across all 13 palettes (verified by
+  `tools/contrast-audit.js` and a new unit gate,
+  `test/unit/palette/structural-text-contrast.test.js`). Themes also gain
+  `--dark-text-secondary`. The token is now part of the required-core-token
+  contract (`tools/check-ownership.js`) and the `new:theme` scaffold.
+- **Contrast audit now covers the secondary/label tiers and translucent
+  on-dark ink.** `tools/contrast-audit.js` checks `--text-secondary` and
+  `--text-label` on canvas and composites the `--on-dark-*` ramp over
+  `--bg-dark` (it previously could not grade `color-mix(... transparent)`
+  and had no subtitle/secondary pair at all).
+- **Per-theme structural-text showcase decks** under
+  `examples/token-contrast/` — one deck per palette exercising every
+  affected element in both light and dark canvas modes.
 - **Minified `.min` variants of every shipped CSS and JS artifact, with named
   export subpaths.** `dist/` now also carries `lattice.min.css`,
   `lattice-default.min.css`, `lattice-runtime.min.js`, and
@@ -43,6 +61,17 @@ in patch versions.
 
 ### Changed
 
+- **`--text-muted` is now decorative-only and a `light-dark()` pair.** It is
+  reserved for genuinely decorative / de-emphasized marks — chrome
+  (pagination/header/footer), empty-cell dashes, skipped/struck state, quote
+  glyphs, code comments (DECORATIVE, WCAG-exempt) — and now carries a
+  dark-canvas side (wiring in the previously orphaned `--dark-text-muted`).
+  Every readable content role that used to borrow it (41 sites across 23
+  files) was repointed to `--text-secondary`. `--text-label` was retuned to clear AA on canvas in the
+  two themes where it sat just below (atelier, mustard). Decks that referenced
+  `--text-muted` only through Lattice components are unaffected; a deck that
+  hard-coded `var(--text-muted)` for body-adjacent *content* text should
+  switch to `var(--text-secondary)`.
 - **Chart-family fills now share one canvas-aware recipe, and warm hues no
   longer mud on the dark canvas.** kanban cards, gantt bars, progress fills,
   and state-chart nodes paint from a single shared fill recipe (the `--fill-*`
@@ -111,6 +140,15 @@ in patch versions.
 
 ### Fixed
 
+- **Subtitle / secondary-text contrast was broken across every theme.** The
+  subtitle, eyebrow, caption, table-header, sub-label and attribution roles
+  all rode the decorative, contrast-exempt `--text-muted` token, which is a
+  single static value that never tracked the canvas — so secondary text fell
+  below WCAG AA in most themes (and hard-failed in cuoio, magnolia, and on the
+  dark canvas in concrete). They now use the new `--text-secondary` tier (AA on
+  both canvases). The stale comment claiming `section.dark` "already remapped"
+  `--text-muted` (it never did) was corrected. See
+  `engineering/decisions/2026-06-05-token-structure-audit.md`.
 - **Dark-panel text was invisible on every theme except cuoio.** The
   `--on-dark-*` opacity ramp (and the `--hljs-*` syntax fallbacks) were
   declared in a `:where(:root)` block. Marp/Marpit only rewrites a *bare*

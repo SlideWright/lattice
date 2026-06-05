@@ -126,7 +126,7 @@ section.roadmap td:empty::before {
 section.roadmap > p {
   font-size:var(--fs-meta);
   font-style:italic;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   margin-top:var(--sp-md);
 }
 

@@ -1502,7 +1502,7 @@ section.cards-wide h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm)
 section.cards-wide .three-stack { display:flex; flex-direction:column; gap:0.9375cqi; flex:1; }
 section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
 section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
+section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-secondary); flex-shrink:0; }
 section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
 section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
 section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
@@ -1684,7 +1684,7 @@ section.checklist > ul > li em,
 section.checklist > ol > li em {
   font-style:italic;
   font-weight:400;
-  color:var(--text-muted);
+  color:var(--text-secondary);
 }
 
 /* === lib/components/legal/citation-card/citation-card.styles.css === */
@@ -2025,7 +2025,7 @@ section.compare-prose .compare-prose-inner .card > ul,
 section.compare-prose .compare-prose-inner .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
 section.compare-prose .compare-prose-inner .card > ul > li,
 section.compare-prose .compare-prose-inner .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
-section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-muted); padding:0 var(--sp-sm); flex-shrink:0; }
+section.compare-prose .connector { display:flex; align-items:center; justify-content:center; font-size:var(--fs-h3); color:var(--text-secondary); padding:0 var(--sp-sm); flex-shrink:0; }
 .below-note { margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0; position:relative; }
 .below-note::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right, var(--accent), transparent); }
 .below-note p { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; }
@@ -2043,7 +2043,7 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ul::before,
 section.compare-prose:not(:has(.compare-prose-inner)) > ol::before {
   content:'❯';
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-size:var(--fs-h3); color:var(--text-muted);
+  font-size:var(--fs-h3); color:var(--text-secondary);
   background:var(--bg); padding:2px 0.625cqi; border-radius:0.3125cqi; z-index:1;
 }
 section.compare-prose:not(:has(.compare-prose-inner)) > ul > li,
@@ -2316,7 +2316,7 @@ section.decision :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.diagram { align-items:center; }
 section.diagram h3 { margin-bottom:0.3125cqi; }
 section.diagram h2 { font-size:var(--fs-h3); margin-bottom:0.3125cqi; }
-section.diagram > p { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-muted); margin-bottom:var(--sp-sm); }
+section.diagram > p { font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); margin-bottom:var(--sp-sm); }
 
 /* Explicit pixel width so Mermaid's getBoundingClientRect() always returns a concrete value.
    Most diagram types (sequence, timeline, gitgraph…) use useMaxWidth:true by default and
@@ -2330,7 +2330,7 @@ section.diagram .mermaid-svg, section.diagram > .mermaid { flex:1; width:calc(10
 section.diagram > :is(pre, marp-pre):not([data-mermaid-state="rendered"]) {
   flex:1; width:calc(100cqi - 2 * var(--sp-2xl)); max-width:100%; height:auto; min-height:0;
 }
-section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--text-muted); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
+section.diagram .diagram-caption { font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--text-secondary); letter-spacing:0.08em; margin-top:var(--sp-md); text-align:center; font-style:italic; }
 /* Key Insight panel on diagram slides must stretch full-width to match every
    other layout. section.diagram uses align-items:center which would shrink
    the blockquote to fit-content; align-self:stretch overrides that. */
@@ -2616,7 +2616,7 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
  */
 section.glossary table { width:100%; border-collapse:collapse; table-layout:auto; font-feature-settings:'tnum' 1; }
 section.glossary thead tr { background:var(--spectrum) bottom / 100% 2px no-repeat; }
-section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-muted); font-size:var(--fs-meta); letter-spacing:0.08em; text-transform:uppercase; }
+section.glossary thead th { padding:0.46875cqi var(--sp-sm) 0.78125cqi; text-align:left; font-weight:700; color:var(--text-secondary); font-size:var(--fs-meta); letter-spacing:0.08em; text-transform:uppercase; }
 section.glossary td { padding:0.46875cqi var(--sp-sm); color:var(--text-body); vertical-align:top; font-size:var(--fs-body-compact); word-wrap:break-word; overflow-wrap:break-word; border-bottom:none; }
 section.glossary tbody tr:nth-child(odd) { background:var(--bg-alt); }
 section.glossary td:first-child,
@@ -3716,7 +3716,7 @@ section.kanban.chart-frame .chart-body {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   flex: 0 0 auto;
 }
 
@@ -3759,7 +3759,7 @@ section.kanban.chart-frame .chart-body {
 /* Optional card body (from a third-level sub-bullet) */
 .kanban-card-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: var(--lh-snug);
   font-style: italic;
   overflow: hidden;
@@ -3889,7 +3889,7 @@ section.kpi h3 {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 section.kpi h2 {
@@ -3956,7 +3956,7 @@ section.kpi > :where(ol, ul) > li > :where(ul, ol) > li:first-child {
 section.kpi > :where(ol, ul) > li > :where(ul, ol) > li + li {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-top: var(--sp-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4141,7 +4141,7 @@ section.kpi.compliance > ol > li:nth-child(3) {
 section.kpi.compliance > p:last-of-type {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   margin: var(--sp-md) 0 0 0;
@@ -4216,7 +4216,7 @@ section.kpi.spotlight > ol > li:nth-child(1) > ul > li + li {
   font-family: var(--font-display);
   font-style: italic;
   font-size: var(--fs-body);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   letter-spacing: 0;
   text-transform: none;
   margin-top: var(--sp-sm);
@@ -4590,7 +4590,7 @@ section.list-tabular.def ol > li > code {
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:600;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   letter-spacing:0.1em;
   text-transform:uppercase;
   text-align:left;
@@ -4769,7 +4769,7 @@ section.math h3:first-child {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0;
 }
 section.math > h2 {
@@ -4793,7 +4793,7 @@ section.math h3 {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 section.math p { margin: 0 0 var(--sp-xs) 0; }
@@ -4886,7 +4886,7 @@ section.math.feature > :is(ul, ol)::before {
   font-size: var(--fs-meta);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-bottom: var(--sp-sm);
 }
 
@@ -4939,7 +4939,7 @@ section.math.derivation td:first-child {
   color: var(--text-heading);
 }
 section.math.derivation td:last-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
   border-left: 2px solid var(--border);
 }
@@ -5040,7 +5040,7 @@ section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
 }
 section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 section.math.theorem blockquote .katex-display {
   margin: var(--sp-xs) 0;
@@ -5101,7 +5101,7 @@ section.math.compare > p:has(> .katex-display) .katex-display > .katex {
   font-size: 1.4em;
 }
 section.math.compare > p:not(:has(.katex-display)) {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 
@@ -5146,7 +5146,7 @@ section.math.canvas > p:has(.katex-display) .katex-display > .katex {
 }
 section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   grid-area: cap;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   margin: var(--sp-sm) 0 0 0;
 }
@@ -5218,7 +5218,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   font-size: var(--fs-meta);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   margin-right: 0.5em;
 }
@@ -5309,7 +5309,7 @@ section.math.stats > blockquote {
   margin: 0 0 var(--sp-md) 0;
   text-align: center;
   font-style: normal;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   letter-spacing: 0.12em;
@@ -5897,7 +5897,7 @@ section.progress .progress-note {
   grid-column: 2 / 3;
   margin-top: -0.3125cqi;
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -6210,7 +6210,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── Threshold variant: target badges at the axis crossings ───────────── */
@@ -6267,7 +6267,7 @@ section.quote blockquote {
 section.quote blockquote::before { content:'\201C'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; margin-bottom:var(--sp-xs); }
 section.quote blockquote::after  { content:'\201D'; font-family:var(--font-display); font-size:var(--fs-h1); color:var(--text-muted); line-height:0.8; display:block; text-align:right; margin-top:var(--sp-xs); }
 section.quote blockquote p { font-family:var(--font-display); font-size:var(--fs-message); font-style:italic; color:var(--text-heading); line-height:var(--lh-snug); margin:0; text-align:center; }
-section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-muted); text-align:center; }
+section.quote > p { padding-top:var(--sp-xl); font-size:var(--fs-meta); line-height:var(--lh-snug); color:var(--text-secondary); text-align:center; }
 
 /* === lib/components/chart/radar/radar.styles.css === */
 /* radar — extracted from lib/_legacy.css (batch 8).
@@ -6434,7 +6434,7 @@ section.radar .radar-legend li[data-kind="band"] .radar-swatch {
   border: 1.5px dashed var(--text-muted);
 }
 section.radar .radar-legend li[data-kind] {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── target: actual vs a reference polygon, per-axis gap segments ─────── */
@@ -7026,7 +7026,7 @@ section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > l
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   font-weight:600;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   background:none; border:none; padding:0;
 }
 /* Prose body — middle nested items. Row 2 spans cols 2-4. */
@@ -7269,7 +7269,7 @@ section.roadmap td:empty::before {
 section.roadmap > p {
   font-size:var(--fs-meta);
   font-style:italic;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   margin-top:var(--sp-md);
 }
 
@@ -7634,7 +7634,7 @@ section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-met
 section.split-brief .brief-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
 section.split-brief .brief-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
 section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-brief .brief-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-brief .brief-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
 section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
@@ -7661,7 +7661,7 @@ section.split-compare .compare-left p { font-size:var(--fs-body); font-family:va
 section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
 section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
 section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
-section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
+section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
 section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
 section.split-compare .option.preferred::after { content:'✦'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-meta); color:var(--accent); line-height:1; pointer-events:none; }
 section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
@@ -7828,9 +7828,9 @@ section.split-list :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 section.split-metric { padding:0; flex-direction:row; }
 section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
-section.split-metric .unit-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); margin-bottom:var(--sp-xs); }
+section.split-metric .unit-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); margin-bottom:var(--sp-xs); }
 section.split-metric .metric-left h2 { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
-section.split-metric .metric-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-muted); }
+section.split-metric .metric-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
 section.split-metric .metric-context { display:block; font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
 section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
 section.split-metric .metric-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
@@ -7864,7 +7864,7 @@ section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
 section.split-statement .statement-left blockquote p { margin:0; }
 section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
 section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-statement .statement-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-muted); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-statement .statement-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
 section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
 section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
 section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
@@ -8544,7 +8544,7 @@ section.statute-stack.lane td:last-child {
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
   letter-spacing:0.04em;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   white-space:nowrap;
 }
 
@@ -8785,7 +8785,7 @@ section.timeline-list .timeline-item .chart-status {
 }
 section.timeline-list .timeline-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   line-height: var(--lh-relaxed);
   max-width: 17.1875cqi;
@@ -9179,7 +9179,7 @@ section h2 + p:has(> code:only-child),
 section h3 + p:has(> code:only-child),
 section h4 + p:has(> code:only-child),
 section h5 + p:has(> code:only-child) {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: var(--fs-message);
 }
 section h1 + p:has(> code:only-child) > code,
@@ -9204,7 +9204,11 @@ section.divider h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
 section.closing h1 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
-/* .dark modifier: --text-muted is already remapped by section.dark, no extra rule needed */
+/* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
+ * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value
+ * automatically. No extra rule needed. (The bookends above hardcode
+ * --on-dark-secondary because they paint a dark bg WITHOUT flipping
+ * color-scheme; see engineering/decisions/2026-06-05-token-structure-audit.md.) */
 /* Centered subtitle for subtopic */
 section.subtopic h2 + p:has(> code:only-child) { text-align: center; }
 
@@ -9255,7 +9259,7 @@ section p:has(> code:only-child):has(+ pre) > code {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   background: none;
   border: none;
   padding: 0;
@@ -9596,7 +9600,7 @@ section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child) {
   font-size:var(--fs-meta);
-  color:var(--text-muted);
+  color:var(--text-secondary);
   line-height:var(--lh-snug);
 }
 /* Marp-preview raw form: rule lives on the <p> directly (no wrapper). */
@@ -10458,7 +10462,7 @@ section.chart-frame .chart-subtitle {
   max-width: 68.75cqi;
   font-size: var(--fs-body);
   font-style: italic;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: var(--lh-relaxed);
 }
 
@@ -10567,7 +10571,7 @@ section.chart-frame .chart-caption {
   font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 /* Short hairline above the caption — soft separator between chart and
  * chrome. Matches the header hairline's shape (short + solid); the
@@ -12298,7 +12302,8 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
   --text-heading: light-dark(var(--brand-canvas), var(--dark-text-heading)); /* 16.19:1 / 17.58:1 */
   --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
   --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
-  --text-muted:   #A69882;      /* chrome / secondary — DECORATIVE                */
+  --text-secondary: light-dark(#7B6E62, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
+  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,
@@ -12386,6 +12391,7 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
   --dark-text-heading: #FAF7F2;  /* 17.58:1 on dark-bg AAA                */
   --dark-text-body:    #D6C4A8;  /* warm tan — 11.02:1 on dark-bg AAA     */
   --dark-text-muted:   #A69882;
+  --dark-text-secondary: #AB9C85;
   --dark-text-label:   #C4B8A8;  /* pale tan — 9.63:1 on dark-bg AAA      */
   --dark-text-display: #FAF7F2;
 }

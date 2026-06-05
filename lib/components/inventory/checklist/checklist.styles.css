@@ -126,5 +126,5 @@ section.checklist > ul > li em,
 section.checklist > ol > li em {
   font-style:italic;
   font-weight:400;
-  color:var(--text-muted);
+  color:var(--text-secondary);
 }

@@ -131,7 +131,7 @@ const SINGLETON_TAGS = new Set([
 // fallback; everything else a theme may inherit from lattice.css `:root`.
 const REQUIRED_THEME_TOKENS = Object.freeze([
   '--bg', '--bg-alt', '--border',
-  '--text-heading', '--text-body', '--text-muted',
+  '--text-heading', '--text-body', '--text-secondary', '--text-muted',
   '--accent', '--accent-soft', '--bg-dark',
 ]);
 

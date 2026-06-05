@@ -106,6 +106,44 @@ function contrastRatio(fg, bg) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+// Universal on-dark opacity ramp (base.tokens.css; not loaded by this tool
+// because it skips the `lattice` import). White ink at these alphas, themes
+// may override via their own --on-dark-* color-mix declarations.
+const ON_DARK_DEFAULTS = {
+  'on-dark-primary': 0.92, 'on-dark-secondary': 0.68,
+  'on-dark-ghost': 0.32, 'on-dark-watermark': 0.12,
+};
+
+function rgbToHex({ r, g, b }) {
+  return '#' + [r, g, b].map(n => Math.round(n).toString(16).padStart(2, '0')).join('');
+}
+
+// Composite a translucent white ink (alpha 0..1) over an opaque hex backdrop.
+function compositeWhiteOver(alpha, bgHex) {
+  const bg = parseHex(bgHex);
+  if (!bg) return null;
+  return rgbToHex({
+    r: alpha * 255 + (1 - alpha) * bg.r,
+    g: alpha * 255 + (1 - alpha) * bg.g,
+    b: alpha * 255 + (1 - alpha) * bg.b,
+  });
+}
+
+// Resolve a translucent fg token to the hex it renders as over `bgHex`.
+// Handles `color-mix(in srgb, white N%, transparent)` and the on-dark
+// defaults above. Returns null when the token isn't a known translucent.
+function resolveTranslucent(token, vars, bgHex) {
+  const val = vars[token];
+  if (val && /transparent/.test(val)) {
+    const m = val.match(/white\s+(\d+(?:\.\d+)?)%/);
+    if (m) return compositeWhiteOver(parseFloat(m[1]) / 100, bgHex);
+  }
+  if (ON_DARK_DEFAULTS[token] != null) {
+    return compositeWhiteOver(ON_DARK_DEFAULTS[token], bgHex);
+  }
+  return null;
+}
+
 function _wcagGrade(ratio) {
   if (ratio === null)  return 'N/A  ';
   if (ratio >= 7.0)    return 'AAA  ';
@@ -141,9 +179,14 @@ function oklabDist(hex1, hex2) {
 // minRatio defaults to 4.5 (AA body text). Large/decorative text passes at 3.0.
 const PAIRS = [
   // ── Slide layout (baseline) ──────────────────────────────────────────
-  ['text-heading', 'bg',         'slide: heading on canvas'],
-  ['text-body',    'bg',         'slide: body on canvas'],
-  ['text-label',   'bg',         'slide: label on canvas'],
+  ['text-heading',   'bg',       'slide: heading on canvas'],
+  ['text-body',      'bg',       'slide: body on canvas'],
+  ['text-secondary', 'bg',       'slide: secondary text (subtitle/caption) on canvas'],
+  ['text-label',     'bg',       'slide: label / eyebrow on canvas'],
+  // ── Dark bookends (title/closing/divider) — translucent on-dark ink ───
+  // on-dark-* are color-mix(white N%, transparent); composited over bg-dark.
+  ['on-dark-primary',   'bg-dark', 'bookend: heading on dark panel'],
+  ['on-dark-secondary', 'bg-dark', 'bookend: subtitle on dark panel'],
   ['text-heading', 'bg-alt',     'slide: heading on card'],
   ['text-heading', 'accent-soft','slide: heading on accent-soft'],
   ['on-accent',    'accent',     'slide: on-accent on accent'],
@@ -221,23 +264,17 @@ for (const theme of themes) {
   const missing = [];
 
   for (const [fg, bg, ctx] of PAIRS) {
-    const fgHex = vars[fg];
     const bgHex = vars[bg];
-
-    // Skip pairs where either token is not defined in this theme's chain.
-    if (!fgHex || !bgHex) {
-      if (parseHex(fgHex) === null || parseHex(bgHex) === null) {
-        // Token exists but value isn't a plain hex (e.g. color-mix).
-        // Flag only if both tokens exist but can't be resolved.
-        if (fgHex && bgHex) {
-          missing.push({ ctx, fg: fgHex, bg: bgHex });
-        }
-      }
+    // bg must resolve to a plain hex (it's the composite backdrop too).
+    if (!bgHex || !parseHex(bgHex)) {
+      if (vars[fg] && bgHex) missing.push({ ctx, fg: vars[fg], bg: bgHex });
       continue;
     }
+    // fg: plain hex, or a translucent on-dark ink composited over bg.
+    const fgHex = parseHex(vars[fg]) ? vars[fg] : resolveTranslucent(fg, vars, bgHex);
 
-    if (!parseHex(fgHex) || !parseHex(bgHex)) {
-      missing.push({ ctx, fg: fgHex, bg: bgHex });
+    if (!fgHex) {
+      if (vars[fg]) missing.push({ ctx, fg: vars[fg], bg: bgHex });
       continue;
     }
 
@@ -269,7 +306,8 @@ for (const theme of themes) {
 
   if (!hasIssues && failsOnly) continue;
 
-  const isDark = css.match(/:root\s*\{[^}]*color-scheme\s*:\s*dark\b/) ? ' [dark]' : '';
+  const isDark = css.replace(/\/\*[\s\S]*?\*\//g, '')
+    .match(/:root\s*\{[^}]*color-scheme\s*:\s*dark\b/) ? ' [dark]' : '';
   console.log(`  ── ${theme}${isDark} ${'─'.repeat(Math.max(1, 52 - theme.length - isDark.length))}`);
 
   if (!hasIssues) {

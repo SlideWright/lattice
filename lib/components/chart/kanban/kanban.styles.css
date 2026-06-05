@@ -134,7 +134,7 @@ section.kanban.chart-frame .chart-body {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   flex: 0 0 auto;
 }
 
@@ -177,7 +177,7 @@ section.kanban.chart-frame .chart-body {
 /* Optional card body (from a third-level sub-bullet) */
 .kanban-card-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: var(--lh-snug);
   font-style: italic;
   overflow: hidden;

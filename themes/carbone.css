@@ -76,7 +76,8 @@
   --text-heading: #F5F5F2;       /* L:15.91:1 on bg AAA */
   --text-body:    #DCDCD7;       /* L:12.63:1 on bg AAA */
   --text-label:   var(--brand-accent); /* L:10.95:1 on bg AAA */
-  --text-muted:   #757A82;       /* decorative — WCAG-exempt */
+  --text-secondary: #A5A5A2;   /* secondary prose / subtitle / caption — 7.0:1 on bg AAA */
+  --text-muted:   #757A82;      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent — electric lime ──────────────────────────────────── */
   --accent:      var(--brand-accent);          /* L:10.95:1 on bg AAA */
@@ -122,6 +123,7 @@
   --dark-text-heading: #F5F5F2;
   --dark-text-body:    #DCDCD7;
   --dark-text-muted:   #757A82;
+  --dark-text-secondary: #A5A5A2;
   --dark-text-label:   var(--brand-accent);
   --dark-text-display: #F5F5F2;
 
