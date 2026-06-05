@@ -502,6 +502,43 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** Marpit hoists theme variables to `:root`.
 - **Commits:** `f7f6558c`, `7079e65c`.
 
+### `:where(:root)` token blocks are dropped from every rendered slide
+
+- **Symptom:** Tokens declared in a `:where(:root) { … }` block are
+  `getComputedStyle(section).getPropertyValue(...)` → `""` (undefined)
+  in marp-cli **and** the preview, even though a sibling plain
+  `:root { … }` block works. A no-fallback consumer like `color:
+  var(--on-dark-secondary)` then inherits whatever the cascade gives
+  (dark body ink), so title/closing/divider eyebrows + subtitles and
+  every split-* dark panel go invisible — on every theme except the
+  one that locally redefines the token (cuoio masked this for the
+  whole `--on-dark-*` ramp). The emulator path is immune: it injects
+  the bundle into a global `<style>` with no scoping, so `:where(:root)`
+  matches the real `<html>` — which is why the committed (emulator-built)
+  gallery PDFs looked fine and the bug only showed in PDF export /
+  desktop.
+- **Cause:** Same Marpit scoping engine as the entry above, but the
+  `:where()` wrapper defeats the root-replacement. Marpit rewrites a
+  **bare** `:root` (or `section`) to target the slide `<section>`
+  directly. Wrapped in `:where()`, it is treated as an ordinary
+  selector and the slide path is PREFIXED as a descendant:
+  `:where(:root)` → `… > section :where(:where(section):not([root]))`
+  and `:where(section)` → `… > section :where(section)`. Both mean "a
+  section nested inside a section", which never exists in Marp, so the
+  block matches nothing.
+- **Mitigation:** Declare universal token defaults in a **plain
+  `:root`** block (see `lib/base/base.tokens.css` `--on-dark-*` / hljs
+  ramp). A palette's own `:root` override is the identical selector at
+  equal specificity and loads after the base bundle (themes
+  `@import 'lattice'` first), so source order — not zero-specificity
+  `:where()` — resolves "any palette override wins". Do NOT reach for
+  `:where(:root)`/`:where(section)` to get low specificity; neither
+  scopes.
+- **Triggered by:** Any token-defining block authored as
+  `:where(:root)` (or `:where(section)`) in the bundle.
+- **Removable when:** Marpit applies root-replacement inside `:where()`.
+- **Commits:** _(this fix)_.
+
 ### Mermaid had `layout: 'tidy-tree'` — silent diagram loss
 
 - **Symptom:** Specific diagram types (state, ER, class) showed as

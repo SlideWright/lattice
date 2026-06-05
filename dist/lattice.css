@@ -334,10 +334,29 @@
   --fs-hero:     calc(8.9583cqi * var(--fs-scale)); /* 86pt — KPI / watermark; class-driven */
 }
 
-/* ── Universal theme defaults (zero specificity — any :root override wins) ─
+/* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.
- * hljs-*    : fallback syntax palette; themes supply curated overrides. */
-:where(:root) {
+ * hljs-*    : fallback syntax palette; themes supply curated overrides.
+ *
+ * MUST be a plain `:root` block — NOT `:where(:root)`. Marp/Marpit only does
+ * its root-replacement (rewriting the selector to target the slide <section>
+ * so the tokens reach the slide and its descendants) for a BARE `:root` or
+ * `section`. Wrapped in `:where()`, Marpit treats it as an ordinary selector
+ * and PREFIXES the slide path as a descendant — `:where(:root)` becomes
+ * `… > section :where(:where(section):not([root]))` and `:where(section)`
+ * becomes `… > section :where(section)`: both mean "a section nested inside a
+ * section", which never exists in Marp, so the whole block matches nothing and
+ * every token below is UNDEFINED in rendered slides. No-fallback consumers like
+ * `color: var(--on-dark-secondary)` on title / closing / divider and every
+ * split-* dark panel then collapse to inherited dark body ink — invisible on
+ * dark surfaces — for every theme except the one that happens to redefine these
+ * in its own :root (cuoio). The earlier `:where(:root)` was chosen for
+ * zero-specificity "any override wins"; plain `:root` gets the same result
+ * because a palette's own `:root` override is the identical selector at equal
+ * specificity and loads AFTER this base block (themes `@import 'lattice'`
+ * first), so source order resolves it — the mitigation engineering/gotchas.md
+ * prescribes for Marp's broken `:where`/`:has` handling. */
+:root {
   --on-dark-primary:   color-mix(in srgb, white 92%, transparent);
   --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
   --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);
@@ -1485,23 +1504,34 @@ section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono
 /* ── CARDS-WIDE ────────────────────────────────────────────────────────────
  * ol > li(heading text + nested <ul>body) → mimic .three-stack > .wide-card.
  * Heading is the bare text node before the nested <ul>; CSS auto-bolds it,
- * so authors do not wrap the heading in **…**. Optional <strong> is harmless. */
-section.cards-wide:not(:has(.three-stack)) ol {
+ * so authors do not wrap the heading in **…**. Optional <strong> is harmless.
+ *
+ * These rules style the RAW markdown form (the marp-cli + runtime/preview
+ * paths, which do not run the cards-wide transform — only the emulator emits
+ * .three-stack). They are NOT guarded with :not(:has(.three-stack)): the
+ * transformed (.three-stack divs) and raw (ol) forms are mutually exclusive
+ * in any single render — the emulator replaces every list, the other paths
+ * keep it — so the .three-stack rules above and the ol rules below target
+ * disjoint elements and never collide. The old :not(:has()) guard was
+ * unnecessary AND silently broke in the Marp preview Chromium (the ol rules
+ * were dropped, so body text inherited the li's font-weight:700 → "all bold").
+ * See engineering/gotchas.md "`:not(:has(...))` is unreliable". */
+section.cards-wide ol {
   display:flex; flex-direction:column; gap:0.9375cqi; flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.cards-wide:not(:has(.three-stack)) ol > li {
+section.cards-wide ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
+section.cards-wide ol { counter-reset:wide-counter; }
+section.cards-wide ol > li { counter-increment:wide-counter; }
+section.cards-wide ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide ol > li > strong { font-weight:inherit; color:inherit; }
+section.cards-wide ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
+section.cards-wide ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
 
 
 
@@ -2156,6 +2186,22 @@ section.content h2 { margin-bottom:var(--sp-sm); }
 section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
 section.content { justify-content:flex-start; }
 
+/* content is "heading + paragraphs OR a short list" (see content.docs.md),
+ * but the layout previously styled only <p>. base.elements.css strips list
+ * markers (list-style:none, padding:0) and a list falls to base --fs-body,
+ * so an authored list rendered bulletless and a size smaller than the prose
+ * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
+ * real markers, prose size, prose-compatible rhythm. No :has() — works in
+ * every render path. */
+section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); }
+section.content ul { list-style:disc; }
+section.content ol { list-style:decimal; }
+section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
+section.content :is(ul, ol) > li::marker { color:var(--accent); }
+/* nested level steps down to body size so sub-points read as support */
+section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
+section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
+
 /* === lib/components/comparison/decision/decision.styles.css === */
 /* decision — extracted from lib/_legacy.css (batch 4).
  * See lib/components/decision/decision.manifest.json for the component contract.
@@ -2318,40 +2364,49 @@ section.featured .sub-card strong { display:block; font-weight:700; color:var(--
 section.featured .sub-card p  { color:var(--text-body); line-height:var(--lh-base); margin:0; }
 
 /* ── FEATURED ────────────────────────────────────────────────────────────────
- * First li → hero col (50%); rest → column of sub-cards (50%)               */
-section.featured:not(:has(.feat-layout)) > ul {
+ * First li → hero col (50%); rest → column of sub-cards (50%).
+ *
+ * Styles the RAW markdown form (marp-cli + runtime/preview, which don't run
+ * the featured transform — only the emulator emits .feat-layout). NOT guarded
+ * with :not(:has(.feat-layout)): the transformed and raw forms are mutually
+ * exclusive per render (the emulator replaces the <ul>; the other paths keep
+ * it), so the .feat-layout rules above and the > ul rules below target
+ * disjoint elements. The old :not(:has()) guard silently broke in the Marp
+ * preview Chromium → the layout collapsed. See engineering/gotchas.md
+ * "`:not(:has(...))` is unreliable".                                       */
+section.featured > ul {
   display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:var(--sp-sm);
   flex:1; min-height:0; list-style:none; padding:0; margin:0;
 }
 /* First item — featured hero card, spans both rows (full column height) */
-section.featured:not(:has(.feat-layout)) > ul > li:first-child {
+section.featured > ul > li:first-child {
   grid-row:1 / -1; background:var(--accent-soft); border:1px solid var(--accent);
   border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi;
   display:flex; flex-direction:column; justify-content:start;
   font-weight:700; letter-spacing:0.12em; color:var(--accent);
   position:relative; overflow:hidden;
 }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child::after {
+section.featured > ul > li:first-child::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
   font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child > strong { display:block; padding-right:3.125cqi; }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
-section.featured:not(:has(.feat-layout)) > ul > li:first-child > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); font-weight:400; letter-spacing:0; padding-right:3.125cqi; }
+section.featured > ul > li:first-child > strong { display:block; padding-right:3.125cqi; }
+section.featured > ul > li:first-child > ul { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.featured > ul > li:first-child > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-relaxed); font-weight:400; letter-spacing:0; padding-right:3.125cqi; }
 /* Sub-card items — column 2, each row */
-section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) {
+section.featured > ul > li:not(:first-child) {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:1.40625cqi 1.71875cqi; display:flex; flex-direction:column; gap:var(--sp-xs);
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > strong { display:block; }
-section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul { list-style:none; padding:0; margin:0; flex:1; }
-section.featured:not(:has(.feat-layout)) > ul > li:not(:first-child) > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
+section.featured > ul > li:not(:first-child) > strong { display:block; }
+section.featured > ul > li:not(:first-child) > ul { list-style:none; padding:0; margin:0; flex:1; }
+section.featured > ul > li:not(:first-child) > ul > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
 /* Suppress list markers */
-section.featured:not(:has(.feat-layout)) > ul > li::before { display:none !important; content:none !important; }
-section.featured:not(:has(.feat-layout)) > ul > li > ul > li::before { display:none !important; content:none !important; }
+section.featured > ul > li::before { display:none !important; content:none !important; }
+section.featured > ul > li > ul > li::before { display:none !important; content:none !important; }
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
  * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
@@ -9792,12 +9847,15 @@ section.obligation-matrix.asymmetric td:first-child {
 /* — image: .mirror and .left are handled in the main IMAGE block above — */
 
 /* — featured: swap hero (first child) and sub-row (rest) columns —
- * Marp CLI path: section.featured > ul > li (first vs not-first)
- * lattice.js path: .feat-layout > .feat-card + .sub-row */
-section.featured.mirror:not(:has(.feat-layout)) > ul > li:first-child {
+ * Marp CLI / runtime path: section.featured > ul > li (first vs not-first)
+ * emulator path: .feat-layout > .feat-card + .sub-row.
+ * No :not(:has(.feat-layout)) guard — the raw <ul> and the .feat-layout form
+ * are mutually exclusive per render, and :not(:has()) silently breaks in the
+ * Marp preview Chromium (see engineering/gotchas.md). */
+section.featured.mirror > ul > li:first-child {
   grid-column: 2;
 }
-section.featured.mirror:not(:has(.feat-layout)) > ul > li:not(:first-child) {
+section.featured.mirror > ul > li:not(:first-child) {
   grid-column: 1;
 }
 section.featured.mirror .feat-layout {
