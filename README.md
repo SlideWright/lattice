@@ -84,11 +84,21 @@ The package also exposes these named entry points:
 | Subpath | Resolves to | For |
 |---|---|---|
 | `@slidewright/lattice/default` | `dist/lattice-default.css` | **zero-config default** — engine + the cuoio palette, flattened into one drop-in stylesheet |
+| `@slidewright/lattice/default/min` | `dist/lattice-default.min.css` | minified zero-config default — the leanest single-file `<link>` for browser use |
 | `@slidewright/lattice/config` | `marp.config.js` | the marp-cli config (registers the theme set) |
 | `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the marp-vscode-preview / web-export runtime transforms |
+| `@slidewright/lattice/runtime/min` | `dist/lattice-runtime.min.js` | minified runtime — production / CDN drop-in (no inline source map) |
 | `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (layouts only, no colour tokens) |
+| `@slidewright/lattice/css/min` | `dist/lattice.min.css` | minified engine bundle (Marp `@theme`/`@size` directives preserved) |
 | `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette — a **Marp theme file**, not a standalone stylesheet |
 | `lattice` bin · `@slidewright/lattice` (`main`/`.`) | `dist/lattice-emulator.js` | the bundled CLI renderer / PDF exporter (`npx lattice deck.md out.pdf`) |
+| `@slidewright/lattice/min` | `dist/lattice-emulator.min.js` | minified CLI bundle (shebang + executable bit preserved); the bin/main stays the unminified file |
+
+The `.min` variants are byte-for-byte render-faithful to their unminified
+siblings — the CSS minifier preserves Marp's directive comments, so a
+minified bundle still registers as a theme. Pick the unminified files for
+debugging (the CLI/runtime carry source maps; the CSS keeps comments) and
+the `.min` files for production / CDN delivery.
 
 **The default theme is cuoio** (warm leather/cream). In a Marp deck,
 `theme: cuoio` selects it; with no theme chosen, decks render against the

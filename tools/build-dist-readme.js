@@ -42,17 +42,37 @@ const DESCRIPTIONS = {
     purpose: 'Engine bundle — the palette-blind layout system (layouts + modifiers, no colour tokens).',
     consume: '`@slidewright/lattice/css`',
   },
+  'lattice.min.css': {
+    purpose: 'Minified `lattice.css` — same engine, comments/whitespace stripped (Marp `@theme`/`@size` directives preserved). Production / CDN drop-in.',
+    consume: '`@slidewright/lattice/css/min`',
+  },
   'lattice-default.css': {
     purpose: 'Zero-config drop-in: the engine flattened together with the default palette (cuoio), `@import` resolved at build time. Browser-droppable.',
     consume: '`@slidewright/lattice/default`',
+  },
+  'lattice-default.min.css': {
+    purpose: 'Minified `lattice-default.css` — the zero-config themed drop-in, compressed. The leanest single-file `<link>` for browser use.',
+    consume: '`@slidewright/lattice/default/min`',
   },
   'lattice-runtime.js': {
     purpose: 'Browser runtime transforms (chart-family, structure post-processing) for the marp-vscode preview and web export. esbuild IIFE.',
     consume: '`@slidewright/lattice/runtime`',
   },
+  'lattice-runtime.min.js': {
+    purpose: 'Minified `lattice-runtime.js` — no inline source map. Production / CDN runtime drop-in.',
+    consume: '`@slidewright/lattice/runtime/min`',
+  },
   'lattice-emulator.js': {
     purpose: 'Bundled Marp-faithful renderer / PDF exporter CLI — the local engine graph inlined, node_modules deps left external. This is the package `bin` and `main`.',
     consume: '`lattice` bin / `@slidewright/lattice`',
+  },
+  'lattice-emulator.min.js': {
+    purpose: 'Minified `lattice-emulator.js` — the same CLI bundle compressed, shebang + executable bit preserved. Leaner install footprint; the bin/main stays the unminified file.',
+    consume: '`@slidewright/lattice/min`',
+  },
+  'docs/components.json': {
+    purpose: 'Machine-readable component catalog (axes, tags, slots, skeletons, when/anti/related) — the JSON an agent or tool loads to pick a component.',
+    consume: 'load as JSON / `@slidewright/lattice/dist/docs/components.json`',
   },
   'docs/components.md': {
     purpose: 'Canonical single-file component reference (plain Markdown): every component\'s slots, variants, when/why, anti-patterns.',

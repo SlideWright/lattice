@@ -25,6 +25,22 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Minified `.min` variants of every shipped CSS and JS artifact, with named
+  export subpaths.** `dist/` now also carries `lattice.min.css`,
+  `lattice-default.min.css`, `lattice-runtime.min.js`, and
+  `lattice-emulator.min.js`, reachable via `@slidewright/lattice/css/min`,
+  `/default/min`, `/runtime/min`, and `/min` respectively. The CSS minifier
+  preserves Marp's `@theme`/`@size` directive comments, so a minified bundle
+  still registers as a theme — the `.min` files are render-faithful to their
+  unminified siblings (verified: a minified-vs-unminified render diff is
+  smaller than two identical renders of the same source). Use the unminified
+  files for debugging (source maps / comments) and the `.min` files for
+  production / CDN delivery; the package `bin`/`main` stays the unminified
+  emulator. Each build generator now emits both variants behind the same
+  `build:check` freshness gate.
+
 ### Changed
 
 - **Chart-family fills now share one canvas-aware recipe, and warm hues no

@@ -17,12 +17,16 @@ files. See the repo `README.md` for the full entry-point table.
 | File | Purpose | Consume via |
 |---|---|---|
 | `docs/components.html` | Canonical single-file component reference as a themable two-panel HTML portal — the same content as components.md, browseable. | open in a browser |
-| `docs/components.json` | **TODO: describe this artifact in tools/build-dist-readme.js.** | — |
+| `docs/components.json` | Machine-readable component catalog (axes, tags, slots, skeletons, when/anti/related) — the JSON an agent or tool loads to pick a component. | load as JSON / `@slidewright/lattice/dist/docs/components.json` |
 | `docs/components.md` | Canonical single-file component reference (plain Markdown): every component's slots, variants, when/why, anti-patterns. | read directly / link from docs |
 | `lattice-default.css` | Zero-config drop-in: the engine flattened together with the default palette (cuoio), `@import` resolved at build time. Browser-droppable. | `@slidewright/lattice/default` |
+| `lattice-default.min.css` | Minified `lattice-default.css` — the zero-config themed drop-in, compressed. The leanest single-file `<link>` for browser use. | `@slidewright/lattice/default/min` |
 | `lattice-emulator.js` | Bundled Marp-faithful renderer / PDF exporter CLI — the local engine graph inlined, node_modules deps left external. This is the package `bin` and `main`. | `lattice` bin / `@slidewright/lattice` |
+| `lattice-emulator.min.js` | Minified `lattice-emulator.js` — the same CLI bundle compressed, shebang + executable bit preserved. Leaner install footprint; the bin/main stays the unminified file. | `@slidewright/lattice/min` |
 | `lattice-runtime.js` | Browser runtime transforms (chart-family, structure post-processing) for the marp-vscode preview and web export. esbuild IIFE. | `@slidewright/lattice/runtime` |
+| `lattice-runtime.min.js` | Minified `lattice-runtime.js` — no inline source map. Production / CDN runtime drop-in. | `@slidewright/lattice/runtime/min` |
 | `lattice.css` | Engine bundle — the palette-blind layout system (layouts + modifiers, no colour tokens). | `@slidewright/lattice/css` |
+| `lattice.min.css` | Minified `lattice.css` — same engine, comments/whitespace stripped (Marp `@theme`/`@size` directives preserved). Production / CDN drop-in. | `@slidewright/lattice/css/min` |
 
 > Regression-baseline PDFs and `*.gallery.md` files are **not** part of the
 > distribution — they stay in git but are excluded from the npm tarball. See
