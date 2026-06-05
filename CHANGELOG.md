@@ -95,6 +95,13 @@ in patch versions.
 
 ### Fixed
 
+- **Mermaid radar (`radar-beta`) curves now ride the engine `--cN` palette.**
+  The override block was a legacy two-curve hard-code (`--accent` /
+  `--c-accent-warm`) living in the *native* radar component's stylesheet even
+  though it styles *Mermaid* output. It now lives with the other Mermaid type
+  overrides in `mermaid.css` and paints each series from `--c1-dark`…`--c8-dark`,
+  so a radar with up to eight curves gets distinct, theme-flavoured colours that
+  flip per canvas — not two fixed brand accents.
 - **Pie wedge borders were off-by-one from their fills.** The piechart SVG
   emits `<defs>` (per-wedge gradients) as its first child, so the
   `nth-child`-based border palette counted from the wrong slot — every wedge's
