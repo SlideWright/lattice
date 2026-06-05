@@ -27,6 +27,31 @@ in patch versions.
 
 ### Changed
 
+- **Chart-family fills now share one canvas-aware recipe, and warm hues no
+  longer mud on the dark canvas.** kanban cards, gantt bars, progress fills,
+  and state-chart nodes paint from a single shared fill recipe (the `--fill-*`
+  hue/ink pair + a 1px hue-tint border + a vivid left accent). On dark the wash
+  now mixes the hue toward `black` rather than the navy `--bg` (mirroring
+  `--state-*-fill`), so amber / gold / red fills stay true instead of turning
+  muddy. Two members specialize the geometry: **state-chart nodes are now
+  neutral slate tiles** with the status carried entirely by the pill — a green
+  "on-track" node no longer sits behind a green pill (no blend, and green keeps
+  its one semantic), matching the kanban card ↔ pill relationship; and
+  **progress bars now encode magnitude in the fill** — a horizontal gradient
+  that "shoots forward" from a pale/dark origin to a saturated leading-edge head
+  whose intensity scales with the percentage, with the track rail dropped so
+  each bar floats like a gantt tile and the `%` readout riding the leading edge.
+- **The categorical charts and the status pill now darken toward black too —
+  completing the dark-mud fix.** The earlier pass moved the status/value *bar*
+  fills off the navy `--bg`; this extends the same rule to the last fills that
+  still mudded: the **pie wedge** and **quadrant zone** SVG gradients (which mix
+  `--catN-hue` inline) now mix toward a new `--chart-cat-base` token —
+  `light-dark(var(--bg), black)` — so on dark every category stays hue-true (a
+  warm wedge reads gold, not brown) while the light canvas is unchanged. The
+  shared **status pill** gradient and the `--catN-fill` token (quadrant dots,
+  word-cloud) gain the same canvas-aware toward-black dark side. Net: quadrant
+  zones, pie wedges, gantt/progress bars, kanban cards, and status pills all
+  darken the one way on the dark canvas.
 - **cuoio ships a curated chart palette — the first theme to flavour the
   chart family.** cuoio's charts no longer inherit the engine's default
   Apple-hue spectrum (which read as "indaco's charts" on the warm canvas);
@@ -36,9 +61,47 @@ in patch versions.
   Mermaid diagrams use, so a pie and a flowchart read as one palette; status
   colour reuses cuoio's `--pass` / `--warn` / `--fail` so a gantt at-risk bar
   matches a `--warn` chip. See `design/theming.md` and `themes/palette-audit.md`.
+- **onyx curates its charts around a slate · red · green triad.** onyx stays
+  achromatic in its *chrome* (ink ramp, brand axis, mermaid, code) but its
+  *charts* now carry a restrained three-colour identity — the signature red
+  plus a slate and a green — over a grayscale value tail, so colour does the
+  separating where it earns legibility (pie wedges, status) instead of every
+  category collapsing to a gray. `--chart-cat*` leads red → slate → green →
+  near-black → grays → olive; `--chart-state-*` draws from the same hues
+  (pass = green, fail = the signature red, info = slate, warn = olive, mute =
+  gray) so categorical and status read as one palette and a gantt at-risk bar
+  matches a warn pill. Fills sit at the engine's readable depth, so the
+  `--text-heading` label reads directly on every fill — measured ≥ 8:1 on both
+  canvases — with no glow or plate behind the text. onyx-only; cuoio, indaco,
+  and the shared engine are untouched.
+- **indaco curates its charts around its cool blue-led spectrum — bringing all
+  three flagship themes to one standard.** indaco now flavours the chart family
+  with its own pigments instead of the engine default: `--chart-cat*` rides its
+  blue-led spectrum (blue · rust · green · magenta · purple · teal · gold · cyan,
+  ported from indaco's `--cN` pigments so a pie and a flowchart match), and
+  `--chart-state-*` reuses indaco's living palette (`--pass`, brand blue,
+  `--text-muted`) — porting its gold to a saddle-amber `warn` and curating a new
+  cool **crimson** `fail`, since indaco's palette had no red. AA-verified both
+  canvases. **cuoio, onyx, and indaco are now the three curated exemplars**; the
+  remaining themes inherit the engine default until brought up to the same
+  standard — the curation recipe and checklist live in
+  `lib/components/chart/_chart-family/chart-family.style.md`.
+- **Pie wedges return to the radial dome finish, shared with the quadrant.** The
+  two solid-area charts (pie, quadrant) now use the *same* hub→rim area-fade
+  (42/58/82 toward `--chart-cat-base`), so they read as one family — a centre-out
+  fade for charts that radiate from a centre, distinct from the bar family's
+  vertical wash. The flatter top→bottom wash prototyped earlier is retained as a
+  documented **future variant** (see `chart-family.style.md` › "Fill finish").
 
 ### Fixed
 
+- **Mermaid radar (`radar-beta`) curves now ride the engine `--cN` palette.**
+  The override block was a legacy two-curve hard-code (`--accent` /
+  `--c-accent-warm`) living in the *native* radar component's stylesheet even
+  though it styles *Mermaid* output. It now lives with the other Mermaid type
+  overrides in `mermaid.css` and paints each series from `--c1-dark`…`--c8-dark`,
+  so a radar with up to eight curves gets distinct, theme-flavoured colours that
+  flip per canvas — not two fixed brand accents.
 - **Pie wedge borders were off-by-one from their fills.** The piechart SVG
   emits `<defs>` (per-wedge gradients) as its first child, so the
   `nth-child`-based border palette counted from the wrong slot — every wedge's

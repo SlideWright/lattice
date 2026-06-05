@@ -2488,12 +2488,18 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
    * like the SVG charts. Capped at ~54% so the shared --text-heading label
    * still reads — dark on light, white on dark, coherent with every chart. The
    * vivid ink border reinforces the hue at the bar edge. */
-  --bar-hue: var(--state-info-hue);
-  --bar-ink: var(--state-info-ink);
+  /* THE CANONICAL CHART FILL (defined in chart-family.css) — identical recipe
+   * and stops as the kanban card / progress bar / state node. A bar supplies
+   * only its semantic --fill-hue / --fill-ink (per status, below). */
+  --fill-hue: var(--state-info-hue);
+  --fill-ink: var(--state-info-ink);
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--bar-hue) 33%, var(--bg)) 0%,
-    color-mix(in oklab, var(--bar-hue) 54%, var(--bg)) 100%);
-  border: 1px solid var(--bar-ink);
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--text-heading);
   font-family: var(--font-body);
   font-size: var(--fs-meta);
@@ -2507,19 +2513,19 @@ section .taskTextOutsideLeft, section .taskTextOutsideRight { fill: var(--text-h
   min-width: 0;
 }
 
-/* Status — each re-points --bar-hue (gradient) + --bar-ink (border) at a
- * semantic --state-* pair; the base rule's gradient + --text-heading label are
- * unchanged. Canvas-aware via light-dark(), so one rule per status, both modes. */
+/* Status — each re-points --fill-hue (gradient) + --fill-ink (edge) at a
+ * semantic --state-* pair; the canonical fill recipe picks them up.
+ * Canvas-aware via light-dark(), so one rule per status, both modes. */
 .gantt-bar[data-s="on-track"],
 .gantt-bar[data-s="done"],
-.gantt-bar[data-s="live"]     { --bar-hue: var(--state-pass-hue); --bar-ink: var(--state-pass-ink); }
+.gantt-bar[data-s="live"]     { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
 .gantt-bar[data-s="at-risk"],
-.gantt-bar[data-s="warn"]     { --bar-hue: var(--state-warn-hue); --bar-ink: var(--state-warn-ink); }
+.gantt-bar[data-s="warn"]     { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
 .gantt-bar[data-s="blocked"],
-.gantt-bar[data-s="fail"]     { --bar-hue: var(--state-fail-hue); --bar-ink: var(--state-fail-ink); }
+.gantt-bar[data-s="fail"]     { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
 .gantt-bar[data-s="pilot"],
-.gantt-bar[data-s="decision"] { --bar-hue: var(--state-info-hue); --bar-ink: var(--state-info-ink); }
-.gantt-bar[data-s="deferred"] { --bar-hue: var(--state-mute-hue); --bar-ink: var(--state-mute-ink); }
+.gantt-bar[data-s="decision"] { --fill-hue: var(--state-info-hue); --fill-ink: var(--state-info-ink); }
+.gantt-bar[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 
 /* === lib/components/inventory/glossary/glossary.styles.css === */
 /* glossary — extracted from lib/_legacy.css (batch 5).
@@ -3582,12 +3588,17 @@ section.kanban.chart-frame .chart-body {
  * its lane. The 3px left stripe stays as the strong lane marker; --text-heading
  * titles still clear the pale tint. Falls back to --bg-alt when no lane. */
 .kanban-card {
-  --lane: var(--lane-color, var(--cat1-ink));
+  /* THE CANONICAL CHART FILL (defined in chart-family.css). Kanban is the
+   * reference: a card's hue is its lane colour, its edge the same lane ink. */
+  --fill-hue: var(--lane-color, var(--cat1-ink));
+  --fill-ink: var(--lane-color, var(--border));
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--lane) 20%, var(--bg)) 0%,
-    color-mix(in oklab, var(--lane) 38%, var(--bg)) 100%);
-  border: 1px solid color-mix(in oklab, var(--lane) 38%, var(--border));
-  border-left: 4px solid var(--lane-color, var(--border));
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   border-radius: 0.46875cqi;
   padding: 0.703125cqi var(--sp-sm);
   display: flex;
@@ -5724,7 +5735,10 @@ section.progress .progress-bars {
 }
 section.progress .progress-row {
   display: grid;
-  grid-template-columns: 18.75cqi 1fr 4.6875cqi 7.5cqi;
+  /* label · track · pill — the % readout now lives INSIDE the fill (right-
+   * aligned on the colored bar, like a gantt bar's in-bar label), so it no
+   * longer needs its own column. */
+  grid-template-columns: 18.75cqi 1fr 7.5cqi;
   align-items: center;
   column-gap: var(--sp-md);
 }
@@ -5736,47 +5750,74 @@ section.progress .progress-label {
 }
 section.progress .progress-track {
   position: relative;
-  height: 1.09375cqi;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: 0.546875cqi;
+  /* NO rail. The track is a transparent positioning context only — the fill is
+   * a self-contained bordered tile that "shoots forward" on the bare canvas
+   * (like a gantt bar floating on its lane). A gray rail behind it diluted the
+   * row and washed the fill out; the magnitude is carried by the bar's length,
+   * its leading-edge intensity (see the fill), and the printed %. overflow:hidden
+   * + radius clip the fill's rounded corners. */
+  height: 2.5cqi;
+  background: transparent;
+  border-radius: 0.46875cqi;
   overflow: hidden;
 }
 section.progress .progress-fill {
   position: absolute;
   inset: 0 auto 0 0;
   width: calc(var(--pct) * 1%);
-  /* Same hue-into-bg depth gradient as the gantt bar and the pie / quadrant /
-   * radar SVG charts — so every data fill in the family reads with the same
-   * richness and dimension. A ratio gauge with no on-bar text, so it runs a
-   * touch richer than gantt (48 → 72%) for a crisp filled-vs-track read.
-   * Neutral bar (no status) = the categorical cat1 slot; status variants
-   * re-point --fill-hue at a semantic --state-*-hue. Authors pin with `--fill`. */
+  /* CHART-FAMILY MATERIAL, progress-SPECIALIZED GEOMETRY. Progress shares the
+   * family's hue/ink palette (--fill-* below), 1px hue-tint border, and 4px
+   * vivid left accent — the same MATERIAL as the kanban card / gantt bar /
+   * state node. What it specializes is the GRADIENT: progress is the only
+   * family member with a magnitude (--pct), so it encodes that magnitude in the
+   * fill rather than wearing the shared vertical wash. The gradient runs
+   * HORIZONTALLY (the direction the bar grows) and "shoots forward" — pale/dark
+   * tail at the origin ramping to a saturated LEADING-EDGE head whose intensity
+   * scales with --pct: a 92% bar ramps to a vivid head, a 12% bar stays dim and
+   * stalled. So value is double-encoded (length AND intensity). The head mix %
+   * is calc(base + --pct * k); canvas-aware via light-dark() — mixes into --bg
+   * on light, toward black on dark (mirrors --state-*-fill, mud-free). The other
+   * members keep the shared --chart-fill-* vertical wash (they have no --pct).
+   * A bar with no status is the categorical cat1 slot; status variants re-point
+   * the --fill-* pair. Authors pin a categorical hue with `--fill`. */
   --fill-hue: var(--fill, var(--cat1-hue));
-  background: linear-gradient(180deg,
-    color-mix(in oklab, var(--fill-hue) 48%, var(--bg)) 0%,
-    color-mix(in oklab, var(--fill-hue) 72%, var(--bg)) 100%);
-  border-radius: 7px 0 0 7px;
+  --fill-ink: var(--cat1-ink);
+  background: linear-gradient(90deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) 12%, var(--bg)),
+               color-mix(in oklab, var(--fill-hue) 30%, black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) calc(20% + var(--pct) * 0.52%), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) calc(38% + var(--pct) * 0.58%), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
+  border-radius: 0.46875cqi;
   transition: none;
+  /* The % readout rides the bar's leading edge: right-aligned ON the colored
+   * fill, like a gantt bar's in-bar label. --text-heading clears the wash on
+   * both canvases. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.625cqi;
+  overflow: hidden;
 }
-/* Each status re-points --fill-hue at a semantic --state-*-hue; the base
- * rule's depth gradient picks it up. Canvas-aware, so one rule each. */
+/* Each status re-points the --fill-* pair; the canonical recipe picks it up.
+ * Canvas-aware via light-dark(), so one rule each. */
 section.progress .progress-fill[data-s="on-track"],
 section.progress .progress-fill[data-s="done"],
-section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); }
+section.progress .progress-fill[data-s="live"] { --fill-hue: var(--state-pass-hue); --fill-ink: var(--state-pass-ink); }
 section.progress .progress-fill[data-s="at-risk"],
-section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); }
+section.progress .progress-fill[data-s="warn"]   { --fill-hue: var(--state-warn-hue); --fill-ink: var(--state-warn-ink); }
 section.progress .progress-fill[data-s="blocked"],
-section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); }
-section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); }
+section.progress .progress-fill[data-s="fail"]   { --fill-hue: var(--state-fail-hue); --fill-ink: var(--state-fail-ink); }
+section.progress .progress-fill[data-s="deferred"] { --fill-hue: var(--state-mute-hue); --fill-ink: var(--state-mute-ink); }
 section.progress .progress-pct {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-heading);
-  min-width: 3.75cqi;
-  text-align: left;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  line-height: 1;
 }
 /* Pills right-align in their column so all pill right edges line up. */
 section.progress .progress-row > .chart-status,
@@ -5785,7 +5826,7 @@ section.progress .progress-row > .chart-status-empty {
 }
 /* Optional row sub-bullet — rendered as a small footnote under the bar. */
 section.progress .progress-note {
-  grid-column: 2 / 4;
+  grid-column: 2 / 3;
   margin-top: -0.3125cqi;
   font-size: var(--fs-meta);
   color: var(--text-muted);
@@ -5926,8 +5967,14 @@ section.quadrant .quadrant-svg {
  */
 
 /* ── Quadrant tints: per-cell fills behind the plot ───────────────────── */
+/* PROTOTYPE (kanban-finish standardization): the region blocks were the
+ * loudest fill in the family (the salmon-red Quick Wins quadrant read far
+ * stronger than the same hue's airy radar wash). fill-opacity drops the four
+ * tints ~40% into the family's quiet register so identity is carried by the
+ * vivid white-ringed dots at the edge, not by shouting region blocks. */
 section.quadrant .quadrant-tint {
   fill: var(--cell-fill);
+  fill-opacity: 0.6;
   stroke: none;
 }
 
@@ -6235,44 +6282,11 @@ section.radar .radar-svg {
   overflow: visible;   /* rim labels paint outside the 300-unit viewBox */
 }
 
-/* ── RADAR ──
- * No per-curve theme variables exist. Both curves render gray by default.
- * Force distinct brand colors with semi-transparent fills so overlap
- * stays visible. Re-skin grid rings from default light gray to a pale
- * brand tint so the chrome matches the rest of the deck.
- */
-section .radarGraticule {
-  fill: var(--c1-light) !important;
-  fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
-  stroke-opacity: 0.20 !important;
-  stroke-width: 1 !important;
-}
-section .radarAxisLine {
-  stroke: var(--c-stroke) !important;
-  stroke-width: 1.5 !important;
-  stroke-opacity: 0.5 !important;
-}
-section .radarCurve-0 {
-  fill: var(--accent) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--accent) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarCurve-1 {
-  fill: var(--c-accent-warm) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--c-accent-warm) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarLegendBox-0 { fill: var(--accent) !important; }
-section .radarLegendBox-1 { fill: var(--c-accent-warm) !important; }
-section .radarAxisLabel {
-  fill: var(--text-heading) !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-}
-section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
+/* Mermaid radar-beta styling (`.radarCurve-N`, `.radarGraticule`, …) used to
+ * live here, but it targets MERMAID's radar output, not this native component
+ * (which uses `.radar-poly` / `.radar-ring` below). It now lives with the other
+ * Mermaid type overrides in lib/integrations/mermaid/mermaid.css, re-pointed
+ * onto the engine `--cN` palette (N curves, not two brand accents). */
 
 /* ── Native radar SVG chrome — appended Phase 4 ──
  * Originally lived in lib/_legacy.css under the CHART FAMILY section.
@@ -7913,13 +7927,32 @@ section.state-chart .state-node {
   gap: var(--sp-sm);
   max-width: 320px;
   padding: 10px 16px;
-  background: var(--state-node-fill);
+  /* THE CANONICAL CHART FILL (chart-family.css): every node is a tile, exactly
+   * like a kanban card. A node WITHOUT a status is a quiet neutral slate tile;
+   * a node WITH a status (the [data-s] rules below) re-points the --fill-* pair
+   * at that status's semantic hue — so colour reads as meaning while every node
+   * shares the one material. */
+  --fill-hue: var(--text-muted);
+  --fill-ink: var(--c-stroke);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--state-node-ink);
-  border: 1px solid var(--state-node-stroke);
   border-radius: 6px;
   font-weight: 500;
   line-height: 1.25;
 }
+
+/* Nodes stay NEUTRAL — a kanban card with no lane. Status is deliberately NOT
+ * painted onto the node: a green "on-track" node behind its green pill would
+ * blend, and would overload green's fixed semantic. Colour lives in the
+ * .chart-status pill — the one loud chip that pops against the neutral tile,
+ * exactly the kanban card ↔ pill relationship. (data-s is kept on the node for
+ * the pill and the start/terminal cues.) */
 
 section.state-chart .state-node .state-label {
   min-width: 0;
@@ -7941,9 +7974,11 @@ section.state-chart .state-node .chart-status {
   flex: 0 0 auto;
 }
 
-/* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. */
+/* Start / terminal redundancy cues alongside the SVG ●/◎ glyphs. Every node now
+ * carries a 4px accent; the start node reads heavier (keeps its neutral/status
+ * stripe colour), the terminal keeps its outline ring. */
 section.state-chart .state-node[data-kind="start"] {
-  border-left-width: 3px;
+  border-left-width: 7px;
 }
 
 section.state-chart .state-node[data-kind="terminal"] {
@@ -8046,15 +8081,24 @@ section.state-chart.horizontal .state-node-row {
   gap: var(--sp-sm);
   padding: var(--sp-sm) var(--sp-md);
   margin: 4px 0;
-  background: var(--state-node-fill);
+  /* Same canonical tile as the SVG-variant nodes above. */
+  --fill-hue: var(--text-muted);
+  --fill-ink: var(--c-stroke);
+  background: linear-gradient(180deg,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+    light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+               color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+  border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+  border-left: var(--chart-fill-accent) solid var(--fill-ink);
   color: var(--state-node-ink);
-  border: 1px solid var(--state-node-stroke);
   border-radius: 6px;
 }
+/* Neutral rows too — the pill carries the status colour (see the SVG-node note). */
 
 section.state-chart.inline .state-node-row[data-kind="start"],
 section.state-chart.horizontal .state-node-row[data-kind="start"] {
-  border-left-width: 3px;
+  border-left-width: 7px;
 }
 
 section.state-chart.inline .state-node-row[data-kind="terminal"],
@@ -10123,17 +10167,20 @@ section.chart-frame {
  *
  *   light canvas → fill = pale tint of the hue (24% on a light bg),
  *                  mark/border = the hue at full depth (dark-on-light)
- *   dark  canvas → fill = a muted DEEP tint of the hue (34% on a dark bg —
- *                  NOT the hue at full strength, which paints garish
- *                  primary blocks), mark/border = the hue lifted toward
- *                  white so it pops (light-on-dark)
+ *   dark  canvas → fill = a muted DEEP tint of the hue (40% mixed toward
+ *                  BLACK — NOT into the navy --bg, which neutralizes warm
+ *                  hues to brown, and NOT the hue at full strength, which
+ *                  paints garish primary blocks), mark/border = the hue
+ *                  lifted toward white so it pops (light-on-dark)
  *
  * so fill and mark ALWAYS share a hue, and neither canvas is louder than
  * the other — the dark side is the light side's restraint, inverted, not a
- * saturation crank. (An earlier revision used `var(--catN-hue)` directly as
- * the dark fill; at 8 categories that read as a clashing Excel-default
- * palette. The 34% mix keeps each region a subdued, hue-true wash of the
- * dark canvas.)
+ * saturation crank. (Two earlier revisions missed: `var(--catN-hue)` direct
+ * read as a clashing Excel-default palette at 8 categories; the later 34%
+ * mix into --bg muddied every warm category toward brown on the navy canvas.
+ * Mixing 40% toward black keeps each region a subdued, hue-true wash —
+ * mirroring --state-*-fill and the canonical chart fill, so a quadrant zone,
+ * a gantt bar, and a status pill all darken the same way on dark.)
  *
  * Why it is built this way: each slot resolves to a single saturated hue for
  * the current canvas via `light-dark(lightCanvasVivid, darkCanvasVivid)`, and
@@ -10168,14 +10215,14 @@ section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a char
   --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
   --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 34%, var(--bg)));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 34%, var(--bg)));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 34%, var(--bg)));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 34%, var(--bg)));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 34%, var(--bg)));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 34%, var(--bg)));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 34%, var(--bg)));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 34%, var(--bg)));
+  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 40%, black));
+  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 40%, black));
+  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 40%, black));
+  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 40%, black));
+  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 40%, black));
+  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 40%, black));
+  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 40%, black));
+  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 40%, black));
 
   --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
   --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
@@ -10185,6 +10232,17 @@ section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a char
   --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
   --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
   --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+
+  /* The mix target for the categorical SVG gradients (pie wedges, quadrant
+   * zones — emitted inline by the transforms). Light canvas mixes the hue into
+   * the slide --bg (a pale tint); dark canvas mixes toward BLACK, NOT the navy
+   * --bg, because a warm hue mixed into a cool canvas neutralizes to brown.
+   * Toward black the hue stays true. The transforms mix `color-mix(hue X%,
+   * var(--chart-cat-base))` so the same stop flips per canvas via this var —
+   * mirroring --catN-fill / --state-*-fill / the canonical chart fill, so a
+   * quadrant zone, a pie wedge, a gantt bar, and a status pill all darken the
+   * same way on dark. (The light side is unchanged from the old `var(--bg)`.) */
+  --chart-cat-base: light-dark(var(--bg), black);
 }
 
 /* ── Chart SEMANTIC / status colour model ─────────────────────────────────
@@ -10236,6 +10294,42 @@ section.chart-frame {
    * axis, kanban column headers). One token so every chart's header underline
    * reads at the same weight, matching the chart eyebrow's accent register. */
   --chart-rule: color-mix(in oklab, var(--accent) 24%, transparent);
+
+  /* ── THE CANONICAL CHART FILL ──────────────────────────────────────────────
+   * Kanban set the family's fill language; these four constants make it the
+   * SINGLE SOURCE OF TRUTH so every rectangular data fill — kanban card, gantt
+   * bar, progress bar, state-chart node — paints identically and cannot drift.
+   * A member supplies only --fill-hue (the gradient hue) and --fill-ink (the
+   * saturated edge), drawn from its own palette (catN categorical / --state-*
+   * semantic), then paints the shared recipe. Each gradient stop is a
+   * light-dark() pair — LIGHT mixes the hue into the canvas --bg; DARK mixes
+   * toward BLACK at a higher ratio (mirrors --state-*-fill) so warm hues stay
+   * true on the navy dark canvas instead of mudding into it:
+   *
+   *   --fill-hue: <hue>;  --fill-ink: <ink>;
+   *   background: linear-gradient(180deg,
+   *     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-l),    var(--bg)),
+   *                color-mix(in oklab, var(--fill-hue) var(--chart-fill-top-d),    black)) 0%,
+   *     light-dark(color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-l), var(--bg)),
+   *                color-mix(in oklab, var(--fill-hue) var(--chart-fill-bottom-d), black)) 100%);
+   *   border: 1px solid color-mix(in oklab, var(--fill-hue) var(--chart-fill-edge), var(--border));
+   *   border-left: var(--chart-fill-accent) solid var(--fill-ink);
+   *
+   * Per-shape variation is allowed where the geometry demands it (the pie wedge
+   * uses a RADIAL gradient with these same stops) — the stops and edge stay
+   * shared, only the gradient axis changes. Colour rides the edge; the wash
+   * only tints, so --text-heading labels clear it on both canvases.
+   *
+   * One member specializes further: PROGRESS is the only chart with a magnitude
+   * (--pct), so it replaces this vertical wash with a HORIZONTAL gradient whose
+   * leading-edge intensity scales with --pct (calc(base + --pct * k)) — the bar
+   * "shoots forward", double-encoding value as length AND intensity. It keeps
+   * the shared material (palette, edge, accent); only the gradient is bespoke.
+   * See progress.styles.css. The others have no --pct and wear the wash. */
+  --chart-fill-top-l: 20%;     --chart-fill-top-d: 48%;
+  --chart-fill-bottom-l: 38%;  --chart-fill-bottom-d: 64%;
+  --chart-fill-edge: 38%;
+  --chart-fill-accent: 4px;
 }
 
 section.chart-frame .chart-header {
@@ -10442,8 +10536,8 @@ section.chart-frame .chart-status {
   --pill-hue: var(--state-info-hue);
   --pill-ink: var(--state-info-ink);
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--pill-hue) 33%, var(--bg)) 0%,
-    color-mix(in oklab, var(--pill-hue) 54%, var(--bg)) 100%);
+    light-dark(color-mix(in oklab, var(--pill-hue) 33%, var(--bg)), color-mix(in oklab, var(--pill-hue) 48%, black)) 0%,
+    light-dark(color-mix(in oklab, var(--pill-hue) 54%, var(--bg)), color-mix(in oklab, var(--pill-hue) 64%, black)) 100%);
   border: 1px solid var(--pill-ink);
   color: var(--text-heading);
 }
@@ -11593,6 +11687,58 @@ section .pieTitleText,
 section .radarTitle,
 section .packetTitle,
 section [class$="TitleText"] { display: none; }
+
+/* ──────────────────────────────────────────────────────────────────────
+ * RADAR (radar-beta)
+ * ──────────────────────────────────────────────────────────────────────
+ * Mermaid's radar ships its curves gray with no per-curve theme hook, so we
+ * paint them from the engine `--cN` categorical palette — like the band cycle
+ * — giving each series a distinct, theme-flavoured colour, extensible to eight
+ * curves (not the two brand accents this used to hard-code). `--cN-dark` is the
+ * saturated stroke tone that flips per canvas (vivid on light, pale on dark).
+ * Moved here from radar.styles.css (the NATIVE radar component): this is
+ * Mermaid output and belongs with the diagram overrides. `!important` beats
+ * Mermaid's auto-emitted inline CSS. (`.radarTitle` is suppressed above.)
+ */
+section .radarGraticule {
+  fill: var(--c1-light) !important;
+  fill-opacity: 0.25 !important;
+  stroke: var(--c-stroke) !important;
+  stroke-opacity: 0.20 !important;
+  stroke-width: 1 !important;
+}
+section .radarAxisLine {
+  stroke: var(--c-stroke) !important;
+  stroke-width: 1.5 !important;
+  stroke-opacity: 0.5 !important;
+}
+section .radarAxisLabel {
+  fill: var(--text-heading) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+section .radarLegendText { fill: var(--text-heading) !important; }
+section .radarCurve-0, section .radarCurve-1, section .radarCurve-2, section .radarCurve-3,
+section .radarCurve-4, section .radarCurve-5, section .radarCurve-6, section .radarCurve-7 {
+  fill-opacity: 0.28 !important;
+  stroke-width: 2.5 !important;
+}
+section .radarCurve-0 { fill: var(--c1-dark) !important; stroke: var(--c1-dark) !important; }
+section .radarCurve-1 { fill: var(--c2-dark) !important; stroke: var(--c2-dark) !important; }
+section .radarCurve-2 { fill: var(--c3-dark) !important; stroke: var(--c3-dark) !important; }
+section .radarCurve-3 { fill: var(--c4-dark) !important; stroke: var(--c4-dark) !important; }
+section .radarCurve-4 { fill: var(--c5-dark) !important; stroke: var(--c5-dark) !important; }
+section .radarCurve-5 { fill: var(--c6-dark) !important; stroke: var(--c6-dark) !important; }
+section .radarCurve-6 { fill: var(--c7-dark) !important; stroke: var(--c7-dark) !important; }
+section .radarCurve-7 { fill: var(--c8-dark) !important; stroke: var(--c8-dark) !important; }
+section .radarLegendBox-0 { fill: var(--c1-dark) !important; }
+section .radarLegendBox-1 { fill: var(--c2-dark) !important; }
+section .radarLegendBox-2 { fill: var(--c3-dark) !important; }
+section .radarLegendBox-3 { fill: var(--c4-dark) !important; }
+section .radarLegendBox-4 { fill: var(--c5-dark) !important; }
+section .radarLegendBox-5 { fill: var(--c6-dark) !important; }
+section .radarLegendBox-6 { fill: var(--c7-dark) !important; }
+section .radarLegendBox-7 { fill: var(--c8-dark) !important; }
 
 /* ──────────────────────────────────────────────────────────────────────
  * BAND CYCLE — sections / clusters / category panels

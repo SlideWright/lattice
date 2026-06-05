@@ -193,3 +193,41 @@ section pre.hljs {
   --c-container:     light-dark(#EEEEEE, #020202);
   --c-subcontainer:  light-dark(#DFDFDF, #0B0B0B);
 }
+
+/* ── Chart-family palette — slate · red · green ─────────────────────────
+ * onyx stays achromatic in its CHROME (ink ramp, brand axis, mermaid, code),
+ * but its CHARTS carry a restrained three-colour identity — the signature
+ * red plus a slate and a green — over a grayscale value tail. Colour does the
+ * separating where it earns legibility (a pie's wedges, a status); value and
+ * the signature red still anchor the look. Each slot is
+ * `light-dark(whiteCanvasValue, blackCanvasValue)` so it survives the canvas
+ * flip (deeper hues on white, lifted on black), every mark clearing 3:1 on
+ * both. This is onyx-only — cuoio / indaco / the shared engine are untouched.
+ *
+ * STATUS charts (gantt, progress, pills, state-chart) draw from the SAME
+ * vocabulary: pass = green, fail = the signature red, info = slate, warn =
+ * olive, mute = gray — so a gantt at-risk bar matches a warn pill and the
+ * whole family reads as one palette. Fills sit at the engine's readable depth
+ * so the --text-heading label reads directly on them (dark on white, light on
+ * black) — no glow, no plate behind text. See design/theming.md. */
+:root {
+  /* Ordered most-distinct-first (charts cycle cat1,2,3…, most use ≤5):
+   * red → slate → green → near-black → grays, then olive. The triad leads;
+   * grays fill the long tail. All slots clear 3:1 on both canvases. */
+  --chart-cat1: light-dark(#C71F2D, #E5484D);  /* signature red — hero       */
+  --chart-cat2: light-dark(#3F5680, #8FA8CE);  /* slate                      */
+  --chart-cat3: light-dark(#2C7A4B, #56C07E);  /* green                      */
+  --chart-cat4: light-dark(#2B2B2B, #E0E0E0);  /* near-black / near-white    */
+  --chart-cat5: light-dark(#8A8A8A, #8E8E8E);  /* mid gray                   */
+  --chart-cat6: light-dark(#555555, #BDBDBD);  /* dark-mid / light gray      */
+  --chart-cat7: light-dark(#6B6F48, #AEB386);  /* olive (supporting accent)  */
+  --chart-cat8: light-dark(#707070, #D2D2D2);  /* mid / light gray           */
+
+  /* Status — pass green / warn olive / fail red / info slate / mute gray:
+   * the same hues as the categories so status + categorical read as one. */
+  --chart-state-pass: light-dark(#2C7A4B, #56C07E);  /* done — green            */
+  --chart-state-warn: light-dark(#6B6F48, #AEB386);  /* at-risk — olive         */
+  --chart-state-fail: light-dark(#C71F2D, #E5484D);  /* blocked — signature red */
+  --chart-state-info: light-dark(#3F5680, #8FA8CE);  /* decision — slate        */
+  --chart-state-mute: light-dark(#AEAEAE, #6E6E6E);  /* deferred — gray         */
+}

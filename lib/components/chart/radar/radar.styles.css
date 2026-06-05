@@ -78,44 +78,11 @@ section.radar .radar-svg {
   overflow: visible;   /* rim labels paint outside the 300-unit viewBox */
 }
 
-/* ── RADAR ──
- * No per-curve theme variables exist. Both curves render gray by default.
- * Force distinct brand colors with semi-transparent fills so overlap
- * stays visible. Re-skin grid rings from default light gray to a pale
- * brand tint so the chrome matches the rest of the deck.
- */
-section .radarGraticule {
-  fill: var(--c1-light) !important;
-  fill-opacity: 0.25 !important;
-  stroke: var(--c-stroke) !important;
-  stroke-opacity: 0.20 !important;
-  stroke-width: 1 !important;
-}
-section .radarAxisLine {
-  stroke: var(--c-stroke) !important;
-  stroke-width: 1.5 !important;
-  stroke-opacity: 0.5 !important;
-}
-section .radarCurve-0 {
-  fill: var(--accent) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--accent) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarCurve-1 {
-  fill: var(--c-accent-warm) !important;
-  fill-opacity: 0.30 !important;
-  stroke: var(--c-accent-warm) !important;
-  stroke-width: 2.5 !important;
-}
-section .radarLegendBox-0 { fill: var(--accent) !important; }
-section .radarLegendBox-1 { fill: var(--c-accent-warm) !important; }
-section .radarAxisLabel {
-  fill: var(--text-heading) !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-}
-section .radarLegendText, section .radarTitle { fill: var(--text-heading) !important; }
+/* Mermaid radar-beta styling (`.radarCurve-N`, `.radarGraticule`, …) used to
+ * live here, but it targets MERMAID's radar output, not this native component
+ * (which uses `.radar-poly` / `.radar-ring` below). It now lives with the other
+ * Mermaid type overrides in lib/integrations/mermaid/mermaid.css, re-pointed
+ * onto the engine `--cN` palette (N curves, not two brand accents). */
 
 /* ── Native radar SVG chrome — appended Phase 4 ──
  * Originally lived in lib/_legacy.css under the CHART FAMILY section.
