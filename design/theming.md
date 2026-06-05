@@ -221,23 +221,15 @@ character by setting the override hooks at `:root`, each a
 | `--chart-state-pass` / `-warn` / `-fail` / `-info` / `-mute` | the 5 semantic hues |
 
 The `var()` indirection means a theme always wins, and it need only set the
-slots it wants to flavour. **cuoio is the worked example**: its
-`--chart-catN` is the palette audit's top-scored "Brand triad" earth
-spectrum (so charts share the `--cN` language of its Mermaid diagrams), and
-its `--chart-state-*` reuses cuoio's own `--pass` / `--warn` / `--fail` so a
-gantt at-risk bar matches a `--warn` chip. See `themes/cuoio.css` and the
-ranked proposals in `themes/palette-audit.md`.
+slots it wants to flavour.
 
-**onyx is the achromatic counter-example.** Its identity forbids a chromatic
-spectrum, so `--chart-cat*` distinguishes categories by *value*, not hue: a
-grayscale ramp (ordered most-distinct-first, all in the dark half so every
-mark clears 3:1 on white) plus the signature red and two faint accents
-(slate, olive). `--chart-state-*` draws from that same red / olive / slate /
-grays, so a gantt and a progress bar read on-brand and identical (fail = red,
-warn = olive, info = slate, pass / mute = grays) — meaning carried by value +
-the pill's text label, not a chromatic status code. The rule of thumb: a
-theme whose categories can't differ by hue differs by value instead. See
-`themes/onyx.css`.
+**The per-theme curation rationale — the shared "port categoricals, reuse
+status" recipe, and how each curated theme expresses it on its own
+hue-or-value axis (cuoio by warm hue, onyx by *value* not hue, indaco by cool
+hue + a curated crimson `fail`) — lives in
+`lib/components/chart/_chart-family/chart-family.style.md`.** This section is
+the mechanical contract; the style doc carries the "different yet similar"
+design principles.
 
 **Curate assessment-first.** Score candidate `--chart-cat*` / `--chart-state-*`
 values *before* committing to them — resolve the full token chain (incl. each
@@ -246,8 +238,8 @@ chart's gradient deep stop) and check, on **both** canvases: text-on-fill WCAG
 distinctness (≥0.15). It catches what the eye misses — a light-gray category
 that vanishes on white, or five status colours that collapse to one value at
 the bar's deep stop. The audit's score is text-contrast only; it does not
-prove categories are distinguishable (onyx's top audit proposal makes every
-slot one gray), so a passing audit score is a starting point, not the answer.
+prove categories are distinguishable, so a passing audit score is a starting
+point, not the answer.
 
 ### Universal semantic palette (`--c-warm-*`, `--c-cool-*`, `--c-alarm*`, `--c-mark`, `--c-note`)
 
