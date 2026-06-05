@@ -10,4 +10,20 @@ section.content h2 { margin-bottom:var(--sp-sm); }
 section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
 section.content { justify-content:flex-start; }
 
+/* content is "heading + paragraphs OR a short list" (see content.docs.md),
+ * but the layout previously styled only <p>. base.elements.css strips list
+ * markers (list-style:none, padding:0) and a list falls to base --fs-body,
+ * so an authored list rendered bulletless and a size smaller than the prose
+ * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
+ * real markers, prose size, prose-compatible rhythm. No :has() — works in
+ * every render path. */
+section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); }
+section.content ul { list-style:disc; }
+section.content ol { list-style:decimal; }
+section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
+section.content :is(ul, ol) > li::marker { color:var(--accent); }
+/* nested level steps down to body size so sub-points read as support */
+section.content :is(ul, ol) :is(ul, ol) { margin:var(--sp-2xs) 0 0 0; }
+section.content :is(ul, ol) :is(ul, ol) > li { font-size:var(--fs-body); line-height:var(--lh-base); }
+
 

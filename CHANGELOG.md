@@ -111,6 +111,32 @@ in patch versions.
 
 ### Fixed
 
+- **Dark-panel text was invisible on every theme except cuoio.** The
+  `--on-dark-*` opacity ramp (and the `--hljs-*` syntax fallbacks) were
+  declared in a `:where(:root)` block. Marp/Marpit only rewrites a *bare*
+  `:root`/`section` onto the slide `<section>`; wrapped in `:where()` it
+  prefixes the slide path as a descendant, producing a "section inside a
+  section" selector that never matches — so those tokens were **undefined in
+  every rendered slide**. No-fallback consumers (`color:
+  var(--on-dark-secondary)` on `title`/`closing`/`divider` and every split-*
+  dark panel) then collapsed to the inherited dark body ink — invisible on
+  dark surfaces — for all 12 themes that don't locally redefine the ramp
+  (cuoio was the only one that did, which masked the bug). Moved the block to
+  a plain `:root`; palette overrides still win by source order. Fixes title
+  eyebrow/subtitle contrast and the blank left panel on `split-statement`,
+  `split-brief`, `split-compare`, `split-metric`, and `split-list`.
+- **`cards-wide` rendered all-bold and `featured` collapsed in the Marp
+  preview / runtime path.** Both layouts styled their raw-markdown form behind
+  a `:not(:has(.three-stack))` / `:not(:has(.feat-layout))` guard, which is
+  silently broken in the Marp preview Chromium (see `engineering/gotchas.md`)
+  — dropping the rules that reset body weight and build the card frames. The
+  transformed and raw forms are mutually exclusive per render, so the guard
+  was unnecessary: removed it, and the rules now apply unconditionally with no
+  `:has()` dependency, so the layouts render in all three paths.
+- **`content` lists rendered bulletless and undersized.** The layout styled
+  only `<p>`, so an authored list (which `content.docs.md` permits) fell to
+  base list styling — markers stripped, a size below the prose beside it.
+  Added list styling at the prose tier with accent markers.
 - **Mermaid radar (`radar-beta`) curves now ride the engine `--cN` palette.**
   The override block was a legacy two-curve hard-code (`--accent` /
   `--c-accent-warm`) living in the *native* radar component's stylesheet even

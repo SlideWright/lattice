@@ -25,23 +25,34 @@ section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono
 /* ── CARDS-WIDE ────────────────────────────────────────────────────────────
  * ol > li(heading text + nested <ul>body) → mimic .three-stack > .wide-card.
  * Heading is the bare text node before the nested <ul>; CSS auto-bolds it,
- * so authors do not wrap the heading in **…**. Optional <strong> is harmless. */
-section.cards-wide:not(:has(.three-stack)) ol {
+ * so authors do not wrap the heading in **…**. Optional <strong> is harmless.
+ *
+ * These rules style the RAW markdown form (the marp-cli + runtime/preview
+ * paths, which do not run the cards-wide transform — only the emulator emits
+ * .three-stack). They are NOT guarded with :not(:has(.three-stack)): the
+ * transformed (.three-stack divs) and raw (ol) forms are mutually exclusive
+ * in any single render — the emulator replaces every list, the other paths
+ * keep it — so the .three-stack rules above and the ol rules below target
+ * disjoint elements and never collide. The old :not(:has()) guard was
+ * unnecessary AND silently broke in the Marp preview Chromium (the ol rules
+ * were dropped, so body text inherited the li's font-weight:700 → "all bold").
+ * See engineering/gotchas.md "`:not(:has(...))` is unreliable". */
+section.cards-wide ol {
   display:flex; flex-direction:column; gap:0.9375cqi; flex:1;
   list-style:none; padding:0; margin:0;
 }
-section.cards-wide:not(:has(.three-stack)) ol > li {
+section.cards-wide ol > li {
   flex:1; background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
+section.cards-wide ol { counter-reset:wide-counter; }
+section.cards-wide ol > li { counter-increment:wide-counter; }
+section.cards-wide ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
+section.cards-wide ol > li > strong { font-weight:inherit; color:inherit; }
+section.cards-wide ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
+section.cards-wide ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
 
 
 

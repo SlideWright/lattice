@@ -295,10 +295,29 @@
   --fs-hero:     calc(8.9583cqi * var(--fs-scale)); /* 86pt — KPI / watermark; class-driven */
 }
 
-/* ── Universal theme defaults (zero specificity — any :root override wins) ─
+/* ── Universal theme defaults (any palette :root override wins via source order) ─
  * on-dark-* : opacity ramp for text on dark panel surfaces.
- * hljs-*    : fallback syntax palette; themes supply curated overrides. */
-:where(:root) {
+ * hljs-*    : fallback syntax palette; themes supply curated overrides.
+ *
+ * MUST be a plain `:root` block — NOT `:where(:root)`. Marp/Marpit only does
+ * its root-replacement (rewriting the selector to target the slide <section>
+ * so the tokens reach the slide and its descendants) for a BARE `:root` or
+ * `section`. Wrapped in `:where()`, Marpit treats it as an ordinary selector
+ * and PREFIXES the slide path as a descendant — `:where(:root)` becomes
+ * `… > section :where(:where(section):not([root]))` and `:where(section)`
+ * becomes `… > section :where(section)`: both mean "a section nested inside a
+ * section", which never exists in Marp, so the whole block matches nothing and
+ * every token below is UNDEFINED in rendered slides. No-fallback consumers like
+ * `color: var(--on-dark-secondary)` on title / closing / divider and every
+ * split-* dark panel then collapse to inherited dark body ink — invisible on
+ * dark surfaces — for every theme except the one that happens to redefine these
+ * in its own :root (cuoio). The earlier `:where(:root)` was chosen for
+ * zero-specificity "any override wins"; plain `:root` gets the same result
+ * because a palette's own `:root` override is the identical selector at equal
+ * specificity and loads AFTER this base block (themes `@import 'lattice'`
+ * first), so source order resolves it — the mitigation engineering/gotchas.md
+ * prescribes for Marp's broken `:where`/`:has` handling. */
+:root {
   --on-dark-primary:   color-mix(in srgb, white 92%, transparent);
   --on-dark-secondary: color-mix(in srgb, white 68%, transparent);
   --on-dark-ghost:     color-mix(in srgb, white 32%, transparent);

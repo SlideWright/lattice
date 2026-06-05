@@ -732,12 +732,15 @@ section.obligation-matrix.asymmetric td:first-child {
 /* — image: .mirror and .left are handled in the main IMAGE block above — */
 
 /* — featured: swap hero (first child) and sub-row (rest) columns —
- * Marp CLI path: section.featured > ul > li (first vs not-first)
- * lattice.js path: .feat-layout > .feat-card + .sub-row */
-section.featured.mirror:not(:has(.feat-layout)) > ul > li:first-child {
+ * Marp CLI / runtime path: section.featured > ul > li (first vs not-first)
+ * emulator path: .feat-layout > .feat-card + .sub-row.
+ * No :not(:has(.feat-layout)) guard — the raw <ul> and the .feat-layout form
+ * are mutually exclusive per render, and :not(:has()) silently breaks in the
+ * Marp preview Chromium (see engineering/gotchas.md). */
+section.featured.mirror > ul > li:first-child {
   grid-column: 2;
 }
-section.featured.mirror:not(:has(.feat-layout)) > ul > li:not(:first-child) {
+section.featured.mirror > ul > li:not(:first-child) {
   grid-column: 1;
 }
 section.featured.mirror .feat-layout {
