@@ -306,7 +306,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── Threshold variant: target badges at the axis crossings ───────────── */

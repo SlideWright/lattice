@@ -194,7 +194,7 @@ _Source: pilot retrospective, six months across four product teams._
 CSS pattern: `p:has(> em:only-child)` — the paragraph must contain a
 single `<em>` and nothing else (no leading/trailing text outside the
 italic span). Glyph: `✦` at `0.95em` in `--accent`. Text: 15px
-(`--fs-sm`) in `--text-muted`. Use for source citations, scope
+(`--fs-sm`) in `--text-secondary`. Use for source citations, scope
 caveats, asterisk-style footnotes — content that *frames* the slide
 rather than extending its argument.
 

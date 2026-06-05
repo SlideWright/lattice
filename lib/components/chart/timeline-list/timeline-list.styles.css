@@ -106,7 +106,7 @@ section.timeline-list .timeline-item .chart-status {
 }
 section.timeline-list .timeline-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   line-height: var(--lh-relaxed);
   max-width: 17.1875cqi;

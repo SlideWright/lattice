@@ -53,14 +53,16 @@ Give secondary content text its **own** token, curated per theme, as a
   themes. Values derived from each theme's own body ink faded toward its
   canvas, placed at the geometric midpoint between body and muted contrast
   (clamped ≥4.6) so the hierarchy reads **body > secondary > muted**.
-- **Repoint readable secondary content** (subtitle, eyebrow, footnote,
-  caption, table header, subheads, unit/KPI labels, attribution,
-  connector — 24 sites across 15 files) from `--text-muted` to
+- **Repoint every readable content role** off `--text-muted` — subtitle,
+  eyebrow, footnote, caption, table header, subheads, unit/KPI labels,
+  attribution, connector, plus chart legend/note/body text and all math
+  labels/captions/annotations (41 sites across 23 files) — to
   `--text-secondary`.
-- **Keep `--text-muted` chrome-only** (pagination/header/footer) and make
-  it a `light-dark()` pair too (wiring in `--dark-text-muted`).
-  Decorative/state/border/code/glyph/stamp marks stay on it (correctly
-  exempt).
+- **Keep `--text-muted` decorative-only** and make it a `light-dark()` pair
+  too (wiring in `--dark-text-muted`). After the migration its only
+  remaining text uses are genuinely decorative / WCAG-exempt: chrome
+  (pagination/header/footer), empty-cell dashes, skipped/struck state, quote
+  glyphs, code comments, the ARCHIVED stamp.
 - **Retune `--text-label`** light side in atelier/mustard to clear AA.
 - **Extend the audit** to check the secondary/label tiers and composite the
   translucent `--on-dark-*` ramp; fix its comment-polluted `[dark]` tag.
@@ -78,10 +80,9 @@ Give secondary content text its **own** token, curated per theme, as a
   white-alpha ramp. Giving those surfaces a scoped `color-scheme:dark` would
   let them reuse the one ramp and retire most of `--on-dark-*`. Deferred
   because it needs a render-confirmation of `color-scheme` on a `<section>`
-  in Marp's Chromium and touches the bookend/split components.
-- **Component-internal labels** (chart axis/label text, math annotations,
-  roadmap internals) still ride `--text-muted`. They are specialized and
-  dense; migrating them is a follow-up to avoid unvetted visual churn.
+  in Marp's Chromium and touches the bookend/split components. It is a
+  documented architectural enhancement, not debt: the current `--on-dark-*`
+  ramp is correct, AA-verified, and works on both renderers.
 
 ## Verification
 

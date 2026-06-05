@@ -57,7 +57,7 @@ to spot during palette development.
 | `--text-body` | Body prose |
 | `--text-secondary` | Secondary **content** text — subtitle, caption, eyebrow, table header, sub-label, attribution. AA (≥4.5:1) on both canvases. |
 | `--text-label` | Accent-hued labels / kickers. AA on both canvases. |
-| `--text-muted` | **Chrome only** — pagination, header, footer. DECORATIVE / WCAG-exempt; never for content text (use `--text-secondary`). |
+| `--text-muted` | **Decorative / de-emphasized** — chrome (pagination/header/footer), empty-cell & skipped-state marks, struck "dropped" options, quote glyphs, code comments. DECORATIVE / WCAG-exempt; never for primary or secondary **content** text (use `--text-secondary`). |
 | `--accent` | Saturated brand color used for emphasis text and borders |
 | `--accent-soft` | Pale brand-tinted panel fill |
 | `--code-text` | Code text on dark code surface |

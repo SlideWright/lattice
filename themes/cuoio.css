@@ -112,7 +112,7 @@
   --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
   --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
   --text-secondary: light-dark(#7B6E62, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* chrome only (pagination/header/footer) — DECORATIVE, WCAG-exempt */
+  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,

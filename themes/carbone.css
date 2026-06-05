@@ -77,7 +77,7 @@
   --text-body:    #DCDCD7;       /* L:12.63:1 on bg AAA */
   --text-label:   var(--brand-accent); /* L:10.95:1 on bg AAA */
   --text-secondary: #A5A5A2;   /* secondary prose / subtitle / caption — 7.0:1 on bg AAA */
-  --text-muted:   #757A82;      /* chrome only (pagination/header/footer) — DECORATIVE, WCAG-exempt */
+  --text-muted:   #757A82;      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent — electric lime ──────────────────────────────────── */
   --accent:      var(--brand-accent);          /* L:10.95:1 on bg AAA */

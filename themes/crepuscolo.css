@@ -72,7 +72,7 @@
   --text-body:    light-dark(#2E2542, var(--dark-text-body));        /* L:13.63:1 / D:10.42:1 */
   --text-label:   light-dark(var(--brand-accent), var(--dark-text-label)); /* L:7.99:1 / D:8.28:1 AAA */
   --text-secondary: light-dark(#5C546C, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#8E83A8, var(--dark-text-muted));      /* chrome only (pagination/header/footer) — DECORATIVE, WCAG-exempt */
+  --text-muted:   light-dark(#8E83A8, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────── */
   --accent:      light-dark(var(--brand-accent), #B59ADC); /* L:7.99:1 / D:7.50:1 on bg AAA */

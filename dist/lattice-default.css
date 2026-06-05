@@ -1684,7 +1684,7 @@ section.checklist > ul > li em,
 section.checklist > ol > li em {
   font-style:italic;
   font-weight:400;
-  color:var(--text-muted);
+  color:var(--text-secondary);
 }
 
 /* === lib/components/legal/citation-card/citation-card.styles.css === */
@@ -3716,7 +3716,7 @@ section.kanban.chart-frame .chart-body {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   flex: 0 0 auto;
 }
 
@@ -3759,7 +3759,7 @@ section.kanban.chart-frame .chart-body {
 /* Optional card body (from a third-level sub-bullet) */
 .kanban-card-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: var(--lh-snug);
   font-style: italic;
   overflow: hidden;
@@ -4769,7 +4769,7 @@ section.math h3:first-child {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0;
 }
 section.math > h2 {
@@ -4793,7 +4793,7 @@ section.math h3 {
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 section.math p { margin: 0 0 var(--sp-xs) 0; }
@@ -4886,7 +4886,7 @@ section.math.feature > :is(ul, ol)::before {
   font-size: var(--fs-meta);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-bottom: var(--sp-sm);
 }
 
@@ -4939,7 +4939,7 @@ section.math.derivation td:first-child {
   color: var(--text-heading);
 }
 section.math.derivation td:last-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
   border-left: 2px solid var(--border);
 }
@@ -5040,7 +5040,7 @@ section.math.theorem blockquote:nth-of-type(3n) {
   border-left-color: var(--text-muted);
 }
 section.math.theorem blockquote:nth-of-type(3n) strong:first-child {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 section.math.theorem blockquote .katex-display {
   margin: var(--sp-xs) 0;
@@ -5101,7 +5101,7 @@ section.math.compare > p:has(> .katex-display) .katex-display > .katex {
   font-size: 1.4em;
 }
 section.math.compare > p:not(:has(.katex-display)) {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 var(--sp-xs) 0;
 }
 
@@ -5146,7 +5146,7 @@ section.math.canvas > p:has(.katex-display) .katex-display > .katex {
 }
 section.math.canvas > p:not(:has(.katex-display)):not(:has(img)) {
   grid-area: cap;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   margin: var(--sp-sm) 0 0 0;
 }
@@ -5218,7 +5218,7 @@ section.math.matrix > :is(ul, ol) > li > strong {
   font-size: var(--fs-meta);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   margin-right: 0.5em;
 }
@@ -5309,7 +5309,7 @@ section.math.stats > blockquote {
   margin: 0 0 var(--sp-md) 0;
   text-align: center;
   font-style: normal;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   letter-spacing: 0.12em;
@@ -5897,7 +5897,7 @@ section.progress .progress-note {
   grid-column: 2 / 3;
   margin-top: -0.3125cqi;
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -6210,7 +6210,7 @@ section.quadrant .quadrant-legend .quadrant-swatch {
 section.quadrant .quadrant-legend .quadrant-legend-count {
   font-family: var(--font-mono, var(--font-body));
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── Threshold variant: target badges at the axis crossings ───────────── */
@@ -6434,7 +6434,7 @@ section.radar .radar-legend li[data-kind="band"] .radar-swatch {
   border: 1.5px dashed var(--text-muted);
 }
 section.radar .radar-legend li[data-kind] {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* ── target: actual vs a reference polygon, per-axis gap segments ─────── */
@@ -7269,7 +7269,7 @@ section.roadmap td:empty::before {
 section.roadmap > p {
   font-size:var(--fs-meta);
   font-style:italic;
-  color:var(--text-muted);
+  color:var(--text-secondary);
   margin-top:var(--sp-md);
 }
 
@@ -8785,7 +8785,7 @@ section.timeline-list .timeline-item .chart-status {
 }
 section.timeline-list .timeline-body {
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
   line-height: var(--lh-relaxed);
   max-width: 17.1875cqi;
@@ -12303,7 +12303,7 @@ section g.row-rect-odd > path  { fill: var(--bg) !important; }
   --text-body:    light-dark(#6B5D4F, var(--dark-text-body));   /* 5.95:1 / 11.02:1 AA  */
   --text-label:   light-dark(#6F604F, var(--dark-text-label));  /* 5.68:1 /  9.63:1 AA  */
   --text-secondary: light-dark(#7B6E62, var(--dark-text-secondary)); /* secondary prose / subtitle / caption — AA both sides */
-  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* chrome only (pagination/header/footer) — DECORATIVE, WCAG-exempt */
+  --text-muted:   light-dark(#A69882, var(--dark-text-muted));      /* decorative / de-emphasized — chrome, empty/skipped marks, glyphs; WCAG-exempt */
 
   /* ── Brand accent ──────────────────────────────────────────────────────
    * The accent is text-bearing on multiple surfaces (inline code chips,

@@ -119,6 +119,6 @@ section.progress .progress-note {
   grid-column: 2 / 3;
   margin-top: -0.3125cqi;
   font-size: var(--fs-meta);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-style: italic;
 }

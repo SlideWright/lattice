@@ -61,11 +61,13 @@ in patch versions.
 
 ### Changed
 
-- **`--text-muted` is now chrome-only and a `light-dark()` pair.** It is
-  reserved for pagination / header / footer (DECORATIVE, WCAG-exempt) and now
-  carries a dark-canvas side (wiring in the previously orphaned
-  `--dark-text-muted`). Content roles that used to borrow it were repointed to
-  `--text-secondary`. `--text-label` was retuned to clear AA on canvas in the
+- **`--text-muted` is now decorative-only and a `light-dark()` pair.** It is
+  reserved for genuinely decorative / de-emphasized marks — chrome
+  (pagination/header/footer), empty-cell dashes, skipped/struck state, quote
+  glyphs, code comments (DECORATIVE, WCAG-exempt) — and now carries a
+  dark-canvas side (wiring in the previously orphaned `--dark-text-muted`).
+  Every readable content role that used to borrow it (41 sites across 23
+  files) was repointed to `--text-secondary`. `--text-label` was retuned to clear AA on canvas in the
   two themes where it sat just below (atelier, mustard). Decks that referenced
   `--text-muted` only through Lattice components are unaffected; a deck that
   hard-coded `var(--text-muted)` for body-adjacent *content* text should
