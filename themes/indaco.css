@@ -268,4 +268,33 @@
    *   --c-subcontainer  kanban ticket, a box nested in a cluster */
   --c-container:     light-dark(#E8F0F7, #292F35);
   --c-subcontainer:  light-dark(#D9E1E8, #3B4147);
+
+  /* ── Chart palette — indaco's curation of the chart-family's two colour
+   * spectrums (defined in lib/components/chart/_chart-family/chart-family.css).
+   * Ported from indaco's own --cN pigment spectrum (cool-blue lead) + its
+   * living status palette, so charts read native to the theme instead of
+   * the engine's generic fallback. Light side = the saturated pigment (drives
+   * the wedge/bar border at full strength + a 24% tint for the fill); dark
+   * side lifts the same hue toward white so it stays vivid on the navy canvas.
+   * Categorical and status share the family's recipe; see the chart-family.css
+   * token block for the contract. AA-verified both canvases (border ≥3:1,
+   * label text ≥4.5:1). */
+  --chart-cat1: light-dark(#006398, color-mix(in oklab, #006398, white 30%));  /* blue    */
+  --chart-cat2: light-dark(#993D00, color-mix(in oklab, #993D00, white 30%));  /* rust    */
+  --chart-cat3: light-dark(#2E6F00, color-mix(in oklab, #2E6F00, white 30%));  /* green   */
+  --chart-cat4: light-dark(#953170, color-mix(in oklab, #953170, white 30%));  /* magenta */
+  --chart-cat5: light-dark(#7142A0, color-mix(in oklab, #7142A0, white 30%));  /* purple  */
+  --chart-cat6: light-dark(#006D60, color-mix(in oklab, #006D60, white 30%));  /* teal    */
+  --chart-cat7: light-dark(#835100, color-mix(in oklab, #835100, white 30%));  /* gold    */
+  --chart-cat8: light-dark(#006A79, color-mix(in oklab, #006A79, white 30%));  /* cyan    */
+
+  /* Status — pass/info/mute REUSE indaco's own palette (--pass, brand blue,
+   * --text-muted); warn ports indaco's gold to a saddle-amber; fail is newly
+   * curated (indaco's palette had no red) as a cool crimson that sits with the
+   * blues. Semantics universal, hues indaco-specific. */
+  --chart-state-pass: light-dark(#2F6B12, #6FCC4D);  /* done — forest green (= --pass)   */
+  --chart-state-warn: light-dark(#8F5E00, #E3A93C);  /* at-risk — saddle amber           */
+  --chart-state-fail: light-dark(#C0283A, #FF6B72);  /* blocked — cool crimson           */
+  --chart-state-info: light-dark(#00598C, #82C8E5);  /* decision — indaco blue           */
+  --chart-state-mute: light-dark(#6B7F9A, #9AAAC0);  /* deferred — blue-gray (= --muted) */
 }

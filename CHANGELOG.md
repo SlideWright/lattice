@@ -39,6 +39,16 @@ in patch versions.
 
 ### Fixed
 
+- **Indaco chart palette was never re-curated after the colour-system
+  migration.** The unified `--chart-cat*` / `--chart-state-*` refactor stripped
+  indaco's old per-theme chart tokens but only cuoio and onyx got re-curated;
+  indaco silently fell through to the engine's generic fallback, so its charts
+  shared colours with every other untuned theme. Indaco now defines its own
+  `--chart-cat1..8` (ported from its blue-led pigment spectrum) and
+  `--chart-state-{pass,warn,fail,info,mute}` (reusing `--pass`, brand blue, and
+  `--text-muted`; saddle-amber warn; a newly-curated cool crimson for fail,
+  since indaco's palette had no red). AA-verified on both canvases.
+
 - **Pie wedge borders were off-by-one from their fills.** The piechart SVG
   emits `<defs>` (per-wedge gradients) as its first child, so the
   `nth-child`-based border palette counted from the wrong slot — every wedge's
