@@ -10200,17 +10200,20 @@ section.chart-frame {
  *
  *   light canvas → fill = pale tint of the hue (24% on a light bg),
  *                  mark/border = the hue at full depth (dark-on-light)
- *   dark  canvas → fill = a muted DEEP tint of the hue (34% on a dark bg —
- *                  NOT the hue at full strength, which paints garish
- *                  primary blocks), mark/border = the hue lifted toward
- *                  white so it pops (light-on-dark)
+ *   dark  canvas → fill = a muted DEEP tint of the hue (40% mixed toward
+ *                  BLACK — NOT into the navy --bg, which neutralizes warm
+ *                  hues to brown, and NOT the hue at full strength, which
+ *                  paints garish primary blocks), mark/border = the hue
+ *                  lifted toward white so it pops (light-on-dark)
  *
  * so fill and mark ALWAYS share a hue, and neither canvas is louder than
  * the other — the dark side is the light side's restraint, inverted, not a
- * saturation crank. (An earlier revision used `var(--catN-hue)` directly as
- * the dark fill; at 8 categories that read as a clashing Excel-default
- * palette. The 34% mix keeps each region a subdued, hue-true wash of the
- * dark canvas.)
+ * saturation crank. (Two earlier revisions missed: `var(--catN-hue)` direct
+ * read as a clashing Excel-default palette at 8 categories; the later 34%
+ * mix into --bg muddied every warm category toward brown on the navy canvas.
+ * Mixing 40% toward black keeps each region a subdued, hue-true wash —
+ * mirroring --state-*-fill and the canonical chart fill, so a quadrant zone,
+ * a gantt bar, and a status pill all darken the same way on dark.)
  *
  * Why it is built this way: each slot resolves to a single saturated hue for
  * the current canvas via `light-dark(lightCanvasVivid, darkCanvasVivid)`, and
@@ -10245,14 +10248,14 @@ section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a char
   --cat7-hue: var(--chart-cat7, light-dark(#B5860A, #FFD426));  /* gold   */
   --cat8-hue: var(--chart-cat8, light-dark(#4B49C9, #6E6CF0));  /* indigo */
 
-  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 34%, var(--bg)));
-  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 34%, var(--bg)));
-  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 34%, var(--bg)));
-  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 34%, var(--bg)));
-  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 34%, var(--bg)));
-  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 34%, var(--bg)));
-  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 34%, var(--bg)));
-  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 34%, var(--bg)));
+  --cat1-fill: light-dark(color-mix(in oklab, var(--cat1-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat1-hue) 40%, black));
+  --cat2-fill: light-dark(color-mix(in oklab, var(--cat2-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat2-hue) 40%, black));
+  --cat3-fill: light-dark(color-mix(in oklab, var(--cat3-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat3-hue) 40%, black));
+  --cat4-fill: light-dark(color-mix(in oklab, var(--cat4-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat4-hue) 40%, black));
+  --cat5-fill: light-dark(color-mix(in oklab, var(--cat5-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat5-hue) 40%, black));
+  --cat6-fill: light-dark(color-mix(in oklab, var(--cat6-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat6-hue) 40%, black));
+  --cat7-fill: light-dark(color-mix(in oklab, var(--cat7-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat7-hue) 40%, black));
+  --cat8-fill: light-dark(color-mix(in oklab, var(--cat8-hue) 24%, var(--bg)), color-mix(in oklab, var(--cat8-hue) 40%, black));
 
   --cat1-ink: light-dark(var(--cat1-hue), color-mix(in oklab, var(--cat1-hue) 78%, white));
   --cat2-ink: light-dark(var(--cat2-hue), color-mix(in oklab, var(--cat2-hue) 78%, white));
@@ -10262,6 +10265,17 @@ section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a char
   --cat6-ink: light-dark(var(--cat6-hue), color-mix(in oklab, var(--cat6-hue) 78%, white));
   --cat7-ink: light-dark(var(--cat7-hue), color-mix(in oklab, var(--cat7-hue) 78%, white));
   --cat8-ink: light-dark(var(--cat8-hue), color-mix(in oklab, var(--cat8-hue) 78%, white));
+
+  /* The mix target for the categorical SVG gradients (pie wedges, quadrant
+   * zones — emitted inline by the transforms). Light canvas mixes the hue into
+   * the slide --bg (a pale tint); dark canvas mixes toward BLACK, NOT the navy
+   * --bg, because a warm hue mixed into a cool canvas neutralizes to brown.
+   * Toward black the hue stays true. The transforms mix `color-mix(hue X%,
+   * var(--chart-cat-base))` so the same stop flips per canvas via this var —
+   * mirroring --catN-fill / --state-*-fill / the canonical chart fill, so a
+   * quadrant zone, a pie wedge, a gantt bar, and a status pill all darken the
+   * same way on dark. (The light side is unchanged from the old `var(--bg)`.) */
+  --chart-cat-base: light-dark(var(--bg), black);
 }
 
 /* ── Chart SEMANTIC / status colour model ─────────────────────────────────
@@ -10555,8 +10569,8 @@ section.chart-frame .chart-status {
   --pill-hue: var(--state-info-hue);
   --pill-ink: var(--state-info-ink);
   background: linear-gradient(180deg,
-    color-mix(in oklab, var(--pill-hue) 33%, var(--bg)) 0%,
-    color-mix(in oklab, var(--pill-hue) 54%, var(--bg)) 100%);
+    light-dark(color-mix(in oklab, var(--pill-hue) 33%, var(--bg)), color-mix(in oklab, var(--pill-hue) 48%, black)) 0%,
+    light-dark(color-mix(in oklab, var(--pill-hue) 54%, var(--bg)), color-mix(in oklab, var(--pill-hue) 64%, black)) 100%);
   border: 1px solid var(--pill-ink);
   color: var(--text-heading);
 }

@@ -41,6 +41,17 @@ in patch versions.
   that "shoots forward" from a pale/dark origin to a saturated leading-edge head
   whose intensity scales with the percentage, with the track rail dropped so
   each bar floats like a gantt tile and the `%` readout riding the leading edge.
+- **The categorical charts and the status pill now darken toward black too —
+  completing the dark-mud fix.** The earlier pass moved the status/value *bar*
+  fills off the navy `--bg`; this extends the same rule to the last fills that
+  still mudded: the **pie wedge** and **quadrant zone** SVG gradients (which mix
+  `--catN-hue` inline) now mix toward a new `--chart-cat-base` token —
+  `light-dark(var(--bg), black)` — so on dark every category stays hue-true (a
+  warm wedge reads gold, not brown) while the light canvas is unchanged. The
+  shared **status pill** gradient and the `--catN-fill` token (quadrant dots,
+  word-cloud) gain the same canvas-aware toward-black dark side. Net: quadrant
+  zones, pie wedges, gantt/progress bars, kanban cards, and status pills all
+  darken the one way on the dark canvas.
 - **cuoio ships a curated chart palette — the first theme to flavour the
   chart family.** cuoio's charts no longer inherit the engine's default
   Apple-hue spectrum (which read as "indaco's charts" on the warm canvas);
