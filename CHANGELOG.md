@@ -74,6 +74,24 @@ in patch versions.
   `--text-heading` label reads directly on every fill — measured ≥ 8:1 on both
   canvases — with no glow or plate behind the text. onyx-only; cuoio, indaco,
   and the shared engine are untouched.
+- **indaco curates its charts around its cool blue-led spectrum — bringing all
+  three flagship themes to one standard.** indaco now flavours the chart family
+  with its own pigments instead of the engine default: `--chart-cat*` rides its
+  blue-led spectrum (blue · rust · green · magenta · purple · teal · gold · cyan,
+  ported from indaco's `--cN` pigments so a pie and a flowchart match), and
+  `--chart-state-*` reuses indaco's living palette (`--pass`, brand blue,
+  `--text-muted`) — porting its gold to a saddle-amber `warn` and curating a new
+  cool **crimson** `fail`, since indaco's palette had no red. AA-verified both
+  canvases. **cuoio, onyx, and indaco are now the three curated exemplars**; the
+  remaining themes inherit the engine default until brought up to the same
+  standard — the curation recipe and checklist live in
+  `lib/components/chart/_chart-family/chart-family.style.md`.
+- **Pie wedges return to the radial dome finish, shared with the quadrant.** The
+  two solid-area charts (pie, quadrant) now use the *same* hub→rim area-fade
+  (42/58/82 toward `--chart-cat-base`), so they read as one family — a centre-out
+  fade for charts that radiate from a centre, distinct from the bar family's
+  vertical wash. The flatter top→bottom wash prototyped earlier is retained as a
+  documented **future variant** (see `chart-family.style.md` › "Fill finish").
 
 ### Fixed
 
