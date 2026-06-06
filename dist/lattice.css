@@ -12654,8 +12654,14 @@ section .arrowheadPath {
 section .actor-line {
   stroke: var(--c-line) !important;
 }
-section svg[aria-roledescription="journey"] line:not(.mouth) {
+section svg[aria-roledescription="journey"] line:not(.mouth):not(.task-line) {
   stroke: var(--c-line) !important;
+}
+/* The vertical dashed task→face connectors add clutter (the face already sits
+ * under its task by position). Drop them to the canvas — invisible in both
+ * modes, no cut-through where they cross the axis. */
+section svg[aria-roledescription="journey"] line.task-line {
+  stroke: transparent !important;
 }
 
 /* ── GANTT SECTION LABELS (left axis) ──
