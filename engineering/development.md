@@ -153,17 +153,34 @@ integration tests, not unit tests.
 
 ## CI
 
-Two jobs in `.github/workflows/ci.yml`:
+`.github/workflows/ci.yml` is path-gated and browser-lean. A top-level
+`concurrency` group cancels superseded runs on the same ref.
 
-- **`lint-and-unit`** — matrix on Node 22/24, `fail-fast: false`.
-  Runs `npm run lint` + `npm test`. Each ~30s.
-- **`integration`** — `needs: lint-and-unit`, single Node version (22).
-  Installs `poppler-utils` (for `pdfinfo`) and runs
-  `npm run test:integration`. ~2–3 min.
+- **`changes`** — classifies the diff (`dorny/paths-filter`). `code` is
+  true unless EVERY changed file is prose markdown; decks
+  (`examples/**.md`, `baseline-decks/**.md`, `**.gallery.md`) count as
+  code. **A docs-only change runs lint only** — `unit` and `integration`
+  are skipped.
+- **`lint`** — ALWAYS runs, single Node, browser-free
+  (`PUPPETEER_SKIP_DOWNLOAD=1`). `npm run lint` + `npm run lint:deck:all`.
+- **`unit`** — code changes only. Matrix Node 22/24, `fail-fast: false`,
+  browser-free. `npm test`, plus `npm run build:check` once (on 22) — the
+  render-free artifact-freshness gate (css, default bundle, runtime +
+  emulator bundles, component docs, portal, dist README).
+- **`integration`** — code changes only, `needs: unit`, single Node (22).
+  The only tier that renders, so the only one that downloads Chromium —
+  **cached** via `actions/cache` on `~/.cache/puppeteer` (keyed on the
+  lockfile). Installs `poppler-utils` (for `pdfinfo`), runs
+  `npm run test:integration`. ~2–3 min cold.
+- **`ci`** — the single gate job (`if: always()`). **Set this as the only
+  required status check** in branch protection: it passes when lint
+  succeeds and the test tiers passed or were skipped, so the conditional
+  jobs never leave a PR stuck on a pending required check.
 
 Integration runs once because the Marp/Puppeteer/emulator pipeline
 doesn't vary with Node version; matrix-testing the slow tier is paranoia,
-not insurance.
+not insurance. Only `integration` needs Chromium — `lint` and `unit` skip
+the download (~150 MB) since neither renders.
 
 ## Integration test cache
 
