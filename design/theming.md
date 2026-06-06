@@ -60,7 +60,34 @@ to spot during palette development.
 | `--text-muted` | **Decorative / de-emphasized** — chrome (pagination/header/footer), empty-cell & skipped-state marks, struck "dropped" options, quote glyphs, code comments. DECORATIVE / WCAG-exempt; never for primary or secondary **content** text (use `--text-secondary`). |
 | `--accent` | Saturated brand color used for emphasis text and borders |
 | `--accent-soft` | Pale brand-tinted panel fill |
+| `--on-accent` | Ink for text/icons placed ON an `--accent` fill (`-secondary` / `-ghost` / `-watermark` tiers derive from it) |
+| `--on-accent-soft` | Ink/border for the `--accent-soft` fill |
 | `--code-text` | Code text on dark code surface |
+
+### Accent containers
+
+Accent comes in two **containers**, and the rule is the same as everywhere
+else: a fill never carries text in a fixed colour — it carries text in its
+*paired* ink, so both adapt when a palette flips its accent light or dark.
+
+| Container | Fill | Ink / border | Use |
+|---|---|---|---|
+| **Bold** | `--accent` | `--on-accent` (primary), `--on-accent-secondary` (eyebrow/caption), `--on-accent-ghost` (chrome / divider), `--on-accent-watermark` (backdrop glyph) | Loud, attention-pulling — verdict bar, corner tags, timeline nodes, the split-list rail |
+| **Soft** | `--accent-soft` | `--on-accent-soft` (emphasis + border); body prose stays `--text-body` | Quiet, recommended-option surfaces — verdict-grid winner, before/after & matrix outcome cells, featured card |
+
+The **bold** ink is the single curated value `--on-accent`: each theme tunes it
+for AAA contrast against *its* `--accent` in both modes, and the three muted
+tiers derive from it by opacity (so overriding `--on-accent` alone re-tunes the
+whole rail). The **soft** ink `--on-accent-soft` is `--accent` itself — it reads
+AAA on the pale tint and is exactly what soft cards already used; naming it gives
+consumers a first-class pair and one override seam, with no new curated colour.
+
+> **Never paint text on `var(--accent)` with `--on-dark*` or a bare `#fff`.**
+> That assumes the accent is always dark; it collapses to light-on-light on
+> every pale-accent palette (all dark modes; concrete/atelier/ardesia outright).
+> The `accent-container ink contract` test
+> (`test/unit/components/accent-contract.test.js`) enforces this across the
+> engine and the docs site.
 
 Custom-logo authors point `logo:` in front matter at an image file.
 A build-stage rewriter injects `<img class="deck-logo">` as the

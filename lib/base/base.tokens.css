@@ -196,11 +196,20 @@
    * --on-accent alone and the whole rail follows, with no white-on-pale-accent
    * collision when a palette flips --accent to a brighter value in dark mode.
    * Themes whose accent doesn't switch (e.g., indaco's mid-blue stays in
-   * both modes) can simplify by redefining --on-accent: #fff at :root. */
+   * both modes) can simplify by redefining --on-accent: #fff at :root.
+   *
+   * Accent comes in TWO containers (see design/theming.md "Accent
+   * containers"). The BOLD container fills with --accent and inks with the
+   * ramp above (ghost doubles as its divider). The SOFT container fills with
+   * --accent-soft (a pale brand tint) and inks/borders with --on-accent-soft.
+   * The soft ink is --accent itself — it reads AAA on the soft tint and is
+   * the value every soft-accent card already used; naming it gives consumers
+   * a first-class pair and a single override seam, with no new curated colour. */
   --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
   --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
   --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
   --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
+  --on-accent-soft:      var(--accent);
 
   /* ── Code panel ─────────────────────────────────────────────────────────
    * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.
