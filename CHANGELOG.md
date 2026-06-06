@@ -265,6 +265,10 @@ in patch versions.
     each column. Changed to `var(--accent)`, which stays vivid in both themes and
     both canvases.
 
+- **Layout audit — cross-component consistency (audit T-misc).** `stats` metric
+  numbers now use the display serif (`--font-display`), matching `big-number` /
+  `kpi` / `split-metric` (they were the lone sans outlier); `split-compare`'s
+  preferred-option marker is now `✧`, matching `verdict-grid`'s focal glyph.
 - **Layout audit — round 1 of fixes (anatomy, contracts, P0 render bugs).**
   - `kpi`: the running header overprinted the eyebrow on every slide with an
     `### eyebrow` (the section `padding-top` coincided with the absolute
