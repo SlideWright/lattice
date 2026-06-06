@@ -182,9 +182,20 @@ const latticeTheme = EditorView.theme({
 	'.cm-matchingBracket': { backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)', outline: 'none' },
 });
 
+// Editor chrome variant that grows to fit its content instead of filling a
+// fixed-height pane — no inner scrollbar, so the whole markdown is visible at
+// once. Used by the component-page Specimen ("see the full source without
+// scrolling"); the playground keeps the fixed-pane default.
+const autoHeightTheme = EditorView.theme({
+	'&': { height: 'auto' },
+	'.cm-scroller': { overflow: 'visible' },
+});
+
 // Create the editor in `parent`. `onChange(value)` fires (debounced by caller)
-// on every doc change. Returns { getValue, setValue, focus, destroy }.
-export function createEditor({ parent, doc = '', onChange }) {
+// on every doc change. `autoHeight` grows the editor to its content (no inner
+// scroll) rather than filling the parent. Returns
+// { getValue, setValue, focus, destroy }.
+export function createEditor({ parent, doc = '', onChange, autoHeight = false }) {
 	const listener = EditorView.updateListener.of((u) => {
 		if (u.docChanged && onChange) onChange(u.state.doc.toString());
 	});
@@ -212,6 +223,7 @@ export function createEditor({ parent, doc = '', onChange }) {
 				}),
 				EditorView.lineWrapping,
 				latticeTheme,
+				...(autoHeight ? [autoHeightTheme] : []),
 				keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
 				listener,
 			],

@@ -30,7 +30,7 @@ engine knows. Open
 [`examples/gallery.pdf`](https://github.com/slidewright/lattice/blob/main/examples/gallery.pdf).
 That is the answer to "what does this actually produce?". For an
 interactive tour of every layout — themable in any palette — see the
-[component reference](/lattice/components.html).
+[component reference](/lattice/components/).
 
 ## What you get
 
@@ -91,5 +91,5 @@ own.
   your first deck.
 - [Author decks](/lattice/guides/authoring/) — the layout catalog and authoring
   contract.
-- [Browse components](/lattice/components.html) — every layout,
+- [Browse components](/lattice/components/) — every layout,
   themable in any palette.

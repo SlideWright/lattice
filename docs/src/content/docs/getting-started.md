@@ -87,5 +87,5 @@ npx @marp-team/marp-cli deck.md \
   authoring contract for each layout.
 - [Themes & palettes](/lattice/guides/themes/) — pick a palette, or author your
   own.
-- [Component reference](/lattice/components.html) — every layout, slot,
+- [Component reference](/lattice/components/) — every layout, slot,
   and modifier, browsable in any palette.

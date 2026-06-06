@@ -55,7 +55,7 @@ job they do — anchor, statement, inventory, comparison, progression,
 evidence, imagery, plus the substance buckets (chart, diagram, math,
 code) and the legal domain set.
 
-The fastest way to choose is the **[component reference](/lattice/components.html)**:
+The fastest way to choose is the **[component reference](/lattice/components/)**:
 an interactive catalog of every layout with its slots, variants, when to
 reach for it, and when not to — and you can preview the whole thing in
 any Lattice palette. The same content is also available as a single
@@ -88,7 +88,7 @@ reference in the repository.
 ## Where to go next
 
 - [Themes & palettes](/lattice/guides/themes/) — choose or author a palette.
-- [Component reference](/lattice/components.html) — every layout's
+- [Component reference](/lattice/components/) — every layout's
   authoring contract.
 - [`reference/skill.md`](https://github.com/slidewright/lattice/blob/main/reference/skill.md)
   in the repo — the full deck-authoring contract.

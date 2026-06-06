@@ -23,7 +23,7 @@ context renders identically.
 
 > **Documentation:** <https://slidewright.github.io/lattice/> — intro,
 > getting started, authoring and theming guides, and the interactive
-> [component reference](https://slidewright.github.io/lattice/components.html)
+> [component reference](https://slidewright.github.io/lattice/components/)
 > (every layout, themable in any palette). Built from `docs/`; see
 > [`docs/README.md`](docs/README.md).
 
@@ -42,7 +42,7 @@ context renders identically.
   supplies pale fills, saturated brand borders, and dark ink; saturated
   red is reserved for alarm states. WCAG AA verified across every
   text-bearing surface. Preview them all in the
-  [component reference](https://slidewright.github.io/lattice/components.html).
+  [component reference](https://slidewright.github.io/lattice/components/).
 - **26 layouts.** Title, divider, content, diagram, cards-grid, compare-prose,
   quote, timeline, big-number, split-list, verdict-grid, more.
   Each layout has an authoring contract documented in [design/skill.md](design/skill.md).

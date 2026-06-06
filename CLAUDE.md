@@ -85,9 +85,11 @@ that generator to re-bless another palette), `dist/lattice-runtime.js`
 emulator CLI — the package `bin`/`main`; `build-emulator.js` inlines the
 local engine graph and leaves node_modules deps external, mirroring the
 runtime split of `lib/runtime/index.js` source → `dist/` bundle),
-`dist/docs/components.{md,html,json}` (the canonical single-file component
-reference — `.md`/`.html` human-readable, `.json` the machine catalog for
-agents/tooling), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
+`dist/docs/components.{md,json}` (the canonical single-file component
+reference — `.md` the human-readable plain-Markdown edition, `.json` the
+machine catalog for agents/tooling; the browsable edition with live previews
++ an in-browser editor is the docs-site component pages,
+`docs/src/pages/components/`), and `dist/README.md` (`build-dist-readme.js` indexes the folder;
 runs last). These are the shipped/public paths — decks load
 `dist/lattice.css` via `marp.config.js` `themeSet`, and the README/jsdelivr
 URLs point into `dist/`. Do not hand-edit them. (The repo-root

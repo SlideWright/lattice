@@ -120,7 +120,7 @@ tracked-only and deterministic per commit. Contents (full showcase):
 - `lib/` — the `marp.config.js` runtime deps (transformers, core,
   component transforms, integrations) **and** every per-component,
   per-bucket, and integration gallery PDF the component reference links
-  to (~140), so `dist/docs/components.html` resolves its
+  to (~140), so `dist/docs/components.md` resolves its
   `../../lib/components/…` links inside the unzipped tree.
 - `themes/` — all palette files.
 - `marp.config.js` — the marp-cli config.

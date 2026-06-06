@@ -36,12 +36,11 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
 const { loadAll, manifestBucket } = require('../lib/components');
+const { resolveAnatomy } = require('./anatomy-catalog');
 
 const ROOT = path.join(__dirname, '..');
 const COMPONENTS_DIR = path.join(ROOT, 'lib', 'components');
-const ASCII_TOOL = path.join(ROOT, 'tools', 'ascii-preview.py');
 
 // component name → bucket, for resolving cross-bucket related-component
 // links. Components are bucket-nested (lib/components/<bucket>/<name>/), so a
@@ -56,43 +55,10 @@ function bucketOf(name) {
   return _nameToBucket.get(name);
 }
 
-/**
- * Cache of the canonical ASCII catalog. Lazily populated by
- * loadAnatomyCatalog() so the python subprocess runs at most once per
- * generator invocation, never if no manifest references a block.
- */
-let _anatomyCatalog = null;
-
-function loadAnatomyCatalog() {
-  if (_anatomyCatalog) return _anatomyCatalog;
-  const out = execFileSync('python3', [ASCII_TOOL, 'build'], { encoding: 'utf8' });
-  const catalog = Object.create(null);
-  let currentId = null;
-  let currentLines = [];
-  for (const line of out.split('\n')) {
-    const m = line.match(/^=== (\S+) ===$/);
-    if (m) {
-      if (currentId) catalog[currentId] = currentLines.join('\n').replace(/\n+$/, '');
-      currentId = m[1];
-      currentLines = [];
-    } else if (currentId) {
-      currentLines.push(line);
-    }
-  }
-  if (currentId) catalog[currentId] = currentLines.join('\n').replace(/\n+$/, '');
-  _anatomyCatalog = catalog;
-  return catalog;
-}
-
-function resolveAnatomy(blockId) {
-  const catalog = loadAnatomyCatalog();
-  const block = catalog[blockId];
-  if (!block) {
-    const known = Object.keys(catalog).sort().join(', ');
-    throw new Error(`anatomyBlock "${blockId}" not found in tools/ascii-preview.py catalog. Known IDs: ${known}`);
-  }
-  return block;
-}
+// Anatomy ASCII blocks are resolved from the canonical catalog
+// (tools/ascii-preview.py) via the shared loader in tools/anatomy-catalog.js,
+// so the .docs.md reference, the aggregate components.md, and the docs-site
+// component pages all render the same block from one source.
 
 /**
  * True when the manifest has any of the prose fields the generator

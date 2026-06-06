@@ -1,0 +1,179 @@
+// Component-page Specimen: a live preview that flips to an in-browser editor.
+//
+// One surface, two faces. The preview face renders the component's sample live
+// through the playground engine and tracks the topbar (palette + light/dark).
+// "Edit" flips the surface to a CodeMirror source face (auto-height, no inner
+// scroll — the whole markdown is visible); typing re-renders the preview in the
+// background so the flip back is instant. Edits are ephemeral (kept in
+// sessionStorage so a reload survives, reset on demand); "Open in Playground"
+// hands the current source off to the full playground.
+//
+// Reuses createLiveRenderer (live-render.js) for the preview and createEditor
+// (editor.js) for the source — the same engine + editor the playground uses.
+
+import { createEditor } from './editor.js';
+import { createLiveRenderer } from './live-render.js';
+
+const FLIP_MS = 350; // keep in sync with @keyframes ll-flip in components.css
+const SOURCE_KEY = 'lattice-docs-pg-source'; // shared handoff key the playground reads
+
+const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+export function initSpecimen() {
+  const dataEl = document.getElementById('specimen-data');
+  const root = document.querySelector('.specimen');
+  if (!dataEl || !root) return;
+  const data = JSON.parse(dataEl.textContent);
+
+  const stage = root.querySelector('.specimen-stage');
+  const previewFace = root.querySelector('.specimen-face.preview');
+  const sourceFace = root.querySelector('.specimen-face.source');
+  const previewHost = root.querySelector('.specimen-preview-host');
+  const editorHost = root.querySelector('.specimen-editor-host');
+  const statusEl = root.querySelector('.specimen-status');
+  const resetBtn = root.querySelector('.specimen-reset');
+  const openBtn = root.querySelector('.specimen-open');
+  const faceBtns = [...root.querySelectorAll('.specimen-face-btn')];
+
+  const storeKey = 'lattice-specimen-' + data.name;
+  const read = (k) => {
+    try {
+      return sessionStorage.getItem(k);
+    } catch {
+      return null;
+    }
+  };
+  const write = (k, v) => {
+    try {
+      sessionStorage.setItem(k, v);
+    } catch {
+      /* private mode / quota — non-fatal */
+    }
+  };
+  const clear = (k) => {
+    try {
+      sessionStorage.removeItem(k);
+    } catch {
+      /* non-fatal */
+    }
+  };
+
+  const saved = read(storeKey);
+  const state = { source: saved != null ? saved : data.sample, face: 'preview', editor: null };
+
+  const lr = createLiveRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl });
+
+  function setStatus(msg, isErr) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.classList.toggle('err', !!isErr);
+  }
+
+  function setDirty(dirty) {
+    if (resetBtn) resetBtn.hidden = !dirty;
+    root.classList.toggle('is-dirty', dirty);
+  }
+
+  let renderTimer = null;
+  function scheduleRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(render, 200);
+  }
+  function render() {
+    setStatus('Rendering…');
+    lr.renderInto(previewHost, state.source, !!data.mermaid).then((r) => {
+      if (r.ok) setStatus(r.slides + ' slide' + (r.slides === 1 ? '' : 's'));
+      else setStatus(r.error || 'render failed', true);
+    });
+  }
+
+  function ensureEditor() {
+    if (state.editor) return state.editor;
+    state.editor = createEditor({
+      parent: editorHost,
+      doc: state.source,
+      autoHeight: true,
+      onChange: (v) => {
+        state.source = v;
+        const dirty = v !== data.sample;
+        setDirty(dirty);
+        if (dirty) write(storeKey, v);
+        else clear(storeKey);
+        scheduleRender();
+      },
+    });
+    return state.editor;
+  }
+
+  function showFace(face) {
+    state.face = face;
+    const isSource = face === 'source';
+    if (isSource) ensureEditor();
+    if (previewFace) previewFace.hidden = isSource;
+    if (sourceFace) sourceFace.hidden = !isSource;
+    faceBtns.forEach((b) => {
+      const on = b.dataset.face === face;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.classList.toggle('is-active', on);
+    });
+    if (isSource && state.editor) state.editor.focus();
+  }
+
+  let flipping = false;
+  function flipTo(face) {
+    if (face === state.face || flipping) {
+      if (face !== state.face) showFace(face);
+      return;
+    }
+    if (prefersReducedMotion || !stage) {
+      showFace(face);
+      return;
+    }
+    flipping = true;
+    stage.classList.add('flipping');
+    // Swap faces at the edge-on midpoint so the change isn't visible.
+    setTimeout(() => showFace(face), FLIP_MS / 2);
+    setTimeout(() => {
+      stage.classList.remove('flipping');
+      flipping = false;
+    }, FLIP_MS);
+  }
+
+  faceBtns.forEach((b) => {
+    b.addEventListener('click', () => flipTo(b.dataset.face));
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      state.source = data.sample;
+      if (state.editor) state.editor.setValue(data.sample);
+      clear(storeKey);
+      setDirty(false);
+      render();
+      setStatus('Reset to the example.');
+    });
+  }
+
+  if (openBtn) {
+    openBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        localStorage.setItem(SOURCE_KEY, state.source);
+      } catch {
+        /* non-fatal — playground falls back to its starter */
+      }
+      window.location.href = openBtn.getAttribute('href');
+    });
+  }
+
+  // Initial paint + keep the preview live as the topbar palette/mode changes.
+  lr.whenReady(() => {
+    render();
+    lr.onThemeChange(() => {
+      render();
+      lr.scaleFrame(previewHost);
+    });
+  });
+
+  setDirty(state.source !== data.sample);
+}

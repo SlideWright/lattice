@@ -75,12 +75,8 @@ const DESCRIPTIONS = {
     consume: 'load as JSON / `@slidewright/lattice/dist/docs/components.json`',
   },
   'docs/components.md': {
-    purpose: 'Canonical single-file component reference (plain Markdown): every component\'s slots, variants, when/why, anti-patterns.',
+    purpose: 'Canonical single-file component reference (plain Markdown): every component\'s slots, variants, when/why, anti-patterns. The browsable edition — live previews + an in-browser editor — is the docs-site component pages.',
     consume: 'read directly / link from docs',
-  },
-  'docs/components.html': {
-    purpose: 'Canonical single-file component reference as a themable two-panel HTML portal — the same content as components.md, browseable.',
-    consume: 'open in a browser',
   },
 };
 

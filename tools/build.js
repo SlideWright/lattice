@@ -20,7 +20,7 @@
  *   4. lattice-emulator.js    tools/build-emulator.js    (bundled CLI bin)
  *   5. VS Code snippets       tools/build-snippets.js
  *   6. per-component docs      tools/build-component-docs.js
- *   7. canonical doc portal    tools/build-docs-portal.js
+ *   7. canonical doc portal    tools/build-docs-portal.js (components.md/.json)
  *   8. landing tokens          tools/build-landing-tokens.js  (docs site palette CSS)
  *   9. playground bundle       tools/build-playground.js      (docs site browser engine)
  *  10. dist README            tools/build-dist-readme.js (indexes dist/; runs last)
@@ -57,7 +57,7 @@ const STEPS = [
   { label: 'lattice-emulator.js', script: 'build-emulator.js' },
   { label: 'VS Code snippets', script: 'build-snippets.js' },
   { label: 'per-component docs', script: 'build-component-docs.js' },
-  { label: 'doc portal (components.md/.html/.json)', script: 'build-docs-portal.js' },
+  { label: 'doc portal (components.md/.json)', script: 'build-docs-portal.js' },
   { label: 'landing tokens (docs site)', script: 'build-landing-tokens.js' },
   { label: 'playground bundle (docs site)', script: 'build-playground.js' },
   // Last — it indexes the finished dist/ folder, so every other artifact

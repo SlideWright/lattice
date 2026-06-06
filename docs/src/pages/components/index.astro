@@ -1,0 +1,100 @@
+---
+// Component reference index — the browsable catalog landing. A fuzzy search +
+// "Group by" lens (Family by default) organize the whole set; each card links
+// to the focused per-component page. Server-renders the Family grouping;
+// component-browser.js enhances it with fuzzy search + live re-grouping (the
+// same controls live in the left nav). Replaces the old single-page,
+// anchor-scroll portal as the "Components" entry point.
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import ComponentsLayout from '../../layouts/ComponentsLayout.astro';
+import { buildCatalog, buildLenses, groupCatalog } from '../../lib/families.mjs';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+const docsRoot = process.cwd();
+const repoRoot = join(docsRoot, '..');
+const require = createRequire(import.meta.url);
+const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
+
+const manifests = loadAll();
+const catalog = buildCatalog(manifests, manifestBucket);
+const lenses = buildLenses();
+const groups = groupCatalog(catalog, 'family');
+
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
+---
+
+<ComponentsLayout
+	title="Components — Lattice"
+	description="Browse every Lattice slide component: fuzzy search, group by family or function, a live preview, an in-browser editor, and the full anatomy/slots/variants reference — themable in every palette."
+	palettes={palettes}
+	catalog={catalog}
+	lenses={lenses}
+	navGroups={groups}
+	current={null}
+>
+	<div class="cindex">
+		<header class="cindex-head">
+			<p class="cindex-eyebrow">Component reference</p>
+			<h1>Every layout, one click from a live preview.</h1>
+			<p class="cindex-lead">
+				{catalog.length} components. Search by name, tag, or what it does — or regroup
+				the set by family, function, or A–Z. Open any one for a preview you can flip
+				into an editor, in the palette you choose up top.
+			</p>
+			<div class="cindex-controls">
+				<input
+					type="search"
+					class="cindex-search-input"
+					data-browser-search
+					placeholder="Search components — name, tag, or description…"
+					aria-label="Search components"
+					autocomplete="off"
+				/>
+				<label class="cindex-groupby">
+					<span>Group by</span>
+					<select data-browser-groupby aria-label="Group components by">
+						{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
+					</select>
+				</label>
+				<span class="cindex-count" data-browser-count></span>
+			</div>
+		</header>
+
+		<div class="cindex-results">
+			{groups.map((g) => (
+				<section class="cindex-bucket">
+					<header class="cindex-bucket-head">
+						<h2>{g.label}</h2>
+						<span class="cindex-bucket-count">{g.items.length}</span>
+					</header>
+					<div class="cindex-grid">
+						{g.items.map((it) => (
+							<a class="ccard" href={url(`components/${it.bucket}/${it.name}/`)}>
+								<div class="ccard-top">
+									<h3>{it.name}</h3>
+									<div class="ccard-ffs">
+										<span class="ffs-pill" title="Function">{tc(it.function)}</span>
+										<span class="ffs-pill" title="Form">{tc(it.form)}</span>
+										<span class="ffs-pill" title="Substance">{tc(it.substance)}</span>
+									</div>
+								</div>
+								<p class="ccard-desc">{it.description}</p>
+								{it.tags.length > 0 && (
+									<div class="ccard-tags">
+										{it.tags.map((t) => <span class="ccard-tag">{t}</span>)}
+									</div>
+								)}
+							</a>
+						))}
+					</div>
+				</section>
+			))}
+		</div>
+	</div>
+</ComponentsLayout>
