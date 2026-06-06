@@ -616,3 +616,52 @@ section g.architecture-service text, section g.architecture-service tspan {
 section g.row-rect-even > path { fill: var(--bg-alt) !important; }
 section g.row-rect-odd > path  { fill: var(--bg) !important; }
 
+/* ── EDGE / TRANSITION / RELATIONSHIP LABELS (flowchart, state, ER, class) ──
+ * Mermaid bakes `edgeLabelBackground` and the label ink as resolved hex at
+ * mmdc time — and mmdc resolves the palette in the default (light) color-
+ * scheme, so the knockout box is white and the text is dark. On a
+ * `section.dark` slide (color-scheme:dark) those baked values can't flip, so
+ * the labels render as glaring white boxes and the text loses contrast.
+ * Re-point both at light-dark() tokens (var(--bg) / var(--c-ink-light)) which
+ * resolve per the slide's color-scheme — identical to the baked values on a
+ * light slide (no regression), correct on a dark slide. */
+section .edgeLabel,
+section .edgeLabel p,
+section span.edgeLabel,
+section .edgeLabels div {
+  background-color: var(--bg) !important;
+  color: var(--c-ink-light) !important;
+}
+section .edgeLabel rect,
+section .edgeLabels rect,
+section .edgeLabel .label-container,
+section rect.relationshipLabelBox {
+  fill: var(--bg) !important;
+}
+section .edgeLabel text,
+section .edgeLabel tspan,
+section .edgeLabels text,
+section text.relationshipLabel,
+section .relationshipLabel tspan {
+  fill: var(--c-ink-light) !important;
+}
+
+/* ── SEQUENCE DIAGRAM (message text, signal lines, loops) ──
+ * signalColor / messageText / loopText are baked from the light palette, so
+ * message text and signal arrows on a dark slide go dark-on-dark (effectively
+ * invisible — the worst of the dark-mode diagram failures). Re-point the
+ * canvas-borne ink + lines at the flipping tokens. Actor boxes and the yellow
+ * note panel keep their baked fills (they read on either canvas), so this is
+ * scoped to the lines and on-canvas text only. */
+section .messageText,
+section text.messageText,
+section .loopText, section .loopText tspan {
+  fill: var(--c-ink-light) !important;
+}
+section .messageLine0, section .messageLine1,
+section line.messageLine0, section line.messageLine1,
+section path.messageLine0, section path.messageLine1,
+section .loopLine {
+  stroke: var(--c-line) !important;
+}
+

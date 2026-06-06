@@ -248,6 +248,14 @@ in patch versions.
     (`z-index:-1`) and is now a visible watermark; and the `triptych` sample
     only supplied one gloss item so it rendered two panels — it now carries the
     translate + obligation items the three-panel layout expects.
+  - **`diagram` dark mode** — Mermaid bakes `edgeLabelBackground` and label ink
+    as resolved hex at render time (in the light color-scheme), so on a dark
+    slide flowchart/state/ER edge & relationship labels rendered as glaring
+    white knockout boxes and sequence message text went invisible (dark-on-
+    dark). `mermaid.css` now re-points those surfaces at `light-dark()` tokens
+    (`var(--bg)` / `var(--c-ink-light)` / `var(--c-line)`) that resolve per the
+    slide's color-scheme — identical on a light slide (no regression), correct
+    on a dark one.
   - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
     different layout than what renders (split-statement, split-brief, decision,
     timeline-list, list-steps, kpi, split-metric, math, image, featured,
