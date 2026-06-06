@@ -6,55 +6,132 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel superseded runs on the same ref — rapid pushes to a PR no longer
+# pile up full pipelines.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint-and-unit:
+  # ── Change classifier ──────────────────────────────────────────────────
+  # `code` is true unless EVERY changed file is prose markdown. Decks are
+  # markdown but DO affect rendering, so they count as code. A docs-only
+  # change leaves `code=false` and skips the unit + integration tiers —
+  # only the always-on lint job runs.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!**/*.md'
+              - 'examples/**/*.md'
+              - 'test/integration/baseline-decks/**/*.md'
+              - 'lib/**/*.gallery.md'
+              - 'lib/integrations/**/*.gallery.md'
+
+  # ── Lint — ALWAYS runs (incl. docs-only) ───────────────────────────────
+  # Node-agnostic and browser-free: source lint + author-facing deck lint.
+  # PUPPETEER_SKIP_DOWNLOAD keeps `npm ci` from pulling ~150 MB of Chromium
+  # that nothing here uses.
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Lint decks
+        # Author-facing footgun checks across every deck (--strict): both
+        # errors (card-style inline-title, ordered-list bold) and warnings
+        # (unknown _class tokens) fail.
+        run: npm run lint:deck:all
+
+  # ── Unit + artifact-freshness — code changes only ──────────────────────
+  # Matrix verifies the engines claim. Unit tests don't render, so the
+  # browser download is skipped here too. build:check (regen + byte-diff of
+  # every generated artifact: css, default bundle, runtime/emulator bundles,
+  # component docs, portal, dist README — render-free) runs once, on 22.
+  unit:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [22, 24]
-    name: lint + unit (node ${{ matrix.node-version }})
+    name: unit (node ${{ matrix.node-version }})
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Lint decks
-        # Author-facing footgun checks across every deck. --strict: both
-        # errors (card-style inline-title, ordered-list bold) and warnings
-        # (unknown _class tokens) fail the build — the deck tree is clean,
-        # so it stays clean.
-        run: npm run lint:deck:all
-
+      - run: npm ci
+      - name: Artifact freshness gate (build --check, no render)
+        if: matrix.node-version == 22
+        run: npm run build:check
       - name: Unit tests
         run: npm test
 
+  # ── Integration — code changes only ────────────────────────────────────
+  # The only tier that renders, so the only one that needs Chromium — cached
+  # across runs (keyed on the lockfile, which moves when puppeteer bumps).
+  # Runs once: the Marp/Puppeteer/emulator pipeline doesn't vary by Node.
   integration:
+    needs: [changes, unit]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    needs: lint-and-unit
     name: integration (node 22)
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install poppler-utils (for pdfinfo)
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
-
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm ci
       - name: Integration tests
         run: npm run test:integration
+
+  # ── Single required check ──────────────────────────────────────────────
+  # Set THIS as the only required status check in branch protection. It
+  # passes when lint succeeds and the test tiers either passed or were
+  # skipped (docs-only) — so conditional jobs never leave a PR stuck on a
+  # "pending" required check.
+  ci:
+    if: always()
+    needs: [lint, unit, integration]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify gate
+        run: |
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }}"
+          if [ "${{ needs.lint.result }}" != "success" ]; then
+            echo "::error::lint failed"; exit 1
+          fi
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}"; do
+            if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
+              echo "::error::a test tier failed ($r)"; exit 1
+            fi
+          done
+          echo "CI gate passed."

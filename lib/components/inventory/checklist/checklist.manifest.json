@@ -6,7 +6,7 @@
   "substance": "structure",
   "tags": ["status", "stoplight", "process", "requirements"],
   "description": "Items with state markers — done, partial, todo.",
-  "purpose": "Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.",
+  "purpose": "Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / x / slash — so the shape reads independently of color (colour-blind-safe).",
   "slots": {
     "title": {
       "selector": "h2",
@@ -25,7 +25,7 @@
   "whenToUse": [
     {
       "title": "Completion reports",
-      "body": "Use when the audience needs to see what's done, what's in progress, and what's outstanding. The state glyphs are the load-bearing signal."
+      "body": "Use when the audience needs to see what's done, what's in progress, and what's outstanding. The state marks are the load-bearing signal."
     },
     {
       "title": "Readiness audits",
@@ -47,7 +47,7 @@
     },
     {
       "title": "Custom state markers",
-      "body": "Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract."
+      "body": "Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the mark palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract."
     }
   ],
   "related": [
