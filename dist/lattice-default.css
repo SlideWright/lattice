@@ -296,6 +296,36 @@
   --tag-bg:   var(--c2-dark);
   --tag-text: var(--on-accent, #fff);
 
+  /* ── Universal pill — STRUCTURE ONLY ──────────────────────────────────
+   * One geometry for every status / metadata pill across every layout.
+   * Colour stays per-pill: each site sets --pill-fg / --pill-bg /
+   * --pill-border (or its own semantic hue tokens) — it must NOT redefine
+   * the geometry below. That split is the whole contract: structure is
+   * universal, colour carries the semantics.
+   *
+   * Padding is em-based on purpose. em resolves against the pill's OWN
+   * font-size, so the box always tracks its text ("responsive to the text
+   * within it"), and since the font sizes are cqi the pill still scales
+   * cleanly HD → 4K. The two values give the classic ~1:2.5 pill ratio.
+   *
+   * Centering is the box's job, not the token's: a pill is laid out as
+   *   display:inline-flex; align-items:center; justify-content:center;
+   *   text-align:center; line-height:1; white-space:nowrap;
+   * which middle- AND centre-aligns the text. The universal-pill rule in
+   * base.modifiers.css applies that recipe; component pills mirror it.
+   *
+   * Three sanctioned variants deliberately override specific axes and say
+   * so at their own site: chart-status (bar-matching radius + gradient),
+   * list-tabular.register (wide stamp), redline.annotated (footnote
+   * superscript / positioned counter). Everything else uses these as-is. */
+  --pill-radius:   999px;
+  --pill-pad-y:    0.3em;
+  --pill-pad-x:    0.75em;
+  --pill-font:     var(--font-mono);
+  --pill-fs:       var(--fs-meta);
+  --pill-weight:   600;
+  --pill-tracking: 0.04em;
+
   /* ── Universal state-token slash mask ─────────────────────────────────
    * The slash that marks [/] (out of scope / waived / N/A). Painted
    * on top of the coloured disc as a semi-transparent dark stroke, so
@@ -1114,7 +1144,8 @@ section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-grid > ul > li > code,
 section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
@@ -1136,7 +1167,8 @@ section.cards-grid .card {
 section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-column:1 / -1; }
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
 section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
@@ -1185,7 +1217,8 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(o
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -1295,7 +1328,8 @@ section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
  *   universal pill rule's :last-child guard does not fire here. — */
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
@@ -1317,7 +1351,8 @@ section.cards-side .card {
 }
 section.cards-side .card > strong { display:block; grid-column:1 / -1; }
 section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
@@ -1369,7 +1404,8 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li:last-child:nth-child(o
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
-  font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -2627,10 +2663,11 @@ section.glossary h2 { display:flex; align-items:baseline; justify-content:space-
  * neutral .badge pill recipe so it sits naturally alongside other
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {
-  display:inline-flex; align-items:center;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
-  letter-spacing:0.06em;
-  border-radius:999px; padding:3px 12px; margin-left:auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
   background:var(--accent-soft); border:1px solid var(--accent);
   color:var(--accent); white-space:nowrap;
   vertical-align:middle;
@@ -3915,16 +3952,21 @@ section.kpi > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
  * each row carries the status colour (set per-row by the modifier's
  * nth-child hooks); subsequent pills stay neutral. */
 section.kpi code {
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: 0.12em;       /* wider tracking pairs with the uppercase opt-in */
   text-transform: uppercase;
   border: 1px solid var(--pill-border, var(--text-muted));
   background: var(--pill-bg, var(--bg));
   color: var(--pill-fg, var(--text-body));
-  border-radius: 999px;
-  padding: 0.234375cqi 0.78125cqi;
+  border-radius: var(--pill-radius);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
   white-space: nowrap;
   margin-left: 0.46875cqi;
   vertical-align: 1px;
@@ -4694,15 +4736,19 @@ section.list-tabular.register ol > li {
   color:var(--text-heading);
 }
 section.list-tabular.register ol > li > code {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
   background:var(--accent-soft);
   color:var(--accent);
   border:none;
-  padding:0.3125cqi 1.09375cqi;
-  border-radius:9999px;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.1em;
+  padding:0.3125cqi 1.09375cqi;     /* sanctioned: wide "stamp" padding — a prominent register label */
+  border-radius:var(--pill-radius);
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:700;                  /* sanctioned: heavier stamp weight */
+  letter-spacing:0.1em;             /* sanctioned: wide tracking pairs with the uppercase opt-in */
   text-transform:uppercase;
   text-align:center;
   white-space:nowrap;
@@ -6758,15 +6804,18 @@ section.redline.split.split > blockquote:nth-of-type(2)::before {
 section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
 
 /* .annotated — single passage with numbered sup markers; annotations below. */
+/* sanctioned: a superscript footnote marker — stays raised + small (0.7em,
+ * vertical-align:super) rather than a centred inline-flex pill. Geometry that
+ * doesn't fight the superscript routes through the --pill-* tokens. */
 section.redline.annotated > blockquote sup {
   display:inline-block;
   background:var(--accent);
   color:var(--on-accent);
-  font-family:var(--font-mono);
+  font-family:var(--pill-font);
   font-size:0.7em;
   font-weight:700;
   padding:0 0.4em;
-  border-radius:999px;
+  border-radius:var(--pill-radius);
   margin-left:0.156cqi;
   line-height:1.4;
   vertical-align:super;
@@ -6780,15 +6829,19 @@ section.redline.annotated > :is(ol, ul) > li {
   position:relative;
   padding-left:calc(var(--sp-lg) + var(--sp-xs));
 }
+/* sanctioned: positioned annotation counter, anchored to the list-row origin
+ * (absolute). Footnote weight (700) is kept; radius + font route to tokens. */
 section.redline.annotated > :is(ol, ul) > li::before {
   content:counter(rl);
   position:absolute; left:0; top:0.156cqi;
+  display:inline-flex; align-items:center; justify-content:center;
   background:var(--accent); color:var(--on-accent);
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
   font-weight:700;
+  letter-spacing:var(--pill-tracking);
   padding:0 0.5em;
-  border-radius:999px;
+  border-radius:var(--pill-radius);
   line-height:1.4;
 }
 
@@ -7039,13 +7092,17 @@ section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > l
   justify-self:end;
 }
 section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
-  display:inline-block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.04em;
-  padding:0.156cqi 0.625cqi;
-  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
+  border-radius:var(--pill-radius);
   border:1px solid var(--accent);
   color:var(--accent);
   background:var(--accent-soft);
@@ -7095,9 +7152,10 @@ section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li {
 }
 section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li::before {
   position:absolute; top:0; left:50%; transform:translate(-50%, -50%);
+  display:inline-flex; align-items:center; justify-content:center; line-height:1;
   background:var(--accent); color:var(--on-accent);
-  border-radius:999px;
-  padding:0.234375cqi 0.78125cqi;
+  border-radius:var(--pill-radius);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   z-index:1;
 }
 section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li > strong:first-child { font-size:var(--fs-body); }
@@ -7127,11 +7185,15 @@ section.regulatory-update.regulatory-update.diff-bands > h3:nth-of-type(8n+4) { 
 /* .priority — tiered priority badges. */
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li::before {
   content:'TIER ' counter(upd);
+  display:inline-flex; align-items:center; justify-content:center; line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   background:var(--accent);
   color:var(--on-accent);
-  border-radius:999px;
-  padding:0.234375cqi 0.625cqi;
-  font-size:var(--fs-meta);
+  border-radius:var(--pill-radius);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
 }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1) { border-left-color:var(--fail); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1)::before { background:var(--fail); }
@@ -7212,16 +7274,17 @@ section.roadmap thead th:not(:first-child) > code {
   position:absolute;
   right:var(--sp-md);
   bottom:-0.546875cqi;
-  font-family:var(--font-mono);
-  font-size:0.859375cqi;
-  font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font);
+  font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:0.15625cqi 0.703125cqi;
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
-  border-radius:999px;
-  letter-spacing:0.04em;
-  line-height:1.2;
+  border-radius:var(--pill-radius);
   white-space:nowrap;
   z-index:1;
 }
@@ -7489,16 +7552,17 @@ section.roadmap.horizons .horizon-meta {
   position:absolute;
   right:0;
   bottom:-0.546875cqi;
-  font-family:var(--font-mono);
-  font-size:0.859375cqi;
-  font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font);
+  font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:0.15625cqi 0.703125cqi;
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
-  border-radius:999px;
-  letter-spacing:0.04em;
-  line-height:1.2;
+  border-radius:var(--pill-radius);
   white-space:nowrap;
   z-index:1;
 }
@@ -8219,11 +8283,17 @@ section.state-chart.inline .state-chip,
 section.state-chart.horizontal .state-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
   gap: 4px;
-  padding: 2px 8px;
-  font-size: 0.78em;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-tracking);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
   border: 1px solid var(--state-node-stroke);
-  border-radius: 999px;
+  border-radius: var(--pill-radius);
   background: color-mix(in oklab, var(--state-node-fill) 60%, transparent);
 }
 
@@ -8391,13 +8461,17 @@ section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-c
  * jurisdiction accent colour. */
 section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
 section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
-  display:inline-block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.04em;
-  padding:0.156cqi 0.625cqi;
-  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
+  border-radius:var(--pill-radius);
   background:var(--accent-soft);
   color:var(--jur-accent, var(--accent));
   border:1px solid var(--jur-accent, var(--accent));
@@ -8899,7 +8973,7 @@ section.tldr.numbered > ol > li::before {
  * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
  * font-independent SVG-mask recipe. */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-.badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
 .badge.fail { --state-color:var(--fail); }
@@ -8955,7 +9029,7 @@ section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
 section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill */
-section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; border-radius:999px; padding:0.234375cqi 0.703125cqi; white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
 section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */
@@ -9410,14 +9484,20 @@ section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   border:1px solid var(--pill-border, var(--text-muted));
   background:var(--pill-bg, var(--bg));
   color:var(--pill-fg, var(--text-body));
-  border-radius:999px;
-  padding:0.234375cqi 0.703125cqi;
+  border-radius:var(--pill-radius);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   white-space:nowrap;
 }
 
@@ -9774,20 +9854,27 @@ section.heat .horizon-rows > li.cell-state.state-skipped { --state-color:var(--t
 
 /* ──────────────────────────────────────────────────────────────────── */
 
-/* .pills — each non-first cell is a status pill. */
-section.obligation-matrix.pills td:not(:first-child) > * { display:inline-block; }
+/* .pills — each non-first cell is a status pill. Universal pill geometry
+ * (base.tokens.css --pill-*); cell keeps its own neutral fill/border. */
+section.obligation-matrix.pills td:not(:first-child) > * {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
 section.obligation-matrix.pills td:not(:first-child) {
   background:none;
   padding:0.46875cqi var(--sp-xs);
 }
 section.obligation-matrix.pills td:not(:first-child) code,
 section.obligation-matrix.pills td:not(:first-child) strong {
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.04em;
-  padding:0.234375cqi 0.78125cqi;
-  border-radius:999px;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
+  border-radius:var(--pill-radius);
   background:var(--bg-alt);
   border:1px solid var(--border);
   color:var(--text-body);
@@ -10596,13 +10683,15 @@ section.chart-frame .chart-caption::before {
 section.chart-frame .chart-status {
   display: inline-flex;
   align-items: center;
-  height: 1.71875cqi;
-  padding: 0 0.78125cqi;
-  border-radius: 0.859375cqi;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  justify-content: center;
+  text-align: center;
+  height: 1.71875cqi;               /* sanctioned: fixed height matches the gantt/progress bar */
+  padding: 0 0.78125cqi;            /* sanctioned: horizontal-only — the height does vertical centering */
+  border-radius: 0.859375cqi;       /* sanctioned: semi-round so a status reads as the bar's small form */
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-tracking);
   white-space: nowrap;
   /* Same depth-gradient recipe as the gantt bar so a status reads identically
    * as a pill or a bar: hue-into-bg gradient + vivid ink border + the shared

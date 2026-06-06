@@ -29,10 +29,11 @@ section.glossary h2 { display:flex; align-items:baseline; justify-content:space-
  * neutral .badge pill recipe so it sits naturally alongside other
  * categorical chips elsewhere in the deck. */
 section.glossary h2 .range-pill {
-  display:inline-flex; align-items:center;
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
-  letter-spacing:0.06em;
-  border-radius:999px; padding:3px 12px; margin-left:auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
   background:var(--accent-soft); border:1px solid var(--accent);
   color:var(--accent); white-space:nowrap;
   vertical-align:middle;

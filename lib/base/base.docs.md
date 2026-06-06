@@ -98,6 +98,33 @@ paragraph placed immediately after the eyebrow:
 **What stays as `_em_`.** Table footnotes and body prose that happens
 to be italic. These are not subtitles.
 
+### Metadata pill (trailing inline code)
+
+A trailing inline `code` span on a list row becomes a **pill** — a small,
+fully-rounded status/metadata chip pinned to the end of the row.
+
+```markdown
+- Throughput target met `on track`
+- API latency `at risk`
+```
+
+Authoring guidance: keep pill text to **one word (hyphenated is fine) or
+two words at most**. Pills are `white-space: nowrap`, so a long phrase
+will not wrap — it just makes a wide pill. (This is a guideline, not a
+hard validator: enforcing a word count in CSS would require truncating
+text, which hides content, so it is intentionally left to the author.)
+
+**Pills share one structure, not one colour.** Every pill across every
+layout draws its geometry — radius, proportional (em-based) padding,
+mono font, weight, tracking, and centre-/middle-aligned text — from the
+universal `--pill-*` tokens in `base.tokens.css`. Colour stays per-pill:
+a layout sets `--pill-fg` / `--pill-bg` / `--pill-border` (or its own
+semantic hue tokens) to carry the meaning. Three pills are **sanctioned
+variants** that deliberately override specific axes and document why at
+their own CSS site: chart-status (a bar-matching semi-round chip),
+list-tabular `register` (a wide "stamp"), and redline `.annotated`
+(footnote superscript / positioned counter).
+
 ### Key Insight panel
 
 Any card-bearing layout that ends with a trailing `> blockquote`

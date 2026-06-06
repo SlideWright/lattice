@@ -259,15 +259,19 @@ section.list-tabular.register ol > li {
   color:var(--text-heading);
 }
 section.list-tabular.register ol > li > code {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
   background:var(--accent-soft);
   color:var(--accent);
   border:none;
-  padding:0.3125cqi 1.09375cqi;
-  border-radius:9999px;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.1em;
+  padding:0.3125cqi 1.09375cqi;     /* sanctioned: wide "stamp" padding — a prominent register label */
+  border-radius:var(--pill-radius);
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:700;                  /* sanctioned: heavier stamp weight */
+  letter-spacing:0.1em;             /* sanctioned: wide tracking pairs with the uppercase opt-in */
   text-transform:uppercase;
   text-align:center;
   white-space:nowrap;

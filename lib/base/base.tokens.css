@@ -244,6 +244,36 @@
   --tag-bg:   var(--c2-dark);
   --tag-text: var(--on-accent, #fff);
 
+  /* ── Universal pill — STRUCTURE ONLY ──────────────────────────────────
+   * One geometry for every status / metadata pill across every layout.
+   * Colour stays per-pill: each site sets --pill-fg / --pill-bg /
+   * --pill-border (or its own semantic hue tokens) — it must NOT redefine
+   * the geometry below. That split is the whole contract: structure is
+   * universal, colour carries the semantics.
+   *
+   * Padding is em-based on purpose. em resolves against the pill's OWN
+   * font-size, so the box always tracks its text ("responsive to the text
+   * within it"), and since the font sizes are cqi the pill still scales
+   * cleanly HD → 4K. The two values give the classic ~1:2.5 pill ratio.
+   *
+   * Centering is the box's job, not the token's: a pill is laid out as
+   *   display:inline-flex; align-items:center; justify-content:center;
+   *   text-align:center; line-height:1; white-space:nowrap;
+   * which middle- AND centre-aligns the text. The universal-pill rule in
+   * base.modifiers.css applies that recipe; component pills mirror it.
+   *
+   * Three sanctioned variants deliberately override specific axes and say
+   * so at their own site: chart-status (bar-matching radius + gradient),
+   * list-tabular.register (wide stamp), redline.annotated (footnote
+   * superscript / positioned counter). Everything else uses these as-is. */
+  --pill-radius:   999px;
+  --pill-pad-y:    0.3em;
+  --pill-pad-x:    0.75em;
+  --pill-font:     var(--font-mono);
+  --pill-fs:       var(--fs-meta);
+  --pill-weight:   600;
+  --pill-tracking: 0.04em;
+
   /* ── Universal state-token slash mask ─────────────────────────────────
    * The slash that marks [/] (out of scope / waived / N/A). Painted
    * on top of the coloured disc as a semi-transparent dark stroke, so
