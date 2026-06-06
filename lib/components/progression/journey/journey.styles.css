@@ -53,7 +53,11 @@
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
-  --journey-section-fg:   var(--on-accent);
+  /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
+   * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
+   * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
+   * so section labels remain legible in both light and dark themes. */
+  --journey-section-fg:   var(--on-dark-primary);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
   --journey-task-fg:      var(--text-body);
   --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
@@ -126,7 +130,7 @@ section.journey .journey-actor-dot {
   height: 1.09375cqi;
   border-radius: 50%;
   background: var(--actor-color);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent, var(--on-dark-primary));
   font-size: 0.664cqi;
   font-weight: 700;
   line-height: 1;
@@ -176,8 +180,11 @@ section.journey .journey-mood-key-swatch {
   background: var(--mood-color);
 }
 section.journey .journey-mood-key-label {
-  font-size: 0.78125cqi;
-  opacity: 0.65;
+  /* Previously 0.78125cqi + opacity:0.65 — compounded sub-token size plus
+   * opacity fade made mood scale numbers illegible at desk distance.
+   * Raised to --fs-meta (11.25pt) and opacity ≥0.85 to meet minimum legibility. */
+  font-size: var(--fs-meta);
+  opacity: 0.85;
 }
 section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
 section.journey .journey-mood-key[data-mood="4"] { --mood-color: var(--journey-mood-4); }

@@ -17,7 +17,12 @@ section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; 
 section.compare-code .code-col p:has(> code:only-child) > code,
 section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
-  letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
+  letter-spacing:0.10em; text-transform:uppercase;
+  /* Use --accent (not --text-label) so column labels stay accent-colored in
+   * both light and dark modes. In light mode --text-label ≈ --accent for most
+   * themes, but in dark mode --text-label drifts to a pale muted value while
+   * --accent stays vivid — preserving the column-identity signal. */
+  color:var(--accent);
   background:none; border:none; padding:0; border-radius:0;
 }
 section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }

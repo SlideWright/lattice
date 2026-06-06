@@ -219,6 +219,29 @@ in patch versions.
 
 ### Fixed
 
+- **Layout audit — T5 dark-mode contrast fixes (audit round 2).**
+  - `journey`: section-bar labels (`--journey-section-fg`) were `var(--on-accent)`,
+    which flips to `--bg-dark` (navy) in dark mode — near-zero contrast against the
+    dark bar. Changed to `var(--on-dark-primary)` (always-light token) for legible
+    labels on both canvases.
+  - `journey`: mood-legend numbers were `0.78125cqi` + `opacity:0.65` — compounded
+    sub-token size and opacity fade made the 1–5 scale illegible. Raised to
+    `var(--fs-meta)` (11.25pt) and `opacity:0.85`.
+  - `journey`: hex `#fff` fallback on actor-dot color replaced with token floor
+    `var(--on-dark-primary)`.
+  - `agenda`: past rows at `opacity:0.4` on a dark canvas are near-invisible,
+    flattening the past/active/future three-state hierarchy. Added a `section.dark`
+    scoped bump: past rows → `0.55`, future rows → `0.65`, preserving the hierarchy
+    while meeting minimum legibility.
+  - `word-cloud`: dark-mode palette routed to `--catN-hue` (full-saturation
+    categorical hues) by overriding `--catN-ink` tokens within `section.dark.word-cloud`.
+    Previously `--catN-ink` dark branch was `color-mix(hue 78%, white)` which reads
+    as pastel against navy; now the direct hue tokens give an analytical, vivid palette.
+  - `compare-code`: column labels (`BEFORE`, `AFTER`) used `--text-label` which in dark
+    mode drifts to a pale muted value, losing the accent-color signal that identifies
+    each column. Changed to `var(--accent)`, which stays vivid in both themes and
+    both canvases.
+
 - **Layout audit — round 1 of fixes (anatomy, contracts, P0 render bugs).**
   - `kpi`: the running header overprinted the eyebrow on every slide with an
     `### eyebrow` (the section `padding-top` coincided with the absolute

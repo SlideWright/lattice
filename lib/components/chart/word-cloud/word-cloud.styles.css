@@ -152,3 +152,22 @@ section.word-cloud .wc-word[data-rotated="1"] {
   letter-spacing: -0.01em;
 }
 
+/* ── Dark-mode palette fix ────────────────────────────────────────────────
+ * On a dark canvas the chart-family --catN-ink tokens resolve to
+ * color-mix(catN-hue 78%, white), which reads as pastel against navy.
+ * Override the catN-ink tokens within .dark scope to use the raw --catN-hue
+ * (full saturation) so word colors read as vivid analytical palette, not
+ * celebration confetti. The transform bakes --wc-color:var(--catN-ink) inline,
+ * so we must re-define the upstream tokens here to affect those resolved values.
+ * Muted words (--text-muted) and accent words (--accent) need no override —
+ * those tokens already have good dark-mode dark values. */
+section.dark.word-cloud {
+  --cat1-ink: var(--cat1-hue);
+  --cat2-ink: var(--cat2-hue);
+  --cat3-ink: var(--cat3-hue);
+  --cat4-ink: var(--cat4-hue);
+  --cat5-ink: var(--cat5-hue);
+  --cat6-ink: var(--cat6-hue);
+  --cat7-ink: var(--cat7-hue);
+}
+
