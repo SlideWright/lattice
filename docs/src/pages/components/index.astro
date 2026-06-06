@@ -1,13 +1,15 @@
 ---
-// Component reference index — the browsable catalog landing. Buckets as
-// sections, components as cards (with their Function·Form·Substance axes and
-// search tags), plus a live search that filters across all of them. Each card
-// links to the focused per-component page. Replaces the old single-page,
+// Component reference index — the browsable catalog landing. A fuzzy search +
+// "Group by" lens (Family by default) organize the whole set; each card links
+// to the focused per-component page. Server-renders the Family grouping;
+// component-browser.js enhances it with fuzzy search + live re-grouping (the
+// same controls live in the left nav). Replaces the old single-page,
 // anchor-scroll portal as the "Components" entry point.
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ComponentsLayout from '../../layouts/ComponentsLayout.astro';
+import { buildCatalog, buildLenses, groupCatalog } from '../../lib/families.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
@@ -16,29 +18,12 @@ const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
-const { loadAll, BUCKETS, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
-const { BUCKET_BLURBS } = require(join(repoRoot, 'tools', 'build-bucket-galleries.js'));
+const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 
 const manifests = loadAll();
-const sortedOf = (list) => list.slice().sort((a, b) => a.name.localeCompare(b.name));
-const tagline = (bucket) => {
-	const blurb = BUCKET_BLURBS[bucket] || bucket;
-	const idx = blurb.indexOf(' — ');
-	return idx >= 0 ? blurb.slice(idx + 3) : blurb;
-};
-
-const sections = [];
-const navGroups = [];
-for (const bucket of BUCKETS) {
-	const members = sortedOf(manifests.filter((m) => manifestBucket(m) === bucket));
-	if (!members.length) continue;
-	sections.push({ bucket, title: tc(bucket), tagline: tagline(bucket), members });
-	navGroups.push({
-		bucket,
-		title: tc(bucket),
-		items: members.map((m) => ({ name: m.name, bucket, tags: m.tags || [] })),
-	});
-}
+const catalog = buildCatalog(manifests, manifestBucket);
+const lenses = buildLenses();
+const groups = groupCatalog(catalog, 'family');
 
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
@@ -46,9 +31,11 @@ const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].
 
 <ComponentsLayout
 	title="Components — Lattice"
-	description="Browse every Lattice slide component: live preview, an in-browser editor, and the full anatomy/slots/variants reference — themable in every palette."
+	description="Browse every Lattice slide component: fuzzy search, group by family or function, a live preview, an in-browser editor, and the full anatomy/slots/variants reference — themable in every palette."
 	palettes={palettes}
-	navGroups={navGroups}
+	catalog={catalog}
+	lenses={lenses}
+	navGroups={groups}
 	current={null}
 >
 	<div class="cindex">
@@ -56,82 +43,58 @@ const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].
 			<p class="cindex-eyebrow">Component reference</p>
 			<h1>Every layout, one click from a live preview.</h1>
 			<p class="cindex-lead">
-				{manifests.length} components across {sections.length} buckets. Open any one for a
-				preview you can flip into an editor — typed in the palette you choose up top.
+				{catalog.length} components. Search by name, tag, or what it does — or regroup
+				the set by family, function, or A–Z. Open any one for a preview you can flip
+				into an editor, in the palette you choose up top.
 			</p>
-			<div class="cindex-search">
-				<input type="search" id="cindex-filter" placeholder="Search components — name, description, or tag…" aria-label="Search components" autocomplete="off" />
-				<span class="cindex-count" id="cindex-count"></span>
+			<div class="cindex-controls">
+				<input
+					type="search"
+					class="cindex-search-input"
+					data-browser-search
+					placeholder="Search components — name, tag, or description…"
+					aria-label="Search components"
+					autocomplete="off"
+				/>
+				<label class="cindex-groupby">
+					<span>Group by</span>
+					<select data-browser-groupby aria-label="Group components by">
+						{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
+					</select>
+				</label>
+				<span class="cindex-count" data-browser-count></span>
 			</div>
 		</header>
 
-		{sections.map((s) => (
-			<section class="cindex-bucket" data-bucket={s.bucket}>
-				<header class="cindex-bucket-head">
-					<h2>{s.title}</h2>
-					<p>{s.tagline}</p>
-				</header>
-				<div class="cindex-grid">
-					{s.members.map((m) => (
-						<a
-							class="ccard"
-							href={url(`components/${manifestBucket(m)}/${m.name}/`)}
-							data-name={m.name}
-							data-tags={(m.tags || []).join(' ')}
-							data-desc={m.description}
-						>
-							<div class="ccard-top">
-								<h3>{m.name}</h3>
-								<div class="ccard-ffs">
-									<span class="ffs-pill" title="Function">{tc(m.function)}</span>
-									<span class="ffs-pill" title="Form">{tc(m.form)}</span>
-									<span class="ffs-pill" title="Substance">{tc(m.substance)}</span>
+		<div class="cindex-results">
+			{groups.map((g) => (
+				<section class="cindex-bucket">
+					<header class="cindex-bucket-head">
+						<h2>{g.label}</h2>
+						<span class="cindex-bucket-count">{g.items.length}</span>
+					</header>
+					<div class="cindex-grid">
+						{g.items.map((it) => (
+							<a class="ccard" href={url(`components/${it.bucket}/${it.name}/`)}>
+								<div class="ccard-top">
+									<h3>{it.name}</h3>
+									<div class="ccard-ffs">
+										<span class="ffs-pill" title="Function">{tc(it.function)}</span>
+										<span class="ffs-pill" title="Form">{tc(it.form)}</span>
+										<span class="ffs-pill" title="Substance">{tc(it.substance)}</span>
+									</div>
 								</div>
-							</div>
-							<p class="ccard-desc">{m.description}</p>
-							{(m.tags || []).length > 0 && (
-								<div class="ccard-tags">
-									{(m.tags || []).map((t) => <span class="ccard-tag">{t}</span>)}
-								</div>
-							)}
-						</a>
-					))}
-				</div>
-			</section>
-		))}
-
-		<p class="cindex-empty" hidden>No components match that search.</p>
+								<p class="ccard-desc">{it.description}</p>
+								{it.tags.length > 0 && (
+									<div class="ccard-tags">
+										{it.tags.map((t) => <span class="ccard-tag">{t}</span>)}
+									</div>
+								)}
+							</a>
+						))}
+					</div>
+				</section>
+			))}
+		</div>
 	</div>
 </ComponentsLayout>
-
-<script is:inline>
-	(function () {
-		var input = document.getElementById('cindex-filter');
-		var count = document.getElementById('cindex-count');
-		if (!input) return;
-		var cards = [].slice.call(document.querySelectorAll('.cindex .ccard'));
-		var buckets = [].slice.call(document.querySelectorAll('.cindex .cindex-bucket'));
-		var empty = document.querySelector('.cindex .cindex-empty');
-		var total = cards.length;
-		function apply() {
-			var q = input.value.trim().toLowerCase();
-			var shown = 0;
-			cards.forEach(function (c) {
-				var hay = (
-					c.getAttribute('data-name') + ' ' +
-					c.getAttribute('data-tags') + ' ' +
-					c.getAttribute('data-desc')
-				).toLowerCase();
-				var show = !q || hay.indexOf(q) >= 0;
-				c.hidden = !show;
-				if (show) shown++;
-			});
-			buckets.forEach(function (b) {
-				b.hidden = b.querySelectorAll('.ccard:not([hidden])').length === 0;
-			});
-			if (empty) empty.hidden = shown > 0;
-			if (count) count.textContent = q ? shown + ' of ' + total : '';
-		}
-		input.addEventListener('input', apply);
-	})();
-</script>

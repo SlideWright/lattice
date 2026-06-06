@@ -1,29 +1,49 @@
 ---
-// Left navigation for the component reference: a bucket → component tree with
-// a live filter (name + tags). Highlights the current component. Shared by the
-// components index and every per-component page (via ComponentsLayout).
+// Left navigation for the component reference: a playground-style control
+// surface — fuzzy search (name + tags + description) and a "Group by" select —
+// over a grouped component tree. Server-renders the default Family grouping;
+// component-browser.js enhances it with fuzzy search + live re-grouping (and
+// drives the index grid too). Highlights the current component.
 //
 // Props:
-//   groups   {bucket,title,items:[{name,bucket,tags}]}[]  — ordered, non-empty
-//   current  string?  — the active component name (aria-current)
-const { groups = [], current = null } = Astro.props;
+//   catalog  built by lib/families.buildCatalog()
+//   lenses   buildLenses() — for the Group by <select> options
+//   groups   groupCatalog(catalog, 'family') — SSR default
+//   current  string|null — active component name
+const { catalog = [], lenses = [], groups = [], current = null } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const config = JSON.stringify({ base, current });
+const catalogJson = JSON.stringify(catalog);
 ---
 
 <nav class="cnav" aria-label="Components">
-	<div class="cnav-search">
-		<input type="search" id="cnav-filter" placeholder="Filter components…" aria-label="Filter components" autocomplete="off" />
+	<div class="cnav-controls">
+		<input
+			type="search"
+			class="cnav-search-input"
+			data-browser-search
+			placeholder="Search components…"
+			aria-label="Search components by name, tag, or description"
+			autocomplete="off"
+		/>
+		<label class="cnav-groupby">
+			<span>Group by</span>
+			<select data-browser-groupby aria-label="Group components by">
+				{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
+			</select>
+		</label>
 	</div>
 	<div class="cnav-scroll">
 		<a class="cnav-home" href={url('components/')} aria-current={current === null ? 'page' : undefined}>All components</a>
 		{groups.map((g) => (
-			<section class="cnav-bucket" data-bucket={g.bucket}>
-				<h2 class="cnav-bucket-title">{g.title}</h2>
+			<section class="cnav-bucket">
+				<h2 class="cnav-bucket-title">{g.label}</h2>
 				<ul>
 					{g.items.map((it) => (
-						<li class="cnav-item" data-name={it.name} data-tags={(it.tags || []).join(' ')}>
+						<li class="cnav-item">
 							<a href={url(`components/${it.bucket}/${it.name}/`)} aria-current={current === it.name ? 'page' : undefined}>
 								{it.name}
 							</a>
@@ -32,32 +52,12 @@ const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 				</ul>
 			</section>
 		))}
-		<p class="cnav-empty" hidden>No components match.</p>
 	</div>
 </nav>
 
-<script is:inline>
-	(function () {
-		var input = document.getElementById('cnav-filter');
-		if (!input) return;
-		var items = [].slice.call(document.querySelectorAll('.cnav .cnav-item'));
-		var buckets = [].slice.call(document.querySelectorAll('.cnav .cnav-bucket'));
-		var empty = document.querySelector('.cnav .cnav-empty');
-		function apply() {
-			var q = input.value.trim().toLowerCase();
-			var anyVisible = false;
-			items.forEach(function (li) {
-				var hay = (li.getAttribute('data-name') + ' ' + li.getAttribute('data-tags')).toLowerCase();
-				var show = !q || hay.indexOf(q) >= 0;
-				li.hidden = !show;
-				if (show) anyVisible = true;
-			});
-			buckets.forEach(function (b) {
-				var visible = b.querySelectorAll('.cnav-item:not([hidden])').length;
-				b.hidden = visible === 0;
-			});
-			if (empty) empty.hidden = anyVisible;
-		}
-		input.addEventListener('input', apply);
-	})();
+<script type="application/json" id="component-catalog" is:inline set:html={catalogJson}></script>
+<script type="application/json" id="browser-config" is:inline set:html={config}></script>
+<script>
+	import { initComponentBrowser } from '../playground/component-browser.js';
+	initComponentBrowser();
 </script>

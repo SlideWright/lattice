@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import ComponentsLayout from '../../../layouts/ComponentsLayout.astro';
 import Specimen from '../../../components/Specimen.astro';
 import ComponentDocs from '../../../components/ComponentDocs.astro';
+import { buildCatalog, buildLenses, groupCatalog } from '../../../lib/families.mjs';
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
@@ -18,28 +19,20 @@ const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 export async function getStaticPaths() {
 	const repoRoot = join(process.cwd(), '..');
 	const require = createRequire(import.meta.url);
-	const { loadAll, BUCKETS, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
+	const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 	const { resolveAnatomy } = require(join(repoRoot, 'tools', 'anatomy-catalog.js'));
 
 	const manifests = loadAll();
-	const titleCase = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
-	const sortedOf = (list) => list.slice().sort((a, b) => a.name.localeCompare(b.name));
 
-	// Ordered nav (bucket → components) + a flat ordered list for prev/next.
-	const navGroups = [];
-	const flat = [];
+	// Shared browse data: the flat catalog, the Group-by lenses, and the SSR
+	// default (Family) grouping for the left nav. prev/next follows the same
+	// family order, so the pager matches the default nav.
+	const catalog = buildCatalog(manifests, manifestBucket);
+	const lenses = buildLenses();
+	const navGroups = groupCatalog(catalog, 'family');
+	const flat = navGroups.flatMap((g) => g.items.map((it) => ({ name: it.name, bucket: it.bucket })));
 	const nameToBucket = {};
-	for (const m of manifests) nameToBucket[m.name] = manifestBucket(m);
-	for (const bucket of BUCKETS) {
-		const members = sortedOf(manifests.filter((m) => manifestBucket(m) === bucket));
-		if (!members.length) continue;
-		navGroups.push({
-			bucket,
-			title: titleCase(bucket),
-			items: members.map((m) => ({ name: m.name, bucket, tags: m.tags || [] })),
-		});
-		for (const m of members) flat.push({ name: m.name, bucket });
-	}
+	for (const it of catalog) nameToBucket[it.name] = it.bucket;
 
 	return manifests.map((m) => {
 		const bucket = manifestBucket(m);
@@ -49,12 +42,12 @@ export async function getStaticPaths() {
 		const anatomy = m.anatomyBlock ? resolveAnatomy(m.anatomyBlock) : null;
 		return {
 			params: { bucket, name: m.name },
-			props: { m, bucket, anatomy, navGroups, nameToBucket, prev, next },
+			props: { m, bucket, anatomy, catalog, lenses, navGroups, nameToBucket, prev, next },
 		};
 	});
 }
 
-const { m, bucket, anatomy, navGroups, nameToBucket, prev, next } = Astro.props;
+const { m, bucket, anatomy, catalog, lenses, navGroups, nameToBucket, prev, next } = Astro.props;
 
 const docsRoot = process.cwd();
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
@@ -68,6 +61,8 @@ const mermaid = /```mermaid/.test(sample);
 	title={`${m.name} — Lattice component`}
 	description={m.description}
 	palettes={palettes}
+	catalog={catalog}
+	lenses={lenses}
 	navGroups={navGroups}
 	current={m.name}
 >

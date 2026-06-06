@@ -9,14 +9,16 @@
 //   title       string
 //   description string
 //   palettes    string[]
-//   navGroups   {bucket,title,items:[{name,bucket,tags}]}[]
+//   catalog     lib/families.buildCatalog() output
+//   lenses      lib/families.buildLenses() output
+//   navGroups   groupCatalog(catalog, 'family') — SSR default left-nav grouping
 //   current     string|null  — active component name (null on the index)
 import '../styles/landing.css';
 import '../styles/components.css';
 import TopBar from '../components/TopBar.astro';
 import ComponentNav from '../components/ComponentNav.astro';
 
-const { title, description, palettes = [], navGroups = [], current = null } = Astro.props;
+const { title, description, palettes = [], catalog = [], lenses = [], navGroups = [], current = null } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
@@ -58,7 +60,7 @@ const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 
 		<div class="clayout">
 			<aside class="clayout-nav" id="cnav-aside">
-				<ComponentNav groups={navGroups} current={current} />
+				<ComponentNav catalog={catalog} lenses={lenses} groups={navGroups} current={current} />
 			</aside>
 			<button class="cnav-scrim" id="cnav-scrim" aria-hidden="true" tabindex="-1"></button>
 			<main class="clayout-main">
@@ -105,9 +107,11 @@ const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 				}
 				if (cnavToggle) cnavToggle.addEventListener('click', function () { setNav(!document.body.classList.contains('cnav-open')); });
 				if (scrim) scrim.addEventListener('click', function () { setNav(false); });
-				// Close the drawer after picking a component (mobile).
-				document.querySelectorAll('.clayout-nav a').forEach(function (a) {
-					a.addEventListener('click', function () { setNav(false); });
+				// Close the drawer after picking a component (mobile). Delegated,
+				// because the nav list is re-rendered by the component browser.
+				var aside = document.getElementById('cnav-aside');
+				if (aside) aside.addEventListener('click', function (e) {
+					if (e.target.closest('a')) setNav(false);
 				});
 			})();
 		</script>
