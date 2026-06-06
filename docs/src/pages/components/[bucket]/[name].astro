@@ -1,0 +1,111 @@
+---
+// Per-component reference page — one focused page per component, built from the
+// manifests via getStaticPaths(). Live preview that flips to an in-browser
+// editor (Specimen), the full anatomy/slots/variants documentation
+// (ComponentDocs), and the shared left nav + topbar (ComponentsLayout). This
+// is the "built-in, not bolted-on" replacement for the old single-file portal.
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import ComponentsLayout from '../../../layouts/ComponentsLayout.astro';
+import Specimen from '../../../components/Specimen.astro';
+import ComponentDocs from '../../../components/ComponentDocs.astro';
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const tc = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+export async function getStaticPaths() {
+	const repoRoot = join(process.cwd(), '..');
+	const require = createRequire(import.meta.url);
+	const { loadAll, BUCKETS, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
+	const { resolveAnatomy } = require(join(repoRoot, 'tools', 'anatomy-catalog.js'));
+
+	const manifests = loadAll();
+	const titleCase = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+	const sortedOf = (list) => list.slice().sort((a, b) => a.name.localeCompare(b.name));
+
+	// Ordered nav (bucket → components) + a flat ordered list for prev/next.
+	const navGroups = [];
+	const flat = [];
+	const nameToBucket = {};
+	for (const m of manifests) nameToBucket[m.name] = manifestBucket(m);
+	for (const bucket of BUCKETS) {
+		const members = sortedOf(manifests.filter((m) => manifestBucket(m) === bucket));
+		if (!members.length) continue;
+		navGroups.push({
+			bucket,
+			title: titleCase(bucket),
+			items: members.map((m) => ({ name: m.name, bucket, tags: m.tags || [] })),
+		});
+		for (const m of members) flat.push({ name: m.name, bucket });
+	}
+
+	return manifests.map((m) => {
+		const bucket = manifestBucket(m);
+		const i = flat.findIndex((f) => f.name === m.name);
+		const prev = i > 0 ? flat[i - 1] : null;
+		const next = i >= 0 && i < flat.length - 1 ? flat[i + 1] : null;
+		const anatomy = m.anatomyBlock ? resolveAnatomy(m.anatomyBlock) : null;
+		return {
+			params: { bucket, name: m.name },
+			props: { m, bucket, anatomy, navGroups, nameToBucket, prev, next },
+		};
+	});
+}
+
+const { m, bucket, anatomy, navGroups, nameToBucket, prev, next } = Astro.props;
+
+const docsRoot = process.cwd();
+const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
+const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
+
+const sample = m.sample || m.skeleton;
+const mermaid = /```mermaid/.test(sample);
+---
+
+<ComponentsLayout
+	title={`${m.name} — Lattice component`}
+	description={m.description}
+	palettes={palettes}
+	navGroups={navGroups}
+	current={m.name}
+>
+	<article class="cpage">
+		<header class="cpage-head">
+			<p class="cpage-crumb">
+				<a href={url('components/')}>Components</a>
+				<span aria-hidden="true">/</span>
+				<span>{tc(bucket)}</span>
+			</p>
+			<div class="cpage-titlerow">
+				<h1>{m.name}</h1>
+				<div class="cpage-ffs">
+					<span class="ffs-pill" title="Function">{tc(m.function)}</span>
+					<span class="ffs-pill" title="Form">{tc(m.form)}</span>
+					<span class="ffs-pill" title="Substance">{tc(m.substance)}</span>
+				</div>
+			</div>
+			<p class="cpage-lead">{m.description}</p>
+		</header>
+
+		<Specimen name={m.name} sample={sample} mermaid={mermaid} />
+
+		<ComponentDocs m={m} anatomy={anatomy} nameToBucket={nameToBucket} />
+
+		<nav class="cpage-pager" aria-label="Previous and next component">
+			{prev ? (
+				<a class="cpage-pager-link prev" href={url(`components/${prev.bucket}/${prev.name}/`)}>
+					<span class="cpage-pager-dir">← Previous</span>
+					<span class="cpage-pager-name">{prev.name}</span>
+				</a>
+			) : <span />}
+			{next ? (
+				<a class="cpage-pager-link next" href={url(`components/${next.bucket}/${next.name}/`)}>
+					<span class="cpage-pager-dir">Next →</span>
+					<span class="cpage-pager-name">{next.name}</span>
+				</a>
+			) : <span />}
+		</nav>
+	</article>
+</ComponentsLayout>

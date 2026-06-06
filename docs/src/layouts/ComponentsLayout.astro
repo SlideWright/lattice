@@ -1,0 +1,115 @@
+---
+// Full-document shell for the component reference (index + per-component
+// pages). Shares the landing/playground topbar and palette/light-dark
+// controls, adds the persistent left nav, and exposes a main slot. This is
+// what makes the reference feel built-in (like the playground) rather than a
+// bolted-on generated blob: same chrome, same tokens, same controls.
+//
+// Props:
+//   title       string
+//   description string
+//   palettes    string[]
+//   navGroups   {bucket,title,items:[{name,bucket,tags}]}[]
+//   current     string|null  — active component name (null on the index)
+import '../styles/landing.css';
+import '../styles/components.css';
+import TopBar from '../components/TopBar.astro';
+import ComponentNav from '../components/ComponentNav.astro';
+
+const { title, description, palettes = [], navGroups = [], current = null } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+---
+
+<!doctype html>
+<html lang="en" data-palette="indaco" data-mode="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/png" href={url('lattice-logo.png')} />
+		<!-- Set palette/mode before first paint to avoid a flash. Shares the
+		     landing/playground localStorage keys so a choice carries across. -->
+		<script is:inline>
+			(function () {
+				var r = document.documentElement;
+				try {
+					var p = localStorage.getItem('lattice-docs-palette');
+					if (p) r.setAttribute('data-palette', p);
+					var m = localStorage.getItem('lattice-docs-mode');
+					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
+					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)
+						r.setAttribute('data-mode', 'dark');
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body class="cbody">
+		<TopBar palettes={palettes} current="components" wide={true} />
+
+		<div class="csub">
+			<button class="cnav-toggle" id="cnav-toggle" type="button" aria-controls="cnav-aside" aria-expanded="false">
+				<span class="cnav-toggle-bars">☰</span> Components
+			</button>
+			<slot name="subbar" />
+		</div>
+
+		<div class="clayout">
+			<aside class="clayout-nav" id="cnav-aside">
+				<ComponentNav groups={navGroups} current={current} />
+			</aside>
+			<button class="cnav-scrim" id="cnav-scrim" aria-hidden="true" tabindex="-1"></button>
+			<main class="clayout-main">
+				<slot />
+			</main>
+		</div>
+
+		<!-- Palette + light/dark + nav wiring. Same localStorage keys as the
+		     landing/playground, so palette/mode follow you across the site. The
+		     Specimen's own observer re-renders the preview when these change. -->
+		<script is:inline>
+			(function () {
+				var root = document.documentElement;
+				var sel = document.getElementById('palette');
+				if (sel) {
+					sel.value = root.getAttribute('data-palette');
+					sel.addEventListener('change', function () {
+						root.setAttribute('data-palette', sel.value);
+						try { localStorage.setItem('lattice-docs-palette', sel.value); } catch (e) {}
+					});
+				}
+				var btn = document.getElementById('mode-toggle');
+				if (btn) {
+					btn.addEventListener('click', function () {
+						var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+						root.setAttribute('data-mode', next);
+						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
+					});
+				}
+				var navToggle = document.getElementById('nav-toggle');
+				var topbar = document.querySelector('.topbar');
+				if (navToggle && topbar) {
+					navToggle.addEventListener('click', function () {
+						var open = topbar.classList.toggle('nav-open');
+						navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+					});
+				}
+				// Mobile left-nav drawer.
+				var cnavToggle = document.getElementById('cnav-toggle');
+				var scrim = document.getElementById('cnav-scrim');
+				function setNav(open) {
+					document.body.classList.toggle('cnav-open', open);
+					if (cnavToggle) cnavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+				}
+				if (cnavToggle) cnavToggle.addEventListener('click', function () { setNav(!document.body.classList.contains('cnav-open')); });
+				if (scrim) scrim.addEventListener('click', function () { setNav(false); });
+				// Close the drawer after picking a component (mobile).
+				document.querySelectorAll('.clayout-nav a').forEach(function (a) {
+					a.addEventListener('click', function () { setNav(false); });
+				});
+			})();
+		</script>
+	</body>
+</html>

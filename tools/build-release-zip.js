@@ -15,7 +15,7 @@
  * Because it archives HEAD (not the working tree), uncommitted changes are
  * NOT included — the tool refuses to run on a dirty tree unless
  * --allow-dirty. The repo layout is preserved under a `lattice-v<x.y.z>/`
- * prefix so the relative PDF links in dist/docs/components.html
+ * prefix so the relative PDF links in dist/docs/components.md
  * (../../lib/components/...) resolve inside the unzipped tree.
  *
  * Output: release/lattice-v<version>.zip (release/ is gitignored — the zip

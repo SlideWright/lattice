@@ -1,0 +1,49 @@
+---
+// Shared global topbar for the landing-styled standalone routes (landing,
+// playground, component pages). Renders the brand, the global nav, and the
+// palette / light-dark controls. The ids (#palette, #mode-toggle,
+// #nav-toggle, #topnav) are wired by each page's controller (or, for the
+// component pages, by ComponentsLayout). `current` drives aria-current so
+// "you are here" is true in the header.
+//
+// Props:
+//   palettes  string[]  — selectable palette names (titleCased for display)
+//   current   string?   — 'getting-started' | 'guides' | 'playground' | 'components'
+//   wide      boolean   — full-bleed inner (playground/components) vs centered (landing)
+const { palettes = [], current = null, wide = false } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+const links = [
+	{ label: 'Get started', href: url('getting-started/'), seg: 'getting-started' },
+	{ label: 'Guides', href: url('guides/authoring/'), seg: 'guides' },
+	{ label: 'Playground', href: url('playground/'), seg: 'playground' },
+	{ label: 'Components', href: url('components/'), seg: 'components' },
+];
+---
+
+<header class="topbar">
+	<div class="wrap topbar-inner" style={wide ? 'max-width:none' : undefined}>
+		<a class="brand" href={url('')}>
+			<img class="brand-logo" src={url('lattice-logo.png')} alt="" width="30" height="30" />
+			<span class="brand-mark">Lattice</span>
+		</a>
+		<nav class="topnav" id="topnav">
+			{links.map((l) => (
+				<a class="navlink" href={l.href} aria-current={current === l.seg ? 'page' : undefined}>{l.label}</a>
+			))}
+			<a class="navlink" href="https://github.com/slidewright/lattice">GitHub</a>
+		</nav>
+		<div class="topbar-actions">
+			<div class="controls">
+				<select class="palette-select" id="palette" aria-label="Palette">
+					{palettes.map((p) => <option value={p}>{titleCase(p)}</option>)}
+				</select>
+				<button class="mode-toggle" id="mode-toggle" aria-label="Toggle light / dark" title="Toggle light / dark"></button>
+			</div>
+			<button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-controls="topnav" aria-expanded="false">☰</button>
+		</div>
+	</div>
+</header>

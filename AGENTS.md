@@ -24,7 +24,8 @@ Every component is described in two generated, always-current files:
   `whenToUse` / `antiPatterns` / `related` prose, plus the controlled
   vocabularies. Load this to select a component.
 - **`dist/docs/components.md`** — the same, human-readable; the browsable
-  `components.html` adds a live filter (by name, description, **or tag**).
+  edition (the docs-site component pages) adds a live filter by name,
+  description, or tag, plus a live preview and an in-browser editor.
 
 **Selecting by intent.** Each component carries 3–5 search tags — the
 *searcher's* vocabulary (e.g. `swimlane`, `board-deck`, `percentage`,

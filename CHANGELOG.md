@@ -36,6 +36,19 @@ in patch versions.
 
 ### Changed
 
+- **The browsable component reference is now built into the docs site as
+  per-component pages.** Each component gets its own focused page
+  (`/components/<bucket>/<name>/`) with a live preview that flips to an
+  in-browser editor (CodeMirror — the whole sample, no scroll), a left-nav
+  component tree with filter, and the full anatomy / slots / variants /
+  when-why documentation — all themable live from the topbar palette and
+  light/dark, like the playground. A new `/components/` index lands the
+  catalog (searchable cards by name, description, or tag). The old
+  single-file `dist/docs/components.html` portal is no longer generated;
+  the shipped single-file references are now `dist/docs/components.md`
+  (human) and `dist/docs/components.json` (agent catalog), and the
+  `Components` link everywhere points at the new pages.
+
 - **`split-compare`'s verdict is now a recommended card with a corner tag.**
   The recommendation bar was restyled from a flat full-accent band into a soft
   accent-container card (`--accent-soft` fill, accent border) with a flush

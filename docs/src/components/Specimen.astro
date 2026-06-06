@@ -1,0 +1,55 @@
+---
+// Live specimen for a component page: a preview that flips to an in-browser
+// editor. The preview renders the component's sample through the playground
+// engine and tracks the topbar palette / light-dark; "Edit" flips to a
+// CodeMirror source face. Behaviour lives in ../playground/specimen.js; the
+// engine bundle (window.LatticePlayground) is the same one the playground
+// loads.
+//
+// Props:
+//   name     string   — component name (storage key + handoff)
+//   sample   string   — the slide markdown to render / seed the editor
+//   mermaid  boolean  — whether the sample contains a ```mermaid fence
+const { name, sample, mermaid = false } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const engineUrl = url('playground/lattice-playground.js');
+const dataJson = JSON.stringify({
+	name,
+	sample,
+	mermaid,
+	themeBase: url('playground/themes/'),
+	runtimeUrl: url('playground/lattice-runtime.js'),
+	playgroundUrl: url('playground/'),
+});
+---
+
+<section class="specimen" aria-label="Live preview">
+	<div class="specimen-bar">
+		<div class="specimen-faces" role="tablist" aria-label="Preview or edit source">
+			<button class="specimen-face-btn is-active" type="button" data-face="preview" role="tab" aria-selected="true">Preview</button>
+			<button class="specimen-face-btn" type="button" data-face="source" role="tab" aria-selected="false">Edit</button>
+		</div>
+		<span class="specimen-spacer"></span>
+		<span class="specimen-status" aria-live="polite"></span>
+		<button class="specimen-reset" type="button" hidden>Reset</button>
+		<a class="specimen-open" href={url('playground/')}>Open in Playground →</a>
+	</div>
+	<div class="specimen-stage">
+		<div class="specimen-face preview">
+			<div class="specimen-preview-host"></div>
+		</div>
+		<div class="specimen-face source" hidden>
+			<div class="specimen-editor-host"></div>
+		</div>
+	</div>
+</section>
+
+<script type="application/json" id="specimen-data" is:inline set:html={dataJson}></script>
+<script is:inline defer src={engineUrl}></script>
+<script>
+	import { initSpecimen } from '../playground/specimen.js';
+	initSpecimen();
+</script>

@@ -353,7 +353,7 @@ no vocabulary term may be **dead** (used by zero). Genuinely-unique
 idioms (`spider` for radar, `formula` for math) are knowingly
 allow-listed in `SINGLETON_TAGS`. Tags surface in the generated
 `<name>.docs.md`, the aggregated `dist/docs/components.md`, and as
-chips + a live filter facet in `dist/docs/components.html`.
+chips + a live filter facet on the docs-site component pages.
 
 ### For agents
 

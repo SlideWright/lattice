@@ -1,0 +1,63 @@
+---
+// Left navigation for the component reference: a bucket → component tree with
+// a live filter (name + tags). Highlights the current component. Shared by the
+// components index and every per-component page (via ComponentsLayout).
+//
+// Props:
+//   groups   {bucket,title,items:[{name,bucket,tags}]}[]  — ordered, non-empty
+//   current  string?  — the active component name (aria-current)
+const { groups = [], current = null } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+---
+
+<nav class="cnav" aria-label="Components">
+	<div class="cnav-search">
+		<input type="search" id="cnav-filter" placeholder="Filter components…" aria-label="Filter components" autocomplete="off" />
+	</div>
+	<div class="cnav-scroll">
+		<a class="cnav-home" href={url('components/')} aria-current={current === null ? 'page' : undefined}>All components</a>
+		{groups.map((g) => (
+			<section class="cnav-bucket" data-bucket={g.bucket}>
+				<h2 class="cnav-bucket-title">{g.title}</h2>
+				<ul>
+					{g.items.map((it) => (
+						<li class="cnav-item" data-name={it.name} data-tags={(it.tags || []).join(' ')}>
+							<a href={url(`components/${it.bucket}/${it.name}/`)} aria-current={current === it.name ? 'page' : undefined}>
+								{it.name}
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		))}
+		<p class="cnav-empty" hidden>No components match.</p>
+	</div>
+</nav>
+
+<script is:inline>
+	(function () {
+		var input = document.getElementById('cnav-filter');
+		if (!input) return;
+		var items = [].slice.call(document.querySelectorAll('.cnav .cnav-item'));
+		var buckets = [].slice.call(document.querySelectorAll('.cnav .cnav-bucket'));
+		var empty = document.querySelector('.cnav .cnav-empty');
+		function apply() {
+			var q = input.value.trim().toLowerCase();
+			var anyVisible = false;
+			items.forEach(function (li) {
+				var hay = (li.getAttribute('data-name') + ' ' + li.getAttribute('data-tags')).toLowerCase();
+				var show = !q || hay.indexOf(q) >= 0;
+				li.hidden = !show;
+				if (show) anyVisible = true;
+			});
+			buckets.forEach(function (b) {
+				var visible = b.querySelectorAll('.cnav-item:not([hidden])').length;
+				b.hidden = visible === 0;
+			});
+			if (empty) empty.hidden = anyVisible;
+		}
+		input.addEventListener('input', apply);
+	})();
+</script>

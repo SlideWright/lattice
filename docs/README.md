@@ -16,11 +16,15 @@ npm run dev      # http://localhost:4321/lattice/
 - `src/content/docs/` — the pages (intro, getting started, guides, reference).
 - `src/styles/lattice.css` — Lattice branding (indaco accent, the engine's fonts).
 - `astro.config.mjs` — `site` + `base` (`/lattice`), sidebar, theme.
-- `scripts/sync-portal.mjs` — copies the generated component-reference
-  portal (`../dist/docs/components.{html,md}`) into `public/` before each
-  build, so it ships as a static asset at `/lattice/components.html`.
-  The portal itself is generated from the component manifests by
+- `scripts/sync-portal.mjs` — copies the generated plain-Markdown
+  component reference (`../dist/docs/components.md`) into `public/` before
+  each build, so it ships as a static download at `/lattice/components.md`.
+  It is generated from the component manifests by
   `tools/build-docs-portal.js` in the repo root.
+- `src/pages/components/` — the browsable component reference: an index
+  (`index.astro`) and a per-component page (`[bucket]/[name].astro`) built
+  from the same manifests, each with a live preview, an in-browser editor,
+  and the full anatomy/slots/variants documentation.
 
 ## Deploy
 
