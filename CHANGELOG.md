@@ -15,19 +15,7 @@ in patch versions.
 > | Category in `## Unreleased` | Bump |
 > |---|---|
 > | `### Removed`, or any `**Breaking:**` bullet / `BREAKING CHANGE` token | **major** |
-> | `### Added`, `### Changed
-
-- **`diagram` dark mode now renders natively per slide (dual-resolve).** The
-  emulator resolves the Mermaid `themeVariables` to the palette's *dark* branch
-  and bakes the diagram with that set when its slide is dark (nearest
-  `_class: … dark`, or a deck-wide dark signal) — instead of baking one light
-  SVG and patching it with CSS overrides. Mermaid bakes themeVariables to literal
-  hex at render time, so a light bake can't flip on a `section.dark` slide; baking
-  the correct scheme per slide closes that gap natively, including Mermaid's own
-  colour-math derivations (edge labels, node text, etc.). Single-scheme decks are
-  unchanged (no second SVG). The per-diagram dark CSS overrides remain as a
-  fallback; `LATTICE_MERMAID_SINGLE=1` forces the prior light-bake + overrides path.
-, `### Deprecated` | **minor** |
+> | `### Added`, `### Changed`, `### Deprecated` | **minor** |
 > | `### Fixed`, `### Security` | **patch** |
 >
 > Keep entries here current **as changes land** (see `CLAUDE.md`) — an empty
@@ -48,6 +36,29 @@ in patch versions.
 
 ### Changed
 
+- **`diagram` dark mode now renders natively per slide (dual-resolve), and the
+  dark-flip CSS override layer is collapsed.** The emulator resolves the Mermaid
+  `themeVariables` to the palette's *dark* branch and bakes the diagram with that
+  set when its slide is dark (nearest `_class: … dark`, or a deck-wide dark
+  signal) — instead of baking one light SVG and patching it with CSS. This mirrors
+  the runtime, which already resolved tokens per-section via `getComputedStyle`;
+  the emulator now matches it (parsing the palette CSS at build time, since mmdc
+  has no live DOM). Mermaid bakes themeVariables to literal hex, so a light bake
+  can't flip on a `section.dark` slide; baking the correct scheme per slide closes
+  that gap natively — including Mermaid's own colour-math (edge labels, edge lines,
+  arrowheads, sequence text/lines, gantt section titles, ER entity headers). With
+  dark now baked correctly, the redundant dark-flip overrides in `mermaid.css` are
+  removed (proven 0-pixel-identical under dual-render). ER dark improves: entity
+  headers now show their brand category colour instead of a flat grey level.
+  Single-scheme decks are unchanged (no second SVG); `LATTICE_MERMAID_SINGLE=1`
+  forces the prior light-bake + overrides path. The only Mermaid CSS overrides
+  that remain target surfaces no themeVariable controls: journey/timeline axes and
+  `treeView` labels/lines (Mermaid emits literal `black`), ER crow's-foot marker
+  fill, the ER zebra-row determinism pin, and mindmap branch-colour saturation.
+- **`diagram` journey mood-faces get an on-brand fill; treeView reads in dark.**
+  Journey faces fill with `--bg-alt` (eyes/mouth/outline stay on `--c-line`) and
+  the dashed task→face connectors are restored. `treeView-beta` labels and tree
+  lines now use the flipping ink/line tokens so they are legible on a dark slide.
 - **`cards-stack` rebuilt on the nested-list card contract.** The title now
   renders **bold by default** (no `**…**` needed) and the nested-bullet body
   resets to normal weight — matching `cards-grid`/`cards-side`. Previously the
