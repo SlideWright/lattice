@@ -259,8 +259,8 @@ caught by the hook instead of by reviewer eyeballs.
   agent loads to pick a component; `AGENTS.md` is the vendor-neutral
   entrypoint. See `design/design-system.md` §7.
 - **Card-style layouts forbid inline `- **Title.** body`.** The
-  CARD_STYLE_LAYOUTS set in `lib/components/index.js` lists 12
-  layouts (cards-grid, cards-side, cards-stack, cards-wide, featured,
+  CARD_STYLE_LAYOUTS set in `lib/components/index.js` lists 11
+  layouts (cards-grid, cards-side, cards-stack, featured,
   split-list, compare-prose, matrix-2x2, verdict-grid, before-after,
   decision, citation-card) whose autobold li rule makes body text
   after `<strong>` inherit `font-weight:700`. The contract on every

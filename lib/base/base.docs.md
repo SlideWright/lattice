@@ -150,7 +150,7 @@ audience should remember from a card-grid slide.
 ```
 
 **Supported layouts:** `cards-grid`, `cards-stack`, `cards-side`,
-`cards-wide`, `compare-prose`, `compare-table`, `verdict-grid`,
+`compare-prose`, `compare-table`, `verdict-grid`,
 `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`,
 `timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`,
 `before-after`, `actors`, `kpi`, `agenda`. Other layouts render
@@ -175,7 +175,7 @@ shouldn't get card weight.
 ```
 
 **Supported layouts:** same set as Key Insight Panel above —
-`cards-grid`, `cards-stack`, `cards-side`, `cards-wide`,
+`cards-grid`, `cards-stack`, `cards-side`,
 `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`,
 `list-criteria`, `list-steps`, `list-tabular`, `timeline`,
 `principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`,
@@ -230,7 +230,7 @@ caveats, asterisk-style footnotes — content that *frames* the slide
 rather than extending its argument.
 
 **Supported layouts:** same set as Below-Note —
-`cards-grid`, `cards-stack`, `cards-wide`, `compare-prose`,
+`cards-grid`, `cards-stack`, `compare-prose`,
 `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`,
 `list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`,
 `matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`.
@@ -339,7 +339,7 @@ problem → cause → fix, or step 1 → step 2 → step 3.
 > treats it as a sibling list, not a child list.
 
 **Layouts that auto-number when authored as `ol`:** `cards-grid`,
-`cards-side`, `cards-stack` (incl. `horizontal`), `cards-wide`, `list`,
+`cards-side`, `cards-stack` (incl. `horizontal`), `list`,
 `list-criteria`, `list-steps`, `list-tabular`, `split-list`, `timeline`,
 `principles`.
 

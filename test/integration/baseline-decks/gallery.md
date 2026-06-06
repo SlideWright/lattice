@@ -326,8 +326,8 @@ _Source: pilot retrospective, six months across four product teams._
 
 ---
 
-<!-- _class: cards-wide -->
-<!-- _footer: "3 full-width cards · cards-wide" -->
+<!-- _class: cards-stack -->
+<!-- _footer: "3 full-width cards · cards-stack" -->
 
 ## Three scoring failure modes found in the pilot.
 

@@ -2,7 +2,7 @@
 
 # inventory
 
-`12 components`
+`11 components`
 
 Inventory — parallel sets of related items.
 
@@ -74,19 +74,6 @@ Inventory — parallel sets of related items.
   - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
 - Switching costs are rising.
   - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
-
----
-
-<!-- _class: cards-wide -->
-
-## Three findings from the Q2 win/loss review.
-
-1. Price is rarely the reason we lose
-   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
-2. The security review is our slowest gate
-   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
-3. One competitor takes most of the displacement
-   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
 
 ---
 

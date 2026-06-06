@@ -50,7 +50,7 @@
     },
     {
       "title": "Long-form body per card",
-      "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide."
+      "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or stacked rows of cards-stack."
     }
   ],
   "related": [

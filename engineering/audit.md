@@ -120,8 +120,7 @@ view_image /tmp/lattice-slides/019.png   ← candidate
 | `split-list`       | Code-p and h5 placement in panel-left      |
 | `featured`          | extractCard plain-text title fallback      |
 | `list-criteria`     | Depth-aware `<li>` + `.crit-body` wrapping |
-| `cards-wide`        | Ordered badge vs CSS counter               |
-| `cards-stack`       | Inline `**Title.**` parsing inside `.card` |
+| `cards-stack`       | Nested-list card parsing inside `.card`    |
 | `compare-prose`     | `.compare-prose-inner` scaffold            |
 | `compare-code`      | Two-block `.code-cols` wrapping            |
 | `verdict-grid`      | Nested `<ul>` → badge rows                 |

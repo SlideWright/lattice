@@ -1249,8 +1249,9 @@ function parseSlide(raw, index) {
   }
 
   // cards-stack: flat ul/ol → .cards-stack-inner; each li becomes a .card.
-  // Distinct from cards-grid: titles are inlined inside the card (no nested list for body),
-  // so a typical li reads like: **Title.** body prose continues here.
+  // Same nested-list card contract as cards-grid: the li's first line is the
+  // title (auto-bold by CSS), a trailing inline `code` is a pill, and a nested
+  // ul/ol carries the body. The li inner HTML is preserved verbatim.
   if (cls.includes('cards-stack')) {
     const listMatch = html.match(/<(ul|ol)>/);
     if (listMatch) {
@@ -1480,55 +1481,6 @@ function parseSlide(raw, index) {
   // both. marp.config.js dispatches through the same registry on the
   // marp-cli path.
   ({ html, cls: classAttr } = sharedTransformerRegistry.applyAllToSection(html, classAttr));
-
-  // cards-wide: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
-  if (cls.includes('cards-wide')) {
-    html = html.replace(/<(ol|ul)>([\s\S]*?)<\/\1>/g, (_, tag, inner) => {
-      const isOrdered = tag === 'ol';
-      // Split inner into top-level <li>…</li> blocks, tracking nested ul/ol depth
-      // so a nested list's </li> doesn't terminate the outer item.
-      const items = [];
-      const re = /<li>|<\/li>|<(?:ul|ol)>|<\/(?:ul|ol)>/g;
-      let depth = 0, liStart = -1, m;
-      while ((m = re.exec(inner)) !== null) {
-        const tok = m[0];
-        if (tok === '<li>') {
-          if (depth === 0) liStart = m.index + tok.length;
-          depth++;
-        } else if (tok === '</li>') {
-          depth--;
-          if (depth === 0 && liStart >= 0) {
-            items.push(inner.slice(liStart, m.index));
-            liStart = -1;
-          }
-        } else if (tok === '<ul>' || tok === '<ol>') {
-          depth++;
-        } else {
-          depth--;
-        }
-      }
-      const cards = items.map(content => {
-        // Header = content before the first nested <ul> (or whole content if none).
-        // Strip a wrapping <strong>…</strong> if the author wrote one — the layout
-        // bolds the heading via CSS, so manual bolding is optional.
-        const nestedUl = content.match(/<ul>([\s\S]*)<\/ul>\s*$/);
-        let headerRaw = nestedUl ? content.slice(0, nestedUl.index) : content;
-        headerRaw = headerRaw.trim();
-        const strongOnly = headerRaw.match(/^<strong>([\s\S]*?)<\/strong>$/);
-        const heading = strongOnly ? strongOnly[1] : headerRaw;
-        if (!heading) return `<div class="wide-card"><div class="wide-card-body"><span>${content}</span></div></div>`;
-        let bodyHtml = '';
-        if (nestedUl) {
-          const bodyItems = [...nestedUl[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(x => x[1]);
-          bodyHtml = bodyItems.map(b => `<span>${b}</span>`).join('');
-        }
-        const badgeHtml = '';
-        return `<div class="wide-card"><div class="wide-card-header">${badgeHtml}<span class="wide-card-heading">${heading}</span></div><div class="wide-card-body">${bodyHtml}</div></div>`;
-      });
-      const orderedClass = isOrdered ? ' ordered' : '';
-      return `<div class="three-stack${orderedClass}">${cards.join('')}</div>`;
-    });
-  }
 
   // compare-code: pair each p>code+pre into .code-col divs inside .code-cols
   // Structure: [p>code(eyebrow)] h2(heading) p>code(left-label) pre p>code(right-label) pre
