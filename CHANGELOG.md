@@ -260,6 +260,11 @@ in patch versions.
     the terminal node/marker at 5 states (a static PDF can't scroll) — tighter
     LR gutters fit the documented 4–6 node range; the `curved` variant clipped
     its terminal ◉ at the bottom — tighter vertical rhythm brings it on-canvas.
+  - `roadmap`: phase date pills were white-on-pale in dark mode (the
+    categorical `--cN-dark` fill flips pale on a dark canvas, but the ink stayed
+    white) — a WCAG-AA failure on every dark variant. Pills now use
+    `var(--c-ink-dark)` (white on the saturated light-canvas fill, near-black on
+    the pale dark-canvas fill).
   - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
     different layout than what renders (split-statement, split-brief, decision,
     timeline-list, list-steps, kpi, split-metric, math, image, featured,

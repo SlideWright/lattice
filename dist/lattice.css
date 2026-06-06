@@ -7392,7 +7392,7 @@ section.roadmap thead th:not(:first-child) > code {
   font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--on-cat, #fff);
+  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
@@ -7670,7 +7670,7 @@ section.roadmap.horizons .horizon-meta {
   font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--on-cat, #fff);
+  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
