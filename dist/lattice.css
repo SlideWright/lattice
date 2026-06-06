@@ -12619,19 +12619,18 @@ section .relationshipLabel tspan {
   fill: var(--c-ink-light) !important;
 }
 
-/* ── EDGE LINES + ARROWHEADS (flowchart, state, ER, class, …) ──
+/* ── MONOCHROME EDGE LINES + ARROWHEADS (flowchart, state, ER, class) ──
  * Mermaid bakes edge strokes and arrowhead fills at #333 (resolved from the
- * light palette). On a `section.dark` slide that's dark-on-dark, so the
- * connectors nearly vanish — fixing the edge LABELS above without the LINES
- * left the arrows barely visible. Re-point both at the flipping --c-line
- * token (light-dark): a near-black line on a light slide (unchanged from the
- * baked #333) and a light line on a dark slide (now clearly visible). Covers
- * every diagram type that draws edges + markers, so connectors read on dark
- * the same way the message lines already do. */
+ * light palette — themeVar lineColor/defaultLinkColor map to --c-line but
+ * freeze at its light branch). On a `section.dark` slide that's dark-on-dark,
+ * so the connectors nearly vanish. Re-point at the flipping --c-line token:
+ * near-black on a light slide (unchanged from baked #333), light on a dark
+ * slide (now visible). SCOPED to the monochrome-edge classes only — NOT a
+ * broad `g.edgePaths path`, which would also recolour the per-branch coloured
+ * edges of mindmap/gitgraph (handled separately below). */
 section .flowchart-link,
 section path.flowchart-link,
 section .edgePath .path,
-section g.edgePaths path,
 section .relationshipLine,
 section .transition {
   stroke: var(--c-line) !important;
@@ -12642,6 +12641,68 @@ section .arrowMarkerPath,
 section .arrowheadPath {
   fill: var(--c-line) !important;
   stroke: var(--c-line) !important;
+}
+
+/* ── SEQUENCE LIFELINES + JOURNEY AXIS (canvas-borne structural lines) ──
+ * actorLineColor (sequence lifeline) and the journey axis line bake from the
+ * light palette (lifeline → --c-line light branch; journey axis → inline
+ * stroke="black"), so both go dark-on-dark on a `section.dark` slide. Re-point
+ * at --c-line. Journey is scoped by aria-roledescription and excludes `.mouth`
+ * (the smiley strokes on the mood faces, which sit on coloured face discs). */
+section .actor-line {
+  stroke: var(--c-line) !important;
+}
+section svg[aria-roledescription="journey"] line:not(.mouth) {
+  stroke: var(--c-line) !important;
+}
+
+/* ── MINDMAP BRANCH EDGES (per-section colour, brightened) ──
+ * Mindmap draws each branch in its section's cScale colour (themeVar
+ * cScale0-11 → --cN-dark). Those bake at the light branch and, more to the
+ * point, the saturated --cN-dark tone reads dark on a dark canvas. Re-point
+ * each `.section-edge-N` at the matching category, brightened via color-mix
+ * toward the flipping ink (lighter on a dark slide, slightly deeper on a light
+ * slide) so the branches stay COLOURED and read brightly in both modes.
+ * Scoped to svg.mindmapDiagram so no other diagram's edges are touched.
+ * (Restores the per-branch colour an earlier over-broad edge rule flattened.)
+ * Section indices mirror the mindmap-node fill mapping below: 0→c1 … 5→c6. */
+section svg.mindmapDiagram .section-edge--1,
+section svg.mindmapDiagram .section-edge-0 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-1 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-2 { stroke: color-mix(in srgb, var(--c3-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-3 { stroke: color-mix(in srgb, var(--c4-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+
+/* ── ENTITY-RELATIONSHIP ENTITY BOXES + ATTRIBUTE CELLS ──
+ * ER entities render every box (the title row AND each attribute row) as
+ * `rect.basic.label-container`; the `.entityBox` rule Mermaid bakes targets no
+ * actual element here, so it can't be used as a hook. The header gets a baked
+ * light fill while attribute rows fall through to the dark canvas — and the
+ * attribute `.nodeLabel` ink bakes dark — so on a dark slide the attribute
+ * cells are dark-on-dark (unreadable) while the header is light. Give EVERY ER
+ * box one flipping surface (var(--bg-alt)) and all ER ink the flipping token
+ * (var(--c-ink-light)): uniform dark-box / light-text on a dark slide,
+ * light-box / dark-text on a light slide — header and attributes both legible.
+ * Box-darkening is DARK-ONLY (`section.dark`): in light mode the baked header
+ * tint and any classDef accent read fine against dark ink, and only on a dark
+ * slide does the non-flipping baked header fill clash with the flipped (light)
+ * ink. So on dark we level every ER box to one flipping surface; light mode is
+ * left exactly as Mermaid themed it. Scoped to svg.erDiagram — no other
+ * diagram is affected. (The entity name and attribute cells share the same
+ * `.nodeLabel` structure, so they can't be inked apart — leveling the boxes is
+ * what keeps both legible.) */
+section.dark svg.erDiagram path:not([fill="none"]) {
+  fill: var(--bg-alt) !important;
+}
+section svg.erDiagram .nodeLabel,
+section svg.erDiagram .nodeLabel p,
+section svg.erDiagram .label,
+section svg.erDiagram text {
+  fill: var(--c-ink-light) !important;
+  color: var(--c-ink-light) !important;
 }
 
 /* ── SEQUENCE DIAGRAM (message text, signal lines, loops) ──

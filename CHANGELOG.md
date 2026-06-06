@@ -298,7 +298,14 @@ in patch versions.
     (`z-index:-1`) and is now a visible watermark; and the `triptych` sample
     only supplied one gloss item so it rendered two panels — it now carries the
     translate + obligation items the three-panel layout expects.
-  - **`diagram` dark mode** — Mermaid bakes `edgeLabelBackground` and label ink
+  - **`diagram` dark mode — round 2 (per-diagram, scoped).** Fixed four more
+  dark-mode surfaces, each scoped to its diagram type (no broad selectors):
+  sequence lifelines + journey axis re-pointed at `--c-line`; mindmap branch
+  edges restored to their per-section category colour, brightened via
+  `color-mix` (an earlier over-broad edge rule had flattened them to mono);
+  ER entity boxes levelled to `--bg-alt` on `section.dark` so header + attribute
+  cells read with light ink. Light mode unchanged across all four.
+- **`diagram` dark mode** — Mermaid bakes `edgeLabelBackground` and label ink
     as resolved hex at render time (in the light color-scheme), so on a dark
     slide flowchart/state/ER edge & relationship labels rendered as glaring
     white knockout boxes, sequence message text went invisible, and the edge
