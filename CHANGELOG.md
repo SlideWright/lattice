@@ -256,6 +256,10 @@ in patch versions.
     (`var(--bg)` / `var(--c-ink-light)` / `var(--c-line)`) that resolve per the
     slide's color-scheme — identical on a light slide (no regression), correct
     on a dark one.
+  - `state-chart`: the `lr` (horizontal) layout overran the slide and clipped
+    the terminal node/marker at 5 states (a static PDF can't scroll) — tighter
+    LR gutters fit the documented 4–6 node range; the `curved` variant clipped
+    its terminal ◉ at the bottom — tighter vertical rhythm brings it on-canvas.
   - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
     different layout than what renders (split-statement, split-brief, decision,
     timeline-list, list-steps, kpi, split-metric, math, image, featured,

@@ -8160,8 +8160,21 @@ section.state-chart .state-nodes {
 section.state-chart .state-chart-figure[data-sc-dir="lr"] .state-nodes {
   flex-direction: row;
   align-items: center;
-  padding: 100px 60px;
-  gap: 56px;
+  /* Tighter horizontal gutter + gap than the comment's original 60/56: at 5
+   * nodes the row overran the slide and clipped the terminal node (a static
+   * PDF can't scroll). Narrower gutters fit the documented 4–6 node range. */
+  padding: 100px 40px;
+  gap: 40px;
+}
+
+/* Curved (TB with bowed back-edges): a 5-state flow plus start + terminal
+ * markers overran the slide height and clipped the terminal ◉ at the bottom.
+ * Tighten the vertical rhythm (the wide horizontal padding stays — it hosts
+ * the bowed back-edge). */
+section.state-chart .state-chart-figure[data-sc-style="curved"] .state-nodes {
+  padding-top: 44px;
+  padding-bottom: 44px;
+  gap: 26px;
 }
 
 section.state-chart .state-node {
