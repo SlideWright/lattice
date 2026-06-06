@@ -475,13 +475,14 @@ section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, sect
  * directly with the actual emitted compound selectors.
  */
 section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
 }
 section circle.face {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--bg-alt) !important;
+  stroke: var(--c-line) !important;
 }
+section path.mouth { fill: var(--c-line) !important; }
 section path.mouth, section line.mouth {
   stroke: var(--c-line) !important;
 }
@@ -615,4 +616,70 @@ section g.architecture-service text, section g.architecture-service tspan {
  */
 section g.row-rect-even > path { fill: var(--bg-alt) !important; }
 section g.row-rect-odd > path  { fill: var(--bg) !important; }
+
+/* ── EDGE MARKERS = EDGE COLOUR (style, both modes) ──
+ * Arrowheads and crow's-foot relationship markers render UNFILLED by default
+ * in some diagram types — notably ER relationship terminals, which come out as
+ * thin open outlines. Fill every marker with the flipping edge colour so each
+ * connector terminal reads as solidly as its line (matching flowchart/state
+ * arrowheads). Not a dark-flip hack: --c-line flips with the canvas, so this
+ * is identical in both schemes — it's a deliberate "solid terminals" style.
+ * (Edge LINE strokes and arrowheads are otherwise baked correctly by the
+ * lineColor themeVar via dual-render; only the ER marker FILL needs this.) */
+section .marker,
+section .marker path,
+section .arrowMarkerPath,
+section .arrowheadPath {
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
+}
+
+/* ── JOURNEY AXIS + TASK CONNECTORS (canvas-borne structural lines) ──
+ * The journey axis line and the dashed task→face connectors emit as inline
+ * stroke="black" — NOT a themeVar, so dual-render can't bake them to the dark
+ * scheme. Re-point at the flipping --c-line. Scoped by aria-roledescription
+ * and excludes `.mouth` (the smiley strokes on the mood faces). The mood-face
+ * fill/eyes/mouth are handled by the journey block above. */
+section svg[aria-roledescription="journey"] line:not(.mouth) {
+  stroke: var(--c-line) !important;
+}
+
+/* ── TIMELINE AXIS + PERIOD DIVIDERS ──
+ * The timeline's section/period divider lines (`.node-line-*`) and the
+ * unclassed axis line (inline stroke="black") bake dark, so the spine vanishes
+ * on a dark slide. Re-point every timeline line at --c-line. */
+section svg[aria-roledescription="timeline"] line {
+  stroke: var(--c-line) !important;
+}
+
+/* ── TREEVIEW LABELS + LINES (beta type — hardcoded black) ──
+ * treeView-beta bakes `.treeView-node-label { fill: black }` and
+ * `.treeView-node-line { stroke: black }` as LITERAL black in its own injected
+ * <style> block — it ignores the labelColor/lineColor themeVariables we inject
+ * (a beta-type gap, despite its docs claiming those vars). So on a dark slide
+ * both the file labels and the tree connectors vanish. Re-point at the flipping
+ * tokens: dark on a light canvas (unchanged from baked black), light on a dark
+ * canvas (now visible). The !important beats Mermaid's un-important inline rule. */
+section .treeView-node-label { fill: var(--c-ink-light) !important; }
+section .treeView-node-line  { stroke: var(--c-line) !important; }
+
+/* ── MINDMAP BRANCH EDGES (per-section colour, brightened) ──
+ * Mindmap draws each branch in its section's cScale colour (themeVar
+ * cScale0-11 → --cN-dark). Those bake at the light branch and, more to the
+ * point, the saturated --cN-dark tone reads dark on a dark canvas. Re-point
+ * each `.section-edge-N` at the matching category, brightened via color-mix
+ * toward the flipping ink (lighter on a dark slide, slightly deeper on a light
+ * slide) so the branches stay COLOURED and read brightly in both modes.
+ * Scoped to svg.mindmapDiagram so no other diagram's edges are touched.
+ * (Restores the per-branch colour an earlier over-broad edge rule flattened.)
+ * Section indices mirror the mindmap-node fill mapping below: 0→c1 … 5→c6. */
+section svg.mindmapDiagram .section-edge--1,
+section svg.mindmapDiagram .section-edge-0 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-1 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-2 { stroke: color-mix(in srgb, var(--c3-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-3 { stroke: color-mix(in srgb, var(--c4-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
 

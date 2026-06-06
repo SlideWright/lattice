@@ -31,7 +31,7 @@ section.timeline > ol > li::before {
   content:counter(timeline-counter);
   display:flex; align-items:center; justify-content:center;
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff));
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }

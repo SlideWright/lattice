@@ -604,9 +604,11 @@ section.actors > ul,
 section.actors > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
-  gap:var(--sp-sm);
+  gap:var(--sp-xs);
   flex:1;
-  justify-content:center;
+  /* flex-start, not center: at 5+ rows center-justify pushed the last row
+   * off the slide bottom (clipped). Top-aligning keeps every row on-canvas. */
+  justify-content:flex-start;
 }
 section.actors > ul > li,
 section.actors > ol > li {
@@ -615,7 +617,7 @@ section.actors > ol > li {
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
   align-items:center;
-  padding:var(--sp-md) var(--sp-lg);
+  padding:var(--sp-sm) var(--sp-lg);
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-left:3px solid var(--accent);
@@ -731,8 +733,12 @@ section.agenda ol > li::before {
   letter-spacing:0.12em;
   color:var(--accent);
 }
-/* progress modifier — highlights "you are here" row */
+/* progress modifier — highlights "you are here" row.
+ * Non-active rows at 0.55 opacity for the future-items dimming.
+ * Dark mode raises future-items to 0.65 so they stay legible on the
+ * dark canvas while still reading as "not yet reached". */
 section.agenda[class*="progress-"] ol > li { opacity:0.55; }
+section.dark.agenda[class*="progress-"] ol > li { opacity:0.65; }
 section.agenda.progress-1 ol > li:nth-child(1),
 section.agenda.progress-2 ol > li:nth-child(2),
 section.agenda.progress-3 ol > li:nth-child(3),
@@ -753,6 +759,16 @@ section.agenda.progress-4 ol > li:nth-child(-n+3),
 section.agenda.progress-5 ol > li:nth-child(-n+4),
 section.agenda.progress-6 ol > li:nth-child(-n+5) {
   opacity:0.4;
+}
+/* Dark-mode bump: 0.4 reads near-invisible on dark canvas, especially with
+ * ≥2 past rows. Raise to 0.55 to keep the past/active/future three-state
+ * hierarchy legible while still signalling "already covered". */
+section.dark.agenda.progress-2 ol > li:nth-child(-n+1),
+section.dark.agenda.progress-3 ol > li:nth-child(-n+2),
+section.dark.agenda.progress-4 ol > li:nth-child(-n+3),
+section.dark.agenda.progress-5 ol > li:nth-child(-n+4),
+section.dark.agenda.progress-6 ol > li:nth-child(-n+5) {
+  opacity:0.55;
 }
 
 /* === lib/components/legal/authority-chain/authority-chain.styles.css === */
@@ -1054,7 +1070,7 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
   padding: 0.46875cqi 1.09375cqi;
   border-radius: var(--radius-md) 0 var(--radius-sm) 0;
   background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary, #fff));
+  color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
   font-size: 1.171875cqi;
   font-weight: 700;
@@ -1067,7 +1083,9 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
  * saturation hue still anchors the card via the bottom border. */
 section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
-  color: var(--on-cat, #fff);
+  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
+   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
+  color: var(--c-ink-dark);
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
@@ -1108,7 +1126,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
   padding: 0.78125cqi var(--sp-md);
   border-radius: 0;
   background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary, #fff));
+  color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
   font-size: 1.09375cqi;
   font-weight: 700;
@@ -1133,7 +1151,8 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
 }
 section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
-  color: var(--on-cat, #fff);
+  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
+  color: var(--c-ink-dark);
 }
 
 
@@ -1240,7 +1259,7 @@ section.cards-grid > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-grid .cards-grid-inner--ordered { counter-reset:card; }
 section.cards-grid .cards-grid-inner--ordered > .card {
@@ -1252,7 +1271,7 @@ section.cards-grid .cards-grid-inner--ordered > .card::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* ── CARDS-GRID ───────────────────────────────────────────────────────────────
@@ -1296,7 +1315,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* ── Cards-grid shape modifiers — appended Phase 7 ──
@@ -1425,7 +1444,7 @@ section.cards-side > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-side .cards-grid-inner--ordered { counter-reset:card; }
 section.cards-side .cards-grid-inner--ordered > .card {
@@ -1437,7 +1456,7 @@ section.cards-side .cards-grid-inner--ordered > .card::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* ── nested-list fallback (no .cards-grid-inner) ─────────────────────────────
@@ -1483,7 +1502,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
@@ -1586,7 +1605,7 @@ section.cards-stack > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-stack .cards-stack-inner--ordered { counter-reset:stack; }
 section.cards-stack .cards-stack-inner--ordered > .card {
@@ -1598,7 +1617,7 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 
@@ -1890,8 +1909,12 @@ section.citation-card.pull-quote.pull-quote > blockquote::before {
   font-size:var(--fs-hero);
   line-height:1;
   color:var(--accent-soft);
-  z-index:-1;
+  /* z-index:0 (was -1, which sank it behind the opaque canvas → invisible).
+   * The quote text below lifts to z-index:1 so the pale glyph reads as a
+   * watermark without obscuring the words. */
+  z-index:0;
 }
+section.citation-card.pull-quote.pull-quote > blockquote > p { position:relative; z-index:1; }
 section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
 
 /* .margin — quote center, citation in left margin, "what" in right margin. */
@@ -1991,8 +2014,28 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.closing { border-top: none; }
 section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
+
+/* Mirror of title: the inline-code paragraph after h1 is the eyebrow,
+ * rendered visually ABOVE the h1 via flex order (overriding the italic
+ * subtitle rule). Without this the eyebrow rendered below the heading and
+ * the heading itself lost centering/max-width (the old rule targeted h2,
+ * but the heading slot is h1). */
+section.closing h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.closing h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 /* === lib/components/code/code/code.styles.css === */
 /* code — extracted from lib/_legacy.css (batch 4).
@@ -2029,7 +2072,12 @@ section.compare-code h2 ~ p:has(> code:only-child) { margin:0 0 var(--sp-xs) 0; 
 section.compare-code .code-col p:has(> code:only-child) > code,
 section.compare-code h2 ~ p:has(> code:only-child) > code {
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600;
-  letter-spacing:0.10em; text-transform:uppercase; color:var(--text-label);
+  letter-spacing:0.10em; text-transform:uppercase;
+  /* Use --accent (not --text-label) so column labels stay accent-colored in
+   * both light and dark modes. In light mode --text-label ≈ --accent for most
+   * themes, but in dark mode --text-label drifts to a pale muted value while
+   * --accent stays vivid — preserving the column-identity signal. */
+  color:var(--accent);
   background:none; border:none; padding:0; border-radius:0;
 }
 section.compare-code pre { flex:1; margin:0; border-radius:var(--radius-md); overflow:hidden; background:var(--spectrum) bottom / 100% 3px no-repeat, var(--code-bg); padding:var(--sp-sm) var(--sp-md); padding-bottom:calc(var(--sp-sm) + 0.234375cqi); box-sizing:border-box; }
@@ -2277,8 +2325,13 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
 
 section.content h3 { margin-bottom:0.3125cqi; }
 section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
-section.content { justify-content:flex-start; }
+/* Cap line length: at --fs-message a full-canvas paragraph runs ~90 chars,
+ * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
+section.content h2 { max-width:72cqi; }
+section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); max-width:72cqi; }
+/* Center the heading+body block vertically so a short slide does not leave a
+ * dead lower half (the only canvas-statement component that top-aligned). */
+section.content { justify-content:center; }
 
 /* content is "heading + paragraphs OR a short list" (see content.docs.md),
  * but the layout previously styled only <p>. base.elements.css strips list
@@ -2287,7 +2340,7 @@ section.content { justify-content:flex-start; }
  * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
  * real markers, prose size, prose-compatible rhythm. No :has() — works in
  * every render path. */
-section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); }
+section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
 section.content ul { list-style:disc; }
 section.content ol { list-style:decimal; }
 section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
@@ -3079,7 +3132,11 @@ section.image.museum p:last-of-type {
 
   /* Surfaces */
   --journey-section-bg:   color-mix(in oklab, var(--bg-alt) 70%, var(--bg-dark));
-  --journey-section-fg:   var(--on-accent);
+  /* Section bar bg mixes toward --bg-dark on BOTH canvases → always a dark
+   * surface. --on-accent flips to --bg-dark in dark mode (same value) giving
+   * near-zero contrast (~2.5:1). Use --on-dark-primary (always-light token)
+   * so section labels remain legible in both light and dark themes. */
+  --journey-section-fg:   var(--on-dark-primary);
   --journey-task-bg:      color-mix(in oklab, var(--bg-alt) 80%, var(--bg));
   --journey-task-fg:      var(--text-body);
   --journey-timeline:     color-mix(in srgb, var(--text-body) 55%, transparent);
@@ -3152,7 +3209,7 @@ section.journey .journey-actor-dot {
   height: 1.09375cqi;
   border-radius: 50%;
   background: var(--actor-color);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent, var(--on-dark-primary));
   font-size: 0.664cqi;
   font-weight: 700;
   line-height: 1;
@@ -3202,8 +3259,11 @@ section.journey .journey-mood-key-swatch {
   background: var(--mood-color);
 }
 section.journey .journey-mood-key-label {
-  font-size: 0.78125cqi;
-  opacity: 0.65;
+  /* Previously 0.78125cqi + opacity:0.65 — compounded sub-token size plus
+   * opacity fade made mood scale numbers illegible at desk distance.
+   * Raised to --fs-meta (11.25pt) and opacity ≥0.85 to meet minimum legibility. */
+  font-size: var(--fs-meta);
+  opacity: 0.85;
 }
 section.journey .journey-mood-key[data-mood="5"] { --mood-color: var(--journey-mood-5); }
 section.journey .journey-mood-key[data-mood="4"] { --mood-color: var(--journey-mood-4); }
@@ -3957,7 +4017,11 @@ section .items .node .label-container {
  * ──────────────────────────────────────────────────────────────────────── */
 section.kpi {
   display: flex; flex-direction: column;
-  padding-top: var(--sp-md);
+  /* Clear the absolute running header (top:1.875cqi, ~fs-meta tall). The base
+   * section uses 6.875cqi top padding for this; KPI trims it for density but
+   * must stay below the header band or the h3 eyebrow / h2 overprints the
+   * "LATTICE · KPI" chrome (they shared the same y at the old --sp-md). */
+  padding-top: calc(var(--sp-md) + var(--sp-lg));
   /* Trim the base 6.875cqi bottom padding — that much is pure reserved
    * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
    * KPI is the densest layout (hero + 3 metric rows + title); the extra
@@ -4732,12 +4796,16 @@ section.list-tabular.metric ol > li > code {
 section.list-tabular.metric.solid ol > li > code {
   background:var(--accent);
   border-color:var(--accent);
-  color:var(--on-accent, #fff);
+  color:var(--on-accent, var(--on-dark-primary));
 }
 
 /* ── Variant: spec (mono key) ─────────────────────────────────────────── */
+/* minmax(0,…) on the flexible + trailing tracks (not bare 1fr/auto) lets the
+ * columns shrink below their content so a long mono key / API path wraps
+ * inside its cell instead of overflowing the slide edge (which corrupted the
+ * trailing glyphs). overflow-wrap on the code makes the wrap point clean. */
 section.list-tabular.spec ol > li {
-  grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
+  grid-template-columns:3.4375cqi minmax(0, 20.3125cqi) minmax(0, 1fr) minmax(0, 15.625cqi);
   font-family:var(--font-mono);
   font-size:var(--fs-body-compact);
   font-weight:600;
@@ -4747,11 +4815,19 @@ section.list-tabular.spec ol > li {
 section.list-tabular.spec ol > li > code {
   color:var(--accent);
   font-weight:700;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
+/* The spec row carries TWO inline codes — the key name and the type. The base
+ * rule sends every `> code` to column 4, which stacked them in one cell (the
+ * "LATTICESTRENG" glyph pile-up). Place the key in the name column and the
+ * type in the trailing column. */
+section.list-tabular.spec ol > li > code:first-of-type { grid-column:2; grid-row:1; justify-self:start; }
+section.list-tabular.spec ol > li > code:nth-of-type(2) { grid-column:4; grid-row:1; justify-self:start; }
 
 /* spec.stacked — description below name; counter spans rows */
 section.list-tabular.spec.stacked ol > li {
-  grid-template-columns:3.4375cqi 1fr auto;
+  grid-template-columns:3.4375cqi minmax(0, 1fr) minmax(0, 15.625cqi);
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
   font-size:var(--fs-body-compact);
@@ -4767,10 +4843,13 @@ section.list-tabular.spec.stacked ol > li > ul > li {
   grid-column:2; grid-row:2;
 }
 section.list-tabular.spec.stacked ol > li > code {
-  grid-column:3; grid-row:2;
-  justify-self:end;
-  align-self:baseline;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
+/* Two codes again: key name on row 1 next to the counter, type at the row-1
+ * trailing edge; the description (nested ul) sits on row 2 (base stacked rule). */
+section.list-tabular.spec.stacked ol > li > code:first-of-type { grid-column:2; grid-row:1; justify-self:start; align-self:baseline; }
+section.list-tabular.spec.stacked ol > li > code:nth-of-type(2) { grid-column:3; grid-row:1; justify-self:end; align-self:baseline; }
 
 /* ── Variant: register (pill) ─────────────────────────────────────────── */
 section.list-tabular.register ol > li {
@@ -5725,9 +5804,16 @@ section.piechart .piechart-figure {
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  width: 25cqi;
-  height: 25cqi;
+  /* 32cqi (was 25cqi): at 25cqi the disc floated small in the lower-left with
+   * large dead zones — the wedge proportions are the whole point, so the disc
+   * needs to command the canvas. The cover variant drops chrome → 36cqi. */
+  width: 32cqi;
+  height: 32cqi;
   display: block;
+}
+section.piechart.cover .piechart-svg {
+  width: 36cqi;
+  height: 36cqi;
 }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
@@ -5749,7 +5835,7 @@ section.piechart .piechart-legend {
 }
 section.piechart .piechart-legend li {
   display: grid;
-  grid-template-columns: 1.09375cqi 1fr auto;
+  grid-template-columns: 1.5cqi 1fr auto;
   align-items: center;
   gap: var(--sp-sm);
   font-size: var(--fs-meta);
@@ -6160,17 +6246,24 @@ section.quadrant .quadrant-split[data-kind="target"] {
 }
 
 /* ── Axis labels + corner ticks ───────────────────────────────────────── */
+/* SVG font-size bypass: labels sit inside a ~420×320-unit SVG viewBox, so
+ * CSS px ≠ pt. Values are intentional deviations from the 12-token scale;
+ * scoped to section.quadrant so themes can override per-component via the token. */
+section.quadrant {
+  --quadrant-axis-size: 12px;  /* raised from 11px — axis name, still below token min */
+  --quadrant-tick-size: 10px;  /* raised from 8px (≈5.7pt at desk) */
+}
 section.quadrant .quadrant-axis-name {
   fill: var(--text-heading);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: var(--quadrant-axis-size);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 section.quadrant .quadrant-tick {
   fill: var(--text-muted);
   font-family: var(--font-mono, var(--font-body));
-  font-size: 8px;
+  font-size: var(--quadrant-tick-size);
   font-weight: 500;
 }
 
@@ -6473,17 +6566,27 @@ section.radar .radar-spoke {
 }
 
 /* ── Axis + tick labels ───────────────────────────────────────────────── */
+/* SVG font-size bypass: axis/tick labels sit inside a ~300-unit SVG viewBox,
+ * so CSS px ≠ pt. 15px ≈ 11.25pt would be too large for rim labels on a
+ * 300-unit viewBox. These are intentional deviations from the 12-token scale.
+ * Scoped to section.radar so themes can override per-component via the token. */
+section.radar {
+  --radar-axis-label-size: 11px;  /* raised from 9px (≈6.4pt at desk) */
+  --radar-tick-size:        9px;  /* raised from 6.5px (≈4.6pt at desk) */
+}
 section.radar .radar-axis-label {
   fill: var(--text-heading);
   font-family: var(--font-body);
-  font-size: 9px;
+  font-size: var(--radar-axis-label-size);
   font-weight: 600;
 }
 section.radar .radar-tick {
   fill: var(--text-muted);
   font-family: var(--font-mono, var(--font-body));
-  font-size: 6.5px;
-  font-weight: 500;
+  font-size: var(--radar-tick-size);
+  /* font-weight raised to 600 (matching the cover-variant lift) so faint
+   * sub-token-size ticks have enough stroke weight to be legible. */
+  font-weight: 600;
 }
 
 /* ── Series polygons + vertex dots ────────────────────────────────────── */
@@ -6818,7 +6921,8 @@ section.redline > :is(ol, ul) > li > strong {
 }
 
 /* .split — two blockquotes side-by-side: old left, new right. */
-section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
+section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr) auto; row-gap:var(--sp-sm); }
+section.redline.split.split > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.split h2 { grid-column:1 / -1; }
 section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.split.split > blockquote:nth-of-type(1) {
@@ -6931,7 +7035,11 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
 
 /* .three-col — old | new | rationale columns. The author writes two
  * blockquotes plus a list for the rationale column. */
-section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
+/* minmax(0,1fr) (not bare 1fr) caps the content row at its flex share so a
+ * long clause can't push the grid past the slide edge and clip mid-word;
+ * the blockquote guard below keeps overflow inside its own track. */
+section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
+section.redline.three-col.three-col > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.three-col h2 { grid-column:1 / -1; }
 section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {
@@ -7330,7 +7438,7 @@ section.roadmap thead th:not(:first-child) > code {
   font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--on-cat, #fff);
+  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
@@ -7608,7 +7716,7 @@ section.roadmap.horizons .horizon-meta {
   font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  color:var(--on-cat, #fff);
+  color:var(--c-ink-dark);              /* white on the saturated light-canvas fill, near-black on the pale dark-canvas fill */
   background:var(--phase-accent, var(--accent));
   padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
@@ -7777,7 +7885,7 @@ section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; ga
 section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
 section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
 section.split-compare .option.preferred > strong { color:var(--accent); border-color:var(--accent); }
-section.split-compare .option.preferred::after { content:'✦'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-meta); color:var(--accent); line-height:1; pointer-events:none; }
+section.split-compare .option.preferred::after { content:'✧'; position:absolute; top:var(--sp-sm); right:var(--sp-sm); font-size:var(--fs-meta); color:var(--accent); line-height:1; pointer-events:none; }
 section.split-compare .option ul { list-style:disc; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ol { list-style:decimal; padding:0 0 0 var(--sp-md); margin:0; }
 section.split-compare .option ul > li,
@@ -7821,7 +7929,7 @@ section.split-list :is(ul,ol) { display:flex; flex-direction:column; gap:var(--s
 section.split-list ol { counter-reset:panel-counter; }
 section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
 section.split-list ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-list ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-list ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
 section.split-list ol > li > strong,
 section.split-list ol > li > span,
 section.split-list ol > li > p,
@@ -8098,8 +8206,21 @@ section.state-chart .state-nodes {
 section.state-chart .state-chart-figure[data-sc-dir="lr"] .state-nodes {
   flex-direction: row;
   align-items: center;
-  padding: 100px 60px;
-  gap: 56px;
+  /* Tighter horizontal gutter + gap than the comment's original 60/56: at 5
+   * nodes the row overran the slide and clipped the terminal node (a static
+   * PDF can't scroll). Narrower gutters fit the documented 4–6 node range. */
+  padding: 100px 40px;
+  gap: 40px;
+}
+
+/* Curved (TB with bowed back-edges): a 5-state flow plus start + terminal
+ * markers overran the slide height and clipped the terminal ◉ at the bottom.
+ * Tighten the vertical rhythm (the wide horizontal padding stays — it hosts
+ * the bowed back-edge). */
+section.state-chart .state-chart-figure[data-sc-style="curved"] .state-nodes {
+  padding-top: 44px;
+  padding-bottom: 44px;
+  gap: 26px;
 }
 
 section.state-chart .state-node {
@@ -8384,7 +8505,7 @@ section.stats h3 { margin-bottom:0.3125cqi; }
 section.stats > p, section.stats > em { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-lg); color:var(--text-label); font-style:italic; display:block; text-align:center; }
 section.stats .stats-row { display:flex; justify-content:center; gap:var(--sp-2xl); }
 section.stats .stat-item { display:flex; flex-direction:column; align-items:center; gap:0.46875cqi; }
-section.stats .stat-num { font-family:var(--font-body); font-size:var(--fs-h1); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
+section.stats .stat-num { font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; }
 section.stats .stat-label { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label); }
 
 /* ── Fallback path: raw ol > li(<strong>num</strong> label) ──
@@ -8402,7 +8523,7 @@ section.stats:not(:has(.stats-row)) ol > li {
   letter-spacing:0.18em; text-transform:uppercase; color:var(--text-label);
 }
 section.stats:not(:has(.stats-row)) ol > li > strong {
-  font-family:var(--font-body); font-size:var(--fs-h1); font-weight:700;
+  font-family:var(--font-display); font-size:var(--fs-h1); font-weight:700;
   color:var(--accent); line-height:1; display:block;
   letter-spacing:0; text-transform:none; font-variant-numeric:tabular-nums;
 }
@@ -8719,7 +8840,7 @@ section.timeline > ol > li::before {
   content:counter(timeline-counter);
   display:flex; align-items:center; justify-content:center;
   width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); color:var(--on-accent, var(--on-dark-primary, #fff));
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
   font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
   margin-bottom:1.09375cqi; flex-shrink:0;
 }
@@ -8990,17 +9111,22 @@ section.tldr.numbered > ul,
 section.tldr.numbered > ol {
   counter-reset:tldr-counter;
 }
+/* Hanging indent — NOT display:grid. A grid li blockifies inline <code> into
+ * its own grid item, fragmenting any takeaway that contains an inline code
+ * span across multiple rows. Positioning the counter absolutely keeps the
+ * takeaway (text + inline code) as one normal inline flow. */
 section.tldr.numbered > ul > li,
 section.tldr.numbered > ol > li {
   counter-increment:tldr-counter;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
+  position:relative;
+  padding-left:6cqi;
 }
 section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
+  position:absolute;
+  left:0;
+  top:0;
   font-family:var(--font-mono);
   font-size:var(--fs-h2);
   font-weight:700;
@@ -9253,6 +9379,25 @@ section.word-cloud .wc-word[data-rotated="1"] {
   letter-spacing: -0.01em;
 }
 
+/* ── Dark-mode palette fix ────────────────────────────────────────────────
+ * On a dark canvas the chart-family --catN-ink tokens resolve to
+ * color-mix(catN-hue 78%, white), which reads as pastel against navy.
+ * Override the catN-ink tokens within .dark scope to use the raw --catN-hue
+ * (full saturation) so word colors read as vivid analytical palette, not
+ * celebration confetti. The transform bakes --wc-color:var(--catN-ink) inline,
+ * so we must re-define the upstream tokens here to affect those resolved values.
+ * Muted words (--text-muted) and accent words (--accent) need no override —
+ * those tokens already have good dark-mode dark values. */
+section.dark.word-cloud {
+  --cat1-ink: var(--cat1-hue);
+  --cat2-ink: var(--cat2-hue);
+  --cat3-ink: var(--cat3-hue);
+  --cat4-ink: var(--cat4-hue);
+  --cat5-ink: var(--cat5-hue);
+  --cat6-ink: var(--cat6-hue);
+  --cat7-ink: var(--cat7-hue);
+}
+
 /* === lib/base/base.modifiers.css === */
 /* _modifiers.css — cross-cutting authorial chrome.
  *
@@ -9419,7 +9564,7 @@ section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
  * Excluded layouts handle blockquote themselves:
  *   quote, featured (primary content)
  */
-section:not(.quote):not(.featured):not(.math) > blockquote {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -9427,7 +9572,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -9438,19 +9583,19 @@ section:not(.quote):not(.featured):not(.math) > blockquote::before {
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote p {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote ul {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote li {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
@@ -9458,7 +9603,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote li {
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote li::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);
@@ -12303,13 +12448,14 @@ section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, sect
  * directly with the actual emitted compound selectors.
  */
 section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
 }
 section circle.face {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--bg-alt) !important;
+  stroke: var(--c-line) !important;
 }
+section path.mouth { fill: var(--c-line) !important; }
 section path.mouth, section line.mouth {
   stroke: var(--c-line) !important;
 }
@@ -12443,3 +12589,69 @@ section g.architecture-service text, section g.architecture-service tspan {
  */
 section g.row-rect-even > path { fill: var(--bg-alt) !important; }
 section g.row-rect-odd > path  { fill: var(--bg) !important; }
+
+/* ── EDGE MARKERS = EDGE COLOUR (style, both modes) ──
+ * Arrowheads and crow's-foot relationship markers render UNFILLED by default
+ * in some diagram types — notably ER relationship terminals, which come out as
+ * thin open outlines. Fill every marker with the flipping edge colour so each
+ * connector terminal reads as solidly as its line (matching flowchart/state
+ * arrowheads). Not a dark-flip hack: --c-line flips with the canvas, so this
+ * is identical in both schemes — it's a deliberate "solid terminals" style.
+ * (Edge LINE strokes and arrowheads are otherwise baked correctly by the
+ * lineColor themeVar via dual-render; only the ER marker FILL needs this.) */
+section .marker,
+section .marker path,
+section .arrowMarkerPath,
+section .arrowheadPath {
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
+}
+
+/* ── JOURNEY AXIS + TASK CONNECTORS (canvas-borne structural lines) ──
+ * The journey axis line and the dashed task→face connectors emit as inline
+ * stroke="black" — NOT a themeVar, so dual-render can't bake them to the dark
+ * scheme. Re-point at the flipping --c-line. Scoped by aria-roledescription
+ * and excludes `.mouth` (the smiley strokes on the mood faces). The mood-face
+ * fill/eyes/mouth are handled by the journey block above. */
+section svg[aria-roledescription="journey"] line:not(.mouth) {
+  stroke: var(--c-line) !important;
+}
+
+/* ── TIMELINE AXIS + PERIOD DIVIDERS ──
+ * The timeline's section/period divider lines (`.node-line-*`) and the
+ * unclassed axis line (inline stroke="black") bake dark, so the spine vanishes
+ * on a dark slide. Re-point every timeline line at --c-line. */
+section svg[aria-roledescription="timeline"] line {
+  stroke: var(--c-line) !important;
+}
+
+/* ── TREEVIEW LABELS + LINES (beta type — hardcoded black) ──
+ * treeView-beta bakes `.treeView-node-label { fill: black }` and
+ * `.treeView-node-line { stroke: black }` as LITERAL black in its own injected
+ * <style> block — it ignores the labelColor/lineColor themeVariables we inject
+ * (a beta-type gap, despite its docs claiming those vars). So on a dark slide
+ * both the file labels and the tree connectors vanish. Re-point at the flipping
+ * tokens: dark on a light canvas (unchanged from baked black), light on a dark
+ * canvas (now visible). The !important beats Mermaid's un-important inline rule. */
+section .treeView-node-label { fill: var(--c-ink-light) !important; }
+section .treeView-node-line  { stroke: var(--c-line) !important; }
+
+/* ── MINDMAP BRANCH EDGES (per-section colour, brightened) ──
+ * Mindmap draws each branch in its section's cScale colour (themeVar
+ * cScale0-11 → --cN-dark). Those bake at the light branch and, more to the
+ * point, the saturated --cN-dark tone reads dark on a dark canvas. Re-point
+ * each `.section-edge-N` at the matching category, brightened via color-mix
+ * toward the flipping ink (lighter on a dark slide, slightly deeper on a light
+ * slide) so the branches stay COLOURED and read brightly in both modes.
+ * Scoped to svg.mindmapDiagram so no other diagram's edges are touched.
+ * (Restores the per-branch colour an earlier over-broad edge rule flattened.)
+ * Section indices mirror the mindmap-node fill mapping below: 0→c1 … 5→c6. */
+section svg.mindmapDiagram .section-edge--1,
+section svg.mindmapDiagram .section-edge-0 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-1 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-2 { stroke: color-mix(in srgb, var(--c3-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-3 { stroke: color-mix(in srgb, var(--c4-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
+section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }

@@ -47,8 +47,9 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Glossary heading.                      │
+│  Glossary heading.            A–Z       │
 │                                         │
+│  TERM      DEFINITION                   │
 │  Term A    Definition or gloss.         │
 │  Term B    Definition or gloss.         │
 │  Term C    Definition or gloss.         │

@@ -66,11 +66,11 @@
   "related": [
     {
       "name": "split-statement",
-      "when": "thesis + one big-number — quantitative version of split-list"
+      "when": "the left panel carries a pull quote (not a section eyebrow + heading)"
     },
     {
       "name": "split-brief",
-      "when": "title-style left + executive paragraph right"
+      "when": "dark left panel (heading + lede) + left-rule findings list on the right"
     },
     {
       "name": "big-number",

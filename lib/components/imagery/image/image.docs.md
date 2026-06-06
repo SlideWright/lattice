@@ -46,11 +46,11 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 ┌─────────────────────────────────────────┐
 │  header                                 │
 │                                         │
-│    ┌──────────────────┐                 │
-│    │                  │  Text slot      │
-│    │   [image area]   │  on the side,   │
-│    │                  │  optional       │
-│    └──────────────────┘  caption.       │
+│  Text slot on     ┌──────────────────┐  │
+│  the left, with   │                  │  │
+│  optional         │   [image area]   │  │
+│  caption.         │                  │  │
+│                   └──────────────────┘  │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

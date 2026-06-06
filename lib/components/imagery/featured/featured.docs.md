@@ -54,9 +54,9 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 │  │ HERO — featured item              │  │
 │  │ body text and detail              │  │
 │  └───────────────────────────────────┘  │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │ Support 1    │     │ Support 2    │  │
-│  └──────────────┘     └──────────────┘  │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  Support 1    Support 2    Support 3    │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

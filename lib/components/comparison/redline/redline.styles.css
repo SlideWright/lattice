@@ -104,7 +104,8 @@ section.redline > :is(ol, ul) > li > strong {
 }
 
 /* .split — two blockquotes side-by-side: old left, new right. */
-section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
+section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr) auto; row-gap:var(--sp-sm); }
+section.redline.split.split > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.split h2 { grid-column:1 / -1; }
 section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.split.split > blockquote:nth-of-type(1) {
@@ -217,7 +218,11 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
 
 /* .three-col — old | new | rationale columns. The author writes two
  * blockquotes plus a list for the rationale column. */
-section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
+/* minmax(0,1fr) (not bare 1fr) caps the content row at its flex share so a
+ * long clause can't push the grid past the slide edge and clip mid-word;
+ * the blockquote guard below keeps overflow inside its own track. */
+section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
+section.redline.three-col.three-col > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.three-col h2 { grid-column:1 / -1; }
 section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {

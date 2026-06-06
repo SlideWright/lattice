@@ -51,8 +51,12 @@ function parsePaletteVars(content) {
       if (m) vars[m[1]] = m[2].trim();
     }
   }
-  // Collapse light-dark() to the correct side.
-  const isDark = /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
+  // Collapse light-dark() to the correct side. The `:root\b[^{}]*\{` shape
+  // (rather than `:root\s*\{`) also matches the `:where(:root) { color-scheme:
+  // dark }` zero-specificity form carbone uses to pin its dark canvas — without
+  // it, carbone was mis-read as light and its light-dark() tokens resolved to
+  // the wrong (light) branch, producing a phantom error-chip contrast failure.
+  const isDark = /:root\b[^{}]*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
   for (const k of Object.keys(vars)) {
     const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
     if (ld) vars[k] = (isDark ? ld[2] : ld[1]).trim();
@@ -307,7 +311,7 @@ for (const theme of themes) {
   if (!hasIssues && failsOnly) continue;
 
   const isDark = css.replace(/\/\*[\s\S]*?\*\//g, '')
-    .match(/:root\s*\{[^}]*color-scheme\s*:\s*dark\b/) ? ' [dark]' : '';
+    .match(/:root\b[^{}]*\{[^}]*color-scheme\s*:\s*dark\b/) ? ' [dark]' : '';
   console.log(`  ── ${theme}${isDark} ${'─'.repeat(Math.max(1, 52 - theme.length - isDark.length))}`);
 
   if (!hasIssues) {

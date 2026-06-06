@@ -36,6 +36,29 @@ in patch versions.
 
 ### Changed
 
+- **`diagram` dark mode now renders natively per slide (dual-resolve), and the
+  dark-flip CSS override layer is collapsed.** The emulator resolves the Mermaid
+  `themeVariables` to the palette's *dark* branch and bakes the diagram with that
+  set when its slide is dark (nearest `_class: … dark`, or a deck-wide dark
+  signal) — instead of baking one light SVG and patching it with CSS. This mirrors
+  the runtime, which already resolved tokens per-section via `getComputedStyle`;
+  the emulator now matches it (parsing the palette CSS at build time, since mmdc
+  has no live DOM). Mermaid bakes themeVariables to literal hex, so a light bake
+  can't flip on a `section.dark` slide; baking the correct scheme per slide closes
+  that gap natively — including Mermaid's own colour-math (edge labels, edge lines,
+  arrowheads, sequence text/lines, gantt section titles, ER entity headers). With
+  dark now baked correctly, the redundant dark-flip overrides in `mermaid.css` are
+  removed (proven 0-pixel-identical under dual-render). ER dark improves: entity
+  headers now show their brand category colour instead of a flat grey level.
+  Single-scheme decks are unchanged (no second SVG); `LATTICE_MERMAID_SINGLE=1`
+  forces the prior light-bake + overrides path. The only Mermaid CSS overrides
+  that remain target surfaces no themeVariable controls: journey/timeline axes and
+  `treeView` labels/lines (Mermaid emits literal `black`), ER crow's-foot marker
+  fill, the ER zebra-row determinism pin, and mindmap branch-colour saturation.
+- **`diagram` journey mood-faces get an on-brand fill; treeView reads in dark.**
+  Journey faces fill with `--bg-alt` (eyes/mouth/outline stay on `--c-line`) and
+  the dashed task→face connectors are restored. `treeView-beta` labels and tree
+  lines now use the flipping ink/line tokens so they are legible on a dark slide.
 - **`cards-stack` rebuilt on the nested-list card contract.** The title now
   renders **bold by default** (no `**…**` needed) and the nested-bullet body
   resets to normal weight — matching `cards-grid`/`cards-side`. Previously the
@@ -218,6 +241,121 @@ in patch versions.
   documented **future variant** (see `chart-family.style.md` › "Fill finish").
 
 ### Fixed
+
+- **Layout audit — T6 hex-fallback hygiene (audit round 2).**
+  - `cards-grid`, `cards-side`, `cards-stack`, `split-list`, `timeline`:
+    numbered-badge `::before` color changed from `var(--on-accent, var(--on-dark-primary, #fff))`
+    to `var(--on-accent, var(--on-dark-primary))` — drops the `#fff` literal floor so the
+    fallback chain bottoms out in a palette token.
+  - `before-after` / `decision` / `compare-prose` corner-tag (flush + banner-tag variants):
+    `before-after` / `banner-tag.before-after` label text changed from
+    `var(--on-accent, var(--on-dark-primary, #fff))` → `var(--on-accent, var(--on-dark-primary))`.
+    `decision` corner tags changed from `var(--on-cat, #fff)` → `var(--c-ink-dark)`:
+    `--on-cat` is undefined (always resolved to `#fff`); `--c-ink-dark` (white on light,
+    near-black on dark) is the correct text token for fills backed by `--cN-dark`
+    (which are saturated on light canvas, pale on dark canvas).
+
+- **Layout audit — T4 SVG chart label sizes (audit round 2).**
+  - `radar`: axis labels raised from `9px` (≈6.4pt) to `11px` and tick marks from
+    `6.5px` (≈4.6pt) to `9px` via scoped `--radar-axis-label-size` / `--radar-tick-size`
+    custom properties with a bypass comment explaining SVG-unit sizing. Tick
+    `font-weight` raised from 500→600 (matching the cover-variant's existing lift)
+    so the faint sub-token-size ring labels get extra stroke weight.
+  - `quadrant`: axis name raised from `11px` to `12px` and tick labels from `8px`
+    (≈5.7pt) to `10px` via scoped `--quadrant-axis-size` / `--quadrant-tick-size`
+    custom properties with bypass comment.
+
+- **Layout audit — T5 dark-mode contrast fixes (audit round 2).**
+  - `journey`: section-bar labels (`--journey-section-fg`) were `var(--on-accent)`,
+    which flips to `--bg-dark` (navy) in dark mode — near-zero contrast against the
+    dark bar. Changed to `var(--on-dark-primary)` (always-light token) for legible
+    labels on both canvases.
+  - `journey`: mood-legend numbers were `0.78125cqi` + `opacity:0.65` — compounded
+    sub-token size and opacity fade made the 1–5 scale illegible. Raised to
+    `var(--fs-meta)` (11.25pt) and `opacity:0.85`.
+  - `journey`: hex `#fff` fallback on actor-dot color replaced with token floor
+    `var(--on-dark-primary)`.
+  - `agenda`: past rows at `opacity:0.4` on a dark canvas are near-invisible,
+    flattening the past/active/future three-state hierarchy. Added a `section.dark`
+    scoped bump: past rows → `0.55`, future rows → `0.65`, preserving the hierarchy
+    while meeting minimum legibility.
+  - `word-cloud`: dark-mode palette routed to `--catN-hue` (full-saturation
+    categorical hues) by overriding `--catN-ink` tokens within `section.dark.word-cloud`.
+    Previously `--catN-ink` dark branch was `color-mix(hue 78%, white)` which reads
+    as pastel against navy; now the direct hue tokens give an analytical, vivid palette.
+  - `compare-code`: column labels (`BEFORE`, `AFTER`) used `--text-label` which in dark
+    mode drifts to a pale muted value, losing the accent-color signal that identifies
+    each column. Changed to `var(--accent)`, which stays vivid in both themes and
+    both canvases.
+
+- **Layout audit — cross-component consistency (audit T-misc).** `stats` metric
+  numbers now use the display serif (`--font-display`), matching `big-number` /
+  `kpi` / `split-metric` (they were the lone sans outlier); `split-compare`'s
+  preferred-option marker is now `✧`, matching `verdict-grid`'s focal glyph.
+- **Layout audit — round 1 of fixes (anatomy, contracts, P0 render bugs).**
+  - `kpi`: the running header overprinted the eyebrow on every slide with an
+    `### eyebrow` (the section `padding-top` coincided with the absolute
+    header's `top`); content now clears the header band.
+  - `closing`: the heading styling targeted `h2` while the slot is `h1`, so the
+    bookend lost its centering / max-width and the eyebrow rendered below the
+    heading. Now mirrors `title` (centered hero `h1`, eyebrow reordered above).
+  - `content`: stopped top-aligning (dead lower half) — now vertically centred —
+    and capped paragraph/list line length so prose doesn't run ~90 chars wide.
+  - `actors`: a 5-row roster clipped its last row off the slide bottom
+    (`justify-content:center`); rows now top-align and stay on-canvas.
+  - `list-tabular` `spec` / `spec+stacked`: the key name and the type both
+    landed in one grid cell (overlapping glyphs) and overflowed the right edge;
+    the key now sits in the name column, the type in the trailing column, and
+    long mono keys/API paths wrap inside their cell.
+  - `tldr` `numbered`: an inline `code` span in a takeaway fragmented the line
+    across rows (grid blockified it); the counter is now a hanging indent so the
+    takeaway flows as one line.
+  - `piechart`: the disc was locked at `25cqi` and floated small in dead space;
+    enlarged to `32cqi` (`36cqi` under `cover`) so the proportions read.
+  - `redline` `three-col` / `split`: a long clause clipped mid-word; the content
+    row is now `minmax(0,1fr)` with an overflow guard so it stays on-slide.
+  - `citation-card`: the base "KEY INSIGHT" blockquote chrome contaminated its
+    verbatim-quote panel on every non-pull-quote variant (light + dark) —
+    citation-card is now excluded from that rule (it styles its own
+    blockquote); the `pull-quote` watermark glyph was sunk behind the canvas
+    (`z-index:-1`) and is now a visible watermark; and the `triptych` sample
+    only supplied one gloss item so it rendered two panels — it now carries the
+    translate + obligation items the three-panel layout expects.
+  - **`diagram` dark mode — round 2 (per-diagram, scoped).** Fixed four more
+  dark-mode surfaces, each scoped to its diagram type (no broad selectors):
+  sequence lifelines + journey axis re-pointed at `--c-line`; mindmap branch
+  edges restored to their per-section category colour, brightened via
+  `color-mix` (an earlier over-broad edge rule had flattened them to mono);
+  ER entity boxes levelled to `--bg-alt` on `section.dark` so header + attribute
+  cells read with light ink. Light mode unchanged across all four.
+- **`diagram` dark mode** — Mermaid bakes `edgeLabelBackground` and label ink
+    as resolved hex at render time (in the light color-scheme), so on a dark
+    slide flowchart/state/ER edge & relationship labels rendered as glaring
+    white knockout boxes, sequence message text went invisible, and the edge
+    LINES + arrowheads (baked #333) nearly vanished (dark-on-
+    dark). `mermaid.css` now re-points those surfaces at `light-dark()` tokens
+    (`var(--bg)` / `var(--c-ink-light)` / `var(--c-line)`) that resolve per the
+    slide's color-scheme — identical on a light slide (no regression), correct
+    on a dark one.
+  - `state-chart`: the `lr` (horizontal) layout overran the slide and clipped
+    the terminal node/marker at 5 states (a static PDF can't scroll) — tighter
+    LR gutters fit the documented 4–6 node range; the `curved` variant clipped
+    its terminal ◉ at the bottom — tighter vertical rhythm brings it on-canvas.
+  - `roadmap`: phase date pills were white-on-pale in dark mode (the
+    categorical `--cN-dark` fill flips pale on a dark canvas, but the ink stayed
+    white) — a WCAG-AA failure on every dark variant. Pills now use
+    `var(--c-ink-dark)` (white on the saturated light-canvas fill, near-black on
+    the pale dark-canvas fill).
+  - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
+    different layout than what renders (split-statement, split-brief, decision,
+    timeline-list, list-steps, kpi, split-metric, math, image, featured,
+    glossary, roadmap, progress, statute-stack, authority-chain,
+    regulatory-update, tldr; added one for state-chart; dropped the dead
+    `── accent ──` rule from title/divider/closing). Fixed misleading manifest
+    contracts: `principles` skeleton (was `- **bold**`, generating card-style-
+    invalid slides) + dropped its non-existent "justification" slot;
+    `kpi`/`stats` list selectors (`ul`→`ol`) and kpi slot name; `split-list`
+    `related` text; `authority-chain` `links`→`tiers` slot.
 
 - **Subtitle / secondary-text contrast was broken across every theme.** The
   subtitle, eyebrow, caption, table-header, sub-label and attribution roles

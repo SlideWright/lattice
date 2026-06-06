@@ -41,17 +41,22 @@ section.tldr.numbered > ul,
 section.tldr.numbered > ol {
   counter-reset:tldr-counter;
 }
+/* Hanging indent — NOT display:grid. A grid li blockifies inline <code> into
+ * its own grid item, fragmenting any takeaway that contains an inline code
+ * span across multiple rows. Positioning the counter absolutely keeps the
+ * takeaway (text + inline code) as one normal inline flow. */
 section.tldr.numbered > ul > li,
 section.tldr.numbered > ol > li {
   counter-increment:tldr-counter;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
+  position:relative;
+  padding-left:6cqi;
 }
 section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
+  position:absolute;
+  left:0;
+  top:0;
   font-family:var(--font-mono);
   font-size:var(--fs-h2);
   font-weight:700;

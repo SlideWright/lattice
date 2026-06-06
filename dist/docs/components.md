@@ -133,7 +133,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 │                 CLOSING                 │
 │                                         │
 │             Take this away              │
-│              ── accent ──               │
+│                                         │
 │                                         │
 │                                         │
 └─────────────────────────────────────────┘
@@ -218,7 +218,7 @@ Marks the start of a major section. Use sparingly — every divider is a context
 │               SECTION 02                │
 │                                         │
 │            Section headline             │
-│              ── accent ──               │
+│                                         │
 │                                         │
 │                                         │
 └─────────────────────────────────────────┘
@@ -388,7 +388,6 @@ One-line subtitle that frames the deck.
 │              EYEBROW LABEL              │
 │                                         │
 │           Display Title Here            │
-│              ── accent ──               │
 │           Subtitle or tagline           │
 │                                         │
 └─────────────────────────────────────────┘
@@ -678,11 +677,11 @@ One-sentence framing paragraph explaining what the findings cover.
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │ BRIEF      │  Executive paragraph    │
-│  │            │  on the right carries   │
-│  │ Brief      │  the body content,      │
-│  │ title      │  two or three lines.    │
+│  ┌────────────┐  FINDINGS               │
+│  │ BRIEF      │  │ Finding title        │
+│  │ heading    │  │ body detail          │
+│  │ + lede     │  │ Finding title        │
+│  │            │  │ body detail          │
 │  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -794,8 +793,8 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Related components
 
-- [`split-statement`](#split-statement) — thesis + one big-number — quantitative version of split-list
-- [`split-brief`](#split-brief) — title-style left + executive paragraph right
+- [`split-statement`](#split-statement) — the left panel carries a pull quote (not a section eyebrow + heading)
+- [`split-brief`](#split-brief) — dark left panel (heading + lede) + left-rule findings list on the right
 - [`big-number`](#big-number) — single statement, no supporting list — the full-canvas version
 - [`cards-stack`](#cards-stack) — the right-side list grows past four points
 
@@ -852,11 +851,11 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │            │  ┌─────────┐            │
-│  │ Claim on   │  │   42×   │            │
-│  │ the left   │  └─────────┘            │
-│  │            │  Caption beside it      │
+│  ┌────────────┐  IMPLICATIONS           │
+│  │ "A quote   │  - First implication    │
+│  │ on the     │    body line            │
+│  │ left."     │  - Second implication   │
+│  │ — source   │    body line            │
 │  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -1610,8 +1609,9 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Glossary heading.                      │
+│  Glossary heading.            A–Z       │
 │                                         │
+│  TERM      DEFINITION                   │
 │  Term A    Definition or gloss.         │
 │  Term B    Definition or gloss.         │
 │  Term C    Definition or gloss.         │
@@ -1922,13 +1922,13 @@ See [list-tabular.gallery.light.pdf](../../lib/components/inventory/list-tabular
 
 ### principles
 
-> Declared statements — short stated principles, each with a one-line justification.
+> Declared statements — guiding rules or tenets, each as one terse sentence.
 
 **Function** inventory · **Form** stack · **Substance** structure
 
 **Tags** `strategy` · `okr` · `onboarding`
 
-Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.
+Use for design tenets, working agreements, or decision rules. Each principle is a single declarative statement; the layout renders it at display weight with a large counter as the visual anchor.
 
 #### When to use
 
@@ -1939,7 +1939,7 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 #### When NOT to use
 
 - **Aspirations, not principles.** "Be empathetic" is a value, not a principle. Principles are decision rules — they say what to do when two options conflict. Reach for content if it's a values statement.
-- **Long per-principle prose.** Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
+- **Long per-principle prose.** Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
 - **Hedged statements.** "We try to default to X" reads as a wish. Drop the hedge — principles are declared, not negotiated. "Default to X" lands harder.
 
 #### Authoring
@@ -1949,9 +1949,9 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 
 ## How we make calls when the spec is silent.
 
-- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.
-- **Decisions over options.** Document the choice, not the menu we evaluated.
-- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.
+1. Default to the choice that is cheaper to reverse.
+2. Document the decision, not the menu of options.
+3. Reversible calls don't need a meeting.
 ```
 
 #### Slots
@@ -2105,10 +2105,10 @@ Use at the end of a section or deck to restate the takeaways in one line each. E
 │  header                                 │
 │  TL;DR heading.                         │
 │                                         │
-│  — First takeaway, single line.         │
-│  — Second takeaway, single line.        │
-│  — Third takeaway, single line.         │
-│  — Fourth takeaway, single line.        │
+│  First takeaway, single line.           │
+│  Second takeaway, single line.          │
+│  Third takeaway, single line.           │
+│  Fourth takeaway, single line.          │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -2537,13 +2537,12 @@ Use after a comparison slide to land the decision. The justifications render as 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│            Verdict heading.             │
+│            Decision heading.            │
 │                                         │
-│  ┌───────────────────────────────────┐  │
-│  │ DECISION                          │  │
-│  │ Single-sentence verdict line      │  │
-│  │ with rationale beneath.           │  │
-│  └───────────────────────────────────┘  │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  CHOSEN       Option B     Option C     │
+│  rationale    rationale    rationale    │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -3231,7 +3230,7 @@ See [list-criteria.gallery.light.pdf](../../lib/components/progression/list-crit
 
 ### list-steps
 
-> Vertical sequence of steps, each with full description body.
+> Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead).
 
 **Function** progression · **Form** timeline · **Substance** structure
 
@@ -3276,22 +3275,22 @@ Use for richer sequential processes where each step needs a paragraph rather tha
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Step-by-step heading.                  │
+│  Step-by-step heading (horizontal).     │
 │                                         │
-│  [STEP 01]  First step label            │
-│             supporting body             │
-│  [STEP 02]  Second step label           │
-│             supporting body             │
-│                                         │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  STEP 01      STEP 02      STEP 03      │
+│  label        label        label        │
+│  body         body         body         │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
 #### Variants (layout-specific)
 
-##### `vertical` — Vertical — strip flips column to row
+##### `vertical` — Vertical — strip flips row to column
 
-Flips the step strip from a vertical stack into a horizontal row; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.
+Flips the step strip from the default horizontal row into a vertical stack; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.
 
 ```markdown
 <!-- _class: list-steps vertical compact -->
@@ -3499,8 +3498,8 @@ State markers `[x]/[-]/[ ]/[/]` are universal: ✓ shipped, ◐ in flight, ○ p
 │  ┌───────────┬───────────┬───────────┐  │
 │  │           │ Q1        │ Q2        │  │
 │  ├───────────┼───────────┼───────────┤  │
-│  │ Track A   │ ▓▓▓░░░    │ ▓▓▓▓▓░    │  │
-│  │ Track B   │ ░▓▓▓▓░    │ ▓▓▓░░░    │  │
+│  │ Track A   │ [x] done  │ [-] wip   │  │
+│  │ Track B   │ [ ] plan  │ [/] skip  │  │
 │  └───────────┴───────────┴───────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -3811,23 +3810,19 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the KPI group. |
-| `subtitle` | `h3` | no | Optional subtitle below the heading. |
-| `kpis` | `ul > li` | yes | One li per KPI. Lead with **Metric name** then nested bullets for value, target, trend, status. |
+| `eyebrow` | `h3` | no | Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`). |
+| `kpis` | `ol > li` | yes | One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status. |
 
 #### Anatomy
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  KPI grid heading.                      │
-│                                         │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │  42×    ✓    │     │  87%    ✓    │  │
-│  │  growth      │     │  uptake      │  │
-│  └──────────────┘     └──────────────┘  │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │  3.2k   ⚠    │     │  91%    ✓    │  │
-│  └──────────────┘     └──────────────┘  │
+│  ┌────────────┐  SUPPORTING KPIS        │
+│  │ $2.4B      │  42%  margin     ✓      │
+│  │ hero       │  $1.1B cash      ✓      │
+│  │ metric     │  +18% YoY        ✓      │
+│  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -4051,12 +4046,11 @@ Measurement window and qualifying detail in one short sentence.
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │ METRIC     │  ┌─────────┐            │
-│  │            │  │   42×   │            │
-│  │ Heading    │  └─────────┘            │
-│  │            │  Caption text           │
-│  └────────────┘                         │
+│  ┌────────────┐  CONTEXT / FINDINGS     │
+│  │ 114%       │  - First finding        │
+│  │ NRR        │    supporting body      │
+│  │ + context  │  - Second finding       │
+│  └────────────┘    supporting body      │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -4122,7 +4116,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the metrics. |
 | `subtitle` | `p > code` | no | Optional subtitle (inline-code paragraph after h2). |
-| `tiles` | `ul > li` | yes | One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption. |
+| `tiles` | `ol > li` | yes | One li per stat tile, authored as an ordered list (`1.`). Format: **Number** then the caption text on the same line (e.g. `1. **73%** faster close`). |
 
 #### Anatomy
 
@@ -4215,9 +4209,9 @@ Use after a comparison or evaluation to land the recommendation: the featured ca
 │  │ HERO — featured item              │  │
 │  │ body text and detail              │  │
 │  └───────────────────────────────────┘  │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │ Support 1    │     │ Support 2    │  │
-│  └──────────────┘     └──────────────┘  │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  Support 1    Support 2    Support 3    │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -4307,11 +4301,11 @@ Replace the bg image below with your own asset. The image fills its half-canvas 
 ┌─────────────────────────────────────────┐
 │  header                                 │
 │                                         │
-│    ┌──────────────────┐                 │
-│    │                  │  Text slot      │
-│    │   [image area]   │  on the side,   │
-│    │                  │  optional       │
-│    └──────────────────┘  caption.       │
+│  Text slot on     ┌──────────────────┐  │
+│  the left, with   │                  │  │
+│  optional         │   [image area]   │  │
+│  caption.         │                  │  │
+│                   └──────────────────┘  │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -4724,9 +4718,9 @@ Use for status-tracking across multiple parallel items (project readiness, OKR p
 │  header                                 │
 │  Progress heading.                      │
 │                                         │
-│  Goal A      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░ 70%   │
-│  Goal B      ▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ 50%   │
-│  Goal C      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90%   │
+│  Goal A   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓70%░░░░░░       │
+│  Goal B   ▓▓▓▓▓▓▓▓▓▓50%░░░░░░░░░░       │
+│  Goal C   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓90%░        │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -5342,6 +5336,21 @@ How a draft moves from author to archive.
 | `states` | `ol > li` | yes | One li per state. Index is the stable ref. Trailing inline code is a closed metadata vocabulary: `start`, `end`, or one of the chart-status keywords (on-track, at-risk, blocked, done, live, decision, deferred, warn, pilot, fail). Multiple metadata tokens allowed; order is irrelevant. Unknown trailing codes are left in the rendered label. |
 | `transitions` | `ol > li > ul > li` | no | Outgoing transitions from a state — one per nested bullet. Each carries a single inline-code arrow `event=>N` or `=>N` (event optional). Target is a state index or the literal `self` for self-loops. Whitespace inside the inline code is insignificant. |
 
+#### Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│          State machine heading          │
+│                                         │
+│     [Draft ] → [Review] → [Pub   ]      │
+│                                         │
+│       (back-edge: Review → Draft)       │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
 #### Variants (layout-specific)
 
 ##### `lr` — Left-to-right
@@ -5471,11 +5480,11 @@ Use for milestone history or annotated timelines. Each item gets a date pill on 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Date-stamped timeline.                 │
+│        Dated milestones heading         │
 │                                         │
-│  2024-01-15  Event one — short note     │
-│  2024-03-02  Event two — short note     │
-│  2024-05-19  Event three — short note   │
+│          ●─────────●─────────●          │
+│      2024-01    2024-03    2024-05      │
+│    Event one  Event two  Event three    │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -5790,11 +5799,10 @@ $$ y = f(x) $$
 │  header                                 │
 │  Equation heading.                      │
 │                                         │
-│                 E  =  m c²              │
-│                                         │
-│    E = energy (joules)                  │
-│    m = mass (kilograms)                 │
-│    c = speed of light                   │
+│  E = m c²    │  WHERE                   │
+│              │  E = energy              │
+│              │  m = mass                │
+│              │  c = speed of light      │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -6235,20 +6243,20 @@ Use when the audience needs to see how a rule descends: what the statute says, h
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `heading` | `h2` | yes | Slide heading naming the rule whose chain is being walked. |
-| `links` | `ol > li` | yes | Ordered list of authority tiers (Statute, Regulation, Guidance, Case). Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss. |
+| `tiers` | `ol > li` | yes | Ordered list of authority tiers (Statute, Regulation, Guidance, Case) — not hyperlinks. Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss. |
 
 #### Anatomy
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Statute → case heading.                │
+│  Authority descent heading.             │
 │                                         │
-│  § Statute        — top tier            │
-│      ↓                                  │
-│    Regulation     — middle tier         │
-│      ↓                                  │
-│    Case law       — bottom tier         │
+│  ┌────────────┐                         │
+│  │ TIER 1     │  § Statute — citation   │
+│  │ TIER 2     │    Regulation — cite    │
+│  │ TIER 3     │    Case law — cite      │
+│  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
@@ -6486,8 +6494,10 @@ Frames the citation, the verbatim text, and the gloss as three panels for a form
 
 > 'Personal data' means any information relating to an identified or identifiable natural person.
 
-- Online identifiers count.
-  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.
+- In plain English.
+  - Any online identifier that can single out a person — IP address, cookie ID, device fingerprint.
+- What we must do.
+  - Scope notice and retention to cover online identifiers, not just named-person records.
 ```
 
 #### Universal modifiers
@@ -6725,11 +6735,11 @@ Use when a quarter's regulatory motion needs a single-slide digest. Each row car
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Change log heading.                    │
+│  Regulatory update heading.             │
 │                                         │
-│  2024-Q1  Added clause 4.2 — gloss      │
-│  2024-Q2  Revised clause 5 — gloss      │
-│  2024-Q3  Deleted clause 6 — gloss      │
+│  01  Name   §cite   gloss   [eff]       │
+│  02  Name   §cite   gloss   [eff]       │
+│  03  Name   §cite   gloss   [eff]       │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
@@ -6924,13 +6934,15 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Citation stack heading.                │
+│  Statute stack heading.                 │
 │                                         │
-│  § Title 1 — Authority                  │
-│      §§ Subsection — gloss              │
-│  § Title 2 — Authority                  │
-│      §§ Subsection — gloss              │
-│                                         │
+│  ┌───────────────────────────────────┐  │
+│  │ FEDERAL · cite        [in effect] │  │
+│  │ Obligation prose for tier.        │  │
+│  └───────────────────────────────────┘  │
+│  ┌───────────────────────────────────┐  │
+│  │ STATE · cite          [pending]   │  │
+│  └───────────────────────────────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

@@ -47,8 +47,12 @@ section.agenda ol > li::before {
   letter-spacing:0.12em;
   color:var(--accent);
 }
-/* progress modifier — highlights "you are here" row */
+/* progress modifier — highlights "you are here" row.
+ * Non-active rows at 0.55 opacity for the future-items dimming.
+ * Dark mode raises future-items to 0.65 so they stay legible on the
+ * dark canvas while still reading as "not yet reached". */
 section.agenda[class*="progress-"] ol > li { opacity:0.55; }
+section.dark.agenda[class*="progress-"] ol > li { opacity:0.65; }
 section.agenda.progress-1 ol > li:nth-child(1),
 section.agenda.progress-2 ol > li:nth-child(2),
 section.agenda.progress-3 ol > li:nth-child(3),
@@ -69,4 +73,14 @@ section.agenda.progress-4 ol > li:nth-child(-n+3),
 section.agenda.progress-5 ol > li:nth-child(-n+4),
 section.agenda.progress-6 ol > li:nth-child(-n+5) {
   opacity:0.4;
+}
+/* Dark-mode bump: 0.4 reads near-invisible on dark canvas, especially with
+ * ≥2 past rows. Raise to 0.55 to keep the past/active/future three-state
+ * hierarchy legible while still signalling "already covered". */
+section.dark.agenda.progress-2 ol > li:nth-child(-n+1),
+section.dark.agenda.progress-3 ol > li:nth-child(-n+2),
+section.dark.agenda.progress-4 ol > li:nth-child(-n+3),
+section.dark.agenda.progress-5 ol > li:nth-child(-n+4),
+section.dark.agenda.progress-6 ol > li:nth-child(-n+5) {
+  opacity:0.55;
 }

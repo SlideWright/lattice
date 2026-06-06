@@ -53,13 +53,15 @@ Use when three or four parallel jurisdictions need to read at a glance: each row
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Citation stack heading.                │
+│  Statute stack heading.                 │
 │                                         │
-│  § Title 1 — Authority                  │
-│      §§ Subsection — gloss              │
-│  § Title 2 — Authority                  │
-│      §§ Subsection — gloss              │
-│                                         │
+│  ┌───────────────────────────────────┐  │
+│  │ FEDERAL · cite        [in effect] │  │
+│  │ Obligation prose for tier.        │  │
+│  └───────────────────────────────────┘  │
+│  ┌───────────────────────────────────┐  │
+│  │ STATE · cite          [pending]   │  │
+│  └───────────────────────────────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

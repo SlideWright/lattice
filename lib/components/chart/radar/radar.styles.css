@@ -105,17 +105,27 @@ section.radar .radar-spoke {
 }
 
 /* ── Axis + tick labels ───────────────────────────────────────────────── */
+/* SVG font-size bypass: axis/tick labels sit inside a ~300-unit SVG viewBox,
+ * so CSS px ≠ pt. 15px ≈ 11.25pt would be too large for rim labels on a
+ * 300-unit viewBox. These are intentional deviations from the 12-token scale.
+ * Scoped to section.radar so themes can override per-component via the token. */
+section.radar {
+  --radar-axis-label-size: 11px;  /* raised from 9px (≈6.4pt at desk) */
+  --radar-tick-size:        9px;  /* raised from 6.5px (≈4.6pt at desk) */
+}
 section.radar .radar-axis-label {
   fill: var(--text-heading);
   font-family: var(--font-body);
-  font-size: 9px;
+  font-size: var(--radar-axis-label-size);
   font-weight: 600;
 }
 section.radar .radar-tick {
   fill: var(--text-muted);
   font-family: var(--font-mono, var(--font-body));
-  font-size: 6.5px;
-  font-weight: 500;
+  font-size: var(--radar-tick-size);
+  /* font-weight raised to 600 (matching the cover-variant lift) so faint
+   * sub-token-size ticks have enough stroke weight to be legible. */
+  font-weight: 600;
 }
 
 /* ── Series polygons + vertex dots ────────────────────────────────────── */

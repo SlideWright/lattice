@@ -18,9 +18,16 @@ section.piechart .piechart-figure {
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  width: 25cqi;
-  height: 25cqi;
+  /* 32cqi (was 25cqi): at 25cqi the disc floated small in the lower-left with
+   * large dead zones — the wedge proportions are the whole point, so the disc
+   * needs to command the canvas. The cover variant drops chrome → 36cqi. */
+  width: 32cqi;
+  height: 32cqi;
   display: block;
+}
+section.piechart.cover .piechart-svg {
+  width: 36cqi;
+  height: 36cqi;
 }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
@@ -42,7 +49,7 @@ section.piechart .piechart-legend {
 }
 section.piechart .piechart-legend li {
   display: grid;
-  grid-template-columns: 1.09375cqi 1fr auto;
+  grid-template-columns: 1.5cqi 1fr auto;
   align-items: center;
   gap: var(--sp-sm);
   font-size: var(--fs-meta);

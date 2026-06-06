@@ -11,7 +11,7 @@ header: "Lattice · principles"
 
 `Inventory · Stack · Structure`
 
-Declared statements — short stated principles, each with a one-line justification.
+Declared statements — guiding rules or tenets, each as one terse sentence.
 
 ---
 
@@ -132,7 +132,7 @@ Declared statements — short stated principles, each with a one-line justificat
 ## When NOT to reach for principles.
 
 - **Aspirations, not principles.** "Be empathetic" is a value, not a principle. Principles are decision rules — they say what to do when two options conflict. Reach for content if it's a values statement.
-- **Long per-principle prose.** Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
+- **Long per-principle prose.** Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
 - **Hedged statements.** "We try to default to X" reads as a wish. Drop the hedge — principles are declared, not negotiated. "Default to X" lands harder.
 
 ---

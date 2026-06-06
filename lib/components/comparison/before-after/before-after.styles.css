@@ -106,7 +106,7 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
   padding: 0.46875cqi 1.09375cqi;
   border-radius: var(--radius-md) 0 var(--radius-sm) 0;
   background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary, #fff));
+  color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
   font-size: 1.171875cqi;
   font-weight: 700;
@@ -119,7 +119,9 @@ section.compare-prose .compare-prose-inner .card:has(> strong:first-child) > str
  * saturation hue still anchors the card via the bottom border. */
 section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
-  color: var(--on-cat, #fff);
+  /* --decision-accent-deep resolves to --cN-dark (categorical fill); text on
+   * a --cN-dark fill uses --c-ink-dark (white on light, near-black on dark). */
+  color: var(--c-ink-dark);
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
@@ -160,7 +162,7 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
   padding: 0.78125cqi var(--sp-md);
   border-radius: 0;
   background: var(--accent);
-  color: var(--on-accent, var(--on-dark-primary, #fff));
+  color: var(--on-accent, var(--on-dark-primary));
   font-family: var(--font-mono);
   font-size: 1.09375cqi;
   font-weight: 700;
@@ -185,7 +187,8 @@ section.banner-tag.compare-prose .compare-prose-inner .card:has(> strong:first-c
 }
 section.banner-tag.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-child {
   background: var(--decision-accent-deep, var(--accent));
-  color: var(--on-cat, #fff);
+  /* --decision-accent-deep resolves to --cN-dark; see flush-corner rule above. */
+  color: var(--c-ink-dark);
 }
 
 

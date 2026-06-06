@@ -119,8 +119,12 @@ section.citation-card.pull-quote.pull-quote > blockquote::before {
   font-size:var(--fs-hero);
   line-height:1;
   color:var(--accent-soft);
-  z-index:-1;
+  /* z-index:0 (was -1, which sank it behind the opaque canvas → invisible).
+   * The quote text below lifts to z-index:1 so the pale glyph reads as a
+   * watermark without obscuring the words. */
+  z-index:0;
 }
+section.citation-card.pull-quote.pull-quote > blockquote > p { position:relative; z-index:1; }
 section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
 
 /* .margin — quote center, citation in left margin, "what" in right margin. */

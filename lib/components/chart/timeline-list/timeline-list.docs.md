@@ -49,11 +49,11 @@ Use for milestone history or annotated timelines. Each item gets a date pill on 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Date-stamped timeline.                 │
+│        Dated milestones heading         │
 │                                         │
-│  2024-01-15  Event one — short note     │
-│  2024-03-02  Event two — short note     │
-│  2024-05-19  Event three — short note   │
+│          ●─────────●─────────●          │
+│      2024-01    2024-03    2024-05      │
+│    Event one  Event two  Event three    │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

@@ -612,7 +612,7 @@ const MERMAID_VAR_MAP = {
 // then resolves light-dark() and one level of var() references. Returns
 // a flat map suitable for feeding Mermaid themeVariables (which expects
 // literal colors, not CSS expressions).
-function parsePaletteVars(paletteCSSContent) {
+function parsePaletteVars(paletteCSSContent, forceDark) {
   // Strip CSS comments first so doc blocks containing example strings
   // like `":root{color-scheme:dark}"` don't break the :root brace matcher.
   const stripped = paletteCSSContent.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -630,7 +630,9 @@ function parsePaletteVars(paletteCSSContent) {
   // viewer; we collapse it now to whichever side matches what the deck is
   // declared as. Dark variants (e.g. cuoio-dark.css) declare
   // `color-scheme: dark` at :root; everything else is treated as light.
-  const isDark = /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
+  // `forceDark` collapses to the dark branch regardless — used by the
+  // dual-render path to bake a second, dark-scheme SVG for section.dark slides.
+  const isDark = forceDark || /:root\s*\{[^}]*color-scheme\s*:\s*dark\b/.test(stripped);
   for (const k of Object.keys(vars)) {
     const ld = vars[k].match(/^light-dark\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
     if (ld) vars[k] = isDark ? ld[2] : ld[1];
@@ -702,6 +704,17 @@ function resolveMermaidThemeVars(paletteVars) {
 // at the top of every theme loads lattice.css first.
 const PALETTE_VARS = parsePaletteVars(layoutCSS + '\n' + paletteCSS);
 const MERMAID_THEME_VARS = resolveMermaidThemeVars(PALETTE_VARS);
+// Dual-render dark set: the SAME palette resolved to its DARK branch. Mermaid
+// bakes themeVariables to literal hex at render time (in the light scheme), so
+// a single bake can't flip on a `section.dark` slide — the documented dark-mode
+// gap. We bake a second SVG with dark-resolved vars and toggle the two by
+// color-scheme in CSS (see mermaid.css `.mmd-light/.mmd-dark`). This makes dark
+// diagrams correct natively, including Mermaid's own colour-math derivations.
+// Toggle off with LATTICE_MERMAID_SINGLE=1 to fall back to the single (light)
+// bake + the per-diagram CSS overrides.
+const DUAL_RENDER = process.env.LATTICE_MERMAID_SINGLE !== '1';
+const PALETTE_VARS_DARK = parsePaletteVars(layoutCSS + '\n' + paletteCSS, true);
+const MERMAID_THEME_VARS_DARK = resolveMermaidThemeVars(PALETTE_VARS_DARK);
 
 // ── Puppeteer config — chrome auto-detection ─────────────────────────────
 // The renderer shells out to mmdc (mermaid-cli) which uses puppeteer to
@@ -769,7 +782,7 @@ if (!CHROME_EXEC) {
   console.warn('  ⚠ No Chrome binary detected. Set PUPPETEER_EXECUTABLE_PATH or install puppeteer to download one.');
 }
 
-function renderMermaid(definition) {
+function renderMermaidOne(definition, themeVars, extraClass) {
   // Prepend the Mermaid init block if not already present.
   // JetBrains Mono is bundled by the lattice.css font import and is the
   // safe default for diagrams: predictable character widths, no measurement
@@ -784,7 +797,7 @@ function renderMermaid(definition) {
   const hasInit = definition.includes('%%{init');
   const initObj = {
     theme: 'base',
-    themeVariables: MERMAID_THEME_VARS,
+    themeVariables: themeVars,
     // C4 ships with shape widths tuned for very short Person()/System()
     // labels and never wraps. Limit shapes-per-row to 3 (default 4) so a
     // 5-shape diagram fans across two rows rather than cramming a single
@@ -849,7 +862,7 @@ function renderMermaid(definition) {
       // The replacement is a single global substitution: it catches the root
       // id, every internal id (e.g. my-svg-flowchart-A-0), every url(#my-svg…)
       // reference, and every #my-svg selector inside the embedded <style>.
-      const uniqueId = `lattice-mmd-${renderMermaid.counter = (renderMermaid.counter || 0) + 1}`;
+      const uniqueId = `lattice-mmd-${renderMermaidOne.counter = (renderMermaidOne.counter || 0) + 1}`;
       svg = svg.replace(/my-svg/g, uniqueId);
       // Mermaid sankey (11.14) has a label-rendering bug: it appends the
       // outbound-link value to the source node's <text> as raw HTML <p>…</p>,
@@ -879,7 +892,8 @@ function renderMermaid(definition) {
         });
       }
       fs.rmSync(tmpDir, { recursive: true, force: true });
-      return `<div class="mermaid-svg">${svg}</div>`;
+      const cls = extraClass ? `mermaid-svg ${extraClass}` : 'mermaid-svg';
+      return `<div class="${cls}">${svg}</div>`;
     } catch (e) {
       lastError = e;
       if (attempt < MAX_ATTEMPTS) {
@@ -894,11 +908,38 @@ function renderMermaid(definition) {
   return `<pre class="mermaid-fallback">${definition}</pre>`;
 }
 
+// Scheme-aware render: a diagram is baked with the dark-resolved themeVars when
+// its slide is dark, else the light-resolved set. Mermaid bakes themeVariables
+// to literal hex at render time, so a light bake can't flip on a section.dark
+// slide — the documented dark-mode gap. Baking the correct scheme per slide
+// closes it natively (including Mermaid's own colour-math derivations), with no
+// per-element CSS overrides and no wasted second SVG on single-scheme decks.
+// Author-supplied %%{init}%% diagrams keep their own theming.
+// LATTICE_MERMAID_SINGLE=1 forces the light bake everywhere (fallback to the
+// CSS-override path).
+function renderMermaid(definition, dark) {
+  const themeVars = dark && DUAL_RENDER ? MERMAID_THEME_VARS_DARK : MERMAID_THEME_VARS;
+  return renderMermaidOne(definition, themeVars, null);
+}
+
 // ── Pre-process markdown: render mermaid blocks before slide splitting ────────
+// Each fence is rendered for the colour-scheme of ITS slide: the nearest
+// preceding `<!-- _class: … -->` decides (a `dark` token => dark bake), falling
+// back to a deck-wide `class:`/`color-scheme:dark` signal in the front matter.
 function preprocessMermaid(source) {
-  return source.replace(/```mermaid\n([\s\S]*?)```/g, (_, def) => {
-    if (!QUIET) process.stdout.write('  Rendering mermaid diagram...');
-    const svg = renderMermaid(def.trim());
+  const fmMatch = source.match(/^---\n[\s\S]*?\n---/);
+  const fm = fmMatch ? fmMatch[0] : '';
+  const globalDark =
+    /^\s*class:\s*["']?[^"'\n]*\bdark\b/m.test(fm) ||
+    /color-scheme\s*:\s*dark/.test(fm);
+  return source.replace(/```mermaid\n([\s\S]*?)```/g, (match, def, offset) => {
+    const before = source.slice(0, offset);
+    const classDirectives = [...before.matchAll(/<!--\s*_class:\s*([^>]*?)\s*-->/g)];
+    const slideDark = classDirectives.length
+      ? /\bdark\b/.test(classDirectives[classDirectives.length - 1][1])
+      : globalDark;
+    if (!QUIET) process.stdout.write(`  Rendering mermaid diagram (${slideDark ? 'dark' : 'light'})...`);
+    const svg = renderMermaid(def.trim(), slideDark);
     if (!QUIET) console.log(' done');
     return svg;
   });

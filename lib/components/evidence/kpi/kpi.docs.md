@@ -44,23 +44,19 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the KPI group. |
-| `subtitle` | `h3` | no | Optional subtitle below the heading. |
-| `kpis` | `ul > li` | yes | One li per KPI. Lead with **Metric name** then nested bullets for value, target, trend, status. |
+| `eyebrow` | `h3` | no | Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`). |
+| `kpis` | `ol > li` | yes | One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status. |
 
 ## Anatomy
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  KPI grid heading.                      │
-│                                         │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │  42×    ✓    │     │  87%    ✓    │  │
-│  │  growth      │     │  uptake      │  │
-│  └──────────────┘     └──────────────┘  │
-│  ┌──────────────┐     ┌──────────────┐  │
-│  │  3.2k   ⚠    │     │  91%    ✓    │  │
-│  └──────────────┘     └──────────────┘  │
+│  ┌────────────┐  SUPPORTING KPIS        │
+│  │ $2.4B      │  42%  margin     ✓      │
+│  │ hero       │  $1.1B cash      ✓      │
+│  │ metric     │  +18% YoY        ✓      │
+│  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

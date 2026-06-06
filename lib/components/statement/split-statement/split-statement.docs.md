@@ -47,11 +47,11 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │            │  ┌─────────┐            │
-│  │ Claim on   │  │   42×   │            │
-│  │ the left   │  └─────────┘            │
-│  │            │  Caption beside it      │
+│  ┌────────────┐  IMPLICATIONS           │
+│  │ "A quote   │  - First implication    │
+│  │ on the     │    body line            │
+│  │ left."     │  - Second implication   │
+│  │ — source   │    body line            │
 │  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

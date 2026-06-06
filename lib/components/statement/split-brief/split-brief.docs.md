@@ -50,11 +50,11 @@ One-sentence framing paragraph explaining what the findings cover.
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │ BRIEF      │  Executive paragraph    │
-│  │            │  on the right carries   │
-│  │ Brief      │  the body content,      │
-│  │ title      │  two or three lines.    │
+│  ┌────────────┐  FINDINGS               │
+│  │ BRIEF      │  │ Finding title        │
+│  │ heading    │  │ body detail          │
+│  │ + lede     │  │ Finding title        │
+│  │            │  │ body detail          │
 │  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

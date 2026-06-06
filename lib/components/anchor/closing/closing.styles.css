@@ -10,7 +10,27 @@
 section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.closing { border-top: none; }
 section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
+
+/* Mirror of title: the inline-code paragraph after h1 is the eyebrow,
+ * rendered visually ABOVE the h1 via flex order (overriding the italic
+ * subtitle rule). Without this the eyebrow rendered below the heading and
+ * the heading itself lost centering/max-width (the old rule targeted h2,
+ * but the heading slot is h1). */
+section.closing h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.closing h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 

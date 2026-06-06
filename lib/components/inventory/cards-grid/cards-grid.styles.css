@@ -74,7 +74,7 @@ section.cards-grid > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 section.cards-grid .cards-grid-inner--ordered { counter-reset:card; }
 section.cards-grid .cards-grid-inner--ordered > .card {
@@ -86,7 +86,7 @@ section.cards-grid .cards-grid-inner--ordered > .card::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* ── CARDS-GRID ───────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ol > li::before {
   position:absolute; top:0; left:0;
   padding:0.46875cqi 1.09375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0;
   font-family:var(--font-mono); font-size:1.25cqi; font-weight:700; line-height:1;
-  color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent);
+  color:var(--on-accent, var(--on-dark-primary)); background:var(--accent);
 }
 
 /* ── Cards-grid shape modifiers — appended Phase 7 ──

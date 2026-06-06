@@ -447,10 +447,10 @@
           "required": true,
           "description": "Slide heading naming the rule whose chain is being walked."
         },
-        "links": {
+        "tiers": {
           "selector": "ol > li",
           "required": true,
-          "description": "Ordered list of authority tiers (Statute, Regulation, Guidance, Case). Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss."
+          "description": "Ordered list of authority tiers (Statute, Regulation, Guidance, Case) — not hyperlinks. Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss."
         }
       },
       "skeleton": "<!-- _class: authority-chain -->\n\n## Rule name — the chain, tier by tier.\n\n1. Statute\n   - `Citation reference`\n   - One-line gloss naming the body that issued it and what it does.\n2. Regulation\n   - `Citation reference`\n   - One-line gloss naming the agency rule.\n3. Guidance\n   - `Citation reference`\n   - One-line gloss naming the staff guidance.\n4. Case\n   - `Citation reference`\n   - One-line gloss naming the precedent.\n",
@@ -3086,15 +3086,15 @@
           "required": true,
           "description": "Slide heading naming the KPI group."
         },
-        "subtitle": {
+        "eyebrow": {
           "selector": "h3",
           "required": false,
-          "description": "Optional subtitle below the heading."
+          "description": "Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`)."
         },
         "kpis": {
-          "selector": "ul > li",
+          "selector": "ol > li",
           "required": true,
-          "description": "One li per KPI. Lead with **Metric name** then nested bullets for value, target, trend, status."
+          "description": "One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status."
         }
       },
       "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. **$2.4B**\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. **42%**\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. **$1.1B**\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
@@ -3381,7 +3381,7 @@
         "walkthrough",
         "planning"
       ],
-      "description": "Vertical sequence of steps, each with full description body.",
+      "description": "Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead).",
       "purpose": "Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.",
       "variants": [
         "vertical",
@@ -4118,8 +4118,8 @@
         "okr",
         "onboarding"
       ],
-      "description": "Declared statements — short stated principles, each with a one-line justification.",
-      "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
+      "description": "Declared statements — guiding rules or tenets, each as one terse sentence.",
+      "purpose": "Use for design tenets, working agreements, or decision rules. Each principle is a single declarative statement; the layout renders it at display weight with a large counter as the visual anchor.",
       "variants": [
         "numbered",
         "lettered",
@@ -4175,7 +4175,7 @@
           "description": "One li per principle: a short declarative statement, authored as an ordered list (the counter renders as a large display numeral). No bold and no separate justification — keep each principle to one terse line."
         }
       },
-      "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
+      "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Document the decision, not the menu of options.\n3. Reversible calls don't need a meeting.\n",
       "whenToUse": [
         {
           "title": "Working agreements",
@@ -4197,7 +4197,7 @@
         },
         {
           "title": "Long per-principle prose",
-          "body": "Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
+          "body": "Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
         },
         {
           "title": "Hedged statements",
@@ -5430,11 +5430,11 @@
       "related": [
         {
           "name": "split-statement",
-          "when": "thesis + one big-number — quantitative version of split-list"
+          "when": "the left panel carries a pull quote (not a section eyebrow + heading)"
         },
         {
           "name": "split-brief",
-          "when": "title-style left + executive paragraph right"
+          "when": "dark left panel (heading + lede) + left-rule findings list on the right"
         },
         {
           "name": "big-number",
@@ -5988,9 +5988,9 @@
           "description": "Optional subtitle (inline-code paragraph after h2)."
         },
         "tiles": {
-          "selector": "ul > li",
+          "selector": "ol > li",
           "required": true,
-          "description": "One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption."
+          "description": "One li per stat tile, authored as an ordered list (`1.`). Format: **Number** then the caption text on the same line (e.g. `1. **73%** faster close`)."
         }
       },
       "skeleton": "<!-- _class: stats -->\n\n`Impact · Pilot Results`\n\n## Six months of results across four product teams.\n\n`Measured against pre-framework baseline, same teams, same market conditions.`\n\n1. **73%** faster close\n2. **4.2×** signal recall\n3. **$1.2M** prevented losses\n4. **−18d** avg cycle time\n",

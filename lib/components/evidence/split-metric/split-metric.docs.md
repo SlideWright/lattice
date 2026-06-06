@@ -53,12 +53,11 @@ Measurement window and qualifying detail in one short sentence.
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  ┌────────────┐                         │
-│  │ METRIC     │  ┌─────────┐            │
-│  │            │  │   42×   │            │
-│  │ Heading    │  └─────────┘            │
-│  │            │  Caption text           │
-│  └────────────┘                         │
+│  ┌────────────┐  CONTEXT / FINDINGS     │
+│  │ 114%       │  - First finding        │
+│  │ NRR        │    supporting body      │
+│  │ + context  │  - Second finding       │
+│  └────────────┘    supporting body      │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

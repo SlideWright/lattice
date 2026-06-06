@@ -5,7 +5,7 @@
   "form": "timeline",
   "substance": "structure",
   "tags": ["process", "walkthrough", "planning"],
-  "description": "Vertical sequence of steps, each with full description body.",
+  "description": "Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead).",
   "purpose": "Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.",
   "variants": [
     "vertical",
@@ -84,8 +84,8 @@
   ],
   "variantDocs": {
     "vertical": {
-      "label": "Vertical — strip flips column to row",
-      "caption": "Flips the step strip from a vertical stack into a horizontal row; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.",
+      "label": "Vertical — strip flips row to column",
+      "caption": "Flips the step strip from the default horizontal row into a vertical stack; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.",
       "sample": "<!-- _class: list-steps vertical compact -->\n\n## Three phases, vertically arranged.\n\n1. Discover\n   - Interview eight stakeholders. Open questions only — listening for friction, not confirming the assumptions we arrived with.\n2. Frame\n   - Half-day workshop to align on root cause. Output is a ranked problem statement and a request for a second workshop.\n3. Decide\n   - Written sign-off on what is in scope, what is out, and what requires a separate decision we will defer.\n"
     },
     "phase": {

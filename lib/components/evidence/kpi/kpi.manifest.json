@@ -21,15 +21,15 @@
       "required": true,
       "description": "Slide heading naming the KPI group."
     },
-    "subtitle": {
+    "eyebrow": {
       "selector": "h3",
       "required": false,
-      "description": "Optional subtitle below the heading."
+      "description": "Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`)."
     },
     "kpis": {
-      "selector": "ul > li",
+      "selector": "ol > li",
       "required": true,
-      "description": "One li per KPI. Lead with **Metric name** then nested bullets for value, target, trend, status."
+      "description": "One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status."
     }
   },
   "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. **$2.4B**\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. **42%**\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. **$1.1B**\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",

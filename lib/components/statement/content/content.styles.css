@@ -7,8 +7,13 @@
 
 section.content h3 { margin-bottom:0.3125cqi; }
 section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
-section.content { justify-content:flex-start; }
+/* Cap line length: at --fs-message a full-canvas paragraph runs ~90 chars,
+ * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
+section.content h2 { max-width:72cqi; }
+section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); max-width:72cqi; }
+/* Center the heading+body block vertically so a short slide does not leave a
+ * dead lower half (the only canvas-statement component that top-aligned). */
+section.content { justify-content:center; }
 
 /* content is "heading + paragraphs OR a short list" (see content.docs.md),
  * but the layout previously styled only <p>. base.elements.css strips list
@@ -17,7 +22,7 @@ section.content { justify-content:flex-start; }
  * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
  * real markers, prose size, prose-compatible rhythm. No :has() — works in
  * every render path. */
-section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); }
+section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
 section.content ul { list-style:disc; }
 section.content ol { list-style:decimal; }
 section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
