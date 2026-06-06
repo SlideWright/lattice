@@ -36,6 +36,14 @@ in patch versions.
 
 ### Changed
 
+- **`split-compare`'s verdict is now a recommended card with a corner tag.**
+  The recommendation bar was restyled from a flat full-accent band into a soft
+  accent-container card (`--accent-soft` fill, accent border) with a flush
+  top-left "RECOMMENDATION" corner tag (accent fill + `--on-accent` ink),
+  matching the cards-grid ordered-list corner-tag pattern. The tag is the
+  eye-catcher; the recommendation reads as normal body. The right column's
+  bottom padding now clears the footer/pagination chrome so the card never
+  bleeds into it.
 - **`diagram` dark mode now renders natively per slide (dual-resolve), and the
   dark-flip CSS override layer is collapsed.** The emulator resolves the Mermaid
   `themeVariables` to the palette's *dark* branch and bakes the diagram with that
@@ -73,6 +81,14 @@ in patch versions.
   a fourth card fits without crowding.
 
 ### Added
+
+- **`--accent-soft-body` token completes the soft accent-container vocabulary.**
+  Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
+  alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`
+  (a pale tint takes canvas ink), so there's a single override seam and no new
+  curated colour. `featured` consumes it. The accent-container ink-contract test
+  now also guards `--accent-soft` fills against light-only inks (`--on-dark*` /
+  bare white), so both the bold and soft containers are enforced.
 
 - **Five opt-in checkbox style variants (`checks-ringed` *(default)*,
   `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`).** A
@@ -242,6 +258,20 @@ in patch versions.
 
 ### Fixed
 
+- **Accent-filled surfaces now stay legible on pale-accent palettes.** Text on
+  `var(--accent)` fills was reaching for a fixed light ink (`--on-dark*` /
+  hardcoded `#fff`), which vanished whenever a theme's accent is pale (every
+  palette's dark mode, plus achromatic palettes like concrete/atelier/ardesia).
+  - The `--on-accent` muted tiers (`-secondary` / `-ghost` / `-watermark`) now
+    **derive from each theme's curated `--on-accent`** by opacity instead of
+    re-deriving from white, so the whole rail inherits the per-theme contrast
+    tuning and overriding `--on-accent` alone carries the rest.
+  - `split-compare` verdict (recommendation) bar, `split-list` panel heading +
+    slide header/footer, and the `pinned` corner tag now read the accent pair
+    instead of a light-on-dark ink.
+  - The docs site projects `--on-accent` per palette/mode; the landing **Try it
+    in your browser** CTA and the playground **Preview** toggle now use it, so
+    their label no longer disappears on a pale accent.
 - **Layout audit — T6 hex-fallback hygiene (audit round 2).**
   - `cards-grid`, `cards-side`, `cards-stack`, `split-list`, `timeline`:
     numbered-badge `::before` color changed from `var(--on-accent, var(--on-dark-primary, #fff))`

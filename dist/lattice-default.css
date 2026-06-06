@@ -241,12 +241,30 @@
    *   ghost     — very muted decorative chrome
    *   watermark — large-glyph backdrop, near-invisible
    *
+   * --on-accent (primary) is the single curated source of truth: each theme
+   * tunes it for AAA contrast against ITS --accent in both modes (see the
+   * documented ratios in themes/<name>.css). The three muted tiers DERIVE
+   * from it by opacity so they inherit that curation automatically — override
+   * --on-accent alone and the whole rail follows, with no white-on-pale-accent
+   * collision when a palette flips --accent to a brighter value in dark mode.
    * Themes whose accent doesn't switch (e.g., indaco's mid-blue stays in
-   * both modes) can simplify by redefining --on-accent: #fff at :root. */
+   * both modes) can simplify by redefining --on-accent: #fff at :root.
+   *
+   * Accent comes in TWO containers (see design/theming.md "Accent
+   * containers"). The BOLD container fills with --accent and inks with the
+   * ramp above (ghost doubles as its divider). The SOFT container fills with
+   * --accent-soft (a pale brand tint) and inks/borders with --on-accent-soft,
+   * with body prose on --accent-soft-body. The soft ink is --accent itself —
+   * it reads AAA on the soft tint and is the value every soft-accent card
+   * already used; the soft body is the canvas body (a pale tint takes canvas
+   * ink). Naming both gives the soft container a first-class vocabulary and a
+   * single override seam, with no new curated colour. */
   --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
-  --on-accent-secondary: light-dark(rgba(255,255,255,0.70), color-mix(in srgb, var(--bg-dark, #000) 70%, transparent));
-  --on-accent-ghost:     light-dark(rgba(255,255,255,0.32), color-mix(in srgb, var(--bg-dark, #000) 32%, transparent));
-  --on-accent-watermark: light-dark(rgba(255,255,255,0.12), color-mix(in srgb, var(--bg-dark, #000) 12%, transparent));
+  --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
+  --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
+  --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
+  --on-accent-soft:      var(--accent);
+  --accent-soft-body:    var(--text-body);
 
   /* ── Code panel ─────────────────────────────────────────────────────────
    * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.
@@ -1022,7 +1040,7 @@ section.before-after > ol > li:first-child {
 section.before-after > ul > li:last-child,
 section.before-after > ol > li:last-child {
   grid-column:3;
-  border-color:var(--accent);
+  border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
 section.before-after > ul > li > strong,
@@ -2226,13 +2244,13 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font
 /* chosen: second card is the winner */
 section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
 section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
-  border-color: var(--accent);
-  border-left: 4px solid var(--accent);
+  border-color: var(--on-accent-soft);
+  border-left: 4px solid var(--on-accent-soft);
   background: var(--accent-soft);
 }
 section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
 section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
-  color: var(--accent);
+  color: var(--on-accent-soft);
 }
 
 /* rejected: second card (or, when composed with decision, the first) is the
@@ -2509,7 +2527,7 @@ section.divider h2 { font-size:var(--fs-h2); color:var(--text-display); max-widt
  */
 section.featured h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--text-body); }
+section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--accent-soft-body); }
 section.featured .feat-card::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
   font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
@@ -2779,8 +2797,8 @@ section.glossary h2 .range-pill {
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
   border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
-  background:var(--accent-soft); border:1px solid var(--accent);
-  color:var(--accent); white-space:nowrap;
+  background:var(--accent-soft); border:1px solid var(--on-accent-soft);
+  color:var(--on-accent-soft); white-space:nowrap;
   vertical-align:middle;
 }
 
@@ -5614,7 +5632,7 @@ section.matrix-2x2 > ol > li {
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
 section.matrix-2x2 > ul > li:nth-child(4),
 section.matrix-2x2 > ol > li:nth-child(4) {
-  border-color:var(--accent);
+  border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
 /* Body — nested ul/ol becomes the cell prose. */
@@ -7893,7 +7911,9 @@ section.split-compare .compare-left::before { content:''; position:absolute; top
 section.split-compare .compare-left .frame-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-sm); }
 section.split-compare .compare-left h2 { font-size:var(--fs-h3); color:var(--on-dark-primary); font-weight:800; line-height:var(--lh-tight); margin:0 0 var(--sp-md); }
 section.split-compare .compare-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
-section.split-compare .compare-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-lg) var(--sp-lg); gap:var(--sp-sm); }
+/* Bottom padding clears the footer / pagination chrome (section::after sits at
+ * bottom:1.875cqi and rises ~1.2cqi) so the verdict card never bleeds into it. */
+section.split-compare .compare-right { flex:1; min-height:0; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-lg) var(--sp-xl) var(--sp-xl) var(--sp-lg); gap:var(--sp-sm); }
 section.split-compare .options { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); flex:1; }
 section.split-compare .option { background:var(--bg-alt); border-radius:var(--radius-md); padding:var(--sp-md); display:flex; flex-direction:column; border:1px solid var(--border); position:relative; }
 section.split-compare .option > strong { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--text-secondary); font-weight:700; padding-bottom:var(--sp-xs); border-bottom:2px solid var(--border); margin:0 0 var(--sp-sm); }
@@ -7905,10 +7925,14 @@ section.split-compare .option ul > li,
 section.split-compare .option ol > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); margin-bottom:0.46875cqi; }
 section.split-compare .option ul > li:last-child,
 section.split-compare .option ol > li:last-child { margin-bottom:0; }
-section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
-section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
-section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
-section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
+/* The verdict is the recommended-option CARD: accent-soft fill + accent
+ * border, with a flush top-left corner tag (accent fill + on-accent ink),
+ * mirroring the ordered-list corner tags in cards-grid. The tag is the
+ * eye-catcher; the recommendation reads as normal body inside the card. */
+section.split-compare .verdict { background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:calc(var(--sp-xs) + 1.5625cqi) var(--sp-md) var(--sp-sm); position:relative; overflow:hidden; flex-shrink:0; }
+section.split-compare .verdict::before { content:'Recommendation'; position:absolute; top:0; left:0; padding:0.3125cqi 0.9375cqi; border-radius:var(--radius-md) 0 var(--radius-sm) 0; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; text-transform:uppercase; letter-spacing:0.12em; line-height:1; color:var(--on-accent); background:var(--accent); }
+section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
+section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
 /* === lib/components/statement/split-list/split-list.styles.css === */
 /* split-list — extracted from lib/_legacy.css (batch 5).
@@ -7920,7 +7944,7 @@ section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-fam
  * ### right-eyebrow before bullets
  */
 section.split-list { padding:0; flex-direction:row; }
-section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
+section.split-list h2 { font-size:var(--fs-emphasis); color:var(--on-accent); line-height:var(--lh-tight); margin:0; }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
 /* Decorative letterform watermark: explicit 11.46cqi (= 110pt). Sized
@@ -7963,8 +7987,10 @@ section.split-list .panel-right :is(ol,ul) + ul > li::before { font-weight:700; 
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-list {
-  --marp-slide-header-color: var(--on-dark-secondary);
-  --marp-slide-footer-color: var(--on-dark-secondary);
+  /* Header/footer render over the left accent rail — ride the accent pair so
+   * they stay legible whether the rail is a dark or a pale accent. */
+  --marp-slide-header-color: var(--on-accent-secondary);
+  --marp-slide-footer-color: var(--on-accent-secondary);
 }
 
 
@@ -9210,10 +9236,10 @@ section.verdict-grid > ul > li {
   display:flex; flex-direction:column; gap:var(--sp-xs);
   font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
 }
-section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); position:relative; overflow:hidden; padding-right:3.125cqi; }
+section.verdict-grid > ul > li:last-child { background:var(--accent-soft); border-color:var(--on-accent-soft); color:var(--on-accent-soft); position:relative; overflow:hidden; padding-right:3.125cqi; }
 section.verdict-grid > ul > li:last-child::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
-  font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
+  font-size:2.75cqi; line-height:1; color:var(--on-accent-soft); opacity:0.35;
   font-family:var(--font-body); font-weight:400; letter-spacing:0;
   pointer-events:none;
 }
@@ -11873,7 +11899,7 @@ section.wip::before {
 section.pinned::before {
   content: '★ Pinned';
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 section.revised::before {
   content: '♻ Revised';

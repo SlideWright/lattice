@@ -5214,8 +5214,8 @@
         "recommendation",
         "contrast"
       ],
-      "description": "Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right.",
-      "purpose": "Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.",
+      "description": "Two options + verdict — dark frame on the left, 2-column option grid + a recommendation card on the right.",
+      "purpose": "Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.",
       "variants": [],
       "effectiveVariants": [
         "accent",
@@ -5289,7 +5289,7 @@
         },
         {
           "title": "Verdict in one sentence",
-          "body": "The trailing blockquote is the recommendation distilled to a single line. Anything longer belongs in spoken commentary, not the verdict bar."
+          "body": "The trailing blockquote is the recommendation distilled to a single line. Anything longer belongs in spoken commentary, not the recommendation card."
         }
       ],
       "antiPatterns": [

@@ -78,13 +78,13 @@ section.compare-prose:not(:has(.compare-prose-inner)) > ol > li > ol > li { font
 /* chosen: second card is the winner */
 section.compare-prose.chosen .compare-prose-inner .card:nth-child(3),
 section.compare-prose.decision .compare-prose-inner .card:nth-child(3) {
-  border-color: var(--accent);
-  border-left: 4px solid var(--accent);
+  border-color: var(--on-accent-soft);
+  border-left: 4px solid var(--on-accent-soft);
   background: var(--accent-soft);
 }
 section.compare-prose.chosen .compare-prose-inner .card:nth-child(3) > strong,
 section.compare-prose.decision .compare-prose-inner .card:nth-child(3) > strong {
-  color: var(--accent);
+  color: var(--on-accent-soft);
 }
 
 /* rejected: second card (or, when composed with decision, the first) is the

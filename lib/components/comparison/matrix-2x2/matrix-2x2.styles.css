@@ -40,7 +40,7 @@ section.matrix-2x2 > ol > li {
 /* Convention: the fourth (bottom-right) quadrant is the "outcome" cell. */
 section.matrix-2x2 > ul > li:nth-child(4),
 section.matrix-2x2 > ol > li:nth-child(4) {
-  border-color:var(--accent);
+  border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
 /* Body — nested ul/ol becomes the cell prose. */

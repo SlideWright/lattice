@@ -72,7 +72,7 @@
 }
 .pg-tab[aria-selected='true'] {
 	background: var(--accent);
-	color: var(--on-dark);
+	color: var(--on-accent);
 	border-color: var(--accent);
 }
 

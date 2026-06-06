@@ -63,7 +63,7 @@ const JSON_FILE = path.join(DOCS_DIR, 'components.json');
 const PORTAL_TOKENS = [
   'bg', 'bg-alt', 'border',
   'text-heading', 'text-body', 'text-muted',
-  'accent', 'accent-soft', 'bg-dark',
+  'accent', 'accent-soft', 'on-accent', 'bg-dark',
 ];
 
 // Palettes surfaced first in the dropdown (the two canonical palettes
@@ -512,6 +512,7 @@ const BASE_STYLE = `@import url('https://fonts.googleapis.com/css2?family=Playfa
   --text-muted: #6B7F9A;
   --accent: #006FA8;
   --accent-soft: #EFF6FC;
+  --on-accent: #FFFFFF;
   --bg-dark: #003D66;
 
   --sidebar-w: 300px;

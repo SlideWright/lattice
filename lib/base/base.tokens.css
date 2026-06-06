@@ -189,12 +189,30 @@
    *   ghost     — very muted decorative chrome
    *   watermark — large-glyph backdrop, near-invisible
    *
+   * --on-accent (primary) is the single curated source of truth: each theme
+   * tunes it for AAA contrast against ITS --accent in both modes (see the
+   * documented ratios in themes/<name>.css). The three muted tiers DERIVE
+   * from it by opacity so they inherit that curation automatically — override
+   * --on-accent alone and the whole rail follows, with no white-on-pale-accent
+   * collision when a palette flips --accent to a brighter value in dark mode.
    * Themes whose accent doesn't switch (e.g., indaco's mid-blue stays in
-   * both modes) can simplify by redefining --on-accent: #fff at :root. */
+   * both modes) can simplify by redefining --on-accent: #fff at :root.
+   *
+   * Accent comes in TWO containers (see design/theming.md "Accent
+   * containers"). The BOLD container fills with --accent and inks with the
+   * ramp above (ghost doubles as its divider). The SOFT container fills with
+   * --accent-soft (a pale brand tint) and inks/borders with --on-accent-soft,
+   * with body prose on --accent-soft-body. The soft ink is --accent itself —
+   * it reads AAA on the soft tint and is the value every soft-accent card
+   * already used; the soft body is the canvas body (a pale tint takes canvas
+   * ink). Naming both gives the soft container a first-class vocabulary and a
+   * single override seam, with no new curated colour. */
   --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
-  --on-accent-secondary: light-dark(rgba(255,255,255,0.70), color-mix(in srgb, var(--bg-dark, #000) 70%, transparent));
-  --on-accent-ghost:     light-dark(rgba(255,255,255,0.32), color-mix(in srgb, var(--bg-dark, #000) 32%, transparent));
-  --on-accent-watermark: light-dark(rgba(255,255,255,0.12), color-mix(in srgb, var(--bg-dark, #000) 12%, transparent));
+  --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
+  --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
+  --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
+  --on-accent-soft:      var(--accent);
+  --accent-soft-body:    var(--text-body);
 
   /* ── Code panel ─────────────────────────────────────────────────────────
    * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.

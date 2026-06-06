@@ -2816,19 +2816,19 @@ See [redline.gallery.light.pdf](../../lib/components/comparison/redline/redline.
 
 ### split-compare
 
-> Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right.
+> Two options + verdict — dark frame on the left, 2-column option grid + a recommendation card on the right.
 
 **Function** comparison · **Form** split · **Substance** structure
 
 **Tags** `tradeoff` · `recommendation` · `contrast`
 
-Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote pins the recommendation across the bottom.
+Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.
 
 #### When to use
 
 - **Binary decision with a recommendation.** The slide must close the question with one chosen path. Use when the audience needs both the trade-off and the verdict on one slide, not on two.
 - **Comparable facts per option.** Each side carries 2–4 short bullets — the same kind of fact across both. Lopsided facts break the visual symmetry.
-- **Verdict in one sentence.** The trailing blockquote is the recommendation distilled to a single line. Anything longer belongs in spoken commentary, not the verdict bar.
+- **Verdict in one sentence.** The trailing blockquote is the recommendation distilled to a single line. Anything longer belongs in spoken commentary, not the recommendation card.
 
 #### When NOT to use
 

@@ -45,7 +45,7 @@ section.before-after > ol > li:first-child {
 section.before-after > ul > li:last-child,
 section.before-after > ol > li:last-child {
   grid-column:3;
-  border-color:var(--accent);
+  border-color:var(--on-accent-soft);
   background:var(--accent-soft);
 }
 section.before-after > ul > li > strong,
