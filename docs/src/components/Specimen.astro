@@ -9,17 +9,22 @@
 // Props:
 //   name     string   — component name (storage key + handoff)
 //   sample   string   — the slide markdown to render / seed the editor
-//   mermaid  boolean  — whether the sample contains a ```mermaid fence
-const { name, sample, mermaid = false } = Astro.props;
+//   mermaid  boolean  — whether any sample contains a ```mermaid fence
+//   variants [{key,label,caption,sample}] — base ('default') + each modifier;
+//            powers the variant switcher and per-variant playground handoff
+const { name, sample, mermaid = false, variants = [] } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
+
+const hasVariants = Array.isArray(variants) && variants.length > 1;
 
 const engineUrl = url('playground/lattice-playground.js');
 const dataJson = JSON.stringify({
 	name,
 	sample,
 	mermaid,
+	variants,
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	playgroundUrl: url('playground/'),
@@ -37,6 +42,22 @@ const dataJson = JSON.stringify({
 		<button class="specimen-reset" type="button" hidden>Reset</button>
 		<a class="specimen-open" href={url('playground/')}>Open in Playground →</a>
 	</div>
+	{hasVariants && (
+		<div class="specimen-variants">
+			<span class="specimen-variants-label">Variant</span>
+			{variants.map((v, i) => (
+				<button
+					class:list={['specimen-variant', { 'is-active': i === 0 }]}
+					type="button"
+					data-variant-select={v.key}
+					title={v.caption || undefined}
+				>
+					{v.label}
+				</button>
+			))}
+		</div>
+	)}
+	{hasVariants && <p class="specimen-variant-caption" hidden></p>}
 	<div class="specimen-stage">
 		<div class="specimen-face preview">
 			<div class="specimen-preview-host"></div>

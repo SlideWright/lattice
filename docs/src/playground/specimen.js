@@ -34,6 +34,13 @@ export function initSpecimen() {
   const resetBtn = root.querySelector('.specimen-reset');
   const openBtn = root.querySelector('.specimen-open');
   const faceBtns = [...root.querySelectorAll('.specimen-face-btn')];
+  const captionEl = root.querySelector('.specimen-variant-caption');
+
+  // Variant map (key -> {sample, caption}); 'default' is the base layout. Each
+  // variant can be previewed in place or opened in the playground.
+  const variants = Array.isArray(data.variants) ? data.variants : [];
+  const variantMap = Object.create(null);
+  for (const v of variants) variantMap[v.key] = v;
 
   const storeKey = 'lattice-specimen-' + data.name;
   const read = (k) => {
@@ -59,7 +66,16 @@ export function initSpecimen() {
   };
 
   const saved = read(storeKey);
-  const state = { source: saved != null ? saved : data.sample, face: 'preview', editor: null };
+  // `base` = the markdown the current view started from (the selected variant's
+  // sample); `source` may diverge from it once the user edits. Dirty/Reset are
+  // measured against `base`, not the default, so they respect the variant.
+  const state = {
+    source: saved != null ? saved : data.sample,
+    base: data.sample,
+    variant: 'default',
+    face: 'preview',
+    editor: null,
+  };
 
   const lr = createLiveRenderer({ themeBase: data.themeBase, runtimeUrl: data.runtimeUrl });
 
@@ -95,7 +111,7 @@ export function initSpecimen() {
       autoHeight: true,
       onChange: (v) => {
         state.source = v;
-        const dirty = v !== data.sample;
+        const dirty = v !== state.base;
         setDirty(dirty);
         if (dirty) write(storeKey, v);
         else clear(storeKey);
@@ -143,26 +159,79 @@ export function initSpecimen() {
     b.addEventListener('click', () => flipTo(b.dataset.face));
   });
 
+  // Show the selected variant's caption (if any) under the variant bar.
+  function setCaption(text) {
+    if (!captionEl) return;
+    captionEl.textContent = text || '';
+    captionEl.hidden = !text;
+  }
+
+  // Switch the previewed variant: reseed source/base, re-render, and (if open)
+  // update the editor. Reset/dirty now measure against this variant.
+  function selectVariant(key) {
+    const v = variantMap[key];
+    if (!v) return;
+    state.variant = key;
+    state.base = v.sample;
+    state.source = v.sample;
+    if (state.editor) state.editor.setValue(v.sample);
+    clear(storeKey);
+    setDirty(false);
+    setCaption(v.caption);
+    for (const b of root.querySelectorAll('.specimen-variant')) {
+      b.classList.toggle('is-active', b.dataset.variantSelect === key);
+    }
+    if (state.face === 'source') flipTo('preview');
+    else render();
+  }
+
+  // Send a specific variant's markdown to the playground as the edit value.
+  function openInPlayground(markdown) {
+    try {
+      localStorage.setItem(SOURCE_KEY, markdown);
+    } catch {
+      /* non-fatal — playground falls back to its starter */
+    }
+    window.location.href = data.playgroundUrl;
+  }
+
+  // Delegated so the same actions work from the specimen's own variant pills
+  // AND from the per-variant buttons in the docs below.
+  //   [data-variant-select="<key>"]   → preview that variant in the specimen
+  //   [data-open-playground="<key>"]  → open the playground seeded with it
+  document.addEventListener('click', (e) => {
+    const sel = e.target.closest('[data-variant-select]');
+    if (sel) {
+      const key = sel.dataset.variantSelect;
+      if (variantMap[key]) {
+        selectVariant(key);
+        if (!sel.closest('.specimen')) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+    const open = e.target.closest('[data-open-playground]');
+    if (open) {
+      e.preventDefault();
+      const v = variantMap[open.dataset.openPlayground];
+      openInPlayground(v ? v.sample : state.source);
+    }
+  });
+
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
-      state.source = data.sample;
-      if (state.editor) state.editor.setValue(data.sample);
+      state.source = state.base;
+      if (state.editor) state.editor.setValue(state.base);
       clear(storeKey);
       setDirty(false);
       render();
-      setStatus('Reset to the example.');
+      setStatus(state.variant === 'default' ? 'Reset to the example.' : `Reset to the ${state.variant} variant.`);
     });
   }
 
   if (openBtn) {
     openBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      try {
-        localStorage.setItem(SOURCE_KEY, state.source);
-      } catch {
-        /* non-fatal — playground falls back to its starter */
-      }
-      window.location.href = openBtn.getAttribute('href');
+      openInPlayground(state.source);
     });
   }
 
