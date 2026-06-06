@@ -342,6 +342,47 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Applies to:** any embedder reusing one iframe via `document.write`. The
   landing's live showcase (`index.astro`) already uses `srcdoc` for this reason.
 
+### Playground renders broken in mobile Safari/WebKit (counters "00", chart text overlaps, marks drop)
+
+- **Symptom:** On the live docs playground (`/lattice/playground/`) in mobile
+  Safari / iOS / any WebKit browser: numbered components (`principles`,
+  `list-criteria`) show `00` for every counter instead of `01 02 03…`; charts
+  (`state-chart` etc.) render with giant labels overlapping each other; SVG
+  state marks (checklist/verdict-grid/obligation-matrix discs) lose their
+  in-disc symbol or show as a clipped half-shape. The SAME deck renders
+  perfectly in Chrome, in the exported PDF, in the per-component gallery
+  baselines, and in marp-vscode. CI is green throughout.
+- **Cause:** Marp's default `inlineSVG` wraps every slide in
+  `<svg><foreignObject><section>…` (this is *why* Marp ships a Safari
+  `marpit-svg-polyfill`). WebKit cannot reliably lay out HTML inside a *scaled*
+  `<foreignObject>`, and the engine leans on exactly the features that degrade
+  there: CSS counters (style containment from `container-type` makes WebKit
+  drop the increment → value 0 → `decimal-leading-zero` renders "00"),
+  container-query units (`container-type` / `cqi` / `cqh` can't resolve a
+  container size inside the foreignObject → fall back to the ICB → labels
+  balloon and overlap), and CSS `mask` (the `var(--state-mark)` masks on the
+  state discs drop). Crucially, **every Lattice regression gate renders via
+  headless Chromium** (puppeteer), which handles foreignObject natively, so the
+  whole WebKit failure class is invisible to `npm test` / the integration tier.
+  The deployed assets being byte-identical to `main` (verify with `md5sum`
+  against the live `playground/themes/lattice.css`, `lattice-runtime.js`,
+  `lattice-playground.js`) is the tell that it's a render-context bug, not
+  staleness.
+- **Mitigation:** The playground engine (`lib/playground/index.js`) renders
+  with `inlineSVG: false`, so slides are plain `<div class="marpit"><section>`
+  HTML with no foreignObject; `writeFrame` in `docs/src/pages/playground.astro`
+  scales each fixed-size `<section>` to the iframe width with a CSS `transform`
+  (a negative `margin-bottom` collapses the gap the un-scaled box would leave),
+  re-fitting on resize + content-height change. The Safari foreignObject
+  polyfill is removed (nothing left to polyfill). The PDF/emulator path KEEPS
+  `inlineSVG` — fixed-page rendering needs it, and it renders server-side via
+  Chromium so it never hit this. Rebuild the bundle: `npm run playground:build`.
+- **Triggered by:** Any new component that relies on `container-type`/`cqi`,
+  CSS counters, or `mask` — i.e. nearly all of them. The fix is structural (no
+  foreignObject) rather than per-feature, so new components inherit it.
+- **Removable when:** WebKit gains reliable layout for HTML in a scaled SVG
+  `<foreignObject>`. No timeline; don't count on it.
+
 ### Mermaid's color parser rejects `light-dark()`
 
 - **Symptom:** `[pageerror] Unsupported color format:

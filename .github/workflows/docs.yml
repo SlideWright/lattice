@@ -3,10 +3,18 @@ name: Deploy docs site
 on:
   push:
     branches: [main]
+    # The playground stages engine assets at build time (sync-playground-assets:
+    # dist/lattice.css, dist/lattice-runtime.js, themes/*.css) and bundles
+    # lib/playground + its imports (lib/integrations, lib/transformers). A change
+    # to any of those alters what the live playground renders WITHOUT touching
+    # docs/, so they must trigger a redeploy too — otherwise an engine/theme PR
+    # silently leaves the live playground on the previously-deployed assets.
     paths:
       - 'docs/**'
-      - 'dist/docs/components.html'
-      - 'dist/docs/components.md'
+      - 'dist/**'
+      - 'themes/**'
+      - 'lib/**'
+      - 'marp.config.js'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 

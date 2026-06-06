@@ -84,6 +84,13 @@ jobs:
       - name: Artifact freshness gate (build --check, no render)
         if: matrix.node-version == 22
         run: npm run build:check
+      - name: Playground bundle freshness gate (byte-diff, no render)
+        # The docs-site playground bundle (docs/public/playground/
+        # lattice-playground.js) is generated from lib/playground + its imports
+        # but lives outside dist/, so build:check doesn't cover it. Gate it here
+        # so an engine/plugin change can't ship a stale bundle to the live site.
+        if: matrix.node-version == 22
+        run: npm run playground:check
       - name: Unit tests
         run: npm test
 

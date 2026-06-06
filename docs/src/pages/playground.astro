@@ -224,10 +224,45 @@ const pgData = JSON.stringify({
 				// UMD build sets window.mermaid, which lattice-runtime.js polls for and
 				// then renders ```mermaid fences (and charts/split-panels via applyAllToDom).
 				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
-				// Marp's official polyfill for Safari/iOS, which renders <foreignObject>
-				// inside a scaled <svg> at native size (slide overflows on mobile Safari).
-				// It patches the section transform; a no-op on Chrome/Firefox.
-				var SVG_POLYFILL = 'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill@2.1.0/lib/polyfill.browser.js';
+
+				// The engine renders with inlineSVG:false (see lib/playground/index.js),
+				// so each slide is a plain fixed-size <section> inside <div class="marpit">
+				// rather than Marp's <svg><foreignObject> wrapper. This `fit` routine
+				// scales every section to the iframe width with a CSS transform; a
+				// negative margin-bottom collapses the gap the un-scaled box would
+				// otherwise leave (transform doesn't change layout box size). Re-run on
+				// viewport resize and on content-height changes (Mermaid/charts render
+				// async, growing a section after the first pass). The Marp Safari
+				// foreignObject polyfill is gone — there's no foreignObject to fix, which
+				// is exactly why the WebKit render failures disappear.
+				var FIT = [
+					'(function(){',
+					'  function fit(){',
+					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
+					'    var w=marpit.clientWidth; if(!w) return;',
+					'    var secs=marpit.querySelectorAll(":scope>section");',
+					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
+					'      var sw=s.offsetWidth||1280, sh=s.offsetHeight||720;',
+					'      var sc=w/sw;',
+					'      s.style.transformOrigin="top left";',
+					'      s.style.transform="scale("+sc+")";',
+					'      s.style.marginBottom=(sh*sc-sh+16)+"px";',
+					'    }',
+					'  }',
+					'  window.addEventListener("resize",fit);',
+					'  if(typeof ResizeObserver!=="undefined"){',
+					'    var ro=new ResizeObserver(function(){fit();});',
+					'    var m=document.querySelector(".marpit");',
+					'    if(m){ro.observe(document.documentElement);',
+					'      var ss=m.querySelectorAll(":scope>section");',
+					'      for(var i=0;i<ss.length;i++) ro.observe(ss[i]);}',
+					'  }',
+					'  fit();',
+					// Backstop for async Mermaid/chart renders that grow a section after
+					// the observers are attached (or where ResizeObserver is absent).
+					'  [60,300,1200,2500].forEach(function(t){setTimeout(fit,t);});',
+					'})();',
+				].join('\n');
 
 				function writeFrame(html, css, mode) {
 					var bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
@@ -243,13 +278,12 @@ const pgData = JSON.stringify({
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
-						'.marpit>svg,svg[data-marpit-svg]{display:block;width:100%;height:auto;margin:0 auto 16px;' +
-						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;background:#fff;}' +
+						'.marpit>section{display:block;transform-origin:top left;' +
+						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						css + '</style></head><body>' + html +
-						'<scr' + 'ipt src="' + SVG_POLYFILL + '"></scr' + 'ipt>' +
-						'<scr' + 'ipt>window.marpitSVGPolyfill&&marpitSVGPolyfill.observe&&marpitSVGPolyfill.observe();</scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +
+						'<scr' + 'ipt>' + FIT + '</scr' + 'ipt>' +
 						'</body></html>';
 				}
 
