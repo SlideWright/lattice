@@ -486,49 +486,75 @@ overall slide status (e.g. `tone-pass` for an "all green" KPI slide,
 <!-- _class: kpi tone-warn -->
 ```
 
-### State markers — `[x]`, `[-]`, `[ ]`
+### State markers — `[x]`, `[-]`, `[ ]`, `[/]`
 
-Two layouts — `verdict-grid` and `checklist` — accept state markers as
-a leading prefix on each list item. The marker syntax, color tokens,
-glyphs, and class names are unified so authors learn one vocabulary.
+Three layouts — `checklist`, `verdict-grid`, and `obligation-matrix` —
+accept state markers as a leading prefix on each item (or table cell).
+The marker syntax, color tokens, **marks**, and class names are unified
+so authors learn one vocabulary, and every layout renders identically.
 
 ```markdown
 - [x] Done — succeeded / chosen
 - [-] Partial — caveat / partial success
 - [ ] Todo — not done / rejected
+- [/] Out of scope — waived / N/A
 ```
 
-| Marker | Class | Token | Glyph | Semantic |
+Each marker is a **status-colored circle carrying a distinct mark**. The
+mark *shape* carries the meaning independently of color — the
+colour-blind-safe redundant channel — so the states stay unambiguous in
+greyscale or for colour-vision-deficient viewers (the old fill-level
+discs, distinguished only by how full they were, did not).
+
+| Marker | Class | Token | Mark | Semantic |
 |---|---|---|---|---|
-| `[x]` | `state pass` | `--pass` | ✓ (green) | succeeded, chosen, complete |
-| `[-]` | `state warn` | `--warn` | – (amber) | partial, caveat, qualified pass |
-| `[ ]` | `state fail` | `--fail` | ✗ on `verdict-grid`, ☐ on `checklist` (red) | not done, rejected, todo |
+| `[x]` | `state pass` | `--pass` | check (green) | succeeded, chosen, complete |
+| `[-]` | `state warn` | `--warn` | dash (amber) | partial, caveat, qualified pass |
+| `[ ]` | `state fail` | `--fail` | x (red) | not done, rejected, todo |
+| `[/]` | `state skip` | `--text-muted` | slash (grey) | out of scope, waived, N/A (row struck through) |
 
-**Why one convention covers both layouts.** `verdict-grid` evaluates
-options against criteria — every cell got a verdict, so `[ ]` reads as
-**rejected**. `checklist` reports completion — items either done,
-partial, or **not yet done**. In both cases, `[ ]` signals "this did
-not pass." Red is the right color either way; the difference between
-"rejected" and "todo" comes from the layout's editorial framing, not a
-separate token.
+**Why one convention covers all three.** `verdict-grid` evaluates
+options against criteria, so `[ ]` reads as **rejected**; `checklist`
+reports completion, so `[ ]` reads as **not yet done**;
+`obligation-matrix` maps coverage, so `[ ]` reads as **not covered**. In
+every case `[ ]` signals "this did not pass," and red + the x mark is
+right either way — the difference between "rejected" and "todo" comes
+from the layout's editorial framing, not a separate token.
 
-**Glyphs differ by layout** because each picks the most readable shape
-for its content density: `verdict-grid` packs many states into a small
-chip row, so the binary ✗ is clearest; `checklist` gives each row full
-width, so the empty checkbox ☐ — which matches the markdown source
-`[ ]` literally — is more legible at body size.
+**Style variants (`checks-*`).** The disc treatment is one of five
+boardroom-ready styles, switchable per slide (`_class: checklist
+checks-outline`) or per deck (`class: checks-bold`). The marks and
+status colours never change — only the disc presentation:
 
-**Theme tokens:** `--pass`, `--warn`, `--fail` (foreground glyph + left
+| Variant | Disc treatment |
+|---|---|
+| *(default)* / `checks-ringed` | saturated fill + hairline darker ring + faint lift; knockout mark. Stays crisp on its own status-tinted row. |
+| `checks-knockout` | flat saturated fill, knockout mark. Cleanest/classic. |
+| `checks-bold` | larger disc + heavier marks, knockout. Reads across a room. |
+| `checks-outline` | transparent fill + ring + status-colour mark. Editorial, low-ink. |
+| `checks-tonal` | soft tint fill + ring + status-colour mark. Calm; best on plain (non-tinted) backgrounds. |
+
+Each variant flips only scalar CSS knobs (`--state-fill-pct`,
+`--state-ring-*`, `--state-mark-pct`, `--state-disc-scale`) at section
+scope; the leaf disc mixes the actual colours from `--state-color` +
+`--bg`, so variants stay theme-aware. See `base.modifiers.css`.
+
+**Theme tokens:** `--pass`, `--warn`, `--fail` (disc fill + ring + left
 bar) and `--pass-bg`, `--warn-bg`, `--fail-bg` (10% color-mix row
-tints). All foreground tokens meet WCAG AA on body backgrounds.
+tints); `--text-muted` drives `[/]`. The knockout mark uses `--bg` (the
+canvas), so it adapts to light/dark and to each theme. All foreground
+tokens meet WCAG AA on body backgrounds. The `.heat` modifier remaps
+`--state-color` to the load/risk axis and the discs follow.
 
 **Implementation contract:** the marker is processed in three channels
-that must stay in lockstep — Marp build (`marp.config.js`:
-`verdictGridBadges`, `checklistItemStates`), emulator
-(`lattice-emulator.js`), and VS Code preview (`lattice-runtime.js`:
-`transformVerdictGridBadges`, `transformChecklistItemStates`). Both
-layouts strip the marker and add `class="state pass|warn|fail"` to the
-carrier element. CSS owns all the visual chrome from there.
+that must stay in lockstep — Marp build (`marp.config.js`), emulator
+(`lattice-emulator.js`), and VS Code preview (`lattice-runtime.js`).
+Each strips the marker and adds
+`class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}"`
+to the carrier element. The redesign changed only what those classes
+*paint* (CSS), so the transforms are untouched and the three render
+paths agree. CSS owns all visual chrome: the disc (`::before` / the
+element) and the masked mark (`::after`).
 
 ### Treatments — `tint-*` and `mark-*`
 

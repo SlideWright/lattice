@@ -831,6 +831,33 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** Radar feature commit; see
   [engineering/decisions/2026-05-15-radar-chart.md](decisions/2026-05-15-radar-chart.md).
 
+### State disc never paints — a recipe var that embeds `--state-color` was defined at `:root`/section
+
+- **Symptom:** The state-token disc (checklist/verdict-grid/obligation-matrix)
+  renders with **no fill and no ring** — only the knockout mark floats on the
+  row. A knockout mark that should adapt to dark mode stays **frozen white** on
+  a dark canvas.
+- **Cause:** The disc recipe is driven by custom properties. If one of them
+  *embeds* `var(--state-color)` (or `var(--bg)`) and is **declared on an
+  ancestor** — `:root`, or a `.checks-*` section variant — the inner `var()`
+  resolves **there**, where `--state-color` is undefined → the property
+  computes to the *guaranteed-invalid value* and inherits down as invalid, so
+  the disc's `background`/`box-shadow` paints nothing. A var that embeds the
+  *defined-at-root* `--bg` instead freezes to root's light-mode value and never
+  re-resolves in a dark scope (hence the white mark). Same family as the
+  `var(--fg)` trap above — invalid substitution, silent fallback.
+- **Mitigation:** Keep the variant/`:root` knobs **scalar-only** — numbers,
+  lengths, percentages (`--state-fill-pct`, `--state-ring-outer-w`,
+  `--state-mark-pct`, …). Do the `color-mix(... var(--state-color) ...,
+  var(--bg))` **at the leaf** (the `.state` row / `.badge` / `td .state`),
+  where `--state-color` and `--bg` are in scope and re-resolve per element and
+  per canvas. See `base.tokens.css` (the "SCALAR KNOBS" block) and
+  `base.modifiers.css` (the `.checks-*` variants).
+- **Triggered by:** Putting `var(--state-color)`/`var(--bg)` inside any custom
+  property set above the leaf. Caught during the checkbox redesign; a
+  scratch prototype showed discs missing in light *and* a frozen-white mark in
+  dark before the knob split.
+
 ### CSS custom properties return raw token stream via `getPropertyValue`
 
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`

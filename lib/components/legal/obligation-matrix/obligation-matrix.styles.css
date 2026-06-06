@@ -70,11 +70,12 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  * emulator/runtime transforms strip the marker and wrap the cell
  * content in
  *   <span class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}">…</span>.
- * The shape class carries the visual (filled / half / empty / slashed
- * disc); the semantic class resolves --state-color. SHAPE is the
+ * The shape class selects the in-disc mark (check / dash / x / slash via
+ * --state-mark); the semantic class resolves --state-color. SHAPE is the
  * primary channel — readable in greyscale, unambiguous for colour-blind
- * viewers. Two SVG masks (in :root) paint the half-disc and slash; no
- * font dependency, no Unicode glyphs.
+ * viewers. The disc (this element) + masked mark (::after) follow the
+ * scalar-knob recipe shared with checklist / verdict-grid; no font
+ * dependency, no Unicode glyphs.
  *
  * Default colour mapping is the per-category coverage palette
  * (applies = green; partial = amber; exempt = red; skipped = muted).
@@ -82,37 +83,42 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  * risk axis (applies = alarm red, exempt = relief green). This layout
  * additionally adds heat-aware cell-tint chrome below. */
 section.obligation-matrix td .state {
+  position:relative;
   display:inline-block;
-  width:1.4em; height:1.4em;
+  width:calc(1.4em * var(--state-disc-scale)); height:calc(1.4em * var(--state-disc-scale));
   border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
   box-sizing:border-box;
   vertical-align:middle;
   /* Hide any trailing label ([x] Applies fully…) while keeping em units
    * resolving against the inherited cell font-size. Setting font-size:0
-   * here would collapse 1.4em to 0 and make the disc invisible. */
+   * here would collapse the disc to 0. The ::after mark is position:absolute
+   * so text-indent never touches it. */
   overflow:hidden;
   text-indent:200%;
   white-space:nowrap;
   line-height:1;
+  /* Disc fill + ring + lift from the scalar knobs (default Ringed Solid or
+   * a .checks-* variant). Colours mixed here from --state-color. Mirror
+   * recipe: checklist.styles.css, verdict-grid.styles.css. */
+  background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
+  box-shadow:
+    0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted)),
+    0 1px 2.5px rgba(0,0,0,var(--state-lift));
 }
 section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
-/* state-half: tonal split — both halves coloured. Crisp bisector
- * on any cell background (including the heat-tinted cells below). */
-section.obligation-matrix td .state.state-half {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+/* Mark overlay — masked symbol (check / dash / x / slash) on the disc.
+ * Mark colour from --state-mark-pct (0% = knockout to --bg). */
+section.obligation-matrix td .state::after {
+  content:'';
+  position:absolute; inset:0;
+  background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
+  -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
+          mask:var(--state-mark) center / 100% 100% no-repeat;
 }
-section.obligation-matrix td .state.state-empty { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
-/* state-slashed: semi-transparent dark slash on the coloured disc. */
-section.obligation-matrix td .state.state-slashed { background-image:var(--state-slash); }
 
 /* .heat chrome — palette inversion comes from the universal
  * section.heat overlay; this block adds the cell-background tint that
