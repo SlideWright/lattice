@@ -27,6 +27,6 @@ section.split-compare .option ol > li { font-size:var(--fs-body); font-family:va
 section.split-compare .option ul > li:last-child,
 section.split-compare .option ol > li:last-child { margin-bottom:0; }
 section.split-compare .verdict { background:var(--accent); border-radius:var(--radius-sm); padding:12px var(--sp-md); display:flex; align-items:baseline; gap:var(--sp-sm); flex-shrink:0; }
-section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-dark-secondary); white-space:nowrap; flex-shrink:0; }
+section.split-compare .verdict::before { content:'Recommendation'; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.12em; color:var(--on-accent-secondary); white-space:nowrap; flex-shrink:0; }
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; flex:1; }
-section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin:0; }
+section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-accent); font-weight:700; line-height:var(--lh-snug); margin:0; }

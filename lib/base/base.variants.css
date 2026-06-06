@@ -120,7 +120,7 @@ section.wip::before {
 section.pinned::before {
   content: '★ Pinned';
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 section.revised::before {
   content: '♻ Revised';

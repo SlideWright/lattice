@@ -242,6 +242,20 @@ in patch versions.
 
 ### Fixed
 
+- **Accent-filled surfaces now stay legible on pale-accent palettes.** Text on
+  `var(--accent)` fills was reaching for a fixed light ink (`--on-dark*` /
+  hardcoded `#fff`), which vanished whenever a theme's accent is pale (every
+  palette's dark mode, plus achromatic palettes like concrete/atelier/ardesia).
+  - The `--on-accent` muted tiers (`-secondary` / `-ghost` / `-watermark`) now
+    **derive from each theme's curated `--on-accent`** by opacity instead of
+    re-deriving from white, so the whole rail inherits the per-theme contrast
+    tuning and overriding `--on-accent` alone carries the rest.
+  - `split-compare` verdict (recommendation) bar, `split-list` panel heading +
+    slide header/footer, and the `pinned` corner tag now read the accent pair
+    instead of a light-on-dark ink.
+  - The docs site projects `--on-accent` per palette/mode; the landing **Try it
+    in your browser** CTA and the playground **Preview** toggle now use it, so
+    their label no longer disappears on a pale accent.
 - **Layout audit — T6 hex-fallback hygiene (audit round 2).**
   - `cards-grid`, `cards-side`, `cards-stack`, `split-list`, `timeline`:
     numbered-badge `::before` color changed from `var(--on-accent, var(--on-dark-primary, #fff))`

@@ -7,7 +7,7 @@
  * ### right-eyebrow before bullets
  */
 section.split-list { padding:0; flex-direction:row; }
-section.split-list h2 { font-size:var(--fs-emphasis); color:var(--text-display); line-height:var(--lh-tight); margin:0; }
+section.split-list h2 { font-size:var(--fs-emphasis); color:var(--on-accent); line-height:var(--lh-tight); margin:0; }
 section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
 section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
 /* Decorative letterform watermark: explicit 11.46cqi (= 110pt). Sized
@@ -50,8 +50,10 @@ section.split-list .panel-right :is(ol,ul) + ul > li::before { font-weight:700; 
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
 section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
 section.split-list {
-  --marp-slide-header-color: var(--on-dark-secondary);
-  --marp-slide-footer-color: var(--on-dark-secondary);
+  /* Header/footer render over the left accent rail — ride the accent pair so
+   * they stay legible whether the rail is a dark or a pale accent. */
+  --marp-slide-header-color: var(--on-accent-secondary);
+  --marp-slide-footer-color: var(--on-accent-secondary);
 }
 
 
