@@ -241,6 +241,13 @@ in patch versions.
     enlarged to `32cqi` (`36cqi` under `cover`) so the proportions read.
   - `redline` `three-col` / `split`: a long clause clipped mid-word; the content
     row is now `minmax(0,1fr)` with an overflow guard so it stays on-slide.
+  - `citation-card`: the base "KEY INSIGHT" blockquote chrome contaminated its
+    verbatim-quote panel on every non-pull-quote variant (light + dark) —
+    citation-card is now excluded from that rule (it styles its own
+    blockquote); the `pull-quote` watermark glyph was sunk behind the canvas
+    (`z-index:-1`) and is now a visible watermark; and the `triptych` sample
+    only supplied one gloss item so it rendered two panels — it now carries the
+    translate + obligation items the three-panel layout expects.
   - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
     different layout than what renders (split-statement, split-brief, decision,
     timeline-list, list-steps, kpi, split-metric, math, image, featured,

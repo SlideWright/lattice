@@ -1892,8 +1892,12 @@ section.citation-card.pull-quote.pull-quote > blockquote::before {
   font-size:var(--fs-hero);
   line-height:1;
   color:var(--accent-soft);
-  z-index:-1;
+  /* z-index:0 (was -1, which sank it behind the opaque canvas → invisible).
+   * The quote text below lifts to z-index:1 so the pale glyph reads as a
+   * watermark without obscuring the words. */
+  z-index:0;
 }
+section.citation-card.pull-quote.pull-quote > blockquote > p { position:relative; z-index:1; }
 section.citation-card.pull-quote > :is(ul, ol) > li:not(:has(> strong:first-child)) { display:none; }
 
 /* .margin — quote center, citation in left margin, "what" in right margin. */
@@ -9482,7 +9486,7 @@ section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
  * Excluded layouts handle blockquote themselves:
  *   quote, featured (primary content)
  */
-section:not(.quote):not(.featured):not(.math) > blockquote {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote {
   background:var(--accent-soft);
   border:1px solid var(--accent);
   border-radius:var(--radius-md);
@@ -9490,7 +9494,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote {
   margin-top:var(--sp-sm);
   flex-shrink:0;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote::before {
   content:'KEY INSIGHT';
   font-family:var(--font-mono);
   font-size:var(--fs-meta);
@@ -9501,19 +9505,19 @@ section:not(.quote):not(.featured):not(.math) > blockquote::before {
   display:block;
   margin-bottom:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote p {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote p {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote ul {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote ul {
   list-style:none;
   padding:0; margin:0;
   display:flex; flex-direction:column; gap:0.46875cqi;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote li {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li {
   font-family:var(--font-body);
   font-size:var(--fs-message);
   color:var(--text-heading);
@@ -9521,7 +9525,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote li {
   padding-left:var(--sp-md);
   position:relative;
 }
-section:not(.quote):not(.featured):not(.math) > blockquote li::before {
+section:not(.quote):not(.featured):not(.math):not(.citation-card) > blockquote li::before {
   content:'—';
   position:absolute; left:0;
   color:var(--accent);

@@ -85,8 +85,10 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 > 'Personal data' means any information relating to an identified or identifiable natural person.
 
-- Online identifiers count.
-  - IP addresses, cookie IDs, and device fingerprints are personal data — scope your notice and retention accordingly.
+- In plain English.
+  - Any online identifier that can single out a person — IP address, cookie ID, device fingerprint.
+- What we must do.
+  - Scope notice and retention to cover online identifiers, not just named-person records.
 
 
 ---
