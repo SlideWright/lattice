@@ -219,6 +219,16 @@ in patch versions.
 
 ### Fixed
 
+- **Layout audit — T4 SVG chart label sizes (audit round 2).**
+  - `radar`: axis labels raised from `9px` (≈6.4pt) to `11px` and tick marks from
+    `6.5px` (≈4.6pt) to `9px` via scoped `--radar-axis-label-size` / `--radar-tick-size`
+    custom properties with a bypass comment explaining SVG-unit sizing. Tick
+    `font-weight` raised from 500→600 (matching the cover-variant's existing lift)
+    so the faint sub-token-size ring labels get extra stroke weight.
+  - `quadrant`: axis name raised from `11px` to `12px` and tick labels from `8px`
+    (≈5.7pt) to `10px` via scoped `--quadrant-axis-size` / `--quadrant-tick-size`
+    custom properties with bypass comment.
+
 - **Layout audit — T5 dark-mode contrast fixes (audit round 2).**
   - `journey`: section-bar labels (`--journey-section-fg`) were `var(--on-accent)`,
     which flips to `--bg-dark` (navy) in dark mode — near-zero contrast against the

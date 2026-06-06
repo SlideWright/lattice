@@ -160,17 +160,24 @@ section.quadrant .quadrant-split[data-kind="target"] {
 }
 
 /* ── Axis labels + corner ticks ───────────────────────────────────────── */
+/* SVG font-size bypass: labels sit inside a ~420×320-unit SVG viewBox, so
+ * CSS px ≠ pt. Values are intentional deviations from the 12-token scale;
+ * scoped to section.quadrant so themes can override per-component via the token. */
+section.quadrant {
+  --quadrant-axis-size: 12px;  /* raised from 11px — axis name, still below token min */
+  --quadrant-tick-size: 10px;  /* raised from 8px (≈5.7pt at desk) */
+}
 section.quadrant .quadrant-axis-name {
   fill: var(--text-heading);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: var(--quadrant-axis-size);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 section.quadrant .quadrant-tick {
   fill: var(--text-muted);
   font-family: var(--font-mono, var(--font-body));
-  font-size: 8px;
+  font-size: var(--quadrant-tick-size);
   font-weight: 500;
 }
 
