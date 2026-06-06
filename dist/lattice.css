@@ -12631,6 +12631,7 @@ section .relationshipLabel tspan {
 section .flowchart-link,
 section path.flowchart-link,
 section .edgePath .path,
+section .relation,
 section .relationshipLine,
 section .transition {
   stroke: var(--c-line) !important;
@@ -12653,6 +12654,46 @@ section .actor-line {
   stroke: var(--c-line) !important;
 }
 section svg[aria-roledescription="journey"] line:not(.mouth) {
+  stroke: var(--c-line) !important;
+}
+
+/* ── JOURNEY MOOD FACES (line-art, not filled discs) ──
+ * Mermaid draws each mood face as a head circle.face (which our section-N
+ * circle rule was filling with a pale band) + two `#666` eye circles + a
+ * `.mouth` smile (`#666` path/line). On a dark slide that reads as a filled
+ * disc with murky dark features — "creepy". Render the face as light line-art
+ * instead: an UNFILLED head outlined in --c-line, with eyes + mouth in the same
+ * --c-line as the journey axis. Matches the edge colour; no fill. */
+section svg[aria-roledescription="journey"] circle.face {
+  fill: none !important;
+  stroke: var(--c-line) !important;
+}
+section svg[aria-roledescription="journey"] circle[fill="#666"] {
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
+}
+section svg[aria-roledescription="journey"] path.mouth {
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
+}
+section svg[aria-roledescription="journey"] line.mouth {
+  stroke: var(--c-line) !important;
+}
+
+/* ── GANTT SECTION LABELS (left axis) ──
+ * `.sectionTitle{0..3}` bake at the resolved dark ink (#0A1628 from the light
+ * palette), so the Foundation/Integration/Cutover labels vanish on a dark
+ * slide. Re-point at the flipping ink. (Task-bar text already maps to
+ * --c-ink-light via themeVars; only the left section titles were missed.) */
+section svg[aria-roledescription="gantt"] [class*="sectionTitle"] {
+  fill: var(--c-ink-light) !important;
+}
+
+/* ── TIMELINE AXIS + PERIOD DIVIDERS ──
+ * The timeline's section/period divider lines (`.node-line-*`) and the
+ * unclassed axis line (inline stroke="black") bake dark, so the spine vanishes
+ * on a dark slide. Re-point every timeline line at --c-line. */
+section svg[aria-roledescription="timeline"] line {
   stroke: var(--c-line) !important;
 }
 
