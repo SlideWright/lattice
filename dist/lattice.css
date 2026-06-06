@@ -604,7 +604,7 @@ section.actors > ul,
 section.actors > ol {
   list-style:none; padding:0; margin:0;
   display:flex; flex-direction:column;
-  gap:var(--sp-sm);
+  gap:var(--sp-xs);
   flex:1;
   /* flex-start, not center: at 5+ rows center-justify pushed the last row
    * off the slide bottom (clipped). Top-aligning keeps every row on-canvas. */
@@ -617,7 +617,7 @@ section.actors > ol > li {
   column-gap:var(--sp-md);
   row-gap:var(--sp-xs);
   align-items:center;
-  padding:var(--sp-md) var(--sp-lg);
+  padding:var(--sp-sm) var(--sp-lg);
   background:var(--bg-alt);
   border:1px solid var(--border);
   border-left:3px solid var(--accent);
