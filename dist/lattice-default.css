@@ -396,14 +396,20 @@
    * inherit the guaranteed-invalid result — the disc then never paints.
    * See engineering/gotchas.md "state disc never paints".
    *
-   * Default = Ringed Solid: saturated fill + hairline darker ring + a
-   * faint lift, knockout mark. Stays crisp on its own status-tinted row.
-   * The five variants in base.modifiers.css override these knobs. */
+   * Default = Ringed Solid: saturated fill + hairline darker ring,
+   * knockout mark. Stays crisp on its own status-tinted row. The five
+   * variants in base.modifiers.css override these knobs.
+   *
+   * NOTE: the recipe is intentionally VECTOR-ONLY (solid fills + 0-blur
+   * spread rings) — no blurred drop-shadow. A blurred box-shadow on a
+   * small element is exported by Chromium print-to-PDF as a
+   * transparency-group/soft-mask image, which some PDF viewers render as
+   * an opaque grey square around the disc. See engineering/gotchas.md
+   * "blurred box-shadow → grey box in some PDF viewers". */
   --state-fill-pct: 100%;       /* disc fill = this % of --state-color, rest transparent */
   --state-ring-outer-w: 1.6px;  /* outer ring width (ringed default) */
   --state-ring-mix: 50%;        /* outer ring colour = --state-color mixed toward black */
   --state-ring-inner-w: 0px;    /* inner ring width (outline / tonal) */
-  --state-lift: 0.22;           /* drop-shadow alpha; 0 = none */
   --state-mark-pct: 0%;         /* mark colour = this % --state-color, rest --bg (0% = knockout) */
   --state-disc-scale: 1;        /* disc + mark size multiplier (bold bumps it) */
 }
@@ -1770,8 +1776,7 @@ section.checklist > ol > li.state::before {
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
-    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted)),
-    0 1px 2.5px rgba(0,0,0,var(--state-lift));
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
 section.checklist > ul > li.state::after,
 section.checklist > ol > li.state::after {
@@ -5671,8 +5676,7 @@ section.obligation-matrix td .state {
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
-    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted)),
-    0 1px 2.5px rgba(0,0,0,var(--state-lift));
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
 section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
@@ -9064,8 +9068,7 @@ section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
-    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted)),
-    0 1px 2.5px rgba(0,0,0,var(--state-lift));
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
 /* Mark overlay — anchored to the disc, which sits at the badge's left pad. */
 .badge::after {
@@ -9957,25 +9960,25 @@ section .state-slashed { --state-mark: var(--mark-slash); }
  * — so the leaf color-mix stays correct. Default (no class) = Ringed Solid. */
 section.checks-ringed {            /* = default; explicit so it can reset an inherited deck-level variant */
   --state-fill-pct:100%; --state-ring-outer-w:1.6px; --state-ring-mix:50%;
-  --state-ring-inner-w:0px; --state-lift:0.22; --state-mark-pct:0%; --state-disc-scale:1;
+  --state-ring-inner-w:0px; --state-mark-pct:0%; --state-disc-scale:1;
 }
 section.checks-knockout {          /* flat saturated disc, knockout mark */
   --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
-  --state-lift:0; --state-mark-pct:0%; --state-disc-scale:1;
+  --state-mark-pct:0%; --state-disc-scale:1;
 }
 section.checks-bold {              /* larger disc + heavier marks, knockout */
   --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
-  --state-lift:0; --state-mark-pct:0%; --state-disc-scale:1.16;
+  --state-mark-pct:0%; --state-disc-scale:1.16;
   --mark-check:var(--mark-check-bold); --mark-dash:var(--mark-dash-bold);
   --mark-x:var(--mark-x-bold);         --mark-slash:var(--mark-slash-bold);
 }
 section.checks-outline {           /* transparent fill, inner ring + status-colour mark */
   --state-fill-pct:0%; --state-ring-outer-w:0px; --state-ring-inner-w:2px;
-  --state-lift:0; --state-mark-pct:100%; --state-disc-scale:1;
+  --state-mark-pct:100%; --state-disc-scale:1;
 }
 section.checks-tonal {             /* soft tint fill, inner ring + status-colour mark */
   --state-fill-pct:17%; --state-ring-outer-w:0px; --state-ring-inner-w:1.6px;
-  --state-lift:0; --state-mark-pct:100%; --state-disc-scale:1;
+  --state-mark-pct:100%; --state-disc-scale:1;
 }
 
 /* ──────────────────────────────────────────────────────────────────── */

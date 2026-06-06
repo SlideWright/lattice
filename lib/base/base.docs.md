@@ -528,7 +528,7 @@ status colours never change — only the disc presentation:
 
 | Variant | Disc treatment |
 |---|---|
-| *(default)* / `checks-ringed` | saturated fill + hairline darker ring + faint lift; knockout mark. Stays crisp on its own status-tinted row. |
+| *(default)* / `checks-ringed` | saturated fill + hairline darker ring; knockout mark. Stays crisp on its own status-tinted row. |
 | `checks-knockout` | flat saturated fill, knockout mark. Cleanest/classic. |
 | `checks-bold` | larger disc + heavier marks, knockout. Reads across a room. |
 | `checks-outline` | transparent fill + ring + status-colour mark. Editorial, low-ink. |

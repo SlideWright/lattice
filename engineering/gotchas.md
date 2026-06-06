@@ -858,6 +858,31 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   scratch prototype showed discs missing in light *and* a frozen-white mark in
   dark before the knob split.
 
+### Blurred `box-shadow` → opaque grey box around the element in some PDF viewers
+
+- **Symptom:** A small element with a soft drop-shadow (e.g. the state-token
+  disc) renders cleanly in the browser, in `marp --images` PNGs, and in
+  MuPDF/PyMuPDF rasterization — but in **mobile / Quartz PDF viewers** (iOS
+  Files/Preview, some Android apps) a **solid grey square** appears around the
+  element's bounding box.
+- **Cause:** Chromium `printToPDF` exports a *blurred* `box-shadow` as a
+  transparency-group / soft-mask (SMask) image sized to the element's expanded
+  box. Viewers with incomplete transparency-group support paint the image's
+  bounds with an opaque grey matte instead of applying the alpha — so the soft
+  shadow becomes a hard grey rectangle. Spread-only shadows (`0 0 0 Npx`, no
+  blur radius) are exported as plain vector strokes and are safe; only the
+  blur triggers it.
+- **Mitigation:** Keep small-element chrome **vector-only** — solid fills and
+  0-blur spread rings/borders. For depth, use a darker *spread* ring
+  (`box-shadow: 0 0 0 1.6px <darker>`) rather than a blurred lift. The state
+  disc recipe (base.tokens.css / the three checkbox consumers) is deliberately
+  blur-free for this reason.
+- **Triggered by:** Any blurred `box-shadow`/`filter: drop-shadow()` on small
+  repeated elements destined for PDF. Verify in an actual mobile PDF viewer —
+  PyMuPDF/Chromium screenshots will NOT reveal it.
+- **Caught:** checkbox redesign — discs showed a grey square in the iOS PDF
+  viewer while every local raster looked clean.
+
 ### CSS custom properties return raw token stream via `getPropertyValue`
 
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`

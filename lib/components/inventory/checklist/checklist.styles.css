@@ -112,8 +112,7 @@ section.checklist > ol > li.state::before {
   background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
   box-shadow:
     0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
-    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted)),
-    0 1px 2.5px rgba(0,0,0,var(--state-lift));
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
 section.checklist > ul > li.state::after,
 section.checklist > ol > li.state::after {

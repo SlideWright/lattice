@@ -679,25 +679,25 @@ section .state-slashed { --state-mark: var(--mark-slash); }
  * — so the leaf color-mix stays correct. Default (no class) = Ringed Solid. */
 section.checks-ringed {            /* = default; explicit so it can reset an inherited deck-level variant */
   --state-fill-pct:100%; --state-ring-outer-w:1.6px; --state-ring-mix:50%;
-  --state-ring-inner-w:0px; --state-lift:0.22; --state-mark-pct:0%; --state-disc-scale:1;
+  --state-ring-inner-w:0px; --state-mark-pct:0%; --state-disc-scale:1;
 }
 section.checks-knockout {          /* flat saturated disc, knockout mark */
   --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
-  --state-lift:0; --state-mark-pct:0%; --state-disc-scale:1;
+  --state-mark-pct:0%; --state-disc-scale:1;
 }
 section.checks-bold {              /* larger disc + heavier marks, knockout */
   --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
-  --state-lift:0; --state-mark-pct:0%; --state-disc-scale:1.16;
+  --state-mark-pct:0%; --state-disc-scale:1.16;
   --mark-check:var(--mark-check-bold); --mark-dash:var(--mark-dash-bold);
   --mark-x:var(--mark-x-bold);         --mark-slash:var(--mark-slash-bold);
 }
 section.checks-outline {           /* transparent fill, inner ring + status-colour mark */
   --state-fill-pct:0%; --state-ring-outer-w:0px; --state-ring-inner-w:2px;
-  --state-lift:0; --state-mark-pct:100%; --state-disc-scale:1;
+  --state-mark-pct:100%; --state-disc-scale:1;
 }
 section.checks-tonal {             /* soft tint fill, inner ring + status-colour mark */
   --state-fill-pct:17%; --state-ring-outer-w:0px; --state-ring-inner-w:1.6px;
-  --state-lift:0; --state-mark-pct:100%; --state-disc-scale:1;
+  --state-mark-pct:100%; --state-disc-scale:1;
 }
 
 /* ──────────────────────────────────────────────────────────────────── */

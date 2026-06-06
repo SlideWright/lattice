@@ -344,14 +344,20 @@
    * inherit the guaranteed-invalid result — the disc then never paints.
    * See engineering/gotchas.md "state disc never paints".
    *
-   * Default = Ringed Solid: saturated fill + hairline darker ring + a
-   * faint lift, knockout mark. Stays crisp on its own status-tinted row.
-   * The five variants in base.modifiers.css override these knobs. */
+   * Default = Ringed Solid: saturated fill + hairline darker ring,
+   * knockout mark. Stays crisp on its own status-tinted row. The five
+   * variants in base.modifiers.css override these knobs.
+   *
+   * NOTE: the recipe is intentionally VECTOR-ONLY (solid fills + 0-blur
+   * spread rings) — no blurred drop-shadow. A blurred box-shadow on a
+   * small element is exported by Chromium print-to-PDF as a
+   * transparency-group/soft-mask image, which some PDF viewers render as
+   * an opaque grey square around the disc. See engineering/gotchas.md
+   * "blurred box-shadow → grey box in some PDF viewers". */
   --state-fill-pct: 100%;       /* disc fill = this % of --state-color, rest transparent */
   --state-ring-outer-w: 1.6px;  /* outer ring width (ringed default) */
   --state-ring-mix: 50%;        /* outer ring colour = --state-color mixed toward black */
   --state-ring-inner-w: 0px;    /* inner ring width (outline / tonal) */
-  --state-lift: 0.22;           /* drop-shadow alpha; 0 = none */
   --state-mark-pct: 0%;         /* mark colour = this % --state-color, rest --bg (0% = knockout) */
   --state-disc-scale: 1;        /* disc + mark size multiplier (bold bumps it) */
 }
