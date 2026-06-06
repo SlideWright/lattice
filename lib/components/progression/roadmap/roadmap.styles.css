@@ -69,16 +69,17 @@ section.roadmap thead th:not(:first-child) > code {
   position:absolute;
   right:var(--sp-md);
   bottom:-0.546875cqi;
-  font-family:var(--font-mono);
-  font-size:0.859375cqi;
-  font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font);
+  font-size:0.859375cqi;              /* deliberate: small corner tag on a dense header cell */
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:0.15625cqi 0.703125cqi;
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
-  border-radius:999px;
-  letter-spacing:0.04em;
-  line-height:1.2;
+  border-radius:var(--pill-radius);
   white-space:nowrap;
   z-index:1;
 }
@@ -346,16 +347,17 @@ section.roadmap.horizons .horizon-meta {
   position:absolute;
   right:0;
   bottom:-0.546875cqi;
-  font-family:var(--font-mono);
-  font-size:0.859375cqi;
-  font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center;
+  text-align:center; line-height:1;
+  font-family:var(--pill-font);
+  font-size:0.859375cqi;              /* deliberate: small corner tag, matches the trailing-code pill */
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:0.15625cqi 0.703125cqi;
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
-  border-radius:999px;
-  letter-spacing:0.04em;
-  line-height:1.2;
+  border-radius:var(--pill-radius);
   white-space:nowrap;
   z-index:1;
 }

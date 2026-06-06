@@ -140,15 +140,18 @@ section.redline.split.split > blockquote:nth-of-type(2)::before {
 section.redline.split > :is(ol, ul) { grid-column:1 / -1; grid-row:4; }
 
 /* .annotated — single passage with numbered sup markers; annotations below. */
+/* sanctioned: a superscript footnote marker — stays raised + small (0.7em,
+ * vertical-align:super) rather than a centred inline-flex pill. Geometry that
+ * doesn't fight the superscript routes through the --pill-* tokens. */
 section.redline.annotated > blockquote sup {
   display:inline-block;
   background:var(--accent);
   color:var(--on-accent);
-  font-family:var(--font-mono);
+  font-family:var(--pill-font);
   font-size:0.7em;
   font-weight:700;
   padding:0 0.4em;
-  border-radius:999px;
+  border-radius:var(--pill-radius);
   margin-left:0.156cqi;
   line-height:1.4;
   vertical-align:super;
@@ -162,15 +165,19 @@ section.redline.annotated > :is(ol, ul) > li {
   position:relative;
   padding-left:calc(var(--sp-lg) + var(--sp-xs));
 }
+/* sanctioned: positioned annotation counter, anchored to the list-row origin
+ * (absolute). Footnote weight (700) is kept; radius + font route to tokens. */
 section.redline.annotated > :is(ol, ul) > li::before {
   content:counter(rl);
   position:absolute; left:0; top:0.156cqi;
+  display:inline-flex; align-items:center; justify-content:center;
   background:var(--accent); color:var(--on-accent);
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
   font-weight:700;
+  letter-spacing:var(--pill-tracking);
   padding:0 0.5em;
-  border-radius:999px;
+  border-radius:var(--pill-radius);
   line-height:1.4;
 }
 

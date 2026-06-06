@@ -101,13 +101,17 @@ section.statute-stack > ol > li > :is(ul, ol) > li:first-child:has(> code:only-c
  * jurisdiction accent colour. */
 section.statute-stack > ul > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code,
 section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-child) > code {
-  display:inline-block;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.04em;
-  padding:0.156cqi 0.625cqi;
-  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
+  border-radius:var(--pill-radius);
   background:var(--accent-soft);
   color:var(--jur-accent, var(--accent));
   border:1px solid var(--jur-accent, var(--accent));

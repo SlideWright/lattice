@@ -73,16 +73,21 @@ section.kpi > :where(ol, ul) > li > :where(ul, ol) > li::marker { content: ''; }
  * each row carries the status colour (set per-row by the modifier's
  * nth-child hooks); subsequent pills stay neutral. */
 section.kpi code {
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: 0.12em;       /* wider tracking pairs with the uppercase opt-in */
   text-transform: uppercase;
   border: 1px solid var(--pill-border, var(--text-muted));
   background: var(--pill-bg, var(--bg));
   color: var(--pill-fg, var(--text-body));
-  border-radius: 999px;
-  padding: 0.234375cqi 0.78125cqi;
+  border-radius: var(--pill-radius);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
   white-space: nowrap;
   margin-left: 0.46875cqi;
   vertical-align: 1px;

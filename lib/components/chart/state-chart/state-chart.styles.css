@@ -318,11 +318,17 @@ section.state-chart.inline .state-chip,
 section.state-chart.horizontal .state-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
   gap: 4px;
-  padding: 2px 8px;
-  font-size: 0.78em;
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-tracking);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
   border: 1px solid var(--state-node-stroke);
-  border-radius: 999px;
+  border-radius: var(--pill-radius);
   background: color-mix(in oklab, var(--state-node-fill) 60%, transparent);
 }
 

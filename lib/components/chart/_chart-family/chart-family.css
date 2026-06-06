@@ -431,13 +431,15 @@ section.chart-frame .chart-caption::before {
 section.chart-frame .chart-status {
   display: inline-flex;
   align-items: center;
-  height: 1.71875cqi;
-  padding: 0 0.78125cqi;
-  border-radius: 0.859375cqi;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  justify-content: center;
+  text-align: center;
+  height: 1.71875cqi;               /* sanctioned: fixed height matches the gantt/progress bar */
+  padding: 0 0.78125cqi;            /* sanctioned: horizontal-only — the height does vertical centering */
+  border-radius: 0.859375cqi;       /* sanctioned: semi-round so a status reads as the bar's small form */
+  font-family: var(--pill-font);
+  font-size: var(--pill-fs);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-tracking);
   white-space: nowrap;
   /* Same depth-gradient recipe as the gantt bar so a status reads identically
    * as a pill or a bar: hue-into-bg gradient + vivid ink border + the shared

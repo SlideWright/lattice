@@ -282,14 +282,20 @@ section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
   border:1px solid var(--pill-border, var(--text-muted));
   background:var(--pill-bg, var(--bg));
   color:var(--pill-fg, var(--text-body));
-  border-radius:999px;
-  padding:0.234375cqi 0.703125cqi;
+  border-radius:var(--pill-radius);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   white-space:nowrap;
 }
 
@@ -646,20 +652,27 @@ section.heat .horizon-rows > li.cell-state.state-skipped { --state-color:var(--t
 
 /* ──────────────────────────────────────────────────────────────────── */
 
-/* .pills — each non-first cell is a status pill. */
-section.obligation-matrix.pills td:not(:first-child) > * { display:inline-block; }
+/* .pills — each non-first cell is a status pill. Universal pill geometry
+ * (base.tokens.css --pill-*); cell keeps its own neutral fill/border. */
+section.obligation-matrix.pills td:not(:first-child) > * {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
 section.obligation-matrix.pills td:not(:first-child) {
   background:none;
   padding:0.46875cqi var(--sp-xs);
 }
 section.obligation-matrix.pills td:not(:first-child) code,
 section.obligation-matrix.pills td:not(:first-child) strong {
-  font-family:var(--font-mono);
-  font-size:var(--fs-meta);
-  font-weight:700;
-  letter-spacing:0.04em;
-  padding:0.234375cqi 0.78125cqi;
-  border-radius:999px;
+  text-align:center;
+  line-height:1;
+  font-family:var(--pill-font);
+  font-size:var(--pill-fs);
+  font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
+  border-radius:var(--pill-radius);
   background:var(--bg-alt);
   border:1px solid var(--border);
   color:var(--text-body);

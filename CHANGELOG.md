@@ -27,6 +27,13 @@ in patch versions.
 
 ### Added
 
+- **Universal pill structure tokens (`--pill-radius`, `--pill-pad-y`,
+  `--pill-pad-x`, `--pill-font`, `--pill-fs`, `--pill-weight`,
+  `--pill-tracking`).** A single structural contract for every status /
+  metadata pill, defined in `lib/base/base.tokens.css`. Padding is em-based
+  so a pill's box tracks its own text size and still scales HD → 4K. Colour
+  stays per-pill via the existing `--pill-fg` / `--pill-bg` / `--pill-border`
+  hooks — structure is universal, colour carries the semantics.
 - **`--text-secondary` — an independent, on-brand, light/dark token for
   secondary content text.** Subtitles, eyebrows, captions, table headers,
   sub-labels and attributions previously borrowed the decorative
@@ -61,6 +68,26 @@ in patch versions.
 
 ### Changed
 
+- **Every pill now shares one geometry.** The ordinary status/metadata pills
+  across layouts — the universal trailing-code pill, verdict-grid badges,
+  kpi, glossary range-pill, cards-grid / cards-side, obligation-matrix,
+  regulatory-update (status / timeline / priority), statute-stack, and
+  state-chart chips — are unified to the `--pill-*` structural tokens:
+  consistent proportional padding, fully-rounded radius, and centre- /
+  middle-aligned text via `inline-flex`. Pills now use the **body sans**
+  (Outfit), not mono — a pill is a status / label chip, not code (mono was
+  only inherited from the original trailing-`code` pill), and the sans also
+  fixes vertical centring at the root: JetBrains Mono's metrics seated caps
+  high in a flex-centred line box, while the sans lands them centred with no
+  optical nudge. The genuinely identifier-like chips (legal citations etc.)
+  are not pills and keep their own mono. Hardcoded `px` padding (glossary,
+  state-chart) and the stray `9999px` radius (list-tabular) are gone, and the
+  `600`/`700` font-weight split resolves to `--pill-weight`. Three pills stay
+  as **sanctioned variants** that deliberately override specific axes —
+  chart-status (bar-matching semi-round + gradient), list-tabular `register`
+  (wide stamp), redline `.annotated` (footnote superscript / positioned
+  counter) — but route everything non-deliberate through the same tokens.
+  Pill colours and semantics are unchanged.
 - **`--text-muted` is now decorative-only and a `light-dark()` pair.** It is
   reserved for genuinely decorative / de-emphasized marks — chrome
   (pagination/header/footer), empty-cell dashes, skipped/struck state, quote
