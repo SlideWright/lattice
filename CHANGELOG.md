@@ -219,6 +219,39 @@ in patch versions.
 
 ### Fixed
 
+- **Layout audit — round 1 of fixes (anatomy, contracts, P0 render bugs).**
+  - `kpi`: the running header overprinted the eyebrow on every slide with an
+    `### eyebrow` (the section `padding-top` coincided with the absolute
+    header's `top`); content now clears the header band.
+  - `closing`: the heading styling targeted `h2` while the slot is `h1`, so the
+    bookend lost its centering / max-width and the eyebrow rendered below the
+    heading. Now mirrors `title` (centered hero `h1`, eyebrow reordered above).
+  - `content`: stopped top-aligning (dead lower half) — now vertically centred —
+    and capped paragraph/list line length so prose doesn't run ~90 chars wide.
+  - `actors`: a 5-row roster clipped its last row off the slide bottom
+    (`justify-content:center`); rows now top-align and stay on-canvas.
+  - `list-tabular` `spec` / `spec+stacked`: the key name and the type both
+    landed in one grid cell (overlapping glyphs) and overflowed the right edge;
+    the key now sits in the name column, the type in the trailing column, and
+    long mono keys/API paths wrap inside their cell.
+  - `tldr` `numbered`: an inline `code` span in a takeaway fragmented the line
+    across rows (grid blockified it); the counter is now a hanging indent so the
+    takeaway flows as one line.
+  - `piechart`: the disc was locked at `25cqi` and floated small in dead space;
+    enlarged to `32cqi` (`36cqi` under `cover`) so the proportions read.
+  - `redline` `three-col` / `split`: a long clause clipped mid-word; the content
+    row is now `minmax(0,1fr)` with an overflow guard so it stays on-slide.
+  - **Docs/contracts:** corrected ~22 `## Anatomy` diagrams that depicted a
+    different layout than what renders (split-statement, split-brief, decision,
+    timeline-list, list-steps, kpi, split-metric, math, image, featured,
+    glossary, roadmap, progress, statute-stack, authority-chain,
+    regulatory-update, tldr; added one for state-chart; dropped the dead
+    `── accent ──` rule from title/divider/closing). Fixed misleading manifest
+    contracts: `principles` skeleton (was `- **bold**`, generating card-style-
+    invalid slides) + dropped its non-existent "justification" slot;
+    `kpi`/`stats` list selectors (`ul`→`ol`) and kpi slot name; `split-list`
+    `related` text; `authority-chain` `links`→`tiers` slot.
+
 - **Subtitle / secondary-text contrast was broken across every theme.** The
   subtitle, eyebrow, caption, table-header, sub-label and attribution roles
   all rode the decorative, contrast-exempt `--text-muted` token, which is a

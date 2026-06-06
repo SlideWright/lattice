@@ -606,7 +606,9 @@ section.actors > ol {
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
   flex:1;
-  justify-content:center;
+  /* flex-start, not center: at 5+ rows center-justify pushed the last row
+   * off the slide bottom (clipped). Top-aligning keeps every row on-canvas. */
+  justify-content:flex-start;
 }
 section.actors > ul > li,
 section.actors > ol > li {
@@ -1991,8 +1993,28 @@ section.citation-card :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 section.closing { justify-content:center; align-items:center; background:var(--bg-dark); }
 section.closing { border-top: none; }
 section.closing hr { margin:0 auto var(--sp-md); }
-section.closing h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
+section.closing h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:54.6875cqi; margin:0 auto var(--sp-sm); text-align:center; }
 section.closing p  { color:var(--on-dark-secondary); font-size:var(--fs-message); font-style:italic; max-width:42.1875cqi; margin:0 auto; text-align:center; }
+
+/* Mirror of title: the inline-code paragraph after h1 is the eyebrow,
+ * rendered visually ABOVE the h1 via flex order (overriding the italic
+ * subtitle rule). Without this the eyebrow rendered below the heading and
+ * the heading itself lost centering/max-width (the old rule targeted h2,
+ * but the heading slot is h1). */
+section.closing h1 + p:has(> code:only-child) { order:-1; margin:0 0 0.3125cqi 0; }
+section.closing h1 + p:has(> code:only-child) > code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 /* === lib/components/code/code/code.styles.css === */
 /* code — extracted from lib/_legacy.css (batch 4).
@@ -2277,8 +2299,13 @@ section.compare-table td:first-child { font-weight:600; color:var(--text-heading
 
 section.content h3 { margin-bottom:0.3125cqi; }
 section.content h2 { margin-bottom:var(--sp-sm); }
-section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); }
-section.content { justify-content:flex-start; }
+/* Cap line length: at --fs-message a full-canvas paragraph runs ~90 chars,
+ * past the comfortable maximum. 72cqi ≈ 65–75 chars. */
+section.content h2 { max-width:72cqi; }
+section.content p  { font-size:var(--fs-message); line-height:var(--lh-relaxed); max-width:72cqi; }
+/* Center the heading+body block vertically so a short slide does not leave a
+ * dead lower half (the only canvas-statement component that top-aligned). */
+section.content { justify-content:center; }
 
 /* content is "heading + paragraphs OR a short list" (see content.docs.md),
  * but the layout previously styled only <p>. base.elements.css strips list
@@ -2287,7 +2314,7 @@ section.content { justify-content:flex-start; }
  * it sits beside — the paragraph/list mismatch. Style lists as prose peers:
  * real markers, prose size, prose-compatible rhythm. No :has() — works in
  * every render path. */
-section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); }
+section.content :is(ul, ol) { margin:0 0 var(--sp-sm) 0; padding-left:var(--sp-lg); display:flex; flex-direction:column; gap:var(--sp-2xs); max-width:72cqi; }
 section.content ul { list-style:disc; }
 section.content ol { list-style:decimal; }
 section.content :is(ul, ol) > li { font-size:var(--fs-message); color:var(--text-body); line-height:var(--lh-snug); }
@@ -3957,7 +3984,11 @@ section .items .node .label-container {
  * ──────────────────────────────────────────────────────────────────────── */
 section.kpi {
   display: flex; flex-direction: column;
-  padding-top: var(--sp-md);
+  /* Clear the absolute running header (top:1.875cqi, ~fs-meta tall). The base
+   * section uses 6.875cqi top padding for this; KPI trims it for density but
+   * must stay below the header band or the h3 eyebrow / h2 overprints the
+   * "LATTICE · KPI" chrome (they shared the same y at the old --sp-md). */
+  padding-top: calc(var(--sp-md) + var(--sp-lg));
   /* Trim the base 6.875cqi bottom padding — that much is pure reserved
    * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
    * KPI is the densest layout (hero + 3 metric rows + title); the extra
@@ -4736,8 +4767,12 @@ section.list-tabular.metric.solid ol > li > code {
 }
 
 /* ── Variant: spec (mono key) ─────────────────────────────────────────── */
+/* minmax(0,…) on the flexible + trailing tracks (not bare 1fr/auto) lets the
+ * columns shrink below their content so a long mono key / API path wraps
+ * inside its cell instead of overflowing the slide edge (which corrupted the
+ * trailing glyphs). overflow-wrap on the code makes the wrap point clean. */
 section.list-tabular.spec ol > li {
-  grid-template-columns:3.4375cqi 20.3125cqi 1fr auto;
+  grid-template-columns:3.4375cqi minmax(0, 20.3125cqi) minmax(0, 1fr) minmax(0, 15.625cqi);
   font-family:var(--font-mono);
   font-size:var(--fs-body-compact);
   font-weight:600;
@@ -4747,11 +4782,19 @@ section.list-tabular.spec ol > li {
 section.list-tabular.spec ol > li > code {
   color:var(--accent);
   font-weight:700;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
+/* The spec row carries TWO inline codes — the key name and the type. The base
+ * rule sends every `> code` to column 4, which stacked them in one cell (the
+ * "LATTICESTRENG" glyph pile-up). Place the key in the name column and the
+ * type in the trailing column. */
+section.list-tabular.spec ol > li > code:first-of-type { grid-column:2; grid-row:1; justify-self:start; }
+section.list-tabular.spec ol > li > code:nth-of-type(2) { grid-column:4; grid-row:1; justify-self:start; }
 
 /* spec.stacked — description below name; counter spans rows */
 section.list-tabular.spec.stacked ol > li {
-  grid-template-columns:3.4375cqi 1fr auto;
+  grid-template-columns:3.4375cqi minmax(0, 1fr) minmax(0, 15.625cqi);
   grid-template-rows:auto auto;
   row-gap:var(--sp-xs);
   font-size:var(--fs-body-compact);
@@ -4767,10 +4810,13 @@ section.list-tabular.spec.stacked ol > li > ul > li {
   grid-column:2; grid-row:2;
 }
 section.list-tabular.spec.stacked ol > li > code {
-  grid-column:3; grid-row:2;
-  justify-self:end;
-  align-self:baseline;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
+/* Two codes again: key name on row 1 next to the counter, type at the row-1
+ * trailing edge; the description (nested ul) sits on row 2 (base stacked rule). */
+section.list-tabular.spec.stacked ol > li > code:first-of-type { grid-column:2; grid-row:1; justify-self:start; align-self:baseline; }
+section.list-tabular.spec.stacked ol > li > code:nth-of-type(2) { grid-column:3; grid-row:1; justify-self:end; align-self:baseline; }
 
 /* ── Variant: register (pill) ─────────────────────────────────────────── */
 section.list-tabular.register ol > li {
@@ -5725,9 +5771,16 @@ section.piechart .piechart-figure {
 }
 section.piechart .piechart-svg {
   flex: 0 0 auto;
-  width: 25cqi;
-  height: 25cqi;
+  /* 32cqi (was 25cqi): at 25cqi the disc floated small in the lower-left with
+   * large dead zones — the wedge proportions are the whole point, so the disc
+   * needs to command the canvas. The cover variant drops chrome → 36cqi. */
+  width: 32cqi;
+  height: 32cqi;
   display: block;
+}
+section.piechart.cover .piechart-svg {
+  width: 36cqi;
+  height: 36cqi;
 }
 section.piechart .piechart-svg .wedge {
   /* Stroke colour is the slot's --catN-ink (set per nth-child below); the
@@ -5749,7 +5802,7 @@ section.piechart .piechart-legend {
 }
 section.piechart .piechart-legend li {
   display: grid;
-  grid-template-columns: 1.09375cqi 1fr auto;
+  grid-template-columns: 1.5cqi 1fr auto;
   align-items: center;
   gap: var(--sp-sm);
   font-size: var(--fs-meta);
@@ -6818,7 +6871,8 @@ section.redline > :is(ol, ul) > li > strong {
 }
 
 /* .split — two blockquotes side-by-side: old left, new right. */
-section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr auto; row-gap:var(--sp-sm); }
+section.redline.split { display:grid; grid-template-columns:1fr 1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr) auto; row-gap:var(--sp-sm); }
+section.redline.split.split > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.split h2 { grid-column:1 / -1; }
 section.redline.split > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.split.split > blockquote:nth-of-type(1) {
@@ -6931,7 +6985,11 @@ section.redline.stacked.stacked > blockquote:nth-of-type(2)::before {
 
 /* .three-col — old | new | rationale columns. The author writes two
  * blockquotes plus a list for the rationale column. */
-section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto 1fr; row-gap:var(--sp-sm); }
+/* minmax(0,1fr) (not bare 1fr) caps the content row at its flex share so a
+ * long clause can't push the grid past the slide edge and clip mid-word;
+ * the blockquote guard below keeps overflow inside its own track. */
+section.redline.three-col { display:grid; grid-template-columns:1fr 1fr 1.1fr; column-gap:var(--sp-md); grid-template-rows:auto auto minmax(0, 1fr); row-gap:var(--sp-sm); }
+section.redline.three-col.three-col > blockquote { min-width:0; min-height:0; overflow:hidden; }
 section.redline.three-col h2 { grid-column:1 / -1; }
 section.redline.three-col > p:has(> code:only-child) { grid-column:1 / -1; }
 section.redline.three-col.three-col > blockquote:nth-of-type(1) {
@@ -8990,17 +9048,22 @@ section.tldr.numbered > ul,
 section.tldr.numbered > ol {
   counter-reset:tldr-counter;
 }
+/* Hanging indent — NOT display:grid. A grid li blockifies inline <code> into
+ * its own grid item, fragmenting any takeaway that contains an inline code
+ * span across multiple rows. Positioning the counter absolutely keeps the
+ * takeaway (text + inline code) as one normal inline flow. */
 section.tldr.numbered > ul > li,
 section.tldr.numbered > ol > li {
   counter-increment:tldr-counter;
-  display:grid;
-  grid-template-columns:auto 1fr;
-  column-gap:var(--sp-lg);
-  align-items:center;
+  position:relative;
+  padding-left:6cqi;
 }
 section.tldr.numbered > ul > li::before,
 section.tldr.numbered > ol > li::before {
   content:counter(tldr-counter, decimal-leading-zero);
+  position:absolute;
+  left:0;
+  top:0;
   font-family:var(--font-mono);
   font-size:var(--fs-h2);
   font-weight:700;

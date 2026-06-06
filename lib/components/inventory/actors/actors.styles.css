@@ -24,7 +24,9 @@ section.actors > ol {
   display:flex; flex-direction:column;
   gap:var(--sp-sm);
   flex:1;
-  justify-content:center;
+  /* flex-start, not center: at 5+ rows center-justify pushed the last row
+   * off the slide bottom (clipped). Top-aligning keeps every row on-canvas. */
+  justify-content:flex-start;
 }
 section.actors > ul > li,
 section.actors > ol > li {

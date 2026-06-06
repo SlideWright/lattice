@@ -33,7 +33,11 @@
  * ──────────────────────────────────────────────────────────────────────── */
 section.kpi {
   display: flex; flex-direction: column;
-  padding-top: var(--sp-md);
+  /* Clear the absolute running header (top:1.875cqi, ~fs-meta tall). The base
+   * section uses 6.875cqi top padding for this; KPI trims it for density but
+   * must stay below the header band or the h3 eyebrow / h2 overprints the
+   * "LATTICE · KPI" chrome (they shared the same y at the old --sp-md). */
+  padding-top: calc(var(--sp-md) + var(--sp-lg));
   /* Trim the base 6.875cqi bottom padding — that much is pure reserved
    * whitespace (the footer is absolutely positioned at bottom:1.875cqi).
    * KPI is the densest layout (hero + 3 metric rows + title); the extra
