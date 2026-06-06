@@ -352,6 +352,21 @@ const pgData = JSON.stringify({
 					render();
 				});
 
+				// Re-sync + re-render on back/forward (bfcache) restores, where the
+				// pre-paint script doesn't re-run — so a theme picked elsewhere
+				// sticks when you navigate back to the playground.
+				window.addEventListener('pageshow', function () {
+					try {
+						var p = localStorage.getItem('lattice-docs-palette');
+						var m = localStorage.getItem('lattice-docs-mode');
+						var changed = false;
+						if (p && p !== root.getAttribute('data-palette')) { root.setAttribute('data-palette', p); changed = true; }
+						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) { root.setAttribute('data-mode', m); changed = true; }
+						paletteSel.value = root.getAttribute('data-palette');
+						if (changed) render();
+					} catch (e) {}
+				});
+
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
