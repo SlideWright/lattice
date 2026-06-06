@@ -87,7 +87,7 @@ Two cards side-by-side, co-equal.
 
 - **Three or more cards.** cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four.
 - **One side is the answer.** If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided.
-- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide.
+- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or stacked rows of cards-stack.
 
 ---
 

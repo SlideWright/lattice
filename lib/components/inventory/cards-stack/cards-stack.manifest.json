@@ -6,7 +6,7 @@
   "substance": "structure",
   "tags": ["overview", "summary", "reference"],
   "description": "Parallel items stacked vertically, full-width cards.",
-  "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.",
+  "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).",
   "variants": [
     "horizontal",
     "numbered"
@@ -20,12 +20,13 @@
     "cards": {
       "selector": "ul > li",
       "required": true,
-      "description": "Each list item becomes one stacked card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text."
+      "description": "Each list item becomes one stacked card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text. An optional trailing inline `code` on the title line renders as a right-anchored pill."
     }
   },
   "skeleton": "<!-- _class: cards-stack -->\n\n## Slide heading.\n\n- First card title\n  - Body text for the first stacked card, two short sentences max.\n- Second card title\n  - Body text for the second stacked card.\n- Third card title\n  - Body text for the third stacked card.\n",
   "anatomyBlock": "cards-stack",
   "sample": "<!-- _class: cards-stack -->\n\n## Three forces are compressing the differentiation window.\n\n- Infrastructure has commoditized.\n  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.\n- Release cycles have collapsed.\n  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.\n- Switching costs are rising.\n  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.\n",
+  "stressSample": "<!-- _class: cards-stack compact -->\n\n## Four workstreams, each with a current status pill.\n\n- Signal intake `shipped`\n  - Connector v1 and multi-source dedupe are live across all three regions. Anomaly auto-routing lands next sprint.\n- Scoring model `in review`\n  - The equal-weights baseline is calibrated; per-team weighting is in security review before the pilot opens.\n- Retrospective loop `at risk`\n  - Outcome classification is still too coarse to score reliably. The owner is reworking the rubric this week.\n- Rollout `not started`\n  - Gated on the scoring model clearing review, then sequenced for the following quarter.\n",
   "whenToUse": [
     {
       "title": "Vertical reading order",
@@ -42,8 +43,8 @@
   ],
   "antiPatterns": [
     {
-      "title": "Four or more items",
-      "body": "The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows."
+      "title": "Five or more items",
+      "body": "A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides."
     },
     {
       "title": "One-line cards",
@@ -58,10 +59,6 @@
     {
       "name": "cards-grid",
       "when": "three or four parallel items in a scannable grid"
-    },
-    {
-      "name": "cards-wide",
-      "when": "three or four rows with more substantial per-card body"
     },
     {
       "name": "cards-side",
@@ -81,7 +78,7 @@
     "numbered": {
       "label": "Numbered stack",
       "caption": "Authored as `ol` (`1.` source). Each row carries a flush corner number — use when the stack carries an implicit count (\"three options\", \"four phases\") even if the order is interchangeable.",
-      "sample": "<!-- _class: cards-stack -->\n\n## Three reasons to keep cards-stack at three items.\n\n1. Cognitive load\n   - Three is the threshold the audience can hold without effort. Past three, the slide demands working memory the room shouldn't have to spend.\n2. Vertical real estate\n   - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.\n3. Build path symmetry\n   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.\n"
+      "sample": "<!-- _class: cards-stack -->\n\n## Three reasons to keep cards-stack at three items.\n\n1. Cognitive load\n   - Three is the threshold the audience can hold without effort. Past three, the slide demands working memory the room shouldn't have to spend.\n2. Vertical real estate\n   - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.\n3. Build path symmetry\n   - cards-stack pairs with cards-grid (3-4 items) for at-a-glance comparison. One stack layout, not two, keeps the family's choices clean.\n"
     }
   }
 }

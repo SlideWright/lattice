@@ -3,7 +3,7 @@
  * inline `- **Title.** body` format in slide source.
  *
  * The bug: card-style layouts (cards-grid, cards-side, cards-stack,
- * cards-wide, featured, split-list, compare-prose, matrix-2x2,
+ * featured, split-list, compare-prose, matrix-2x2,
  * verdict-grid, before-after, decision, citation-card) auto-bold the
  * top-level li via CSS. When an author writes
  *

@@ -271,14 +271,17 @@ section footer {
  *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
  *   non-list             content, code, compare-code, image, diagram
- *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
+ *   needs placement      list, list-criteria, list-tabular
  *                        (grid/scaffold rows where margin-left:auto cannot
  *                        right-anchor; opt in by adding a per-layout rule
  *                        modeled on the actors override)
  *
- * Allow list (renders correctly today): cards-grid, cards-side, actors,
- * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+ * Allow list (renders correctly today): cards-grid, cards-side, cards-stack,
+ * actors, checklist. cards-grid/cards-side/cards-stack carry their own
+ * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
+ * so the universal selector can't reach it); the rest rely on this rule.
+ * Plus any future layout whose `> li` is `display:flex`. */
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -354,7 +357,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
@@ -377,7 +379,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -416,7 +417,6 @@ section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
 section.featured .below-note:has(> p > em:only-child)::before,
 section.list-criteria .below-note:has(> p > em:only-child)::before,
-section.cards-wide .below-note:has(> p > em:only-child)::before,
 section.cards-stack .below-note:has(> p > em:only-child)::before,
 section.list .below-note:has(> p > em:only-child)::before,
 section.list-steps .below-note:has(> p > em:only-child)::before,
@@ -442,7 +442,6 @@ section.compare-prose .below-note > p:has(> em:only-child),
 section.verdict-grid .below-note > p:has(> em:only-child),
 section.featured .below-note > p:has(> em:only-child),
 section.list-criteria .below-note > p:has(> em:only-child),
-section.cards-wide .below-note > p:has(> em:only-child),
 section.cards-stack .below-note > p:has(> em:only-child),
 section.list .below-note > p:has(> em:only-child),
 section.list-steps .below-note > p:has(> em:only-child),
@@ -462,7 +461,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -487,7 +485,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -512,7 +509,6 @@ section.compare-prose .below-note > p:has(> em:only-child)::before,
 section.verdict-grid .below-note > p:has(> em:only-child)::before,
 section.featured .below-note > p:has(> em:only-child)::before,
 section.list-criteria .below-note > p:has(> em:only-child)::before,
-section.cards-wide .below-note > p:has(> em:only-child)::before,
 section.cards-stack .below-note > p:has(> em:only-child)::before,
 section.list .below-note > p:has(> em:only-child)::before,
 section.list-steps .below-note > p:has(> em:only-child)::before,
@@ -532,7 +528,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,

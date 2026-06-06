@@ -25,6 +25,30 @@ in patch versions.
 
 ## Unreleased
 
+### Removed
+
+- **Breaking: the `cards-wide` layout is removed.** `cards-stack` now covers
+  its territory — three or four full-width rows with substantial per-card
+  body — so the two no longer overlap. Migrate any `<!-- _class: cards-wide -->`
+  slide to `<!-- _class: cards-stack -->`; the authoring shape is identical
+  (a top-level bullet is the card title, a nested bullet carries the body),
+  and a fourth row fits with the `compact` modifier.
+
+### Changed
+
+- **`cards-stack` rebuilt on the nested-list card contract.** The title now
+  renders **bold by default** (no `**…**` needed) and the nested-bullet body
+  resets to normal weight — matching `cards-grid`/`cards-side`. Previously the
+  title inherited body weight and the nested body rendered as a raw bulleted
+  sublist. Existing `**Title.**`-wrapped slides keep rendering identically.
+- **`cards-stack` supports metadata pills.** A trailing inline `` `code` `` on
+  a card's title line now renders as a right-anchored pill, the same contract
+  as `cards-grid`/`cards-side`. `cards-stack` graduates off the universal-pill
+  deny list.
+- **`cards-stack` gains a stronger `compact` modifier.** On top of the generic
+  spacing shrink, `compact` now drops card body type to `--fs-body-compact` so
+  a fourth card fits without crowding.
+
 ### Added
 
 - **Five opt-in checkbox style variants (`checks-ringed` *(default)*,

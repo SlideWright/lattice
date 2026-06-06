@@ -129,22 +129,6 @@
     ],
     "description": "Parallel items stacked vertically, full-width cards."
   },
-  "lattice: cards-wide": {
-    "prefix": "lattice-cards-wide",
-    "body": [
-      "<!-- _class: cards-wide -->",
-      "",
-      "## Slide heading.",
-      "",
-      "- First row title",
-      "  - Body text for the first wide row, one or two sentences.",
-      "- Second row title",
-      "  - Body text for the second wide row.",
-      "- Third row title",
-      "  - Body text for the third wide row."
-    ],
-    "description": "Three or four wide rows, each a full-width card."
-  },
   "lattice: checklist": {
     "prefix": "lattice-checklist",
     "body": [

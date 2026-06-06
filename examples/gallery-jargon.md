@@ -882,8 +882,8 @@ Cross-functional sign-off · 2026-04-29 · "cross-functional" means two teams in
 
 ---
 
-<!-- _class: cards-wide -->
-<!-- _footer: "3 full-width cards · cards-wide" -->
+<!-- _class: cards-stack compact -->
+<!-- _footer: "3 full-width cards · cards-stack compact" -->
 
 ## Three scoring failure modes found in the pilot
 

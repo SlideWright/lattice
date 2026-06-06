@@ -214,7 +214,7 @@ def panel_right(panel_text: str, right_text: str) -> tuple:
     return ('raw', panel_text + ' ' * PANEL_GAP + right)
 
 
-# ----- wide-card primitives (T19 cards-wide, T9 cards-stack) ----------------
+# ----- wide-card primitives (cards-stack, decision, code, citation, featured) -
 
 def wide_card_top() -> str:
     return '┌' + '─' * (CONTENT - 2) + '┐'
@@ -567,20 +567,6 @@ def demo_blocks() -> dict[str, str]:
         ('split', 'footer', '1/19'),
     ])
 
-    blocks['cards-wide'] = frame([
-        ('left', 'header'),
-        ('left', 'Three wide rows heading.'),
-        ('raw', wide_card_top()),
-        ('raw', wide_card_row('Wide row 1 — full content width')),
-        ('raw', wide_card_bot()),
-        ('raw', wide_card_top()),
-        ('raw', wide_card_row('Wide row 2 — full content width')),
-        ('raw', wide_card_bot()),
-        ('raw', wide_card_top()),
-        ('raw', wide_card_row('Wide row 3 — full content width')),
-        ('raw', wide_card_bot()),
-        ('split', 'footer', '1/19'),
-    ])
 
     blocks['list'] = frame([
         ('left', 'header'),

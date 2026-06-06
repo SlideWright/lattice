@@ -55,7 +55,24 @@ Parallel items stacked vertically, full-width cards.
 2. Vertical real estate
    - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.
 3. Build path symmetry
-   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.
+   - cards-stack pairs with cards-grid (3-4 items) for at-a-glance comparison. One stack layout, not two, keeps the family's choices clean.
+
+
+---
+
+<!-- _class: cards-stack compact -->
+<!-- _footer: "Stress test · cards-stack" -->
+
+## Four workstreams, each with a current status pill.
+
+- Signal intake `shipped`
+  - Connector v1 and multi-source dedupe are live across all three regions. Anomaly auto-routing lands next sprint.
+- Scoring model `in review`
+  - The equal-weights baseline is calibrated; per-team weighting is in security review before the pilot opens.
+- Retrospective loop `at risk`
+  - Outcome classification is still too coarse to score reliably. The owner is reworking the rubric this week.
+- Rollout `not started`
+  - Gated on the scoring model clearing review, then sequenced for the following quarter.
 
 
 ---
@@ -110,7 +127,7 @@ Parallel items stacked vertically, full-width cards.
 
 ## When NOT to reach for cards-stack.
 
-- **Four or more items.** The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows.
+- **Five or more items.** A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides.
 - **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
@@ -123,6 +140,5 @@ Parallel items stacked vertically, full-width cards.
 `Related components`
 
 - `cards-grid` — three or four parallel items in a scannable grid
-- `cards-wide` — three or four rows with more substantial per-card body
 - `cards-side` — exactly two items in left-right balance
 - `list-steps` — items carry an explicit, ordered sequence

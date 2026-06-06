@@ -49,11 +49,11 @@
   "antiPatterns": [
     {
       "title": "Three or fewer rows",
-      "body": "The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe."
+      "body": "The ledger needs density to justify its shape. For two to four items, reach for cards-stack — the rows get the room to breathe."
     },
     {
       "title": "Long per-row prose",
-      "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides."
+      "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides."
     },
     {
       "title": "Stacking two primary variants",

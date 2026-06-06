@@ -6,7 +6,7 @@
 
 **Tags** `overview` · `summary` · `reference`
 
-Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.
+Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).
 
 ## When to use
 
@@ -16,7 +16,7 @@ Use when the items want vertical reading order — sequential exploration rather
 
 ## When NOT to use
 
-- **Four or more items.** The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows.
+- **Five or more items.** A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides.
 - **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
@@ -40,7 +40,7 @@ Use when the items want vertical reading order — sequential exploration rather
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `cards` | `ul > li` | yes | Each list item becomes one stacked card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text. |
+| `cards` | `ul > li` | yes | Each list item becomes one stacked card. Authoring contract: a top-level bullet is the card title (renders bold by default); an indented bullet underneath carries the body text. An optional trailing inline `code` on the title line renders as a right-anchored pill. |
 
 ## Anatomy
 
@@ -93,7 +93,7 @@ Authored as `ol` (`1.` source). Each row carries a flush corner number — use w
 2. Vertical real estate
    - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.
 3. Build path symmetry
-   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.
+   - cards-stack pairs with cards-grid (3-4 items) for at-a-glance comparison. One stack layout, not two, keeps the family's choices clean.
 ```
 
 ## Universal modifiers
@@ -103,7 +103,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
-- [`cards-wide`](../../inventory/cards-wide/cards-wide.docs.md) — three or four rows with more substantial per-card body
 - [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — exactly two items in left-right balance
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
 

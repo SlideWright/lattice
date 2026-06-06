@@ -1494,17 +1494,24 @@ section.cards-side:not(:has(.cards-grid-inner)) > ol > li::before {
 section.cards-side :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/inventory/cards-stack/cards-stack.styles.css === */
-/* cards-stack — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-stack/cards-stack.manifest.json for the component contract.
+/* cards-stack — vertical (or horizontal) stack of full-width cards.
+ * See lib/components/inventory/cards-stack/cards-stack.manifest.json for the
+ * component contract.
  */
 
 /* ── CARDS-STACK ──
- * Structured: flat ul/ol → .cards-stack-inner > .card.
- * Each card holds inline-title prose: **Title.** body continues.
+ * Nested-list card contract — the same authoring shape as cards-grid:
+ *   - Card title `pill`
+ *     - body text continues here
+ * The top-level li is the card. Its first line is the title (auto-bold by
+ * CSS — no `**…**` needed); an optional trailing inline `code` becomes a
+ * right-anchored pill on the title row; the nested ul/ol carries the body
+ * (auto-reset to normal weight). The li is a wrapping flex row so the pill
+ * right-anchors next to the title and the body wraps full-width below.
  *
  * Two parallel selector chains, same shape as cards-grid:
- *   marp-cli path: section.cards-stack > ul/ol > li        (raw markdown)
- *   lattice.js path: section.cards-stack .cards-stack-inner > .card  (post-processed)
+ *   marp-cli + runtime path: section.cards-stack > ul/ol > li        (native HTML)
+ *   emulator path:           section.cards-stack .cards-stack-inner > .card
  */
 section.cards-stack { display:flex; flex-direction:column; }
 section.cards-stack h2 { margin-bottom:var(--sp-sm); }
@@ -1520,20 +1527,59 @@ section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   margin:0; flex:1; list-style:none;
-  font-size:var(--fs-body); line-height:var(--lh-relaxed); color:var(--text-body);
+  display:flex; flex-wrap:wrap; align-items:baseline; align-content:flex-start;
+  column-gap:var(--sp-sm); row-gap:var(--sp-xs);
+  font-size:var(--fs-body); line-height:var(--lh-snug);
+  font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
 
+/* — title strong: backwards-compat shim. Legacy slides that wrap the title in
+ *   `**…**` render identically; the strong simply inherits the li's bold. — */
+section.cards-stack > ul > li > strong, section.cards-stack > ol > li > strong,
+section.cards-stack .card > strong { font-weight:inherit; color:inherit; }
+
+/* — trailing inline code → right-anchored pill on the title row.
+ *   Carries full chrome rather than leaning on the universal pill rule:
+ *   the emulator path's `.card` is not inside a ul/ol (so the universal
+ *   `> ul/ol > li > code` selector can't reach it), and the marp-cli path
+ *   emits the `<code>` before the nested `<ul>` (so the :last-child guard
+ *   would miss it). The :has(+ ul/ol) case is covered here by position. — */
+section.cards-stack > ul > li > code, section.cards-stack > ol > li > code,
+section.cards-stack .card > code {
+  margin-left:auto; align-self:baseline;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
+  letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius);
+  padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  border:1px solid var(--pill-border, var(--text-muted));
+  background:var(--pill-bg, var(--bg)); color:var(--pill-fg, var(--text-body));
+}
+
+/* — card body (nested list) wraps full-width below the title row, reset to
+ *   normal weight and body colour so only the title reads bold. — */
+section.cards-stack > ul > li > ul, section.cards-stack > ul > li > ol,
+section.cards-stack > ol > li > ul, section.cards-stack > ol > li > ol,
+section.cards-stack .card > ul, section.cards-stack .card > ol {
+  flex-basis:100%; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+  font-weight:400; color:var(--text-body); line-height:var(--lh-base);
+}
+section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
+section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
+section.cards-stack .card > ul > li, section.cards-stack .card > ol > li {
+  font-size:var(--fs-body);
+}
+
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.
- * Author writes `1. **Title.** body…`; CSS pins a counter badge in the
- * top-left corner. Two parallel chains for the raw and scaffolded paths,
- * both gated on the ordered shape (`> ol` / `--ordered` modifier class).
- * Composes with `horizontal`: the badge sits in the same corner whether
- * cards stack vertically or flow as a row. ── */
+ * Author writes `1. Title`; CSS pins a counter badge in the top-left
+ * corner. Two parallel chains for the raw and scaffolded paths, both gated
+ * on the ordered shape (`> ol` / `--ordered` modifier class). Composes with
+ * `horizontal`: the badge sits in the same corner whether cards stack
+ * vertically or flow as a row. ── */
 section.cards-stack > ol { counter-reset:stack; }
 section.cards-stack > ol > li {
   counter-increment:stack;
-  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
+  position:relative; padding-top:calc(var(--sp-xs) + 1.875cqi);
 }
 section.cards-stack > ol > li::before {
   content:counter(stack);
@@ -1545,7 +1591,7 @@ section.cards-stack > ol > li::before {
 section.cards-stack .cards-stack-inner--ordered { counter-reset:stack; }
 section.cards-stack .cards-stack-inner--ordered > .card {
   counter-increment:stack;
-  position:relative; padding-top:calc(var(--sp-sm) + 2.34375cqi);
+  position:relative; padding-top:calc(var(--sp-xs) + 1.875cqi);
 }
 section.cards-stack .cards-stack-inner--ordered > .card::before {
   content:counter(stack);
@@ -1556,22 +1602,30 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
 }
 
 
-/* ── Cards-stack horizontal modifier — appended Phase 7 ──
- */
-/* ────────────────────────────────────────────────────────────────────────
- * Layout-specific modifiers — cards-stack horizontal
- * Reference: proposals.md §2.2 cards-stack
- *
+/* ── Cards-stack horizontal modifier ──
  * Default cards-stack flows the cards as a vertical stack (one per row).
  * `horizontal` flips to a horizontal row, useful when cards are short and
- * the slide reads left-to-right rather than top-to-bottom.
- * ──────────────────────────────────────────────────────────────────────── */
-
+ * the slide reads left-to-right rather than top-to-bottom. ── */
 section.cards-stack.horizontal > ul,
 section.cards-stack.horizontal > ol,
 section.cards-stack.horizontal .cards-stack-inner {
   flex-direction: row;
   align-items: stretch;
+}
+
+
+/* ── compact ──
+ * Layout-specific density on top of the generic `--sp-*` shrink that the
+ * universal `compact` modifier (lib/shared/shared.styles.css) already
+ * applies. cards-stack additionally drops body type to --fs-body-compact so
+ * a fourth card fits without crowding. Card padding is left to the generic
+ * `--sp-*` shrink so the ordered-badge clearance (padding-top) is preserved. */
+section.cards-stack.compact > ul > li, section.cards-stack.compact > ol > li,
+section.cards-stack.compact .card { font-size:var(--fs-body-compact); }
+section.cards-stack.compact > ul > li > ul > li, section.cards-stack.compact > ul > li > ol > li,
+section.cards-stack.compact > ol > li > ul > li, section.cards-stack.compact > ol > li > ol > li,
+section.cards-stack.compact .card > ul > li, section.cards-stack.compact .card > ol > li {
+  font-size:var(--fs-body-compact);
 }
 
 
@@ -1581,72 +1635,6 @@ section.cards-stack.horizontal .cards-stack-inner {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
-/* === lib/components/inventory/cards-wide/cards-wide.styles.css === */
-/* cards-wide — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-wide/cards-wide.manifest.json for the component contract.
- */
-
-/* ── CARDS-WIDE ──
- * ## heading  then 3× pairs: ### eyebrow·heading  p body
- * CSS stacks them vertically, each full width
- */
-section.cards-wide h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
-section.cards-wide .three-stack { display:flex; flex-direction:column; gap:0.9375cqi; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
-section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-secondary); flex-shrink:0; }
-section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
-section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
-section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-
-
-
-
-
-/* ── CARDS-WIDE ────────────────────────────────────────────────────────────
- * ol > li(heading text + nested <ul>body) → mimic .three-stack > .wide-card.
- * Heading is the bare text node before the nested <ul>; CSS auto-bolds it,
- * so authors do not wrap the heading in **…**. Optional <strong> is harmless.
- *
- * These rules style the RAW markdown form (the marp-cli + runtime/preview
- * paths, which do not run the cards-wide transform — only the emulator emits
- * .three-stack). They are NOT guarded with :not(:has(.three-stack)): the
- * transformed (.three-stack divs) and raw (ol) forms are mutually exclusive
- * in any single render — the emulator replaces every list, the other paths
- * keep it — so the .three-stack rules above and the ol rules below target
- * disjoint elements and never collide. The old :not(:has()) guard was
- * unnecessary AND silently broke in the Marp preview Chromium (the ol rules
- * were dropped, so body text inherited the li's font-weight:700 → "all bold").
- * See engineering/gotchas.md "`:not(:has(...))` is unreliable". */
-section.cards-wide ol {
-  display:flex; flex-direction:column; gap:0.9375cqi; flex:1;
-  list-style:none; padding:0; margin:0;
-}
-section.cards-wide ol > li {
-  flex:1; background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-}
-section.cards-wide ol { counter-reset:wide-counter; }
-section.cards-wide ol > li { counter-increment:wide-counter; }
-section.cards-wide ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide ol > li > strong { font-weight:inherit; color:inherit; }
-section.cards-wide ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
-section.cards-wide ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
-
-
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/inventory/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
@@ -9539,14 +9527,17 @@ section footer {
  *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
  *   non-list             content, code, compare-code, image, diagram
- *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
+ *   needs placement      list, list-criteria, list-tabular
  *                        (grid/scaffold rows where margin-left:auto cannot
  *                        right-anchor; opt in by adding a per-layout rule
  *                        modeled on the actors override)
  *
- * Allow list (renders correctly today): cards-grid, cards-side, actors,
- * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+ * Allow list (renders correctly today): cards-grid, cards-side, cards-stack,
+ * actors, checklist. cards-grid/cards-side/cards-stack carry their own
+ * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
+ * so the universal selector can't reach it); the rest rely on this rule.
+ * Plus any future layout whose `> li` is `display:flex`. */
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9622,7 +9613,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
@@ -9645,7 +9635,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -9684,7 +9673,6 @@ section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
 section.featured .below-note:has(> p > em:only-child)::before,
 section.list-criteria .below-note:has(> p > em:only-child)::before,
-section.cards-wide .below-note:has(> p > em:only-child)::before,
 section.cards-stack .below-note:has(> p > em:only-child)::before,
 section.list .below-note:has(> p > em:only-child)::before,
 section.list-steps .below-note:has(> p > em:only-child)::before,
@@ -9710,7 +9698,6 @@ section.compare-prose .below-note > p:has(> em:only-child),
 section.verdict-grid .below-note > p:has(> em:only-child),
 section.featured .below-note > p:has(> em:only-child),
 section.list-criteria .below-note > p:has(> em:only-child),
-section.cards-wide .below-note > p:has(> em:only-child),
 section.cards-stack .below-note > p:has(> em:only-child),
 section.list .below-note > p:has(> em:only-child),
 section.list-steps .below-note > p:has(> em:only-child),
@@ -9730,7 +9717,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9755,7 +9741,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9780,7 +9765,6 @@ section.compare-prose .below-note > p:has(> em:only-child)::before,
 section.verdict-grid .below-note > p:has(> em:only-child)::before,
 section.featured .below-note > p:has(> em:only-child)::before,
 section.list-criteria .below-note > p:has(> em:only-child)::before,
-section.cards-wide .below-note > p:has(> em:only-child)::before,
 section.cards-stack .below-note > p:has(> em:only-child)::before,
 section.list .below-note > p:has(> em:only-child)::before,
 section.list-steps .below-note > p:has(> em:only-child)::before,
@@ -9800,7 +9784,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
