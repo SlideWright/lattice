@@ -1,8 +1,16 @@
 # chart-family
 
-Lattice's chart engine. A shared rendering subsystem used by seven
+Lattice's chart engine. A shared rendering subsystem used by twelve
 chart-class components: `progress`, `timeline-list`, `piechart`,
-`gantt`, `kanban`, `radar`, `quadrant`.
+`gantt`, `kanban`, `radar`, `quadrant`, `state-chart`, `funnel`, `map`,
+`journey`, and `word-cloud`.
+
+Membership is defined by the engine, not the disk bucket: a chart-family
+member is any layout the dispatcher wraps in the `.chart-frame` skeleton.
+That is a wider net than substance = `series` — `state-chart` is a `graph`
+and `journey` is `structure`, yet both render through the frame, and
+`word-cloud` (`series`) was folded in when its bespoke frame-mirroring CSS
+was retired in favour of the real skeleton.
 
 **Files in this folder:**
 
@@ -58,15 +66,25 @@ The closed set of layouts wrapped by chart-family is hard-coded in
 
 ```js
 const CHART_LAYOUTS = ['progress', 'timeline-list', 'piechart',
-                       'gantt', 'kanban', 'radar', 'quadrant'];
+                       'gantt', 'kanban', 'radar', 'quadrant',
+                       'state-chart', 'funnel', 'map',
+                       'journey', 'word-cloud'];
 ```
 
 Adding a new chart member requires updating that array AND either:
 - writing an inline builder in `chart-family.js` (current pattern for
   `progress` / `timeline-list` / `piechart` / `gantt` / `kanban`), OR
 - writing a per-component `<name>.transform.js` kernel and importing
-  it from `chart-family.js` (current pattern for `radar` and
-  `quadrant`).
+  it from `chart-family.js` (current pattern for `radar`, `quadrant`,
+  `state-chart`, `funnel`, `map`, `journey`, and `word-cloud`).
+
+For a delegated kernel the dispatch branch calls the kernel's section
+transform to rewrite the list in place (e.g.
+`journey.transformJourneySection(html, cls)` /
+`wordCloud.transformWordCloudSection(html, cls)`), leaving the `<h2>` for
+the chart-frame wrap to lift into the header. The body container the kernel
+emits (`.journey-board`, `.word-cloud-canvas`, …) must be listed in the
+`bodyRE` the wrap scans for.
 
 ---
 
@@ -134,7 +152,7 @@ A planned cleanup distributes all kernels to their components, leaving
 
 ## See also
 
-- `lib/components/{progress,timeline-list,piechart,gantt,kanban,radar,quadrant}/<name>.docs.md` — per-component contracts and variant catalogs.
+- `lib/components/chart/{progress,timeline-list,piechart,gantt,kanban,radar,quadrant,state-chart,funnel,map,journey,word-cloud}/<name>.docs.md` — per-component contracts and variant catalogs.
 - `lib/shared/shared.docs.md` — the contrast: small composable
   modifiers (`compact`, `loose`, `accent`) that compose with all
   layouts, not just chart components.

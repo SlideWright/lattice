@@ -104,7 +104,7 @@ section.chart-frame {
  * palette-blind. Eight slots — past ~6 categories perceptual distinction
  * collapses (Wong 2011), so charts should consolidate rather than cycle on. */
 section.chart-frame,
-section.word-cloud { /* word-cloud rides the same catN spectrum but isn't a chart-frame member */
+section.word-cloud { /* word-cloud is a chart-frame member; the bare selector also covers the rare un-transformed fallback (no h2/list) */
   /* Apple-inspired categorical spectrum — the chart-family's OWN palette,
    * decoupled from the engine-wide cN accents (which still drive roadmap /
    * journey / legal / decision). Each slot is `light-dark(lightCanvasVivid,
@@ -349,8 +349,9 @@ section.chart-frame .chart-body {
  *
  * Excluded: state-chart, whose vertical state flow already fills the full
  * chart-body height — the panel inset would push its top/bottom nodes past the
- * clipped edge. (word-cloud is free-floating and not a chart-frame member at
- * all, so it never matches this rule.)
+ * clipped edge. (word-cloud, now a chart-frame member, gets this shared panel
+ * like the rest — it replaced the bespoke ::before panel word-cloud carried
+ * before the fold.)
  *
  * OPT-IN: the canvas is now off by default — a chart sits directly on the
  * slide unless the slide adds the `canvas` modifier. So this rule is gated on

@@ -2,27 +2,10 @@
 
 # progression
 
-`4 components`
+`3 components`
 
 Progression — ordered movement through stages or time.
 
-
----
-
-<!-- _class: journey -->
-
-## Customer onboarding · trial to activation.
-
-- Evaluate
-  - Read case study `@prospect` `:5`
-  - Book demo `@prospect` `:4`
-  - Live demo `@prospect` `@sales` `:4`
-- Trial
-  - Trial signup `@prospect` `:3`
-  - Workspace setup `@user` `@onboarding` `:1`
-- Activate
-  - First report `@user` `:3`
-  - Daily use `@user` `:5`
 
 ---
 

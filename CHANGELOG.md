@@ -85,6 +85,20 @@ in patch versions.
 
 ### Changed
 
+- **`journey` and `word-cloud` folded into the chart family.** Both are now
+  chart-frame members dispatched by the chart engine
+  (`lib/components/chart/_chart-family/chart-family.js`) like every other
+  chart, instead of standalone transformers. They render in the shared
+  `.chart-frame` skeleton — eyebrow → centered `h2` → body → caption — so a
+  `journey` or `word-cloud` slide now picks up the same header rule, caption
+  treatment, and opt-in `.canvas` surface panel as `progress` / `radar` /
+  `gantt`. `journey` also moves from the `progression` disk bucket to the
+  `chart` bucket (its `function` stays `progression`); the authoring class
+  names (`<!-- _class: journey -->`, `<!-- _class: word-cloud -->`) and every
+  variant are unchanged. `word-cloud`'s bespoke frame-mirroring CSS (its own
+  `> h2` rule and `.canvas` panel `::before`) is retired in favour of the real
+  skeleton. Decks render identically across all three paths; only the visual
+  framing of these two layouts changes.
 - **The Drawing Board chat now styles Architect replies as they stream**, not
   only once the stream completes. Each token re-renders the accumulated reply
   through the existing zero-dependency `renderMarkdown` (no `unified`/`remark`
