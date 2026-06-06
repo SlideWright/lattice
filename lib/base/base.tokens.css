@@ -287,22 +287,79 @@
   --pill-weight:   600;
   --pill-tracking: 0.04em;
 
-  /* ── Universal state-token slash mask ─────────────────────────────────
-   * The slash that marks [/] (out of scope / waived / N/A). Painted
-   * on top of the coloured disc as a semi-transparent dark stroke, so
-   * the disc keeps full colour AND the slash is unmistakable in pure
-   * greyscale. Stroke-width is ~22% of the disc diameter so [x] (filled)
-   * and [/] (filled + slash) are clearly distinct shapes.
-   *
-   * The half-disc state ([-]) is painted with a CSS linear-gradient
-   * inline at each consumer site (two tones of --state-color, not a
-   * transparent cut) so the disc stays fully coloured on tinted cell
-   * surfaces (e.g. obligation-matrix.heat). See the UNIVERSAL STATE
-   * TOKEN contract block in the LAYOUTS section.
-   *
-   * COLOUR + SHAPE both at full strength. Neither channel sacrificed
-   * for the other. */
+  /* ── ROADMAP slash mask (legacy) ──────────────────────────────────────
+   * Semi-transparent dark slash painted on top of a coloured dot. Now
+   * used ONLY by roadmap.status (state-skipped) — the checkbox trio
+   * (checklist / verdict-grid / obligation-matrix) moved to the
+   * full-opacity --mark-slash mask below. Kept so roadmap renders
+   * unchanged. */
   --state-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='2' y1='14' x2='14' y2='2' stroke='black' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/></svg>");
+
+  /* ── Universal state-token MARKS — circle + distinct in-disc symbol ───
+   * The redesigned checkbox grammar for [x]/[-]/[ ]/[/]. Every state is
+   * the SAME coloured disc treatment carrying a DISTINCT mark, so the
+   * SHAPE channel carries the meaning independently of colour — the
+   * colour-blind-safe redundant encoding the old fill-level discs
+   * (full/half/empty) lacked:
+   *
+   *   [x] done         → check  on --pass        (green)
+   *   [-] partial      → dash   on --warn        (amber)
+   *   [ ] not done     → x      on --fail        (red)
+   *   [/] out of scope → slash  on --text-muted  (grey, row struck through)
+   *
+   * Each mark is a CSS mask (opaque path on transparent ground); the
+   * consumer paints it in a `background-color` revealed through the mask,
+   * so the mark colour is theme- and variant-driven (knockout = canvas
+   * colour, or the status colour for the outline/tonal styles) — NOT
+   * baked into the data-URI. Stroke colour inside the SVG is irrelevant
+   * (mask uses alpha); we use `black` so the URI stays `#`-free and needs
+   * no escaping. viewBox 24 with the path inset to the central ~50%
+   * gives the mark its disc padding.
+   *
+   * Shape→mark mapping and the disc recipe live with the universal
+   * state-token block in base.modifiers.css; consumers read these tokens.
+   *
+   * No transform/runtime/emulator change: the marker decoder still emits
+   * `state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}`;
+   * only what those classes PAINT changed, so all three render paths agree. */
+  --mark-check: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  --mark-dash:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  --mark-x:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
+  --mark-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  /* Heavier-stroked set for the `checks-bold` variant (a mask's stroke
+   * can't be tuned by CSS var, so bold swaps the token). */
+  --mark-check-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  --mark-dash-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+  --mark-x-bold:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round'/></svg>");
+  --mark-slash-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+
+  /* ── State-disc recipe — SCALAR KNOBS (default = "Ringed Solid") ──────
+   * The disc is painted by each consumer from --state-color + these
+   * scalar knobs. Knobs hold ONLY numbers/lengths/percentages — never a
+   * value embedding --state-color or --bg — because the variant classes
+   * (.checks-*) set them on an ANCESTOR (section), where --state-color is
+   * not in scope. The leaf element (where --state-color resolves) does
+   * the color-mix. Storing `var(--state-color)` in a :root/section custom
+   * property would resolve it THERE against an undefined value and
+   * inherit the guaranteed-invalid result — the disc then never paints.
+   * See engineering/gotchas.md "state disc never paints".
+   *
+   * Default = Ringed Solid: saturated fill + hairline darker ring,
+   * knockout mark. Stays crisp on its own status-tinted row. The five
+   * variants in base.modifiers.css override these knobs.
+   *
+   * NOTE: the recipe is intentionally VECTOR-ONLY (solid fills + 0-blur
+   * spread rings) — no blurred drop-shadow. A blurred box-shadow on a
+   * small element is exported by Chromium print-to-PDF as a
+   * transparency-group/soft-mask image, which some PDF viewers render as
+   * an opaque grey square around the disc. See engineering/gotchas.md
+   * "blurred box-shadow → grey box in some PDF viewers". */
+  --state-fill-pct: 100%;       /* disc fill = this % of --state-color, rest transparent */
+  --state-ring-outer-w: 1.6px;  /* outer ring width (ringed default) */
+  --state-ring-mix: 50%;        /* outer ring colour = --state-color mixed toward black */
+  --state-ring-inner-w: 0px;    /* inner ring width (outline / tonal) */
+  --state-mark-pct: 0%;         /* mark colour = this % --state-color, rest --bg (0% = knockout) */
+  --state-disc-scale: 1;        /* disc + mark size multiplier (bold bumps it) */
 }
 
 /* ── The 12 typography tokens, scaled ──────────────────────────────────

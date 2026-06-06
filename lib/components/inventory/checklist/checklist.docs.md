@@ -6,11 +6,11 @@
 
 **Tags** `status` · `stoplight` · `process` · `requirements`
 
-Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ] produce green/amber/red glyphs.
+Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / x / slash — so the shape reads independently of color (colour-blind-safe).
 
 ## When to use
 
-- **Completion reports.** Use when the audience needs to see what's done, what's in progress, and what's outstanding. The state glyphs are the load-bearing signal.
+- **Completion reports.** Use when the audience needs to see what's done, what's in progress, and what's outstanding. The state marks are the load-bearing signal.
 - **Readiness audits.** Pre-launch, pre-release, pre-flight. A short list where the mix of green / amber / red tells the room whether to proceed.
 - **Five to eight items.** Short enough that the audience can take in the state mix at a glance. Past eight, split into two checklists by phase or owner.
 
@@ -18,7 +18,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 - **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters.
 - **Long per-item prose.** Each item is one short line. If a row needs a sentence of explanation, the right home is cards-stack or list-tabular.
-- **Custom state markers.** Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the glyph palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
+- **Custom state markers.** Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the mark palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
 
 ## Authoring
 

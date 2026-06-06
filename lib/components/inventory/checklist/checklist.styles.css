@@ -14,15 +14,18 @@
  * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
- *   [x] → pass + state-full     (filled disc, --pass green)
- *   [-] → warn + state-half     (half-filled disc, --warn amber)
- *   [ ] → fail + state-empty    (outline disc, --fail red)
- *   [/] → skip + state-slashed  (filled disc + slash, --text-muted; row strikethrough)
+ *   [x] → pass + state-full     (check  on --pass  green)
+ *   [-] → warn + state-half     (dash   on --warn  amber)
+ *   [ ] → fail + state-empty    (x      on --fail  red)
+ *   [/] → skip + state-slashed  (slash  on --text-muted; row strikethrough)
  *
- * The Marp plugin (build) and runtime transformer (preview) strip the
- * marker and add `class="state {pass|warn|fail|skip} {state-full|...}"`
- * to the <li>; CSS paints the universal state token via ::before. The
- * row background tint and left rail pick up the same --state-color.
+ * Every state is the SAME disc treatment carrying a DISTINCT mark, so the
+ * SHAPE channel is colour-blind-safe. The Marp plugin (build) and runtime
+ * transformer (preview) strip the marker and add
+ * `class="state {pass|warn|fail|skip} {state-full|...}"` to the <li>; CSS
+ * paints the disc (::before) + mark (::after). The row background tint and
+ * left rail pick up the same --state-color. The disc style follows the
+ * default (Ringed Solid) or a .checks-* variant; see base.modifiers.css.
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
 section.checklist { display:flex; flex-direction:column; }
@@ -85,40 +88,37 @@ section.checklist > ol > li.state.skip {
   text-decoration-color:color-mix(in srgb, var(--text-muted) 50%, transparent);
 }
 
-/* Universal state token — circular glyph in the row's left column.
- * Shape branches on state-full / state-half / state-empty / state-slashed
- * via the two shared SVG masks. No font dependency. */
+/* Universal state token — coloured disc + distinct in-disc mark in the
+ * row's left column. ::before paints the disc (fill + ring + lift from
+ * the scalar knobs); ::after masks the per-shape mark (check / dash / x /
+ * slash) on top. Colours are mixed HERE from --state-color (resolved on
+ * the .state row) + the knobs set by the default or a .checks-* variant.
+ * Mirror recipe: verdict-grid.styles.css, obligation-matrix.styles.css. */
 section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before {
+section.checklist > ol > li.state::before,
+section.checklist > ul > li.state::after,
+section.checklist > ol > li.state::after {
   content:'';
   position:absolute;
   left:var(--sp-md);
   top:calc(var(--sp-sm) + 0.18em);
-  width:1.15em;
-  height:1.15em;
-  border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
+  width:calc(1.15em * var(--state-disc-scale));
+  height:calc(1.15em * var(--state-disc-scale));
   box-sizing:border-box;
 }
-/* state-half: tonal split — both halves coloured, sharp bisector. */
-section.checklist > ul > li.state.state-half::before,
-section.checklist > ol > li.state.state-half::before {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+section.checklist > ul > li.state::before,
+section.checklist > ol > li.state::before {
+  border-radius:50%;
+  background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
+  box-shadow:
+    0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
-section.checklist > ul > li.state.state-empty::before,
-section.checklist > ol > li.state.state-empty::before {
-  background-color:transparent;
-  border:2px solid var(--state-color, var(--text-muted));
-}
-/* state-slashed: semi-transparent dark slash on the coloured disc. */
-section.checklist > ul > li.state.state-slashed::before,
-section.checklist > ol > li.state.state-slashed::before {
-  background-image:var(--state-slash);
+section.checklist > ul > li.state::after,
+section.checklist > ol > li.state::after {
+  background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
+  -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
+          mask:var(--state-mark) center / 100% 100% no-repeat;
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */

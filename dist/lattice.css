@@ -326,22 +326,79 @@
   --pill-weight:   600;
   --pill-tracking: 0.04em;
 
-  /* ── Universal state-token slash mask ─────────────────────────────────
-   * The slash that marks [/] (out of scope / waived / N/A). Painted
-   * on top of the coloured disc as a semi-transparent dark stroke, so
-   * the disc keeps full colour AND the slash is unmistakable in pure
-   * greyscale. Stroke-width is ~22% of the disc diameter so [x] (filled)
-   * and [/] (filled + slash) are clearly distinct shapes.
-   *
-   * The half-disc state ([-]) is painted with a CSS linear-gradient
-   * inline at each consumer site (two tones of --state-color, not a
-   * transparent cut) so the disc stays fully coloured on tinted cell
-   * surfaces (e.g. obligation-matrix.heat). See the UNIVERSAL STATE
-   * TOKEN contract block in the LAYOUTS section.
-   *
-   * COLOUR + SHAPE both at full strength. Neither channel sacrificed
-   * for the other. */
+  /* ── ROADMAP slash mask (legacy) ──────────────────────────────────────
+   * Semi-transparent dark slash painted on top of a coloured dot. Now
+   * used ONLY by roadmap.status (state-skipped) — the checkbox trio
+   * (checklist / verdict-grid / obligation-matrix) moved to the
+   * full-opacity --mark-slash mask below. Kept so roadmap renders
+   * unchanged. */
   --state-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='2' y1='14' x2='14' y2='2' stroke='black' stroke-opacity='0.55' stroke-width='3.5' stroke-linecap='round'/></svg>");
+
+  /* ── Universal state-token MARKS — circle + distinct in-disc symbol ───
+   * The redesigned checkbox grammar for [x]/[-]/[ ]/[/]. Every state is
+   * the SAME coloured disc treatment carrying a DISTINCT mark, so the
+   * SHAPE channel carries the meaning independently of colour — the
+   * colour-blind-safe redundant encoding the old fill-level discs
+   * (full/half/empty) lacked:
+   *
+   *   [x] done         → check  on --pass        (green)
+   *   [-] partial      → dash   on --warn        (amber)
+   *   [ ] not done     → x      on --fail        (red)
+   *   [/] out of scope → slash  on --text-muted  (grey, row struck through)
+   *
+   * Each mark is a CSS mask (opaque path on transparent ground); the
+   * consumer paints it in a `background-color` revealed through the mask,
+   * so the mark colour is theme- and variant-driven (knockout = canvas
+   * colour, or the status colour for the outline/tonal styles) — NOT
+   * baked into the data-URI. Stroke colour inside the SVG is irrelevant
+   * (mask uses alpha); we use `black` so the URI stays `#`-free and needs
+   * no escaping. viewBox 24 with the path inset to the central ~50%
+   * gives the mark its disc padding.
+   *
+   * Shape→mark mapping and the disc recipe live with the universal
+   * state-token block in base.modifiers.css; consumers read these tokens.
+   *
+   * No transform/runtime/emulator change: the marker decoder still emits
+   * `state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}`;
+   * only what those classes PAINT changed, so all three render paths agree. */
+  --mark-check: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  --mark-dash:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  --mark-x:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
+  --mark-slash: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>");
+  /* Heavier-stroked set for the `checks-bold` variant (a mask's stroke
+   * can't be tuned by CSS var, so bold swaps the token). */
+  --mark-check-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.6l4 4 8-9' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  --mark-dash-bold:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 12h10' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+  --mark-x-bold:     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 8l8 8M16 8l-8 8' fill='none' stroke='black' stroke-width='3.6' stroke-linecap='round'/></svg>");
+  --mark-slash-bold: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M8 16L16 8' fill='none' stroke='black' stroke-width='3.8' stroke-linecap='round'/></svg>");
+
+  /* ── State-disc recipe — SCALAR KNOBS (default = "Ringed Solid") ──────
+   * The disc is painted by each consumer from --state-color + these
+   * scalar knobs. Knobs hold ONLY numbers/lengths/percentages — never a
+   * value embedding --state-color or --bg — because the variant classes
+   * (.checks-*) set them on an ANCESTOR (section), where --state-color is
+   * not in scope. The leaf element (where --state-color resolves) does
+   * the color-mix. Storing `var(--state-color)` in a :root/section custom
+   * property would resolve it THERE against an undefined value and
+   * inherit the guaranteed-invalid result — the disc then never paints.
+   * See engineering/gotchas.md "state disc never paints".
+   *
+   * Default = Ringed Solid: saturated fill + hairline darker ring,
+   * knockout mark. Stays crisp on its own status-tinted row. The five
+   * variants in base.modifiers.css override these knobs.
+   *
+   * NOTE: the recipe is intentionally VECTOR-ONLY (solid fills + 0-blur
+   * spread rings) — no blurred drop-shadow. A blurred box-shadow on a
+   * small element is exported by Chromium print-to-PDF as a
+   * transparency-group/soft-mask image, which some PDF viewers render as
+   * an opaque grey square around the disc. See engineering/gotchas.md
+   * "blurred box-shadow → grey box in some PDF viewers". */
+  --state-fill-pct: 100%;       /* disc fill = this % of --state-color, rest transparent */
+  --state-ring-outer-w: 1.6px;  /* outer ring width (ringed default) */
+  --state-ring-mix: 50%;        /* outer ring colour = --state-color mixed toward black */
+  --state-ring-inner-w: 0px;    /* inner ring width (outline / tonal) */
+  --state-mark-pct: 0%;         /* mark colour = this % --state-color, rest --bg (0% = knockout) */
+  --state-disc-scale: 1;        /* disc + mark size multiplier (bold bumps it) */
 }
 
 /* ── The 12 typography tokens, scaled ──────────────────────────────────
@@ -1608,15 +1665,18 @@ section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * - [/] Org-wide adoption — _deferred to Phase 3_
  *
  * Each top-level list item carries a state marker (universal grammar):
- *   [x] → pass + state-full     (filled disc, --pass green)
- *   [-] → warn + state-half     (half-filled disc, --warn amber)
- *   [ ] → fail + state-empty    (outline disc, --fail red)
- *   [/] → skip + state-slashed  (filled disc + slash, --text-muted; row strikethrough)
+ *   [x] → pass + state-full     (check  on --pass  green)
+ *   [-] → warn + state-half     (dash   on --warn  amber)
+ *   [ ] → fail + state-empty    (x      on --fail  red)
+ *   [/] → skip + state-slashed  (slash  on --text-muted; row strikethrough)
  *
- * The Marp plugin (build) and runtime transformer (preview) strip the
- * marker and add `class="state {pass|warn|fail|skip} {state-full|...}"`
- * to the <li>; CSS paints the universal state token via ::before. The
- * row background tint and left rail pick up the same --state-color.
+ * Every state is the SAME disc treatment carrying a DISTINCT mark, so the
+ * SHAPE channel is colour-blind-safe. The Marp plugin (build) and runtime
+ * transformer (preview) strip the marker and add
+ * `class="state {pass|warn|fail|skip} {state-full|...}"` to the <li>; CSS
+ * paints the disc (::before) + mark (::after). The row background tint and
+ * left rail pick up the same --state-color. The disc style follows the
+ * default (Ringed Solid) or a .checks-* variant; see base.modifiers.css.
  * Trailing inline `code` on a row floats right as a status pill
  * (universal pill convention). */
 section.checklist { display:flex; flex-direction:column; }
@@ -1679,40 +1739,37 @@ section.checklist > ol > li.state.skip {
   text-decoration-color:color-mix(in srgb, var(--text-muted) 50%, transparent);
 }
 
-/* Universal state token — circular glyph in the row's left column.
- * Shape branches on state-full / state-half / state-empty / state-slashed
- * via the two shared SVG masks. No font dependency. */
+/* Universal state token — coloured disc + distinct in-disc mark in the
+ * row's left column. ::before paints the disc (fill + ring + lift from
+ * the scalar knobs); ::after masks the per-shape mark (check / dash / x /
+ * slash) on top. Colours are mixed HERE from --state-color (resolved on
+ * the .state row) + the knobs set by the default or a .checks-* variant.
+ * Mirror recipe: verdict-grid.styles.css, obligation-matrix.styles.css. */
 section.checklist > ul > li.state::before,
-section.checklist > ol > li.state::before {
+section.checklist > ol > li.state::before,
+section.checklist > ul > li.state::after,
+section.checklist > ol > li.state::after {
   content:'';
   position:absolute;
   left:var(--sp-md);
   top:calc(var(--sp-sm) + 0.18em);
-  width:1.15em;
-  height:1.15em;
-  border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
+  width:calc(1.15em * var(--state-disc-scale));
+  height:calc(1.15em * var(--state-disc-scale));
   box-sizing:border-box;
 }
-/* state-half: tonal split — both halves coloured, sharp bisector. */
-section.checklist > ul > li.state.state-half::before,
-section.checklist > ol > li.state.state-half::before {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+section.checklist > ul > li.state::before,
+section.checklist > ol > li.state::before {
+  border-radius:50%;
+  background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
+  box-shadow:
+    0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
-section.checklist > ul > li.state.state-empty::before,
-section.checklist > ol > li.state.state-empty::before {
-  background-color:transparent;
-  border:2px solid var(--state-color, var(--text-muted));
-}
-/* state-slashed: semi-transparent dark slash on the coloured disc. */
-section.checklist > ul > li.state.state-slashed::before,
-section.checklist > ol > li.state.state-slashed::before {
-  background-image:var(--state-slash);
+section.checklist > ul > li.state::after,
+section.checklist > ol > li.state::after {
+  background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
+  -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
+          mask:var(--state-mark) center / 100% 100% no-repeat;
 }
 /* Inline _em_ tail inside an item — soft annotation. Renders as muted
  * italic body voice; the eye still reads the label first. */
@@ -5573,11 +5630,12 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  * emulator/runtime transforms strip the marker and wrap the cell
  * content in
  *   <span class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}">…</span>.
- * The shape class carries the visual (filled / half / empty / slashed
- * disc); the semantic class resolves --state-color. SHAPE is the
+ * The shape class selects the in-disc mark (check / dash / x / slash via
+ * --state-mark); the semantic class resolves --state-color. SHAPE is the
  * primary channel — readable in greyscale, unambiguous for colour-blind
- * viewers. Two SVG masks (in :root) paint the half-disc and slash; no
- * font dependency, no Unicode glyphs.
+ * viewers. The disc (this element) + masked mark (::after) follow the
+ * scalar-knob recipe shared with checklist / verdict-grid; no font
+ * dependency, no Unicode glyphs.
  *
  * Default colour mapping is the per-category coverage palette
  * (applies = green; partial = amber; exempt = red; skipped = muted).
@@ -5585,37 +5643,41 @@ section.obligation-matrix tbody tr:nth-child(odd) td:not(:first-child) {
  * risk axis (applies = alarm red, exempt = relief green). This layout
  * additionally adds heat-aware cell-tint chrome below. */
 section.obligation-matrix td .state {
+  position:relative;
   display:inline-block;
-  width:1.4em; height:1.4em;
+  width:calc(1.4em * var(--state-disc-scale)); height:calc(1.4em * var(--state-disc-scale));
   border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
   box-sizing:border-box;
   vertical-align:middle;
   /* Hide any trailing label ([x] Applies fully…) while keeping em units
    * resolving against the inherited cell font-size. Setting font-size:0
-   * here would collapse 1.4em to 0 and make the disc invisible. */
+   * here would collapse the disc to 0. The ::after mark is position:absolute
+   * so text-indent never touches it. */
   overflow:hidden;
   text-indent:200%;
   white-space:nowrap;
   line-height:1;
+  /* Disc fill + ring + lift from the scalar knobs (default Ringed Solid or
+   * a .checks-* variant). Colours mixed here from --state-color. Mirror
+   * recipe: checklist.styles.css, verdict-grid.styles.css. */
+  background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
+  box-shadow:
+    0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
 section.obligation-matrix td .state.pass { --state-color:var(--pass); }
 section.obligation-matrix td .state.warn { --state-color:var(--warn); }
 section.obligation-matrix td .state.fail { --state-color:var(--fail); }
 section.obligation-matrix td .state.skip { --state-color:var(--text-muted); }
-/* state-half: tonal split — both halves coloured. Crisp bisector
- * on any cell background (including the heat-tinted cells below). */
-section.obligation-matrix td .state.state-half {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+/* Mark overlay — masked symbol (check / dash / x / slash) on the disc.
+ * Mark colour from --state-mark-pct (0% = knockout to --bg). */
+section.obligation-matrix td .state::after {
+  content:'';
+  position:absolute; inset:0;
+  background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
+  -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
+          mask:var(--state-mark) center / 100% 100% no-repeat;
 }
-section.obligation-matrix td .state.state-empty { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
-/* state-slashed: semi-transparent dark slash on the coloured disc. */
-section.obligation-matrix td .state.state-slashed { background-image:var(--state-slash); }
 
 /* .heat chrome — palette inversion comes from the universal
  * section.heat overlay; this block adds the cell-background tint that
@@ -8968,39 +9030,43 @@ section.tldr.numbered > ol > li::before {
  * ## heading  then 4× pairs: ### tool-name  p badges+body
  *
  * The badge is the layout's chrome (mono pill). Its leading ::before
- * paints the universal state token — a 1em coloured disc whose shape is
- * picked by state-full / state-half / state-empty / state-slashed.
- * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
- * font-independent SVG-mask recipe. */
+ * paints the universal state-token disc and ::after masks the per-shape
+ * mark on top — check / dash / x / slash, picked by state-full /
+ * state-half / state-empty / state-slashed. Replaces the prior Unicode
+ * ✓/–/✗ glyphs (font-dependent) with a font-independent disc+mask recipe;
+ * the SHAPE carries the meaning independently of colour. */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge { position:relative; display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
 .badge.fail { --state-color:var(--fail); }
 .badge.skip { --state-color:var(--text-muted); color:var(--text-muted); text-decoration:line-through; text-decoration-color:color-mix(in srgb, var(--text-muted) 60%, transparent); }
+/* Disc (leading ::before, in flex flow) + mark (::after, overlaid on the
+ * disc). Colours mixed here from --state-color + the scalar knobs; disc
+ * style follows the default (Ringed Solid) or a .checks-* variant. Mirror
+ * recipe: checklist.styles.css, obligation-matrix.styles.css. */
 .badge::before {
   content:'';
   display:inline-block;
-  width:0.95em; height:0.95em;
-  border-radius:50%;
-  background-color:var(--state-color, var(--text-muted));
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:100% 100%;
-  box-sizing:border-box;
   flex:none;
+  width:calc(0.95em * var(--state-disc-scale)); height:calc(0.95em * var(--state-disc-scale));
+  border-radius:50%;
+  box-sizing:border-box;
+  background:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-fill-pct), transparent);
+  box-shadow:
+    0 0 0 var(--state-ring-outer-w) color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-ring-mix), black),
+    inset 0 0 0 var(--state-ring-inner-w) var(--state-color, var(--text-muted));
 }
-/* state-half: tonal split — left full colour, right same hue at 55%
- * mixed with --bg. Disc stays fully coloured; the bisector is sharp. */
-.badge.state-half::before {
-  background:linear-gradient(to right,
-    var(--state-color, var(--text-muted)) 50%,
-    color-mix(in srgb, var(--state-color, var(--text-muted)) 55%, var(--bg)) 50%);
+/* Mark overlay — anchored to the disc, which sits at the badge's left pad. */
+.badge::after {
+  content:'';
+  position:absolute;
+  left:var(--pill-pad-x); top:50%; transform:translateY(-50%);
+  width:calc(0.95em * var(--state-disc-scale)); height:calc(0.95em * var(--state-disc-scale));
+  background-color:color-mix(in srgb, var(--state-color, var(--text-muted)) var(--state-mark-pct), var(--bg));
+  -webkit-mask:var(--state-mark) center / 100% 100% no-repeat;
+          mask:var(--state-mark) center / 100% 100% no-repeat;
 }
-.badge.state-empty::before   { background-color:transparent; border:2px solid var(--state-color, var(--text-muted)); }
-/* state-slashed: filled coloured disc with a semi-transparent dark slash
- * painted on top. Colour fully present, slash crisp on any cell BG. */
-.badge.state-slashed::before { background-image:var(--state-slash); }
 
 
 /* ── VERDICT-GRID ────────────────────────────────────────────────────────────
@@ -9851,6 +9917,56 @@ section.heat .badge.skip,
 section.heat td .state.skip,
 section.heat td.cell-state.state-skipped,
 section.heat .horizon-rows > li.cell-state.state-skipped { --state-color:var(--text-muted); }
+
+/* ════════════════════════════════════════════════════════════════════════
+ * UNIVERSAL STATE-TOKEN MARKS + STYLE VARIANTS
+ * ────────────────────────────────────────────────────────────────────────
+ * The checkbox grammar ([x]/[-]/[ ]/[/]) renders as one coloured disc
+ * carrying a DISTINCT mark per state, across the three consumers that share
+ * the universal `state {sem} {shape}` classes: checklist, verdict-grid,
+ * obligation-matrix. (Roadmap keeps its own dot vocabulary — see the
+ * --state-slash note in base.tokens.css.) The disc geometry/painting lives
+ * in each consumer's CSS and reads the scalar knobs from base.tokens.css;
+ * this block owns the two universal pieces: the shape→mark mapping and the
+ * five author-facing style variants.
+ *
+ * Mark tokens, the scalar-knob defaults, and the "knobs are scalar-only"
+ * rationale are documented in base.tokens.css.
+ * ──────────────────────────────────────────────────────────────────── */
+
+/* Shape class → mark mask. The shape classes are exclusive to the three
+ * checkbox consumers, so a `section`-scoped class selector is unambiguous. */
+section .state-full    { --state-mark: var(--mark-check); }
+section .state-half    { --state-mark: var(--mark-dash);  }
+section .state-empty   { --state-mark: var(--mark-x);     }
+section .state-slashed { --state-mark: var(--mark-slash); }
+
+/* Style variants — author opts in per slide (`_class: checklist checks-bold`)
+ * or per deck (`class: checks-outline`). Each sets ONLY scalar knobs (plus,
+ * for bold, the heavier mark tokens) — never a value embedding --state-color
+ * — so the leaf color-mix stays correct. Default (no class) = Ringed Solid. */
+section.checks-ringed {            /* = default; explicit so it can reset an inherited deck-level variant */
+  --state-fill-pct:100%; --state-ring-outer-w:1.6px; --state-ring-mix:50%;
+  --state-ring-inner-w:0px; --state-mark-pct:0%; --state-disc-scale:1;
+}
+section.checks-knockout {          /* flat saturated disc, knockout mark */
+  --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
+  --state-mark-pct:0%; --state-disc-scale:1;
+}
+section.checks-bold {              /* larger disc + heavier marks, knockout */
+  --state-fill-pct:100%; --state-ring-outer-w:0px; --state-ring-inner-w:0px;
+  --state-mark-pct:0%; --state-disc-scale:1.16;
+  --mark-check:var(--mark-check-bold); --mark-dash:var(--mark-dash-bold);
+  --mark-x:var(--mark-x-bold);         --mark-slash:var(--mark-slash-bold);
+}
+section.checks-outline {           /* transparent fill, inner ring + status-colour mark */
+  --state-fill-pct:0%; --state-ring-outer-w:0px; --state-ring-inner-w:2px;
+  --state-mark-pct:100%; --state-disc-scale:1;
+}
+section.checks-tonal {             /* soft tint fill, inner ring + status-colour mark */
+  --state-fill-pct:17%; --state-ring-outer-w:0px; --state-ring-inner-w:1.6px;
+  --state-mark-pct:100%; --state-disc-scale:1;
+}
 
 /* ──────────────────────────────────────────────────────────────────── */
 

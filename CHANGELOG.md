@@ -27,6 +27,20 @@ in patch versions.
 
 ### Added
 
+- **Five opt-in checkbox style variants (`checks-ringed` *(default)*,
+  `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`).** A
+  universal section modifier (per-slide or per-deck) that switches the
+  state-token disc treatment for `checklist` / `verdict-grid` /
+  `obligation-matrix` without changing the marks or status colours. Each
+  variant flips only scalar CSS knobs (`--state-fill-pct`, `--state-ring-*`,
+  `--state-mark-pct`, `--state-disc-scale`) at section scope; the leaf disc
+  mixes the real colours from `--state-color` + `--bg`, so variants stay
+  theme-aware. The default, **Ringed Solid**, adds a hairline darker ring so a
+  disc stays crisp on its own status-tinted row.
+- **State-token mark tokens (`--mark-check`, `--mark-dash`, `--mark-x`,
+  `--mark-slash`, plus `-bold` set) and disc-recipe knob tokens.** SVG-mask
+  marks + the scalar knobs that drive the redesigned checkbox discs, in
+  `lib/base/base.tokens.css`.
 - **Universal pill structure tokens (`--pill-radius`, `--pill-pad-y`,
   `--pill-pad-x`, `--pill-font`, `--pill-fs`, `--pill-weight`,
   `--pill-tracking`).** A single structural contract for every status /
@@ -68,6 +82,20 @@ in patch versions.
 
 ### Changed
 
+- **State markers (`[x]`/`[-]`/`[ ]`/`[/]`) redesigned as colour + a distinct
+  in-disc mark.** Across `checklist`, `verdict-grid`, and `obligation-matrix`
+  every state is now the same status-coloured circle carrying a unique mark —
+  **check / dash / x / slash** — replacing the old fill-level discs
+  (filled / half / outline / slashed) and the layout-specific Unicode glyphs.
+  The mark *shape* carries the meaning independently of colour, so the states
+  are unambiguous in greyscale and for colour-vision-deficient viewers — the
+  redundant encoding the fill-level discs lacked. Marks are font-independent
+  SVG masks painted in theme tokens (knockout = `--bg`; disc = `--pass` /
+  `--warn` / `--fail` / `--text-muted`), so they stay theme- and dark-mode
+  aware, and `.heat` still composes. Authoring is unchanged (same markers,
+  same classes); only the CSS that those classes paint changed, so the three
+  render paths and page counts are unaffected. `roadmap` keeps its own dot
+  vocabulary (its `planned` state is "future," not "fail") and is unchanged.
 - **Every pill now shares one geometry.** The ordinary status/metadata pills
   across layouts — the universal trailing-code pill, verdict-grid badges,
   kpi, glossary range-pill, cards-grid / cards-side, obligation-matrix,

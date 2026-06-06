@@ -831,6 +831,58 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Commits:** Radar feature commit; see
   [engineering/decisions/2026-05-15-radar-chart.md](decisions/2026-05-15-radar-chart.md).
 
+### State disc never paints — a recipe var that embeds `--state-color` was defined at `:root`/section
+
+- **Symptom:** The state-token disc (checklist/verdict-grid/obligation-matrix)
+  renders with **no fill and no ring** — only the knockout mark floats on the
+  row. A knockout mark that should adapt to dark mode stays **frozen white** on
+  a dark canvas.
+- **Cause:** The disc recipe is driven by custom properties. If one of them
+  *embeds* `var(--state-color)` (or `var(--bg)`) and is **declared on an
+  ancestor** — `:root`, or a `.checks-*` section variant — the inner `var()`
+  resolves **there**, where `--state-color` is undefined → the property
+  computes to the *guaranteed-invalid value* and inherits down as invalid, so
+  the disc's `background`/`box-shadow` paints nothing. A var that embeds the
+  *defined-at-root* `--bg` instead freezes to root's light-mode value and never
+  re-resolves in a dark scope (hence the white mark). Same family as the
+  `var(--fg)` trap above — invalid substitution, silent fallback.
+- **Mitigation:** Keep the variant/`:root` knobs **scalar-only** — numbers,
+  lengths, percentages (`--state-fill-pct`, `--state-ring-outer-w`,
+  `--state-mark-pct`, …). Do the `color-mix(... var(--state-color) ...,
+  var(--bg))` **at the leaf** (the `.state` row / `.badge` / `td .state`),
+  where `--state-color` and `--bg` are in scope and re-resolve per element and
+  per canvas. See `base.tokens.css` (the "SCALAR KNOBS" block) and
+  `base.modifiers.css` (the `.checks-*` variants).
+- **Triggered by:** Putting `var(--state-color)`/`var(--bg)` inside any custom
+  property set above the leaf. Caught during the checkbox redesign; a
+  scratch prototype showed discs missing in light *and* a frozen-white mark in
+  dark before the knob split.
+
+### Blurred `box-shadow` → opaque grey box around the element in some PDF viewers
+
+- **Symptom:** A small element with a soft drop-shadow (e.g. the state-token
+  disc) renders cleanly in the browser, in `marp --images` PNGs, and in
+  MuPDF/PyMuPDF rasterization — but in **mobile / Quartz PDF viewers** (iOS
+  Files/Preview, some Android apps) a **solid grey square** appears around the
+  element's bounding box.
+- **Cause:** Chromium `printToPDF` exports a *blurred* `box-shadow` as a
+  transparency-group / soft-mask (SMask) image sized to the element's expanded
+  box. Viewers with incomplete transparency-group support paint the image's
+  bounds with an opaque grey matte instead of applying the alpha — so the soft
+  shadow becomes a hard grey rectangle. Spread-only shadows (`0 0 0 Npx`, no
+  blur radius) are exported as plain vector strokes and are safe; only the
+  blur triggers it.
+- **Mitigation:** Keep small-element chrome **vector-only** — solid fills and
+  0-blur spread rings/borders. For depth, use a darker *spread* ring
+  (`box-shadow: 0 0 0 1.6px <darker>`) rather than a blurred lift. The state
+  disc recipe (base.tokens.css / the three checkbox consumers) is deliberately
+  blur-free for this reason.
+- **Triggered by:** Any blurred `box-shadow`/`filter: drop-shadow()` on small
+  repeated elements destined for PDF. Verify in an actual mobile PDF viewer —
+  PyMuPDF/Chromium screenshots will NOT reveal it.
+- **Caught:** checkbox redesign — discs showed a grey square in the iOS PDF
+  viewer while every local raster looked clean.
+
 ### CSS custom properties return raw token stream via `getPropertyValue`
 
 - **Symptom:** Reading `--bg` via `getComputedStyle(el).getPropertyValue('--bg')`
