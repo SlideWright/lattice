@@ -479,7 +479,7 @@ section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
   stroke: var(--c-line) !important;
 }
 section circle.face {
-  fill: none !important;
+  fill: var(--bg-alt) !important;
   stroke: var(--c-line) !important;
 }
 section path.mouth { fill: var(--c-line) !important; }
@@ -681,14 +681,8 @@ section .arrowheadPath {
 section .actor-line {
   stroke: var(--c-line) !important;
 }
-section svg[aria-roledescription="journey"] line:not(.mouth):not(.task-line) {
+section svg[aria-roledescription="journey"] line:not(.mouth) {
   stroke: var(--c-line) !important;
-}
-/* The vertical dashed task→face connectors add clutter (the face already sits
- * under its task by position). Drop them to the canvas — invisible in both
- * modes, no cut-through where they cross the axis. */
-section svg[aria-roledescription="journey"] line.task-line {
-  stroke: transparent !important;
 }
 
 /* ── GANTT SECTION LABELS (left axis) ──
