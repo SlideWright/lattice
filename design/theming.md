@@ -61,7 +61,8 @@ to spot during palette development.
 | `--accent` | Saturated brand color used for emphasis text and borders |
 | `--accent-soft` | Pale brand-tinted panel fill |
 | `--on-accent` | Ink for text/icons placed ON an `--accent` fill (`-secondary` / `-ghost` / `-watermark` tiers derive from it) |
-| `--on-accent-soft` | Ink/border for the `--accent-soft` fill |
+| `--on-accent-soft` | Ink/border (emphasis) for the `--accent-soft` fill |
+| `--accent-soft-body` | Body prose on the `--accent-soft` fill (derives from `--text-body`) |
 | `--code-text` | Code text on dark code surface |
 
 ### Accent containers
@@ -73,7 +74,7 @@ else: a fill never carries text in a fixed colour — it carries text in its
 | Container | Fill | Ink / border | Use |
 |---|---|---|---|
 | **Bold** | `--accent` | `--on-accent` (primary), `--on-accent-secondary` (eyebrow/caption), `--on-accent-ghost` (chrome / divider), `--on-accent-watermark` (backdrop glyph) | Loud, attention-pulling — verdict bar, corner tags, timeline nodes, the split-list rail |
-| **Soft** | `--accent-soft` | `--on-accent-soft` (emphasis + border); body prose stays `--text-body` | Quiet, recommended-option surfaces — verdict-grid winner, before/after & matrix outcome cells, featured card |
+| **Soft** | `--accent-soft` | `--on-accent-soft` (emphasis + border); `--accent-soft-body` (body prose, = canvas `--text-body`) | Quiet, recommended-option surfaces — verdict-grid winner, before/after & matrix outcome cells, featured card |
 
 The **bold** ink is the single curated value `--on-accent`: each theme tunes it
 for AAA contrast against *its* `--accent` in both modes, and the three muted

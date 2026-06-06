@@ -82,6 +82,14 @@ in patch versions.
 
 ### Added
 
+- **`--accent-soft-body` token completes the soft accent-container vocabulary.**
+  Soft accent surfaces (`--accent-soft` fill) now have a named body-text token
+  alongside `--on-accent-soft` (emphasis/border) — it derives from `--text-body`
+  (a pale tint takes canvas ink), so there's a single override seam and no new
+  curated colour. `featured` consumes it. The accent-container ink-contract test
+  now also guards `--accent-soft` fills against light-only inks (`--on-dark*` /
+  bare white), so both the bold and soft containers are enforced.
+
 - **Five opt-in checkbox style variants (`checks-ringed` *(default)*,
   `checks-knockout`, `checks-bold`, `checks-outline`, `checks-tonal`).** A
   universal section modifier (per-slide or per-deck) that switches the

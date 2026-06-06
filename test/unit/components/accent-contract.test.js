@@ -67,8 +67,11 @@ const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, ' ');
 // an @media wrapper is skipped and its inner rules are matched individually.
 const BLOCK_RE = /\{([^{}]+)\}/g;
 
-// Fills with the BOLD accent container exactly — not --accent-soft / --accent-*.
-const ACCENT_FILL_RE = /background(?:-color)?\s*:\s*var\(\s*--accent\s*\)/;
+// Fills with either accent container — bold (--accent) or soft (--accent-soft).
+// A light-only ink (--on-dark* / bare white) is wrong on EITHER, because both
+// flip pale in some mode. Body on the soft tint is canvas --text-body /
+// --accent-soft-body, which is correct and not flagged.
+const ACCENT_FILL_RE = /background(?:-color)?\s*:\s*var\(\s*--accent(?:-soft)?\s*\)/;
 
 // Light-only inks that break on a pale accent — only when they are the PRIMARY
 // `color:` value. The lookbehind excludes `background-color` and custom

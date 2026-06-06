@@ -253,15 +253,18 @@
    * Accent comes in TWO containers (see design/theming.md "Accent
    * containers"). The BOLD container fills with --accent and inks with the
    * ramp above (ghost doubles as its divider). The SOFT container fills with
-   * --accent-soft (a pale brand tint) and inks/borders with --on-accent-soft.
-   * The soft ink is --accent itself — it reads AAA on the soft tint and is
-   * the value every soft-accent card already used; naming it gives consumers
-   * a first-class pair and a single override seam, with no new curated colour. */
+   * --accent-soft (a pale brand tint) and inks/borders with --on-accent-soft,
+   * with body prose on --accent-soft-body. The soft ink is --accent itself —
+   * it reads AAA on the soft tint and is the value every soft-accent card
+   * already used; the soft body is the canvas body (a pale tint takes canvas
+   * ink). Naming both gives the soft container a first-class vocabulary and a
+   * single override seam, with no new curated colour. */
   --on-accent:           light-dark(#FFFFFF, var(--bg-dark, #000));
   --on-accent-secondary: color-mix(in srgb, var(--on-accent) 70%, transparent);
   --on-accent-ghost:     color-mix(in srgb, var(--on-accent) 32%, transparent);
   --on-accent-watermark: color-mix(in srgb, var(--on-accent) 12%, transparent);
   --on-accent-soft:      var(--accent);
+  --accent-soft-body:    var(--text-body);
 
   /* ── Code panel ─────────────────────────────────────────────────────────
    * Code blocks (.code, .compare-code, hljs) ride the brand dark surface.
@@ -2524,7 +2527,7 @@ section.divider h2 { font-size:var(--fs-h2); color:var(--text-display); max-widt
  */
 section.featured h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
 section.featured .feat-layout { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr; flex:1; gap:var(--sp-sm); }
-section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--text-body); }
+section.featured .feat-card { flex:0 0 50%; background:var(--accent-soft); border:1px solid var(--on-accent-soft); border-radius:var(--radius-md); padding:var(--sp-sm) 2.03125cqi; position:relative; overflow:hidden; font-size:var(--fs-body); color:var(--accent-soft-body); }
 section.featured .feat-card::after {
   content:'✧'; position:absolute; top:0.625cqi; right:0.625cqi;
   font-size:2.75cqi; line-height:1; color:var(--accent); opacity:0.35;
