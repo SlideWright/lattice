@@ -12448,13 +12448,14 @@ section .ishikawa-spine, section .ishikawa-arrow, section .ishikawa-branch, sect
  * directly with the actual emitted compound selectors.
  */
 section svg:has(path.mouth) circle:not(.face):not([class*="actor-"]) {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
 }
 section circle.face {
-  fill: var(--c1-light) !important;
-  stroke: var(--c-stroke) !important;
+  fill: none !important;
+  stroke: var(--c-line) !important;
 }
+section path.mouth { fill: var(--c-line) !important; }
 section path.mouth, section line.mouth {
   stroke: var(--c-line) !important;
 }
@@ -12654,29 +12655,6 @@ section .actor-line {
   stroke: var(--c-line) !important;
 }
 section svg[aria-roledescription="journey"] line:not(.mouth) {
-  stroke: var(--c-line) !important;
-}
-
-/* ── JOURNEY MOOD FACES (line-art, not filled discs) ──
- * Mermaid draws each mood face as a head circle.face (which our section-N
- * circle rule was filling with a pale band) + two `#666` eye circles + a
- * `.mouth` smile (`#666` path/line). On a dark slide that reads as a filled
- * disc with murky dark features — "creepy". Render the face as light line-art
- * instead: an UNFILLED head outlined in --c-line, with eyes + mouth in the same
- * --c-line as the journey axis. Matches the edge colour; no fill. */
-section svg[aria-roledescription="journey"] circle.face {
-  fill: none !important;
-  stroke: var(--c-line) !important;
-}
-section svg[aria-roledescription="journey"] circle[fill="#666"] {
-  fill: var(--c-line) !important;
-  stroke: var(--c-line) !important;
-}
-section svg[aria-roledescription="journey"] path.mouth {
-  fill: var(--c-line) !important;
-  stroke: var(--c-line) !important;
-}
-section svg[aria-roledescription="journey"] line.mouth {
   stroke: var(--c-line) !important;
 }
 
