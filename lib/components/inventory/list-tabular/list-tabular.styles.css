@@ -266,7 +266,7 @@ section.list-tabular.register ol > li > code {
   background:var(--accent-soft);
   color:var(--accent);
   border:none;
-  padding:var(--pill-pad-top) 1.09375cqi var(--pill-pad-bottom);  /* sanctioned wide "stamp" horizontal; shared optical-centre vertical */
+  padding:var(--pill-pad-y) 1.09375cqi;     /* sanctioned: wide "stamp" padding */
   border-radius:var(--pill-radius);
   font-family:var(--pill-font);
   font-size:var(--pill-fs);

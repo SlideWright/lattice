@@ -326,7 +326,7 @@ section.state-chart.horizontal .state-chip {
   font-size: var(--pill-fs);
   font-weight: var(--pill-weight);
   letter-spacing: var(--pill-tracking);
-  padding: var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
+  padding: var(--pill-pad-y) var(--pill-pad-x);
   border: 1px solid var(--state-node-stroke);
   border-radius: var(--pill-radius);
   background: color-mix(in oklab, var(--state-node-fill) 60%, transparent);

@@ -77,7 +77,7 @@ section.roadmap thead th:not(:first-child) > code {
   letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg);
   border-radius:var(--pill-radius);
   white-space:nowrap;
@@ -355,7 +355,7 @@ section.roadmap.horizons .horizon-meta {
   letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border:2px solid var(--bg-alt);
   border-radius:var(--pill-radius);
   white-space:nowrap;

@@ -295,7 +295,7 @@ section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split
   background:var(--pill-bg, var(--bg));
   color:var(--pill-fg, var(--text-body));
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   white-space:nowrap;
 }
 
@@ -671,7 +671,7 @@ section.obligation-matrix.pills td:not(:first-child) strong {
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
+  padding:var(--pill-pad-y) var(--pill-pad-x);
   border-radius:var(--pill-radius);
   background:var(--bg-alt);
   border:1px solid var(--border);

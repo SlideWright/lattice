@@ -115,9 +115,13 @@ hard validator: enforcing a word count in CSS would require truncating
 text, which hides content, so it is intentionally left to the author.)
 
 **Pills share one structure, not one colour.** Every pill across every
-layout draws its geometry — radius, proportional (em-based) padding,
-mono font, weight, tracking, and centre-/middle-aligned text — from the
-universal `--pill-*` tokens in `base.tokens.css`. Colour stays per-pill:
+layout draws its geometry — radius, proportional (em-based) padding, the
+body sans, weight, tracking, and centre-/middle-aligned text — from the
+universal `--pill-*` tokens in `base.tokens.css`. (Pills use the deck's
+sans, not mono: a pill is a status / label chip, not code, and the sans
+also vertically centres caps correctly where mono seats them high.) The
+separate non-pill citation/identifier chips keep their own mono. Colour
+stays per-pill:
 a layout sets `--pill-fg` / `--pill-bg` / `--pill-border` (or its own
 semantic hue tokens) to carry the meaning. Three pills are **sanctioned
 variants** that deliberately override specific axes and document why at

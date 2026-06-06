@@ -74,12 +74,13 @@ in patch versions.
   regulatory-update (status / timeline / priority), statute-stack, and
   state-chart chips — are unified to the `--pill-*` structural tokens:
   consistent proportional padding, fully-rounded radius, and centre- /
-  middle-aligned text via `inline-flex`. The y-padding is split
-  `--pill-pad-top` / `--pill-pad-bottom` (0.33 / 0.27em, same total height)
-  to optically re-centre caps and digits, which a font's baseline otherwise
-  leaves sitting high inside a flex-centred line box (`text-box-trim`, the
-  spec fix, is unsupported in the Marp Chromium — see
-  `engineering/gotchas.md`). Hardcoded `px` padding (glossary,
+  middle-aligned text via `inline-flex`. Pills now use the **body sans**
+  (Outfit), not mono — a pill is a status / label chip, not code (mono was
+  only inherited from the original trailing-`code` pill), and the sans also
+  fixes vertical centring at the root: JetBrains Mono's metrics seated caps
+  high in a flex-centred line box, while the sans lands them centred with no
+  optical nudge. The genuinely identifier-like chips (legal citations etc.)
+  are not pills and keep their own mono. Hardcoded `px` padding (glossary,
   state-chart) and the stray `9999px` radius (list-tabular) are gone, and the
   `600`/`700` font-weight split resolves to `--pill-weight`. Three pills stay
   as **sanctioned variants** that deliberately override specific axes —
