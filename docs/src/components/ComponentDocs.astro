@@ -116,6 +116,10 @@ const skeleton = (m.skeleton || '').replace(/\n$/, '');
 						</h3>
 						<p set:html={inline(vd.caption)} />
 						<pre class="cdocs-code"><code set:html={esc((vd.sample || '').replace(/\n$/, ''))} /></pre>
+						<div class="cdocs-variant-actions">
+							<button class="cdocs-variant-btn" type="button" data-variant-select={v}>Preview ↑</button>
+							<button class="cdocs-variant-btn" type="button" data-open-playground={v}>Open in Playground →</button>
+						</div>
 					</div>
 				);
 			})}

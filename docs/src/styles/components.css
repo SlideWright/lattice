@@ -378,6 +378,53 @@
 	outline: none;
 }
 
+/* ── Variant switcher ───────────────────────────────────────────────────── */
+.specimen-variants {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+}
+.specimen-variants-label {
+	font-family: var(--font-mono);
+	font-size: 10px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-right: 4px;
+}
+.specimen-variant {
+	padding: 4px 11px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	background: var(--bg);
+	color: var(--text-body);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	cursor: pointer;
+}
+.specimen-variant:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+.specimen-variant.is-active {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--on-accent);
+}
+.specimen-variant-caption {
+	margin: 0;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-alt);
+	color: var(--text-muted);
+	font-size: 12.5px;
+	line-height: 1.45;
+}
+
 /* ── Docs sections ──────────────────────────────────────────────────────── */
 .cdocs {
 	color: var(--text-body);
@@ -516,6 +563,27 @@
 }
 .cdocs-variant p {
 	margin: 0 0 8px;
+}
+.cdocs-variant-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 8px;
+}
+.cdocs-variant-btn {
+	padding: 5px 11px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg);
+	color: var(--accent);
+	font-family: var(--font-body);
+	font-size: 12.5px;
+	font-weight: 500;
+	cursor: pointer;
+}
+.cdocs-variant-btn:hover {
+	border-color: var(--accent);
+	background: var(--accent-soft);
 }
 .cdocs-related-list {
 	list-style: none;

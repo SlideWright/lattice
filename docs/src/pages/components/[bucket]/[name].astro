@@ -54,7 +54,17 @@ const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generat
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((x) => x[1]))];
 
 const sample = m.sample || m.skeleton;
-const mermaid = /```mermaid/.test(sample);
+
+// Variants for the specimen switcher: the base layout plus each documented
+// modifier (its own slide markdown). Clicking one previews it in place; each
+// can also be opened in the playground seeded with that markdown.
+const variantDocs = m.variantDocs || {};
+const variantKeys = Array.isArray(m.variants) ? m.variants.filter((v) => variantDocs[v]) : [];
+const variants = [
+	{ key: 'default', label: 'default', caption: '', sample },
+	...variantKeys.map((v) => ({ key: v, label: v, caption: variantDocs[v].caption || '', sample: variantDocs[v].sample })),
+];
+const mermaid = variants.some((v) => /```mermaid/.test(v.sample));
 ---
 
 <ComponentsLayout
@@ -84,7 +94,7 @@ const mermaid = /```mermaid/.test(sample);
 			<p class="cpage-lead">{m.description}</p>
 		</header>
 
-		<Specimen name={m.name} sample={sample} mermaid={mermaid} />
+		<Specimen name={m.name} sample={sample} mermaid={mermaid} variants={variants} />
 
 		<ComponentDocs m={m} anatomy={anatomy} nameToBucket={nameToBucket} />
 
