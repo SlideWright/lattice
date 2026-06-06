@@ -15,7 +15,19 @@ in patch versions.
 > | Category in `## Unreleased` | Bump |
 > |---|---|
 > | `### Removed`, or any `**Breaking:**` bullet / `BREAKING CHANGE` token | **major** |
-> | `### Added`, `### Changed`, `### Deprecated` | **minor** |
+> | `### Added`, `### Changed
+
+- **`diagram` dark mode now renders natively per slide (dual-resolve).** The
+  emulator resolves the Mermaid `themeVariables` to the palette's *dark* branch
+  and bakes the diagram with that set when its slide is dark (nearest
+  `_class: … dark`, or a deck-wide dark signal) — instead of baking one light
+  SVG and patching it with CSS overrides. Mermaid bakes themeVariables to literal
+  hex at render time, so a light bake can't flip on a `section.dark` slide; baking
+  the correct scheme per slide closes that gap natively, including Mermaid's own
+  colour-math derivations (edge labels, node text, etc.). Single-scheme decks are
+  unchanged (no second SVG). The per-diagram dark CSS overrides remain as a
+  fallback; `LATTICE_MERMAID_SINGLE=1` forces the prior light-bake + overrides path.
+, `### Deprecated` | **minor** |
 > | `### Fixed`, `### Security` | **patch** |
 >
 > Keep entries here current **as changes land** (see `CLAUDE.md`) — an empty
