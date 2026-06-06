@@ -11,7 +11,7 @@ header: "Lattice · split-compare"
 
 `Comparison · Split · Structure`
 
-Two options + verdict — dark frame on the left, 2-column option grid + accent verdict bar on the right.
+Two options + verdict — dark frame on the left, 2-column option grid + a recommendation card on the right.
 
 ---
 
