@@ -36,6 +36,14 @@ in patch versions.
 
 ### Changed
 
+- **`split-compare`'s verdict is now a recommended card with a corner tag.**
+  The recommendation bar was restyled from a flat full-accent band into a soft
+  accent-container card (`--accent-soft` fill, accent border) with a flush
+  top-left "RECOMMENDATION" corner tag (accent fill + `--on-accent` ink),
+  matching the cards-grid ordered-list corner-tag pattern. The tag is the
+  eye-catcher; the recommendation reads as normal body. The right column's
+  bottom padding now clears the footer/pagination chrome so the card never
+  bleeds into it.
 - **`diagram` dark mode now renders natively per slide (dual-resolve), and the
   dark-flip CSS override layer is collapsed.** The emulator resolves the Mermaid
   `themeVariables` to the palette's *dark* branch and bakes the diagram with that
