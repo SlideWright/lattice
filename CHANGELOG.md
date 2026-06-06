@@ -301,7 +301,8 @@ in patch versions.
   - **`diagram` dark mode** — Mermaid bakes `edgeLabelBackground` and label ink
     as resolved hex at render time (in the light color-scheme), so on a dark
     slide flowchart/state/ER edge & relationship labels rendered as glaring
-    white knockout boxes and sequence message text went invisible (dark-on-
+    white knockout boxes, sequence message text went invisible, and the edge
+    LINES + arrowheads (baked #333) nearly vanished (dark-on-
     dark). `mermaid.css` now re-points those surfaces at `light-dark()` tokens
     (`var(--bg)` / `var(--c-ink-light)` / `var(--c-line)`) that resolve per the
     slide's color-scheme — identical on a light slide (no regression), correct

@@ -646,6 +646,31 @@ section .relationshipLabel tspan {
   fill: var(--c-ink-light) !important;
 }
 
+/* ── EDGE LINES + ARROWHEADS (flowchart, state, ER, class, …) ──
+ * Mermaid bakes edge strokes and arrowhead fills at #333 (resolved from the
+ * light palette). On a `section.dark` slide that's dark-on-dark, so the
+ * connectors nearly vanish — fixing the edge LABELS above without the LINES
+ * left the arrows barely visible. Re-point both at the flipping --c-line
+ * token (light-dark): a near-black line on a light slide (unchanged from the
+ * baked #333) and a light line on a dark slide (now clearly visible). Covers
+ * every diagram type that draws edges + markers, so connectors read on dark
+ * the same way the message lines already do. */
+section .flowchart-link,
+section path.flowchart-link,
+section .edgePath .path,
+section g.edgePaths path,
+section .relationshipLine,
+section .transition {
+  stroke: var(--c-line) !important;
+}
+section .marker,
+section .marker path,
+section .arrowMarkerPath,
+section .arrowheadPath {
+  fill: var(--c-line) !important;
+  stroke: var(--c-line) !important;
+}
+
 /* ── SEQUENCE DIAGRAM (message text, signal lines, loops) ──
  * signalColor / messageText / loopText are baked from the light palette, so
  * message text and signal arrows on a dark slide go dark-on-dark (effectively
