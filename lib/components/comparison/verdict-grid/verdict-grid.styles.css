@@ -11,7 +11,7 @@
  * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
  * font-independent SVG-mask recipe. */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
 .badge.fail { --state-color:var(--fail); }
@@ -67,7 +67,7 @@ section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
 section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill */
-section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
 section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */

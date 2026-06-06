@@ -37,7 +37,7 @@ section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
@@ -60,7 +60,7 @@ section.cards-side .card {
 section.cards-side .card > strong { display:block; grid-column:1 / -1; }
 section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
@@ -113,7 +113,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:blo
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,

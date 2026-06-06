@@ -148,7 +148,7 @@ section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > l
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border-radius:var(--pill-radius);
   border:1px solid var(--accent);
   color:var(--accent);
@@ -202,7 +202,7 @@ section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li::before 
   display:inline-flex; align-items:center; justify-content:center; line-height:1;
   background:var(--accent); color:var(--on-accent);
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   z-index:1;
 }
 section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li > strong:first-child { font-size:var(--fs-body); }
@@ -240,7 +240,7 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li::before 
   background:var(--accent);
   color:var(--on-accent);
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
 }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1) { border-left-color:var(--fail); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1)::before { background:var(--fail); }

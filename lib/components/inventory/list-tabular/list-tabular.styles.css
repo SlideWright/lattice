@@ -266,7 +266,7 @@ section.list-tabular.register ol > li > code {
   background:var(--accent-soft);
   color:var(--accent);
   border:none;
-  padding:0.3125cqi 1.09375cqi;     /* sanctioned: wide "stamp" padding — a prominent register label */
+  padding:var(--pill-pad-top) 1.09375cqi var(--pill-pad-bottom);  /* sanctioned wide "stamp" horizontal; shared optical-centre vertical */
   border-radius:var(--pill-radius);
   font-family:var(--pill-font);
   font-size:var(--pill-fs);

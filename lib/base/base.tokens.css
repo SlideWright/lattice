@@ -254,7 +254,17 @@
    * Padding is em-based on purpose. em resolves against the pill's OWN
    * font-size, so the box always tracks its text ("responsive to the text
    * within it"), and since the font sizes are cqi the pill still scales
-   * cleanly HD → 4K. The two values give the classic ~1:2.5 pill ratio.
+   * cleanly HD → 4K. The horizontal value gives the classic ~1:2.5 ratio.
+   *
+   * The y-padding is split top/bottom and is deliberately NOT symmetric.
+   * align-items:center centres the line BOX, but a font's baseline sits
+   * asymmetrically inside it — JetBrains Mono reserves descender space the
+   * caps/digits in a short pill label never use, so symmetric padding makes
+   * the text read a hair high. Shifting ~0.03em of the y-padding downward
+   * (top 0.33 / bottom 0.27, total unchanged at 0.6em so the pill height is
+   * identical) optically re-centres caps and digits. Measured against the
+   * rendering Chromium; `text-box-trim` would be the "correct" fix but is
+   * unsupported in the Marp Chromium build (see engineering/gotchas.md).
    *
    * Centering is the box's job, not the token's: a pill is laid out as
    *   display:inline-flex; align-items:center; justify-content:center;
@@ -266,9 +276,10 @@
    * so at their own site: chart-status (bar-matching radius + gradient),
    * list-tabular.register (wide stamp), redline.annotated (footnote
    * superscript / positioned counter). Everything else uses these as-is. */
-  --pill-radius:   999px;
-  --pill-pad-y:    0.3em;
-  --pill-pad-x:    0.75em;
+  --pill-radius:     999px;
+  --pill-pad-top:    0.33em;   /* optical centre: caps sit high, so y-padding leans down */
+  --pill-pad-bottom: 0.27em;   /* top + bottom = 0.6em — same height as a symmetric 0.3/0.3 */
+  --pill-pad-x:      0.75em;
   --pill-font:     var(--font-mono);
   --pill-fs:       var(--fs-meta);
   --pill-weight:   600;

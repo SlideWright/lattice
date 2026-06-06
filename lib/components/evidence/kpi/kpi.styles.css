@@ -87,7 +87,7 @@ section.kpi code {
   background: var(--pill-bg, var(--bg));
   color: var(--pill-fg, var(--text-body));
   border-radius: var(--pill-radius);
-  padding: var(--pill-pad-y) var(--pill-pad-x);
+  padding: var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   white-space: nowrap;
   margin-left: 0.46875cqi;
   vertical-align: 1px;

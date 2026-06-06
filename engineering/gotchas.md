@@ -147,6 +147,15 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Removable when:** Apple PDFKit gains parity with Skia/PDFium for the soft-mask constructs Chromium emits. No timeline.
 - **Commits:** This branch (treatments rename; the cropped-bbox + box-shadow + gradient-slot escape hatches). See `engineering/treatments.md` → "Mark rendering" for the rendering-mechanism breakdown.
 
+### `text-box-trim` / `text-box-edge` are inert in the Marp Chromium build
+
+- **Symptom:** A pill/badge laid out as `display:inline-flex; align-items:center; line-height:1` looks like its text sits slightly HIGH — more empty space below the glyphs than above — even though the box is centred. Adding `text-box-trim:trim-both; text-box-edge:cap alphabetic` (the spec-correct fix) changes nothing in the rendered PDF.
+- **Cause:** `align-items:center` centres the line BOX, but a font's baseline sits asymmetrically inside it — the descender space below the baseline is reserved even for caps/digits that never use it (JetBrains Mono, the pill font, has ascent 1020 / descent −300 on a 1000 UPM). So short uppercase labels read high. `text-box-trim` would trim the box to the cap/baseline edges and fix it, but it shipped unprefixed only in **Chrome 133** (Feb 2025); the puppeteer-cached Chromium that marp-cli / lattice-emulator render with is **131**, where the property is silently ignored. Verified: a `text-box-trim` pill is pixel-identical to one without.
+- **Mitigation:** Optical-nudge the vertical padding instead of relying on the line box — split the y-padding so the bottom is smaller than the top, shifting the text down to where caps read centred. The universal pill does this with `--pill-pad-top: 0.33em` / `--pill-pad-bottom: 0.27em` (total unchanged, so height is identical to a symmetric `0.3/0.3`). The split was measured against Chromium 131 by rasterising caps pills at a range of top/bottom ratios and finding the ratio where the ink-gap above == ink-gap below (~0.33/0.27 for caps; lowercase-only and descender words then hang a touch low, which reads naturally). Keep `text-box-trim` OUT of the CSS until the render Chromium is ≥133 — adding it now does nothing, and once it works it would double-correct on top of the nudge.
+- **Triggered by:** Any small flex-centred label in mono — pills, badges, status chips.
+- **Removable when:** The render Chromium reaches ≥133; then the nudge can be replaced by `text-box-trim:trim-both; text-box-edge:cap alphabetic` on the pill recipe (drop the asymmetric padding in the same change).
+- **Commits:** The universal-pill branch.
+
 ### Custom `logo:` front-matter directive shows nothing in marp-vscode preview
 
 - **Symptom:** A deck with `logo: ./acme-logo.svg` in front matter

@@ -306,7 +306,17 @@
    * Padding is em-based on purpose. em resolves against the pill's OWN
    * font-size, so the box always tracks its text ("responsive to the text
    * within it"), and since the font sizes are cqi the pill still scales
-   * cleanly HD → 4K. The two values give the classic ~1:2.5 pill ratio.
+   * cleanly HD → 4K. The horizontal value gives the classic ~1:2.5 ratio.
+   *
+   * The y-padding is split top/bottom and is deliberately NOT symmetric.
+   * align-items:center centres the line BOX, but a font's baseline sits
+   * asymmetrically inside it — JetBrains Mono reserves descender space the
+   * caps/digits in a short pill label never use, so symmetric padding makes
+   * the text read a hair high. Shifting ~0.03em of the y-padding downward
+   * (top 0.33 / bottom 0.27, total unchanged at 0.6em so the pill height is
+   * identical) optically re-centres caps and digits. Measured against the
+   * rendering Chromium; `text-box-trim` would be the "correct" fix but is
+   * unsupported in the Marp Chromium build (see engineering/gotchas.md).
    *
    * Centering is the box's job, not the token's: a pill is laid out as
    *   display:inline-flex; align-items:center; justify-content:center;
@@ -318,9 +328,10 @@
    * so at their own site: chart-status (bar-matching radius + gradient),
    * list-tabular.register (wide stamp), redline.annotated (footnote
    * superscript / positioned counter). Everything else uses these as-is. */
-  --pill-radius:   999px;
-  --pill-pad-y:    0.3em;
-  --pill-pad-x:    0.75em;
+  --pill-radius:     999px;
+  --pill-pad-top:    0.33em;   /* optical centre: caps sit high, so y-padding leans down */
+  --pill-pad-bottom: 0.27em;   /* top + bottom = 0.6em — same height as a symmetric 0.3/0.3 */
+  --pill-pad-x:      0.75em;
   --pill-font:     var(--font-mono);
   --pill-fs:       var(--fs-meta);
   --pill-weight:   600;
@@ -1145,7 +1156,7 @@ section.cards-grid > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-grid > ul > li > code,
 section.cards-grid > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-grid > ul > li > ul, section.cards-grid > ul > li > ol,
@@ -1168,7 +1179,7 @@ section.cards-grid .cards-grid-inner > .card:last-child:nth-child(odd) { grid-co
 section.cards-grid .card > strong { display:block; grid-column:1 / -1; }
 section.cards-grid .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid .card > ul, section.cards-grid .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-grid .card > ul > li, section.cards-grid .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
@@ -1218,7 +1229,7 @@ section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > strong { display:blo
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-grid:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-grid:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -1329,7 +1340,7 @@ section.cards-side > ul > li > strong { display:block; grid-column:1 / -1; }
 section.cards-side > ul > li > code,
 section.cards-side > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 /* — card body (nested list) — */
 section.cards-side > ul > li > ul, section.cards-side > ul > li > ol,
@@ -1352,7 +1363,7 @@ section.cards-side .card {
 section.cards-side .card > strong { display:block; grid-column:1 / -1; }
 section.cards-side .card > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side .card > ul, section.cards-side .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; grid-column:1 / -1; }
 section.cards-side .card > ul > li, section.cards-side .card > ol > li { font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-base); font-weight:400; }
@@ -1405,7 +1416,7 @@ section.cards-side:not(:has(.cards-grid-inner)) > ul > li > strong { display:blo
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > code,
 section.cards-side:not(:has(.cards-grid-inner)) > ol > li > code { grid-column:2; grid-row:1; align-self:baseline; margin-left:var(--sp-xs);
   display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1;
-  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap;
+  font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap;
   background:var(--bg); border-color:var(--text-muted); color:var(--text-body); }
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ul,
 section.cards-side:not(:has(.cards-grid-inner)) > ul > li > ol,
@@ -2667,7 +2678,7 @@ section.glossary h2 .range-pill {
   text-align:center; line-height:1;
   font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); margin-left:auto;
+  border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); margin-left:auto;
   background:var(--accent-soft); border:1px solid var(--accent);
   color:var(--accent); white-space:nowrap;
   vertical-align:middle;
@@ -3966,7 +3977,7 @@ section.kpi code {
   background: var(--pill-bg, var(--bg));
   color: var(--pill-fg, var(--text-body));
   border-radius: var(--pill-radius);
-  padding: var(--pill-pad-y) var(--pill-pad-x);
+  padding: var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   white-space: nowrap;
   margin-left: 0.46875cqi;
   vertical-align: 1px;
@@ -4743,7 +4754,7 @@ section.list-tabular.register ol > li > code {
   background:var(--accent-soft);
   color:var(--accent);
   border:none;
-  padding:0.3125cqi 1.09375cqi;     /* sanctioned: wide "stamp" padding — a prominent register label */
+  padding:var(--pill-pad-top) 1.09375cqi var(--pill-pad-bottom);  /* sanctioned wide "stamp" horizontal; shared optical-centre vertical */
   border-radius:var(--pill-radius);
   font-family:var(--pill-font);
   font-size:var(--pill-fs);
@@ -7101,7 +7112,7 @@ section.regulatory-update.regulatory-update > :is(ol, ul) > li > :is(ul, ol) > l
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border-radius:var(--pill-radius);
   border:1px solid var(--accent);
   color:var(--accent);
@@ -7155,7 +7166,7 @@ section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li::before 
   display:inline-flex; align-items:center; justify-content:center; line-height:1;
   background:var(--accent); color:var(--on-accent);
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   z-index:1;
 }
 section.regulatory-update.regulatory-update.timeline > :is(ol, ul) > li > strong:first-child { font-size:var(--fs-body); }
@@ -7193,7 +7204,7 @@ section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li::before 
   background:var(--accent);
   color:var(--on-accent);
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
 }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1) { border-left-color:var(--fail); }
 section.regulatory-update.regulatory-update.priority > :is(ol, ul) > li:nth-child(1)::before { background:var(--fail); }
@@ -7282,7 +7293,7 @@ section.roadmap thead th:not(:first-child) > code {
   letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border:2px solid var(--bg);
   border-radius:var(--pill-radius);
   white-space:nowrap;
@@ -7560,7 +7571,7 @@ section.roadmap.horizons .horizon-meta {
   letter-spacing:var(--pill-tracking);
   color:var(--on-cat, #fff);
   background:var(--phase-accent, var(--accent));
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border:2px solid var(--bg-alt);
   border-radius:var(--pill-radius);
   white-space:nowrap;
@@ -8291,7 +8302,7 @@ section.state-chart.horizontal .state-chip {
   font-size: var(--pill-fs);
   font-weight: var(--pill-weight);
   letter-spacing: var(--pill-tracking);
-  padding: var(--pill-pad-y) var(--pill-pad-x);
+  padding: var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border: 1px solid var(--state-node-stroke);
   border-radius: var(--pill-radius);
   background: color-mix(in oklab, var(--state-node-fill) 60%, transparent);
@@ -8470,7 +8481,7 @@ section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-ch
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border-radius:var(--pill-radius);
   background:var(--accent-soft);
   color:var(--jur-accent, var(--accent));
@@ -8973,7 +8984,7 @@ section.tldr.numbered > ol > li::before {
  * Replaces the prior Unicode ✓/–/✗ glyphs (font-dependent) with a
  * font-independent SVG-mask recipe. */
 section.verdict-grid h2 { margin-bottom:var(--sp-sm); }
-.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+.badge { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; gap:6px; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 .badge.pass { --state-color:var(--pass); }
 .badge.warn { --state-color:var(--warn); }
 .badge.fail { --state-color:var(--fail); }
@@ -9029,7 +9040,7 @@ section.verdict-grid > ul > li > strong { font-weight:inherit; color:inherit; }
 /* Inner ul = badge row */
 section.verdict-grid > ul > li > ul { display:flex; flex-wrap:wrap; gap:0.390625cqi; list-style:none; padding:0; margin:0; align-content:flex-start; }
 /* Badge items (all but last nested li) — neutral pill */
-section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-y) var(--pill-pad-x); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
+section.verdict-grid > ul > li > ul > li:not(:last-child) { display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:1; font-family:var(--pill-font); font-size:var(--pill-fs); font-weight:var(--pill-weight); letter-spacing:var(--pill-tracking); border-radius:var(--pill-radius); padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom); white-space:nowrap; background:var(--bg); border:1px solid var(--text-muted); color:var(--text-body); }
 /* When emitter/runtime ran: strip neutral pill so .badge span styles through cleanly */
 section.verdict-grid > ul > li > ul > li:not(:last-child):has(.badge) { background:none; border:none; padding:0; }
 /* Body text (last nested li) — reset inherited card-title styles */
@@ -9497,7 +9508,7 @@ section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split
   background:var(--pill-bg, var(--bg));
   color:var(--pill-fg, var(--text-body));
   border-radius:var(--pill-radius);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   white-space:nowrap;
 }
 
@@ -9873,7 +9884,7 @@ section.obligation-matrix.pills td:not(:first-child) strong {
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border-radius:var(--pill-radius);
   background:var(--bg-alt);
   border:1px solid var(--border);

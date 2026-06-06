@@ -110,7 +110,7 @@ section.statute-stack > ol > li > :is(ul, ol) > li:last-child:has(> code:only-ch
   font-size:var(--pill-fs);
   font-weight:var(--pill-weight);
   letter-spacing:var(--pill-tracking);
-  padding:var(--pill-pad-y) var(--pill-pad-x);
+  padding:var(--pill-pad-top) var(--pill-pad-x) var(--pill-pad-bottom);
   border-radius:var(--pill-radius);
   background:var(--accent-soft);
   color:var(--jur-accent, var(--accent));

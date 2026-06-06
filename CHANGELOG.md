@@ -74,7 +74,12 @@ in patch versions.
   regulatory-update (status / timeline / priority), statute-stack, and
   state-chart chips — are unified to the `--pill-*` structural tokens:
   consistent proportional padding, fully-rounded radius, and centre- /
-  middle-aligned text via `inline-flex`. Hardcoded `px` padding (glossary,
+  middle-aligned text via `inline-flex`. The y-padding is split
+  `--pill-pad-top` / `--pill-pad-bottom` (0.33 / 0.27em, same total height)
+  to optically re-centre caps and digits, which a font's baseline otherwise
+  leaves sitting high inside a flex-centred line box (`text-box-trim`, the
+  spec fix, is unsupported in the Marp Chromium — see
+  `engineering/gotchas.md`). Hardcoded `px` padding (glossary,
   state-chart) and the stray `9999px` radius (list-tabular) are gone, and the
   `600`/`700` font-weight split resolves to `--pill-weight`. Three pills stay
   as **sanctioned variants** that deliberately override specific axes —
