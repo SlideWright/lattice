@@ -219,6 +219,19 @@ in patch versions.
 
 ### Fixed
 
+- **Layout audit — T6 hex-fallback hygiene (audit round 2).**
+  - `cards-grid`, `cards-side`, `cards-stack`, `split-list`, `timeline`:
+    numbered-badge `::before` color changed from `var(--on-accent, var(--on-dark-primary, #fff))`
+    to `var(--on-accent, var(--on-dark-primary))` — drops the `#fff` literal floor so the
+    fallback chain bottoms out in a palette token.
+  - `before-after` / `decision` / `compare-prose` corner-tag (flush + banner-tag variants):
+    `before-after` / `banner-tag.before-after` label text changed from
+    `var(--on-accent, var(--on-dark-primary, #fff))` → `var(--on-accent, var(--on-dark-primary))`.
+    `decision` corner tags changed from `var(--on-cat, #fff)` → `var(--c-ink-dark)`:
+    `--on-cat` is undefined (always resolved to `#fff`); `--c-ink-dark` (white on light,
+    near-black on dark) is the correct text token for fills backed by `--cN-dark`
+    (which are saturated on light canvas, pale on dark canvas).
+
 - **Layout audit — T4 SVG chart label sizes (audit round 2).**
   - `radar`: axis labels raised from `9px` (≈6.4pt) to `11px` and tick marks from
     `6.5px` (≈4.6pt) to `9px` via scoped `--radar-axis-label-size` / `--radar-tick-size`
