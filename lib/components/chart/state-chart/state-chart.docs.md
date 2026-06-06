@@ -58,6 +58,21 @@ How a draft moves from author to archive.
 | `states` | `ol > li` | yes | One li per state. Index is the stable ref. Trailing inline code is a closed metadata vocabulary: `start`, `end`, or one of the chart-status keywords (on-track, at-risk, blocked, done, live, decision, deferred, warn, pilot, fail). Multiple metadata tokens allowed; order is irrelevant. Unknown trailing codes are left in the rendered label. |
 | `transitions` | `ol > li > ul > li` | no | Outgoing transitions from a state — one per nested bullet. Each carries a single inline-code arrow `event=>N` or `=>N` (event optional). Target is a state index or the literal `self` for self-loops. Whitespace inside the inline code is insignificant. |
 
+## Anatomy
+
+```text
+┌─────────────────────────────────────────┐
+│  header                                 │
+│          State machine heading          │
+│                                         │
+│     [Draft ] → [Review] → [Pub   ]      │
+│                                         │
+│       (back-edge: Review → Draft)       │
+│                                         │
+│  footer                           1/19  │
+└─────────────────────────────────────────┘
+```
+
 ## Variants (layout-specific)
 
 ### `lr` — Left-to-right

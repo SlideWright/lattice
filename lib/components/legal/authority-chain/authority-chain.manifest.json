@@ -20,10 +20,10 @@
       "required": true,
       "description": "Slide heading naming the rule whose chain is being walked."
     },
-    "links": {
+    "tiers": {
       "selector": "ol > li",
       "required": true,
-      "description": "Ordered list of authority tiers (Statute, Regulation, Guidance, Case). Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss."
+      "description": "Ordered list of authority tiers (Statute, Regulation, Guidance, Case) — not hyperlinks. Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss."
     }
   },
   "skeleton": "<!-- _class: authority-chain -->\n\n## Rule name — the chain, tier by tier.\n\n1. Statute\n   - `Citation reference`\n   - One-line gloss naming the body that issued it and what it does.\n2. Regulation\n   - `Citation reference`\n   - One-line gloss naming the agency rule.\n3. Guidance\n   - `Citation reference`\n   - One-line gloss naming the staff guidance.\n4. Case\n   - `Citation reference`\n   - One-line gloss naming the precedent.\n",

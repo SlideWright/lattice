@@ -50,9 +50,9 @@ Use for status-tracking across multiple parallel items (project readiness, OKR p
 │  header                                 │
 │  Progress heading.                      │
 │                                         │
-│  Goal A      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░ 70%   │
-│  Goal B      ▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ 50%   │
-│  Goal C      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90%   │
+│  Goal A   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓70%░░░░░░       │
+│  Goal B   ▓▓▓▓▓▓▓▓▓▓50%░░░░░░░░░░       │
+│  Goal C   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓90%░        │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

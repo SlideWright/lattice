@@ -137,7 +137,7 @@ Featured left panel + supporting list on the right.
 
 `Related components`
 
-- `split-statement` — thesis + one big-number — quantitative version of split-list
-- `split-brief` — title-style left + executive paragraph right
+- `split-statement` — the left panel carries a pull quote (not a section eyebrow + heading)
+- `split-brief` — dark left panel (heading + lede) + left-rule findings list on the right
 - `big-number` — single statement, no supporting list — the full-canvas version
 - `cards-stack` — the right-side list grows past four points

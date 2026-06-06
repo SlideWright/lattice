@@ -383,7 +383,6 @@ def demo_blocks() -> dict[str, str]:
         ('center', 'EYEBROW LABEL'),
         ('blank',),
         ('center', 'Display Title Here'),
-        ('center', '── accent ──'),
         ('center', 'Subtitle or tagline'),
         ('blank',),
     ])
@@ -455,7 +454,7 @@ def demo_blocks() -> dict[str, str]:
         ('center', 'SECTION 02'),
         ('blank',),
         ('center', 'Section headline'),
-        ('center', '── accent ──'),
+        ('blank',),
         ('blank',),
         ('blank',),
     ])
@@ -477,7 +476,7 @@ def demo_blocks() -> dict[str, str]:
         ('center', 'CLOSING'),
         ('blank',),
         ('center', 'Take this away'),
-        ('center', '── accent ──'),
+        ('blank',),
         ('blank',),
         ('blank',),
     ])
@@ -519,22 +518,22 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['split-brief'] = frame([
         ('left', 'header'),
-        panel_right(panel_top(), ''),
-        panel_right(panel_row('BRIEF'), 'Executive paragraph'),
-        panel_right(panel_row(''), 'on the right carries'),
-        panel_right(panel_row('Brief'), 'the body content,'),
-        panel_right(panel_row('title'), 'two or three lines.'),
+        panel_right(panel_top(), 'FINDINGS'),
+        panel_right(panel_row('BRIEF'), '│ Finding title'),
+        panel_right(panel_row('heading'), '│ body detail'),
+        panel_right(panel_row('+ lede'), '│ Finding title'),
+        panel_right(panel_row(''), '│ body detail'),
         panel_right(panel_bot(), ''),
         ('split', 'footer', '1/19'),
     ])
 
     blocks['split-statement'] = frame([
         ('left', 'header'),
-        panel_right(panel_top(), ''),
-        panel_right(panel_row(''), '┌─────────┐'),
-        panel_right(panel_row('Claim on'), '│   42×   │'),
-        panel_right(panel_row('the left'), '└─────────┘'),
-        panel_right(panel_row(''), 'Caption beside it'),
+        panel_right(panel_top(), 'IMPLICATIONS'),
+        panel_right(panel_row('"A quote'), '- First implication'),
+        panel_right(panel_row('on the'), '  body line'),
+        panel_right(panel_row('left."'), '- Second implication'),
+        panel_right(panel_row('— source'), '  body line'),
         panel_right(panel_bot(), ''),
         ('split', 'footer', '1/19'),
     ])
@@ -606,8 +605,9 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['glossary'] = frame([
         ('left', 'header'),
-        ('left', 'Glossary heading.'),
+        ('left', 'Glossary heading.            A–Z'),
         ('blank',),
+        ('left', 'TERM      DEFINITION'),
         ('left', 'Term A    Definition or gloss.'),
         ('left', 'Term B    Definition or gloss.'),
         ('left', 'Term C    Definition or gloss.'),
@@ -655,23 +655,25 @@ def demo_blocks() -> dict[str, str]:
         ('left', 'header'),
         ('left', 'TL;DR heading.'),
         ('blank',),
-        ('left', '— First takeaway, single line.'),
-        ('left', '— Second takeaway, single line.'),
-        ('left', '— Third takeaway, single line.'),
-        ('left', '— Fourth takeaway, single line.'),
+        ('left', 'First takeaway, single line.'),
+        ('left', 'Second takeaway, single line.'),
+        ('left', 'Third takeaway, single line.'),
+        ('left', 'Fourth takeaway, single line.'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])
 
     blocks['statute-stack'] = frame([
         ('left', 'header'),
-        ('left', 'Citation stack heading.'),
+        ('left', 'Statute stack heading.'),
         ('blank',),
-        ('left', '§ Title 1 — Authority'),
-        ('left', '    §§ Subsection — gloss'),
-        ('left', '§ Title 2 — Authority'),
-        ('left', '    §§ Subsection — gloss'),
-        ('blank',),
+        ('raw', wide_card_top()),
+        ('raw', wide_card_row('FEDERAL · cite        [in effect]')),
+        ('raw', wide_card_row('Obligation prose for tier.')),
+        ('raw', wide_card_bot()),
+        ('raw', wide_card_top()),
+        ('raw', wide_card_row('STATE · cite          [pending]')),
+        ('raw', wide_card_bot()),
         ('split', 'footer', '1/19'),
     ])
 
@@ -703,13 +705,12 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['decision'] = frame([
         ('left', 'header'),
-        ('center', 'Verdict heading.'),
+        ('center', 'Decision heading.'),
         ('blank',),
-        ('raw', wide_card_top()),
-        ('raw', wide_card_row('DECISION')),
-        ('raw', wide_card_row('Single-sentence verdict line')),
-        ('raw', wide_card_row('with rationale beneath.')),
-        ('raw', wide_card_bot()),
+        ('raw', three_card_top() + '  ' + three_card_top() + '  ' + three_card_top()),
+        three_cells('CHOSEN', 'Option B', 'Option C'),
+        three_cells('rationale', 'rationale', 'rationale'),
+        ('raw', three_card_bot() + '  ' + three_card_bot() + '  ' + three_card_bot()),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])
@@ -795,13 +796,13 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['list-steps'] = frame([
         ('left', 'header'),
-        ('left', 'Step-by-step heading.'),
+        ('left', 'Step-by-step heading (horizontal).'),
         ('blank',),
-        ('left', '[STEP 01]  First step label'),
-        ('left', '           supporting body'),
-        ('left', '[STEP 02]  Second step label'),
-        ('left', '           supporting body'),
-        ('blank',),
+        ('raw', three_card_top() + '  ' + three_card_top() + '  ' + three_card_top()),
+        three_cells('STEP 01', 'STEP 02', 'STEP 03'),
+        three_cells('label', 'label', 'label'),
+        three_cells('body', 'body', 'body'),
+        ('raw', three_card_bot() + '  ' + three_card_bot() + '  ' + three_card_bot()),
         ('split', 'footer', '1/19'),
     ])
 
@@ -818,11 +819,11 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['timeline-list'] = frame([
         ('left', 'header'),
-        ('left', 'Date-stamped timeline.'),
+        ('center', 'Dated milestones heading'),
         ('blank',),
-        ('left', '2024-01-15  Event one — short note'),
-        ('left', '2024-03-02  Event two — short note'),
-        ('left', '2024-05-19  Event three — short note'),
+        ('center', '●─────────●─────────●'),
+        ('center', '2024-01    2024-03    2024-05'),
+        ('center', 'Event one  Event two  Event three'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])
@@ -869,31 +870,31 @@ def demo_blocks() -> dict[str, str]:
         ('raw', table_top()),
         table_row('', 'Q1', 'Q2'),
         ('raw', table_sep()),
-        table_row('Track A', '▓▓▓░░░', '▓▓▓▓▓░'),
-        table_row('Track B', '░▓▓▓▓░', '▓▓▓░░░'),
+        table_row('Track A', '[x] done', '[-] wip'),
+        table_row('Track B', '[ ] plan', '[/] skip'),
         ('raw', table_bot()),
         ('split', 'footer', '1/19'),
     ])
 
     blocks['authority-chain'] = frame([
         ('left', 'header'),
-        ('left', 'Statute → case heading.'),
+        ('left', 'Authority descent heading.'),
         ('blank',),
-        ('left', '§ Statute        — top tier'),
-        ('left', '    ↓'),
-        ('left', '  Regulation     — middle tier'),
-        ('left', '    ↓'),
-        ('left', '  Case law       — bottom tier'),
+        panel_right(panel_top(), ''),
+        panel_right(panel_row('TIER 1'), '§ Statute — citation'),
+        panel_right(panel_row('TIER 2'), '  Regulation — cite'),
+        panel_right(panel_row('TIER 3'), '  Case law — cite'),
+        panel_right(panel_bot(), ''),
         ('split', 'footer', '1/19'),
     ])
 
     blocks['regulatory-update'] = frame([
         ('left', 'header'),
-        ('left', 'Change log heading.'),
+        ('left', 'Regulatory update heading.'),
         ('blank',),
-        ('left', '2024-Q1  Added clause 4.2 — gloss'),
-        ('left', '2024-Q2  Revised clause 5 — gloss'),
-        ('left', '2024-Q3  Deleted clause 6 — gloss'),
+        ('left', '01  Name   §cite   gloss   [eff]'),
+        ('left', '02  Name   §cite   gloss   [eff]'),
+        ('left', '03  Name   §cite   gloss   [eff]'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])
@@ -924,15 +925,11 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['kpi'] = frame([
         ('left', 'header'),
-        ('left', 'KPI grid heading.'),
-        ('blank',),
-        two_cards(card_top(), card_top()),
-        two_cards(card_row(' 42×    ✓'), card_row(' 87%    ✓')),
-        two_cards(card_row(' growth'), card_row(' uptake')),
-        two_cards(card_bot(), card_bot()),
-        two_cards(card_top(), card_top()),
-        two_cards(card_row(' 3.2k   ⚠'), card_row(' 91%    ✓')),
-        two_cards(card_bot(), card_bot()),
+        panel_right(panel_top(), 'SUPPORTING KPIS'),
+        panel_right(panel_row('$2.4B'), '42%  margin     ✓'),
+        panel_right(panel_row('hero'), '$1.1B cash      ✓'),
+        panel_right(panel_row('metric'), '+18% YoY        ✓'),
+        panel_right(panel_bot(), ''),
         ('split', 'footer', '1/19'),
     ])
 
@@ -977,9 +974,20 @@ def demo_blocks() -> dict[str, str]:
         ('left', 'header'),
         ('left', 'Progress heading.'),
         ('blank',),
-        progress_bar('Goal A', 14, 20, '70%'),
-        progress_bar('Goal B', 10, 20, '50%'),
-        progress_bar('Goal C', 18, 20, '90%'),
+        ('left', 'Goal A   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓70%░░░░░░'),
+        ('left', 'Goal B   ▓▓▓▓▓▓▓▓▓▓50%░░░░░░░░░░'),
+        ('left', 'Goal C   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓90%░'),
+        ('blank',),
+        ('split', 'footer', '1/19'),
+    ])
+
+    blocks['state-chart'] = frame([
+        ('left', 'header'),
+        ('center', 'State machine heading'),
+        ('blank',),
+        nodes_arrow_row(['Draft', 'Review', 'Pub'], w=8),
+        ('blank',),
+        ('center', '(back-edge: Review → Draft)'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])
@@ -1022,12 +1030,11 @@ def demo_blocks() -> dict[str, str]:
 
     blocks['split-metric'] = frame([
         ('left', 'header'),
-        panel_right(panel_top(), ''),
-        panel_right(panel_row('METRIC'), '┌─────────┐'),
-        panel_right(panel_row(''), '│   42×   │'),
-        panel_right(panel_row('Heading'), '└─────────┘'),
-        panel_right(panel_row(''), 'Caption text'),
-        panel_right(panel_bot(), ''),
+        panel_right(panel_top(), 'CONTEXT / FINDINGS'),
+        panel_right(panel_row('114%'), '- First finding'),
+        panel_right(panel_row('NRR'), '  supporting body'),
+        panel_right(panel_row('+ context'), '- Second finding'),
+        panel_right(panel_bot(), '  supporting body'),
         ('split', 'footer', '1/19'),
     ])
 
@@ -1035,11 +1042,10 @@ def demo_blocks() -> dict[str, str]:
         ('left', 'header'),
         ('left', 'Equation heading.'),
         ('blank',),
-        ('center', '   E  =  m c²'),
-        ('blank',),
-        ('left', '  E = energy (joules)'),
-        ('left', '  m = mass (kilograms)'),
-        ('left', '  c = speed of light'),
+        ('left', 'E = m c²    │  WHERE'),
+        ('left', '            │  E = energy'),
+        ('left', '            │  m = mass'),
+        ('left', '            │  c = speed of light'),
         ('split', 'footer', '1/19'),
     ])
 
@@ -1064,20 +1070,20 @@ def demo_blocks() -> dict[str, str]:
         ('raw', wide_card_row('HERO — featured item')),
         ('raw', wide_card_row('body text and detail')),
         ('raw', wide_card_bot()),
-        two_cards(card_top(), card_top()),
-        two_cards(card_row('Support 1'), card_row('Support 2')),
-        two_cards(card_bot(), card_bot()),
+        ('raw', three_card_top() + '  ' + three_card_top() + '  ' + three_card_top()),
+        three_cells('Support 1', 'Support 2', 'Support 3'),
+        ('raw', three_card_bot() + '  ' + three_card_bot() + '  ' + three_card_bot()),
         ('split', 'footer', '1/19'),
     ])
 
     blocks['image-canvas'] = frame([
         ('left', 'header'),
         ('blank',),
-        ('raw', '  ┌──────────────────┐               '),
-        ('raw', '  │                  │  Text slot    '),
-        ('raw', '  │   [image area]   │  on the side, '),
-        ('raw', '  │                  │  optional     '),
-        ('raw', '  └──────────────────┘  caption.     '),
+        ('raw', 'Text slot on     ┌──────────────────┐'),
+        ('raw', 'the left, with   │                  │'),
+        ('raw', 'optional         │   [image area]   │'),
+        ('raw', 'caption.         │                  │'),
+        ('raw', '                 └──────────────────┘'),
         ('blank',),
         ('split', 'footer', '1/19'),
     ])

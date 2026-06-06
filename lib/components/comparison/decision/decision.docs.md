@@ -45,13 +45,12 @@ Use after a comparison slide to land the decision. The justifications render as 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│            Verdict heading.             │
+│            Decision heading.            │
 │                                         │
-│  ┌───────────────────────────────────┐  │
-│  │ DECISION                          │  │
-│  │ Single-sentence verdict line      │  │
-│  │ with rationale beneath.           │  │
-│  └───────────────────────────────────┘  │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  CHOSEN       Option B     Option C     │
+│  rationale    rationale    rationale    │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

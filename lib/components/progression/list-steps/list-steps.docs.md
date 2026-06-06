@@ -1,6 +1,6 @@
 # list-steps
 
-> Vertical sequence of steps, each with full description body.
+> Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead).
 
 **Function** progression · **Form** timeline · **Substance** structure
 
@@ -45,22 +45,22 @@ Use for richer sequential processes where each step needs a paragraph rather tha
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Step-by-step heading.                  │
+│  Step-by-step heading (horizontal).     │
 │                                         │
-│  [STEP 01]  First step label            │
-│             supporting body             │
-│  [STEP 02]  Second step label           │
-│             supporting body             │
-│                                         │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  │
+│  STEP 01      STEP 02      STEP 03      │
+│  label        label        label        │
+│  body         body         body         │
+│  └─────────┘  └─────────┘  └─────────┘  │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```
 
 ## Variants (layout-specific)
 
-### `vertical` — Vertical — strip flips column to row
+### `vertical` — Vertical — strip flips row to column
 
-Flips the step strip from a vertical stack into a horizontal row; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.
+Flips the step strip from the default horizontal row into a vertical stack; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.
 
 ```markdown
 <!-- _class: list-steps vertical compact -->

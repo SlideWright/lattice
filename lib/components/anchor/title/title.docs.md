@@ -52,7 +52,6 @@ One-line subtitle that frames the deck.
 │              EYEBROW LABEL              │
 │                                         │
 │           Display Title Here            │
-│              ── accent ──               │
 │           Subtitle or tagline           │
 │                                         │
 └─────────────────────────────────────────┘

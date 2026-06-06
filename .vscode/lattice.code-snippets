@@ -476,7 +476,7 @@
       "3. Third step — a sentence describing what you do here.",
       "4. Fourth step — a sentence describing what you do here."
     ],
-    "description": "Vertical sequence of steps, each with full description body."
+    "description": "Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead)."
   },
   "lattice: list-tabular": {
     "prefix": "lattice-list-tabular",
@@ -568,11 +568,11 @@
       "",
       "## How we make calls when the spec is silent.",
       "",
-      "- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.",
-      "- **Decisions over options.** Document the choice, not the menu we evaluated.",
-      "- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting."
+      "1. Default to the choice that is cheaper to reverse.",
+      "2. Document the decision, not the menu of options.",
+      "3. Reversible calls don't need a meeting."
     ],
-    "description": "Declared statements — short stated principles, each with a one-line justification."
+    "description": "Declared statements — guiding rules or tenets, each as one terse sentence."
   },
   "lattice: progress": {
     "prefix": "lattice-progress",

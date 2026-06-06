@@ -1,12 +1,12 @@
 # principles
 
-> Declared statements — short stated principles, each with a one-line justification.
+> Declared statements — guiding rules or tenets, each as one terse sentence.
 
 **Function** inventory · **Form** stack · **Substance** structure
 
 **Tags** `strategy` · `okr` · `onboarding`
 
-Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.
+Use for design tenets, working agreements, or decision rules. Each principle is a single declarative statement; the layout renders it at display weight with a large counter as the visual anchor.
 
 ## When to use
 
@@ -17,7 +17,7 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 ## When NOT to use
 
 - **Aspirations, not principles.** "Be empathetic" is a value, not a principle. Principles are decision rules — they say what to do when two options conflict. Reach for content if it's a values statement.
-- **Long per-principle prose.** Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
+- **Long per-principle prose.** Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index.
 - **Hedged statements.** "We try to default to X" reads as a wish. Drop the hedge — principles are declared, not negotiated. "Default to X" lands harder.
 
 ## Authoring
@@ -27,9 +27,9 @@ Use for design tenets, working agreements, or guiding rules. Each principle read
 
 ## How we make calls when the spec is silent.
 
-- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.
-- **Decisions over options.** Document the choice, not the menu we evaluated.
-- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.
+1. Default to the choice that is cheaper to reverse.
+2. Document the decision, not the menu of options.
+3. Reversible calls don't need a meeting.
 ```
 
 ## Slots

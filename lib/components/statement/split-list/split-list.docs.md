@@ -89,8 +89,8 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — thesis + one big-number — quantitative version of split-list
-- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — title-style left + executive paragraph right
+- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the left panel carries a pull quote (not a section eyebrow + heading)
+- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — dark left panel (heading + lede) + left-rule findings list on the right
 - [`big-number`](../../statement/big-number/big-number.docs.md) — single statement, no supporting list — the full-canvas version
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — the right-side list grows past four points
 

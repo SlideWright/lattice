@@ -47,10 +47,10 @@ Use at the end of a section or deck to restate the takeaways in one line each. E
 │  header                                 │
 │  TL;DR heading.                         │
 │                                         │
-│  — First takeaway, single line.         │
-│  — Second takeaway, single line.        │
-│  — Third takeaway, single line.         │
-│  — Fourth takeaway, single line.        │
+│  First takeaway, single line.           │
+│  Second takeaway, single line.          │
+│  Third takeaway, single line.           │
+│  Fourth takeaway, single line.          │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

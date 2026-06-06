@@ -52,11 +52,10 @@ $$ y = f(x) $$
 │  header                                 │
 │  Equation heading.                      │
 │                                         │
-│                 E  =  m c²              │
-│                                         │
-│    E = energy (joules)                  │
-│    m = mass (kilograms)                 │
-│    c = speed of light                   │
+│  E = m c²    │  WHERE                   │
+│              │  E = energy              │
+│              │  m = mass                │
+│              │  c = speed of light      │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

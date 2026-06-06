@@ -49,7 +49,7 @@ Marks the start of a major section. Use sparingly — every divider is a context
 │               SECTION 02                │
 │                                         │
 │            Section headline             │
-│              ── accent ──               │
+│                                         │
 │                                         │
 │                                         │
 └─────────────────────────────────────────┘

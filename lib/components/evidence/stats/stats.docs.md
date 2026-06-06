@@ -43,7 +43,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the metrics. |
 | `subtitle` | `p > code` | no | Optional subtitle (inline-code paragraph after h2). |
-| `tiles` | `ul > li` | yes | One li per stat tile. Format: a single line with **Number** then a nested bullet for the caption. |
+| `tiles` | `ol > li` | yes | One li per stat tile, authored as an ordered list (`1.`). Format: **Number** then the caption text on the same line (e.g. `1. **73%** faster close`). |
 
 ## Anatomy
 

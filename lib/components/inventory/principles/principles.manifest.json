@@ -5,8 +5,8 @@
   "form": "stack",
   "substance": "structure",
   "tags": ["strategy", "okr", "onboarding"],
-  "description": "Declared statements — short stated principles, each with a one-line justification.",
-  "purpose": "Use for design tenets, working agreements, or guiding rules. Each principle reads as a complete sentence; the justification is below.",
+  "description": "Declared statements — guiding rules or tenets, each as one terse sentence.",
+  "purpose": "Use for design tenets, working agreements, or decision rules. Each principle is a single declarative statement; the layout renders it at display weight with a large counter as the visual anchor.",
   "variants": [
     "numbered",
     "lettered",
@@ -25,7 +25,7 @@
       "description": "One li per principle: a short declarative statement, authored as an ordered list (the counter renders as a large display numeral). No bold and no separate justification — keep each principle to one terse line."
     }
   },
-  "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n- **Bias to action.** Default to shipping a defensible answer over chasing a perfect one.\n- **Decisions over options.** Document the choice, not the menu we evaluated.\n- **Cheaper to reverse than to debate.** Reversible calls don't need a meeting.\n",
+  "skeleton": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Document the decision, not the menu of options.\n3. Reversible calls don't need a meeting.\n",
   "anatomyBlock": "principles",
   "sample": "<!-- _class: principles -->\n\n## How we make calls when the spec is silent.\n\n1. Default to the choice that is cheaper to reverse.\n2. Name the actor, never the system.\n3. Write the bet on the same slide as the choice.\n4. Disagree in the room, then commit outside it.\n5. Optimise for the reader who wasn't there.\n",
   "whenToUse": [
@@ -49,7 +49,7 @@
     },
     {
       "title": "Long per-principle prose",
-      "body": "Each justification is one sentence. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
+      "body": "Each principle is one terse sentence — there is no separate justification slot. If a principle needs a paragraph of context, give it its own slide and let principles act as the index."
     },
     {
       "title": "Hedged statements",

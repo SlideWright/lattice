@@ -56,11 +56,11 @@ Use when a quarter's regulatory motion needs a single-slide digest. Each row car
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Change log heading.                    │
+│  Regulatory update heading.             │
 │                                         │
-│  2024-Q1  Added clause 4.2 — gloss      │
-│  2024-Q2  Revised clause 5 — gloss      │
-│  2024-Q3  Deleted clause 6 — gloss      │
+│  01  Name   §cite   gloss   [eff]       │
+│  02  Name   §cite   gloss   [eff]       │
+│  03  Name   §cite   gloss   [eff]       │
 │                                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘

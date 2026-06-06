@@ -50,7 +50,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 │                 CLOSING                 │
 │                                         │
 │             Take this away              │
-│              ── accent ──               │
+│                                         │
 │                                         │
 │                                         │
 └─────────────────────────────────────────┘

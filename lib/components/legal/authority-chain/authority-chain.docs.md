@@ -46,20 +46,20 @@ Use when the audience needs to see how a rule descends: what the statute says, h
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `heading` | `h2` | yes | Slide heading naming the rule whose chain is being walked. |
-| `links` | `ol > li` | yes | Ordered list of authority tiers (Statute, Regulation, Guidance, Case). Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss. |
+| `tiers` | `ol > li` | yes | Ordered list of authority tiers (Statute, Regulation, Guidance, Case) — not hyperlinks. Each leads with the tier label; nested ul carries the citation (code) and the one-line gloss. |
 
 ## Anatomy
 
 ```text
 ┌─────────────────────────────────────────┐
 │  header                                 │
-│  Statute → case heading.                │
+│  Authority descent heading.             │
 │                                         │
-│  § Statute        — top tier            │
-│      ↓                                  │
-│    Regulation     — middle tier         │
-│      ↓                                  │
-│    Case law       — bottom tier         │
+│  ┌────────────┐                         │
+│  │ TIER 1     │  § Statute — citation   │
+│  │ TIER 2     │    Regulation — cite    │
+│  │ TIER 3     │    Case law — cite      │
+│  └────────────┘                         │
 │  footer                           1/19  │
 └─────────────────────────────────────────┘
 ```

@@ -11,7 +11,7 @@ header: "Lattice · list-steps"
 
 `Progression · Timeline · Structure`
 
-Vertical sequence of steps, each with full description body.
+Horizontal row of ordered step cards, each with a full description body (the `vertical` variant stacks them instead).
 
 ---
 
@@ -33,7 +33,7 @@ Vertical sequence of steps, each with full description body.
 ---
 
 <!-- _class: list-steps vertical compact -->
-<!-- _footer: "Vertical — strip flips column to row · list-steps vertical" -->
+<!-- _footer: "Vertical — strip flips row to column · list-steps vertical" -->
 
 ## Three phases, vertically arranged.
 
