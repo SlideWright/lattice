@@ -4796,7 +4796,7 @@ section.list-tabular.metric ol > li > code {
 section.list-tabular.metric.solid ol > li > code {
   background:var(--accent);
   border-color:var(--accent);
-  color:var(--on-accent, #fff);
+  color:var(--on-accent, var(--on-dark-primary));
 }
 
 /* ── Variant: spec (mono key) ─────────────────────────────────────────── */
