@@ -271,6 +271,16 @@ in patch versions.
 
 ### Fixed
 
+- **Docs playground no longer renders `math` slides tiny + jittering.** The
+  playground renders `inlineSVG:false` (bare `<section>`, no
+  `<svg><foreignObject>` wrapper), and `section{container-type:size}` collapses
+  a section that has no explicit box — so cqi/cqh-based layouts (notably
+  `math.matrix` / `math.compare`) shrank to an unreadable size and visibly
+  re-scaled as the KaTeX stylesheet streamed in async. `writeFrame` now pins
+  each slide to its intrinsic 1280×720 (matching the specimen renderer), giving
+  container queries a definite box and making the fit-to-width scale
+  deterministic. PDFs were never affected.
+
 - **Accent-filled surfaces now stay legible on pale-accent palettes.** Text on
   `var(--accent)` fills was reaching for a fixed light ink (`--on-dark*` /
   hardcoded `#fff`), which vanished whenever a theme's accent is pale (every
