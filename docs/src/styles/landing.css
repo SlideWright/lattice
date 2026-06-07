@@ -484,6 +484,19 @@ html[data-mode='dark'] .mode-toggle::before {
 	font-size: 0.88em;
 	color: var(--accent);
 }
+/* Live slide preview at the top of each "speaks your field" card. The runtime
+ * fills it with a real slide following the global palette + mode — no static
+ * image. Reuses the .shot-img iframe.live scaling (transform set by scaleFrame);
+ * this rule just supplies the 16:9 cropping box the standalone host needs. */
+.feature-shot {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background: var(--bg-alt);
+	border: 1px solid var(--border);
+	margin-bottom: 18px;
+}
 
 /* ── Showcase strip ──────────────────────────────────────────────────── */
 .showcase {

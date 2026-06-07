@@ -56,6 +56,21 @@ const showcase = manifests
 // tiles) through the playground runtime so they follow the selected palette
 // and light/dark, instead of being baked-in-indaco static images.
 const needsMermaid = (s) => /```mermaid/.test(s || '');
+
+// The "speaks your field" cards each render a REAL slide live (no static
+// image) through the same playground runtime the hero + carousel use, so they
+// follow the global palette + light/dark. One representative component per
+// field — its manifest sample is the source rendered in the card.
+const CARD_COMPONENTS = ['math', 'gantt', 'diagram', 'obligation-matrix', 'radar', 'cards-grid'];
+const cardData = CARD_COMPONENTS.reduce((acc, n) => {
+	const m = manifests.find((x) => x.name === n);
+	if (m) {
+		const s = m.sample || m.skeleton;
+		acc[n] = { sample: s, mermaid: needsMermaid(s) };
+	}
+	return acc;
+}, {});
+
 const liveData = JSON.stringify({
 	hero: { name: heroComp.name, sample: heroComp.sample, mermaid: needsMermaid(heroComp.sample) },
 	tiles: showcase.reduce((acc, s) => {
@@ -63,6 +78,7 @@ const liveData = JSON.stringify({
 		acc[s.nm] = { sample: m.sample || m.skeleton, mermaid: needsMermaid(m.sample || m.skeleton) };
 		return acc;
 	}, {}),
+	cards: cardData,
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	frameCss: SINGLE_SLIDE_FRAME,
@@ -171,26 +187,32 @@ const liveData = JSON.stringify({
 					</div>
 					<div class="feature-grid">
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="math"></div>
 							<h3>Mathematicians, quants &amp; ML</h3>
 							<p>Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.</p>
 						</div>
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="gantt"></div>
 							<h3>Project leads</h3>
 							<p>Gantt charts, kanban boards, roadmaps, journeys, and step ladders — native SVG rendered straight from a list, not pasted in from Visio.</p>
 						</div>
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="diagram"></div>
 							<h3>Engineers &amp; architects</h3>
 							<p>All 25 Mermaid diagram types, auto-themed to the deck. State charts. Side-by-side code diffs, syntax-highlighted, from two fenced blocks.</p>
 						</div>
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="obligation-matrix"></div>
 							<h3>Lawyers &amp; compliance</h3>
 							<p>Statute stacks, authority chains, obligation matrices, citation cards, and regulatory-update layouts — an actual legal vocabulary.</p>
 						</div>
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="radar"></div>
 							<h3>Analysts</h3>
 							<p>Radar, quadrant, KPI, stats, progress, pie, and word-cloud — the evidence layouts that turn numbers into an argument.</p>
 						</div>
 						<div class="feature">
+							<div class="feature-shot shot-img" data-live-card="cards-grid"></div>
 							<h3>And the basics, for everyone</h3>
 							<p>A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-eight layouts, one Markdown syntax.</p>
 						</div>
@@ -547,13 +569,37 @@ const liveData = JSON.stringify({
 						renderAllTiles();
 					}
 
-					// ── Re-render on palette / mode change (hero + visible tiles) ─
+					// ── "Speaks your field" cards: live render, no static fallback ─
+					// Same machinery as the tiles, keyed by data-live-card. Each card
+					// shows a real slide for its field; they sit just under the hero, so
+					// render them as the section nears the viewport.
+					var cardHosts = [].slice.call(document.querySelectorAll('.shot-img[data-live-card]'));
+					var renderedCards = [];
+					function renderCard(host) {
+						var name = host.getAttribute('data-live-card');
+						var c = D.cards[name];
+						if (!c) return;
+						renderInto(host, c.sample, c.mermaid).then(function (ok) { if (ok && renderedCards.indexOf(host) < 0) renderedCards.push(host); });
+					}
+					function renderAllCards() { cardHosts.forEach(renderCard); }
+					var fieldSection = cardHosts.length ? cardHosts[0].closest('.section') : null;
+					if ('IntersectionObserver' in window && fieldSection) {
+						var cio = new IntersectionObserver(function (entries) {
+							if (entries.some(function (e) { return e.isIntersecting; })) { cio.disconnect(); renderAllCards(); }
+						}, { rootMargin: '300px' });
+						cio.observe(fieldSection);
+					} else {
+						renderAllCards();
+					}
+
+					// ── Re-render on palette / mode change (hero + visible tiles + cards) ─
 					var reflow;
 					new MutationObserver(function () {
 						clearTimeout(reflow);
 						reflow = setTimeout(function () {
 							renderHero();
 							rendered.forEach(renderTile);
+							renderedCards.forEach(renderCard);
 						}, 80);
 					}).observe(root, { attributes: true, attributeFilter: ['data-palette', 'data-mode'] });
 				});
