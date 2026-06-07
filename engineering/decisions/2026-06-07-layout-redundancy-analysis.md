@@ -199,3 +199,56 @@ Each merge is a **breaking change** and must:
    `**Breaking:**` (or "Deprecated" if the alias is kept).
 
 Recommended order (low blast radius → high): **5 → 3 → 4 → 1 → 2.**
+
+---
+
+## Execution status (2026-06-07)
+
+Approved scope: clusters **1, 3, 4, 5** (hard break + migrate in-repo decks);
+`cards-side` dropped outright; cluster 2 analysis-only.
+
+**Shipped (committed + pushed on this branch):**
+
+| Cluster | Change | Components removed |
+|---|---|---|
+| 5 | `subtopic` → `divider light` variant | `subtopic` |
+| 3 | `tldr` → `list takeaway`, `principles` → `list principles` | `tldr`, `principles` |
+| 1a | `cards-side` dropped; authors use `compare-prose` | `cards-side` |
+
+Catalog: **58 → 54 components.** Each merge: source CSS variant + manifest +
+deck migration + regenerated artifacts, gated by `check:ownership` + `npm test`
+(green) and visually spot-checked.
+
+**Deferred — blocked on shared/leaked-CSS untangling (not in this pass):**
+
+- **Cluster 1b — `before-after` → `compare-prose` variant.** `before-after.styles.css`
+  is the *home* of the corner-tag + banner-tag CSS shared by `compare-prose`
+  and `decision`; it must be **relocated** (not deleted) before `before-after`
+  can be removed. `before-after`'s own look (→ arrow + accent-ring "new state")
+  is distinct enough to preserve as a `transition` variant, and `compare-prose`
+  is post-processed in two render paths (emulator `.compare-prose-inner` vs the
+  CSS `:not(:has(...))` fallback) — the variant (esp. the connector glyph swap)
+  must be verified in both × light/dark. Tractable, but a full cluster's worth of
+  careful work; not safe to ship half-verified.
+
+- **Cluster 4 — `timeline` → `list-steps timeline` variant.** Three couplings
+  discovered in `timeline.styles.css`:
+  1. It also holds the **Mermaid timeline-diagram overrides**
+     (`.timeline-node.section-N` ×12, `.eventWrapper`) — these must move to
+     `lib/integrations/mermaid/mermaid.css`, not be lost.
+  2. The legal **`regulatory-update timeline`** variant *deliberately* reuses the
+     `section.timeline` component rules by class-leak (its slides carry both
+     `.regulatory-update` and `.timeline`), so removing `section.timeline` would
+     break it unless those base rules are preserved or grafted into
+     `regulatory-update`.
+  3. The structure layout itself (dots-on-a-spine) is a large override graft on
+     top of `list-steps`' card+arrow base.
+
+  The engine lift selectors (`hasClass('timeline')` in the emulator,
+  `section.timeline` in the runtime) already match a `.list-steps.timeline`
+  class, so no 3-path lift edits are needed — but couplings (1) and (2) must be
+  untangled first. Recommend a dedicated follow-up.
+
+A minor follow-up from 1a: the cards-grid post-processor in `lattice-emulator.js`
+and `lib/runtime/index.js` still name-checks `cards-side` as a harmless no-op
+(left to avoid a bundle rebuild).
