@@ -113,6 +113,21 @@ const url = (p) => `${base}/${p}`.replace(/([^:])\/{2,}/g, '$1/');
 				if (aside) aside.addEventListener('click', function (e) {
 					if (e.target.closest('a')) setNav(false);
 				});
+
+				// Re-sync palette/mode from storage on every show — including
+				// back/forward (bfcache) restores, where the pre-paint <head>
+				// script doesn't re-run, so a theme picked on another page (e.g.
+				// the playground) would otherwise be stale after Back. Setting the
+				// attribute also triggers the Specimen's observer to re-render.
+				window.addEventListener('pageshow', function () {
+					try {
+						var p = localStorage.getItem('lattice-docs-palette');
+						if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
+						var m = localStorage.getItem('lattice-docs-mode');
+						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) root.setAttribute('data-mode', m);
+						if (sel) sel.value = root.getAttribute('data-palette');
+					} catch (e) {}
+				});
 			})();
 		</script>
 	</body>

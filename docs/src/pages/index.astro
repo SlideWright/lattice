@@ -302,6 +302,18 @@ const liveData = JSON.stringify({
 						try { localStorage.setItem('lattice-docs-mode', next); } catch (e) {}
 					});
 				}
+				// Re-sync on back/forward (bfcache) restores, where the pre-paint
+				// script doesn't re-run. The live-render observer below picks up the
+				// attribute change and re-renders the hero + tiles.
+				window.addEventListener('pageshow', function () {
+					try {
+						var p = localStorage.getItem('lattice-docs-palette');
+						if (p && p !== root.getAttribute('data-palette')) root.setAttribute('data-palette', p);
+						var m = localStorage.getItem('lattice-docs-mode');
+						if ((m === 'light' || m === 'dark') && m !== root.getAttribute('data-mode')) root.setAttribute('data-mode', m);
+						if (sel) sel.value = root.getAttribute('data-palette');
+					} catch (e) {}
+				});
 				var navToggle = document.getElementById('nav-toggle');
 				var topbar = document.querySelector('.topbar');
 				if (navToggle && topbar) {
