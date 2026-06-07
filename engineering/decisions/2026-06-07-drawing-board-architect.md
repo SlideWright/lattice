@@ -286,6 +286,11 @@ tradeoff at the export action.
 
 ## 9. Phased plan (proposed)
 
+> **Phase 1 is specced in full** in the companion build plan
+> `engineering/decisions/2026-06-07-drawing-board-phase-1-plan.md` —
+> slice-by-slice, with the two spikes (full-deck filmstrip, export fidelity), the
+> linter-browserization pre-work, acceptance bars, and the deps/gates analysis.
+
 - **Phase 1 — Walking skeleton (no LLM):** the Drawing Board route, 3-panel shell + rail,
   CodeMirror editor wired to the playground engine, **filmstrip preview with
   synced scroll**, IndexedDB decks + checkpoint history, MD/PDF/PPTX export, and
