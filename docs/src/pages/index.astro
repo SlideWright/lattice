@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import '../styles/landing.css';
+import { SINGLE_SLIDE_FRAME } from '../playground/frame-css.js';
 
 // Astro evaluates this frontmatter at build time with cwd = docs/, so anchor
 // repo reads to cwd (import.meta.url is unreliable once the page is bundled).
@@ -64,6 +65,7 @@ const liveData = JSON.stringify({
 	}, {}),
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
+	frameCss: SINGLE_SLIDE_FRAME,
 });
 ---
 
@@ -374,7 +376,7 @@ const liveData = JSON.stringify({
 				if (!dataEl) return;
 				var D = JSON.parse(dataEl.textContent);
 				var root = document.documentElement;
-				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl;
+				var THEME_BASE = D.themeBase, RUNTIME_URL = D.runtimeUrl, FRAME_CSS = D.frameCss;
 				var MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 				// ── Theme fetching (shared with the playground) ──────────────
@@ -401,8 +403,11 @@ const liveData = JSON.stringify({
 					// wasn't caught). With a fixed intrinsic size the polyfill isn't
 					// needed; the iframe ELEMENT is CSS-transform-scaled to fit its
 					// container instead (see scaleFrame + .slide-frame iframe.live).
-					var s = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:' + bg +
-						';overflow:hidden;width:1280px;height:720px}.marpit{width:1280px;height:720px}.marpit>svg,svg[data-marpit-svg]{display:block;width:1280px;height:720px}' + css +
+					// FRAME_CSS (frame-css.js SINGLE_SLIDE_FRAME) pins the intrinsic
+					// 1280x720 box — the single source of truth shared with the
+					// playground + specimens; a second html,body rule adds the dynamic bg.
+					var s = '<!doctype html><html><head><meta charset="utf-8"><style>' + FRAME_CSS +
+						'html,body{background:' + bg + '}' + css +
 						'</style></head><body>' + html;
 					if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
 					s += '<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt></body></html>';

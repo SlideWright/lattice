@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
+import { SLIDE_BOX } from '../playground/frame-css.js';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
@@ -50,6 +51,7 @@ const pgData = JSON.stringify({
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	defaultPalette: 'indaco',
+	slideBox: SLIDE_BOX,
 });
 ---
 
@@ -176,6 +178,7 @@ const pgData = JSON.stringify({
 				var catalog = data.catalog;
 				var THEME_BASE = data.themeBase;
 				var RUNTIME_URL = data.runtimeUrl;
+				var SLIDE_BOX = data.slideBox;
 				var root = document.documentElement;
 				var frame = document.getElementById('preview');
 				var statusEl = document.getElementById('pg-status');
@@ -255,13 +258,16 @@ const pgData = JSON.stringify({
 					'  function fit(){',
 					'    var marpit=document.querySelector(".marpit"); if(!marpit) return;',
 					'    var w=marpit.clientWidth; if(!w) return;',
+					// Each section is pinned to 1280x720 by SLIDE_BOX (frame-css.js), so
+					// scale by the constant w/1280 — no offsetWidth measurement to drift
+					// as KaTeX/Mermaid stream in. marginBottom collapses the gap the
+					// un-scaled 720px-tall layout box leaves (transform doesn't shrink it).
 					'    var secs=marpit.querySelectorAll(":scope>section");',
+					'    var sc=w/1280;',
 					'    for(var i=0;i<secs.length;i++){var s=secs[i];',
-					'      var sw=s.offsetWidth||1280, sh=s.offsetHeight||720;',
-					'      var sc=w/sw;',
 					'      s.style.transformOrigin="top left";',
 					'      s.style.transform="scale("+sc+")";',
-					'      s.style.marginBottom=(sh*sc-sh+16)+"px";',
+					'      s.style.marginBottom=(720*sc-720+16)+"px";',
 					'    }',
 					'  }',
 					'  window.addEventListener("resize",fit);',
@@ -293,21 +299,13 @@ const pgData = JSON.stringify({
 						'<!doctype html><html><head><meta charset="utf-8">' +
 						'<link rel="stylesheet" href="' + KATEX + '">' +
 						'<style>html,body{margin:0;padding:18px;background:' + bg + ';}' +
-						// Pin every slide to the intrinsic 1280x720 BEFORE FIT scales it.
-						// The engine renders inlineSVG:false (no <svg><foreignObject>
-						// wrapper), and dist/lattice.css sets `section{container-type:size}`
-						// — size containment means the box refuses to size from its
-						// contents, so without an explicit width/height it collapses
-						// (height->0) and every cqi/cqh the layouts depend on resolves
-						// against a broken box. KaTeX-heavy variants (math.matrix /
-						// .compare) then render tiny, and because the KaTeX stylesheet
-						// streams in async, each FIT pass measures a different offsetWidth
-						// and the slide visibly jumps + rescales. Giving the section a
-						// definite 1280x720 box (matching the specimen renderer in
-						// docs/src/playground/live-render.js) makes container queries
-						// resolve correctly and FIT deterministic at scale(w/1280).
-						'.marpit>section{display:block;width:1280px;height:720px;' +
-						'transform-origin:top left;' +
+						// SLIDE_BOX pins each slide to its intrinsic 1280x720 box (the single
+						// source of truth in frame-css.js) BEFORE FIT scales it. Without it,
+						// `section{container-type:size}` collapses and cqi/cqh-based layouts
+						// (math.matrix/.compare) render tiny + jitter. See frame-css.js +
+						// engineering/gotchas.md. A second rule adds this host's chrome.
+						SLIDE_BOX +
+						'.marpit>section{display:block;transform-origin:top left;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
