@@ -31,10 +31,14 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 
 `Measured against pre-framework baseline, same teams, same market conditions.`
 
-1. **73%** faster close
-2. **4.2×** signal recall
-3. **$1.2M** prevented losses
-4. **−18d** avg cycle time
+1. 73%
+   - faster close
+2. 4.2×
+   - signal recall
+3. $1.2M
+   - prevented losses
+4. −18d
+   - avg cycle time
 ```
 
 ## Slots
@@ -43,7 +47,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the metrics. |
 | `subtitle` | `p > code` | no | Optional subtitle (inline-code paragraph after h2). |
-| `tiles` | `ol > li` | yes | One li per stat tile, authored as an ordered list (`1.`). Format: **Number** then the caption text on the same line (e.g. `1. **73%** faster close`). |
+| `tiles` | `ol > li` | yes | One li per stat tile, authored as an ordered list (`1.`). The lead is the number (it renders in display type automatically — no `**…**` needed); the caption is a nested bullet beneath it:     1. 73%        - faster close A bare number with no nested caption won't render as the big number. |
 
 ## Anatomy
 

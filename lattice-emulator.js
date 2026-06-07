@@ -1369,7 +1369,7 @@ function parseSlide(raw, index) {
       cls.includes('statute-stack') || cls.includes('regulatory-update') ||
       cls.includes('authority-chain') || cls.includes('redline') ||
       hasClass('timeline') || hasClass('list-criteria') ||
-      hasClass('actors')) {
+      hasClass('actors') || hasClass('kpi') || hasClass('stats')) {
     const liftOpts = { chipTail: hasClass('actors') };
     html = html.replace(/<(ul|ol)>([\s\S]*)<\/\1>/, (_full, tag, inner) => {
       // Walk top-level <li>…</li> with depth tracking.
@@ -1395,20 +1395,11 @@ function parseSlide(raw, index) {
     });
   }
 
-  // stats: wrap ol, each li becomes a stat-item with h1 number + span label
-  if (cls.includes('stats')) {
-    html = html.replace(/<ol>([\s\S]*?)<\/ol>/g, (_, inner) => {
-      const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-      const statItems = items.map(content => {
-        // content is like: <strong>73%</strong> faster close
-        const numMatch = content.match(/<strong>(.*?)<\/strong>/);
-        const num = numMatch ? numMatch[1] : '';
-        const label = content.replace(/<strong>.*?<\/strong>/, '').trim();
-        return `<div class="stat-item"><span class="stat-num">${num}</span><span class="stat-label">${label}</span></div>`;
-      });
-      return `<div class="stats-row">${statItems.join('')}</div>`;
-    });
-  }
+  // stats now renders from a plain nested list (number = lifted <strong>,
+  // label = nested sublist) via the slot-label lift above + stats.styles.css.
+  // The old parse-and-rebuild into .stats-row (emulator-only; marp/runtime
+  // always used the CSS fallback) is gone — see
+  // engineering/decisions/2026-06-07-slot-header-auto-lift.md.
 
   // roadmap, journey, word-cloud now run via the shared transformer
   // registry call further down (sharedTransformerRegistry.applyAllToSection).

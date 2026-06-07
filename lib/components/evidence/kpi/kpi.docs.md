@@ -12,7 +12,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 
 - **Status framing matters as much as the number.** Reach for kpi when the audience needs value, target, trend, AND status indicator together. For ungoverned metric rows use stats; for a single hero number use big-number.
 - **Pick the modifier from the audience.** Board / investor reviews use the bare briefing default. SRE / SLO reviews use `ops`. Auditor / regulator packs use `compliance`. Year-over-year growth stories use `trajectory`. A single hero metric with body copy uses `spotlight`.
-- **One contract across all five.** Every modifier reads the same `### eyebrow / ## headline / 1. **value** / nested bullets / status pills` authoring contract. Switching modifiers should never require rewriting the prose.
+- **One contract across all five.** Every modifier reads the same `### eyebrow / ## headline / 1. value / nested bullets / status pills` authoring contract. Switching modifiers should never require rewriting the prose.
 
 ## When NOT to use
 
@@ -28,13 +28,13 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 ### Financial · Q4 2026
 ## Revenue ahead of plan; margin and cash both expanded.
 
-1. **$2.4B**
+1. $2.4B
    - Total revenue
    - target $2.2B · +9% `On plan` `Board`
-2. **42%**
+2. 42%
    - Gross margin
    - +2pp QoQ `On plan` `Audit`
-3. **$1.1B**
+3. $1.1B
    - Cash & equivalents
    - +$180M QoQ `On plan` `Investor`
 ```
@@ -45,7 +45,7 @@ Use for KPI dashboards with status framing — current value, target, trend, att
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the KPI group. |
 | `eyebrow` | `h3` | no | Optional eyebrow above the heading — mono, tracked uppercase (e.g. `### FINANCIAL · Q4 2026`). |
-| `kpis` | `ol > li` | yes | One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status. |
+| `kpis` | `ol > li` | yes | One li per KPI, authored as an ordered list (`1.`). The lead is the metric value (the big number) — it renders in display type automatically (no `**…**` needed); follow it with nested bullets for the metric name, target/trend, and status pills. A bare value with no nested bullets won't render as the number. |
 
 ## Anatomy
 
@@ -72,16 +72,16 @@ Bare-bones variance dashboard — each KPI shows current value against target wi
 
 ## Where we are against quarter targets.
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99%, gap is "known issue"
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min, beating target
-3. **18**
+3. 18
    - Decisions logged
    - target 340, gap is "cultural"
-4. **1**
+4. 1
    - Calibration cycles run
    - target 6, gap is "structural"
 ```
@@ -96,16 +96,16 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ### Framework · Q4 2026
 ## One metric below target; remediation under way, as it has been for two quarters.
 
-1. **94%**
+1. 94%
    - Signal-classification success
    - target 99% · -5pp `At risk` `Board`
-2. **18 min**
+2. 18 min
    - p99 decision close
    - target 20 min `On plan` `Ops`
-3. **0**
+3. 0
    - Auditor findings
    - target 0 — nobody has opened the log to check `On plan` `Audit`
-4. **3.2×**
+4. 3.2×
    - Calibration headroom
    - target 2× `On plan` `Framework`
 ```
@@ -120,16 +120,16 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 ### Platform · Q4 2026
 ## One latency target slipping; everything else inside SLO, for now.
 
-1. **99.92%**
+1. 99.92%
    - API availability
    - SLO 99.95% · -0.03pp `At risk` `SRE`
-2. **42 ms**
+2. 42 ms
    - p99 read latency
    - SLO 50 ms · -16% headroom `On track` `SRE`
-3. **18 ms**
+3. 18 ms
    - p99 write latency
    - SLO 15 ms · +20% `Breaching` `Platform`
-4. **0.04%**
+4. 0.04%
    - Error budget burn (28d)
    - SLO 1% · 4% consumed `On track` `Reliability`
 ```
@@ -144,16 +144,16 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 ### Compliance · Q4 2026
 ## Three frameworks clean; one open finding under remediation since the last walk-through.
 
-1. **0**
+1. 0
    - SOC 2 Type II open findings
    - 2026 audit complete `Compliant` `Auditor`
-2. **0**
+2. 0
    - PCI-DSS open findings
    - QSA review Oct 2026 `Compliant` `QSA`
-3. **1**
+3. 1
    - GDPR open findings
    - remediation due Q1 2027 `Remediating` `DPO`
-4. **0**
+4. 0
    - Internal audit material findings
    - quarterly review complete `Compliant` `Audit Committee`
 
@@ -170,16 +170,16 @@ Four-up cards with categorical stripes that read as period-over-period movement.
 ### Growth · FY26 vs FY25
 ## Every growth lever moved forward this year, in the cut of the data we are showing.
 
-1. **$420M**
+1. $420M
    - ARR
    - +28% YoY `YoY +28%` `Investor`
-2. **94%**
+2. 94%
    - Net dollar retention
    - +3pp YoY `YoY +3pp` `Investor`
-3. **2,840**
+3. 2,840
    - Enterprise logos
    - +540 net new `YoY +23%` `Board`
-4. **$148K**
+4. $148K
    - Average contract value
    - +$22K vs FY25 `YoY +18%` `Board`
 ```
@@ -194,17 +194,17 @@ Hero KPI gets a paragraph of body copy and a row of context pills; the supportin
 ### Headline · Q4 2026
 ## The number behind the quarter, and the one in every headline slide.
 
-1. **$420M**
+1. $420M
    - Annual recurring revenue
    - First quarter past the $400M threshold; up 28% year-over-year and ahead of the FY26 plan by $18M, which is the figure we will quote until it stops flattering us.
    - `Headline` `Board` `Investor`
-2. **94%**
+2. 94%
    - Net dollar retention
    - +3pp YoY `On plan`
-3. **2,840**
+3. 2,840
    - Enterprise logos
    - +540 net new `On plan`
-4. **$148K**
+4. $148K
    - Average contract value
    - +$22K vs prior year `On plan`
 ```

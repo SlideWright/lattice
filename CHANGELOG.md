@@ -36,6 +36,27 @@ in patch versions.
 
 ### Changed
 
+- **`kpi` and `stats` no longer require `**bold**` for their numbers.** Both
+  now auto-lift the parent list item's lead (the figure) into the display-type
+  `<strong>` via `slotLabelLift`, so authors write `1. $2.4B` / `1. 73%`
+  instead of `1. **$2.4B**` / `1. **73%**`; typing the bold is an idempotent
+  no-op. **Breaking (stats only):** `stats` moves from the inline
+  `1. **73%** faster close` shape to the nested shape every other slot layout
+  uses — the caption is now a nested bullet:
+
+  ```
+  1. 73%
+     - faster close
+  ```
+
+  The old emulator-only parse-and-rebuild into `.stats-row` is removed (marp
+  and runtime already styled the raw list, so the three render paths now
+  agree), and the `:has(.stats-row)` CSS fallback is gone. Migrate any
+  `_class: stats` slide to the nested shape. `kpi` is unaffected — its decks
+  already used the nested shape, so the de-bold is non-breaking. A new
+  `number-slot-bodyless-item` lint warning flags a kpi/stats item authored
+  without its nested label (the number won't render in display type). See
+  `engineering/decisions/2026-06-07-slot-header-auto-lift.md`.
 - **`timeline`, `list-criteria`, and `actors` no longer require `**bold**`
   markdown for their slot headers.** These layouts now auto-lift each
   top-level list item's lead text into the heading via `slotLabelLift` (the
