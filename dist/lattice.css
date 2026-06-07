@@ -217,7 +217,7 @@
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
-   * split-list left rail, banner-tags, badges). Themes can override any
+   * split-panel left rail, banner-tags, badges). Themes can override any
    * tier; the defaults below adapt automatically via light-dark() so
    * dark-canvas modes (where many palettes flip --accent to a brighter
    * value) do not inherit a white-on-bright-pastel collision.
@@ -7715,30 +7715,6 @@ section.roadmap.milestones tbody td:not(:first-child) {
   background:color-mix(in srgb, var(--bg-alt) 45%, transparent);
 }
 
-/* === lib/components/statement/split-brief/split-brief.styles.css === */
-/* split-brief — statement.split.structure
- *
- * Executive brief. Dark left anchor. Right panel: findings list via
- * left-rule chrome. Author: `eyebrow` · ## h2 · p · tight ul
- * (title / -- body). SlotLabelLift bolts the per-item title.
- *
- * See lib/components/split-brief/split-brief.manifest.json for the component contract.
- */
-
-section.split-brief { padding:0; flex-direction:row; }
-section.split-brief .brief-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
-section.split-brief .brief-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
-section.split-brief .brief-left .eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
-section.split-brief .brief-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
-section.split-brief .brief-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
-section.split-brief .brief-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-brief .brief-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-brief .brief-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
-section.split-brief .brief-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
-section.split-brief .brief-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
-section.split-brief .brief-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-brief .brief-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
-
 /* === lib/components/comparison/split-compare/split-compare.styles.css === */
 /* split-compare — comparison.split.structure
  *
@@ -7779,230 +7755,110 @@ section.split-compare .verdict::before { content:'Recommendation'; position:abso
 section.split-compare .verdict blockquote { margin:0; padding:0; border:none; }
 section.split-compare .verdict blockquote p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); font-weight:400; line-height:var(--lh-snug); margin:0; }
 
-/* === lib/components/statement/split-list/split-list.styles.css === */
-/* split-list — extracted from lib/_legacy.css (batch 5).
- * See lib/components/split-list/split-list.manifest.json for the component contract.
+/* === lib/components/statement/split-panel/split-panel.styles.css === */
+/* split-panel — statement.panel.structure
+ *
+ * Featured left panel + supporting right zone. One DOM shape (.panel-left /
+ * .panel-right, emitted by lib/core/split-panels.js); the variant supplies the
+ * finish. Absorbed five former components on 2026-06-07 (see engineering/
+ * decisions/2026-06-07-split-family-analysis.md):
+ *   default     — featured heading + findings (was split-brief)
+ *   .metric     — light-left polarity + hero number (was split-metric)
+ *   .quote      — pull-quote feature (was split-statement)
+ *   .steps      — numbered step-timeline right zone (was split-steps)
+ *   .watermark  — accent panel + letterform + meta footer (was split-list)
  */
 
-/* ── SPLIT-PANEL ──
- * ## left-heading  p left-intro  - bullet list right panel
- * ### right-eyebrow before bullets
- */
-section.split-list { padding:0; flex-direction:row; }
-section.split-list h2 { font-size:var(--fs-emphasis); color:var(--on-accent); line-height:var(--lh-tight); margin:0; }
-section.split-list .panel-left { width:34%; background:var(--accent); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; flex-shrink:0; }
-section.split-list .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--on-accent-watermark); }
-/* Decorative letterform watermark: explicit 11.46cqi (= 110pt). Sized
- * larger than --fs-hero (86pt) because the watermark serves a purely
- * editorial / decorative role on this layout — it tints the panel like a
- * letterpress imprint and never competes with the content for reading
- * attention. Editorial signal, not legibility. */
-section.split-list .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
-/* Code-only paragraph (eyebrow / section label) in the processed panel-left:
- * mirrors the fallback grid's align-self:center — pinned to vertical centre. */
-section.split-list .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; color:var(--on-accent-secondary); }
-section.split-list .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
-/* h5 eyebrow in processed panel-left: mirror the fallback grid's align-self:start. */
-section.split-list .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; }
-section.split-list .panel-right { flex:1; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; background:var(--bg); }
-section.split-list .panel-right h3 { margin-bottom:0.3125cqi; }
-section.split-list .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
-section.split-list :is(ul,ol) { display:flex; flex-direction:column; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
-section.split-list ol { counter-reset:panel-counter; }
-section.split-list :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
-section.split-list ol > li { counter-increment:panel-counter; display:grid; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
-section.split-list ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
-section.split-list ol > li > strong,
-section.split-list ol > li > span,
-section.split-list ol > li > p,
-section.split-list ol > li > em { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
-section.split-list ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
-section.split-list ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
-section.split-list :is(ul,ol) > li > strong { display:block; }
-section.split-list :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; padding-inline-start:0; margin:0.3125cqi 0 0 0; margin-inline-start:0; width:100%; }
-section.split-list :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; padding-inline-start:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
-section.split-list :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
-/* Trailing ul after the main list = optional metadata footer (Audience, Intent).
- * Pinned to the bottom of the right panel via margin-top:auto. Authored as two plain
- * bullets — labels are injected via ::before so the markdown stays minimal. Absent →
- * no rule fires, panel renders as before. */
-section.split-list .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; padding-inline-start:0; }
-section.split-list .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
-section.split-list .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
-section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
-section.split-list .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
-section.split-list {
-  /* Header/footer render over the left accent rail — ride the accent pair so
-   * they stay legible whether the rail is a dark or a pale accent. */
-  --marp-slide-header-color: var(--on-accent-secondary);
-  --marp-slide-footer-color: var(--on-accent-secondary);
-}
+/* ── base = featured heading + findings (former split-brief) ─────────────── */
+section.split-panel { padding:0; flex-direction:row; }
+section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-panel .panel-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-panel .panel-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-panel .panel-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
 
+/* ── .metric — light-left polarity + hero number (former split-metric) ───── */
+section.split-panel.metric .panel-left { width:44%; background:var(--bg); border-right:1px solid var(--border); justify-content:center; align-items:flex-start; }
+section.split-panel.metric .panel-left::before { content:none; }
+section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-bottom:var(--sp-xs); }
+section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
+section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.split-panel.metric .panel-right { background:var(--bg-dark); }
+section.split-panel.metric .panel-right h3 { color:var(--on-dark-secondary); border-bottom-color:var(--on-dark-watermark); }
+section.split-panel.metric .panel-right > ul > li { border-left:2px solid var(--on-dark-watermark); }
+section.split-panel.metric .panel-right > ul > li > strong { color:var(--on-dark-primary); }
+section.split-panel.metric .panel-right > ul > li > :is(ul,ol) > li { color:var(--on-dark-secondary); }
 
-/* ── SPLIT-PANEL CSS-grid fallback ──────────────────────────────────────────
- * Pure-CSS rendering without DOM transformation.
- * h5 + h2 → left dark panel; h3 + p + ul → right content panel.
- * h5 pins to top-left, h2 pins to bottom-left via grid-row span + align-self. */
-section.split-list:not(:has(.panel-left)) {
-  display:grid;
-  grid-template-columns:34% 1fr;
-  grid-template-rows:auto auto 1fr auto;
-  padding:0; position:relative;
-}
-section.split-list:not(:has(.panel-left))::before {
-  content:''; position:absolute;
-  top:0; left:0; bottom:0; width:34%;
-  background:var(--accent); z-index:0;
-}
-section.split-list:not(:has(.panel-left)) h5 {
-  grid-column:1; grid-row:1 / -1; align-self:start;
-  padding:var(--sp-xl) var(--sp-lg) 0;
-  z-index:1; position:relative;
-  color:var(--on-accent-secondary); margin:0;
-}
-section.split-list:not(:has(.panel-left)) h2 {
-  grid-column:1; grid-row:1 / -1; align-self:end;
-  padding:0 var(--sp-lg) var(--sp-xl);
-  z-index:1; position:relative;
-  color:var(--on-accent); font-size:var(--fs-emphasis); line-height:var(--lh-tight); margin:0;
-}
-section.split-list:not(:has(.panel-left)) h3 {
-  grid-column:2; grid-row:1;
-  padding:var(--sp-xl) var(--sp-xl) 0 var(--sp-lg); margin:0;
-}
-section.split-list:not(:has(.panel-left)) p {
-  grid-column:2; grid-row:2;
-  padding:var(--sp-xs) var(--sp-xl) var(--sp-sm) var(--sp-lg);
-  font-size:var(--fs-body); line-height:var(--lh-relaxed); margin:0; align-self:start;
-}
-/* Code-only paragraph (eyebrow / section label) → left dark panel, centered.
- * Overrides the general p rule above; color must be set explicitly on both
- * the <p> (for inheritance by > code) and directly on > code (for cascade). */
-section.split-list:not(:has(.panel-left)) p:has(> code:only-child) {
-  grid-column:1; grid-row:1 / -1; align-self:center;
-  padding:0 var(--sp-lg);
-  z-index:1; position:relative;
-  color:var(--on-accent-secondary);
-}
-section.split-list:not(:has(.panel-left)) p:has(> code:only-child) > code {
-  color:var(--on-accent-secondary);
-  background:none; border:none; padding:0; border-radius:0;
-}
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) {
-  grid-column:2; grid-row:3;
-  padding:var(--sp-xs) var(--sp-xl) var(--sp-xl) var(--sp-lg);
-  list-style:none; margin:0;
-}
-/* Optional metadata footer: a trailing ul placed *after* the main list in the
- * source. Lands in row 4 of the fallback grid, pinned to the bottom of the
- * right column with a divider above. Card styling is reset on its <li>. */
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul {
-  grid-column:2; grid-row:4;
-  padding:var(--sp-sm) var(--sp-xl) var(--sp-xl) var(--sp-lg);
-  margin:0; border-top:1px solid var(--border);
-  list-style:none; display:flex; flex-direction:column; gap:4px;
-}
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li {
-  display:block;
-  background:none; border:none; border-radius:0;
-  padding:0; margin:0;
-  font-size:var(--fs-body); font-weight:400;
-  color:var(--text-body); line-height:var(--lh-snug);
-}
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li::before {
-  font-weight:700; color:var(--text-heading); margin-right:0.4em;
-}
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(1)::before { content:"Audience ·"; }
-section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+/* ── .quote — pull-quote feature (former split-statement) ────────────────── */
+section.split-panel.pullquote .panel-left { width:50%; }
+section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
+section.split-panel.pullquote .panel-left blockquote,
+section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
+section.split-panel.pullquote .panel-left blockquote p { margin:0; }
+section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
+
+/* ── .steps — numbered step-timeline right zone (former split-steps) ─────── */
+section.split-panel.steps .panel-left { width:30%; background:var(--bg-alt); border-right:1px solid var(--border); justify-content:center; }
+section.split-panel.steps .panel-left::before { content:none; }
+section.split-panel.steps .panel-eyebrow { position:absolute; top:var(--sp-lg); left:var(--sp-lg); margin:0; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; letter-spacing:0; text-transform:none; pointer-events:none; z-index:0; }
+section.split-panel.steps .panel-left h2 { font-size:var(--fs-h2); color:var(--text-heading); font-weight:800; position:relative; z-index:1; }
+section.split-panel.steps .panel-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); position:relative; z-index:1; }
+section.split-panel.steps .panel-right { justify-content:center; }
+section.split-panel.steps .panel-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; flex:0 1 auto; }
+section.split-panel.steps .panel-right > ol { counter-reset:step-counter; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li { display:grid; grid-template-columns:3.125cqi 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding:0 0 var(--sp-md) 0; border-left:none; }
+section.split-panel.steps .panel-right > ol > li { counter-increment:step-counter; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:1.484375cqi; top:3.125cqi; bottom:0; width:2px; background:var(--border); }
+section.split-panel.steps .panel-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; position:relative; z-index:1; }
+section.split-panel.steps .panel-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; display:block; margin:0; font-size:var(--fs-body); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:3.125cqi; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── .watermark — accent panel + letterform + points + meta footer (former split-list) ── */
+section.split-panel.watermark .panel-left { width:34%; background:var(--accent); justify-content:flex-end; }
+section.split-panel.watermark .panel-left::before { background:var(--on-accent-watermark); height:4px; }
+section.split-panel.watermark .panel-left h2 { font-size:var(--fs-emphasis); color:var(--on-accent); margin:0; font-weight:800; }
+section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; margin:0; color:var(--on-accent-secondary); }
+section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
+section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
+section.split-panel.watermark .panel-right { padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; color:var(--text-heading); margin-bottom:0.3125cqi; }
+section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-direction:column; justify-content:flex-start; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
+section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right > ol > li { counter-increment:panel-counter; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
+section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
+section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > strong { display:block; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; margin:0.3125cqi 0 0 0; width:100%; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+/* optional metadata footer — a trailing ul after the main list (Audience · Intent) */
+section.split-panel.watermark .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secondary); --marp-slide-footer-color: var(--on-accent-secondary); }
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.split-list :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
-/* === lib/components/evidence/split-metric/split-metric.styles.css === */
-/* split-metric — evidence.split.structure
- *
- * One number owns the room. Light left / dark right — inverted scheme
- * from split-brief. Author: `unit label` · ## number · p · tight ul
- * (title / -- body). SlotLabelLift bolts the per-item title.
- *
- * See lib/components/split-metric/split-metric.manifest.json for the component contract.
- */
-
-section.split-metric { padding:0; flex-direction:row; }
-section.split-metric .metric-left { width:44%; flex-shrink:0; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:var(--sp-xl) var(--sp-lg); }
-section.split-metric .unit-label { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); margin-bottom:var(--sp-xs); }
-section.split-metric .metric-left h2 { display:block; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
-section.split-metric .metric-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
-section.split-metric .metric-context { display:block; font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
-section.split-metric .metric-right { flex:1; background:var(--bg-dark); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-metric .metric-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--on-dark-watermark); }
-section.split-metric .metric-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
-section.split-metric .metric-right > ul > li { padding-left:var(--sp-md); border-left:2px solid var(--on-dark-watermark); }
-section.split-metric .metric-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-primary); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
-section.split-metric .metric-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-metric .metric-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--on-dark-secondary); line-height:var(--lh-snug); }
-
-/* === lib/components/statement/split-statement/split-statement.styles.css === */
-/* split-statement — statement.split.structure
- *
- * Pull quote. Half the slide committed to one idea — no apology.
- * Author: > blockquote · `cite` · tight ul (title / -- body).
- * SlotLabelLift bolts the per-item title.
- *
- * See lib/components/split-statement/split-statement.manifest.json for the component contract.
- */
-
-section.split-statement { padding:0; flex-direction:row; }
-section.split-statement .statement-left { width:50%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
-section.split-statement .statement-left::before { content:'\201C'; position:absolute; top:-2.1875cqi; left:1.09375cqi; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; }
-/* Half-canvas pull-quote: explicit 3.9583cqi (= 38pt) sits between
- * --fs-h2 (28pt) and --fs-h1 (48pt). Pull-quotes occupying a half-canvas
- * panel earn more authority than a standard slide title (h2) without
- * commanding like the dominant title (h1). No existing token captures
- * this tier; the size is layout-specific. */
-section.split-statement .statement-left blockquote,
-section.split-statement .statement-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
-section.split-statement .statement-left blockquote { margin:0 0 var(--sp-md); }
-section.split-statement .statement-left blockquote p { margin:0; }
-section.split-statement .statement-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
-section.split-statement .statement-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
-section.split-statement .statement-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
-section.split-statement .statement-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
-section.split-statement .statement-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.3125cqi; }
-section.split-statement .statement-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
-section.split-statement .statement-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
-
-/* === lib/components/progression/split-steps/split-steps.styles.css === */
-/* split-steps — progression.split.structure
- *
- * Sequential process. CSS counter timeline with connecting line. Author:
- * `phase` · ## h2 · p · tight ol (title / -- body sub-item). SlotLabelLift
- * bolts the per-step title.
- *
- * See lib/components/split-steps/split-steps.manifest.json for the component contract.
- */
-
-section.split-steps { padding:0; flex-direction:row; }
-section.split-steps .steps-left { width:30%; flex-shrink:0; background:var(--bg-alt); border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
-section.split-steps .phase-num { position:absolute; top:var(--sp-lg); left:var(--sp-lg); font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; pointer-events:none; z-index:0; }
-section.split-steps .steps-left h2 { font-size:var(--fs-h2); color:var(--text-heading); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; position:relative; z-index:1; }
-section.split-steps .steps-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); margin:0; position:relative; z-index:1; }
-section.split-steps .steps-right { flex:1; background:var(--bg); padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); display:flex; flex-direction:column; justify-content:center; }
-section.split-steps .steps-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; }
-section.split-steps .steps-right > ol { counter-reset:step-counter; }
-section.split-steps .steps-right > :is(ul,ol) > li { display:grid; grid-template-columns:3.125cqi 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding-bottom:var(--sp-md); }
-section.split-steps .steps-right > ol > li { counter-increment:step-counter; }
-section.split-steps .steps-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
-section.split-steps .steps-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:1.484375cqi; top:3.125cqi; bottom:0; width:2px; background:var(--border); }
-section.split-steps .steps-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; position:relative; z-index:1; }
-section.split-steps .steps-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
-section.split-steps .steps-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; font-size:var(--fs-body); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:3.125cqi; }
-section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
-section.split-steps .steps-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+ * the parent's font-weight:700. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/chart/state-chart/state-chart.styles.css === */
 /* state-chart — native state machine diagram, browser-measured layout.
@@ -9186,7 +9042,7 @@ section.divider.light h2 + p:has(> code:only-child) { color: var(--text-secondar
  * A paragraph whose only child is an inline code span, placed immediately
  * before any heading, is promoted to an eyebrow label — same visual style as
  * h3/h5 but fully lint-safe (not a heading, so it never violates heading-order
- * rules). h5 remains available for structural use (e.g. split-list).
+ * rules). h5 remains available for structural use (e.g. split-panel watermark).
  *
  * Declared AFTER the subtitle block — same specificity (0,1,4), so source
  * order ensures eyebrow wins when a code paragraph is sandwiched between two
@@ -9362,7 +9218,7 @@ section footer {
  * Deny list = layouts where a metadata pill does not earn its place,
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
- *   bookends/openers     title, divider, closing, split-list
+ *   bookends/openers     title, divider, closing, split-panel
  *   single-message       featured, big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
  *                        list-steps (counter), list (own line),
@@ -9379,7 +9235,7 @@ section footer {
  * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
+section:where(:not(.title):not(.divider):not(.closing):not(.split-panel):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9861,7 +9717,7 @@ section.obligation-matrix.asymmetric td:first-child {
  * Flips the asymmetric half of a layout:
  *   image          — image side flips left/right (alias of legacy `.left`)
  *   featured       — hero card moves from left col to right col
- *   split-list    — accent panel moves from left to right
+ *   split-panel    — accent panel moves from left to right (watermark)
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
  * Migration: `image.left` is preserved as an alias; new authoring should
@@ -9888,9 +9744,9 @@ section.featured.mirror .feat-layout {
 section.featured.mirror .feat-layout .feat-card { grid-column: 2; grid-row: 1; }
 section.featured.mirror .feat-layout .sub-row    { grid-column: 1; grid-row: 1; }
 
-/* — split-list: reverse the row so panel-left renders on the right —
+/* — split-panel: reverse the row so panel-left renders on the right —
  * Watermark / eyebrow positions stay anchored to .panel-left's own box. */
-section.split-list.mirror {
+section.split-panel.mirror {
   flex-direction: row-reverse;
 }
 

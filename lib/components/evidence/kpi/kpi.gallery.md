@@ -256,6 +256,6 @@ Source · regulatory register · weekly export
 
 - `stats` — metric row without targets or status pills
 - `big-number` — a single number is the whole argument
-- `split-metric` — one KPI with a paragraph of supporting prose
+- `split-panel` — one KPI with a paragraph of supporting prose
 - `progress` — completion percentages across parallel workstreams
 - `timeline-list` — milestones in time, not metrics at a moment

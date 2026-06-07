@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 52,
+  "count": 48,
   "components": [
     {
       "name": "actors",
@@ -597,7 +597,7 @@
           "when": "grid of 4-6 metrics with status indicators"
         },
         {
-          "name": "split-metric",
+          "name": "split-panel",
           "when": "the metric needs a paragraph of context alongside it"
         },
         {
@@ -1051,7 +1051,7 @@
         },
         {
           "title": "Paraphrased 'quote'",
-          "body": "If you are rewriting the source language, drop the citation framing and use content or split-statement. The whole point of citation-card is verbatim language with attribution."
+          "body": "If you are rewriting the source language, drop the citation framing and use content or split-panel pullquote. The whole point of citation-card is verbatim language with attribution."
         },
         {
           "title": "Gloss longer than the quote",
@@ -1072,7 +1072,7 @@
           "when": "the source is a person, not a document"
         },
         {
-          "name": "split-statement",
+          "name": "split-panel",
           "when": "a quote with three or four implications"
         },
         {
@@ -2207,7 +2207,7 @@
           "when": "the recommendation needs an explicit pro/con frame"
         },
         {
-          "name": "split-brief",
+          "name": "split-panel",
           "when": "the recommendation is a thesis sentence + supporting findings"
         }
       ],
@@ -2892,7 +2892,7 @@
           "when": "a single number is the whole argument"
         },
         {
-          "name": "split-metric",
+          "name": "split-panel",
           "when": "one KPI with a paragraph of supporting prose"
         },
         {
@@ -3113,7 +3113,7 @@
         },
         {
           "title": "Rationale longer than two lines",
-          "body": "Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-brief` where the body has room to breathe."
+          "body": "Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-panel` where the body has room to breathe."
         },
         {
           "title": "Missing criterion title",
@@ -3257,7 +3257,7 @@
           "when": "gating requirements rather than a sequence of actions"
         },
         {
-          "name": "split-steps",
+          "name": "split-panel",
           "when": "phase label + heading on the left, steps on the right"
         },
         {
@@ -3848,7 +3848,7 @@
         },
         {
           "title": "Two slices",
-          "body": "A two-slice pie is just a percentage with extra steps. Use big-number or split-metric — the audience can read '38% / 62%' faster than they can decode a half-and-half disc."
+          "body": "A two-slice pie is just a percentage with extra steps. Use big-number or split-panel metric — the audience can read '38% / 62%' faster than they can decode a half-and-half disc."
         },
         {
           "title": "Comparing two pies",
@@ -4205,7 +4205,7 @@
       "antiPatterns": [
         {
           "title": "Paragraph-length quotes",
-          "body": "If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-statement` (gives the quote half the slide alongside spelled-out implications)."
+          "body": "If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-panel pullquote` (gives the quote half the slide alongside spelled-out implications)."
         },
         {
           "title": "Multiple quotes per slide",
@@ -4218,7 +4218,7 @@
       ],
       "related": [
         {
-          "name": "split-statement",
+          "name": "split-panel",
           "when": "the quote needs implications spelled out alongside it"
         },
         {
@@ -4737,124 +4737,6 @@
       "galleryHref": "../../lib/components/progression/roadmap/roadmap.gallery.light.pdf"
     },
     {
-      "name": "split-brief",
-      "bucket": "statement",
-      "function": "statement",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "summary",
-        "board-deck",
-        "takeaway"
-      ],
-      "description": "Executive brief — dark left anchor, findings list on the right with left-rule chrome.",
-      "purpose": "Use when one paragraph of executive context needs to read alongside three or four substantiating findings. The dark left panel is the anchor; the right panel is the evidence.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "eyebrow": {
-          "selector": "p:first-of-type > code",
-          "required": false,
-          "description": "Optional inline-code eyebrow above the heading."
-        },
-        "heading": {
-          "selector": "h2",
-          "required": true,
-          "description": "Heading shown in the dark left anchor."
-        },
-        "lede": {
-          "selector": "p",
-          "required": true,
-          "description": "One-sentence framing paragraph under the heading."
-        },
-        "findings": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Right-side findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold."
-        }
-      },
-      "skeleton": "<!-- _class: split-brief -->\n\n`Eyebrow context`\n\n## Headline that anchors the brief.\n\nOne-sentence framing paragraph explaining what the findings cover.\n\n- First finding\n  - Supporting detail explaining the first finding.\n- Second finding\n  - Supporting detail explaining the second finding.\n- Third finding\n  - Supporting detail explaining the third finding.\n",
-      "whenToUse": [
-        {
-          "title": "Executive context + findings",
-          "body": "When the slide needs both a paragraph of framing AND a list of substantiating points. The dark left panel carries the framing; the right list carries the evidence. Pure list (no framing) belongs in `list` or `cards-stack`."
-        },
-        {
-          "title": "Three to four findings",
-          "body": "Sweet spot is 3-4 findings. Fewer wastes the layout's grid; more crowds the right panel and the audience loses scannability."
-        },
-        {
-          "title": "Executive audiences",
-          "body": "The brief shape mirrors how analysts and execs structure memos: thesis on the left, evidence on the right. Reach for split-brief when the deck reads like a memo, not a presentation."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "More than 5 findings",
-          "body": "Past 5 findings, the right panel becomes a wall of bullets and the layout's balance breaks. Split into two slides or use `cards-stack` for a fuller list."
-        },
-        {
-          "title": "Lede that's not a sentence",
-          "body": "The lede is the framing. A fragment or eyebrow-style phrase wastes the role. Write one declarative sentence that sets up why the findings matter."
-        },
-        {
-          "title": "Findings without titles",
-          "body": "The title at the start of each li — rendered bold automatically — is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure."
-        }
-      ],
-      "related": [
-        {
-          "name": "split-list",
-          "when": "the right side is a list of supporting points, not findings"
-        },
-        {
-          "name": "split-statement",
-          "when": "the left side carries a quote, not a thesis"
-        },
-        {
-          "name": "cards-stack",
-          "when": "the slide is mostly the list of findings; no executive framing needed"
-        },
-        {
-          "name": "list",
-          "when": "single-line takeaways — the `takeaway` variant"
-        }
-      ],
-      "galleryHref": "../../lib/components/statement/split-brief/split-brief.gallery.light.pdf"
-    },
-    {
       "name": "split-compare",
       "bucket": "comparison",
       "function": "comparison",
@@ -4967,7 +4849,7 @@
           "when": "the verdict slide that follows a separate comparison"
         },
         {
-          "name": "split-brief",
+          "name": "split-panel",
           "when": "the right side is findings, not paired options"
         },
         {
@@ -4978,19 +4860,25 @@
       "galleryHref": "../../lib/components/comparison/split-compare/split-compare.gallery.light.pdf"
     },
     {
-      "name": "split-list",
+      "name": "split-panel",
       "bucket": "statement",
       "function": "statement",
       "form": "panel",
       "substance": "structure",
       "tags": [
-        "overview",
-        "walkthrough",
-        "showcase"
+        "summary",
+        "board-deck",
+        "hero-number",
+        "pull-quote",
+        "takeaway"
       ],
-      "description": "Featured left panel + supporting list on the right.",
-      "purpose": "Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.",
+      "description": "Featured left panel + supporting right zone — one prominent claim beside the points that substantiate it.",
+      "purpose": "Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.",
       "variants": [
+        "metric",
+        "pullquote",
+        "steps",
+        "watermark",
         "mirror"
       ],
       "effectiveVariants": [
@@ -5003,18 +4891,21 @@
         "loose",
         "mark-orbit",
         "mark-threads",
+        "metric",
         "mirror",
         "no-footer",
         "no-header",
         "no-paginate",
         "no-period",
         "pinned",
+        "pullquote",
         "redacted",
         "revised",
         "scale-2xl",
         "scale-l",
         "scale-xl",
         "silent",
+        "steps",
         "tbd",
         "tint-corner at-tl",
         "tint-edge at-right",
@@ -5024,428 +4915,80 @@
         "tone-skip",
         "tone-warn",
         "treatment-none",
+        "watermark",
         "wip",
         "with-period"
       ],
       "slots": {
-        "panel-heading": {
-          "selector": "h2",
-          "required": true,
-          "description": "Heading shown in the dark left panel."
-        },
-        "panel-eyebrow": {
-          "selector": "h3",
-          "required": false,
-          "description": "Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow)."
-        },
-        "points": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Right-side supporting points. The lead text of each li is the point label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the body text."
-        },
-        "meta": {
-          "selector": "section :is(ul,ol) + ul",
-          "required": false,
-          "description": "Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels."
-        }
-      },
-      "skeleton": "<!-- _class: split-list -->\n\n## Panel headline that frames the side points.\n\n### Section rubric\n\n- First point\n  - Supporting sentence explaining the first point.\n- Second point\n  - Supporting sentence explaining the second point.\n- Third point\n  - Supporting sentence explaining the third point.\n",
-      "whenToUse": [
-        {
-          "title": "Thesis plus proof",
-          "body": "One bold claim deserves dedicated visual weight on the left; supporting points sit to the right. Use when the audience needs to hear the claim before the evidence."
-        },
-        {
-          "title": "Section openers with substance",
-          "body": "More substantive than a divider, but still anchored by a single statement. Three to four supporting points keep the panel from feeling cluttered."
-        },
-        {
-          "title": "Mirror for image-heavy decks",
-          "body": "The `mirror` variant flips the panel to the right. Useful when the deck's visual rhythm wants accents on alternating sides."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Longer than four points",
-          "body": "If the right side runs past four points, the panel and list lose balance. Move to `cards-stack` for longer lists or split into two slides."
-        },
-        {
-          "title": "No panel headline",
-          "body": "The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide."
-        },
-        {
-          "title": "Stacking many split-list slides in a row",
-          "body": "The dark sidebar is a strong visual signal. Three split-list slides back-to-back numbs the audience to it. Intersperse with content or stats."
-        }
-      ],
-      "related": [
-        {
-          "name": "split-statement",
-          "when": "the left panel carries a pull quote (not a section eyebrow + heading)"
-        },
-        {
-          "name": "split-brief",
-          "when": "dark left panel (heading + lede) + left-rule findings list on the right"
-        },
-        {
-          "name": "big-number",
-          "when": "single statement, no supporting list — the full-canvas version"
-        },
-        {
-          "name": "cards-stack",
-          "when": "the right-side list grows past four points"
-        }
-      ],
-      "galleryHref": "../../lib/components/statement/split-list/split-list.gallery.light.pdf"
-    },
-    {
-      "name": "split-metric",
-      "bucket": "evidence",
-      "function": "evidence",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "hero-number",
-        "metric",
-        "assessment"
-      ],
-      "description": "One number owns the room — light left with the hero metric, dark right with supporting findings.",
-      "purpose": "Use when a single KPI is the argument. The hero number is the headline; the right-side list explains why the number matters and what the trend implies.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "unit": {
+        "eyebrow": {
           "selector": "p:first-of-type > code",
           "required": false,
-          "description": "Optional inline-code unit label above the metric (e.g. 'Net Revenue Retention')."
-        },
-        "metric": {
-          "selector": "h2",
-          "required": true,
-          "description": "The hero number. Wrap a unit in *italics* (e.g. '114*%*') to render at smaller weight."
-        },
-        "context": {
-          "selector": "p",
-          "required": true,
-          "description": "One-sentence context line below the metric — measurement window, cohort, comparison."
-        },
-        "findings": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Right-side supporting findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold."
-        }
-      },
-      "skeleton": "<!-- _class: split-metric -->\n\n`Metric name`\n\n## 114*%*\n\nMeasurement window and qualifying detail in one short sentence.\n\n- First supporting point.\n  - Why this metric matters and what's driving it.\n- Second supporting point.\n  - What concentration or trend explains it.\n- Third supporting point.\n  - What this number unlocks or threatens.\n",
-      "whenToUse": [
-        {
-          "title": "One KPI deserves the room",
-          "body": "When a single number — NRR, NPS, gross margin, error budget burn — carries the slide and the audience needs to see why it matters. The hero scale on the left earns the focus; the right panel earns the explanation."
-        },
-        {
-          "title": "Three findings, not three numbers",
-          "body": "The right panel is for the implications of the headline number — the driver, the trend, the unlock. If the panel needs four more metrics to explain the first, use `kpi` instead."
-        },
-        {
-          "title": "Italics for the unit",
-          "body": "Wrap the unit in `*…*` (e.g. `114*%*`, `4.2*×*`, `$420*M*`) so the headline reads as 'one-fourteen percent' rather than letting the symbol dominate the eye. The italic glyph drops a weight relative to the number."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Two metrics on the left panel",
-          "body": "If two numbers compete for the hero slot the layout breaks visually. Either trust one number to carry the slide or move to `stats` for a metric row."
-        },
-        {
-          "title": "Findings that just restate the number",
-          "body": "Bullets like 'NRR is 114%' or 'Up from 110%' don't earn the panel — the headline already said that. Use the right-side findings for the driver, the cohort, and the unlock."
-        },
-        {
-          "title": "No context line under the metric",
-          "body": "A number with no measurement window or cohort is a boast, not a finding. The context line is what makes the metric audit-defensible — name the cohort, the window, the comparison."
-        }
-      ],
-      "related": [
-        {
-          "name": "big-number",
-          "when": "the number is the whole slide — no supporting findings needed"
-        },
-        {
-          "name": "stats",
-          "when": "a row of comparable headline metrics instead of one focal KPI"
-        },
-        {
-          "name": "kpi",
-          "when": "the metric needs targets, status pills, and a dashboard frame"
-        },
-        {
-          "name": "split-statement",
-          "when": "the left is a quote, not a metric"
-        },
-        {
-          "name": "split-brief",
-          "when": "the left is a thesis statement, not a number"
-        }
-      ],
-      "galleryHref": "../../lib/components/evidence/split-metric/split-metric.gallery.light.pdf"
-    },
-    {
-      "name": "split-statement",
-      "bucket": "statement",
-      "function": "statement",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "pull-quote",
-        "quotation",
-        "takeaway"
-      ],
-      "description": "Pull quote — half the slide committed to one quoted idea on a dark left panel, supporting list on the right.",
-      "purpose": "Use when one quotation deserves the full attention of a slide and the implications need spelling out. Distinct from `quote` (which is the whole slide); split-statement gives equal room to quote and consequences.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "quotation": {
-          "selector": "blockquote",
-          "required": true,
-          "description": "The pull quote — one or two sentences, italic display font in the dark left panel."
-        },
-        "cite": {
-          "selector": "p:first-of-type > code",
-          "required": false,
-          "description": "Optional attribution in an inline-code paragraph after the blockquote."
-        },
-        "implications": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Right-side supporting points. Each li's lead is the implication title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold."
-        }
-      },
-      "skeleton": "<!-- _class: split-statement -->\n\n> The quotation, one or two sentences worth committing half the slide to.\n\n`Speaker · Role, Organisation, Year`\n\n- First implication\n  - What this quote means for the work in front of us.\n- Second implication\n  - A second-order consequence worth naming.\n- Third implication\n  - The action this quote argues for.\n",
-      "whenToUse": [
-        {
-          "title": "Quote + implications",
-          "body": "When a quotation matters AND you need to spell out the consequences alongside it. Pure quote (no implications) → `quote` slide. Pure list (no quote) → `cards-stack`. split-statement is the hybrid."
-        },
-        {
-          "title": "Expert claims that argue for action",
-          "body": "Customer voice, analyst quote, founder principle — the kind of phrase that ought to drive a decision. The right panel makes the decision explicit so the audience doesn't have to infer it."
-        },
-        {
-          "title": "Two-line quotation max",
-          "body": "The left panel is large but not infinite. Past two sentences the italic display font crowds. Trim the quote or split into a `quote` slide followed by an `cards-stack` of implications."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Implications that just paraphrase the quote",
-          "body": "If the right-panel bullets are restating what the quote said, the slide is doing two jobs that should be one. Either trust the quote (use `quote`) or make implications that genuinely extend it."
-        },
-        {
-          "title": "Quote shorter than the implications",
-          "body": "When the quote is one phrase and the right panel has three paragraphs of body, the visual balance breaks. Either lengthen the quote (within reason) or move to `split-brief` (lede + findings)."
-        },
-        {
-          "title": "No attribution",
-          "body": "The inline-code cite line is what makes a pull quote credible. An unattributed quote in a deck reads as the author's invention; attribution earns the visual weight."
-        }
-      ],
-      "related": [
-        {
-          "name": "quote",
-          "when": "the quote IS the slide — no implications needed"
-        },
-        {
-          "name": "split-brief",
-          "when": "the left carries a thesis statement, not a quote"
-        },
-        {
-          "name": "split-list",
-          "when": "the right side is supporting points, no quoted claim on the left"
-        }
-      ],
-      "galleryHref": "../../lib/components/statement/split-statement/split-statement.gallery.light.pdf"
-    },
-    {
-      "name": "split-steps",
-      "bucket": "progression",
-      "function": "progression",
-      "form": "split",
-      "substance": "structure",
-      "tags": [
-        "process",
-        "planning",
-        "walkthrough"
-      ],
-      "description": "Sequential process — phase label + heading on the left, numbered step timeline on the right with a connecting line.",
-      "purpose": "Use when a multi-step process needs a phase anchor (week N, sprint, milestone) alongside the ordered steps that compose it. Ordered list renders with auto-numbered discs; unordered list uses plain discs.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "phase": {
-          "selector": "p:first-of-type > code",
-          "required": false,
-          "description": "Optional inline-code phase number or label (e.g. '02')."
+          "description": "Optional inline-code label above the feature (the phase number under `steps`, the unit under `metric`)."
         },
         "heading": {
           "selector": "h2",
           "required": true,
-          "description": "Phase heading shown over the watermark phase number."
+          "description": "The featured element in the left panel — a heading by default; a hero number under `metric`; the phase name under `steps`. (Under `pullquote`, use a blockquote instead — see the variant.)"
         },
-        "summary": {
+        "lede": {
           "selector": "p",
-          "required": true,
-          "description": "One-sentence summary of what this phase covers."
+          "required": false,
+          "description": "One-sentence framing paragraph under the feature."
         },
-        "steps": {
-          "selector": "ol > li",
+        "points": {
+          "selector": "ul > li",
           "required": true,
-          "description": "Right-side steps. Use ordered list for numbered discs; lead each with **Title.** then nested body."
+          "description": "Right-side supporting points. Each li's lead is the point title — it renders bold automatically (no `**…**`); follow it with a nested `- body` line."
         }
       },
-      "skeleton": "<!-- _class: split-steps -->\n\n`02`\n\n## Phase name\n\nOne-sentence summary describing what this phase produces.\n\n1. First step\n   - What happens and what gets produced.\n2. Second step\n   - What follows and how it's validated.\n3. Third step\n   - What closes the phase out.\n",
+      "skeleton": "<!-- _class: split-panel -->\n\n`Eyebrow context`\n\n## Headline that anchors the panel.\n\nOne-sentence framing paragraph explaining what the points cover.\n\n- First point\n  - Supporting detail explaining the first point.\n- Second point\n  - Supporting detail explaining the second point.\n- Third point\n  - Supporting detail explaining the third point.\n",
       "whenToUse": [
         {
-          "title": "Phase anchor on the left, steps on the right",
-          "body": "When a phase number, name, and intro paragraph need to read alongside the ordered steps that compose it. The left panel is the orientation; the right panel is the work."
+          "title": "One feature, supporting points",
+          "body": "When a single prominent element — a thesis heading, a hero number, a quote — deserves its own panel and the right side substantiates it. The panel is the anchor; the right is the evidence."
         },
         {
-          "title": "Three to five steps per phase",
-          "body": "Below three the right panel feels under-furnished; above five the timeline spine compresses and the body lines run together. Group adjacent steps or split into two phase slides."
+          "title": "Pick the variant by what the panel features",
+          "body": "Heading (default), hero number (`metric`), pull-quote (`pullquote`), phase + numbered steps (`steps`), or an accent panel with a letterform watermark and a metadata footer (`watermark`)."
         },
         {
-          "title": "Phase chip names the slot",
-          "body": "The inline-code phase chip (`01`, `02`, `Sprint 3`, `Week 4`) becomes the decorative left-panel watermark. Pick a chip the audience can recognise from a deck cover or roadmap."
+          "title": "Points carry a title + body",
+          "body": "Each right-side item leads with a bold title (lifted automatically) and a nested one-line body. Three or four points read best; more crowds the panel."
         }
       ],
       "antiPatterns": [
         {
-          "title": "Standalone process, no phase anchor",
-          "body": "If the slide is one ordered process with no phase context, use `list-steps` or `timeline`. split-steps earns its split only when the left panel adds orientation."
+          "title": "A binary decision with a verdict",
+          "body": "If the slide weighs two options and lands a recommendation, use `split-compare` — its right zone is a 2-option grid + a verdict card, which `split-panel` does not provide."
         },
         {
-          "title": "Steps longer than two sentences",
-          "body": "Each right-side step is a title plus a sentence or two. If a step needs a paragraph, lift to `list-steps` where the cards have body room."
+          "title": "Co-equal halves",
+          "body": "split-panel is asymmetric — a featured panel beside supporting detail. For two co-equal options side by side, use `compare-prose`."
         },
         {
-          "title": "More than one phase per slide",
-          "body": "split-steps is one phase per slide; the watermark and intro paragraph anchor that single phase. Use consecutive split-steps slides for sequential phases."
+          "title": "A list with no feature",
+          "body": "If there's no prominent left-panel element, a plain `list` or `cards-stack` serves better — the panel earns its place only when one element leads."
         }
       ],
       "related": [
         {
+          "name": "split-compare",
+          "when": "a binary decision with a recommendation card"
+        },
+        {
+          "name": "compare-prose",
+          "when": "two co-equal options side by side"
+        },
+        {
+          "name": "big-number",
+          "when": "the hero number is the whole slide, with no supporting list"
+        },
+        {
           "name": "list-steps",
-          "when": "standalone ordered process without a phase anchor"
-        },
-        {
-          "name": "roadmap",
-          "when": "phased grid across multiple workstreams"
-        },
-        {
-          "name": "split-list",
-          "when": "left-anchor + right-list shape without a step sequence"
-        },
-        {
-          "name": "split-brief",
-          "when": "executive framing with substantiating findings rather than steps"
+          "when": "an ordered process without a left anchor panel"
         }
       ],
-      "galleryHref": "../../lib/components/progression/split-steps/split-steps.gallery.light.pdf"
+      "galleryHref": null
     },
     {
       "name": "state-chart",
@@ -5648,7 +5191,7 @@
         },
         {
           "title": "Numbers are the headline",
-          "body": "Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-metric` instead."
+          "body": "Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-panel metric` instead."
         },
         {
           "title": "Independent metrics, not parts of a whole",
@@ -5679,7 +5222,7 @@
           "when": "metrics need targets, trends, and status pills"
         },
         {
-          "name": "split-metric",
+          "name": "split-panel",
           "when": "one focal KPI with a paragraph of supporting prose"
         },
         {

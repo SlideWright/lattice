@@ -180,8 +180,8 @@ flowchart LR
 
 ---
 
-<!-- _class: split-list -->
-<!-- _footer: "Dark panel + content · split-list" -->
+<!-- _class: split-panel watermark -->
+<!-- _footer: "Dark panel + content · split-panel watermark" -->
 
 ## Scoring Model Deep Dive
 
@@ -456,8 +456,8 @@ The left card is struck through. The DECISION connector is bold. The conclusion 
 
 ---
 
-<!-- _class: split-list mirror -->
-<!-- _footer: "Section opener, panel right · split-list mirror" -->
+<!-- _class: split-panel watermark mirror -->
+<!-- _footer: "Section opener, panel right · split-panel watermark mirror" -->
 
 ## Phase 01 through Phase 03 ships the architecture, the operations, and the scale
 

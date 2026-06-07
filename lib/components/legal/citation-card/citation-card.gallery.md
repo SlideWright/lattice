@@ -147,7 +147,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 ## When NOT to reach for citation-card.
 
 - **Multiple citations on one slide.** If you are stacking two or three statutes, use statute-stack instead — citation-card is built for the canvas-weight treatment of a single authority.
-- **Paraphrased 'quote'.** If you are rewriting the source language, drop the citation framing and use content or split-statement. The whole point of citation-card is verbatim language with attribution.
+- **Paraphrased 'quote'.** If you are rewriting the source language, drop the citation framing and use content or split-panel pullquote. The whole point of citation-card is verbatim language with attribution.
 - **Gloss longer than the quote.** When the plain-English explanation runs three paragraphs, the citation is no longer the focus. Trim the gloss to one sentence plus a `What we must do` action, or move to content.
 - **Plain gloss under the pull-quote variant.** The `pull-quote` variant hides any gloss line that does not lead with **bold** — it shows only the `**What we must do**` action. A plain 'In plain English …' interpretation line silently vanishes there. Lead gloss lines with a bold label under pull-quote, or keep them on the default variant.
 
@@ -161,5 +161,5 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 - `statute-stack` — two or three citations need to land on one slide
 - `quote` — the source is a person, not a document
-- `split-statement` — a quote with three or four implications
+- `split-panel` — a quote with three or four implications
 - `content` — the citation is one input among several in a prose argument

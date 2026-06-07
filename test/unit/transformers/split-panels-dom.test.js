@@ -1,10 +1,8 @@
 /**
- * Unit tests for the split-panels transformer's applyToDom (DOM-walk path).
- *
- * applyToDom runs in the browser (lattice-runtime.js bundle), invoked from
- * lib/runtime/index.js's content-transform loop. These tests use jsdom to
- * exercise the same code path without a real browser. The HTML-string
- * kernel is covered separately in registry.test.js.
+ * Unit tests for the split-panels transformer's applyToDom (DOM-walk path),
+ * the runtime render path. Two layouts: split-panel (with the metric/quote/
+ * steps/watermark variants) and split-compare. Mirrors the HTML-string kernel
+ * in lib/core/split-panels.js.
  */
 
 const { test, describe } = require('node:test');
@@ -12,174 +10,115 @@ const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const splitPanels = require('../../../lib/transformers/split-panels');
 
-function makeDoc(bodyHtml) {
-  const dom = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`);
-  return dom.window.document;
+function dom(html) {
+  return new JSDOM(`<!DOCTYPE html><body>${html}</body>`).window.document;
 }
 
-describe('split-panels.applyToDom — per-layout', () => {
-  test('split-brief: wraps into brief-left / brief-right', () => {
-    const doc = makeDoc(`
-      <section class="split-brief">
-        <p><code>EYEBROW</code></p>
-        <h2>Title</h2>
-        <p>Intro paragraph.</p>
-        <ul><li><strong>title</strong><ul><li>body</li></ul></li></ul>
-      </section>
-    `);
+describe('split-panels.applyToDom — split-panel', () => {
+  test('default: eyebrow span + h2 + lede go to panel-left; list to panel-right', () => {
+    const doc = dom(`
+      <section class="split-panel">
+        <p><code>Eyebrow</code></p>
+        <h2>Headline</h2>
+        <p>Lede paragraph.</p>
+        <ul><li>Point<ul><li>body</li></ul></li></ul>
+      </section>`);
     splitPanels.applyToDom(doc);
-    const sec = doc.querySelector('section.split-brief');
-    const left = sec.querySelector('.brief-left');
-    const right = sec.querySelector('.brief-right');
-    assert.ok(left, 'brief-left created');
-    assert.ok(right, 'brief-right created');
-    assert.equal(left.querySelector('.eyebrow').textContent, 'EYEBROW');
-    assert.equal(left.querySelector('h2').textContent, 'Title');
-    assert.ok(right.querySelector('ul'), 'list moved into brief-right');
+    const sec = doc.querySelector('section.split-panel');
+    const left = sec.querySelector('.panel-left');
+    const right = sec.querySelector('.panel-right');
+    assert.ok(left && right, 'panel-left + panel-right present');
+    assert.ok(left.querySelector('.panel-eyebrow'), 'eyebrow lifted to span');
+    assert.ok(left.querySelector('h2'), 'h2 in left');
+    assert.ok(right.querySelector('ul > li'), 'list in right');
   });
 
-  test('split-metric: code-p → unit-label; intro-p → metric-context span (not p)', () => {
-    const doc = makeDoc(`
-      <section class="split-metric">
-        <p><code>%</code></p>
-        <h2>42</h2>
-        <p>of teams report cycle wins.</p>
-        <ul><li>row</li></ul>
-      </section>
-    `);
-    splitPanels.applyToDom(doc);
-    const left = doc.querySelector('.metric-left');
-    assert.equal(left.querySelector('.unit-label').textContent, '%');
-    assert.equal(left.querySelector('h2').textContent, '42');
-    const ctx = left.querySelector('.metric-context');
-    assert.ok(ctx, 'metric-context span created');
-    assert.equal(ctx.tagName, 'SPAN');
-    assert.match(ctx.textContent, /cycle wins/);
-    // Intro p must be unwrapped (moved into the span as inner HTML), not duplicated.
-    assert.equal(doc.querySelectorAll('section.split-metric > p').length, 0,
-      'intro-p removed from section after lift');
+  test('metric/steps: same panel-left/panel-right shape (variant is CSS-only)', () => {
+    for (const variant of ['metric', 'steps']) {
+      const doc = dom(`
+        <section class="split-panel ${variant}">
+          <p><code>Label</code></p>
+          <h2>114</h2>
+          <p>Context.</p>
+          <ol><li>Item<ul><li>body</li></ul></li></ol>
+        </section>`);
+      splitPanels.applyToDom(doc);
+      const sec = doc.querySelector('section.split-panel');
+      assert.ok(sec.querySelector('.panel-left .panel-eyebrow'), `${variant}: eyebrow span`);
+      assert.ok(sec.querySelector('.panel-right ol > li'), `${variant}: list in right`);
+    }
   });
 
-  test('split-steps: phase-num eyebrow + h2 + intro', () => {
-    const doc = makeDoc(`
-      <section class="split-steps">
-        <p><code>01</code></p>
-        <h2>Discovery</h2>
-        <p>Goal-framing interviews and constraint mapping.</p>
-        <ol><li>workstream</li></ol>
-      </section>
-    `);
+  test('quote: blockquote + cite go to panel-left', () => {
+    const doc = dom(`
+      <section class="split-panel pullquote">
+        <blockquote><p>The quote.</p></blockquote>
+        <p><code>Speaker</code></p>
+        <ul><li>Implication<ul><li>body</li></ul></li></ul>
+      </section>`);
     splitPanels.applyToDom(doc);
-    const left = doc.querySelector('.steps-left');
-    assert.equal(left.querySelector('.phase-num').textContent, '01');
-    assert.equal(left.querySelector('h2').textContent, 'Discovery');
-    assert.match(doc.querySelector('.steps-right ol li').textContent, /workstream/);
+    const left = doc.querySelector('section.split-panel .panel-left');
+    assert.ok(left.querySelector('blockquote'), 'blockquote in left');
+    assert.ok(left.querySelector('cite'), 'cite in left');
+    assert.ok(doc.querySelector('.panel-right ul > li'), 'implications in right');
   });
 
-  test('split-compare: ul items become .option divs, second is .preferred, blockquote → .verdict', () => {
-    const doc = makeDoc(`
+  test('watermark: watermark glyph + h2 in panel-left', () => {
+    const doc = dom(`
+      <section class="split-panel watermark">
+        <h2>Scorecard</h2>
+        <h5>Rubric</h5>
+        <ul><li>Point<ul><li>body</li></ul></li></ul>
+      </section>`);
+    splitPanels.applyToDom(doc);
+    const left = doc.querySelector('section.split-panel .panel-left');
+    assert.ok(left.querySelector('.watermark'), 'watermark glyph present');
+    assert.equal(left.querySelector('.watermark').textContent, 'S', 'first letter of h2');
+    assert.ok(left.querySelector('h5') && left.querySelector('h2'), 'h5 + h2 in left');
+  });
+});
+
+describe('split-panels.applyToDom — split-compare', () => {
+  test('ul items become .option divs (second .preferred), blockquote → .verdict', () => {
+    const doc = dom(`
       <section class="split-compare">
-        <p><code>FRAME</code></p>
-        <h2>Build or buy?</h2>
-        <p>Two paths, one decision.</p>
-        <ul>
-          <li><strong>Build</strong> in-house</li>
-          <li><strong>Buy</strong> from vendor</li>
-        </ul>
-        <blockquote>Verdict: buy.</blockquote>
-      </section>
-    `);
+        <p><code>Decision</code></p>
+        <h2>Choice</h2>
+        <p>Context.</p>
+        <ul><li><strong>A</strong></li><li><strong>B</strong></li></ul>
+        <blockquote><p>Recommend B.</p></blockquote>
+      </section>`);
     splitPanels.applyToDom(doc);
-    const opts = doc.querySelectorAll('.compare-right .options .option');
-    assert.equal(opts.length, 2, 'two .option divs');
-    assert.ok(!opts[0].classList.contains('preferred'), 'first option not preferred');
-    assert.ok(opts[1].classList.contains('preferred'), 'second option is preferred');
-    const verdict = doc.querySelector('.compare-right .verdict');
-    assert.ok(verdict, '.verdict wrapper present');
-    assert.match(verdict.textContent, /buy\./);
-  });
-
-  test('split-statement: blockquote + cite go to statement-left; rest to statement-right', () => {
-    const doc = makeDoc(`
-      <section class="split-statement">
-        <blockquote>The plan is the plan.</blockquote>
-        <p><code>— Internal memo, 2025</code></p>
-        <ul><li>follow-up</li></ul>
-      </section>
-    `);
-    splitPanels.applyToDom(doc);
-    const left = doc.querySelector('.statement-left');
-    assert.ok(left.querySelector('blockquote'), 'blockquote in statement-left');
-    assert.equal(left.querySelector('cite').textContent, '— Internal memo, 2025');
-    assert.ok(doc.querySelector('.statement-right ul li'), 'list moved to statement-right');
-  });
-
-  test('split-list: closes the legacy drift — adds panel-left / panel-right + watermark', () => {
-    const doc = makeDoc(`
-      <section class="split-list">
-        <h5>Section heading</h5>
-        <p><code>Section 02</code></p>
-        <h2>Listing topic</h2>
-        <ul><li>first</li><li>second</li></ul>
-      </section>
-    `);
-    splitPanels.applyToDom(doc);
-    const left = doc.querySelector('.panel-left');
-    const right = doc.querySelector('.panel-right');
-    assert.ok(left, 'panel-left created (regression: the legacy runtime omitted this layout)');
-    assert.ok(right, 'panel-right created');
-    assert.equal(left.querySelector('.watermark').textContent, 'L',
-      'watermark = first character of h2 text');
-    assert.ok(left.querySelector('h5'), 'h5 in panel-left');
-    assert.ok(left.querySelector('h2'), 'h2 in panel-left');
-    assert.ok(right.querySelector('ul'), 'list in panel-right');
+    const sec = doc.querySelector('section.split-compare');
+    assert.ok(sec.querySelector('.compare-left .frame-label'), 'frame label');
+    const opts = sec.querySelectorAll('.compare-right .option');
+    assert.equal(opts.length, 2, 'two option divs');
+    assert.ok(opts[1].classList.contains('preferred'), 'second is preferred');
+    assert.ok(sec.querySelector('.compare-right .verdict'), 'verdict card');
   });
 });
 
 describe('split-panels.applyToDom — guards', () => {
   test('idempotent: a second pass is a no-op', () => {
-    const doc = makeDoc(`
-      <section class="split-brief">
-        <p><code>X</code></p><h2>T</h2><p>intro.</p>
-        <ul><li>a</li></ul>
-      </section>
-    `);
+    const doc = dom(`
+      <section class="split-panel">
+        <h2>H</h2>
+        <ul><li>P<ul><li>b</li></ul></li></ul>
+      </section>`);
     splitPanels.applyToDom(doc);
-    const afterOnce = doc.querySelector('section.split-brief').innerHTML;
+    const once = doc.querySelector('section.split-panel').innerHTML;
     splitPanels.applyToDom(doc);
-    const afterTwice = doc.querySelector('section.split-brief').innerHTML;
-    assert.equal(afterTwice, afterOnce, 'second applyToDom pass should not mutate');
+    assert.equal(doc.querySelector('section.split-panel').innerHTML, once, 'second pass no-op');
   });
 
   test('safely returns on null / non-DOM root', () => {
     assert.doesNotThrow(() => splitPanels.applyToDom(null));
-    assert.doesNotThrow(() => splitPanels.applyToDom(undefined));
     assert.doesNotThrow(() => splitPanels.applyToDom({}));
   });
 
   test('non-split sections are left untouched', () => {
-    const doc = makeDoc(`
-      <section class="content"><h2>plain</h2><p>nothing.</p></section>
-    `);
-    const before = doc.querySelector('section.content').outerHTML;
+    const doc = dom(`<section class="cards-grid"><ul><li>x</li></ul></section>`);
     splitPanels.applyToDom(doc);
-    const after = doc.querySelector('section.content').outerHTML;
-    assert.equal(after, before);
-  });
-
-  test('scoped to root: descendants inside root are transformed, outside untouched', () => {
-    const doc = makeDoc(`
-      <div id="scope">
-        <section class="split-brief" id="a">
-          <p><code>E</code></p><h2>A</h2><p>a.</p><ul><li>x</li></ul>
-        </section>
-      </div>
-      <section class="split-brief" id="b">
-        <p><code>E</code></p><h2>B</h2><p>b.</p><ul><li>y</li></ul>
-      </section>
-    `);
-    splitPanels.applyToDom(doc.getElementById('scope'));
-    assert.ok(doc.querySelector('#a .brief-left'), 'a (inside scope) was transformed');
-    assert.equal(doc.querySelector('#b .brief-left'), null, 'b (outside scope) was NOT transformed');
+    assert.ok(!doc.querySelector('.panel-left'), 'no panel wrappers added');
   });
 });

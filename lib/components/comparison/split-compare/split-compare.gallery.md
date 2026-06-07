@@ -126,5 +126,5 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 - `compare-prose` — the comparison is undecided — no verdict bar yet
 - `decision` — the verdict slide that follows a separate comparison
-- `split-brief` — the right side is findings, not paired options
+- `split-panel` — the right side is findings, not paired options
 - `verdict-grid` — three or more options scored against shared criteria

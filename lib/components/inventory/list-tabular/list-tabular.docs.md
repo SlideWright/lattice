@@ -119,7 +119,7 @@ Meta renders as an accent-soft pill — status registers, tagged inventories, ro
 ## Active components — release status.
 
 1. cards-grid `stable`
-2. split-brief `stable`
+2. split-panel `stable`
 3. radar-chart `beta`
 4. quadrant-chart `beta`
 5. kanban-board `alpha`
@@ -186,7 +186,7 @@ Renders the register tag as a hairline-bordered outline pill instead of the fill
 ## Active components — release status.
 
 1. cards-grid `stable`
-2. split-brief `stable`
+2. split-panel `stable`
 3. radar-chart `beta`
 4. quadrant-chart `beta`
 5. kanban-board `alpha`

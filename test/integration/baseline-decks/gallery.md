@@ -241,8 +241,8 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: split-list -->
-<!-- _footer: "Dark panel + content · split-list" -->
+<!-- _class: split-panel watermark -->
+<!-- _footer: "Dark panel + content · split-panel watermark" -->
 
 ## Scoring Model Deep Dive
 
@@ -879,7 +879,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · image mirror`
 
-## Mirror flips the image slot — same vocabulary as featured, split-list, compare-prose.
+## Mirror flips the image slot — same vocabulary as featured, split-panel watermark, compare-prose.
 
 The half-canvas image moves from the right slot to the left, and the text padding swaps to match. `mirror` is the cross-cutting orientation flag in the Lattice grammar; `image left` is preserved as a backwards-compatible alias for one release.
 
@@ -901,8 +901,8 @@ The half-canvas image moves from the right slot to the left, and the text paddin
 
 ---
 
-<!-- _class: split-list mirror -->
-<!-- _footer: "Modifier — split-list mirror · split-list mirror" -->
+<!-- _class: split-panel watermark mirror -->
+<!-- _footer: "Modifier — split-panel watermark mirror · split-panel watermark mirror" -->
 
 ## Section opener with the accent panel on the right.
 
@@ -1283,7 +1283,7 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _class: divider -->
 <!-- _header: '' -->
 <!-- _paginate: false -->
-<!-- _footer: "Split Layouts · split-brief + split-metric + split-steps + split-compare + split-statement" -->
+<!-- _footer: "Split Layouts · split-panel + split-panel metric + split-panel steps + split-compare + split-panel pullquote" -->
 
 `Split Layouts · five variants`
 
@@ -1291,8 +1291,8 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 ---
 
-<!-- _class: split-brief -->
-<!-- _footer: "Split — brief · split-brief" -->
+<!-- _class: split-panel -->
+<!-- _footer: "Split — brief · split-panel" -->
 
 `Q2 Performance Review`
 
@@ -1309,8 +1309,8 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 ---
 
-<!-- _class: split-metric -->
-<!-- _footer: "Split — metric · split-metric" -->
+<!-- _class: split-panel metric -->
+<!-- _footer: "Split — metric · split-panel metric" -->
 
 `Net Revenue Retention`
 
@@ -1327,8 +1327,8 @@ Measured across all customers active for 12+ months, March 31 cohort.
 
 ---
 
-<!-- _class: split-steps -->
-<!-- _footer: "Split — steps · split-steps" -->
+<!-- _class: split-panel steps -->
+<!-- _footer: "Split — steps · split-panel steps" -->
 
 `02`
 
@@ -1369,8 +1369,8 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ---
 
-<!-- _class: split-statement -->
-<!-- _footer: "Split — statement · split-statement" -->
+<!-- _class: split-panel pullquote -->
+<!-- _footer: "Split — statement · split-panel pullquote" -->
 
 > The best product does not win. The most understood product does.
 

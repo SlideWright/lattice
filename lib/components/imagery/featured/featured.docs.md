@@ -91,7 +91,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — all options carry equal weight; no winner declared
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — options scored against shared criteria, not picked
 - [`decision`](../../comparison/decision/decision.docs.md) — the recommendation needs an explicit pro/con frame
-- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the recommendation is a thesis sentence + supporting findings
+- [`split-panel`](../../statement/split-panel/split-panel.docs.md) — the recommendation is a thesis sentence + supporting findings
 
 ## Demo deck
 

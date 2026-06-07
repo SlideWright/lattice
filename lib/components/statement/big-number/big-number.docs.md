@@ -63,7 +63,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`stats`](../../evidence/stats/stats.docs.md) — row of 2-3 metrics, comparable visual weight
 - [`kpi`](../../evidence/kpi/kpi.docs.md) — grid of 4-6 metrics with status indicators
-- [`split-metric`](../../evidence/split-metric/split-metric.docs.md) — the metric needs a paragraph of context alongside it
+- [`split-panel`](../../statement/split-panel/split-panel.docs.md) — the metric needs a paragraph of context alongside it
 - [`content`](../../statement/content/content.docs.md) — the argument is mostly prose with a number embedded
 
 ## Demo deck

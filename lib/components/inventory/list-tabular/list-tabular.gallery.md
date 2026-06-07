@@ -90,7 +90,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 ## Active components — release status.
 
 1. cards-grid `stable`
-2. split-brief `stable`
+2. split-panel `stable`
 3. radar-chart `beta`
 4. quadrant-chart `beta`
 5. kanban-board `alpha`
@@ -149,7 +149,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 ## Active components — release status.
 
 1. cards-grid `stable`
-2. split-brief `stable`
+2. split-panel `stable`
 3. radar-chart `beta`
 4. quadrant-chart `beta`
 5. kanban-board `alpha`

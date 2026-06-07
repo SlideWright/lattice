@@ -78,5 +78,5 @@ Single oversized number as the focal claim.
 
 - `stats` — row of 2-3 metrics, comparable visual weight
 - `kpi` — grid of 4-6 metrics with status indicators
-- `split-metric` — the metric needs a paragraph of context alongside it
+- `split-panel` — the metric needs a paragraph of context alongside it
 - `content` — the argument is mostly prose with a number embedded

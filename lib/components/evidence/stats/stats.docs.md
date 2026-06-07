@@ -11,7 +11,7 @@ Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile 
 ## When to use
 
 - **Three to five headline metrics.** Quarterly results, pilot outcomes, year-end summary — anywhere a small set of independent numbers tells the story together. Each tile reads as a `big-number` in miniature.
-- **Numbers are the headline.** Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-metric` instead.
+- **Numbers are the headline.** Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-panel metric` instead.
 - **Independent metrics, not parts of a whole.** Stats rows are for headline KPIs that don't sum to anything — close rate, recall rate, dollars saved, days cut. For part-to-whole breakdowns reach for `piechart`.
 
 ## When NOT to use
@@ -72,7 +72,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`big-number`](../../statement/big-number/big-number.docs.md) — one number is enough to carry the slide
 - [`kpi`](../../evidence/kpi/kpi.docs.md) — metrics need targets, trends, and status pills
-- [`split-metric`](../../evidence/split-metric/split-metric.docs.md) — one focal KPI with a paragraph of supporting prose
+- [`split-panel`](../../statement/split-panel/split-panel.docs.md) — one focal KPI with a paragraph of supporting prose
 - [`piechart`](../../chart/piechart/piechart.docs.md) — the numbers are parts of a whole, not independent
 - [`progress`](../../chart/progress/progress.docs.md) — the metrics are completion percentages across workstreams
 

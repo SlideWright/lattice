@@ -118,6 +118,6 @@ Row of 3–5 stat tiles, each with a big number and a label.
 
 - `big-number` — one number is enough to carry the slide
 - `kpi` — metrics need targets, trends, and status pills
-- `split-metric` — one focal KPI with a paragraph of supporting prose
+- `split-panel` — one focal KPI with a paragraph of supporting prose
 - `piechart` — the numbers are parts of a whole, not independent
 - `progress` — the metrics are completion percentages across workstreams

@@ -76,7 +76,7 @@ Body text at full strength for comparison. The eyebrow above and the subtitle li
 
 ---
 
-<!-- _class: split-statement -->
+<!-- _class: split-panel pullquote -->
 
 > The best product does not win. The most understood product does.
 
@@ -89,7 +89,7 @@ Body text at full strength for comparison. The eyebrow above and the subtitle li
 
 ---
 
-<!-- _class: split-metric -->
+<!-- _class: split-panel metric -->
 
 `Net Revenue Retention`
 
