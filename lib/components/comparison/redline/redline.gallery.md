@@ -150,7 +150,7 @@ Clause-by-clause comparison — verbatim language with inline <ins>/<del> tracki
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

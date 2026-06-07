@@ -71,10 +71,7 @@ section h5 + p:has(> code:only-child) > code {
 }
 /* Dark bookend slides are always dark but don't carry .dark — set explicitly */
 section.title   h1 + p:has(> code:only-child),
-section.title   h2 + p:has(> code:only-child),
-section.divider h1 + p:has(> code:only-child),
 section.divider h2 + p:has(> code:only-child),
-section.closing h1 + p:has(> code:only-child),
 section.closing h2 + p:has(> code:only-child) { color: var(--on-dark-secondary); }
 /* .dark modifier: the subtitle uses --text-secondary, a light-dark() pair, and
  * section.dark flips color-scheme:dark — so it resolves to its dark-canvas value

@@ -12,7 +12,7 @@ Marks the start of a major section. Use sparingly — every divider is a context
 
 - **Major section starts.** Marks the boundary between two themed sections of the deck. The dark canvas is a strong context-switch signal — use it when the audience needs to re-orient.
 - **Sparingly.** A 30-slide deck typically has 3-5 dividers. More becomes navigation noise; the signal weakens if every third slide is a divider.
-- **With an eyebrow.** An inline-code paragraph above the h1 stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in.
+- **With an eyebrow.** An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in.
 
 ## When NOT to use
 
@@ -30,15 +30,15 @@ Marks the start of a major section. Use sparingly — every divider is a context
 
 `Section 01`
 
-# Section name
+## Section name
 ```
 
 ## Slots
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `heading` | `h1` | yes | Section name. |
-| `eyebrow` | `p > code` | no | Optional section number or category label above h1. |
+| `heading` | `h2` | yes | Section name. |
+| `eyebrow` | `p > code` | no | Optional section number or category label above the heading. |
 
 ## Anatomy
 
@@ -66,7 +66,7 @@ Stamps an auto-incrementing section number in the corner. Each divider in the de
 
 `Section 03`
 
-# Inventory
+## Inventory
 ```
 
 ## Universal modifiers

@@ -124,7 +124,7 @@ Two-thirds of trials that reach the first generated report convert to paid; the 
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

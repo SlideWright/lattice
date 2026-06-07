@@ -84,7 +84,7 @@ Multi-row comparison table with consistent columns.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

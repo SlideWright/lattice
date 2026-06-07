@@ -132,4 +132,4 @@ Mermaid's `stateDiagram-v2` works, but theming it cleanly requires a CSS overrid
 
 `Lattice · State chart`
 
-# Numbered authoring is the layout.
+## Numbered authoring is the layout.

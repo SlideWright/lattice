@@ -177,7 +177,7 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

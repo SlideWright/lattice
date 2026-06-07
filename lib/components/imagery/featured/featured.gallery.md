@@ -113,7 +113,7 @@ Featured card + sub-grid — one prominent item with supporting cards.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

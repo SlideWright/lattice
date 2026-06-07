@@ -72,7 +72,7 @@ Single oversized number as the focal claim.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

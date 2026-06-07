@@ -11,12 +11,12 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 ## When to use
 
 - **Last slide of every deck.** Closes the bookend pair with title. Restates the takeaway, the call to action, or the next-steps line. The dark canvas tells the audience visually that the presentation is over.
-- **Single takeaway line.** The h1 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link.
+- **Single takeaway line.** The h2 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link.
 - **Accent modifier for emphasis.** Pair with the universal `accent` modifier to recolor the focal heading. Useful when the closing line is a quote or a key decision the deck has been building toward.
 
 ## When NOT to use
 
-- **Multi-line h1.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
+- **Multi-line heading.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
 - **Header or footer overrides.** Don't reinstate `_header:` or `_footer:` on the closing. The dark canvas is the "we're done" signal; chrome breaks it. Use the `silent` modifier to suppress all three in one token.
 - **Mid-deck closing.** If the audience needs a strong statement mid-deck, use `big-number` or `content` with the `dark` modifier. Reserving closing for the final slide preserves its bookend role.
 
@@ -28,7 +28,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 <!-- _header: '' -->
 <!-- _footer: '' -->
 
-# Closing takeaway or call to action
+## Closing takeaway or call to action
 
 `Optional eyebrow`
 ```
@@ -37,7 +37,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `heading` | `h1` | yes | Closing line — takeaway, thank-you, or call to action. |
+| `heading` | `h2` | yes | Closing line — takeaway, thank-you, or call to action. |
 | `eyebrow` | `p > code` | no | Optional category label. |
 | `subtitle` | `p` | no | Optional supporting line. |
 
@@ -65,7 +65,7 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 ```markdown
 <!-- _class: closing silent numbered -->
 
-# Take this away.
+## Take this away.
 
 `Closing 04`
 ```

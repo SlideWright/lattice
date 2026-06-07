@@ -133,7 +133,7 @@ Featured left panel + supporting list on the right.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

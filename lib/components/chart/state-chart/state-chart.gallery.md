@@ -212,7 +212,7 @@ How a draft moves from author to publication.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

@@ -93,7 +93,7 @@ Two cards side-by-side, co-equal.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

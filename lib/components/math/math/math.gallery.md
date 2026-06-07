@@ -244,7 +244,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

@@ -104,7 +104,7 @@ Roster of responsibilities owned by named actors.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

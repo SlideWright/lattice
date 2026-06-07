@@ -12,7 +12,7 @@
   ],
   "slots": {
     "heading": {
-      "selector": "h1",
+      "selector": "h2",
       "required": true,
       "description": "Closing line — takeaway, thank-you, or call to action."
     },
@@ -27,9 +27,9 @@
       "description": "Optional supporting line."
     }
   },
-  "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n# Closing takeaway or call to action\n\n`Optional eyebrow`\n",
+  "skeleton": "<!-- _class: closing -->\n<!-- _paginate: false -->\n<!-- _header: '' -->\n<!-- _footer: '' -->\n\n## Closing takeaway or call to action\n\n`Optional eyebrow`\n",
   "anatomyBlock": "closing-bookend",
-  "sample": "<!-- _class: closing silent -->\n\n# The signal was always there. Now we have a system that looks.\n\n`Product Strategy · Q3 2025`\n",
+  "sample": "<!-- _class: closing silent -->\n\n## The signal was always there. Now we have a system that looks.\n\n`Product Strategy · Q3 2025`\n",
   "whenToUse": [
     {
       "title": "Last slide of every deck",
@@ -37,7 +37,7 @@
     },
     {
       "title": "Single takeaway line",
-      "body": "The h1 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link."
+      "body": "The h2 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link."
     },
     {
       "title": "Accent modifier for emphasis",
@@ -46,7 +46,7 @@
   ],
   "antiPatterns": [
     {
-      "title": "Multi-line h1",
+      "title": "Multi-line heading",
       "body": "Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact."
     },
     {
@@ -76,7 +76,7 @@
     "numbered": {
       "label": "Numbered — independent closing counter",
       "caption": "Stamps an auto-incrementing closing number, independent of the divider section counter. Useful for serialized deck families where each deck closes on numbered note `Closing 04`.",
-      "sample": "<!-- _class: closing silent numbered -->\n\n# Take this away.\n\n`Closing 04`\n"
+      "sample": "<!-- _class: closing silent numbered -->\n\n## Take this away.\n\n`Closing 04`\n"
     }
   }
 }

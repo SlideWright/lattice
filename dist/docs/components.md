@@ -94,12 +94,12 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 #### When to use
 
 - **Last slide of every deck.** Closes the bookend pair with title. Restates the takeaway, the call to action, or the next-steps line. The dark canvas tells the audience visually that the presentation is over.
-- **Single takeaway line.** The h1 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link.
+- **Single takeaway line.** The h2 is the slide. Keep it to one editorial line that summarizes the whole deck or names the action the audience should take. The eyebrow can carry a sub-line or link.
 - **Accent modifier for emphasis.** Pair with the universal `accent` modifier to recolor the focal heading. Useful when the closing line is a quote or a key decision the deck has been building toward.
 
 #### When NOT to use
 
-- **Multi-line h1.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
+- **Multi-line heading.** Keep the closing line to one editorial sentence. The layout is centered and large — two-line closings get cramped and lose impact.
 - **Header or footer overrides.** Don't reinstate `_header:` or `_footer:` on the closing. The dark canvas is the "we're done" signal; chrome breaks it. Use the `silent` modifier to suppress all three in one token.
 - **Mid-deck closing.** If the audience needs a strong statement mid-deck, use `big-number` or `content` with the `dark` modifier. Reserving closing for the final slide preserves its bookend role.
 
@@ -111,7 +111,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 <!-- _header: '' -->
 <!-- _footer: '' -->
 
-# Closing takeaway or call to action
+## Closing takeaway or call to action
 
 `Optional eyebrow`
 ```
@@ -120,7 +120,7 @@ Last slide of every deck. Restates the takeaway or call-to-action. Like title, s
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `heading` | `h1` | yes | Closing line — takeaway, thank-you, or call to action. |
+| `heading` | `h2` | yes | Closing line — takeaway, thank-you, or call to action. |
 | `eyebrow` | `p > code` | no | Optional category label. |
 | `subtitle` | `p` | no | Optional supporting line. |
 
@@ -148,7 +148,7 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 ```markdown
 <!-- _class: closing silent numbered -->
 
-# Take this away.
+## Take this away.
 
 `Closing 04`
 ```
@@ -181,7 +181,7 @@ Marks the start of a major section. Use sparingly — every divider is a context
 
 - **Major section starts.** Marks the boundary between two themed sections of the deck. The dark canvas is a strong context-switch signal — use it when the audience needs to re-orient.
 - **Sparingly.** A 30-slide deck typically has 3-5 dividers. More becomes navigation noise; the signal weakens if every third slide is a divider.
-- **With an eyebrow.** An inline-code paragraph above the h1 stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in.
+- **With an eyebrow.** An inline-code paragraph above the heading stamps a section number or category label. Useful for serialized decks where the audience needs to remember which section they're in.
 
 #### When NOT to use
 
@@ -199,15 +199,15 @@ Marks the start of a major section. Use sparingly — every divider is a context
 
 `Section 01`
 
-# Section name
+## Section name
 ```
 
 #### Slots
 
 | Slot | Selector | Required | Description |
 |---|---|---|---|
-| `heading` | `h1` | yes | Section name. |
-| `eyebrow` | `p > code` | no | Optional section number or category label above h1. |
+| `heading` | `h2` | yes | Section name. |
+| `eyebrow` | `p > code` | no | Optional section number or category label above the heading. |
 
 #### Anatomy
 
@@ -235,7 +235,7 @@ Stamps an auto-incrementing section number in the corner. Each divider in the de
 
 `Section 03`
 
-# Inventory
+## Inventory
 ```
 
 #### Universal modifiers

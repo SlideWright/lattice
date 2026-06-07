@@ -155,7 +155,7 @@ Single authoritative reference — heading + citation + verbatim quote + plain-E
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

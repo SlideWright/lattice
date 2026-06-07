@@ -93,7 +93,7 @@ Explicit state-change comparison — what was, what is.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

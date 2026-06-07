@@ -64,7 +64,7 @@ A decision framework for product leaders navigating market uncertainty.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

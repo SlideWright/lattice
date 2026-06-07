@@ -11,7 +11,7 @@ Anchor — where you are in the deck.
 
 <!-- _class: closing silent -->
 
-# The signal was always there. Now we have a system that looks.
+## The signal was always there. Now we have a system that looks.
 
 `Product Strategy · Q3 2025`
 
@@ -21,7 +21,7 @@ Anchor — where you are in the deck.
 
 `Section 03`
 
-# Inventory
+## Inventory
 
 ---
 

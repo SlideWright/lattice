@@ -199,7 +199,7 @@ Spiral-packed word cloud — items sized by weight.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

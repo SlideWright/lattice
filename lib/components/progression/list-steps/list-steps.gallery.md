@@ -218,7 +218,7 @@ Horizontal row of ordered step cards, each with a full description body (the `ve
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

@@ -135,7 +135,7 @@ Parallel items stacked vertically, full-width cards.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

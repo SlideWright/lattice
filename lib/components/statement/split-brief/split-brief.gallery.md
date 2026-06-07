@@ -104,7 +104,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

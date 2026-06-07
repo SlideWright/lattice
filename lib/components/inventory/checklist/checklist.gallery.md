@@ -92,7 +92,7 @@ Items with state markers — done, partial, todo.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

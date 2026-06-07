@@ -68,7 +68,7 @@ A pulled quotation, centered, with attribution.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

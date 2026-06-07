@@ -96,7 +96,7 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

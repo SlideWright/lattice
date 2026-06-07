@@ -242,7 +242,7 @@ Hairline-ruled ledger of items — name on the left, body on the right.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

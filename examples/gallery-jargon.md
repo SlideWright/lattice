@@ -733,7 +733,7 @@ for signal in calibrator.intake.unscored():
 
 `Section 04 · The Results`
 
-# Six months of data. Eighteen logged decisions. One calibration cycle
+## Six months of data. Eighteen logged decisions. One calibration cycle
 
 The pilot team measured what the pilot team built.
 

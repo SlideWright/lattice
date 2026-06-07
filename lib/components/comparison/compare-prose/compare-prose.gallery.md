@@ -160,7 +160,7 @@ Two prose options side-by-side with a labeled corner tag on each.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

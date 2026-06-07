@@ -104,7 +104,7 @@ Measured across all customers active for 12+ months, March 31 cohort.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

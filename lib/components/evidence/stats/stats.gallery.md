@@ -112,7 +112,7 @@ Row of 3–5 stat tiles, each with a big number and a label.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 

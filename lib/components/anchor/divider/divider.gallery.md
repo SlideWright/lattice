@@ -20,7 +20,7 @@ Section boundary slide. Dark canvas with a single heading.
 
 `Section 03`
 
-# Inventory
+## Inventory
 
 
 ---
@@ -30,7 +30,7 @@ Section boundary slide. Dark canvas with a single heading.
 
 `Section 03`
 
-# Inventory
+## Inventory
 
 
 ---
@@ -40,7 +40,7 @@ Section boundary slide. Dark canvas with a single heading.
 
 `Section 03`
 
-# Inventory
+## Inventory
 
 
 ---
@@ -50,7 +50,7 @@ Section boundary slide. Dark canvas with a single heading.
 
 `Section 03`
 
-# Inventory
+## Inventory
 
 
 ---
@@ -68,7 +68,7 @@ Section boundary slide. Dark canvas with a single heading.
 
 <!-- _class: closing silent -->
 
-# See also.
+## See also.
 
 `Related components`
 
