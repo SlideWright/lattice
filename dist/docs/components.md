@@ -719,7 +719,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Demo deck
 
-See [split-panel.gallery.light.pdf](./split-panel.gallery.light.pdf) for rendered examples of every variant.
+See [split-panel.gallery.light.pdf](../../lib/components/statement/split-panel/split-panel.gallery.light.pdf) for rendered examples of every variant.
 
 ## Inventory
 

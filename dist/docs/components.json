@@ -4988,7 +4988,7 @@
           "when": "an ordered process without a left anchor panel"
         }
       ],
-      "galleryHref": null
+      "galleryHref": "../../lib/components/statement/split-panel/split-panel.gallery.light.pdf"
     },
     {
       "name": "state-chart",
