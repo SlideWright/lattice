@@ -168,7 +168,14 @@ const dbData = JSON.stringify({
 				<div class="db-panel-head">
 					<span class="db-panel-title">Markdown</span>
 					<span class="db-spacer"></span>
-					<button class="db-btn" id="db-export" title="Export — MD / PDF / PPTX (Slice 4)" disabled>Export ▾</button>
+					<div class="db-export" id="db-export-wrap">
+						<button class="db-btn" id="db-export" aria-haspopup="menu" aria-expanded="false" title="Export this deck">Export ▾</button>
+						<div class="db-export-menu" id="db-export-menu" role="menu" hidden>
+							<button class="db-menu-item" type="button" data-export="md" role="menuitem">Markdown<small>.md — the source</small></button>
+							<button class="db-menu-item" type="button" data-export="pdf" role="menuitem">PDF<small>print → save as PDF</small></button>
+							<button class="db-menu-item" type="button" data-export="pptx" role="menuitem">PowerPoint<small>.pptx — image slides</small></button>
+						</div>
+					</div>
 				</div>
 				<div class="db-panel-body">
 					<!-- CodeMirror mounts into #db-editor-host; the textarea is the no-JS /
@@ -243,6 +250,43 @@ const dbData = JSON.stringify({
 			});
 			window.__dbStore = store;
 			store.init();
+		</script>
+
+		<!-- Export — MD / PDF / PPTX (Slice 4). PptxGenJS is lazy-imported inside
+		     the module on first PPTX use, so it never loads unless invoked. -->
+		<script>
+			import { exportMarkdown, exportPdf, exportPptx } from '../playground/drawing-board-export.js';
+			const wrap = document.getElementById('db-export-wrap');
+			const trigger = document.getElementById('db-export');
+			const menu = document.getElementById('db-export-menu');
+			const statusEl = document.getElementById('db-status');
+			const deckName = () => {
+				const n = document.querySelector('.db-deck[aria-current="true"] .db-deck-name');
+				return (n && n.textContent) || 'deck';
+			};
+			const status = (msg, err) => { if (statusEl) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); } };
+			const closeMenu = () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
+			trigger.addEventListener('click', (e) => {
+				e.stopPropagation();
+				const open = menu.hidden;
+				menu.hidden = !open;
+				trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+			});
+			document.addEventListener('click', (e) => { if (wrap && !wrap.contains(e.target)) closeMenu(); });
+			document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+			menu.addEventListener('click', async (e) => {
+				const btn = e.target.closest('[data-export]');
+				if (!btn) return;
+				closeMenu();
+				const kind = btn.getAttribute('data-export');
+				const frame = document.getElementById('db-frame');
+				const source = window.__dbEditor ? window.__dbEditor.getValue() : '';
+				try {
+					if (kind === 'md') { exportMarkdown(source, deckName()); status('Markdown exported.'); }
+					else if (kind === 'pdf') { exportPdf(frame); status('Opening print dialog…'); }
+					else if (kind === 'pptx') { await exportPptx(frame, deckName(), (m) => status(m)); status('PowerPoint exported.'); }
+				} catch (err) { status(String(err.message || err), true); }
+			});
 		</script>
 
 		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
@@ -403,6 +447,13 @@ const dbData = JSON.stringify({
 						'.marpit>section{display:block;transform-origin:top left;cursor:pointer;' +
 						'box-shadow:0 8px 30px rgba(0,0,0,.22);border-radius:6px;}' +
 						'.marpit>section.db-active{outline:3px solid ' + ACCENT + ';outline-offset:4px;}' +
+						// Print path (Slice 4 PDF export): un-scale each section to a full
+						// 1280x720 page and page-break between them. exportPdf() just calls
+						// this iframe's print dialog over the already-rendered slides.
+						'@page{size:1280px 720px;margin:0;}' +
+						'@media print{html,body{padding:0;margin:0;background:#fff;}' +
+						'.marpit>section{transform:none!important;margin:0!important;box-shadow:none!important;border-radius:0!important;outline:none!important;break-after:page;}' +
+						'.marpit>section:last-child{break-after:auto;}}' +
 						css + '</style></head><body>' + html +
 						'<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>' +
 						'<scr' + 'ipt src="' + RUNTIME_URL + '"></scr' + 'ipt>' +

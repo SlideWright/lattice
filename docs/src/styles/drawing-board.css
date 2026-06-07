@@ -419,6 +419,48 @@ body.db-page .topbar {
 	border-color: var(--accent);
 }
 
+/* Export dropdown (editor panel head) */
+.db-export {
+	position: relative;
+}
+.db-export-menu {
+	position: absolute;
+	top: calc(100% + 5px);
+	right: 0;
+	z-index: 40;
+	min-width: 218px;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: 0.3rem;
+}
+.db-menu-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	font-size: 0.86rem;
+	font-weight: 550;
+	color: var(--text-body);
+	background: none;
+	border: 0;
+	border-radius: var(--radius-sm);
+	padding: 0.45rem 0.55rem;
+	cursor: pointer;
+}
+.db-menu-item small {
+	font-weight: 400;
+	font-size: 0.7rem;
+	color: var(--text-muted);
+}
+.db-menu-item:hover {
+	background: var(--bg-alt);
+	color: var(--text-heading);
+}
+
 /* ── The editor panel ─────────────────────────────────────────────────────── */
 .db-editor-host {
 	position: absolute;
