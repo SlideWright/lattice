@@ -14,14 +14,21 @@ concurrency:
 
 jobs:
   # ── Change classifier ──────────────────────────────────────────────────
-  # `code` is true unless EVERY changed file is prose markdown. Decks are
-  # markdown but DO affect rendering, so they count as code. A docs-only
-  # change leaves `code=false` and skips the unit + integration tiers —
-  # only the always-on lint job runs.
+  # Splits a change into two independent tiers:
+  #   code  — affects rendering or the test suite → unit + integration
+  #   docs  — affects the docs site (Astro) → docs-build
+  # An allowlist of roots, NOT "everything that isn't prose": a docs-site-only
+  # change (docs/**) no longer drags the whole engine unit+integration
+  # pipeline, and prose (README, design/, engineering/, *.md) runs only the
+  # always-on lint. Decks count as code (they affect rendering) and live inside
+  # the listed roots — examples/, plus the gallery/baseline .md under lib/ and
+  # test/. An engine change (lib/, themes/, dist/, …) sets BOTH, because the
+  # docs build also reads the engine (loadAll + staged dist/ + themes/).
   changes:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      docs: ${{ steps.filter.outputs.docs }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -29,11 +36,25 @@ jobs:
         with:
           filters: |
             code:
-              - '!**/*.md'
-              - 'examples/**/*.md'
-              - 'test/integration/baseline-decks/**/*.md'
-              - 'lib/**/*.gallery.md'
-              - 'lib/integrations/**/*.gallery.md'
+              - 'lib/**'
+              - 'tools/**'
+              - 'test/**'
+              - 'themes/**'
+              - 'dist/**'
+              - 'examples/**'
+              - 'marp.config.js'
+              - 'lattice-emulator.js'
+              - 'mermaid-v11.min.js'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/ci.yml'
+            docs:
+              - 'docs/**'
+              - 'dist/**'
+              - 'themes/**'
+              - 'lib/**'
+              - 'marp.config.js'
+              - '.github/workflows/ci.yml'
 
   # ── Lint — ALWAYS runs (incl. docs-only) ───────────────────────────────
   # Node-agnostic and browser-free: source lint + author-facing deck lint.
@@ -120,6 +141,31 @@ jobs:
       - name: Integration tests
         run: npm run test:integration
 
+  # ── Docs site build — docs (or engine) changes only ────────────────────
+  # The deploy workflow (docs.yml) only builds on push to main, so PRs got no
+  # docs-build validation. This builds the Astro site (same `npm run build` the
+  # deploy uses) so a docs/engine change that breaks the site fails the PR.
+  # No rendering here, so Chromium is skipped.
+  docs-build:
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Install docs deps
+        run: npm ci
+        working-directory: docs
+      - name: Build docs site
+        run: npm run build
+        working-directory: docs
+
   # ── Single required check ──────────────────────────────────────────────
   # Set THIS as the only required status check in branch protection. It
   # passes when lint succeeds and the test tiers either passed or were
@@ -127,18 +173,18 @@ jobs:
   # "pending" required check.
   ci:
     if: always()
-    needs: [lint, unit, integration]
+    needs: [lint, unit, integration, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: Verify gate
         run: |
-          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }}"
+          echo "lint=${{ needs.lint.result }} unit=${{ needs.unit.result }} integration=${{ needs.integration.result }} docs-build=${{ needs.docs-build.result }}"
           if [ "${{ needs.lint.result }}" != "success" ]; then
             echo "::error::lint failed"; exit 1
           fi
-          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}"; do
+          for r in "${{ needs.unit.result }}" "${{ needs.integration.result }}" "${{ needs.docs-build.result }}"; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
-              echo "::error::a test tier failed ($r)"; exit 1
+              echo "::error::a required tier failed ($r)"; exit 1
             fi
           done
           echo "CI gate passed."
