@@ -9,11 +9,12 @@ import { join } from 'node:path';
 import '../styles/landing.css';
 import '../styles/playground.css';
 import { SLIDE_BOX } from '../playground/frame-css.js';
+import { buildCatalog, buildLenses, groupCatalog } from '../lib/families.mjs';
 
 const docsRoot = process.cwd();
 const repoRoot = join(docsRoot, '..');
 const require = createRequire(import.meta.url);
-const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const { loadAll, manifestBucket } = require(join(repoRoot, 'lib/components', 'index.js'));
 const manifests = loadAll();
 
 const base = import.meta.env.BASE_URL;
@@ -23,10 +24,13 @@ const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generat
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
 const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
-// Template catalog for the picker, grouped by Function family. Each component
-// carries its documented variants (modifiers) so the Variant dropdown can load
-// any of them into the editor.
-const FUNCTION_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery'];
+// Template catalog for the picker. Each component carries its documented
+// variants (modifiers) so the Variant dropdown can load any of them into the
+// editor. The `components` array (enriched with the Function·Form·Substance /
+// family / tags fields) feeds the searchable, groupable popover picker —
+// reusing the same buildCatalog + groupCatalog + lenses the component
+// reference browses with, so the playground gains the reference's search +
+// Group-by power without a second taxonomy.
 const catalog = {};
 for (const m of manifests) {
 	const variantDocs = m.variantDocs || {};
@@ -37,10 +41,9 @@ for (const m of manifests) {
 		variants: variantKeys.map((v) => ({ key: v, label: v, caption: variantDocs[v].caption || '', sample: variantDocs[v].sample })),
 	};
 }
-const groups = FUNCTION_ORDER.map((fn) => ({
-	fn,
-	items: manifests.filter((m) => m.function === fn).map((m) => m.name).sort(),
-})).filter((g) => g.items.length);
+const components = buildCatalog(manifests, manifestBucket);
+const lenses = buildLenses();
+const pickerGroups = groupCatalog(components, 'function'); // SSR default (no-JS fallback)
 
 // Starter deck = the hero component's sample (verdict-grid).
 const heroComp = manifests.find((m) => m.showcase && m.showcase.hero);
@@ -48,6 +51,8 @@ const starter = (heroComp && heroComp.sample) || '<!-- _class: title silent -->\
 
 const pgData = JSON.stringify({
 	catalog,
+	components,
+	lenses,
 	themeBase: url('playground/themes/'),
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	defaultPalette: 'indaco',
@@ -103,27 +108,83 @@ const pgData = JSON.stringify({
 		</header>
 
 		<div class="pg-bar">
-			<div class="pg-picker">
-				<label for="pg-template">Template</label>
-				<select id="pg-template" aria-label="Component template">
-					<option value="">Pick a component…</option>
-					{groups.map((g) => (
-						<optgroup label={titleCase(g.fn)}>
-							{g.items.map((n) => <option value={n}>{n}</option>)}
-						</optgroup>
-					))}
-				</select>
+			<!-- Searchable, groupable component picker. The trigger shows the
+			     current component; clicking opens a popover with a search box +
+			     Group-by + the grouped list (template-picker.js). The grouped
+			     <ul> is the no-JS / pre-hydration fallback. -->
+			<div class="pg-picker pg-template-picker" id="pg-template-picker">
+				<label id="pg-template-label">Component</label>
+				<button
+					type="button"
+					class="pg-picker-trigger"
+					id="pg-template-trigger"
+					aria-haspopup="listbox"
+					aria-expanded="false"
+					aria-labelledby="pg-template-label pg-template-current"
+				>
+					<span class="pg-picker-current" id="pg-template-current">Pick a component…</span>
+					<span class="pg-picker-caret" aria-hidden="true">▾</span>
+				</button>
+				<div class="pg-picker-pop" id="pg-template-pop" hidden>
+					<div class="pg-picker-pop-head">
+						<input
+							type="search"
+							class="pg-picker-search"
+							id="pg-template-search"
+							placeholder="Search components — name, tag, or description…"
+							aria-label="Search components"
+							autocomplete="off"
+						/>
+						<label class="pg-picker-groupby">
+							<span>Group</span>
+							<select id="pg-template-groupby" aria-label="Group components by">
+								{lenses.map((l) => <option value={l.id}>{l.label}</option>)}
+							</select>
+						</label>
+					</div>
+					<div class="pg-picker-list" id="pg-template-list" role="listbox" aria-label="Components">
+						{pickerGroups.map((g) => (
+							<section class="pg-picker-group">
+								<h3 class="pg-picker-group-title">{g.label}</h3>
+								<ul>
+									{g.items.map((it) => (
+										<li>
+											<button type="button" class="pg-picker-option" role="option" aria-selected="false" data-pick={it.name}>
+												{it.name}
+											</button>
+										</li>
+									))}
+								</ul>
+							</section>
+						))}
+					</div>
+				</div>
 			</div>
 			<div class="pg-picker">
 				<label for="pg-variant">Variant</label>
-				<select id="pg-variant" aria-label="Component variant" disabled>
+				<select id="pg-variant" class="pg-variant-select" aria-label="Component variant" disabled>
 					<option value="">—</option>
 				</select>
 			</div>
-			<button class="pg-btn" id="pg-insert-sample">Insert example</button>
-			<button class="pg-btn" id="pg-insert-skeleton">Insert skeleton</button>
 			<span class="spacer"></span>
 			<span class="pg-status" id="pg-status">Ready.</span>
+			<!-- Insert options demoted off the bar: selecting a component inserts
+			     its example; this ⚙ menu holds the rarer skeleton + reset paths. -->
+			<div class="pg-picker pg-settings" id="pg-settings">
+				<button
+					type="button"
+					class="pg-icon-btn"
+					id="pg-settings-trigger"
+					aria-haspopup="menu"
+					aria-expanded="false"
+					aria-label="Insert options"
+					title="Insert options"
+				>⚙</button>
+				<div class="pg-settings-pop" id="pg-settings-pop" hidden role="menu" aria-label="Insert options">
+					<button type="button" class="pg-menu-item" id="pg-insert-sample" role="menuitem">Reset to example</button>
+					<button type="button" class="pg-menu-item" id="pg-insert-skeleton" role="menuitem">Insert blank skeleton</button>
+				</div>
+			</div>
 			<div class="pg-tabs" role="tablist">
 				<button class="pg-tab" id="tab-edit" role="tab" aria-selected="true">Edit</button>
 				<button class="pg-tab" id="tab-preview" role="tab" aria-selected="false">Preview</button>
@@ -171,6 +232,14 @@ const pgData = JSON.stringify({
 			window.dispatchEvent(new Event('pg-editor-ready'));
 		</script>
 
+		<!-- Searchable, groupable component picker (popover over the bar trigger).
+		     Bundled by Astro/Vite; talks to the inline controller below via the
+		     `pg-template-pick` event and the window.__pgPicker bridge. -->
+		<script>
+			import { initTemplatePicker } from '../playground/template-picker.js';
+			initTemplatePicker();
+		</script>
+
 		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {
@@ -184,8 +253,22 @@ const pgData = JSON.stringify({
 				var statusEl = document.getElementById('pg-status');
 				var paletteSel = document.getElementById('palette');
 				var modeBtn = document.getElementById('mode-toggle');
-				var tmplSel = document.getElementById('pg-template');
 				var varSel = document.getElementById('pg-variant');
+				var pickerCurrentEl = document.getElementById('pg-template-current');
+
+				// The component picker is a popover (template-picker.js, a module);
+				// this controller tracks the active component in `currentName` and
+				// keeps the trigger label + the picker's highlight in sync. Reads
+				// that used to go through the old native <select> now read this.
+				var currentName = '';
+				function setCurrentName(name) {
+					currentName = name || '';
+					if (pickerCurrentEl) pickerCurrentEl.textContent = currentName || 'Pick a component…';
+					if (window.__pgPicker) window.__pgPicker.setCurrent(currentName);
+				}
+				// If the picker module finishes initializing after us, re-push the
+				// current selection so its highlight reflects the live editor.
+				window.addEventListener('pg-picker-ready', function () { if (window.__pgPicker) window.__pgPicker.setCurrent(currentName); });
 
 				// Source accessors: prefer the CodeMirror adapter (window.__pgEditor),
 				// fall back to the textarea if the editor module hasn't loaded yet or
@@ -406,19 +489,20 @@ const pgData = JSON.stringify({
 				function syncPickers() {
 					var det = detectComponent(getSource());
 					if (!det) return;
-					if (tmplSel.value !== det.name) { tmplSel.value = det.name; populateVariants(det.name); }
+					if (currentName !== det.name) { setCurrentName(det.name); populateVariants(det.name); }
 					else if (varSel.disabled && (catalog[det.name].variants || []).length) { populateVariants(det.name); }
 					for (var i = 0; i < varSel.options.length; i++) {
 						if (varSel.options[i].value === det.variant) { varSel.value = det.variant; break; }
 					}
 				}
 
-				tmplSel.addEventListener('change', function () {
-					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
+				// The popover picker reports a selection via this event (detail.name).
+				window.addEventListener('pg-template-pick', function (e) {
+					var name = e.detail && e.detail.name;
+					if (name && catalog[name]) { setCurrentName(name); setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
 				});
 				varSel.addEventListener('change', function () {
-					var comp = catalog[tmplSel.value];
+					var comp = catalog[currentName];
 					if (!comp) return;
 					var key = varSel.value;
 					var md = comp.sample;
@@ -428,14 +512,38 @@ const pgData = JSON.stringify({
 					}
 					setSource(md); saveSource(); render();
 				});
+				// ⚙ settings popover: the demoted insert actions. "Reset to example"
+				// reloads the component's filled sample; "Insert blank skeleton"
+				// loads the bare slot scaffold for authoring from scratch.
+				var settingsWrap = document.getElementById('pg-settings');
+				var settingsTrigger = document.getElementById('pg-settings-trigger');
+				var settingsPop = document.getElementById('pg-settings-pop');
+				function closeSettings() {
+					if (settingsPop) settingsPop.hidden = true;
+					if (settingsTrigger) settingsTrigger.setAttribute('aria-expanded', 'false');
+				}
+				if (settingsTrigger && settingsPop) {
+					settingsTrigger.addEventListener('click', function (e) {
+						e.stopPropagation();
+						var willOpen = settingsPop.hidden;
+						settingsPop.hidden = !willOpen;
+						settingsTrigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+					});
+					document.addEventListener('click', function (e) {
+						if (settingsWrap && !settingsWrap.contains(e.target)) closeSettings();
+					});
+					document.addEventListener('keydown', function (e) {
+						if (e.key === 'Escape') closeSettings();
+					});
+				}
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
-					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
+					closeSettings();
+					if (currentName && catalog[currentName]) { setSource(catalog[currentName].sample); populateVariants(currentName); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
-					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].skeleton); populateVariants(name); saveSource(); render(); }
+					closeSettings();
+					if (currentName && catalog[currentName]) { setSource(catalog[currentName].skeleton); populateVariants(currentName); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				// Reflect whatever the editor currently holds (starter deck, restored
