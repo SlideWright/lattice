@@ -22,11 +22,19 @@ const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generat
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
 const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
 
-// Template catalog for the picker, grouped by Function family.
+// Template catalog for the picker, grouped by Function family. Each component
+// carries its documented variants (modifiers) so the Variant dropdown can load
+// any of them into the editor.
 const FUNCTION_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery'];
 const catalog = {};
 for (const m of manifests) {
-	(catalog[m.name] = { skeleton: m.skeleton, sample: m.sample || m.skeleton });
+	const variantDocs = m.variantDocs || {};
+	const variantKeys = Array.isArray(m.variants) ? m.variants.filter((v) => variantDocs[v]) : [];
+	catalog[m.name] = {
+		skeleton: m.skeleton,
+		sample: m.sample || m.skeleton,
+		variants: variantKeys.map((v) => ({ key: v, label: v, caption: variantDocs[v].caption || '', sample: variantDocs[v].sample })),
+	};
 }
 const groups = FUNCTION_ORDER.map((fn) => ({
 	fn,
@@ -102,6 +110,12 @@ const pgData = JSON.stringify({
 							{g.items.map((n) => <option value={n}>{n}</option>)}
 						</optgroup>
 					))}
+				</select>
+			</div>
+			<div class="pg-picker">
+				<label for="pg-variant">Variant</label>
+				<select id="pg-variant" aria-label="Component variant" disabled>
+					<option value="">—</option>
 				</select>
 			</div>
 			<button class="pg-btn" id="pg-insert-sample">Insert example</button>
@@ -325,20 +339,64 @@ const pgData = JSON.stringify({
 				var taEl = document.getElementById('editor');
 				if (taEl) taEl.addEventListener('input', onEdit);
 
+				var varSel = document.getElementById('pg-variant');
+
+				// Fill the Variant dropdown for the picked component: 'default' (the
+				// base sample) plus each documented modifier. Disabled when the
+				// component has no variants (or none is picked).
+				function populateVariants(name) {
+					var comp = name && catalog[name];
+					varSel.innerHTML = '';
+					var variants = (comp && comp.variants) || [];
+					if (!comp || !variants.length) {
+						var none = document.createElement('option');
+						none.value = '';
+						none.textContent = '—';
+						varSel.appendChild(none);
+						varSel.disabled = true;
+						return;
+					}
+					varSel.disabled = false;
+					var def = document.createElement('option');
+					def.value = 'default';
+					def.textContent = 'default';
+					varSel.appendChild(def);
+					variants.forEach(function (v) {
+						var o = document.createElement('option');
+						o.value = v.key;
+						o.textContent = v.label;
+						if (v.caption) o.title = v.caption;
+						varSel.appendChild(o);
+					});
+					varSel.value = 'default';
+				}
+
 				tmplSel.addEventListener('change', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].sample); saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
+				});
+				varSel.addEventListener('change', function () {
+					var comp = catalog[tmplSel.value];
+					if (!comp) return;
+					var key = varSel.value;
+					var md = comp.sample;
+					if (key && key !== 'default') {
+						var v = (comp.variants || []).filter(function (x) { return x.key === key; })[0];
+						if (v) md = v.sample;
+					}
+					setSource(md); saveSource(); render();
 				});
 				document.getElementById('pg-insert-sample').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].sample); saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
 				document.getElementById('pg-insert-skeleton').addEventListener('click', function () {
 					var name = tmplSel.value;
-					if (name && catalog[name]) { setSource(catalog[name].skeleton); saveSource(); render(); }
+					if (name && catalog[name]) { setSource(catalog[name].skeleton); populateVariants(name); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
+				populateVariants(tmplSel.value);
 
 				paletteSel.addEventListener('change', function () {
 					root.setAttribute('data-palette', paletteSel.value);
