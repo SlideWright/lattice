@@ -168,9 +168,16 @@ body.db-page .topbar {
 .db-workspace[data-rail="collapsed"] .db-rail-head .db-panel-title {
 	display: none;
 }
+.db-deck-row {
+	display: flex;
+	align-items: stretch;
+	gap: 0.3rem;
+	margin-bottom: 0.4rem;
+}
 .db-deck {
+	flex: 1 1 auto;
+	min-width: 0;
 	display: block;
-	width: 100%;
 	text-align: left;
 	font: inherit;
 	font-size: 0.84rem;
@@ -179,7 +186,6 @@ body.db-page .topbar {
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	padding: 0.5rem 0.6rem;
-	margin-bottom: 0.4rem;
 	cursor: pointer;
 }
 .db-deck[aria-current="true"] {
@@ -187,18 +193,91 @@ body.db-page .topbar {
 	box-shadow: inset 2px 0 0 var(--accent);
 }
 .db-deck-name {
+	display: block;
 	font-weight: 600;
 	color: var(--text-heading);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .db-deck-meta {
+	display: block;
 	font-size: 0.72rem;
 	color: var(--text-muted);
 	margin-top: 0.15rem;
 }
+.db-deck-x {
+	flex: 0 0 auto;
+	width: 26px;
+	font: inherit;
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.12s, color 0.12s, border-color 0.12s;
+}
+.db-deck-row:hover .db-deck-x {
+	opacity: 1;
+}
+.db-deck-x:hover {
+	color: #c0392b;
+	border-color: #c0392b;
+}
+
+/* History section */
+.db-rail-section {
+	margin-top: 1rem;
+	border-top: 1px solid var(--border);
+	padding-top: 0.6rem;
+}
+.db-rail-section-head {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 0.5rem;
+}
+.db-rail-section-head .db-panel-title {
+	flex: 1 1 auto;
+}
+.db-history-item {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	font-size: 0.8rem;
+	color: var(--text-body);
+	background: none;
+	border: 0;
+	border-left: 2px solid var(--border);
+	padding: 0.35rem 0.5rem;
+	margin-bottom: 0.1rem;
+	cursor: pointer;
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.db-history-item:hover {
+	background: var(--bg);
+	border-left-color: var(--accent);
+	color: var(--text-heading);
+}
+.db-hist-label {
+	font-weight: 550;
+}
+.db-hist-time {
+	flex: 0 0 auto;
+	font-size: 0.7rem;
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
 .db-rail-note {
 	font-size: 0.72rem;
 	color: var(--text-muted);
-	padding: 0.5rem 0.2rem;
+	padding: 0.4rem 0.2rem;
 	line-height: 1.5;
 }
 

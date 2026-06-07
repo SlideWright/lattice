@@ -45,6 +45,7 @@ const dbData = JSON.stringify({
 	runtimeUrl: url('playground/lattice-runtime.js'),
 	defaultPalette: 'indaco',
 	slideBox: SLIDE_BOX,
+	starter,
 });
 ---
 
@@ -105,17 +106,19 @@ const dbData = JSON.stringify({
 				<div class="db-rail-head">
 					<button class="db-rail-collapse" id="db-rail-collapse" aria-label="Collapse rail" title="Collapse rail">⟨</button>
 					<span class="db-panel-title">Decks</span>
-					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck (Slice 3)" disabled>+</button>
+					<button class="db-btn db-btn-icon" id="db-new-deck" aria-label="New deck" title="New deck">+</button>
 				</div>
 				<div class="db-rail-body">
-					<button class="db-deck" type="button" aria-current="true">
-						<span class="db-deck-name">Untitled deck</span>
-						<span class="db-deck-meta">draft · just now</span>
-					</button>
-					<p class="db-rail-note">
-						Saved decks &amp; checkpoint history land in <strong>Slice 3</strong> — your work will
-						persist in this browser and restore from any point.
-					</p>
+					<div class="db-deck-list" id="db-deck-list">
+						<p class="db-rail-note">Loading your decks…</p>
+					</div>
+					<div class="db-rail-section">
+						<div class="db-rail-section-head">
+							<span class="db-panel-title">History</span>
+							<button class="db-btn db-btn-icon" id="db-checkpoint" aria-label="Save checkpoint" title="Save a checkpoint">⚑</button>
+						</div>
+						<div class="db-history-list" id="db-history-list"></div>
+					</div>
 				</div>
 			</aside>
 
@@ -227,6 +230,21 @@ const dbData = JSON.stringify({
 			window.dispatchEvent(new Event('db-editor-ready'));
 		</script>
 
+		<!-- Local persistence + checkpoint history (Slice 3). Owns the deck/history
+		     rail; bridges to the controller via the db-deck-loaded event +
+		     window.__dbStore. Dependency-free (raw IndexedDB). -->
+		<script>
+			import { createStore } from '../playground/drawing-board-store.js';
+			const data = JSON.parse(document.getElementById('db-data').textContent);
+			const store = createStore({
+				getSource: () => (window.__dbEditor ? window.__dbEditor.getValue() : ''),
+				onLoadDeck: (source) => window.dispatchEvent(new CustomEvent('db-deck-loaded', { detail: { source } })),
+				starter: data.starter || '',
+			});
+			window.__dbStore = store;
+			store.init();
+		</script>
+
 		<script is:inline defer src={url('playground/lattice-playground.js')}></script>
 		<script is:inline>
 			(function () {
@@ -290,10 +308,9 @@ const dbData = JSON.stringify({
 					var ta = document.getElementById('db-editor-ta');
 					if (ta) ta.value = text;
 				}
-				// Courtesy persistence so a refresh doesn't lose typing. Full IndexedDB
-				// decks + checkpoint history is Slice 3; this is the single-deck stopgap.
-				var SOURCE_KEY = 'lattice-db-source';
-				function saveSource() { try { localStorage.setItem(SOURCE_KEY, getSource()); } catch (e) {} }
+				// Persistence is owned by the store module (IndexedDB, Slice 3): the
+				// controller pushes edits to it via window.__dbStore.saveActive and
+				// receives deck loads via the db-deck-loaded event below.
 
 				paletteSel.value = root.getAttribute('data-palette');
 				var fetched = {};
@@ -416,7 +433,21 @@ const dbData = JSON.stringify({
 					}).catch(function (e) { setStatus(String(e.message || e), true); });
 				}
 
-				function onEdit() { saveSource(); recomputeStarts(); scheduleRender(); }
+				function onEdit() {
+					recomputeStarts();
+					scheduleRender();
+					if (window.__dbStore) window.__dbStore.saveActive(getSource());
+				}
+				// The store loads a deck (switch / restore / initial) -> swap the editor
+				// source and re-render. setSource fires onChange, but the store guards its
+				// own autosave during a load, so this doesn't echo back.
+				window.addEventListener('db-deck-loaded', function (e) {
+					var src = e.detail && e.detail.source;
+					if (src == null) return;
+					setSource(src);
+					recomputeStarts();
+					render();
+				});
 				// Cursor moved in the editor -> if it crossed into a different slide,
 				// scroll the filmstrip to it (smooth). Same-slide moves don't scroll, so
 				// typing within a slide stays put.
@@ -447,7 +478,6 @@ const dbData = JSON.stringify({
 					if (!window.__dbEditor) return;
 					window.__dbEditor.onChange(onEdit);
 					window.__dbEditor.onCursor(onCursorMove);
-					try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
 					recomputeStarts();
 					render();
 				}
