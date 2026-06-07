@@ -16,7 +16,7 @@ const { runMarp }   = require('../../helpers/render');
 const { pageCount } = require('../../helpers/pdf');
 
 const GALLERY = path.join(__dirname, '..', 'baseline-decks', 'gallery.md');
-const EXPECTED_PAGES = 89;
+const EXPECTED_PAGES = 88;
 
 describe('marp.gallery', () => {
   test('marp-cli: gallery.md builds and produces expected page count',

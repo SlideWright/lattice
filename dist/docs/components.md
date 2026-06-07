@@ -24,8 +24,8 @@
   - [`cards-grid`](#cards-grid)
   - [`cards-side`](#cards-side)
   - [`cards-stack`](#cards-stack)
-  - [`cards-wide`](#cards-wide)
   - [`checklist`](#checklist)
+  - [`faq`](#faq)
   - [`glossary`](#glossary)
   - [`list`](#list)
   - [`list-tabular`](#list-tabular)
@@ -717,13 +717,13 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 #### When to use
 
 - **Thesis plus proof.** One bold claim deserves dedicated visual weight on the left; supporting points sit to the right. Use when the audience needs to hear the claim before the evidence.
-- **Section openers with substance.** More substantive than a divider, but still anchored by a single statement. Three to four supporting points keep the panel from feeling cluttered.
+- **Section openers with substance.** More substantive than a divider, but still anchored by a single statement. Three to five supporting points keep the panel from feeling cluttered.
 - **Mirror for image-heavy decks.** The `mirror` variant flips the panel to the right. Useful when the deck's visual rhythm wants accents on alternating sides.
 
 #### When NOT to use
 
-- **Longer than four points.** If the right side runs past four points, the panel and list lose balance. Move to `cards-stack` for longer lists or split into two slides.
-- **No panel headline.** The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide.
+- **Longer than five points — hard limit.** The layout holds exactly 3–5 points. This is a structural constraint, not a preference: beyond five the panel and list lose balance and the right column overflows. Move to `cards-stack` for longer lists or split into two slides. Do not stretch to six.
+- **No panel headline.** The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide. The `panel-heading` slot is required; there is no valid rendering without it.
 - **Stacking many split-list slides in a row.** The dark sidebar is a strong visual signal. Three split-list slides back-to-back numbs the audience to it. Intersperse with content or stats.
 
 #### Authoring
@@ -749,7 +749,8 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 |---|---|---|---|
 | `panel-heading` | `h2` | yes | Heading shown in the dark left panel. |
 | `panel-eyebrow` | `h3` | no | Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow). |
-| `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
+| `intro` | `p` | no | Optional framing sentence in the right panel, between the section rubric and the list. One sentence maximum, 1–2 lines. More than two lines crowds the list and should become a separate slide. |
+| `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. Hard limit: 3–5 items. Fewer than three feels sparse; more than five breaks the panel-to-list balance — use `cards-stack` instead. |
 | `meta` | `section :is(ul,ol) + ul` | no | Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels. |
 
 #### Anatomy
@@ -787,6 +788,50 @@ Flips the dark accent panel from the left to the right. Use when the deck's visu
   - Pair a default split-list and a mirrored one across a section to keep the eye moving.
 - Right-to-left framing
   - The argument reads more naturally when the claim follows the evidence rather than preceding it.
+```
+
+##### `dense` — Dense — strip card chrome, hairline separators
+
+Removes background, border, and border-radius from items; replaces card chrome with thin hairline separators. Shifts register from 'substantive points' to 'index / table of contents'. Fits 7–8 items comfortably.
+
+```markdown
+<!-- _class: split-list dense -->
+
+## Seven items without chrome.
+
+### Index register
+
+1. First item
+   - One-line description.
+2. Second item
+   - One-line description.
+3. Third item
+   - One-line description.
+```
+
+##### `columns` — Columns — two-column right panel
+
+Places list items in a two-column grid. Capacity doubles. Read order is top-to-bottom within each column, left column then right. Use for 6–8 parallel items of similar length.
+
+```markdown
+<!-- _class: split-list columns -->
+
+## Eight items across two columns.
+
+### Column layout
+
+- First
+  - One line.
+- Second
+  - One line.
+- Third
+  - One line.
+- Fourth
+  - One line.
+- Fifth
+  - One line.
+- Sixth
+  - One line.
 ```
 
 #### Universal modifiers
@@ -1281,7 +1326,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-steps`](#list-steps) — items carry an explicit sequence
 - [`cards-stack`](#cards-stack) — items stack vertically as full-width rows
 - [`cards-side`](#cards-side) — two-card horizontal comparison
-- [`cards-wide`](#cards-wide) — three full-width rows for longer prose per item
+- [`cards-stack`](#cards-stack) — two to four full-width rows for longer prose per item
 - [`verdict-grid`](#verdict-grid) — comparing options against shared criteria
 
 #### Demo deck
@@ -1308,7 +1353,7 @@ Use for an explicit pair — two options, two phases, two artifacts presented wi
 
 - **Three or more cards.** cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four.
 - **One side is the answer.** If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided.
-- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide.
+- **Long-form body per card.** More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-stack.
 
 #### Authoring
 
@@ -1396,7 +1441,7 @@ Use when the items want vertical reading order — sequential exploration rather
 
 #### When NOT to use
 
-- **Four or more items.** The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows.
+- **Four or more items.** The stack overflows past four. For five or more rows reach for list-tabular.
 - **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
@@ -1442,6 +1487,23 @@ Use when the items want vertical reading order — sequential exploration rather
 
 #### Variants (layout-specific)
 
+##### `vertical` — Vertical stack
+
+Explicit alias for the default stacking direction — cards flow top-to-bottom. Use when the source needs the orientation to be self-documenting, or when a slide pairs a vertical and a horizontal variant side by side in a build.
+
+```markdown
+<!-- _class: cards-stack vertical -->
+
+## Three forces are compressing the differentiation window.
+
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
+```
+
 ##### `horizontal` — Horizontal cards
 
 Stacked rows pivot to a left-aligned title column with the body to its right — useful when the card titles are short labels and the body carries the weight.
@@ -1473,7 +1535,7 @@ Authored as `ol` (`1.` source). Each row carries a flush corner number — use w
 2. Vertical real estate
    - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.
 3. Build path symmetry
-   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.
+   - cards-stack pairs with cards-grid (3-4 grid items) and cards-side (exactly 2). Keeping cards-stack at 2-4 keeps the family's choices clean.
 ```
 
 #### Universal modifiers
@@ -1483,91 +1545,12 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Related components
 
 - [`cards-grid`](#cards-grid) — three or four parallel items in a scannable grid
-- [`cards-wide`](#cards-wide) — three or four rows with more substantial per-card body
 - [`cards-side`](#cards-side) — exactly two items in left-right balance
 - [`list-steps`](#list-steps) — items carry an explicit, ordered sequence
 
 #### Demo deck
 
 See [cards-stack.gallery.light.pdf](../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf) for rendered examples of every variant.
-
-### cards-wide
-
-> Three or four wide rows, each a full-width card.
-
-**Function** inventory · **Form** stack · **Substance** structure
-
-**Tags** `overview` · `showcase` · `reference`
-
-Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.
-
-#### When to use
-
-- **Substantial per-row body.** Each item carries one to two sentences — more than a cards-grid card can hold without crowding. The wide row gives the body real estate.
-- **Top-to-bottom reading.** The audience absorbs one row at a time rather than the whole set at a glance. Use when sequence-of-reading matters even if items are parallel.
-- **Three or four rows.** The layout is sized for three or four wide cards. Past four the slide gets dense; for longer reference lists move to list-tabular.
-
-#### When NOT to use
-
-- **Five or more rows.** The slide tips into wall-of-text past four rows. Move to list-tabular for reference density, or split across two cards-wide slides.
-- **One-line rows.** If each row is a short phrase the wide cards look padded. Drop to `list` or `tldr` and let the short text speak for itself.
-- **Comparison framing.** cards-wide is parallel inventory, not comparison. If the rows are weighed against shared criteria, use compare-table or verdict-grid.
-
-#### Authoring
-
-```markdown
-<!-- _class: cards-wide -->
-
-## Slide heading.
-
-- First row title
-  - Body text for the first wide row, one or two sentences.
-- Second row title
-  - Body text for the second wide row.
-- Third row title
-  - Body text for the third wide row.
-```
-
-#### Slots
-
-| Slot | Selector | Required | Description |
-|---|---|---|---|
-| `title` | `h2` | yes | Slide heading. |
-| `cards` | `ul > li` | yes | Three or four list items, each one wide row. Lead each with **Card Title.** then 1–2 sentences. |
-
-#### Anatomy
-
-```text
-┌─────────────────────────────────────────┐
-│  header                                 │
-│  Three wide rows heading.               │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 1 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 2 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 3 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  footer                           1/19  │
-└─────────────────────────────────────────┘
-```
-
-#### Universal modifiers
-
-This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
-
-#### Related components
-
-- [`cards-stack`](#cards-stack) — two or three rows with shorter body per card
-- [`cards-grid`](#cards-grid) — four or fewer parallel items in a scannable grid
-- [`list-tabular`](#list-tabular) — five or more reference-style rows
-- [`list-steps`](#list-steps) — rows carry an explicit, ordered sequence
-
-#### Demo deck
-
-See [cards-wide.gallery.light.pdf](../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf) for rendered examples of every variant.
 
 ### checklist
 
@@ -1641,6 +1624,136 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Demo deck
 
 See [checklist.gallery.light.pdf](../../lib/components/inventory/checklist/checklist.gallery.light.pdf) for rendered examples of every variant.
+
+### faq
+
+> Frequently-asked questions laid out in five spatial forms — ledger, card grid, split panel, indexed stack, or statement focus.
+
+**Function** inventory · **Form** ledger · **Substance** structure
+
+**Tags** `reference` · `onboarding` · `compliance` · `board-deck`
+
+Use for any Q&A content where the audience benefits from pre-answered questions: investor due diligence, onboarding packets, product launches, legal FAQs, or objection-handling slides. Choose the variant that matches the weight of the content.
+
+#### When to use
+
+- **Pre-answered questions.** When the audience will have the same predictable questions and the deck is the right place to answer them — due diligence packs, onboarding docs, product launches, policy walkthroughs.
+- **Choose the variant by content weight.** Default (faq) for boardroom authority: dark left panel, watermark, 3–5 items. Ledger (faq ledger) for reference density: 4–6 items, short answers, scan-and-move-on. Cards (faq cards) for 4–6 standalone Q&As that each deserve reading. Indexed (faq indexed) when sequence matters. Focused (faq focused) for the one question that dominates a slide.
+- **Four to six entries for list variants.** Below four, the layout feels sparse. Above six, the slide tips toward a wall of text. Use compact for six or more. faq.focused is always one entry.
+
+#### When NOT to use
+
+- **Inline question-answer on one bullet.** Do not write `- **Question?** Answer here.` — the answer inherits bold weight and runs into the question. Use the nested format: `- Question? \n  - Answer.`
+- **Multi-sentence answers in ledger or indexed.** One sentence per answer on the ledger and indexed variants. If an answer needs two sentences, the question deserves its own slide or use faq.focused.
+- **Using faq.focused for multiple questions.** faq.focused is a statement layout — one question per slide. If you have several to handle, use faq.cards or faq.indexed.
+
+#### Authoring
+
+```markdown
+<!-- _class: faq -->
+
+## Common Questions
+
+- Question one?
+  - Answer to question one.
+- Question two?
+  - Answer to question two.
+- Question three?
+  - Answer to question three.
+- Question four?
+  - Answer to question four.
+```
+
+#### Slots
+
+| Slot | Selector | Required | Description |
+|---|---|---|---|
+| `title` | `h2` | yes | Slide heading naming the FAQ set. On the default panel layout, renders anchored to the bottom-left of the dark accent panel. |
+| `entries` | `ul > li` | yes | One outer li per Q&A pair. The outer li text is the question (auto-bold); a single nested li is the answer. faq.focused uses h2 + p instead. |
+
+#### Variants (layout-specific)
+
+##### `ledger` — Ledger — two-column rows
+
+Question bold left (36%), answer right (64%). Reference-density. 4–6 items.
+
+```markdown
+<!-- _class: faq ledger -->
+
+## Frequently Asked Questions
+
+- What is the onboarding timeline?
+  - New hires complete all paperwork and training within their first 30 days.
+- How does the expense policy work?
+  - Up to $150 without pre-approval; over $150 requires a receipt and manager sign-off in Expensify.
+- Where is the engineering handbook?
+  - Notion → Engineering Hub → Handbook. Your manager shares the link on day one.
+- Who handles benefits questions?
+  - People Ops owns benefits. DM @hr-team in Slack or book a 15-minute slot via Calendly.
+```
+
+##### `cards` — Cards — card grid
+
+2×N grid. Each Q+A is a card with a 4px accent top bar. 4–6 cards.
+
+```markdown
+<!-- _class: faq cards -->
+
+## Frequently Asked Questions
+
+- Does the platform support SSO?
+  - Yes. SAML 2.0 and OIDC are supported out of the box; SCIM provisioning is available on Enterprise.
+- Is there a free trial?
+  - All plans include a 14-day free trial with no credit card required.
+- What is the uptime SLA?
+  - 99.9% uptime on Growth and above, with 24-hour incident response on Enterprise.
+- Can we export our data?
+  - Full export in JSON and CSV within 48 hours of any request or cancellation.
+```
+
+##### `indexed` — Indexed — numbered stack
+
+Full-width cards with accent number badge. Q bold, A below. 3–5 items.
+
+```markdown
+<!-- _class: faq indexed -->
+
+## Top Questions, Answered
+
+- What is our go-to-market strategy?
+  - We sell direct to enterprise accounts over $500K ARR via a 90-day land-and-expand motion.
+- Who are our reference customers?
+  - We have ten public referenceable logos across finance, healthcare, and logistics.
+- When do we expect profitability?
+  - Contribution-margin positive in Q3 at current growth; cash-flow positive in 18 months.
+```
+
+##### `focused` — Focused — statement
+
+One Q+A at statement scale. Authoring: h2 for question, p for answer.
+
+```markdown
+<!-- _class: faq focused -->
+
+## Is this genuinely enterprise-grade?
+
+Every one of our 400 enterprise customers runs mission-critical workloads on the platform — with a 99.97% uptime SLA backed by contractual guarantees, not marketing language.
+```
+
+#### Universal modifiers
+
+This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
+
+#### Related components
+
+- [`glossary`](#glossary) — term/definition format rather than question/answer
+- [`split-list`](#split-list) — thesis in a dark panel + supporting points, not Q&A
+- [`checklist`](#checklist) — items need pass/partial/fail status markers
+- [`cards-stack`](#cards-stack) — items are parallel descriptions, not Q&A pairs
+
+#### Demo deck
+
+See [faq.gallery.light.pdf](../../lib/components/inventory/faq/faq.gallery.light.pdf) for rendered examples of every variant.
 
 ### glossary
 
@@ -1809,8 +1922,8 @@ Use for compact reference tables: glossary-style entries, key/value pairs, specs
 
 #### When NOT to use
 
-- **Three or fewer rows.** The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe.
-- **Long per-row prose.** Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides.
+- **Three or fewer rows.** The ledger needs density to justify its shape. For two or three items, reach for cards-stack — the rows get the room to breathe.
+- **Long per-row prose.** Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides.
 - **Stacking two primary variants.** `def`, `metric`, `spec`, and `register` are mutually exclusive. Pair each only with its secondary modifier (def+rule, metric+solid, spec+stacked, register+outline).
 
 #### Authoring

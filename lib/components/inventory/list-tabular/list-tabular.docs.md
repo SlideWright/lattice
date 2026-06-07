@@ -16,8 +16,8 @@ Use for compact reference tables: glossary-style entries, key/value pairs, specs
 
 ## When NOT to use
 
-- **Three or fewer rows.** The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe.
-- **Long per-row prose.** Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides.
+- **Three or fewer rows.** The ledger needs density to justify its shape. For two or three items, reach for cards-stack — the rows get the room to breathe.
+- **Long per-row prose.** Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides.
 - **Stacking two primary variants.** `def`, `metric`, `spec`, and `register` are mutually exclusive. Pair each only with its secondary modifier (def+rule, metric+solid, spec+stacked, register+outline).
 
 ## Authoring

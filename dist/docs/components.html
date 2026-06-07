@@ -518,8 +518,8 @@ tbody tr:last-child td { border-bottom: none; }
           <li><a href="#c-cards-grid" data-target="c-cards-grid">cards-grid</a></li>
           <li><a href="#c-cards-side" data-target="c-cards-side">cards-side</a></li>
           <li><a href="#c-cards-stack" data-target="c-cards-stack">cards-stack</a></li>
-          <li><a href="#c-cards-wide" data-target="c-cards-wide">cards-wide</a></li>
           <li><a href="#c-checklist" data-target="c-checklist">checklist</a></li>
+          <li><a href="#c-faq" data-target="c-faq">faq</a></li>
           <li><a href="#c-glossary" data-target="c-glossary">glossary</a></li>
           <li><a href="#c-list" data-target="c-list">list</a></li>
           <li><a href="#c-list-tabular" data-target="c-list-tabular">list-tabular</a></li>
@@ -1321,15 +1321,15 @@ One-sentence framing paragraph explaining what the findings cover.
     <h4>When to use</h4>
     <ul>
       <li><strong>Thesis plus proof.</strong> One bold claim deserves dedicated visual weight on the left; supporting points sit to the right. Use when the audience needs to hear the claim before the evidence.</li>
-      <li><strong>Section openers with substance.</strong> More substantive than a divider, but still anchored by a single statement. Three to four supporting points keep the panel from feeling cluttered.</li>
+      <li><strong>Section openers with substance.</strong> More substantive than a divider, but still anchored by a single statement. Three to five supporting points keep the panel from feeling cluttered.</li>
       <li><strong>Mirror for image-heavy decks.</strong> The <code>mirror</code> variant flips the panel to the right. Useful when the deck's visual rhythm wants accents on alternating sides.</li>
     </ul>
   </section>
   <section class="guidance avoid">
     <h4>When not to use</h4>
     <ul>
-      <li><strong>Longer than four points.</strong> If the right side runs past four points, the panel and list lose balance. Move to <code>cards-stack</code> for longer lists or split into two slides.</li>
-      <li><strong>No panel headline.</strong> The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide.</li>
+      <li><strong>Longer than five points — hard limit.</strong> The layout holds exactly 3–5 points. This is a structural constraint, not a preference: beyond five the panel and list lose balance and the right column overflows. Move to <code>cards-stack</code> for longer lists or split into two slides. Do not stretch to six.</li>
+      <li><strong>No panel headline.</strong> The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide. The <code>panel-heading</code> slot is required; there is no valid rendering without it.</li>
       <li><strong>Stacking many split-list slides in a row.</strong> The dark sidebar is a strong visual signal. Three split-list slides back-to-back numbs the audience to it. Intersperse with content or stats.</li>
     </ul>
   </section>
@@ -1355,7 +1355,8 @@ One-sentence framing paragraph explaining what the findings cover.
       <tbody>
         <tr><td><code>panel-heading</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Heading shown in the dark left panel.</td></tr>
         <tr><td><code>panel-eyebrow</code></td><td><code>h3</code></td><td><span class="req no">no</span></td><td>Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow).</td></tr>
-        <tr><td><code>points</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>Right-side supporting points. Lead each with <strong>Label.</strong> then body text.</td></tr>
+        <tr><td><code>intro</code></td><td><code>p</code></td><td><span class="req no">no</span></td><td>Optional framing sentence in the right panel, between the section rubric and the list. One sentence maximum, 1–2 lines. More than two lines crowds the list and should become a separate slide.</td></tr>
+        <tr><td><code>points</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>Right-side supporting points. Lead each with <strong>Label.</strong> then body text. Hard limit: 3–5 items. Fewer than three feels sparse; more than five breaks the panel-to-list balance — use <code>cards-stack</code> instead.</td></tr>
         <tr><td><code>meta</code></td><td><code>section :is(ul,ol) + ul</code></td><td><span class="req no">no</span></td><td>Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels.</td></tr>
       </tbody>
     </table>
@@ -1391,6 +1392,44 @@ One-sentence framing paragraph explaining what the findings cover.
   - Pair a default split-list and a mirrored one across a section to keep the eye moving.
 - Right-to-left framing
   - The argument reads more naturally when the claim follows the evidence rather than preceding it.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>dense</code> — Dense — strip card chrome, hairline separators</h5>
+      <p>Removes background, border, and border-radius from items; replaces card chrome with thin hairline separators. Shifts register from 'substantive points' to 'index / table of contents'. Fits 7–8 items comfortably.</p>
+      <pre class="code"><code>&lt;!-- _class: split-list dense --&gt;
+
+## Seven items without chrome.
+
+### Index register
+
+1. First item
+   - One-line description.
+2. Second item
+   - One-line description.
+3. Third item
+   - One-line description.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>columns</code> — Columns — two-column right panel</h5>
+      <p>Places list items in a two-column grid. Capacity doubles. Read order is top-to-bottom within each column, left column then right. Use for 6–8 parallel items of similar length.</p>
+      <pre class="code"><code>&lt;!-- _class: split-list columns --&gt;
+
+## Eight items across two columns.
+
+### Column layout
+
+- First
+  - One line.
+- Second
+  - One line.
+- Third
+  - One line.
+- Fourth
+  - One line.
+- Fifth
+  - One line.
+- Sixth
+  - One line.</code></pre>
     </div>
   </section>
   <section class="related">
@@ -1885,7 +1924,7 @@ One-sentence framing paragraph explaining what the findings cover.
       <li><a class="chip" href="#c-list-steps">list-steps</a> <span>items carry an explicit sequence</span></li>
       <li><a class="chip" href="#c-cards-stack">cards-stack</a> <span>items stack vertically as full-width rows</span></li>
       <li><a class="chip" href="#c-cards-side">cards-side</a> <span>two-card horizontal comparison</span></li>
-      <li><a class="chip" href="#c-cards-wide">cards-wide</a> <span>three full-width rows for longer prose per item</span></li>
+      <li><a class="chip" href="#c-cards-stack">cards-stack</a> <span>two to four full-width rows for longer prose per item</span></li>
       <li><a class="chip" href="#c-verdict-grid">verdict-grid</a> <span>comparing options against shared criteria</span></li>
     </ul>
   </section>
@@ -1922,7 +1961,7 @@ One-sentence framing paragraph explaining what the findings cover.
     <ul>
       <li><strong>Three or more cards.</strong> cards-side is built for exactly two slots. For three parallel items use cards-grid three; for four use cards-grid four.</li>
       <li><strong>One side is the answer.</strong> If the deck has already chosen, use compare-prose with the winner highlighted. cards-side reads as undecided — that's the wrong signal when you've decided.</li>
-      <li><strong>Long-form body per card.</strong> More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide.</li>
+      <li><strong>Long-form body per card.</strong> More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-stack.</li>
     </ul>
   </section>
   <section class="authoring">
@@ -2015,7 +2054,7 @@ One-sentence framing paragraph explaining what the findings cover.
   <section class="guidance avoid">
     <h4>When not to use</h4>
     <ul>
-      <li><strong>Four or more items.</strong> The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows.</li>
+      <li><strong>Four or more items.</strong> The stack overflows past four. For five or more rows reach for list-tabular.</li>
       <li><strong>One-line cards.</strong> If each card is a single short phrase, the stack reads as a padded list. Drop to <code>list</code> or <code>tldr</code> and reclaim the vertical space.</li>
       <li><strong>Forced sequence.</strong> Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.</li>
     </ul>
@@ -2062,6 +2101,20 @@ One-sentence framing paragraph explaining what the findings cover.
   <section class="variants">
     <h4>Variants</h4>
     <div class="variant">
+      <h5><code>vertical</code> — Vertical stack</h5>
+      <p>Explicit alias for the default stacking direction — cards flow top-to-bottom. Use when the source needs the orientation to be self-documenting, or when a slide pairs a vertical and a horizontal variant side by side in a build.</p>
+      <pre class="code"><code>&lt;!-- _class: cards-stack vertical --&gt;
+
+## Three forces are compressing the differentiation window.
+
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.</code></pre>
+    </div>
+    <div class="variant">
       <h5><code>horizontal</code> — Horizontal cards</h5>
       <p>Stacked rows pivot to a left-aligned title column with the body to its right — useful when the card titles are short labels and the body carries the weight.</p>
       <pre class="code"><code>&lt;!-- _class: cards-stack horizontal --&gt;
@@ -2087,105 +2140,19 @@ One-sentence framing paragraph explaining what the findings cover.
 2. Vertical real estate
    - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.
 3. Build path symmetry
-   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.</code></pre>
+   - cards-stack pairs with cards-grid (3-4 grid items) and cards-side (exactly 2). Keeping cards-stack at 2-4 keeps the family's choices clean.</code></pre>
     </div>
   </section>
   <section class="related">
     <h4>Related</h4>
     <ul class="related-list">
       <li><a class="chip" href="#c-cards-grid">cards-grid</a> <span>three or four parallel items in a scannable grid</span></li>
-      <li><a class="chip" href="#c-cards-wide">cards-wide</a> <span>three or four rows with more substantial per-card body</span></li>
       <li><a class="chip" href="#c-cards-side">cards-side</a> <span>exactly two items in left-right balance</span></li>
       <li><a class="chip" href="#c-list-steps">list-steps</a> <span>items carry an explicit, ordered sequence</span></li>
     </ul>
   </section>
   <section class="demo">
     <a class="gallery-link" href="../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf">View rendered gallery →</a>
-  </section>
-</article>
-<article class="component" data-name="cards-wide" data-tags="overview showcase reference">
-  <header class="component-head">
-    <h3 id="c-cards-wide">cards-wide</h3>
-    <div class="ffs">
-      <span class="ffs-pill" title="Function">Inventory</span>
-      <span class="ffs-pill" title="Form">Stack</span>
-      <span class="ffs-pill" title="Substance">Structure</span>
-    </div>
-  </header>
-  <p class="lead">Three or four wide rows, each a full-width card.</p>
-  <p class="purpose">Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.</p>
-  <div class="tags" data-pagefind-ignore>
-    <span class="tag">overview</span>
-    <span class="tag">showcase</span>
-    <span class="tag">reference</span>
-  </div>
-  <section class="guidance use">
-    <h4>When to use</h4>
-    <ul>
-      <li><strong>Substantial per-row body.</strong> Each item carries one to two sentences — more than a cards-grid card can hold without crowding. The wide row gives the body real estate.</li>
-      <li><strong>Top-to-bottom reading.</strong> The audience absorbs one row at a time rather than the whole set at a glance. Use when sequence-of-reading matters even if items are parallel.</li>
-      <li><strong>Three or four rows.</strong> The layout is sized for three or four wide cards. Past four the slide gets dense; for longer reference lists move to list-tabular.</li>
-    </ul>
-  </section>
-  <section class="guidance avoid">
-    <h4>When not to use</h4>
-    <ul>
-      <li><strong>Five or more rows.</strong> The slide tips into wall-of-text past four rows. Move to list-tabular for reference density, or split across two cards-wide slides.</li>
-      <li><strong>One-line rows.</strong> If each row is a short phrase the wide cards look padded. Drop to <code>list</code> or <code>tldr</code> and let the short text speak for itself.</li>
-      <li><strong>Comparison framing.</strong> cards-wide is parallel inventory, not comparison. If the rows are weighed against shared criteria, use compare-table or verdict-grid.</li>
-    </ul>
-  </section>
-  <section class="authoring">
-    <h4>Authoring</h4>
-    <pre class="code"><code>&lt;!-- _class: cards-wide --&gt;
-
-## Slide heading.
-
-- First row title
-  - Body text for the first wide row, one or two sentences.
-- Second row title
-  - Body text for the second wide row.
-- Third row title
-  - Body text for the third wide row.</code></pre>
-  </section>
-  <section class="slots">
-    <h4>Slots</h4>
-    <table>
-      <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
-      <tbody>
-        <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading.</td></tr>
-        <tr><td><code>cards</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>Three or four list items, each one wide row. Lead each with <strong>Card Title.</strong> then 1–2 sentences.</td></tr>
-      </tbody>
-    </table>
-  </section>
-  <section class="anatomy">
-    <h4>Anatomy</h4>
-    <pre class="ascii"><code>┌─────────────────────────────────────────┐
-│  header                                 │
-│  Three wide rows heading.               │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 1 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 2 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │ Wide row 3 — full content width   │  │
-│  └───────────────────────────────────┘  │
-│  footer                           1/19  │
-└─────────────────────────────────────────┘</code></pre>
-  </section>
-  <section class="related">
-    <h4>Related</h4>
-    <ul class="related-list">
-      <li><a class="chip" href="#c-cards-stack">cards-stack</a> <span>two or three rows with shorter body per card</span></li>
-      <li><a class="chip" href="#c-cards-grid">cards-grid</a> <span>four or fewer parallel items in a scannable grid</span></li>
-      <li><a class="chip" href="#c-list-tabular">list-tabular</a> <span>five or more reference-style rows</span></li>
-      <li><a class="chip" href="#c-list-steps">list-steps</a> <span>rows carry an explicit, ordered sequence</span></li>
-    </ul>
-  </section>
-  <section class="demo">
-    <a class="gallery-link" href="../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
 <article class="component" data-name="checklist" data-tags="status stoplight process requirements">
@@ -2267,6 +2234,135 @@ One-sentence framing paragraph explaining what the findings cover.
   </section>
   <section class="demo">
     <a class="gallery-link" href="../../lib/components/inventory/checklist/checklist.gallery.light.pdf">View rendered gallery →</a>
+  </section>
+</article>
+<article class="component" data-name="faq" data-tags="reference onboarding compliance board-deck">
+  <header class="component-head">
+    <h3 id="c-faq">faq</h3>
+    <div class="ffs">
+      <span class="ffs-pill" title="Function">Inventory</span>
+      <span class="ffs-pill" title="Form">Ledger</span>
+      <span class="ffs-pill" title="Substance">Structure</span>
+    </div>
+  </header>
+  <p class="lead">Frequently-asked questions laid out in five spatial forms — ledger, card grid, split panel, indexed stack, or statement focus.</p>
+  <p class="purpose">Use for any Q&amp;A content where the audience benefits from pre-answered questions: investor due diligence, onboarding packets, product launches, legal FAQs, or objection-handling slides. Choose the variant that matches the weight of the content.</p>
+  <div class="tags" data-pagefind-ignore>
+    <span class="tag">reference</span>
+    <span class="tag">onboarding</span>
+    <span class="tag">compliance</span>
+    <span class="tag">board-deck</span>
+  </div>
+  <section class="guidance use">
+    <h4>When to use</h4>
+    <ul>
+      <li><strong>Pre-answered questions.</strong> When the audience will have the same predictable questions and the deck is the right place to answer them — due diligence packs, onboarding docs, product launches, policy walkthroughs.</li>
+      <li><strong>Choose the variant by content weight.</strong> Default (faq) for boardroom authority: dark left panel, watermark, 3–5 items. Ledger (faq ledger) for reference density: 4–6 items, short answers, scan-and-move-on. Cards (faq cards) for 4–6 standalone Q&amp;As that each deserve reading. Indexed (faq indexed) when sequence matters. Focused (faq focused) for the one question that dominates a slide.</li>
+      <li><strong>Four to six entries for list variants.</strong> Below four, the layout feels sparse. Above six, the slide tips toward a wall of text. Use compact for six or more. faq.focused is always one entry.</li>
+    </ul>
+  </section>
+  <section class="guidance avoid">
+    <h4>When not to use</h4>
+    <ul>
+      <li><strong>Inline question-answer on one bullet.</strong> Do not write <code>- <strong>Question?</strong> Answer here.</code> — the answer inherits bold weight and runs into the question. Use the nested format: <code>- Question? \n  - Answer.</code></li>
+      <li><strong>Multi-sentence answers in ledger or indexed.</strong> One sentence per answer on the ledger and indexed variants. If an answer needs two sentences, the question deserves its own slide or use faq.focused.</li>
+      <li><strong>Using faq.focused for multiple questions.</strong> faq.focused is a statement layout — one question per slide. If you have several to handle, use faq.cards or faq.indexed.</li>
+    </ul>
+  </section>
+  <section class="authoring">
+    <h4>Authoring</h4>
+    <pre class="code"><code>&lt;!-- _class: faq --&gt;
+
+## Common Questions
+
+- Question one?
+  - Answer to question one.
+- Question two?
+  - Answer to question two.
+- Question three?
+  - Answer to question three.
+- Question four?
+  - Answer to question four.</code></pre>
+  </section>
+  <section class="slots">
+    <h4>Slots</h4>
+    <table>
+      <thead><tr><th>Slot</th><th>Selector</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><code>h2</code></td><td><span class="req yes">yes</span></td><td>Slide heading naming the FAQ set. On the default panel layout, renders anchored to the bottom-left of the dark accent panel.</td></tr>
+        <tr><td><code>entries</code></td><td><code>ul &gt; li</code></td><td><span class="req yes">yes</span></td><td>One outer li per Q&amp;A pair. The outer li text is the question (auto-bold); a single nested li is the answer. faq.focused uses h2 + p instead.</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="variants">
+    <h4>Variants</h4>
+    <div class="variant">
+      <h5><code>ledger</code> — Ledger — two-column rows</h5>
+      <p>Question bold left (36%), answer right (64%). Reference-density. 4–6 items.</p>
+      <pre class="code"><code>&lt;!-- _class: faq ledger --&gt;
+
+## Frequently Asked Questions
+
+- What is the onboarding timeline?
+  - New hires complete all paperwork and training within their first 30 days.
+- How does the expense policy work?
+  - Up to $150 without pre-approval; over $150 requires a receipt and manager sign-off in Expensify.
+- Where is the engineering handbook?
+  - Notion → Engineering Hub → Handbook. Your manager shares the link on day one.
+- Who handles benefits questions?
+  - People Ops owns benefits. DM @hr-team in Slack or book a 15-minute slot via Calendly.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>cards</code> — Cards — card grid</h5>
+      <p>2×N grid. Each Q+A is a card with a 4px accent top bar. 4–6 cards.</p>
+      <pre class="code"><code>&lt;!-- _class: faq cards --&gt;
+
+## Frequently Asked Questions
+
+- Does the platform support SSO?
+  - Yes. SAML 2.0 and OIDC are supported out of the box; SCIM provisioning is available on Enterprise.
+- Is there a free trial?
+  - All plans include a 14-day free trial with no credit card required.
+- What is the uptime SLA?
+  - 99.9% uptime on Growth and above, with 24-hour incident response on Enterprise.
+- Can we export our data?
+  - Full export in JSON and CSV within 48 hours of any request or cancellation.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>indexed</code> — Indexed — numbered stack</h5>
+      <p>Full-width cards with accent number badge. Q bold, A below. 3–5 items.</p>
+      <pre class="code"><code>&lt;!-- _class: faq indexed --&gt;
+
+## Top Questions, Answered
+
+- What is our go-to-market strategy?
+  - We sell direct to enterprise accounts over $500K ARR via a 90-day land-and-expand motion.
+- Who are our reference customers?
+  - We have ten public referenceable logos across finance, healthcare, and logistics.
+- When do we expect profitability?
+  - Contribution-margin positive in Q3 at current growth; cash-flow positive in 18 months.</code></pre>
+    </div>
+    <div class="variant">
+      <h5><code>focused</code> — Focused — statement</h5>
+      <p>One Q+A at statement scale. Authoring: h2 for question, p for answer.</p>
+      <pre class="code"><code>&lt;!-- _class: faq focused --&gt;
+
+## Is this genuinely enterprise-grade?
+
+Every one of our 400 enterprise customers runs mission-critical workloads on the platform — with a 99.97% uptime SLA backed by contractual guarantees, not marketing language.</code></pre>
+    </div>
+  </section>
+  <section class="related">
+    <h4>Related</h4>
+    <ul class="related-list">
+      <li><a class="chip" href="#c-glossary">glossary</a> <span>term/definition format rather than question/answer</span></li>
+      <li><a class="chip" href="#c-split-list">split-list</a> <span>thesis in a dark panel + supporting points, not Q&amp;A</span></li>
+      <li><a class="chip" href="#c-checklist">checklist</a> <span>items need pass/partial/fail status markers</span></li>
+      <li><a class="chip" href="#c-cards-stack">cards-stack</a> <span>items are parallel descriptions, not Q&amp;A pairs</span></li>
+    </ul>
+  </section>
+  <section class="demo">
+    <a class="gallery-link" href="../../lib/components/inventory/faq/faq.gallery.light.pdf">View rendered gallery →</a>
   </section>
 </article>
 <article class="component" data-name="glossary" data-tags="definition reference onboarding">
@@ -2459,8 +2555,8 @@ One-sentence framing paragraph explaining what the findings cover.
   <section class="guidance avoid">
     <h4>When not to use</h4>
     <ul>
-      <li><strong>Three or fewer rows.</strong> The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe.</li>
-      <li><strong>Long per-row prose.</strong> Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides.</li>
+      <li><strong>Three or fewer rows.</strong> The ledger needs density to justify its shape. For two or three items, reach for cards-stack — the rows get the room to breathe.</li>
+      <li><strong>Long per-row prose.</strong> Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides.</li>
       <li><strong>Stacking two primary variants.</strong> <code>def</code>, <code>metric</code>, <code>spec</code>, and <code>register</code> are mutually exclusive. Pair each only with its secondary modifier (def+rule, metric+solid, spec+stacked, register+outline).</li>
     </ul>
   </section>

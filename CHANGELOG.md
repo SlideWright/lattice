@@ -25,7 +25,26 @@ in patch versions.
 
 ## Unreleased
 
+### Removed
+
+- **`cards-wide` component removed.** `cards-stack` now covers the full range: 2–4 full-width stacked cards, vertical (default) or `horizontal`, unordered or ordered (numbered corner badge from `ol` source). Authors previously using `cards-wide` should migrate to `cards-stack`. The `cards-wide` CSS, transform, and manifest are deleted; `base.modifiers.css` below-note/annotation selectors updated.
+
 ### Added
+
+- **`faq` component — five spatial layouts for boardroom Q&A.** New inventory
+  component at `lib/components/inventory/faq/`. Default (`<!-- _class: faq -->`)
+  is the split-panel form: dark 34% left panel with `?` watermark and a heading
+  anchored to the panel's bottom-left, right side carrying a stacked Q&A ledger
+  with hairline separators. Four explicit variants opt in with additional class
+  tokens: `faq ledger` (two-column hairline rows, question bold-left 36%/answer
+  right 64%), `faq cards` (2×N card grid with 4px accent top bar per card),
+  `faq indexed` (full-width cards with accent decimal-leading-zero badge tab),
+  and `faq focused` (one Q+A at statement scale, oversized `?` watermark at
+  right edge). All variants support the cross-cutting `dark`, `compact`, and
+  `accent` modifiers; the default panel variant also supports `mirror`.
+  CSS-only — no transform required; all five forms share the nested authoring
+  contract (`- Question?\n  - Answer.`), except `faq focused` which uses an
+  `h2` for the question and a paragraph for the answer.
 
 - **Minified `.min` variants of every shipped CSS and JS artifact, with named
   export subpaths.** `dist/` now also carries `lattice.min.css`,
@@ -42,6 +61,10 @@ in patch versions.
   `build:check` freshness gate.
 
 ### Changed
+
+- **`cards-stack` bold headers.** Card titles now render `font-weight:700 / text-heading`; nested body items are `font-weight:400 / text-body`. Visual hierarchy within each card now matches `cards-grid`.
+- **`cards-stack` gains `vertical` modifier and `compact` override.** `vertical` is an explicit alias for the default stacking direction. `compact` halves card padding and title-to-body gap.
+- **`cards-stack` item count extended to 2–4.** `cards-stack` is now the single full-width stacked-card layout; `cards-wide` is removed.
 
 - **Chart-family fills now share one canvas-aware recipe, and warm hues no
   longer mud on the dark canvas.** kanban cards, gantt bars, progress fills,

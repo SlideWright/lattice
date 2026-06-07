@@ -963,11 +963,11 @@ const sharedTransformerRegistry = require('./lib/transformers/registry');
 // dispatch lives in the inline chart-family block below; this kernel is
 // shared with lib/components/chart/_chart-family/chart-family.js (marp.config.js path) and mirrored in
 // lattice-runtime.js.
-const radar = require('./lib/components/chart/radar/radar.transform');
+const _radar = require('./lib/components/chart/radar/radar.transform');
 // Quadrant chart kernel — 2×2 scatter / matrix layout (one default + five
 // modifier variants: bubble, trail, cohort, threshold, magic). Same
 // kernel-as-module pattern as radar.
-const quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
+const _quadrant = require('./lib/components/chart/quadrant/quadrant.transform');
 
 const rawSlides = splitSlides(content, headingDivider);
 const _total     = rawSlides.length;
@@ -1480,55 +1480,6 @@ function parseSlide(raw, index) {
   // both. marp.config.js dispatches through the same registry on the
   // marp-cli path.
   ({ html, cls: classAttr } = sharedTransformerRegistry.applyAllToSection(html, classAttr));
-
-  // cards-wide: wrap ol/ul, each li becomes a wide-card; ol gets numbered badge
-  if (cls.includes('cards-wide')) {
-    html = html.replace(/<(ol|ul)>([\s\S]*?)<\/\1>/g, (_, tag, inner) => {
-      const isOrdered = tag === 'ol';
-      // Split inner into top-level <li>…</li> blocks, tracking nested ul/ol depth
-      // so a nested list's </li> doesn't terminate the outer item.
-      const items = [];
-      const re = /<li>|<\/li>|<(?:ul|ol)>|<\/(?:ul|ol)>/g;
-      let depth = 0, liStart = -1, m;
-      while ((m = re.exec(inner)) !== null) {
-        const tok = m[0];
-        if (tok === '<li>') {
-          if (depth === 0) liStart = m.index + tok.length;
-          depth++;
-        } else if (tok === '</li>') {
-          depth--;
-          if (depth === 0 && liStart >= 0) {
-            items.push(inner.slice(liStart, m.index));
-            liStart = -1;
-          }
-        } else if (tok === '<ul>' || tok === '<ol>') {
-          depth++;
-        } else {
-          depth--;
-        }
-      }
-      const cards = items.map(content => {
-        // Header = content before the first nested <ul> (or whole content if none).
-        // Strip a wrapping <strong>…</strong> if the author wrote one — the layout
-        // bolds the heading via CSS, so manual bolding is optional.
-        const nestedUl = content.match(/<ul>([\s\S]*)<\/ul>\s*$/);
-        let headerRaw = nestedUl ? content.slice(0, nestedUl.index) : content;
-        headerRaw = headerRaw.trim();
-        const strongOnly = headerRaw.match(/^<strong>([\s\S]*?)<\/strong>$/);
-        const heading = strongOnly ? strongOnly[1] : headerRaw;
-        if (!heading) return `<div class="wide-card"><div class="wide-card-body"><span>${content}</span></div></div>`;
-        let bodyHtml = '';
-        if (nestedUl) {
-          const bodyItems = [...nestedUl[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map(x => x[1]);
-          bodyHtml = bodyItems.map(b => `<span>${b}</span>`).join('');
-        }
-        const badgeHtml = '';
-        return `<div class="wide-card"><div class="wide-card-header">${badgeHtml}<span class="wide-card-heading">${heading}</span></div><div class="wide-card-body">${bodyHtml}</div></div>`;
-      });
-      const orderedClass = isOrdered ? ' ordered' : '';
-      return `<div class="three-stack${orderedClass}">${cards.join('')}</div>`;
-    });
-  }
 
   // compare-code: pair each p>code+pre into .code-col divs inside .code-cols
   // Structure: [p>code(eyebrow)] h2(heading) p>code(left-label) pre p>code(right-label) pre

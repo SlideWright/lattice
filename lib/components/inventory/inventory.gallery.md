@@ -77,19 +77,6 @@ Inventory — parallel sets of related items.
 
 ---
 
-<!-- _class: cards-wide -->
-
-## Three findings from the Q2 win/loss review.
-
-1. Price is rarely the reason we lose
-   - In 31 of 38 closed-lost interviews the buyer named time-to-value, not cost. We are losing in the evaluation, not the negotiation.
-2. The security review is our slowest gate
-   - Enterprise contracts spent 18 extra days in legal this quarter, almost all of it traced to a security addendum introduced in March.
-3. One competitor takes most of the displacement
-   - Seven of nine competitive losses in the $80–200K tier went to the same rival. The exposure is concentrated, which means it is fixable.
-
----
-
 <!-- _class: checklist -->
 
 ## Go-live readiness for the framework rollout.
@@ -101,6 +88,21 @@ Inventory — parallel sets of related items.
 - [-] Operating rhythm on the calendar, attendance optional in practice
 - [ ] Exec sponsor confirmed for the launch comms
 - [/] Per-team weighting UI, descoped to next half
+
+---
+
+<!-- _class: faq -->
+
+## Due Diligence Q&A
+
+- What is the current ARR?
+  - $12.4M ARR growing 85% year-over-year for four consecutive quarters.
+- What is the net revenue retention?
+  - 118% NRR; logo churn is below 3% annually across all cohorts.
+- Who are the top five customers?
+  - Combined, the top five represent 28% of ARR and are all on multi-year contracts.
+- What are the key risks?
+  - Single cloud-provider dependency. Mitigation roadmap is detailed in the appendix.
 
 ---
 

@@ -850,8 +850,8 @@
           "when": "two-card horizontal comparison"
         },
         {
-          "name": "cards-wide",
-          "when": "three full-width rows for longer prose per item"
+          "name": "cards-stack",
+          "when": "two to four full-width rows for longer prose per item"
         },
         {
           "name": "verdict-grid",
@@ -948,7 +948,7 @@
         },
         {
           "title": "Long-form body per card",
-          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide."
+          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-stack."
         }
       ],
       "related": [
@@ -985,6 +985,7 @@
       "description": "Parallel items stacked vertically, full-width cards.",
       "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.",
       "variants": [
+        "vertical",
         "horizontal",
         "numbered"
       ],
@@ -1020,6 +1021,7 @@
         "tone-skip",
         "tone-warn",
         "treatment-none",
+        "vertical",
         "wip",
         "with-period"
       ],
@@ -1053,7 +1055,7 @@
       "antiPatterns": [
         {
           "title": "Four or more items",
-          "body": "The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows."
+          "body": "The stack overflows past four. For five or more rows reach for list-tabular."
         },
         {
           "title": "One-line cards",
@@ -1070,10 +1072,6 @@
           "when": "three or four parallel items in a scannable grid"
         },
         {
-          "name": "cards-wide",
-          "when": "three or four rows with more substantial per-card body"
-        },
-        {
           "name": "cards-side",
           "when": "exactly two items in left-right balance"
         },
@@ -1083,114 +1081,6 @@
         }
       ],
       "galleryHref": "../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf"
-    },
-    {
-      "name": "cards-wide",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "stack",
-      "substance": "structure",
-      "tags": [
-        "overview",
-        "showcase",
-        "reference"
-      ],
-      "description": "Three or four wide rows, each a full-width card.",
-      "purpose": "Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading."
-        },
-        "cards": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Three or four list items, each one wide row. Lead each with **Card Title.** then 1–2 sentences."
-        }
-      },
-      "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- First row title\n  - Body text for the first wide row, one or two sentences.\n- Second row title\n  - Body text for the second wide row.\n- Third row title\n  - Body text for the third wide row.\n",
-      "whenToUse": [
-        {
-          "title": "Substantial per-row body",
-          "body": "Each item carries one to two sentences — more than a cards-grid card can hold without crowding. The wide row gives the body real estate."
-        },
-        {
-          "title": "Top-to-bottom reading",
-          "body": "The audience absorbs one row at a time rather than the whole set at a glance. Use when sequence-of-reading matters even if items are parallel."
-        },
-        {
-          "title": "Three or four rows",
-          "body": "The layout is sized for three or four wide cards. Past four the slide gets dense; for longer reference lists move to list-tabular."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Five or more rows",
-          "body": "The slide tips into wall-of-text past four rows. Move to list-tabular for reference density, or split across two cards-wide slides."
-        },
-        {
-          "title": "One-line rows",
-          "body": "If each row is a short phrase the wide cards look padded. Drop to `list` or `tldr` and let the short text speak for itself."
-        },
-        {
-          "title": "Comparison framing",
-          "body": "cards-wide is parallel inventory, not comparison. If the rows are weighed against shared criteria, use compare-table or verdict-grid."
-        }
-      ],
-      "related": [
-        {
-          "name": "cards-stack",
-          "when": "two or three rows with shorter body per card"
-        },
-        {
-          "name": "cards-grid",
-          "when": "four or fewer parallel items in a scannable grid"
-        },
-        {
-          "name": "list-tabular",
-          "when": "five or more reference-style rows"
-        },
-        {
-          "name": "list-steps",
-          "when": "rows carry an explicit, ordered sequence"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf"
     },
     {
       "name": "checklist",
@@ -2448,6 +2338,126 @@
         }
       ],
       "galleryHref": "../../lib/components/anchor/divider/divider.gallery.light.pdf"
+    },
+    {
+      "name": "faq",
+      "bucket": "inventory",
+      "function": "inventory",
+      "form": "ledger",
+      "substance": "structure",
+      "tags": [
+        "reference",
+        "onboarding",
+        "compliance",
+        "board-deck"
+      ],
+      "description": "Frequently-asked questions laid out in five spatial forms — ledger, card grid, split panel, indexed stack, or statement focus.",
+      "purpose": "Use for any Q&A content where the audience benefits from pre-answered questions: investor due diligence, onboarding packets, product launches, legal FAQs, or objection-handling slides. Choose the variant that matches the weight of the content.",
+      "variants": [
+        "ledger",
+        "cards",
+        "indexed",
+        "focused",
+        "mirror"
+      ],
+      "effectiveVariants": [
+        "accent",
+        "archived",
+        "cards",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "focused",
+        "indexed",
+        "ledger",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "mirror",
+        "no-footer",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "pinned",
+        "redacted",
+        "revised",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "Slide heading naming the FAQ set. On the default panel layout, renders anchored to the bottom-left of the dark accent panel."
+        },
+        "entries": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One outer li per Q&A pair. The outer li text is the question (auto-bold); a single nested li is the answer. faq.focused uses h2 + p instead."
+        }
+      },
+      "skeleton": "<!-- _class: faq -->\n\n## Common Questions\n\n- Question one?\n  - Answer to question one.\n- Question two?\n  - Answer to question two.\n- Question three?\n  - Answer to question three.\n- Question four?\n  - Answer to question four.\n",
+      "whenToUse": [
+        {
+          "title": "Pre-answered questions",
+          "body": "When the audience will have the same predictable questions and the deck is the right place to answer them — due diligence packs, onboarding docs, product launches, policy walkthroughs."
+        },
+        {
+          "title": "Choose the variant by content weight",
+          "body": "Default (faq) for boardroom authority: dark left panel, watermark, 3–5 items. Ledger (faq ledger) for reference density: 4–6 items, short answers, scan-and-move-on. Cards (faq cards) for 4–6 standalone Q&As that each deserve reading. Indexed (faq indexed) when sequence matters. Focused (faq focused) for the one question that dominates a slide."
+        },
+        {
+          "title": "Four to six entries for list variants",
+          "body": "Below four, the layout feels sparse. Above six, the slide tips toward a wall of text. Use compact for six or more. faq.focused is always one entry."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "Inline question-answer on one bullet",
+          "body": "Do not write `- **Question?** Answer here.` — the answer inherits bold weight and runs into the question. Use the nested format: `- Question? \\n  - Answer.`"
+        },
+        {
+          "title": "Multi-sentence answers in ledger or indexed",
+          "body": "One sentence per answer on the ledger and indexed variants. If an answer needs two sentences, the question deserves its own slide or use faq.focused."
+        },
+        {
+          "title": "Using faq.focused for multiple questions",
+          "body": "faq.focused is a statement layout — one question per slide. If you have several to handle, use faq.cards or faq.indexed."
+        }
+      ],
+      "related": [
+        {
+          "name": "glossary",
+          "when": "term/definition format rather than question/answer"
+        },
+        {
+          "name": "split-list",
+          "when": "thesis in a dark panel + supporting points, not Q&A"
+        },
+        {
+          "name": "checklist",
+          "when": "items need pass/partial/fail status markers"
+        },
+        {
+          "name": "cards-stack",
+          "when": "items are parallel descriptions, not Q&A pairs"
+        }
+      ],
+      "galleryHref": "../../lib/components/inventory/faq/faq.gallery.light.pdf"
     },
     {
       "name": "featured",
@@ -3709,11 +3719,11 @@
       "antiPatterns": [
         {
           "title": "Three or fewer rows",
-          "body": "The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe."
+          "body": "The ledger needs density to justify its shape. For two or three items, reach for cards-stack — the rows get the room to breathe."
         },
         {
           "title": "Long per-row prose",
-          "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides."
+          "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides."
         },
         {
           "title": "Stacking two primary variants",
@@ -5456,14 +5466,18 @@
       "description": "Featured left panel + supporting list on the right.",
       "purpose": "Use when one prominent statement deserves a dark sidebar and the right side carries the substantiating points.",
       "variants": [
-        "mirror"
+        "mirror",
+        "dense",
+        "columns"
       ],
       "effectiveVariants": [
         "accent",
         "archived",
+        "columns",
         "compact",
         "confidential",
         "dark",
+        "dense",
         "draft",
         "loose",
         "mark-orbit",
@@ -5503,10 +5517,15 @@
           "required": false,
           "description": "Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow)."
         },
+        "intro": {
+          "selector": "p",
+          "required": false,
+          "description": "Optional framing sentence in the right panel, between the section rubric and the list. One sentence maximum, 1–2 lines. More than two lines crowds the list and should become a separate slide."
+        },
         "points": {
           "selector": "ul > li",
           "required": true,
-          "description": "Right-side supporting points. Lead each with **Label.** then body text."
+          "description": "Right-side supporting points. Lead each with **Label.** then body text. Hard limit: 3–5 items. Fewer than three feels sparse; more than five breaks the panel-to-list balance — use `cards-stack` instead."
         },
         "meta": {
           "selector": "section :is(ul,ol) + ul",
@@ -5522,7 +5541,7 @@
         },
         {
           "title": "Section openers with substance",
-          "body": "More substantive than a divider, but still anchored by a single statement. Three to four supporting points keep the panel from feeling cluttered."
+          "body": "More substantive than a divider, but still anchored by a single statement. Three to five supporting points keep the panel from feeling cluttered."
         },
         {
           "title": "Mirror for image-heavy decks",
@@ -5531,12 +5550,12 @@
       ],
       "antiPatterns": [
         {
-          "title": "Longer than four points",
-          "body": "If the right side runs past four points, the panel and list lose balance. Move to `cards-stack` for longer lists or split into two slides."
+          "title": "Longer than five points — hard limit",
+          "body": "The layout holds exactly 3–5 points. This is a structural constraint, not a preference: beyond five the panel and list lose balance and the right column overflows. Move to `cards-stack` for longer lists or split into two slides. Do not stretch to six."
         },
         {
           "title": "No panel headline",
-          "body": "The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide."
+          "body": "The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide. The `panel-heading` slot is required; there is no valid rendering without it."
         },
         {
           "title": "Stacking many split-list slides in a row",

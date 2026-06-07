@@ -326,20 +326,6 @@ _Source: pilot retrospective, six months across four product teams._
 
 ---
 
-<!-- _class: cards-wide -->
-<!-- _footer: "3 full-width cards · cards-wide" -->
-
-## Three scoring failure modes found in the pilot.
-
-1. Recency dominance
-   - High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
-2. Source concentration
-   - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
-3. Outcome misclassification
-   - PMs logging predicted outcomes that were too vague to score at retrospective. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
-
----
-
 <!-- _class: list-criteria -->
 <!-- _footer: "Numbered criteria · list-criteria" -->
 

@@ -150,7 +150,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit sequence
 - [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — items stack vertically as full-width rows
 - [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — two-card horizontal comparison
-- [`cards-wide`](../../inventory/cards-wide/cards-wide.docs.md) — three full-width rows for longer prose per item
+- [`cards-stack`](../../inventory/cards-stack/cards-stack.docs.md) — two to four full-width rows for longer prose per item
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — comparing options against shared criteria
 
 ## Demo deck

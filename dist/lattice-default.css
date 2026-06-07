@@ -129,7 +129,7 @@
    *   Card / list / inline prose    → --fs-body          (default; 18pt projection)
    *   Dense table / grid cell       → --fs-body-compact  (tables, glossary, matrix; 16pt)
    *   Slide-level statement body    → --fs-message       (statement, quote, lead, divider sub)
-   *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
+   *   Key-insight / below-note      → --fs-body          (callout panel; same register as body)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
    *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
 
@@ -1408,9 +1408,16 @@ section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   margin:0; flex:1; list-style:none;
-  font-size:var(--fs-body); line-height:var(--lh-relaxed); color:var(--text-body);
+  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
+/* — card body (nested list) — */
+section.cards-stack > ul > li > ul, section.cards-stack > ul > li > ol,
+section.cards-stack > ol > li > ul, section.cards-stack > ol > li > ol,
+section.cards-stack .card > ul, section.cards-stack .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
+section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
+section.cards-stack .card > ul > li, section.cards-stack .card > ol > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.
  * Author writes `1. **Title.** body…`; CSS pins a counter badge in the
@@ -1444,23 +1451,30 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
 }
 
 
-/* ── Cards-stack horizontal modifier — appended Phase 7 ──
- */
-/* ────────────────────────────────────────────────────────────────────────
- * Layout-specific modifiers — cards-stack horizontal
- * Reference: proposals.md §2.2 cards-stack
- *
- * Default cards-stack flows the cards as a vertical stack (one per row).
- * `horizontal` flips to a horizontal row, useful when cards are short and
- * the slide reads left-to-right rather than top-to-bottom.
+/* ── Layout-specific modifiers ────────────────────────────────────────────
+ * vertical  — explicit alias for the default stacking direction.
+ * horizontal — flip cards to a left-to-right row.
+ * Both are intentionally authored via class; the list type (ul vs ol) is
+ * the only way to get unordered vs numbered — no magic modifier needed.
  * ──────────────────────────────────────────────────────────────────────── */
+
+section.cards-stack.vertical > ul,
+section.cards-stack.vertical > ol,
+section.cards-stack.vertical .cards-stack-inner { flex-direction: column; }
 
 section.cards-stack.horizontal > ul,
 section.cards-stack.horizontal > ol,
-section.cards-stack.horizontal .cards-stack-inner {
-  flex-direction: row;
-  align-items: stretch;
-}
+section.cards-stack.horizontal .cards-stack-inner { flex-direction: row; align-items: stretch; }
+
+/* ── compact override ──────────────────────────────────────────────────────
+ * The global compact modifier scales tokens to ~75%. For cards-stack, the
+ * card padding and title-to-body gap should be explicitly halved instead. */
+section.cards-stack.compact > ul > li,
+section.cards-stack.compact > ol > li,
+section.cards-stack.compact .card { padding: calc(var(--sp-sm) / 2) calc(var(--sp-md) / 2); }
+section.cards-stack.compact > ul > li > ul, section.cards-stack.compact > ul > li > ol,
+section.cards-stack.compact > ol > li > ul, section.cards-stack.compact > ol > li > ol,
+section.cards-stack.compact .card > ul, section.cards-stack.compact .card > ol { margin-top: var(--sp-2xs); }
 
 
 /* Hardening: element siblings of <strong> in a card li don't inherit
@@ -1469,61 +1483,6 @@ section.cards-stack.horizontal .cards-stack-inner {
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.cards-stack :is(ul,ol) > li > strong ~ * { font-weight: 400; }
-
-/* === lib/components/inventory/cards-wide/cards-wide.styles.css === */
-/* cards-wide — extracted from lib/_legacy.css (batch 6).
- * See lib/components/cards-wide/cards-wide.manifest.json for the component contract.
- */
-
-/* ── CARDS-WIDE ──
- * ## heading  then 3× pairs: ### eyebrow·heading  p body
- * CSS stacks them vertically, each full width
- */
-section.cards-wide h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-sm); }
-section.cards-wide .three-stack { display:flex; flex-direction:column; gap:0.9375cqi; flex:1; }
-section.cards-wide .wide-card { flex:1; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md); display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); color:var(--text-body); }
-section.cards-wide .wide-card-header { display:flex; align-items:center; gap:var(--sp-sm); }
-section.cards-wide .wide-card-eyebrow { font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:600; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; }
-section.cards-wide .wide-card-heading { font-weight:700; color:var(--text-heading); }
-section.cards-wide .wide-card-body { color:var(--text-body); line-height:var(--lh-base); }
-section.cards-wide .three-stack.ordered { counter-reset:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card { counter-increment:wide-counter; }
-section.cards-wide .three-stack.ordered .wide-card-header::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide .wide-card-badge { flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-
-
-
-
-
-/* ── CARDS-WIDE ────────────────────────────────────────────────────────────
- * ol > li(heading text + nested <ul>body) → mimic .three-stack > .wide-card.
- * Heading is the bare text node before the nested <ul>; CSS auto-bolds it,
- * so authors do not wrap the heading in **…**. Optional <strong> is harmless. */
-section.cards-wide:not(:has(.three-stack)) ol {
-  display:flex; flex-direction:column; gap:0.9375cqi; flex:1;
-  list-style:none; padding:0; margin:0;
-}
-section.cards-wide:not(:has(.three-stack)) ol > li {
-  flex:1; background:var(--bg-alt); border:1px solid var(--border);
-  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
-  display:flex; flex-wrap:wrap; align-items:center; gap:0.625cqi;
-  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);
-}
-section.cards-wide:not(:has(.three-stack)) ol { counter-reset:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li { counter-increment:wide-counter; }
-section.cards-wide:not(:has(.three-stack)) ol > li::before { content:counter(wide-counter); flex-shrink:0; font-family:var(--font-mono); font-size:var(--fs-body); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--on-accent, var(--on-dark-primary, #fff)); background:var(--accent); border-radius:0.46875cqi; padding:0.234375cqi 0.703125cqi; }
-section.cards-wide:not(:has(.three-stack)) ol > li > strong { font-weight:inherit; color:inherit; }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul { flex-basis:100%; list-style:none; padding:0; margin:0; font-weight:400; color:var(--text-body); }
-section.cards-wide:not(:has(.three-stack)) ol > li > ul > li { font-size:var(--fs-meta); line-height:var(--lh-base); }
-
-
-
-/* Hardening: element siblings of <strong> in a card li don't inherit
- * the parent's font-weight:700. Covers cases like `<strong>Title.</strong>
- * <em>italic body</em>`. Text-node siblings still inherit (CSS can't
- * target text nodes); the manifest validator catches that case at
- * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
-section.cards-wide :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
 /* === lib/components/inventory/checklist/checklist.styles.css === */
 /* checklist — extracted from lib/_legacy.css (batch 3).
@@ -2304,6 +2263,358 @@ section.divider { border-top: none; }
 section.divider::before { content:''; position:absolute; left:0; top:0; bottom:0; width:0.46875cqi; background:var(--spectrum-vertical, var(--spectrum)); }
 section.divider h1 { font-size:var(--fs-h1); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
 section.divider h2 { font-size:var(--fs-h2); color:var(--text-display); max-width:62.5cqi; line-height:var(--lh-tight); }
+
+/* === lib/components/inventory/faq/faq.styles.css === */
+/* faq — FAQ layout family. Five spatial forms, one component.
+ *
+ * Base:     faq          — Panel: dark left panel + right stacked Q&A ledger (DEFAULT)
+ * Variants: faq.ledger   — Ledger: two-column hairline rows
+ *           faq.cards    — Card grid: 2×N Q+A cards with accent top bar
+ *           faq.indexed  — Indexed stack: full-width cards with accent number tab
+ *           faq.focused  — Statement: single Q+A at statement scale
+ *
+ * Authoring (faq, faq.ledger, faq.cards, faq.indexed):
+ *   - Question text?
+ *     - Answer sentence or two.
+ *
+ * Authoring (faq.focused):
+ *   ## The question on everyone's mind?
+ *   Answer in one or two confident sentences.
+ *
+ * All list-based variants are in CARD_STYLE_LAYOUTS (lib/components/index.js).
+ * Authors must use the nested format — inline `- **Q.** answer` is flagged.
+ */
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 1. FAQ — PANEL (DEFAULT)
+ * Dark left panel (34%) + right stacked Q&A ledger.
+ * High authority. 3–5 items. M&A / board / executive briefing.
+ * CSS-grid layout — no transform required.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) {
+  display:grid;
+  grid-template-columns:34% 1fr;
+  grid-template-rows:1fr;
+  padding:0; position:relative;
+  /* Header and footer readable against the dark left panel */
+  --marp-slide-header-color: var(--on-dark-secondary);
+  --marp-slide-footer-color: var(--on-dark-secondary);
+}
+
+/* Dark accent panel background */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused)::before {
+  content:''; position:absolute;
+  top:0; left:0; bottom:0; width:34%;
+  background:var(--accent); z-index:0;
+}
+
+/* Oversized "?" letterform watermark in the left panel */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused)::after {
+  content:'?';
+  position:absolute;
+  font-family:var(--font-display);
+  font-size:calc(11.46cqi * var(--fs-scale));
+  font-weight:700;
+  color:var(--on-accent-watermark);
+  top:3.125cqi; left:1.5625cqi;
+  line-height:1; pointer-events:none; z-index:1;
+}
+
+/* Panel heading — bottom-left of the dark panel */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) h2 {
+  grid-column:1; grid-row:1;
+  align-self:end;
+  padding:0 var(--sp-lg) var(--sp-xl);
+  z-index:2; position:relative;
+  color:var(--on-accent, var(--on-dark-primary, #fff));
+  font-size:var(--fs-emphasis); line-height:var(--lh-tight); margin:0;
+}
+
+/* Right panel: stacked Q&A ledger */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul {
+  grid-column:2; grid-row:1;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  display:flex; flex-direction:column; justify-content:center;
+  list-style:none; margin:0; gap:0;
+}
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li {
+  display:flex; flex-direction:column;
+  padding:var(--sp-xs) 0;
+  border-bottom:1px solid var(--border);
+  list-style:none;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li:first-child {
+  border-top:1px solid var(--border);
+}
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul {
+  list-style:none; padding:0; margin:var(--sp-2xs) 0 0 0;
+}
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* Strong siblings in panel list don't inherit bold */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > strong ~ * {
+  font-weight:400;
+}
+
+/* compact: tighter right-panel rows */
+section.faq.compact:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li {
+  padding:calc(var(--sp-2xs) + var(--sp-3xs)) 0;
+  font-size:var(--fs-body-compact);
+}
+section.faq.compact:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul > li {
+  font-size:var(--fs-body-compact);
+}
+
+/* mirror: panel on the right */
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) {
+  grid-template-columns:1fr 34%;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused)::before {
+  left:auto; right:0; width:34%;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused)::after {
+  left:auto; right:1.5625cqi;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) h2 {
+  grid-column:2; grid-row:1;
+  padding:0 var(--sp-lg) var(--sp-xl) var(--sp-lg);
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul {
+  grid-column:1; grid-row:1;
+  padding:var(--sp-xl) var(--sp-lg) var(--sp-xl) var(--sp-xl);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 2. FAQ.LEDGER — TWO-COLUMN HAIRLINE ROWS
+ * Question bold left (36%), answer right (64%).
+ * Reference-density. 4–6 items. Investor / legal / policy Q&A.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.ledger { display:flex; flex-direction:column; }
+section.faq.ledger h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.ledger > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  flex:1; justify-content:center;
+}
+
+section.faq.ledger > ul > li {
+  display:grid;
+  grid-template-columns:36% 1fr;
+  column-gap:var(--sp-xl);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  list-style:none; align-items:baseline;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+section.faq.ledger > ul > li:first-child { border-top:1px solid var(--border); }
+
+/* Answer: placed in column 2 via grid */
+section.faq.ledger > ul > li > ul {
+  grid-column:2; grid-row:1;
+  list-style:none; padding:0; margin:0;
+}
+section.faq.ledger > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* compact: tighter rows, body-compact text — fits 6–8 items */
+section.faq.ledger.compact > ul > li {
+  padding:var(--sp-xs) 0;
+  font-size:var(--fs-body-compact);
+}
+section.faq.ledger.compact > ul > li > ul > li { font-size:var(--fs-body-compact); }
+
+/* accent: accent color on question text + 2px left rail per row */
+section.faq.ledger.accent > ul > li {
+  padding-left:var(--sp-sm);
+  border-left:2px solid var(--accent);
+  color:var(--accent);
+}
+section.faq.ledger.accent > ul > li > ul > li { color:var(--text-body); }
+
+/* Strong siblings: body text after strong in li doesn't inherit bold */
+section.faq.ledger > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 3. FAQ.CARDS — CARD GRID
+ * 2×N grid. Each card = one Q+A. Accent 3px top bar per card.
+ * Visual, structured. 4–6 cards. Product / service FAQ.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.cards { display:flex; flex-direction:column; }
+section.faq.cards h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.cards > ul {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-auto-rows:1fr; gap:var(--sp-md);
+  list-style:none; padding:0; margin:0; flex:1;
+}
+
+section.faq.cards > ul > li {
+  position:relative;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  /* extra top padding clears the 4px accent bar */
+  padding:calc(var(--sp-sm) + 0.3125cqi) var(--sp-md) var(--sp-sm);
+  display:flex; flex-direction:column;
+  list-style:none;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+
+/* 4px accent bar pinned to card top */
+section.faq.cards > ul > li::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height:0.3125cqi;
+  background:var(--accent);
+  border-radius:var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* Answer body */
+section.faq.cards > ul > li > ul {
+  flex:1; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+}
+section.faq.cards > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* Lone last card spans full width */
+section.faq.cards > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+
+/* Hardening: siblings of strong in a card don't inherit bold */
+section.faq.cards > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 4. FAQ.INDEXED — INDEXED STACK
+ * Full-width cards with accent number badge (left tab). Q bold, A below.
+ * Deliberate, sequential. 3–5 items. Onboarding / compliance FAQ.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.indexed { display:flex; flex-direction:column; }
+section.faq.indexed h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.indexed > ul {
+  counter-reset:faq-idx;
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1; justify-content:center;
+}
+
+section.faq.indexed > ul > li {
+  counter-increment:faq-idx;
+  position:relative;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  /* left padding clears the 4.6875cqi (60px at HD) number badge */
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(4.6875cqi + var(--sp-md));
+  display:flex; flex-direction:column;
+  list-style:none; overflow:hidden;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+
+/* Accent number badge — full-height left tab */
+section.faq.indexed > ul > li::before {
+  content:counter(faq-idx, decimal-leading-zero);
+  position:absolute; top:0; left:0; bottom:0;
+  width:4.6875cqi;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono);
+  font-size:1.5625cqi; font-weight:800; letter-spacing:0.04em; line-height:1;
+  color:var(--on-accent, var(--on-dark-primary, #fff));
+  background:var(--accent);
+  border-radius:var(--radius-md) 0 0 var(--radius-md);
+}
+
+/* Answer body */
+section.faq.indexed > ul > li > ul {
+  list-style:none; padding:0; margin:var(--sp-2xs) 0 0 0;
+}
+section.faq.indexed > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* compact: tighter cards, fits 5 items comfortably */
+section.faq.indexed.compact > ul { gap:var(--sp-xs); }
+section.faq.indexed.compact > ul > li { font-size:var(--fs-body-compact); }
+section.faq.indexed.compact > ul > li > ul > li { font-size:var(--fs-body-compact); }
+
+/* Strong siblings in indexed cards don't inherit bold */
+section.faq.indexed > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 5. FAQ.FOCUSED — STATEMENT
+ * One Q+A at statement scale. Objection-handling / key concern.
+ * Authoring: ## Question? \n\n Answer paragraph.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.focused {
+  display:flex; flex-direction:column;
+  justify-content:center;
+  position:relative; overflow:hidden;
+}
+
+/* Oversized "?" letterform — right-edge crop, border color for subtlety */
+section.faq.focused::before {
+  content:'?';
+  position:absolute; right:-2cqi; top:50%;
+  transform:translateY(-55%);
+  font-family:var(--font-display);
+  font-size:38cqi; font-weight:700;
+  color:var(--border);
+  line-height:1; z-index:0; pointer-events:none;
+}
+
+/* Question heading */
+section.faq.focused h2 {
+  font-size:var(--fs-emphasis);
+  color:var(--text-heading);
+  line-height:var(--lh-tight);
+  max-width:72%;
+  position:relative; z-index:1;
+  margin-bottom:0;
+}
+
+/* Accent rule separator between question and answer */
+section.faq.focused h2::after {
+  content:'';
+  display:block;
+  width:2.34375cqi;
+  height:0.15625cqi;
+  background:var(--accent);
+  margin-top:var(--sp-lg);
+  border-radius:1px;
+}
+
+/* Answer paragraph */
+section.faq.focused p {
+  font-size:var(--fs-message);
+  color:var(--text-body);
+  line-height:var(--lh-relaxed);
+  max-width:68%;
+  position:relative; z-index:1;
+  margin-top:var(--sp-lg);
+}
 
 /* === lib/components/imagery/featured/featured.styles.css === */
 /* featured — extracted from lib/_legacy.css (batch 5).
@@ -7761,6 +8072,108 @@ section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::b
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.split-list :is(ul,ol) > li > strong ~ * { font-weight: 400; }
 
+
+/* ── OPTION A: compact — tighten panel padding + gap + card padding ──────
+ * Extends the universal compact modifier with split-list-specific tightening.
+ * Reduces panel-right padding (the main overhead source) plus item gap and
+ * card padding. ul cards: reduce padding. ol items: reduce content padding. */
+section.split-list.compact .panel-left  { padding: var(--sp-lg) var(--sp-md); }
+section.split-list.compact .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-md) var(--sp-md); }
+section.split-list.compact :is(ul,ol) { gap: var(--sp-xs); }
+section.split-list.compact ul > li { padding: 0.46875cqi 0.78125cqi; }
+section.split-list.compact ol > li > :is(strong,span,p,em) { padding-top: 0.3125cqi; padding-bottom: 0.15625cqi; }
+section.split-list.compact ol > li > :is(strong,span,p,em):last-child { padding-bottom: 0.3125cqi; }
+section.split-list.compact ol > li > :is(ul,ol) { padding-bottom: 0.3125cqi; }
+
+
+/* ── OPTION B: dense — strip card chrome, hairline separators ────────────
+ * Drops background/border/radius from cards; uses thin border-bottom
+ * separators and tighter padding. 20/80 split ratio, --lh-tight throughout,
+ * reduced h3 + paragraph gaps. Sub-text at --fs-body-compact. Fits 7–8 items. */
+section.split-list.dense .panel-left  { width: 25%; padding: var(--sp-lg) var(--sp-md); }
+section.split-list.dense .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-sm) var(--sp-md); }
+section.split-list.dense .panel-right h3 { margin-bottom: var(--sp-2xs); }
+section.split-list.dense .panel-right p  { line-height: var(--lh-tight); margin-bottom: var(--sp-xs); }
+section.split-list.dense :is(ul,ol) { gap: 0; }
+section.split-list.dense ul > li {
+  background: none; border: none; border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0.3125cqi 0;
+  line-height: var(--lh-tight);
+}
+section.split-list.dense ul > li:last-child { border-bottom: none; }
+section.split-list.dense ul > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); line-height: var(--lh-tight); }
+section.split-list.dense ol > li {
+  grid-template-columns: 2.5cqi 1fr;
+  border-bottom: 1px solid var(--border);
+}
+section.split-list.dense ol > li:last-child { border-bottom: none; }
+section.split-list.dense ol > li::before { font-size: 1.1cqi; }
+section.split-list.dense ol > li > :is(strong,span,p,em) { padding: 0.3125cqi 0.625cqi 0.15625cqi; line-height: var(--lh-tight); }
+section.split-list.dense ol > li > :is(strong,span,p,em):last-child { padding-bottom: 0.3125cqi; }
+section.split-list.dense ol > li > :is(ul,ol) { padding: 0 0.625cqi 0.3125cqi; }
+section.split-list.dense ol > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); line-height: var(--lh-tight); }
+section.split-list:not(:has(.panel-left)).dense { grid-template-columns: 20% 1fr; }
+
+
+/* ── OPTION C: columns — two-column right panel grid ────────────────────
+ * ul: places bullet cards in a 2-column grid — capacity doubles, chrome
+ * intact, no wrapping issue. ol: counter badge is too wide for narrow
+ * columns; columns variant uses a compact inline counter instead. */
+section.split-list.columns .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-md) var(--sp-md); }
+section.split-list.columns ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm);
+  align-content: start;
+}
+/* ol columns: replace the wide badge with a compact inline number prefix */
+section.split-list.columns ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm);
+  align-content: start;
+  counter-reset: panel-counter;
+}
+section.split-list.columns ol > li {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: unset;
+  column-gap: unset;
+  padding: 0.78125cqi 1.09375cqi;
+  overflow: visible;
+}
+section.split-list.columns ol > li::before {
+  content: counter(panel-counter);
+  grid-column: unset; grid-row: unset;
+  align-self: unset;
+  display: inline-block;
+  background: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 800;
+  margin-bottom: 0.15625cqi;
+  width: auto; height: auto;
+  justify-content: unset;
+}
+section.split-list.columns ol > li > :is(strong,span,p,em) {
+  grid-column: unset;
+  padding: 0;
+  font-size: var(--fs-body);
+}
+section.split-list.columns ol > li > :is(ul,ol) {
+  grid-column: unset;
+  padding: 0.3125cqi 0 0 0;
+}
+section.split-list.columns ol > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); }
+section.split-list:not(:has(.panel-left)).columns > ul {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); align-content: start;
+}
+section.split-list:not(:has(.panel-left)).columns > ol {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); align-content: start; counter-reset: panel-counter;
+}
+
 /* === lib/components/evidence/split-metric/split-metric.styles.css === */
 /* split-metric — evidence.split.structure
  *
@@ -9253,7 +9666,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote::before {
 }
 section:not(.quote):not(.featured):not(.math) > blockquote p {
   font-family:var(--font-body);
-  font-size:var(--fs-message);
+  font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   margin:0;
@@ -9265,7 +9678,7 @@ section:not(.quote):not(.featured):not(.math) > blockquote ul {
 }
 section:not(.quote):not(.featured):not(.math) > blockquote li {
   font-family:var(--font-body);
-  font-size:var(--fs-message);
+  font-size:var(--fs-body);
   color:var(--text-heading);
   line-height:var(--lh-snug);
   padding-left:var(--sp-md);
@@ -9340,14 +9753,14 @@ section footer {
  *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
  *   non-list             content, code, compare-code, image, diagram
- *   needs placement      list, list-criteria, list-tabular, cards-stack, cards-wide
+ *   needs placement      list, list-criteria, list-tabular, cards-stack
  *                        (grid/scaffold rows where margin-left:auto cannot
  *                        right-anchor; opt in by adding a per-layout rule
  *                        modeled on the actors override)
  *
  * Allow list (renders correctly today): cards-grid, cards-side, actors,
  * checklist. Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.cards-wide):not(.math))
+section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.cards-stack):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9417,7 +9830,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
@@ -9432,7 +9844,7 @@ section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
   margin-top:var(--sp-sm); padding-top:var(--sp-xs); flex-shrink:0;
-  position:relative; font-size:var(--fs-message); color:var(--text-body);
+  position:relative; font-size:var(--fs-body); color:var(--text-body);
   line-height:var(--lh-relaxed); margin-bottom:0;
 }
 section.cards-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -9440,7 +9852,6 @@ section.compare-prose:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + 
 section.verdict-grid:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.featured:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-criteria:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.cards-wide:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.cards-stack:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
@@ -9479,7 +9890,6 @@ section.compare-prose .below-note:has(> p > em:only-child)::before,
 section.verdict-grid .below-note:has(> p > em:only-child)::before,
 section.featured .below-note:has(> p > em:only-child)::before,
 section.list-criteria .below-note:has(> p > em:only-child)::before,
-section.cards-wide .below-note:has(> p > em:only-child)::before,
 section.cards-stack .below-note:has(> p > em:only-child)::before,
 section.list .below-note:has(> p > em:only-child)::before,
 section.list-steps .below-note:has(> p > em:only-child)::before,
@@ -9505,7 +9915,6 @@ section.compare-prose .below-note > p:has(> em:only-child),
 section.verdict-grid .below-note > p:has(> em:only-child),
 section.featured .below-note > p:has(> em:only-child),
 section.list-criteria .below-note > p:has(> em:only-child),
-section.cards-wide .below-note > p:has(> em:only-child),
 section.cards-stack .below-note > p:has(> em:only-child),
 section.list .below-note > p:has(> em:only-child),
 section.list-steps .below-note > p:has(> em:only-child),
@@ -9525,7 +9934,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9550,7 +9958,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9575,7 +9982,6 @@ section.compare-prose .below-note > p:has(> em:only-child)::before,
 section.verdict-grid .below-note > p:has(> em:only-child)::before,
 section.featured .below-note > p:has(> em:only-child)::before,
 section.list-criteria .below-note > p:has(> em:only-child)::before,
-section.cards-wide .below-note > p:has(> em:only-child)::before,
 section.cards-stack .below-note > p:has(> em:only-child)::before,
 section.list .below-note > p:has(> em:only-child)::before,
 section.list-steps .below-note > p:has(> em:only-child)::before,
@@ -9595,7 +10001,6 @@ section.compare-prose > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 section.verdict-grid > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.featured > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-criteria > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.cards-wide > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.cards-stack > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
