@@ -14,6 +14,8 @@
 // which sidesteps the Safari foreignObject scaling bug (see that file's
 // srcdoc comment for the full why).
 
+import { SINGLE_SLIDE_FRAME } from './frame-css.js';
+
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
 /**
@@ -50,10 +52,14 @@ export function createLiveRenderer({ themeBase, runtimeUrl }) {
   // (never the SVG) to fit the container — see the index.astro srcdoc note.
   function srcdoc(html, css, mode, mermaid) {
     const bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
+    // SINGLE_SLIDE_FRAME pins the intrinsic 1280×720 box (the single source of
+    // truth in frame-css.js); a second html,body rule adds the dynamic bg.
     let s =
-      '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:' +
+      '<!doctype html><html><head><meta charset="utf-8"><style>' +
+      SINGLE_SLIDE_FRAME +
+      'html,body{background:' +
       bg +
-      ';overflow:hidden;width:1280px;height:720px}.marpit{width:1280px;height:720px}.marpit>svg,svg[data-marpit-svg]{display:block;width:1280px;height:720px}.marpit>section{width:1280px;height:720px}' +
+      '}' +
       css +
       '</style></head><body>' +
       html;

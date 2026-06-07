@@ -403,15 +403,20 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   recomputes `scale(w/sw)` — hence the jumping + tiny render. `stats`
   survives because it's content-light and mostly `em`-driven. This is NOT a
   math-layout bug; the CSS contract and the PDFs are correct.
-- **Mitigation:** `writeFrame` in `docs/src/pages/playground.astro` pins
-  `.marpit>section{width:1280px;height:720px}` so `container-type:size` has
-  a definite box and `FIT` is deterministic at `scale(w/1280)` — matching
-  the specimen renderer `docs/src/playground/live-render.js` (which already
-  pins it). Any standalone host that injects engine-rendered sections with
-  `inlineSVG:false` must pin the 1280×720 box itself; don't rely on the
-  section sizing from content.
-- **Triggered by:** A new playground/specimen host that forgets the
-  explicit section box, or any layout leaning on `cqi`/`cqh` for sizing.
+- **Mitigation:** `docs/src/playground/frame-css.js` is the SINGLE SOURCE OF
+  TRUTH for the `.marpit>section{width:1280px;height:720px}` pin (`SLIDE_BOX`)
+  and the single-slide wrapper (`SINGLE_SLIDE_FRAME`). All three
+  `inlineSVG:false` hosts import it — `live-render.js` (specimens) directly,
+  `index.astro` (hero) + `playground.astro` (playground) through the page's
+  JSON data channel — so `container-type:size` always gets a definite box and
+  the playground `FIT` is deterministic at `scale(w/1280)`. The three used to
+  inline the dimensions independently and drifted (the hero pinned the wrapper
+  but not `>section`; the playground pinned neither) — which is how this bug
+  entered. Any new `inlineSVG:false` host must import from `frame-css.js`, not
+  re-type the dimensions.
+- **Triggered by:** A new playground/specimen host that renders
+  `inlineSVG:false` without importing `frame-css.js`, or any layout leaning on
+  `cqi`/`cqh` for sizing.
 
 ### Mermaid's color parser rejects `light-dark()`
 
