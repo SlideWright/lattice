@@ -12,8 +12,8 @@ A Marp-based slide deck system for boardroom-quality decks — PDF, HTML, PPTX, 
 Lattice produces decks where every slide is a deliberate layout — title,
 diagram, compare-prose, split-list, verdict-grid, and 20+ more —
 themed through a single CSS palette and rendered to your delivery format
-with no manual formatting work. Mermaid diagrams render with the same
-theme. Decks read as ink-on-paper and pass WCAG AA throughout.
+with no manual formatting work. Decks read as ink-on-paper and pass
+WCAG AA throughout.
 
 You author every slide as plain Markdown — bullet lists, tables, fenced
 code, `$…$` math — and Lattice renders it in the visual vocabulary your

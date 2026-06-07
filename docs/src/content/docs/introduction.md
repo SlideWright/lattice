@@ -65,9 +65,8 @@ the notation your discipline already uses:
 - **Analysts** — radar, quadrant, KPI, stats, progress, pie, and
   word-cloud layouts that turn numbers into an argument.
 
-Fifty-eight layouts in all, every one driven by the same Markdown you
-already know — and every one rendered against your chosen palette, WCAG
-AA throughout, and diffable in git.
+Fifty-eight layouts in all — and you reach every one of them with the
+same Markdown, never a new tool to learn.
 
 ## What changes for…
 
