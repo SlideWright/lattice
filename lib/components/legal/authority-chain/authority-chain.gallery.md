@@ -196,5 +196,4 @@ Provenance chain — statute to regulation to guidance to case, walked in order.
 
 - `regulatory-update` — period-bounded changelog rather than a single rule's lineage
 - `list-criteria` — flat enumeration of requirements without tier hierarchy
-- `timeline` — the sequence is chronological events, not legal tiers
 - `list-steps` — the rows are procedural steps rather than authority tiers

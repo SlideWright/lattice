@@ -160,6 +160,5 @@ Three workstreams across four quarters; the one at-risk bar quietly gates the en
 `Related components`
 
 - `roadmap` — phased grid of deliverables across workstreams without continuous spans
-- `timeline` — single-lane sequence of milestones
 - `kanban` — current state by stage rather than schedule by lane
 - `list-steps` — sequential process with descriptive steps, no parallel lanes

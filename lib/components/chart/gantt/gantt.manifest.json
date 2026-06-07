@@ -56,10 +56,7 @@
       "name": "roadmap",
       "when": "phased grid of deliverables across workstreams without continuous spans"
     },
-    {
-      "name": "timeline",
-      "when": "single-lane sequence of milestones"
-    },
+    
     {
       "name": "kanban",
       "when": "current state by stage rather than schedule by lane"

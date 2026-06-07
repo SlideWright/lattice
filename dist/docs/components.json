@@ -249,8 +249,8 @@
           "when": "each item needs two sentences of body text"
         },
         {
-          "name": "principles",
-          "when": "stating shared rules rather than per-actor responsibilities"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         },
         {
           "name": "glossary",
@@ -350,7 +350,7 @@
       "antiPatterns": [
         {
           "title": "Sub-bullets per section",
-          "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here."
+          "body": "The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a section divider when the section opens — not here."
         },
         {
           "title": "Unnumbered list",
@@ -367,16 +367,12 @@
       ],
       "related": [
         {
-          "name": "subtopic",
-          "when": "opening a single section mid-deck"
-        },
-        {
           "name": "divider",
           "when": "marking a section boundary without restating the menu"
         },
         {
-          "name": "tldr",
-          "when": "closing the deck with the takeaways the agenda promised"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         },
         {
           "name": "title",
@@ -490,10 +486,6 @@
         {
           "name": "list-criteria",
           "when": "flat enumeration of requirements without tier hierarchy"
-        },
-        {
-          "name": "timeline",
-          "when": "the sequence is chronological events, not legal tiers"
         },
         {
           "name": "list-steps",
@@ -831,7 +823,7 @@
         },
         {
           "title": "One-line cards",
-          "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space."
+          "body": "If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space."
         },
         {
           "title": "Forced sequence",
@@ -932,7 +924,7 @@
       "antiPatterns": [
         {
           "title": "All-done lists",
-          "body": "If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters."
+          "body": "If every item is `[x]` the state markers are decoration. Use `list` (or its `takeaway` variant) for celebratory recaps; checklist earns its weight when the mix matters."
         },
         {
           "title": "Long per-item prose",
@@ -947,10 +939,6 @@
         {
           "name": "list",
           "when": "items have no state — just bullets"
-        },
-        {
-          "name": "tldr",
-          "when": "summary lines without per-item completion tracking"
         },
         {
           "name": "list-tabular",
@@ -2320,10 +2308,6 @@
           "when": "phased grid of deliverables across workstreams without continuous spans"
         },
         {
-          "name": "timeline",
-          "when": "single-lane sequence of milestones"
-        },
-        {
           "name": "kanban",
           "when": "current state by stage rather than schedule by lane"
         },
@@ -2393,7 +2377,7 @@
           "description": "Nested bullets: outer li is the term, inner li is its one-line definition. A runtime transform converts the list into a two-column table and derives the alphabetic range pill from the first and last terms, so terms should be authored in alphabetical order; without the Lattice runtime the raw nested list renders unstyled."
         }
       },
-      "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, subtopic, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
+      "skeleton": "<!-- _class: glossary -->\n\n## Glossary\n\n- Adjacency\n  - The relationship between two slides that share an audience or context.\n- Anchor\n  - A title, divider, or closing slide that orients the audience.\n- Cadence\n  - The deck's pacing — how much new information per slide.\n",
       "whenToUse": [
         {
           "title": "Jargon-heavy decks",
@@ -2405,13 +2389,13 @@
         },
         {
           "title": "Short definitions",
-          "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading."
+          "body": "Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own divider (light variant) slide where the term is the heading."
         }
       ],
       "antiPatterns": [
         {
           "title": "Multi-sentence definitions",
-          "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading."
+          "body": "Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading."
         },
         {
           "title": "Mixed term lengths",
@@ -2428,16 +2412,16 @@
           "when": "rows are key/value reference, not term/definition"
         },
         {
-          "name": "subtopic",
-          "when": "one term needs a full slide of explanation"
+          "name": "divider",
+          "when": "lighter mid-section orientation — the bright-canvas `light` variant"
         },
         {
           "name": "actors",
           "when": "the left column is a named person, not a term"
         },
         {
-          "name": "principles",
-          "when": "the entries are stated rules, not defined terms"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         }
       ],
       "galleryHref": "../../lib/components/inventory/glossary/glossary.gallery.light.pdf"
@@ -2666,10 +2650,6 @@
         }
       ],
       "related": [
-        {
-          "name": "timeline",
-          "when": "linear sequence without per-step mood or actors"
-        },
         {
           "name": "list-steps",
           "when": "process needs descriptive body per step, no chart"
@@ -3154,8 +3134,8 @@
           "when": "options scored against shared criteria"
         },
         {
-          "name": "principles",
-          "when": "tenets or values rather than gates a decision must clear"
+          "name": "list",
+          "when": "declared statements — the `principles` variant"
         },
         {
           "name": "list-tabular",
@@ -3408,10 +3388,6 @@
         {
           "name": "actors",
           "when": "the left column is a named person, not a key"
-        },
-        {
-          "name": "principles",
-          "when": "rows are stated rules, not reference entries"
         },
         {
           "name": "list",
@@ -4628,8 +4604,8 @@
           "when": "flat enumeration of requirements without dates or citations"
         },
         {
-          "name": "timeline",
-          "when": "chronological sequence of events on a single axis"
+          "name": "list-steps",
+          "when": "lighter dots-on-a-spine sequence — the `timeline` variant"
         },
         {
           "name": "list-tabular",
@@ -4872,8 +4848,8 @@
           "when": "the slide is mostly the list of findings; no executive framing needed"
         },
         {
-          "name": "tldr",
-          "when": "5+ one-line takeaways without supporting detail"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         }
       ],
       "galleryHref": "../../lib/components/statement/split-brief/split-brief.gallery.light.pdf"
@@ -5455,10 +5431,6 @@
         {
           "name": "list-steps",
           "when": "standalone ordered process without a phase anchor"
-        },
-        {
-          "name": "timeline",
-          "when": "horizontal sequence of short-labelled steps"
         },
         {
           "name": "roadmap",
@@ -6053,10 +6025,6 @@
         {
           "name": "closing",
           "when": "the final slide — closes the bookend pair"
-        },
-        {
-          "name": "subtopic",
-          "when": "lighter mid-deck orientation slide on the bright canvas"
         }
       ],
       "galleryHref": "../../lib/components/anchor/title/title.gallery.light.pdf"
@@ -6302,8 +6270,8 @@
           "when": "the verbatim language matters more than the frequency"
         },
         {
-          "name": "tldr",
-          "when": "the qualitative summary is prose, not a packed cloud"
+          "name": "list",
+          "when": "single-line takeaways — the `takeaway` variant"
         }
       ],
       "galleryHref": "../../lib/components/chart/word-cloud/word-cloud.gallery.light.pdf"

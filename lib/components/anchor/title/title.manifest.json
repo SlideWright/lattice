@@ -57,7 +57,6 @@
   ],
   "related": [
     { "name": "divider", "when": "mid-deck section breaks — same dark-bookend chrome" },
-    { "name": "closing", "when": "the final slide — closes the bookend pair" },
-    { "name": "subtopic", "when": "lighter mid-deck orientation slide on the bright canvas" }
+    { "name": "closing", "when": "the final slide — closes the bookend pair" }
   ]
 }

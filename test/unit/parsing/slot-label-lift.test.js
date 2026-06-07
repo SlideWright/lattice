@@ -1,7 +1,7 @@
 /**
  * Unit: lib/slot-label-lift.js — auto-wrap slot label in <strong>.
  *
- * Used by named-slot layouts (decision, before-after, compare-prose) so
+ * Used by named-slot layouts (decision, compare-prose) so
  * authors can write `- Build` instead of `- **Build**` and still get
  * the corner-tag chrome. The function is pure HTML→HTML and runs
  * downstream of markdown-it parsing, so inputs reflect the parser's

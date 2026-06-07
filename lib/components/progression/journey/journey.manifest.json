@@ -57,10 +57,7 @@
     }
   ],
   "related": [
-    {
-      "name": "timeline",
-      "when": "linear sequence without per-step mood or actors"
-    },
+    
     {
       "name": "list-steps",
       "when": "process needs descriptive body per step, no chart"

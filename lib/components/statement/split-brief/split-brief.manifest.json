@@ -73,9 +73,6 @@
       "name": "cards-stack",
       "when": "the slide is mostly the list of findings; no executive framing needed"
     },
-    {
-      "name": "tldr",
-      "when": "5+ one-line takeaways without supporting detail"
-    }
+    { "name": "list", "when": "single-line takeaways — the `takeaway` variant" }
   ]
 }

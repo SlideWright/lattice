@@ -110,5 +110,5 @@ Roster of responsibilities owned by named actors.
 
 - `list-tabular` — rows are reference entries, not owners
 - `cards-stack` — each item needs two sentences of body text
-- `principles` — stating shared rules rather than per-actor responsibilities
+- `list` — declared statements — the `principles` variant
 - `glossary` — the left column is a term, not an actor

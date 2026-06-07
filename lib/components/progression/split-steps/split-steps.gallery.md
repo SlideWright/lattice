@@ -117,7 +117,6 @@ Four weeks. Shared definition of the problem before any solution work begins.
 `Related components`
 
 - `list-steps` — standalone ordered process without a phase anchor
-- `timeline` — horizontal sequence of short-labelled steps
 - `roadmap` — phased grid across multiple workstreams
 - `split-list` — left-anchor + right-list shape without a step sequence
 - `split-brief` — executive framing with substantiating findings rather than steps

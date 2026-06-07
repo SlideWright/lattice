@@ -160,7 +160,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`regulatory-update`](../../legal/regulatory-update/regulatory-update.docs.md) — period-bounded changelog rather than a single rule's lineage
 - [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — flat enumeration of requirements without tier hierarchy
-- [`timeline`](../timeline/timeline.docs.md) — the sequence is chronological events, not legal tiers
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — the rows are procedural steps rather than authority tiers
 
 ## Demo deck

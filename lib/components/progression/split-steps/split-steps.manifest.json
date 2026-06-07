@@ -65,10 +65,7 @@
       "name": "list-steps",
       "when": "standalone ordered process without a phase anchor"
     },
-    {
-      "name": "timeline",
-      "when": "horizontal sequence of short-labelled steps"
-    },
+    
     {
       "name": "roadmap",
       "when": "phased grid across multiple workstreams"

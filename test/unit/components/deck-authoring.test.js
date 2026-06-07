@@ -2,9 +2,9 @@
  * Unit: deck-authoring contract — card-style layouts forbid the
  * inline `- **Title.** body` format in slide source.
  *
- * The bug: card-style layouts (cards-grid, cards-side, cards-stack,
+ * The bug: card-style layouts (cards-grid, cards-stack,
  * featured, split-list, compare-prose, matrix-2x2,
- * verdict-grid, before-after, decision, citation-card) auto-bold the
+ * verdict-grid, decision, citation-card) auto-bold the
  * top-level li via CSS. When an author writes
  *
  *   - **Title.** body text continues here

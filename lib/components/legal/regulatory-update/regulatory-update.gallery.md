@@ -251,5 +251,5 @@ Change log against a baseline — numbered list of statutes/cases/rules with cit
 
 - `authority-chain` — single rule walked statute → regulation → guidance → case
 - `list-criteria` — flat enumeration of requirements without dates or citations
-- `timeline` — chronological sequence of events on a single axis
+- `list-steps` — lighter dots-on-a-spine sequence — the `timeline` variant
 - `list-tabular` — structured metadata per row but no regulatory framing

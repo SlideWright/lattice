@@ -148,7 +148,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`timeline`](../timeline/timeline.docs.md) — linear sequence without per-step mood or actors
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — process needs descriptive body per step, no chart
 - [`gantt`](../../chart/gantt/gantt.docs.md) — schedule of overlapping tasks across lanes
 - [`kanban`](../../chart/kanban/kanban.docs.md) — current status by stage rather than sequence over time

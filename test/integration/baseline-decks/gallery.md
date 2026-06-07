@@ -32,7 +32,7 @@ A decision framework for product leaders navigating market uncertainty
 
 <!-- _class: divider light -->
 <!-- _header: '' -->
-<!-- _footer: "Centered orientation · subtopic" -->
+<!-- _footer: "Centered orientation · divider light" -->
 
 `Module 02`
 
@@ -949,13 +949,13 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 
 <!-- _class: divider light numbered -->
 <!-- _header: '' -->
-<!-- _footer: "Modifier — subtopic numbered · subtopic numbered" -->
+<!-- _footer: "Modifier — divider light numbered · divider light numbered" -->
 
-`Modifier · subtopic numbered`
+`Modifier · divider light numbered`
 
 ## Each bookend layout owns its own counter.
 
-The subtopic counter is independent of the divider counter, so a mid-deck subtopic stamps `01` even when the dividers are already at `04`.
+The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`.
 
 ---
 
@@ -1008,7 +1008,7 @@ The subtopic counter is independent of the divider counter, so a mid-deck subtop
 ---
 
 <!-- _class: compare-prose transition -->
-<!-- _footer: "New layout — before-after · before-after" -->
+<!-- _footer: "Comparison variant — compare-prose transition · compare-prose transition" -->
 
 ## Decisions used to require a quarterly re-litigation.
 
@@ -1100,7 +1100,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ---
 
 <!-- _class: list takeaway numbered -->
-<!-- _footer: "New layout — tldr · tldr numbered" -->
+<!-- _footer: "List variant — list takeaway · list takeaway numbered" -->
 
 `Section 03 · Recap`
 

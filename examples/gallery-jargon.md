@@ -92,7 +92,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 ---
 
 <!-- _class: divider light -->
-<!-- _footer: "Centered orientation · subtopic" -->
+<!-- _footer: "Centered orientation · divider light" -->
 
 `Signal Definition · Workshop 04`
 
@@ -554,7 +554,7 @@ Phase 3 is where org-wide enablement lives. Phase 3 has been in the roadmap sinc
 ---
 
 <!-- _class: compare-prose transition -->
-<!-- _footer: "State change over time · before-after" -->
+<!-- _footer: "State change over time · compare-prose transition" -->
 
 ## Decisions used to require a quarterly re-litigation
 
@@ -570,9 +570,9 @@ The architecture change is the calibration loop. The culture change is still in 
 ---
 
 <!-- _class: compare-prose transition banner-tag -->
-<!-- _footer: "Same comparison, banner-tag chrome · before-after banner-tag" -->
+<!-- _footer: "Same comparison, banner-tag chrome · compare-prose transition banner-tag" -->
 
-## The same before-after for the board deck
+## The same transition for the board deck
 
 `Before and after · banner-tag modifier`
 
@@ -740,7 +740,7 @@ The pilot team measured what the pilot team built.
 ---
 
 <!-- _class: list takeaway numbered -->
-<!-- _footer: "Section recap before the data · tldr numbered" -->
+<!-- _footer: "Section recap before the data · list takeaway numbered" -->
 
 `Recap · Sections 01 through 03`
 
@@ -913,13 +913,13 @@ Cross-functional sign-off · 2026-04-29 · "cross-functional" means two teams in
 ---
 
 <!-- _class: divider light numbered -->
-<!-- _footer: "Section opener, independent counter · subtopic numbered" -->
+<!-- _footer: "Section opener, independent counter · divider light numbered" -->
 
 `Section 05 · The Pattern Library`
 
 ## The story closed on slide 57. These slides demonstrate authoring patterns
 
-The narrative arc ended at the working-session ask. Section 05 is the reference appendix — layout variants and modifiers used throughout the deck, demonstrated for authors who want to replicate them. The subtopic counter is independent of the divider counter, which is why this slide stamps 01 rather than 05.
+The narrative arc ended at the working-session ask. Section 05 is the reference appendix — layout variants and modifiers used throughout the deck, demonstrated for authors who want to replicate them. The divider light counter is independent of the dark-divider counter, which is why this slide stamps 01 rather than 05.
 
 ---
 

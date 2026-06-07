@@ -60,7 +60,7 @@ describe('new-slide CLI', () => {
 
     test('offers "did you mean" suggestions for near-misses', () => {
       const { stderr } = captureStdio(() => emitSkeleton('cards'));
-      // "cards" is a substring of cards-grid, cards-stack, cards-side
+      // "cards" is a substring of cards-grid, cards-stack
       assert.match(stderr, /did you mean: cards-/);
     });
 

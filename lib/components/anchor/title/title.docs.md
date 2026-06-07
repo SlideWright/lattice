@@ -65,7 +65,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`divider`](../../anchor/divider/divider.docs.md) — mid-deck section breaks — same dark-bookend chrome
 - [`closing`](../../anchor/closing/closing.docs.md) — the final slide — closes the bookend pair
-- [`subtopic`](../subtopic/subtopic.docs.md) — lighter mid-deck orientation slide on the bright canvas
 
 ## Demo deck
 

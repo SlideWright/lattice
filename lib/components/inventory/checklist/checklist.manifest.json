@@ -39,7 +39,7 @@
   "antiPatterns": [
     {
       "title": "All-done lists",
-      "body": "If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters."
+      "body": "If every item is `[x]` the state markers are decoration. Use `list` (or its `takeaway` variant) for celebratory recaps; checklist earns its weight when the mix matters."
     },
     {
       "title": "Long per-item prose",
@@ -55,10 +55,7 @@
       "name": "list",
       "when": "items have no state — just bullets"
     },
-    {
-      "name": "tldr",
-      "when": "summary lines without per-item completion tracking"
-    },
+    
     {
       "name": "list-tabular",
       "when": "rows need a label-plus-description structure, not state"

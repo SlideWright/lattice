@@ -111,5 +111,5 @@ Numbered criteria list — each requirement is a row with rationale.
 - `list-steps` — rows are procedural steps with longer body, not gating criteria
 - `checklist` — rows carry done/in-flight/planned state markers
 - `verdict-grid` — options scored against shared criteria
-- `principles` — tenets or values rather than gates a decision must clear
+- `list` — declared statements — the `principles` variant
 - `list-tabular` — rows carry structured metadata alongside the name and description

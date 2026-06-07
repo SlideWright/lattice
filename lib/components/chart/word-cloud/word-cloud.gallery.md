@@ -207,4 +207,4 @@ Spiral-packed word cloud — items sized by weight.
 - `stats` — the headline metrics are independent numbers, not a corpus
 - `piechart` — the items are parts of a whole, not free-form themes
 - `quote` — the verbatim language matters more than the frequency
-- `tldr` — the qualitative summary is prose, not a packed cloud
+- `list` — single-line takeaways — the `takeaway` variant

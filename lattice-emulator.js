@@ -993,7 +993,7 @@ const content   = rawMd.replace(/^---[\s\S]*?---\n/, '');
 // Slide splitter — extracted to lib/split-slides.js so it can be unit-tested
 // directly. See that file for the fence-and-headingDivider rationale.
 const { splitSlides }    = require('./lib/core/split-slides');
-// Named-slot lift helper used by decision / before-after / compare-prose.
+// Named-slot lift helper used by decision / compare-prose (incl. transition).
 const { liftSlotLabel }  = require('./lib/core/slot-label-lift');
 // Shared transformer registry — dispatches chart-family, split-panels,
 // roadmap, journey, and word-cloud per-section via applyAllToSection.
@@ -1257,13 +1257,13 @@ function parseSlide(raw, index) {
   const hasClass = (name) => new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(cls);
   // Slot-label lift — extracted to lib/slot-label-lift.js for unit testing.
   // See that file for behavior; same closure binding (used by cards-stack
-  // and decision/before-after handlers below).
+  // and the decision / compare-prose handlers below).
 
   // cards-grid: wrap ul/ol into .cards-grid-inner, each top-level li becomes a .card.
   // Uses depth tracking to handle nested lists (li > ul/ol for body text).
   // handles 2 cards (1 row), 3 cards (2+1 via CSS :last-child:nth-child(odd)), 4 cards (2×2)
-  // cards-grid-2plus1 and cards-side both consolidate here
-  if (cls.includes('cards-grid') || cls.includes('cards-side')) {
+  // cards-grid-2plus1 consolidates here
+  if (cls.includes('cards-grid')) {
     const listMatch = html.match(/<(ul|ol)>/);
     if (listMatch) {
       const listTag = listMatch[1];
@@ -1354,10 +1354,10 @@ function parseSlide(raw, index) {
     }
   }
 
-  // decision / before-after / statute-stack / regulatory-update /
+  // decision / statute-stack / regulatory-update /
   // authority-chain / redline / timeline / list-criteria / actors:
   // named-slot layouts where each top-level li is a card with a slot
-  // label (Build / Before / Federal / Statute / Pilot / a criterion /
+  // label (Build / Federal / Statute / Pilot / a criterion /
   // a responsibility). The CSS keeps these as native ul/ol > li (no card
   // div wrapper); the only post-process needed is lifting the leading
   // text into <strong> so the labeled-corner-tag and slot-card CSS
@@ -1365,7 +1365,7 @@ function parseSlide(raw, index) {
   // wrapped in .crit-body below — this lift runs first so the <strong>
   // lands inside the wrapper; actors keeps its trailing `code` pill a
   // sibling of the <strong> via liftSlotLabel's trailing-code rule.)
-  if (cls.includes('decision') || cls.includes('before-after') ||
+  if (cls.includes('decision') ||
       cls.includes('statute-stack') || cls.includes('regulatory-update') ||
       cls.includes('authority-chain') || cls.includes('redline') ||
       hasClass('timeline') || hasClass('list-criteria') ||
@@ -1447,8 +1447,7 @@ function parseSlide(raw, index) {
   // class="state {pass|warn|fail|skip} {state-full|state-half|state-empty|state-slashed}"
   // and the marker stripped. CSS draws the universal state token via
   // ::before and pins a trailing <code> as the right-aligned row pill
-  // (universal pill convention, shared with cards-grid / cards-side /
-  // actors).
+  // (universal pill convention, shared with cards-grid / actors).
   if (cls.includes('checklist')) {
     html = html.replace(/<li>([\s\S]*?)<\/li>/g, (full, inner) => {
       const m = /^\s*\[([x\-/ ])\]\s*/.exec(inner);
@@ -1673,7 +1672,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','subtopic','divider','image','split-list','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
+  const noBeloNote = ['title','closing','quote','big-number','divider','image','split-list','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block

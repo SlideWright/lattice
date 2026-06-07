@@ -325,7 +325,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`divider`](#divider) — mid-deck section breaks — same dark-bookend chrome
 - [`closing`](#closing) — the final slide — closes the bookend pair
-- [`subtopic`](../subtopic/subtopic.docs.md) — lighter mid-deck orientation slide on the bright canvas
 
 #### Demo deck
 
@@ -623,7 +622,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`split-list`](#split-list) — the right side is a list of supporting points, not findings
 - [`split-statement`](#split-statement) — the left side carries a quote, not a thesis
 - [`cards-stack`](#cards-stack) — the slide is mostly the list of findings; no executive framing needed
-- [`tldr`](../tldr/tldr.docs.md) — 5+ one-line takeaways without supporting detail
+- [`list`](#list) — single-line takeaways — the `takeaway` variant
 
 #### Demo deck
 
@@ -877,7 +876,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`list-tabular`](#list-tabular) — rows are reference entries, not owners
 - [`cards-stack`](#cards-stack) — each item needs two sentences of body text
-- [`principles`](../principles/principles.docs.md) — stating shared rules rather than per-actor responsibilities
+- [`list`](#list) — declared statements — the `principles` variant
 - [`glossary`](#glossary) — the left column is a term, not an actor
 
 #### Demo deck
@@ -902,7 +901,7 @@ Use as the second slide of any multi-section deck. Numbers are generated; author
 
 #### When NOT to use
 
-- **Sub-bullets per section.** The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a subtopic divider when the section opens — not here.
+- **Sub-bullets per section.** The agenda is a wayfinder, not a treatment. If a section needs decomposition, that belongs on a section divider when the section opens — not here.
 - **Unnumbered list.** Authoring with `-` instead of `1.` loses the numbered chrome the layout depends on. Always use ordered list syntax.
 - **Single-section decks.** If the deck has no sections to enumerate, skip the agenda. Empty wayfinding is more friction than no wayfinding.
 - **More than six sections.** A single agenda slide holds up to six sections at a legible row height; beyond that the rows crowd the footer. Group related items under fewer headings, or split the agenda across two slides.
@@ -1048,9 +1047,8 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Related components
 
-- [`subtopic`](../subtopic/subtopic.docs.md) — opening a single section mid-deck
 - [`divider`](#divider) — marking a section boundary without restating the menu
-- [`tldr`](../tldr/tldr.docs.md) — closing the deck with the takeaways the agenda promised
+- [`list`](#list) — single-line takeaways — the `takeaway` variant
 - [`title`](#title) — the slide immediately preceding the agenda
 
 #### Demo deck
@@ -1234,7 +1232,7 @@ Use when the items want vertical reading order — sequential exploration rather
 #### When NOT to use
 
 - **Five or more items.** A fourth card fits with the `compact` modifier; past four the stack overflows. For five or more parallel items reach for cards-grid four, or split across slides.
-- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
+- **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` (or its `takeaway` variant) and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
 #### Authoring
@@ -1345,7 +1343,7 @@ Use for completion reports, readiness audits, or pre-flight checks. State marker
 
 #### When NOT to use
 
-- **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` or `tldr` for celebratory recaps; checklist earns its weight when the mix matters.
+- **All-done lists.** If every item is `[x]` the state markers are decoration. Use `list` (or its `takeaway` variant) for celebratory recaps; checklist earns its weight when the mix matters.
 - **Long per-item prose.** Each item is one short line. If a row needs a sentence of explanation, the right home is cards-stack or list-tabular.
 - **Custom state markers.** Only `[x]`, `[-]`, `[ ]`, and `[/]` (out-of-scope, struck through) map to the mark palette. Authoring `[?]` or `[!]` renders as literal text and breaks the visual contract.
 
@@ -1392,7 +1390,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Related components
 
 - [`list`](#list) — items have no state — just bullets
-- [`tldr`](../tldr/tldr.docs.md) — summary lines without per-item completion tracking
 - [`list-tabular`](#list-tabular) — rows need a label-plus-description structure, not state
 - [`cards-stack`](#cards-stack) — each item needs two sentences of body
 
@@ -1414,11 +1411,11 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 
 - **Jargon-heavy decks.** When the audience needs a reference page they can flip back to. Acronyms, domain terms, internal names — anything the speaker won't define inline.
 - **Five to eight entries per slide.** The ledger is sized for a short page. For longer glossaries, split alphabetically across multiple slides — the runtime stamps each with its range pill.
-- **Short definitions.** Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading.
+- **Short definitions.** Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own divider (light variant) slide where the term is the heading.
 
 #### When NOT to use
 
-- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading.
+- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading.
 - **Mixed term lengths.** If some terms are single words and others are full phrases, the left column gets ragged. Trim long terms to their canonical short form.
 - **Hand-written range pill.** The runtime derives the range pill (e.g. "A – G") from the entries. Authoring it into the heading double-stamps it.
 
@@ -1432,7 +1429,7 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 - Adjacency
   - The relationship between two slides that share an audience or context.
 - Anchor
-  - A title, divider, subtopic, or closing slide that orients the audience.
+  - A title, divider, or closing slide that orients the audience.
 - Cadence
   - The deck's pacing — how much new information per slide.
 ```
@@ -1468,9 +1465,9 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Related components
 
 - [`list-tabular`](#list-tabular) — rows are key/value reference, not term/definition
-- [`subtopic`](../subtopic/subtopic.docs.md) — one term needs a full slide of explanation
+- [`divider`](#divider) — lighter mid-section orientation — the bright-canvas `light` variant
 - [`actors`](#actors) — the left column is a named person, not a term
-- [`principles`](../principles/principles.docs.md) — the entries are stated rules, not defined terms
+- [`list`](#list) — declared statements — the `principles` variant
 
 #### Demo deck
 
@@ -1844,7 +1841,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`glossary`](#glossary) — term/definition pairs with auto-derived range pill
 - [`cards-stack`](#cards-stack) — two or three richer items, not a ledger
 - [`actors`](#actors) — the left column is a named person, not a key
-- [`principles`](../principles/principles.docs.md) — rows are stated rules, not reference entries
 - [`list`](#list) — rows are bullets without a label-plus-description shape
 
 #### Demo deck
@@ -2769,7 +2765,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 #### Related components
 
-- [`timeline`](../timeline/timeline.docs.md) — linear sequence without per-step mood or actors
 - [`list-steps`](#list-steps) — process needs descriptive body per step, no chart
 - [`gantt`](#gantt) — schedule of overlapping tasks across lanes
 - [`kanban`](#kanban) — current status by stage rather than sequence over time
@@ -2849,7 +2844,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`list-steps`](#list-steps) — rows are procedural steps with longer body, not gating criteria
 - [`checklist`](#checklist) — rows carry done/in-flight/planned state markers
 - [`verdict-grid`](#verdict-grid) — options scored against shared criteria
-- [`principles`](../principles/principles.docs.md) — tenets or values rather than gates a decision must clear
+- [`list`](#list) — declared statements — the `principles` variant
 - [`list-tabular`](#list-tabular) — rows carry structured metadata alongside the name and description
 
 #### Demo deck
@@ -3320,7 +3315,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Related components
 
 - [`list-steps`](#list-steps) — standalone ordered process without a phase anchor
-- [`timeline`](../timeline/timeline.docs.md) — horizontal sequence of short-labelled steps
 - [`roadmap`](#roadmap) — phased grid across multiple workstreams
 - [`split-list`](#split-list) — left-anchor + right-list shape without a step sequence
 - [`split-brief`](#split-brief) — executive framing with substantiating findings rather than steps
@@ -4031,7 +4025,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 #### Related components
 
 - [`roadmap`](#roadmap) — phased grid of deliverables across workstreams without continuous spans
-- [`timeline`](../timeline/timeline.docs.md) — single-lane sequence of milestones
 - [`kanban`](#kanban) — current state by stage rather than schedule by lane
 - [`list-steps`](#list-steps) — sequential process with descriptive steps, no parallel lanes
 
@@ -5225,7 +5218,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 - [`stats`](#stats) — the headline metrics are independent numbers, not a corpus
 - [`piechart`](#piechart) — the items are parts of a whole, not free-form themes
 - [`quote`](#quote) — the verbatim language matters more than the frequency
-- [`tldr`](../tldr/tldr.docs.md) — the qualitative summary is prose, not a packed cloud
+- [`list`](#list) — single-line takeaways — the `takeaway` variant
 
 #### Demo deck
 
@@ -5929,7 +5922,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`regulatory-update`](#regulatory-update) — period-bounded changelog rather than a single rule's lineage
 - [`list-criteria`](#list-criteria) — flat enumeration of requirements without tier hierarchy
-- [`timeline`](../timeline/timeline.docs.md) — the sequence is chronological events, not legal tiers
 - [`list-steps`](#list-steps) — the rows are procedural steps rather than authority tiers
 
 #### Demo deck
@@ -6444,7 +6436,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`authority-chain`](#authority-chain) — single rule walked statute → regulation → guidance → case
 - [`list-criteria`](#list-criteria) — flat enumeration of requirements without dates or citations
-- [`timeline`](../timeline/timeline.docs.md) — chronological sequence of events on a single axis
+- [`list-steps`](#list-steps) — lighter dots-on-a-spine sequence — the `timeline` variant
 - [`list-tabular`](#list-tabular) — structured metadata per row but no regulatory framing
 
 #### Demo deck

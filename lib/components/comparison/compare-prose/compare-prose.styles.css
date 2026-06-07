@@ -170,7 +170,7 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * variant) and decision: lifts each top-level card label into a flush
  * corner tag; `.banner-tag` converts it to a full-width header strip. */
 /* ── corner tag, labeled variant ──────────────────────────────────────────
- * before-after, decision, and compare-prose lift the leading text of
+ * decision and compare-prose lift the leading text of
  * each top-level <li> into a flush top-left corner tag — same recipe
  * and accent fill as the numbered corner tag (cards-grid / cards-stack),
  * but the content is editorial label text instead of a counter. Frees
@@ -215,7 +215,7 @@ section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-chi
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
- * Opt-in modifier on before-after / decision / compare-prose. Converts the
+ * Opt-in modifier on decision / compare-prose (incl. transition). Converts the
  * flush-corner labeled tag into a full-width header strip — the card becomes
  * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
  * spans full width), body is `flex: 1 1 0` and stretches to fill the

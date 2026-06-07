@@ -12,11 +12,11 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 
 - **Jargon-heavy decks.** When the audience needs a reference page they can flip back to. Acronyms, domain terms, internal names — anything the speaker won't define inline.
 - **Five to eight entries per slide.** The ledger is sized for a short page. For longer glossaries, split alphabetically across multiple slides — the runtime stamps each with its range pill.
-- **Short definitions.** Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own subtopic slide where the term is the heading.
+- **Short definitions.** Each definition is one sentence — a working gloss, not an essay. Long definitions belong on their own divider (light variant) slide where the term is the heading.
 
 ## When NOT to use
 
-- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use subtopic with the term as the heading.
+- **Multi-sentence definitions.** Each entry is one short line. If a definition needs context or examples, the term deserves its own slide — use a divider (light variant) with the term as the heading.
 - **Mixed term lengths.** If some terms are single words and others are full phrases, the left column gets ragged. Trim long terms to their canonical short form.
 - **Hand-written range pill.** The runtime derives the range pill (e.g. "A – G") from the entries. Authoring it into the heading double-stamps it.
 
@@ -30,7 +30,7 @@ Use for jargon-heavy decks where the audience needs a reference page. The runtim
 - Adjacency
   - The relationship between two slides that share an audience or context.
 - Anchor
-  - A title, divider, subtopic, or closing slide that orients the audience.
+  - A title, divider, or closing slide that orients the audience.
 - Cadence
   - The deck's pacing — how much new information per slide.
 ```
@@ -66,9 +66,9 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — rows are key/value reference, not term/definition
-- [`subtopic`](../subtopic/subtopic.docs.md) — one term needs a full slide of explanation
+- [`divider`](../../anchor/divider/divider.docs.md) — lighter mid-section orientation — the bright-canvas `light` variant
 - [`actors`](../../inventory/actors/actors.docs.md) — the left column is a named person, not a term
-- [`principles`](../principles/principles.docs.md) — the entries are stated rules, not defined terms
+- [`list`](../../inventory/list/list.docs.md) — declared statements — the `principles` variant
 
 ## Demo deck
 

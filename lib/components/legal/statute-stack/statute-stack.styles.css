@@ -20,7 +20,7 @@
  * `- Federal`, not `- **Federal**`). The nested ul holds the body — the
  * first item is the citation chip (only-child <code>), middle items are
  * prose obligations, and the last item is the status pill (only-child
- * <code>). Matches before-after / decision shape so slot-labelled
+ * <code>). Matches the decision / compare-prose slot-card shape so slot-labelled
  * layouts share one authoring convention.
  *
  * Default = three equal vertical rails. Modifiers reshape the same DOM:

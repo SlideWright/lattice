@@ -1014,7 +1014,6 @@ section.big-number > ul > li > ul > li { font-family:var(--font-body); font-size
 /* === lib/components/inventory/cards-grid/cards-grid.styles.css === */
 /* cards-grid — extracted from lib/_legacy.css (batch 6).
  * See lib/components/cards-grid/cards-grid.manifest.json for the component contract.
- * Sibling cards-side rules live in lib/components/cards-side/styles.css.
  */
 
 /* ── CARDS-GRID ──
@@ -1986,7 +1985,7 @@ section.compare-prose :is(ul,ol) > li > strong ~ * { font-weight: 400; }
  * variant) and decision: lifts each top-level card label into a flush
  * corner tag; `.banner-tag` converts it to a full-width header strip. */
 /* ── corner tag, labeled variant ──────────────────────────────────────────
- * before-after, decision, and compare-prose lift the leading text of
+ * decision and compare-prose lift the leading text of
  * each top-level <li> into a flush top-left corner tag — same recipe
  * and accent fill as the numbered corner tag (cards-grid / cards-stack),
  * but the content is editorial label text instead of a counter. Frees
@@ -2031,7 +2030,7 @@ section.decision > :is(ul, ol) > li:has(> strong:first-child) > strong:first-chi
 }
 
 /* ── corner tag, banner variant (.banner-tag modifier) ────────────────────
- * Opt-in modifier on before-after / decision / compare-prose. Converts the
+ * Opt-in modifier on decision / compare-prose (incl. transition). Converts the
  * flush-corner labeled tag into a full-width header strip — the card becomes
  * a vertical column-flex: tag is `flex: 0 0 auto` (fits content height,
  * spans full width), body is `flex: 1 1 0` and stretches to fill the
@@ -8457,7 +8456,7 @@ section.stats > ol > li > ul > li {
  * `- Federal`, not `- **Federal**`). The nested ul holds the body — the
  * first item is the citation chip (only-child <code>), middle items are
  * prose obligations, and the last item is the status pill (only-child
- * <code>). Matches before-after / decision shape so slot-labelled
+ * <code>). Matches the decision / compare-prose slot-card shape so slot-labelled
  * layouts share one authoring convention.
  *
  * Default = three equal vertical rails. Modifiers reshape the same DOM:
@@ -9267,8 +9266,6 @@ section.dark p:has(> code:only-child):has(+ h5) > code,
 section.dark p:has(> code:only-child):has(+ ul) > code,
 section.dark p:has(> code:only-child):has(+ ol) > code,
 section.dark p:has(> code:only-child):has(+ pre) > code { color: var(--on-dark-secondary); }
-/* Centered eyebrow for subtopic */
-section.subtopic p:has(> code:only-child):has(+ h2) { text-align: center; }
 
 
 /* ── KEY INSIGHT ──────────────────────────────────────────────
@@ -9378,11 +9375,11 @@ section footer {
  * Deny list = layouts where a metadata pill does not earn its place,
  * OR where the row container is grid/scaffold and the pill needs a
  * per-layout placement override before it can join the allow list:
- *   bookends/openers     title, divider, subtopic, closing, split-list
+ *   bookends/openers     title, divider, closing, split-list
  *   single-message       featured, big-number, kpi, stats, quote
  *   own metadata channel glossary (range-pill), agenda (page pointer),
- *                        timeline/list-steps (counter), principles/tldr (own line),
- *                        verdict-grid/decision/before-after/matrix-2x2 (chrome),
+ *                        list-steps (counter), list (own line),
+ *                        verdict-grid/decision/matrix-2x2 (chrome),
  *                        compare-prose (connector), compare-table/roadmap (table)
  *   non-list             content, code, compare-code, image, diagram
  *   needs placement      list, list-criteria, list-tabular
@@ -9390,12 +9387,12 @@ section footer {
  *                        right-anchor; opt in by adding a per-layout rule
  *                        modeled on the actors override)
  *
- * Allow list (renders correctly today): cards-grid, cards-side, cards-stack,
- * actors, checklist. cards-grid/cards-side/cards-stack carry their own
+ * Allow list (renders correctly today): cards-grid, cards-stack,
+ * actors, checklist. cards-grid/cards-stack carry their own
  * full-chrome pill rule (the emulator `.card` path is not inside a ul/ol,
  * so the universal selector can't reach it); the rest rely on this rule.
  * Plus any future layout whose `> li` is `display:flex`. */
-section:where(:not(.title):not(.divider):not(.subtopic):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.before-after):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.tldr):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
+section:where(:not(.title):not(.divider):not(.closing):not(.split-list):not(.featured):not(.big-number):not(.kpi):not(.stats):not(.quote):not(.glossary):not(.compare-table):not(.roadmap):not(.agenda):not(.matrix-2x2):not(.decision):not(.verdict-grid):not(.compare-prose):not(.code):not(.compare-code):not(.image):not(.diagram):not(.content):not(.timeline):not(.list-steps):not(.principles):not(.list):not(.list-criteria):not(.list-tabular):not(.math))
   > :where(ul, ol) > li > code:where(:last-child, :has(+ :is(ul, ol))) {
   margin-left:auto;
   align-self:center;
@@ -9477,10 +9474,8 @@ section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
-section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p {
@@ -9499,10 +9494,8 @@ section.list-steps:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::
 section.list-tabular:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.timeline:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.principles:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.tldr:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.matrix-2x2:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.decision:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
-section.before-after:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.actors:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.kpi:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before,
 section.agenda:not(:has(.below-note)) > :is(ul, ol, blockquote, table) + p::before {
@@ -9537,10 +9530,8 @@ section.list-steps .below-note:has(> p > em:only-child)::before,
 section.list-tabular .below-note:has(> p > em:only-child)::before,
 section.timeline .below-note:has(> p > em:only-child)::before,
 section.principles .below-note:has(> p > em:only-child)::before,
-section.tldr .below-note:has(> p > em:only-child)::before,
 section.matrix-2x2 .below-note:has(> p > em:only-child)::before,
 section.decision .below-note:has(> p > em:only-child)::before,
-section.before-after .below-note:has(> p > em:only-child)::before,
 section.actors .below-note:has(> p > em:only-child)::before,
 section.kpi .below-note:has(> p > em:only-child)::before,
 section.agenda .below-note:has(> p > em:only-child)::before,
@@ -9562,10 +9553,8 @@ section.list-steps .below-note > p:has(> em:only-child),
 section.list-tabular .below-note > p:has(> em:only-child),
 section.timeline .below-note > p:has(> em:only-child),
 section.principles .below-note > p:has(> em:only-child),
-section.tldr .below-note > p:has(> em:only-child),
 section.matrix-2x2 .below-note > p:has(> em:only-child),
 section.decision .below-note > p:has(> em:only-child),
-section.before-after .below-note > p:has(> em:only-child),
 section.actors .below-note > p:has(> em:only-child),
 section.kpi .below-note > p:has(> em:only-child),
 section.agenda .below-note > p:has(> em:only-child),
@@ -9581,10 +9570,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9605,10 +9592,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child),
@@ -9629,10 +9614,8 @@ section.list-steps .below-note > p:has(> em:only-child)::before,
 section.list-tabular .below-note > p:has(> em:only-child)::before,
 section.timeline .below-note > p:has(> em:only-child)::before,
 section.principles .below-note > p:has(> em:only-child)::before,
-section.tldr .below-note > p:has(> em:only-child)::before,
 section.matrix-2x2 .below-note > p:has(> em:only-child)::before,
 section.decision .below-note > p:has(> em:only-child)::before,
-section.before-after .below-note > p:has(> em:only-child)::before,
 section.actors .below-note > p:has(> em:only-child)::before,
 section.kpi .below-note > p:has(> em:only-child)::before,
 section.agenda .below-note > p:has(> em:only-child)::before,
@@ -9648,10 +9631,8 @@ section.list-steps > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::be
 section.list-tabular > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.timeline > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.principles > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.tldr > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.matrix-2x2 > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.decision > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
-section.before-after > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.actors > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.kpi > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
 section.agenda > :is(ul, ol, blockquote, table) + p:has(> em:only-child)::before,
@@ -9670,15 +9651,13 @@ section.compare-table > :is(ul, ol, blockquote, table) + p:has(> em:only-child):
 /* ════════════════════════════════════════════════════════════════════════
  * NEW LAYOUTS (Wave 7) — proposals.md §3.1–3.6
  * ────────────────────────────────────────────────────────────────────────
- * Four authoring components introduced to replace the most common
+ * Authoring components introduced to replace the most common
  * cards-grid / compare-prose hand-rolls in real decks.
  *
  *   matrix-2x2    — quadrant grid (SWOT, Eisenhower, risk/impact, …)
  *   decision      — verdict slide; one heading + 2-3 short justifications
- *   before-after  — explicit state-change with arrow connector
- *   principles    — declared statements; sparser than list, larger type
  *
- * All four are CSS-only: they style the bare <ul>/<ol> Marp emits. No
+ * Both are CSS-only: they style the bare <ul>/<ol> Marp emits. No
  * lattice.js post-processing is required because the markdown contract
  * is simple enough that direct selectors do the job.
  * ════════════════════════════════════════════════════════════════════════ */
@@ -9898,9 +9877,6 @@ section.obligation-matrix.asymmetric td:first-child {
  *   split-list    — accent panel moves from left to right
  *   compare-prose  — left and right cards swap (also reverses chosen/decision)
  *
- * `cards-side` is symmetric (2-col grid with no left/right asymmetry) and
- * is therefore not a mirror target despite being listed in proposals §2.1.
- *
  * Migration: `image.left` is preserved as an alias; new authoring should
  * prefer `image.mirror` for consistency with the cross-cutting vocabulary.
  * ──────────────────────────────────────────────────────────────────────── */
@@ -9941,11 +9917,11 @@ section.compare-prose.mirror .compare-prose-inner {
 
 /* ────────────────────────────────────────────────────────────────────────
  * Bookend modifier — numbered
- * Reference: proposals.md §2.2 divider/subtopic/closing; appendix matrix
+ * Reference: proposals.md §2.2 divider/closing; appendix matrix
  *
  * Stamps an auto-incrementing index in the top-right corner of any
- * divider/subtopic/closing slide that opts in via .numbered. Each layout
- * carries its own counter so authors can mix the three without collisions
+ * divider (incl. the `light` variant) or closing slide that opts in via
+ * .numbered. Each carries its own counter so authors can mix them without collisions
  * (e.g. "01 / divider" and "01 / closing" both read as 01 within their
  * own series).
  *
@@ -9957,15 +9933,16 @@ section.compare-prose.mirror .compare-prose-inner {
  * ──────────────────────────────────────────────────────────────────────── */
 
 body {
-  counter-reset: lat-divider lat-subtopic lat-closing;
+  counter-reset: lat-divider lat-divider-light lat-closing;
 }
 
-section.divider.numbered  { counter-increment: lat-divider; }
-section.subtopic.numbered { counter-increment: lat-subtopic; }
-section.closing.numbered  { counter-increment: lat-closing; }
+section.divider.numbered        { counter-increment: lat-divider; }
+/* divider.light (former subtopic) keeps its own counter, independent of the
+ * dark dividers — higher specificity wins over the rule above. */
+section.divider.light.numbered  { counter-increment: lat-divider-light; }
+section.closing.numbered        { counter-increment: lat-closing; }
 
 section.divider.numbered::after,
-section.subtopic.numbered::after,
 section.closing.numbered::after {
   position: absolute;
   top: var(--sp-xl);
@@ -9981,17 +9958,22 @@ section.closing.numbered::after {
   z-index: 1;
 }
 
-/* On dark canvases the accent is muted; lift the numeral with the
- * dark watermark colour so it reads against the dark bg. */
+/* On dark canvases the accent is muted; lift the numeral with the dark
+ * watermark colour so it reads against the dark bg. divider.light is a bright
+ * canvas, so it keeps the accent colour set above (overrides the dark rule). */
 section.divider.numbered::after,
 section.closing.numbered::after {
   color: var(--on-dark-watermark, var(--accent));
   opacity: 0.85;
 }
+section.divider.light.numbered::after {
+  color: var(--accent);
+  opacity: 0.55;
+}
 
-section.divider.numbered::after  { content: counter(lat-divider,  decimal-leading-zero); }
-section.subtopic.numbered::after { content: counter(lat-subtopic, decimal-leading-zero); }
-section.closing.numbered::after  { content: counter(lat-closing,  decimal-leading-zero); }
+section.divider.numbered::after        { content: counter(lat-divider,  decimal-leading-zero); }
+section.divider.light.numbered::after  { content: counter(lat-divider-light, decimal-leading-zero); }
+section.closing.numbered::after        { content: counter(lat-closing,  decimal-leading-zero); }
 
 /* ════════════════════════════════════════════════════════════════════════
  * OVERFLOW WARNING — visual signal when content exceeds the 1280×720 frame

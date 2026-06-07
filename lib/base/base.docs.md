@@ -82,7 +82,7 @@ mono, no uppercase.
 ```
 
 CSS pattern: `h* + p:has(> code:only-child)`. Layout-specific `> p`
-rules (diagram, stats, title, closing, subtopic) govern container size
+rules (diagram, stats, title, closing) govern container size
 and color; the subtitle rule only strips the pill and applies italic.
 
 This replaces the legacy `_em paragraph_` pattern for post-heading
@@ -149,11 +149,10 @@ audience should remember from a card-grid slide.
 > Key insight: signals without decisions are noise.
 ```
 
-**Supported layouts:** `cards-grid`, `cards-stack`, `cards-side`,
-`compare-prose`, `compare-table`, `verdict-grid`,
+**Supported layouts:** `cards-grid`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`,
 `featured`, `list`, `list-criteria`, `list-steps`, `list-tabular`,
-`timeline`, `principles`, `tldr`, `matrix-2x2`, `decision`,
-`before-after`, `actors`, `kpi`, `agenda`. Other layouts render
+`timeline`, `principles`, `matrix-2x2`, `decision`,
+`actors`, `kpi`, `agenda`. Other layouts render
 blockquote as default blockquote chrome.
 
 ### Below-Note
@@ -175,11 +174,9 @@ shouldn't get card weight.
 ```
 
 **Supported layouts:** same set as Key Insight Panel above —
-`cards-grid`, `cards-stack`, `cards-side`,
-`compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`,
+`cards-grid`, `cards-stack`, `compare-prose`, `compare-table`, `verdict-grid`, `featured`, `list`,
 `list-criteria`, `list-steps`, `list-tabular`, `timeline`,
-`principles`, `tldr`, `matrix-2x2`, `decision`, `before-after`,
-`actors`, `kpi`, `agenda`.
+`principles`, `matrix-2x2`, `decision`, `actors`, `kpi`, `agenda`.
 
 Renders as muted body text with a thin top border. Inherits the slide's
 text color so it reads on either light or dark canvas.
@@ -232,8 +229,7 @@ rather than extending its argument.
 **Supported layouts:** same set as Below-Note —
 `cards-grid`, `cards-stack`, `compare-prose`,
 `compare-table`, `verdict-grid`, `featured`, `list`, `list-criteria`,
-`list-steps`, `list-tabular`, `timeline`, `principles`, `tldr`,
-`matrix-2x2`, `decision`, `before-after`, `actors`, `kpi`, `agenda`.
+`list-steps`, `list-tabular`, `timeline`, `principles`, `matrix-2x2`, `decision`, `actors`, `kpi`, `agenda`.
 
 ### The three trailing-paragraph registers — comparison
 
@@ -253,8 +249,8 @@ slide 22 for key-insight + annotation.
 
 ### Labeled Corner Tag
 
-The named-slot sibling of the numbered corner tag. On `before-after`,
-`compare-prose`, and `decision`, the slot label sits at the top of
+The named-slot sibling of the numbered corner tag. On `compare-prose` (incl. the
+`transition` variant) and `decision`, the slot label sits at the top of
 each card as a flush corner tag — same geometry as the numbered tag
 (see Auto-Numbered Cards below), but the content is editorial text
 instead of a counter. The card body fills from the top; no first line
@@ -271,8 +267,8 @@ is consumed by a label.
   - Resolved against logged weights and prior outcomes, average close 18 min, billed as rigor.
 ```
 
-**Layouts that support the labeled corner tag:** `before-after`,
-`compare-prose`, `decision`.
+**Layouts that support the labeled corner tag:** `compare-prose`
+(incl. `transition`), `decision`.
 
 **Authoring is plain.** Write the slot label as the first line of each
 list item — no bold, no syntax. The build pipeline lifts it into a
@@ -283,8 +279,8 @@ Authors don't carry presentational markup.
 - Tag chrome matches the numbered corner tag — accent fill, white mono
   text, flush top-left geometry. The labeled and numbered variants are
   visually a family.
-- `before-after` and `compare-prose` use the unified accent fill (their
-  slots have semantic ordering: before/after, A/B). `decision` is the
+- `compare-prose` uses the unified accent fill (its slots have semantic
+  ordering — before/after via `transition`, or A/B). `decision` is the
   categorical case: each slot is an independent reason, so the tag and
   the bottom border cycle through the categorical palette (`--c1-dark`,
   `--c2-dark`, `--c3-dark`, …) — same palette and cycle as
@@ -308,7 +304,7 @@ Authors don't carry presentational markup.
   owns the card. Same lift infrastructure feeds both styles, so
   authoring is unchanged. Composes with all existing modifiers
   (`chosen`, `decision`, `mirror`, `vertical`).
-- Named-slot only — `before-after`, `compare-prose`, and `decision`
+- Named-slot only — `compare-prose` (incl. `transition`) and `decision`
   exist precisely to label their cards. Other card-bearing layouts
   (`cards-grid`, `cards-stack`, etc.) keep the in-card title row
   because their card titles are editorial sentences, not categorical
@@ -339,7 +335,7 @@ problem → cause → fix, or step 1 → step 2 → step 3.
 > treats it as a sibling list, not a child list.
 
 **Layouts that auto-number when authored as `ol`:** `cards-grid`,
-`cards-side`, `cards-stack` (incl. `horizontal`), `list`,
+`cards-stack` (incl. `horizontal`), `list`,
 `list-criteria`, `list-steps`, `list-tabular`, `split-list`, `timeline`,
 `principles`.
 
@@ -401,7 +397,7 @@ series and a `closing numbered` series number independently.
 | Layout | Counter token | Stamp position |
 |---|---|---|
 | `divider` | `lat-divider` | top-right |
-| `subtopic` | `lat-subtopic` | top-right |
+| `divider light` | `lat-divider-light` | top-right |
 | `closing` | `lat-closing` | top-right |
 
 ```markdown

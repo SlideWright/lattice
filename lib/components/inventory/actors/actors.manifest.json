@@ -59,10 +59,7 @@
       "name": "cards-stack",
       "when": "each item needs two sentences of body text"
     },
-    {
-      "name": "principles",
-      "when": "stating shared rules rather than per-actor responsibilities"
-    },
+    { "name": "list", "when": "declared statements — the `principles` variant" },
     {
       "name": "glossary",
       "when": "the left column is a term, not an actor"

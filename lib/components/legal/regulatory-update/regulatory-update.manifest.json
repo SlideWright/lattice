@@ -71,10 +71,7 @@
       "name": "list-criteria",
       "when": "flat enumeration of requirements without dates or citations"
     },
-    {
-      "name": "timeline",
-      "when": "chronological sequence of events on a single axis"
-    },
+    { "name": "list-steps", "when": "lighter dots-on-a-spine sequence — the `timeline` variant" },
     {
       "name": "list-tabular",
       "when": "structured metadata per row but no regulatory framing"
