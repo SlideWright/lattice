@@ -31,11 +31,11 @@ Use when a single KPI is the argument. The hero number is the headline; the righ
 
 Measurement window and qualifying detail in one short sentence.
 
-- **First supporting point.**
+- First supporting point.
   - Why this metric matters and what's driving it.
-- **Second supporting point.**
+- Second supporting point.
   - What concentration or trend explains it.
-- **Third supporting point.**
+- Third supporting point.
   - What this number unlocks or threatens.
 ```
 
@@ -46,7 +46,7 @@ Measurement window and qualifying detail in one short sentence.
 | `unit` | `p:first-of-type > code` | no | Optional inline-code unit label above the metric (e.g. 'Net Revenue Retention'). |
 | `metric` | `h2` | yes | The hero number. Wrap a unit in *italics* (e.g. '114*%*') to render at smaller weight. |
 | `context` | `p` | yes | One-sentence context line below the metric — measurement window, cohort, comparison. |
-| `findings` | `ul > li` | yes | Right-side supporting findings. Lead each with **Title.** then nested body. |
+| `findings` | `ul > li` | yes | Right-side supporting findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 ## Anatomy
 

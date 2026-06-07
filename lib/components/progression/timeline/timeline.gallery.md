@@ -20,13 +20,13 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ## From first pilot to general availability.
 
-1. **Pilot**
+1. Pilot
    - *Four product teams run the framework for a quarter against a shared baseline.*
-2. **Calibrate**
+2. Calibrate
    - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. **Roll out**
+3. Roll out
    - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. **GA**
+4. GA
    - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
@@ -37,13 +37,13 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ## From first pilot to general availability.
 
-1. **Pilot**
+1. Pilot
    - *Four product teams run the framework for a quarter against a shared baseline.*
-2. **Calibrate**
+2. Calibrate
    - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. **Roll out**
+3. Roll out
    - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. **GA**
+4. GA
    - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
@@ -54,13 +54,13 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ## From first pilot to general availability.
 
-1. **Pilot**
+1. Pilot
    - *Four product teams run the framework for a quarter against a shared baseline.*
-2. **Calibrate**
+2. Calibrate
    - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. **Roll out**
+3. Roll out
    - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. **GA**
+4. GA
    - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 
@@ -71,13 +71,13 @@ Horizontal ordered steps along a single axis, each a labeled dot.
 
 ## From first pilot to general availability.
 
-1. **Pilot**
+1. Pilot
    - *Four product teams run the framework for a quarter against a shared baseline.*
-2. **Calibrate**
+2. Calibrate
    - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. **Roll out**
+3. Roll out
    - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. **GA**
+4. GA
    - *The framework leaves pilot status and ships as the default for new initiatives.*
 
 

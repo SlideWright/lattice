@@ -16,12 +16,12 @@
     "steps": {
       "selector": "ol > li, ul > li",
       "required": true,
-      "description": "One li per step. Lead each with **Step label** then a nested bullet for the description."
+      "description": "One li per step. The lead text is the step label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the description."
     }
   },
-  "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. **First stage**\n   - *Short description of what happens here.*\n2. **Second stage**\n   - *Short description.*\n3. **Third stage**\n   - *Short description.*\n4. **Fourth stage**\n   - *Short description.*\n",
+  "skeleton": "<!-- _class: timeline -->\n\n## How the process flows.\n\n1. First stage\n   - *Short description of what happens here.*\n2. Second stage\n   - *Short description.*\n3. Third stage\n   - *Short description.*\n4. Fourth stage\n   - *Short description.*\n",
   "anatomyBlock": "timeline",
-  "sample": "<!-- _class: timeline -->\n\n## From first pilot to general availability.\n\n1. **Pilot**\n   - *Four product teams run the framework for a quarter against a shared baseline.*\n2. **Calibrate**\n   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*\n3. **Roll out**\n   - *Every product team onboards and the weekly signal review joins the operating rhythm.*\n4. **GA**\n   - *The framework leaves pilot status and ships as the default for new initiatives.*\n",
+  "sample": "<!-- _class: timeline -->\n\n## From first pilot to general availability.\n\n1. Pilot\n   - *Four product teams run the framework for a quarter against a shared baseline.*\n2. Calibrate\n   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*\n3. Roll out\n   - *Every product team onboards and the weekly signal review joins the operating rhythm.*\n4. GA\n   - *The framework leaves pilot status and ships as the default for new initiatives.*\n",
   "whenToUse": [
     {
       "title": "Short labels on a horizontal axis",

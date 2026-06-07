@@ -3,7 +3,8 @@
  */
 
 /* ── CRITERIA ──
- * ## heading  ol or ul — li **title** [optional nested ul > li description]
+ * ## heading  ol or ul — li title (lifted to <strong> automatically by
+ * slotLabelLift — authors need not type `**…**`) [optional nested ul > li description]
  * CSS counter provides leading-zero number (01 02…) regardless of list type.
  * Use ul when order is semantic-free; ol when order carries meaning.
  */

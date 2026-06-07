@@ -26,12 +26,12 @@
     "findings": {
       "selector": "ul > li",
       "required": true,
-      "description": "Right-side findings. Lead each with **Title.** then nested body lines."
+      "description": "Right-side findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold."
     }
   },
-  "skeleton": "<!-- _class: split-brief -->\n\n`Eyebrow context`\n\n## Headline that anchors the brief.\n\nOne-sentence framing paragraph explaining what the findings cover.\n\n- **First finding.** Supporting detail explaining the first finding.\n- **Second finding.** Supporting detail explaining the second finding.\n- **Third finding.** Supporting detail explaining the third finding.\n",
+  "skeleton": "<!-- _class: split-brief -->\n\n`Eyebrow context`\n\n## Headline that anchors the brief.\n\nOne-sentence framing paragraph explaining what the findings cover.\n\n- First finding\n  - Supporting detail explaining the first finding.\n- Second finding\n  - Supporting detail explaining the second finding.\n- Third finding\n  - Supporting detail explaining the third finding.\n",
   "anatomyBlock": "split-brief",
-  "sample": "<!-- _class: split-brief -->\n\n`Q2 Performance Review`\n\n## Enterprise revenue stalled in Q2.\n\nThree structural factors explain 90% of the shortfall — all addressable before Q4 close.\n\n- **Renewal pricing complexity is driving churn at the segment ceiling.**\n  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.\n- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**\n  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.\n- **Competitive displacement accelerated in the $80-200K ACV tier.**\n  - Seven losses to a single competitor. Time-to-value gap is the exposure.\n",
+  "sample": "<!-- _class: split-brief -->\n\n`Q2 Performance Review`\n\n## Enterprise revenue stalled in Q2.\n\nThree structural factors explain 90% of the shortfall — all addressable before Q4 close.\n\n- Renewal pricing complexity is driving churn at the segment ceiling.\n  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.\n- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.\n  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.\n- Competitive displacement accelerated in the $80-200K ACV tier.\n  - Seven losses to a single competitor. Time-to-value gap is the exposure.\n",
   "whenToUse": [
     {
       "title": "Executive context + findings",
@@ -57,7 +57,7 @@
     },
     {
       "title": "Findings without titles",
-      "body": "The **Title.** at the start of each li is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure."
+      "body": "The title at the start of each li — rendered bold automatically — is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure."
     }
   ],
   "related": [

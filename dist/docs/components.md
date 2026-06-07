@@ -645,7 +645,7 @@ Use when one paragraph of executive context needs to read alongside three or fou
 
 - **More than 5 findings.** Past 5 findings, the right panel becomes a wall of bullets and the layout's balance breaks. Split into two slides or use `cards-stack` for a fuller list.
 - **Lede that's not a sentence.** The lede is the framing. A fragment or eyebrow-style phrase wastes the role. Write one declarative sentence that sets up why the findings matter.
-- **Findings without titles.** The **Title.** at the start of each li is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
+- **Findings without titles.** The title at the start of each li — rendered bold automatically — is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
 
 #### Authoring
 
@@ -658,9 +658,12 @@ Use when one paragraph of executive context needs to read alongside three or fou
 
 One-sentence framing paragraph explaining what the findings cover.
 
-- **First finding.** Supporting detail explaining the first finding.
-- **Second finding.** Supporting detail explaining the second finding.
-- **Third finding.** Supporting detail explaining the third finding.
+- First finding
+  - Supporting detail explaining the first finding.
+- Second finding
+  - Supporting detail explaining the second finding.
+- Third finding
+  - Supporting detail explaining the third finding.
 ```
 
 #### Slots
@@ -670,7 +673,7 @@ One-sentence framing paragraph explaining what the findings cover.
 | `eyebrow` | `p:first-of-type > code` | no | Optional inline-code eyebrow above the heading. |
 | `heading` | `h2` | yes | Heading shown in the dark left anchor. |
 | `lede` | `p` | yes | One-sentence framing paragraph under the heading. |
-| `findings` | `ul > li` | yes | Right-side findings. Lead each with **Title.** then nested body lines. |
+| `findings` | `ul > li` | yes | Right-side findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 
@@ -747,7 +750,7 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 |---|---|---|---|
 | `panel-heading` | `h2` | yes | Heading shown in the dark left panel. |
 | `panel-eyebrow` | `h3` | no | Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow). |
-| `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
+| `points` | `ul > li` | yes | Right-side supporting points. The lead text of each li is the point label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the body text. |
 | `meta` | `section :is(ul,ol) + ul` | no | Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels. |
 
 #### Anatomy
@@ -833,9 +836,12 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 
 `Speaker · Role, Organisation, Year`
 
-- **First implication.** What this quote means for the work in front of us.
-- **Second implication.** A second-order consequence worth naming.
-- **Third implication.** The action this quote argues for.
+- First implication
+  - What this quote means for the work in front of us.
+- Second implication
+  - A second-order consequence worth naming.
+- Third implication
+  - The action this quote argues for.
 ```
 
 #### Slots
@@ -844,7 +850,7 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 |---|---|---|---|
 | `quotation` | `blockquote` | yes | The pull quote — one or two sentences, italic display font in the dark left panel. |
 | `cite` | `p:first-of-type > code` | no | Optional attribution in an inline-code paragraph after the blockquote. |
-| `implications` | `ul > li` | yes | Right-side supporting points. Lead each with **Title.** then nested body. |
+| `implications` | `ul > li` | yes | Right-side supporting points. Each li's lead is the implication title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 
@@ -908,11 +914,11 @@ Use to show 'who owns what' across a process, scoring policy, or org chart. Two-
 
 ## Who owns each part of the process.
 
-- **Owns the first part** `First actor`
+- Owns the first part `First actor`
   - One-line note on what that ownership covers.
-- **Owns the second part** `Second actor`
+- Owns the second part `Second actor`
   - One-line note.
-- **Owns the third part** `Third actor`
+- Owns the third part `Third actor`
   - One-line note.
 ```
 
@@ -921,7 +927,7 @@ Use to show 'who owns what' across a process, scoring policy, or org chart. Two-
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `rows` | `ul > li` | yes | One row per responsibility. Each li leads with a **bold responsibility**, then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body. |
+| `rows` | `ul > li` | yes | One row per responsibility. Each li leads with the responsibility label — rendered bold automatically (no `**…**` needed) — then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body. |
 
 #### Anatomy
 
@@ -2281,7 +2287,7 @@ Use to weigh two approaches against each other in body text. Add the `chosen` or
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading framing the comparison. |
-| `options` | `ul > li` | yes | Exactly two list items, each one option. Lead each with **Option label.** then 1–3 sentences. |
+| `options` | `ul > li` | yes | Exactly two list items, each one option. The lead text is the option label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet carrying 1–3 sentences. |
 
 #### Anatomy
 
@@ -3170,7 +3176,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 - **Parallel options, not gates.** If the items are alternatives the audience is choosing between, use `cards-grid` or `verdict-grid`. list-criteria is for requirements all of which must hold.
 - **Rationale longer than two lines.** Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-brief` where the body has room to breathe.
-- **Missing criterion title.** The bold lead on each li is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the bold title is the structure.
+- **Missing criterion title.** The lead line on each li — rendered bold automatically — is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the title is the structure.
 
 #### Authoring
 
@@ -3179,13 +3185,13 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 ## What every decision must satisfy.
 
-1. **First criterion**
+1. First criterion
    - Short rationale for why this matters.
-2. **Second criterion**
+2. Second criterion
    - Short rationale.
-3. **Third criterion**
+3. Third criterion
    - Short rationale.
-4. **Fourth criterion**
+4. Fourth criterion
    - Short rationale.
 ```
 
@@ -3194,7 +3200,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the framework. |
-| `criteria` | `ol > li` | yes | One li per criterion. Author as `**Criterion name**` then a nested `- rationale` bullet (card-style nested format, not the forbidden inline `**Title.** body`). |
+| `criteria` | `ol > li` | yes | One li per criterion. The lead text is the criterion title — it renders bold automatically (no `**…**` needed); follow it with a nested `- rationale` bullet. |
 
 #### Anatomy
 
@@ -3712,13 +3718,13 @@ Use for sequential processes with 3–6 stages. Ordered list (ol) renders number
 
 ## How the process flows.
 
-1. **First stage**
+1. First stage
    - *Short description of what happens here.*
-2. **Second stage**
+2. Second stage
    - *Short description.*
-3. **Third stage**
+3. Third stage
    - *Short description.*
-4. **Fourth stage**
+4. Fourth stage
    - *Short description.*
 ```
 
@@ -3727,7 +3733,7 @@ Use for sequential processes with 3–6 stages. Ordered list (ol) renders number
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the process. |
-| `steps` | `ol > li, ul > li` | yes | One li per step. Lead each with **Step label** then a nested bullet for the description. |
+| `steps` | `ol > li, ul > li` | yes | One li per step. The lead text is the step label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the description. |
 
 #### Anatomy
 
@@ -4024,11 +4030,11 @@ Use when a single KPI is the argument. The hero number is the headline; the righ
 
 Measurement window and qualifying detail in one short sentence.
 
-- **First supporting point.**
+- First supporting point.
   - Why this metric matters and what's driving it.
-- **Second supporting point.**
+- Second supporting point.
   - What concentration or trend explains it.
-- **Third supporting point.**
+- Third supporting point.
   - What this number unlocks or threatens.
 ```
 
@@ -4039,7 +4045,7 @@ Measurement window and qualifying detail in one short sentence.
 | `unit` | `p:first-of-type > code` | no | Optional inline-code unit label above the metric (e.g. 'Net Revenue Retention'). |
 | `metric` | `h2` | yes | The hero number. Wrap a unit in *italics* (e.g. '114*%*') to render at smaller weight. |
 | `context` | `p` | yes | One-sentence context line below the metric — measurement window, cohort, comparison. |
-| `findings` | `ul > li` | yes | Right-side supporting findings. Lead each with **Title.** then nested body. |
+| `findings` | `ul > li` | yes | Right-side supporting findings. Each li's lead is the finding title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 #### Anatomy
 

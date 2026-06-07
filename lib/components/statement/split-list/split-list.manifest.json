@@ -24,7 +24,7 @@
     "points": {
       "selector": "ul > li",
       "required": true,
-      "description": "Right-side supporting points. Lead each with **Label.** then body text."
+      "description": "Right-side supporting points. The lead text of each li is the point label — it renders bold automatically (no `**…**` needed); follow it with a nested bullet for the body text."
     },
     "meta": {
       "selector": "section :is(ul,ol) + ul",

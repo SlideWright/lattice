@@ -30,15 +30,15 @@ Progression — ordered movement through stages or time.
 
 ## What a vendor must clear before procurement signs.
 
-1. **SOC 2 Type II**
+1. SOC 2 Type II
    - A current report with no exceptions in the security or availability criteria.
-2. **Data residency**
+2. Data residency
    - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
-3. **Exit guarantee**
+3. Exit guarantee
    - Full data export in a documented format, available without opening a support ticket.
-4. **Breach notification**
+4. Breach notification
    - A 72-hour notice obligation written into the contract, not the marketing page.
-5. **Uptime history**
+5. Uptime history
    - Twelve months of published status at 99.9% or better, verifiable independently.
 
 ---
@@ -96,11 +96,11 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 ## From first pilot to general availability.
 
-1. **Pilot**
+1. Pilot
    - *Four product teams run the framework for a quarter against a shared baseline.*
-2. **Calibrate**
+2. Calibrate
    - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. **Roll out**
+3. Roll out
    - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. **GA**
+4. GA
    - *The framework leaves pilot status and ships as the default for new initiatives.*

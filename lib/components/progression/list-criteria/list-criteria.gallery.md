@@ -20,15 +20,15 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What a vendor must clear before procurement signs.
 
-1. **SOC 2 Type II**
+1. SOC 2 Type II
    - A current report with no exceptions in the security or availability criteria.
-2. **Data residency**
+2. Data residency
    - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
-3. **Exit guarantee**
+3. Exit guarantee
    - Full data export in a documented format, available without opening a support ticket.
-4. **Breach notification**
+4. Breach notification
    - A 72-hour notice obligation written into the contract, not the marketing page.
-5. **Uptime history**
+5. Uptime history
    - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
@@ -39,15 +39,15 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What a vendor must clear before procurement signs.
 
-1. **SOC 2 Type II**
+1. SOC 2 Type II
    - A current report with no exceptions in the security or availability criteria.
-2. **Data residency**
+2. Data residency
    - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
-3. **Exit guarantee**
+3. Exit guarantee
    - Full data export in a documented format, available without opening a support ticket.
-4. **Breach notification**
+4. Breach notification
    - A 72-hour notice obligation written into the contract, not the marketing page.
-5. **Uptime history**
+5. Uptime history
    - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
@@ -58,15 +58,15 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What a vendor must clear before procurement signs.
 
-1. **SOC 2 Type II**
+1. SOC 2 Type II
    - A current report with no exceptions in the security or availability criteria.
-2. **Data residency**
+2. Data residency
    - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
-3. **Exit guarantee**
+3. Exit guarantee
    - Full data export in a documented format, available without opening a support ticket.
-4. **Breach notification**
+4. Breach notification
    - A 72-hour notice obligation written into the contract, not the marketing page.
-5. **Uptime history**
+5. Uptime history
    - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
@@ -77,15 +77,15 @@ Numbered criteria list — each requirement is a row with rationale.
 
 ## What a vendor must clear before procurement signs.
 
-1. **SOC 2 Type II**
+1. SOC 2 Type II
    - A current report with no exceptions in the security or availability criteria.
-2. **Data residency**
+2. Data residency
    - Customer data stays in-region; every sub-processor is disclosed and contractually bound.
-3. **Exit guarantee**
+3. Exit guarantee
    - Full data export in a documented format, available without opening a support ticket.
-4. **Breach notification**
+4. Breach notification
    - A 72-hour notice obligation written into the contract, not the marketing page.
-5. **Uptime history**
+5. Uptime history
    - Twelve months of published status at 99.9% or better, verifiable independently.
 
 
@@ -98,7 +98,7 @@ Numbered criteria list — each requirement is a row with rationale.
 
 - **Parallel options, not gates.** If the items are alternatives the audience is choosing between, use `cards-grid` or `verdict-grid`. list-criteria is for requirements all of which must hold.
 - **Rationale longer than two lines.** Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-brief` where the body has room to breathe.
-- **Missing criterion title.** The bold lead on each li is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the bold title is the structure.
+- **Missing criterion title.** The lead line on each li — rendered bold automatically — is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the title is the structure.
 
 ---
 

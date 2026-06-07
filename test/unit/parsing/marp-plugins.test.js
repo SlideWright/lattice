@@ -349,6 +349,33 @@ describe('marp-plugins', () => {
     }
   });
 
+  test('slotLabelLift: fires on timeline, list-criteria, and actors', () => {
+    for (const cls of ['timeline', 'list-criteria', 'actors']) {
+      const m = makeMarp(plugins.slotLabelLift);
+      const md = `<!-- _class: ${cls} -->\n- Lead\n  - body`;
+      const { html } = m.render(md);
+      assert.match(html, /<strong>Lead<\/strong>/, `expected lift on ${cls} but got: ${html}`);
+    }
+  });
+
+  test('slotLabelLift: `timeline` does NOT match the `timeline-list` chart class', () => {
+    // `timeline-list` is a latticeplot chart whose <li> leads carry a date
+    // chip + title that the chart transform owns — the lift must not touch
+    // it. A plain \b boundary would mis-fire (hyphen is a word boundary).
+    const m = makeMarp(plugins.slotLabelLift);
+    const md = '<!-- _class: timeline-list -->\n1. `2024 Q3` Lead\n   - body';
+    const { html } = m.render(md);
+    assert.doesNotMatch(html, /<strong>/, `timeline-list must not be lifted, got: ${html}`);
+  });
+
+  test('slotLabelLift: actors keeps the trailing `code` actor-name pill outside <strong>', () => {
+    const m = makeMarp(plugins.slotLabelLift);
+    const md = '<!-- _class: actors -->\n- Owns the model `Head of Product`\n  - body';
+    const { html } = m.render(md);
+    // Label lifted; the code chip stays a sibling, not a child of <strong>.
+    assert.match(html, /<strong>Owns the model\s*<\/strong>\s*<code>Head of Product<\/code>/);
+  });
+
   test('slotLabelLift: only the top-level li lead is lifted, not nested li leads', () => {
     const m = makeMarp(plugins.slotLabelLift);
     const md = [

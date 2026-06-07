@@ -27,11 +27,11 @@ Use to show 'who owns what' across a process, scoring policy, or org chart. Two-
 
 ## Who owns each part of the process.
 
-- **Owns the first part** `First actor`
+- Owns the first part `First actor`
   - One-line note on what that ownership covers.
-- **Owns the second part** `Second actor`
+- Owns the second part `Second actor`
   - One-line note.
-- **Owns the third part** `Third actor`
+- Owns the third part `Third actor`
   - One-line note.
 ```
 
@@ -40,7 +40,7 @@ Use to show 'who owns what' across a process, scoring policy, or org chart. Two-
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading. |
-| `rows` | `ul > li` | yes | One row per responsibility. Each li leads with a **bold responsibility**, then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body. |
+| `rows` | `ul > li` | yes | One row per responsibility. Each li leads with the responsibility label — rendered bold automatically (no `**…**` needed) — then a trailing inline-code actor name (rendered as a right-aligned categorical pill), then an optional nested bullet carrying a one-line body. |
 
 ## Anatomy
 

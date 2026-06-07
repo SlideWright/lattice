@@ -18,7 +18,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 - **Parallel options, not gates.** If the items are alternatives the audience is choosing between, use `cards-grid` or `verdict-grid`. list-criteria is for requirements all of which must hold.
 - **Rationale longer than two lines.** Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-brief` where the body has room to breathe.
-- **Missing criterion title.** The bold lead on each li is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the bold title is the structure.
+- **Missing criterion title.** The lead line on each li — rendered bold automatically — is what makes the ledger scannable. A naked sentence per row reads as paragraph soup; the title is the structure.
 
 ## Authoring
 
@@ -27,13 +27,13 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 
 ## What every decision must satisfy.
 
-1. **First criterion**
+1. First criterion
    - Short rationale for why this matters.
-2. **Second criterion**
+2. Second criterion
    - Short rationale.
-3. **Third criterion**
+3. Third criterion
    - Short rationale.
-4. **Fourth criterion**
+4. Fourth criterion
    - Short rationale.
 ```
 
@@ -42,7 +42,7 @@ Use to enumerate the criteria a decision must meet, in priority order. Numbering
 | Slot | Selector | Required | Description |
 |---|---|---|---|
 | `title` | `h2` | yes | Slide heading naming the framework. |
-| `criteria` | `ol > li` | yes | One li per criterion. Author as `**Criterion name**` then a nested `- rationale` bullet (card-style nested format, not the forbidden inline `**Title.** body`). |
+| `criteria` | `ol > li` | yes | One li per criterion. The lead text is the criterion title — it renders bold automatically (no `**…**` needed); follow it with a nested `- rationale` bullet. |
 
 ## Anatomy
 

@@ -24,11 +24,11 @@ Executive brief — dark left anchor, findings list on the right with left-rule 
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- **Renewal pricing complexity is driving churn at the segment ceiling.**
+- Renewal pricing complexity is driving churn at the segment ceiling.
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- **Competitive displacement accelerated in the $80-200K ACV tier.**
+- Competitive displacement accelerated in the $80-200K ACV tier.
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 
@@ -43,11 +43,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- **Renewal pricing complexity is driving churn at the segment ceiling.**
+- Renewal pricing complexity is driving churn at the segment ceiling.
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- **Competitive displacement accelerated in the $80-200K ACV tier.**
+- Competitive displacement accelerated in the $80-200K ACV tier.
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 
@@ -62,11 +62,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- **Renewal pricing complexity is driving churn at the segment ceiling.**
+- Renewal pricing complexity is driving churn at the segment ceiling.
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- **Competitive displacement accelerated in the $80-200K ACV tier.**
+- Competitive displacement accelerated in the $80-200K ACV tier.
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 
@@ -81,11 +81,11 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
 
-- **Renewal pricing complexity is driving churn at the segment ceiling.**
+- Renewal pricing complexity is driving churn at the segment ceiling.
   - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- **Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.**
+- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
   - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- **Competitive displacement accelerated in the $80-200K ACV tier.**
+- Competitive displacement accelerated in the $80-200K ACV tier.
   - Seven losses to a single competitor. Time-to-value gap is the exposure.
 
 
@@ -98,7 +98,7 @@ Three structural factors explain 90% of the shortfall — all addressable before
 
 - **More than 5 findings.** Past 5 findings, the right panel becomes a wall of bullets and the layout's balance breaks. Split into two slides or use `cards-stack` for a fuller list.
 - **Lede that's not a sentence.** The lede is the framing. A fragment or eyebrow-style phrase wastes the role. Write one declarative sentence that sets up why the findings matter.
-- **Findings without titles.** The **Title.** at the start of each li is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
+- **Findings without titles.** The title at the start of each li — rendered bold automatically — is what makes the right panel scannable. A naked sentence per bullet reads as paragraph soup; the bold lead is the structure.
 
 ---
 

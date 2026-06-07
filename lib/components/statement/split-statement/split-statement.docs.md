@@ -29,9 +29,12 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 
 `Speaker · Role, Organisation, Year`
 
-- **First implication.** What this quote means for the work in front of us.
-- **Second implication.** A second-order consequence worth naming.
-- **Third implication.** The action this quote argues for.
+- First implication
+  - What this quote means for the work in front of us.
+- Second implication
+  - A second-order consequence worth naming.
+- Third implication
+  - The action this quote argues for.
 ```
 
 ## Slots
@@ -40,7 +43,7 @@ Use when one quotation deserves the full attention of a slide and the implicatio
 |---|---|---|---|
 | `quotation` | `blockquote` | yes | The pull quote — one or two sentences, italic display font in the dark left panel. |
 | `cite` | `p:first-of-type > code` | no | Optional attribution in an inline-code paragraph after the blockquote. |
-| `implications` | `ul > li` | yes | Right-side supporting points. Lead each with **Title.** then nested body. |
+| `implications` | `ul > li` | yes | Right-side supporting points. Each li's lead is the implication title — it renders bold automatically (no `**…**` needed); follow it with a nested `- body` line. A bare single-line bullet won't render bold. |
 
 ## Anatomy
 

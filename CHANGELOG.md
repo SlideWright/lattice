@@ -36,6 +36,28 @@ in patch versions.
 
 ### Changed
 
+- **`timeline`, `list-criteria`, and `actors` no longer require `**bold**`
+  markdown for their slot headers.** These layouts now auto-lift each
+  top-level list item's lead text into the heading via `slotLabelLift` (the
+  same mechanism `before-after`, `decision`, `statute-stack`, etc. already
+  used), so authors write `1. Pilot` / `- Owns the model \`Owner\`` instead
+  of `1. **Pilot**` / `- **Owns the model** \`Owner\``. Existing decks that
+  still use the bold markdown render identically — the lift is idempotent,
+  so `**…**` is now optional, never wrong. For `actors`, a trailing inline
+  `code` actor-name pill is kept a sibling of the lifted heading so its
+  right-aligned pill placement is preserved. The shipped samples, galleries,
+  and per-component docs drop the bold; stale `compare-prose` / `split-list`
+  doc text that told authors to write `**Label.**` is corrected to describe
+  the automatic behavior.
+- **The `split-brief`, `split-metric`, and `split-statement` right-panel
+  titles no longer require `**bold**` either.** Same auto-lift treatment —
+  their samples, skeletons, and docs drop the bold and use the nested
+  `- Title` / `  - body` shape. A new author-lint rule (`split-bodyless-item`,
+  also enforced on manifests) catches the one shape the lift *can't* rescue:
+  a right-panel item with no nested body (inline `- Title. body` or a bare
+  `- Title`), which renders as flat unhierarchied text because the lift needs
+  a nested body to know where the title ends. `npm run lint:deck` now reports
+  it as an error with the nested-shape fix.
 - **The browsable component reference is now built into the docs site as
   per-component pages.** Each component gets its own focused page
   (`/components/<bucket>/<name>/`) with a live preview that flips to an

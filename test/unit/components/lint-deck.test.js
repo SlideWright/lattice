@@ -37,6 +37,60 @@ describe('deck linter', () => {
     assert.equal(f.severity, 'error');
   });
 
+  test('flags a bodyless inline item on a split slide (error)', () => {
+    const src = `${FM}<!-- _class: split-metric -->\n\n\`Unit\`\n\n## 114%\n\nContext.\n\n- Title sentence. Body crammed on the same line.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-bodyless-item');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'error');
+    assert.equal(f.classToken, 'split-metric');
+  });
+
+  test('flags a bare title-only item on a split slide (error — also unlifted)', () => {
+    const src = `${FM}<!-- _class: split-brief -->\n\n\`Eyebrow\`\n\n## Head.\n\nFraming.\n\n- A finding with no nested body\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-bodyless-item');
+    assert.ok(f);
+    assert.equal(f.severity, 'error');
+  });
+
+  test('accepts the nested shape on a split slide', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n> Quote.\n\n\`Speaker\`\n\n- First implication\n  - What it means.\n- Second implication\n  - A consequence.\n`;
+    assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'split-bodyless-item').length, 0);
+  });
+
+  test('warns when an h2-anchored split slide has no `## ` headline', () => {
+    const src = `${FM}<!-- _class: split-metric -->\n\n\`Unit\`\n\nContext only, no headline.\n\n- Title\n  - body.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-missing-headline');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'warning');
+    assert.equal(f.classToken, 'split-metric');
+  });
+
+  test('does NOT warn split-statement for a missing `## ` (blockquote-anchored)', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n> Quote.\n\n\`Speaker\`\n\n- A\n  - b.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-missing-headline');
+    assert.ok(!f, 'split-statement should not require an h2');
+  });
+
+  test('warns when split-statement has no `> ` blockquote', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n\`Speaker\`\n\n- A\n  - b.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-statement-missing-quote');
+    assert.ok(f);
+    assert.equal(f.severity, 'warning');
+  });
+
+  test('warns when split-compare does not have exactly two options', () => {
+    const three = `${FM}<!-- _class: split-compare -->\n\n## H.\n\n- One\n  - a.\n- Two\n  - b.\n- Three\n  - c.\n`;
+    const f = lintText(three, { vocab }).find((x) => x.rule === 'split-compare-option-count');
+    assert.ok(f);
+    assert.equal(f.severity, 'warning');
+    assert.match(f.message, /found 3/);
+  });
+
+  test('accepts a well-formed split-compare two-up', () => {
+    const two = `${FM}<!-- _class: split-compare -->\n\n## H.\n\n- One\n  - a.\n- Two\n  - b.\n`;
+    assert.equal(lintText(two, { vocab }).filter((x) => x.rule.startsWith('split-')).length, 0);
+  });
+
   test('flags an unknown class token (warning)', () => {
     const src = `${FM}<!-- _class: card-grid -->\n\n## Typo.\n`;
     const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-class');

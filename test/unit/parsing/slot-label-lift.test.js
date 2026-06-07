@@ -91,6 +91,41 @@ describe('slot-label-lift', () => {
     assert.equal(output, '<strong>Build <code>v2</code></strong><ul><li>body</li></ul>');
   });
 
+  // ── chipTail (actors actor-name pill) ───────────────────────────────────
+
+  test('lift: chipTail keeps a trailing <code> chip outside the <strong>', () => {
+    const input  = '<p>Owns the model <code>Head of Product</code></p><ul><li>body</li></ul>';
+    const output = liftSlotLabel(input, { chipTail: true });
+    assert.equal(output, '<strong>Owns the model</strong> <code>Head of Product</code><ul><li>body</li></ul>');
+  });
+
+  test('lift: chipTail leaves mid-lead <code> nested in the <strong>', () => {
+    // Only a TRAILING code run is split off; code followed by text stays in.
+    const input  = '<p>Build <code>v2</code> now</p><ul><li>body</li></ul>';
+    const output = liftSlotLabel(input, { chipTail: true });
+    assert.equal(output, '<strong>Build <code>v2</code> now</strong><ul><li>body</li></ul>');
+  });
+
+  test('lift: chipTail with no trailing code behaves like the default', () => {
+    const input  = '<p>Owns the model</p><ul><li>body</li></ul>';
+    assert.equal(
+      liftSlotLabel(input, { chipTail: true }),
+      liftSlotLabel(input),
+    );
+  });
+
+  test('lift: chipTail is idempotent on already-authored `**label** `code``', () => {
+    const input  = '<p><strong>Owns the model</strong> <code>Head of Product</code></p><ul><li>body</li></ul>';
+    const output = liftSlotLabel(input, { chipTail: true });
+    assert.equal(output, '<strong>Owns the model</strong> <code>Head of Product</code><ul><li>body</li></ul>');
+  });
+
+  test('lift: chipTail off (default) keeps a trailing chip inside the <strong>', () => {
+    const input  = '<p>Owns the model <code>Head of Product</code></p><ul><li>body</li></ul>';
+    const output = liftSlotLabel(input);
+    assert.equal(output, '<strong>Owns the model <code>Head of Product</code></strong><ul><li>body</li></ul>');
+  });
+
   test('lift: multi-word lead with punctuation', () => {
     const input  = '<p>Why not delay?</p><ul><li>body</li></ul>';
     const output = liftSlotLabel(input);
