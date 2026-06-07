@@ -4,7 +4,11 @@
   "function": "statement",
   "form": "canvas",
   "substance": "prose",
-  "tags": ["pull-quote", "quotation", "showcase"],
+  "tags": [
+    "pull-quote",
+    "quotation",
+    "showcase"
+  ],
   "description": "A pulled quotation, centered, with attribution.",
   "purpose": "Use to land a phrase verbatim — customer voice, expert claim, mission statement. Keep under ~25 words. The quote IS the slide; the attribution is the supporting credit.",
   "slots": {
@@ -39,7 +43,7 @@
   "antiPatterns": [
     {
       "title": "Paragraph-length quotes",
-      "body": "If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-statement` (gives the quote half the slide alongside spelled-out implications)."
+      "body": "If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-panel pullquote` (gives the quote half the slide alongside spelled-out implications)."
     },
     {
       "title": "Multiple quotes per slide",
@@ -52,7 +56,7 @@
   ],
   "related": [
     {
-      "name": "split-statement",
+      "name": "split-panel",
       "when": "the quote needs implications spelled out alongside it"
     },
     {
@@ -64,5 +68,7 @@
       "when": "the most memorable thing is a metric, not a phrase"
     }
   ],
-  "showcase": { "featured": true }
+  "showcase": {
+    "featured": true
+  }
 }

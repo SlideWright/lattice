@@ -27,6 +27,16 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: `split-brief`, `split-metric`, `split-statement`, `split-steps`,
+  and `split-list` are removed** — consolidated into a single **`split-panel`**
+  component (the featured-left-panel + supporting-right-zone family; they
+  differed only in finish). Migrate: `split-brief` → `split-panel` (default),
+  `split-metric` → `split-panel metric`, `split-statement` → `split-panel pullquote`,
+  `split-steps` → `split-panel steps`, `split-list` → `split-panel watermark`.
+  `split-compare` is unchanged (its right zone is a distinct 2-option grid +
+  verdict). The family's `form` is corrected from `split` to `panel`. The dead
+  `splitPanelCounter` marp plugin (numbered the removed `split-list`) is also
+  removed. See `engineering/decisions/2026-06-07-split-family-analysis.md`.
 - **Breaking: the `before-after` layout is removed.** It was `compare-prose`
   with an arrow connector and an accent ring on the second ("after") card — the
   same two-card data shape — so it is now the `transition` variant of

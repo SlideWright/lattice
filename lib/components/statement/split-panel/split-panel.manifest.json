@@ -1,0 +1,98 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "split-panel",
+  "function": "statement",
+  "form": "panel",
+  "substance": "structure",
+  "bucket": "statement",
+  "tags": ["summary", "board-deck", "hero-number", "pull-quote", "takeaway"],
+  "description": "Featured left panel + supporting right zone — one prominent claim beside the points that substantiate it.",
+  "purpose": "Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.",
+  "variants": ["metric", "pullquote", "steps", "watermark", "mirror"],
+  "slots": {
+    "eyebrow": {
+      "selector": "p:first-of-type > code",
+      "required": false,
+      "description": "Optional inline-code label above the feature (the phase number under `steps`, the unit under `metric`)."
+    },
+    "heading": {
+      "selector": "h2",
+      "required": true,
+      "description": "The featured element in the left panel — a heading by default; a hero number under `metric`; the phase name under `steps`. (Under `pullquote`, use a blockquote instead — see the variant.)"
+    },
+    "lede": {
+      "selector": "p",
+      "required": false,
+      "description": "One-sentence framing paragraph under the feature."
+    },
+    "points": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "Right-side supporting points. Each li's lead is the point title — it renders bold automatically (no `**…**`); follow it with a nested `- body` line."
+    }
+  },
+  "skeleton": "<!-- _class: split-panel -->\n\n`Eyebrow context`\n\n## Headline that anchors the panel.\n\nOne-sentence framing paragraph explaining what the points cover.\n\n- First point\n  - Supporting detail explaining the first point.\n- Second point\n  - Supporting detail explaining the second point.\n- Third point\n  - Supporting detail explaining the third point.\n",
+  "anatomyBlock": "split-panel",
+  "sample": "<!-- _class: split-panel -->\n\n`Q2 board review`\n\n## Renewals held; the gap is new logos.\n\nThe quarter closed on plan for retention, and three findings explain the new-business shortfall.\n\n- Net retention beat plan\n  - 114% against a 108% target; the installed base is healthy and expanding.\n- New-logo pipeline thinned\n  - Top-of-funnel fell 22% after the field reorg; coverage is the constraint, not conversion.\n- The fix is coverage, not price\n  - Two reps moved onto the gap close most of it before the Q4 cutover.\n",
+  "whenToUse": [
+    {
+      "title": "One feature, supporting points",
+      "body": "When a single prominent element — a thesis heading, a hero number, a quote — deserves its own panel and the right side substantiates it. The panel is the anchor; the right is the evidence."
+    },
+    {
+      "title": "Pick the variant by what the panel features",
+      "body": "Heading (default), hero number (`metric`), pull-quote (`pullquote`), phase + numbered steps (`steps`), or an accent panel with a letterform watermark and a metadata footer (`watermark`)."
+    },
+    {
+      "title": "Points carry a title + body",
+      "body": "Each right-side item leads with a bold title (lifted automatically) and a nested one-line body. Three or four points read best; more crowds the panel."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "A binary decision with a verdict",
+      "body": "If the slide weighs two options and lands a recommendation, use `split-compare` — its right zone is a 2-option grid + a verdict card, which `split-panel` does not provide."
+    },
+    {
+      "title": "Co-equal halves",
+      "body": "split-panel is asymmetric — a featured panel beside supporting detail. For two co-equal options side by side, use `compare-prose`."
+    },
+    {
+      "title": "A list with no feature",
+      "body": "If there's no prominent left-panel element, a plain `list` or `cards-stack` serves better — the panel earns its place only when one element leads."
+    }
+  ],
+  "related": [
+    { "name": "split-compare", "when": "a binary decision with a recommendation card" },
+    { "name": "compare-prose", "when": "two co-equal options side by side" },
+    { "name": "big-number", "when": "the hero number is the whole slide, with no supporting list" },
+    { "name": "list-steps", "when": "an ordered process without a left anchor panel" }
+  ],
+  "variantDocs": {
+    "metric": {
+      "label": "Metric — hero number owns the room",
+      "caption": "Flips the polarity: light left panel with one hero number (wrap a unit in *italics*, e.g. `114*%*`, to render it smaller), dark right panel with the supporting findings. The `h2` is the number; the inline-code eyebrow is the unit label; the lede is the measurement context. Was the standalone `split-metric` component before 2026-06-07.",
+      "sample": "<!-- _class: split-panel metric -->\n\n`Net Revenue Retention`\n\n## 114*%*\n\nTrailing twelve months, top-50 accounts, versus a 108% target.\n\n- Expansion outran churn\n  - Seat growth in the installed base more than covered the two logos lost to consolidation.\n- Concentration is the watch-item\n  - The top ten accounts drive 41% of the number; a single departure swings it three points.\n"
+    },
+    "pullquote": {
+      "label": "Quote — pull-quote feature",
+      "caption": "The left panel commits half the slide to one quotation (display italic on a dark canvas) with an optional inline-code attribution; the right panel spells out the implications. Write a `>` blockquote instead of an `h2`. Was the standalone `split-statement` component before 2026-06-07.",
+      "sample": "<!-- _class: split-panel pullquote -->\n\n> We do not have a demand problem. We have a coverage problem.\n\n`VP Sales · Q2 board review`\n\n- Reframes the miss\n  - The pipeline gap is structural, not a market signal — it followed the field reorg.\n- Points at the fix\n  - Coverage is a staffing decision the room can make today, not a quarter-long bet.\n"
+    },
+    "steps": {
+      "label": "Steps — numbered step-timeline",
+      "caption": "The left panel anchors a phase (inline-code phase number as a watermark + heading + summary); the right panel renders an ordered list as a numbered step-timeline with a connecting line. Use `ol` for numbered discs. Was the standalone `split-steps` component before 2026-06-07.",
+      "sample": "<!-- _class: split-panel steps -->\n\n`02`\n\n## Calibrate\n\nWhat the second phase produces before rollout begins.\n\n1. Tune the weights\n   - Score real outcomes against the model and adjust until the error band is acceptable.\n2. Make the log mandatory\n   - Every decision is recorded with its signals; the audit trail starts here.\n3. Sign off the baseline\n   - Written agreement on scope before the rollout phase opens.\n"
+    },
+    "watermark": {
+      "label": "Watermark — accent panel + letterform",
+      "caption": "An accent left panel with a large letterform watermark (the heading's first letter), an `h5` section rubric, and an optional `Audience · / Intent ·` metadata footer on the right. Use for an overview/showcase panel. Was the standalone `split-list` component before 2026-06-07.",
+      "sample": "<!-- _class: split-panel watermark -->\n\n## Scorecard\n\n### What the framework measures\n\n- Signal quality\n  - Whether the inputs are trustworthy enough to act on without re-checking.\n- Decision latency\n  - How long from signal to a logged, owned decision.\n- Reversal rate\n  - How often a logged decision is later overturned, and why.\n"
+    },
+    "mirror": {
+      "label": "Mirror — swap left and right",
+      "caption": "Flips the featured panel to the right and the supporting zone to the left. Use when the deck's reading rhythm wants the panel on the trailing side.",
+      "sample": "<!-- _class: split-panel mirror -->\n\n`Eyebrow context`\n\n## Headline on the right-hand panel.\n\nOne-sentence framing paragraph.\n\n- First point\n  - Supporting detail.\n- Second point\n  - Supporting detail.\n"
+    }
+  }
+}

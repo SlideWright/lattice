@@ -2,7 +2,7 @@
 
 # progression
 
-`5 components`
+`4 components`
 
 Progression — ordered movement through stages or time.
 
@@ -70,22 +70,3 @@ Progression — ordered movement through stages or time.
 | Adoption   | [x] Pilot onboarding   | [-] Weekly signal review | [ ] Org-wide rollout    |
 | Governance | [x] Decision log       | [x] Calibration cadence  | [ ] Board reporting     |
 | Tooling    | [x] Intake form        | [/] Dashboards           | [ ] Self-serve exports  |
-
----
-
-<!-- _class: split-steps -->
-
-`02`
-
-## Discovery and Scoping
-
-Four weeks. Shared definition of the problem before any solution work begins.
-
-1. Stakeholder Interviews
-   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
-2. Current-State Audit
-   - System inventory, workflow documentation, and data-quality review feed a single source-of-truth artefact.
-3. Problem Framing Workshop
-   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
-4. Scope Confirmation
-   - Written sign-off on what is in, what is out, and what requires a separate decision.

@@ -70,8 +70,8 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ---
 
-<!-- _class: split-list -->
-<!-- _footer: "Accent rail · split-list" -->
+<!-- _class: split-panel watermark -->
+<!-- _footer: "Accent rail · split-panel watermark" -->
 
 ## The accent rail proves it
 

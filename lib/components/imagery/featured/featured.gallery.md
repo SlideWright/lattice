@@ -120,4 +120,4 @@ Featured card + sub-grid — one prominent item with supporting cards.
 - `cards-grid` — all options carry equal weight; no winner declared
 - `verdict-grid` — options scored against shared criteria, not picked
 - `decision` — the recommendation needs an explicit pro/con frame
-- `split-brief` — the recommendation is a thesis sentence + supporting findings
+- `split-panel` — the recommendation is a thesis sentence + supporting findings

@@ -4,7 +4,11 @@
   "function": "evidence",
   "form": "stack",
   "substance": "structure",
-  "tags": ["dashboard", "metric", "percentage"],
+  "tags": [
+    "dashboard",
+    "metric",
+    "percentage"
+  ],
   "description": "Row of 3–5 stat tiles, each with a big number and a label.",
   "purpose": "Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.",
   "slots": {
@@ -34,7 +38,7 @@
     },
     {
       "title": "Numbers are the headline",
-      "body": "Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-metric` instead."
+      "body": "Lead with the number, follow with a one-line caption. The tile is for the metric and a label, not for explanation; if the caption wants a sentence, use `kpi` or `split-panel metric` instead."
     },
     {
       "title": "Independent metrics, not parts of a whole",
@@ -65,7 +69,7 @@
       "when": "metrics need targets, trends, and status pills"
     },
     {
-      "name": "split-metric",
+      "name": "split-panel",
       "when": "one focal KPI with a paragraph of supporting prose"
     },
     {

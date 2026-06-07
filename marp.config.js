@@ -4,7 +4,7 @@
  * The markdown-it / Marpit engine plugins (deck-class propagation, the `logo:`
  * directive, verdict-grid / obligation-matrix / checklist state markers,
  * slot-label lift, glossary table + range, heading-period adjustment,
- * split-list numbering, latticeplot fences, Mermaid hljs registration) now live
+ * latticeplot fences, Mermaid hljs registration) now live
  * in lib/integrations/marp/plugins.js so the browser playground bundle can run
  * the SAME engine for render parity. This file wires them into marp-cli and
  * adds the HTML-stage transformer registry + deck-logo injection.
@@ -15,7 +15,6 @@ const {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
-  splitPanelCounter,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,
@@ -77,7 +76,6 @@ module.exports = {
   engine: ({ marp }) => {
     registerMermaidHljs(marp);
     marp.use(deckClassPropagate)
-        .use(splitPanelCounter)
         .use(verdictGridBadges)
         .use(obligationMatrixBadges)
         .use(checklistItemStates)
@@ -124,7 +122,6 @@ module.exports.plugins = {
   deckClassPropagate,
   applyDeckLogoToHtml,
   readDeckLogoFrontMatter,
-  splitPanelCounter,
   stateClassesFor,
   verdictGridBadges,
   obligationMatrixBadges,

@@ -16,7 +16,7 @@ Use to land a phrase verbatim — customer voice, expert claim, mission statemen
 
 ## When NOT to use
 
-- **Paragraph-length quotes.** If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-statement` (gives the quote half the slide alongside spelled-out implications).
+- **Paragraph-length quotes.** If the quote runs past 25 words, the slide is reading like a wall of text. Trim aggressively or use `split-panel pullquote` (gives the quote half the slide alongside spelled-out implications).
 - **Multiple quotes per slide.** Two quotes on one canvas dilute both. The whole point is that one quote earns the whole slide. For a montage of customer voices, use successive quote slides.
 - **Decorative quotes.** If the quote could be paraphrased without losing anything, the slide doesn't need to be a quote slide. Move the idea into `content` and skip the chrome.
 
@@ -58,7 +58,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`split-statement`](../../statement/split-statement/split-statement.docs.md) — the quote needs implications spelled out alongside it
+- [`split-panel`](../../statement/split-panel/split-panel.docs.md) — the quote needs implications spelled out alongside it
 - [`content`](../../statement/content/content.docs.md) — the language is paraphrasable — let prose carry it
 - [`big-number`](../../statement/big-number/big-number.docs.md) — the most memorable thing is a metric, not a phrase
 

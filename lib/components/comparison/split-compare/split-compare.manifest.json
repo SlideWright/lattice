@@ -4,7 +4,11 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
-  "tags": ["tradeoff", "recommendation", "contrast"],
+  "tags": [
+    "tradeoff",
+    "recommendation",
+    "contrast"
+  ],
   "description": "Two options + verdict — dark frame on the left, 2-column option grid + a recommendation card on the right.",
   "purpose": "Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.",
   "slots": {
@@ -66,9 +70,21 @@
     }
   ],
   "related": [
-    { "name": "compare-prose", "when": "the comparison is undecided — no verdict bar yet" },
-    { "name": "decision", "when": "the verdict slide that follows a separate comparison" },
-    { "name": "split-brief", "when": "the right side is findings, not paired options" },
-    { "name": "verdict-grid", "when": "three or more options scored against shared criteria" }
+    {
+      "name": "compare-prose",
+      "when": "the comparison is undecided — no verdict bar yet"
+    },
+    {
+      "name": "decision",
+      "when": "the verdict slide that follows a separate comparison"
+    },
+    {
+      "name": "split-panel",
+      "when": "the right side is findings, not paired options"
+    },
+    {
+      "name": "verdict-grid",
+      "when": "three or more options scored against shared criteria"
+    }
   ]
 }

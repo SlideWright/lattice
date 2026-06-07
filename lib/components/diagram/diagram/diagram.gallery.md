@@ -20,7 +20,7 @@ footer: "Mermaid 11.14 · rendered through the diagram component"
 
 ---
 
-<!-- _class: split-list -->
+<!-- _class: split-panel watermark -->
 
 ## How this gallery is organised.
 

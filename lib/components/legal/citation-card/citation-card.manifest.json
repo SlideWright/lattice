@@ -5,7 +5,11 @@
   "bucket": "legal",
   "form": "canvas",
   "substance": "prose",
-  "tags": ["citation", "quotation", "contract"],
+  "tags": [
+    "citation",
+    "quotation",
+    "contract"
+  ],
   "description": "Single authoritative reference — heading + citation + verbatim quote + plain-English gloss.",
   "purpose": "Use when one citation IS the slide. The blockquote carries the verbatim language; the trailing list explains what it means and what we must do about it.",
   "variants": [
@@ -60,7 +64,7 @@
     },
     {
       "title": "Paraphrased 'quote'",
-      "body": "If you are rewriting the source language, drop the citation framing and use content or split-statement. The whole point of citation-card is verbatim language with attribution."
+      "body": "If you are rewriting the source language, drop the citation framing and use content or split-panel pullquote. The whole point of citation-card is verbatim language with attribution."
     },
     {
       "title": "Gloss longer than the quote",
@@ -81,7 +85,7 @@
       "when": "the source is a person, not a document"
     },
     {
-      "name": "split-statement",
+      "name": "split-panel",
       "when": "a quote with three or four implications"
     },
     {

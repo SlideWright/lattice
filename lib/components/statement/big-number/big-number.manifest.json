@@ -4,7 +4,11 @@
   "function": "statement",
   "form": "canvas",
   "substance": "prose",
-  "tags": ["hero-number", "metric", "pitch"],
+  "tags": [
+    "hero-number",
+    "metric",
+    "pitch"
+  ],
   "description": "Single oversized number as the focal claim.",
   "purpose": "Use to make one metric land. The number should be the headline — supporting text is one short caption. The whole slide is the chart.",
   "slots": {
@@ -65,7 +69,7 @@
       "when": "grid of 4-6 metrics with status indicators"
     },
     {
-      "name": "split-metric",
+      "name": "split-panel",
       "when": "the metric needs a paragraph of context alongside it"
     },
     {
@@ -73,5 +77,7 @@
       "when": "the argument is mostly prose with a number embedded"
     }
   ],
-  "showcase": { "featured": true }
+  "showcase": {
+    "featured": true
+  }
 }

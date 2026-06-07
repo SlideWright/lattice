@@ -2,7 +2,7 @@
 
 # statement
 
-`6 components`
+`4 components`
 
 Statement — one declarative claim per slide.
 
@@ -36,52 +36,17 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ---
 
-<!-- _class: split-brief -->
+<!-- _class: split-panel -->
 
-`Q2 Performance Review`
+`Q2 board review`
 
-## Enterprise revenue stalled in Q2.
+## Renewals held; the gap is new logos.
 
-Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+The quarter closed on plan for retention, and three findings explain the new-business shortfall.
 
-- Renewal pricing complexity is driving churn at the segment ceiling.
-  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint.
-  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- Competitive displacement accelerated in the $80-200K ACV tier.
-  - Seven losses to a single competitor. Time-to-value gap is the exposure.
-
----
-
-<!-- _class: split-list -->
-
-## The best product does not win. The most understood one does.
-
-### Why understanding wins
-
-- Clarity is a product decision
-  - If a prospect can't state our value in a sentence, that's an architecture problem, not a messaging one.
-- Onboarding is the first argument
-  - The moment a user first succeeds sets the frame for everything that follows.
-- Comprehension drives retention
-  - Users who understand the system's logic stay through friction; users who don't churn at the first one.
-
-<!-- -->
-
-- Product and growth leadership
-- Win on comprehension, not feature count
-
----
-
-<!-- _class: split-statement -->
-
-> The best product does not win. The most understood product does.
-
-`Morgan Chase · Head of Product, Vercel, 2024`
-
-- Clarity is a product decision, not a marketing one.
-  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
-- Onboarding is the product's first argument for itself.
-  - The moment a user first succeeds defines their frame for everything that follows.
-- Understanding, not delight, is the retention driver at scale.
-  - Users who understand the system's logic stay through friction. Build for comprehension.
+- Net retention beat plan
+  - 114% against a 108% target; the installed base is healthy and expanding.
+- New-logo pipeline thinned
+  - Top-of-funnel fell 22% after the field reorg; coverage is the constraint, not conversion.
+- The fix is coverage, not price
+  - Two reps moved onto the gap close most of it before the Q4 cutover.

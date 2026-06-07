@@ -65,7 +65,7 @@ const THEMES_DIR = path.join(ROOT, 'themes');
 // Layout-specific variants are styled in two places: a component's own
 // <name>.styles.css, AND the shared base.modifiers.css (where the cross-
 // cutting modifier block lives — e.g. obligation-matrix .pills/.lanes,
-// split-list/cards-stack .mirror). checkVariantDeclaration scans both so a
+// split-panel/cards-stack .mirror). checkVariantDeclaration scans both so a
 // variant defined only in base.modifiers can't go undeclared.
 const BASE_MODIFIERS_CSS = path.join(ROOT, 'lib', 'base', 'base.modifiers.css');
 

@@ -74,7 +74,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`compare-prose`](../../comparison/compare-prose/compare-prose.docs.md) — the comparison is undecided — no verdict bar yet
 - [`decision`](../../comparison/decision/decision.docs.md) — the verdict slide that follows a separate comparison
-- [`split-brief`](../../statement/split-brief/split-brief.docs.md) — the right side is findings, not paired options
+- [`split-panel`](../../statement/split-panel/split-panel.docs.md) — the right side is findings, not paired options
 - [`verdict-grid`](../../comparison/verdict-grid/verdict-grid.docs.md) — three or more options scored against shared criteria
 
 ## Demo deck

@@ -186,7 +186,7 @@ def table_row(a: str, b: str, c: str) -> tuple:
     return ('raw', '│' + _cell(a) + '│' + _cell(b) + '│' + _cell(c) + '│')
 
 
-# ----- panel primitives (T17 split-list etc.) ------------------------------
+# ----- panel primitives (split-panel etc.) --------------------------------
 
 PANEL_W = 14           # left accent panel width including walls
 PANEL_GAP = 2          # space between panel and right column
@@ -387,18 +387,6 @@ def demo_blocks() -> dict[str, str]:
         ('blank',),
     ])
 
-    blocks['T17-split-list'] = frame([
-        ('left', 'header'),
-        panel_right(panel_top(), ''),
-        panel_right(panel_row('EYEBROW'), 'Section heading'),
-        panel_right(panel_row(''), ''),
-        panel_right(panel_row('Panel'), '- Point one'),
-        panel_right(panel_row('title'), '- Point two'),
-        panel_right(panel_row(''), '- Point three'),
-        panel_right(panel_bot(), ''),
-        ('split', 'footer', '1/19'),
-    ])
-
     blocks['T7-card-grid-2x2'] = frame([
         ('left', 'header'),
         ('center', 'LABEL'),
@@ -505,24 +493,13 @@ def demo_blocks() -> dict[str, str]:
         ('split', 'footer', '1/19'),
     ])
 
-    blocks['split-brief'] = frame([
+    blocks['split-panel'] = frame([
         ('left', 'header'),
         panel_right(panel_top(), 'FINDINGS'),
         panel_right(panel_row('BRIEF'), '│ Finding title'),
         panel_right(panel_row('heading'), '│ body detail'),
         panel_right(panel_row('+ lede'), '│ Finding title'),
         panel_right(panel_row(''), '│ body detail'),
-        panel_right(panel_bot(), ''),
-        ('split', 'footer', '1/19'),
-    ])
-
-    blocks['split-statement'] = frame([
-        ('left', 'header'),
-        panel_right(panel_top(), 'IMPLICATIONS'),
-        panel_right(panel_row('"A quote'), '- First implication'),
-        panel_right(panel_row('on the'), '  body line'),
-        panel_right(panel_row('left."'), '- Second implication'),
-        panel_right(panel_row('— source'), '  body line'),
         panel_right(panel_bot(), ''),
         ('split', 'footer', '1/19'),
     ])
@@ -852,17 +829,6 @@ def demo_blocks() -> dict[str, str]:
         ('split', 'footer', '1/19'),
     ])
 
-    blocks['split-steps'] = frame([
-        ('left', 'header'),
-        panel_right(panel_top(), ''),
-        panel_right(panel_row('PHASE'), '01  First step here'),
-        panel_right(panel_row(''), '02  Second step here'),
-        panel_right(panel_row('Title'), '03  Third step here'),
-        panel_right(panel_row(''), '04  Fourth step here'),
-        panel_right(panel_bot(), ''),
-        ('split', 'footer', '1/19'),
-    ])
-
     # ----- EVIDENCE family --------------------------------------------------
 
     blocks['stats'] = frame([
@@ -978,16 +944,6 @@ def demo_blocks() -> dict[str, str]:
         ('center', '  emergent   HUGE        '),
         ('center', '    minor   medium       '),
         ('center', '  tiny      LARGE   keyword'),
-        ('split', 'footer', '1/19'),
-    ])
-
-    blocks['split-metric'] = frame([
-        ('left', 'header'),
-        panel_right(panel_top(), 'CONTEXT / FINDINGS'),
-        panel_right(panel_row('114%'), '- First finding'),
-        panel_right(panel_row('NRR'), '  supporting body'),
-        panel_right(panel_row('+ context'), '- Second finding'),
-        panel_right(panel_bot(), '  supporting body'),
         ('split', 'footer', '1/19'),
     ])
 

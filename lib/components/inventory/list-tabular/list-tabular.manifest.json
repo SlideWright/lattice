@@ -98,7 +98,7 @@
     "register": {
       "label": "Tagged pill (register)",
       "caption": "Meta renders as an accent-soft pill — status registers, tagged inventories, role registers where the meta is a category.",
-      "sample": "<!-- _class: list-tabular register -->\n\n## Active components — release status.\n\n1. cards-grid `stable`\n2. split-brief `stable`\n3. radar-chart `beta`\n4. quadrant-chart `beta`\n5. kanban-board `alpha`\n"
+      "sample": "<!-- _class: list-tabular register -->\n\n## Active components — release status.\n\n1. cards-grid `stable`\n2. split-panel `stable`\n3. radar-chart `beta`\n4. quadrant-chart `beta`\n5. kanban-board `alpha`\n"
     },
     "rule": {
       "label": "def + rule",
@@ -118,7 +118,7 @@
     "outline": {
       "label": "register + outline",
       "caption": "Renders the register tag as a hairline-bordered outline pill instead of the filled accent-soft default. Lighter visual weight when the deck has many register slides in a row.",
-      "sample": "<!-- _class: list-tabular register outline -->\n\n## Active components — release status.\n\n1. cards-grid `stable`\n2. split-brief `stable`\n3. radar-chart `beta`\n4. quadrant-chart `beta`\n5. kanban-board `alpha`\n"
+      "sample": "<!-- _class: list-tabular register outline -->\n\n## Active components — release status.\n\n1. cards-grid `stable`\n2. split-panel `stable`\n3. radar-chart `beta`\n4. quadrant-chart `beta`\n5. kanban-board `alpha`\n"
     }
   }
 }

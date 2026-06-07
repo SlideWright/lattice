@@ -78,6 +78,6 @@ header: "Lattice · kpi + stats auto-lift"
 `Related`
 
 - `big-number` — when one figure carries the slide
-- `split-metric` — one focal KPI with a paragraph of prose
+- `split-panel metric` — one focal KPI with a paragraph of prose
 - `stats` — an ungoverned row of headline figures
 - `kpi` — value, target, trend, and status pills together

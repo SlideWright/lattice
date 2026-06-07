@@ -1,0 +1,103 @@
+/* split-panel — statement.panel.structure
+ *
+ * Featured left panel + supporting right zone. One DOM shape (.panel-left /
+ * .panel-right, emitted by lib/core/split-panels.js); the variant supplies the
+ * finish. Absorbed five former components on 2026-06-07 (see engineering/
+ * decisions/2026-06-07-split-family-analysis.md):
+ *   default     — featured heading + findings (was split-brief)
+ *   .metric     — light-left polarity + hero number (was split-metric)
+ *   .quote      — pull-quote feature (was split-statement)
+ *   .steps      — numbered step-timeline right zone (was split-steps)
+ *   .watermark  — accent panel + letterform + meta footer (was split-list)
+ */
+
+/* ── base = featured heading + findings (former split-brief) ─────────────── */
+section.split-panel { padding:0; flex-direction:row; }
+section.split-panel .panel-left { width:38%; flex-shrink:0; background:var(--bg-dark); display:flex; flex-direction:column; justify-content:flex-end; padding:var(--sp-xl) var(--sp-lg); position:relative; overflow:hidden; }
+section.split-panel .panel-left::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+section.split-panel .panel-eyebrow { display:block; font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--on-dark-secondary); margin-bottom:var(--sp-md); }
+section.split-panel .panel-left h2 { font-size:var(--fs-h1); color:var(--on-dark-primary); line-height:var(--lh-tight); margin:0 0 var(--sp-sm); font-weight:800; }
+section.split-panel .panel-left p { font-size:var(--fs-message); color:var(--on-dark-secondary); line-height:var(--lh-snug); margin:0; }
+section.split-panel .panel-right { flex:1; background:var(--bg); display:flex; flex-direction:column; padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-panel .panel-right h3 { font-size:var(--fs-meta); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.14em; color:var(--text-secondary); font-weight:600; margin:0 0 var(--sp-lg); padding-bottom:var(--sp-sm); border-bottom:1px solid var(--border); }
+section.split-panel .panel-right > ul { display:flex; flex-direction:column; flex:1; justify-content:space-evenly; list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right > ul > li { padding-left:var(--sp-md); border-left:3px solid var(--accent); }
+section.split-panel .panel-right > ul > li > strong { display:block; font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); margin-bottom:0.390625cqi; }
+section.split-panel .panel-right > ul > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.split-panel .panel-right > ul > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── .metric — light-left polarity + hero number (former split-metric) ───── */
+section.split-panel.metric .panel-left { width:44%; background:var(--bg); border-right:1px solid var(--border); justify-content:center; align-items:flex-start; }
+section.split-panel.metric .panel-left::before { content:none; }
+section.split-panel.metric .panel-eyebrow { color:var(--text-secondary); margin-bottom:var(--sp-xs); }
+section.split-panel.metric .panel-left h2 { font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--text-heading); line-height:1; margin:0 0 var(--sp-sm); }
+section.split-panel.metric .panel-left h2 em { font-size:var(--fs-h1); font-weight:700; font-style:normal; color:var(--text-secondary); }
+section.split-panel.metric .panel-left p { font-size:var(--fs-meta); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-snug); max-width:26ch; margin:0; padding-top:var(--sp-sm); border-top:1px solid var(--border); }
+section.split-panel.metric .panel-right { background:var(--bg-dark); }
+section.split-panel.metric .panel-right h3 { color:var(--on-dark-secondary); border-bottom-color:var(--on-dark-watermark); }
+section.split-panel.metric .panel-right > ul > li { border-left:2px solid var(--on-dark-watermark); }
+section.split-panel.metric .panel-right > ul > li > strong { color:var(--on-dark-primary); }
+section.split-panel.metric .panel-right > ul > li > :is(ul,ol) > li { color:var(--on-dark-secondary); }
+
+/* ── .quote — pull-quote feature (former split-statement) ────────────────── */
+section.split-panel.pullquote .panel-left { width:50%; }
+section.split-panel.pullquote .panel-left::before { content:'\201C'; top:-2.1875cqi; left:1.09375cqi; right:auto; height:auto; width:auto; font-size:17.1875cqi; font-family:var(--font-display); font-weight:700; color:var(--on-dark-watermark); line-height:1; pointer-events:none; background:none; }
+section.split-panel.pullquote .panel-left blockquote,
+section.split-panel.pullquote .panel-left blockquote p { font-size:calc(3.9583cqi * var(--fs-scale)); font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--on-dark-primary); line-height:var(--lh-tight); position:relative; z-index:1; }
+section.split-panel.pullquote .panel-left blockquote { margin:0 0 var(--sp-md); }
+section.split-panel.pullquote .panel-left blockquote p { margin:0; }
+section.split-panel.pullquote .panel-left cite { font-size:var(--fs-message); font-family:var(--font-body); font-style:normal; color:var(--on-dark-secondary); position:relative; z-index:1; display:block; }
+
+/* ── .steps — numbered step-timeline right zone (former split-steps) ─────── */
+section.split-panel.steps .panel-left { width:30%; background:var(--bg-alt); border-right:1px solid var(--border); justify-content:center; }
+section.split-panel.steps .panel-left::before { content:none; }
+section.split-panel.steps .panel-eyebrow { position:absolute; top:var(--sp-lg); left:var(--sp-lg); margin:0; font-size:var(--fs-hero); font-family:var(--font-display); font-weight:900; color:var(--border); line-height:1; letter-spacing:0; text-transform:none; pointer-events:none; z-index:0; }
+section.split-panel.steps .panel-left h2 { font-size:var(--fs-h2); color:var(--text-heading); font-weight:800; position:relative; z-index:1; }
+section.split-panel.steps .panel-left p { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); position:relative; z-index:1; }
+section.split-panel.steps .panel-right { justify-content:center; }
+section.split-panel.steps .panel-right > :is(ul,ol) { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; flex:0 1 auto; }
+section.split-panel.steps .panel-right > ol { counter-reset:step-counter; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li { display:grid; grid-template-columns:3.125cqi 1fr; grid-template-rows:auto auto; column-gap:var(--sp-md); position:relative; padding:0 0 var(--sp-md) 0; border-left:none; }
+section.split-panel.steps .panel-right > ol > li { counter-increment:step-counter; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li:last-child { padding-bottom:0; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li:not(:last-child)::after { content:''; position:absolute; left:1.484375cqi; top:3.125cqi; bottom:0; width:2px; background:var(--border); }
+section.split-panel.steps .panel-right > ol > li::before { content:counter(step-counter); grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; position:relative; z-index:1; }
+section.split-panel.steps .panel-right > ul > li::before { content:''; grid-column:1; grid-row:1 / span 2; align-self:start; width:3.125cqi; height:3.125cqi; border-radius:50%; background:var(--accent); position:relative; z-index:1; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > strong { grid-column:2; grid-row:1; display:block; margin:0; font-size:var(--fs-body); font-family:var(--font-body); font-weight:700; color:var(--text-heading); line-height:3.125cqi; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) { grid-column:2; grid-row:2; list-style:none; padding:2px 0 0; margin:0; }
+section.split-panel.steps .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { font-size:var(--fs-body); font-family:var(--font-body); color:var(--text-body); line-height:var(--lh-relaxed); }
+
+/* ── .watermark — accent panel + letterform + points + meta footer (former split-list) ── */
+section.split-panel.watermark .panel-left { width:34%; background:var(--accent); justify-content:flex-end; }
+section.split-panel.watermark .panel-left::before { background:var(--on-accent-watermark); height:4px; }
+section.split-panel.watermark .panel-left h2 { font-size:var(--fs-emphasis); color:var(--on-accent); margin:0; font-weight:800; }
+section.split-panel.watermark .panel-left .watermark { position:absolute; font-family:var(--font-display); font-size:calc(11.46cqi * var(--fs-scale)); font-weight:700; color:var(--on-accent-watermark); top:3.125cqi; left:1.5625cqi; line-height:1; pointer-events:none; }
+section.split-panel.watermark .panel-left > p:has(> code:only-child) { position:absolute; top:50%; transform:translateY(-50%); padding:0; margin:0; color:var(--on-accent-secondary); }
+section.split-panel.watermark .panel-left > p:has(> code:only-child) > code { color:var(--on-accent-secondary); background:none; border:none; padding:0; border-radius:0; }
+section.split-panel.watermark .panel-left > h5 { position:absolute; top:var(--sp-xl); margin:0; color:var(--on-accent-secondary); }
+section.split-panel.watermark .panel-right { padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg); }
+section.split-panel.watermark .panel-right h3 { font-family:inherit; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; color:var(--text-heading); margin-bottom:0.3125cqi; }
+section.split-panel.watermark .panel-right p { font-size:var(--fs-body); line-height:var(--lh-relaxed); margin-bottom:var(--sp-md); }
+section.split-panel.watermark .panel-right > :is(ul,ol) { display:flex; flex-direction:column; justify-content:flex-start; gap:var(--sp-sm); flex:1; list-style:none; padding:0; margin:0; }
+section.split-panel.watermark .panel-right > ol { counter-reset:panel-counter; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li { display:grid; align-content:start; justify-items:start; background:var(--bg-alt); border:1px solid var(--border); border-left:1px solid var(--border); border-radius:var(--radius-md); padding:1.09375cqi 1.40625cqi; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right > ol > li { counter-increment:panel-counter; grid-template-columns:3.59375cqi 1fr; grid-auto-rows:auto; column-gap:0.78125cqi; justify-items:stretch; padding:0; overflow:hidden; border:none; }
+section.split-panel.watermark .panel-right > ol > li::before { content:counter(panel-counter); grid-column:1; grid-row:1 / span 10; align-self:stretch; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, var(--on-dark-primary)); font-family:var(--font-mono); font-size:1.875cqi; font-weight:800; }
+section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em) { grid-column:2; padding:0.703125cqi 1.25cqi 0.234375cqi; margin:0; font-size:var(--fs-body); color:var(--text-heading); font-weight:700; line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right > ol > li > :is(strong,span,p,em):last-child { padding-bottom:0.703125cqi; }
+section.split-panel.watermark .panel-right > ol > li > :is(ul,ol) { grid-column:2; margin:0; padding:0 1.25cqi 0.703125cqi; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > strong { display:block; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) { display:block; list-style:none; padding:0; margin:0.3125cqi 0 0 0; width:100%; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li { display:block; list-style:none; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); color:var(--text-body); line-height:var(--lh-snug); font-weight:400; }
+section.split-panel.watermark .panel-right > :is(ul,ol) > li > :is(ul,ol) > li > p { margin:0; }
+/* optional metadata footer — a trailing ul after the main list (Audience · Intent) */
+section.split-panel.watermark .panel-right :is(ol,ul) + ul { margin-top:auto; padding-top:var(--sp-sm); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0.3125cqi; flex:0 0 auto; list-style:none; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li { display:block; background:none; border:none; border-radius:0; padding:0; margin:0; font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-snug); }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li::before { font-weight:700; color:var(--text-heading); margin-right:0.4em; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(1)::before { content:"Audience ·"; }
+section.split-panel.watermark .panel-right :is(ol,ul) + ul > li:nth-child(2)::before { content:"Intent ·"; }
+section.split-panel.watermark { --marp-slide-header-color: var(--on-accent-secondary); --marp-slide-footer-color: var(--on-accent-secondary); }
+
+/* Hardening: element siblings of <strong> in a card li don't inherit
+ * the parent's font-weight:700. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
+section.split-panel :is(ul,ol) > li > strong ~ * { font-weight: 400; }

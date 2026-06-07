@@ -178,7 +178,7 @@
 
   /* ── On-accent text tier ──────────────────────────────────────────────
    * Paired ink for `--accent` backgrounds (corner tags, timeline circles,
-   * split-list left rail, banner-tags, badges). Themes can override any
+   * split-panel left rail, banner-tags, badges). Themes can override any
    * tier; the defaults below adapt automatically via light-dark() so
    * dark-canvas modes (where many palettes flip --accent to a brighter
    * value) do not inherit a white-on-bright-pastel collision.

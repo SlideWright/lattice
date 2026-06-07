@@ -43,7 +43,7 @@
     },
     {
       "title": "Rationale longer than two lines",
-      "body": "Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-brief` where the body has room to breathe."
+      "body": "Each row is a one-sentence rationale. If a criterion needs a paragraph, lift it to `list-steps` or `split-panel` where the body has room to breathe."
     },
     {
       "title": "Missing criterion title",

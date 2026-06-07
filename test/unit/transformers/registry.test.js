@@ -54,7 +54,7 @@ describe('transformer registry', () => {
 
   test('applyAllToHtml is idempotent', () => {
     const input =
-      '<section class="split-brief">' +
+      '<section class="split-panel">' +
       '<p><code>EYEBROW</code></p>' +
       '<h2>Title</h2>' +
       '<p>Intro paragraph.</p>' +
@@ -69,14 +69,9 @@ describe('transformer registry', () => {
 describe('split-panels transformer (via registry)', () => {
   const splitPanels = registry.getByName('split-panels');
 
-  test('declares the six split-* layouts', () => {
-    const expected = [
-      'split-list', 'split-brief', 'split-metric',
-      'split-steps', 'split-compare', 'split-statement',
-    ];
-    for (const layout of expected) {
-      assert.ok(splitPanels.layouts.includes(layout), `missing layout: ${layout}`);
-    }
+  test('declares the split-panel family layouts', () => {
+    const expected = ['split-panel', 'split-compare'];
+    assert.deepEqual([...splitPanels.layouts].sort(), [...expected].sort());
   });
 
   test('selector covers every layout', () => {
@@ -86,26 +81,26 @@ describe('split-panels transformer (via registry)', () => {
     }
   });
 
-  test('applyToSection rewrites split-brief; cls unchanged', () => {
+  test('applyToSection rewrites split-panel; cls unchanged', () => {
     const inner =
       '<p><code>EYEBROW</code></p>' +
       '<h2>Title</h2>' +
       '<p>Intro paragraph.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const { html, cls } = splitPanels.applyToSection(inner, 'split-brief');
-    assert.match(html, /<div class="brief-left">/);
-    assert.match(html, /<span class="eyebrow">EYEBROW<\/span>/);
-    assert.match(html, /<div class="brief-right">/);
-    assert.equal(cls, 'split-brief', 'split-panels does not mutate cls');
+    const { html, cls } = splitPanels.applyToSection(inner, 'split-panel');
+    assert.match(html, /<div class="panel-left">/);
+    assert.match(html, /<span class="panel-eyebrow">EYEBROW<\/span>/);
+    assert.match(html, /<div class="panel-right">/);
+    assert.equal(cls, 'split-panel', 'split-panels does not mutate cls');
   });
 
-  test('applyToSection rewrites split-list into panel-left / panel-right', () => {
+  test('applyToSection rewrites split-panel watermark into panel-left / panel-right', () => {
     const inner =
       '<h5>section heading</h5>' +
       '<p><code>Section 02</code></p>' +
       '<h2>List title</h2>' +
       '<ul><li>item</li></ul>';
-    const { html } = splitPanels.applyToSection(inner, 'split-list');
+    const { html } = splitPanels.applyToSection(inner, 'split-panel watermark');
     assert.match(html, /<div class="panel-left">/);
     assert.match(html, /<div class="watermark">L<\/div>/);
     assert.match(html, /<div class="panel-right">/);
@@ -124,15 +119,15 @@ describe('split-panels transformer (via registry)', () => {
       '<h2>42%</h2>' +
       '<p>of teams report cycle wins.</p>' +
       '<ul><li>title<ul><li>body</li></ul></li></ul>';
-    const once  = splitPanels.applyToSection(inner, 'split-metric');
-    const twice = splitPanels.applyToSection(once.html,  'split-metric');
+    const once  = splitPanels.applyToSection(inner, 'split-panel metric');
+    const twice = splitPanels.applyToSection(once.html,  'split-panel metric');
     assert.equal(twice.html, once.html);
   });
 
   test('applyToHtml runs against full Marpit HTML and rewrites only split-* sections', () => {
     const html =
       '<section class="content"><h2>plain</h2></section>' +
-      '<section class="split-brief">' +
+      '<section class="split-panel">' +
       '<p><code>E</code></p><h2>T</h2><p>intro.</p>' +
       '<ul><li>a</li></ul>' +
       '</section>';
@@ -140,8 +135,8 @@ describe('split-panels transformer (via registry)', () => {
     // Non-split section untouched.
     assert.ok(out.includes('<section class="content"><h2>plain</h2></section>'));
     // Split section rewritten.
-    assert.match(out, /<div class="brief-left">/);
-    assert.match(out, /<div class="brief-right">/);
+    assert.match(out, /<div class="panel-left">/);
+    assert.match(out, /<div class="panel-right">/);
   });
 });
 
@@ -204,14 +199,14 @@ describe('applyAllToSection — registry composition', () => {
     assert.ok(r.cls.split(/\s+/).includes('chart-frame'));
   });
 
-  test('applyAllToSection on a split-brief section runs split-panels (chart-family is a no-op)', () => {
+  test('applyAllToSection on a split-panel section runs split-panels (chart-family is a no-op)', () => {
     const inner =
       '<p><code>X</code></p><h2>T</h2><p>intro.</p>' +
       '<ul><li>a</li></ul>';
-    const r = registry.applyAllToSection(inner, 'split-brief');
-    assert.match(r.html, /<div class="brief-left">/);
+    const r = registry.applyAllToSection(inner, 'split-panel');
+    assert.match(r.html, /<div class="panel-left">/);
     // chart-family didn't touch this section — cls unchanged
-    assert.equal(r.cls, 'split-brief');
+    assert.equal(r.cls, 'split-panel');
   });
 
   test('applyAllToSection on a plain section is a complete no-op', () => {

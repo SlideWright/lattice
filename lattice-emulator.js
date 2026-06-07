@@ -1516,8 +1516,8 @@ function parseSlide(raw, index) {
   }
 
   // Registry-managed transformers — chart-family (progress, timeline-list,
-  // piechart, gantt, kanban, radar, quadrant) and split-* (split-list,
-  // split-brief, split-metric, split-steps, split-compare, split-statement).
+  // piechart, gantt, kanban, radar, quadrant) and split-* (split-panel,
+  // split-compare).
   // chart-family appends `chart-frame` to the section's class list;
   // applyAllToSection returns the cumulative { html, cls } so we pick up
   // both. marp.config.js dispatches through the same registry on the
@@ -1672,7 +1672,7 @@ function parseSlide(raw, index) {
   // in .below-note for the full-width hairline treatment.
   // Excludes: bookends and layouts where trailing <p> is already claimed
   // (caption / attribution / main content / italic legend).
-  const noBeloNote = ['title','closing','quote','big-number','divider','image','split-list','split-brief','split-metric','split-steps','split-compare','split-statement','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
+  const noBeloNote = ['title','closing','quote','big-number','divider','image','split-panel','split-compare','content','diagram','stats','code','roadmap','progress','timeline-list','piechart','gantt','kanban','image-razor','image-brief','image-chamber'];
   const isNoBelowNote = noBeloNote.some(x => cls.includes(x));
   if (!isNoBelowNote) {
     // Only wrap a trailing <p> as below-note if it follows a structural block
