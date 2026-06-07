@@ -83,8 +83,8 @@
       "when": "two-card horizontal comparison"
     },
     {
-      "name": "cards-wide",
-      "when": "three full-width rows for longer prose per item"
+      "name": "cards-stack",
+      "when": "two to four full-width rows for longer prose per item"
     },
     {
       "name": "verdict-grid",

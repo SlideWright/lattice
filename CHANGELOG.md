@@ -25,6 +25,10 @@ in patch versions.
 
 ## Unreleased
 
+### Removed
+
+- **`cards-wide` component removed.** `cards-stack` now covers the full range: 2–4 full-width stacked cards, vertical (default) or `horizontal`, unordered or ordered (numbered corner badge from `ol` source). Authors previously using `cards-wide` should migrate to `cards-stack`. The `cards-wide` CSS, transform, and manifest are deleted; `base.modifiers.css` below-note/annotation selectors updated.
+
 ### Added
 
 - **Minified `.min` variants of every shipped CSS and JS artifact, with named

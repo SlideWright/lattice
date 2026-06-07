@@ -149,7 +149,7 @@
       "accent"
     ]
   },
-  "count": 59,
+  "count": 58,
   "components": [
     {
       "name": "actors",
@@ -850,8 +850,8 @@
           "when": "two-card horizontal comparison"
         },
         {
-          "name": "cards-wide",
-          "when": "three full-width rows for longer prose per item"
+          "name": "cards-stack",
+          "when": "two to four full-width rows for longer prose per item"
         },
         {
           "name": "verdict-grid",
@@ -948,7 +948,7 @@
         },
         {
           "title": "Long-form body per card",
-          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-wide."
+          "body": "More than two sentences per card crowds the split. For richer side-by-side bodies, move to split-list or two stacked rows of cards-stack."
         }
       ],
       "related": [
@@ -985,6 +985,7 @@
       "description": "Parallel items stacked vertically, full-width cards.",
       "purpose": "Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–3 items work best.",
       "variants": [
+        "vertical",
         "horizontal",
         "numbered"
       ],
@@ -1020,6 +1021,7 @@
         "tone-skip",
         "tone-warn",
         "treatment-none",
+        "vertical",
         "wip",
         "with-period"
       ],
@@ -1053,7 +1055,7 @@
       "antiPatterns": [
         {
           "title": "Four or more items",
-          "body": "The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows."
+          "body": "The stack overflows past four. For five or more rows reach for list-tabular."
         },
         {
           "title": "One-line cards",
@@ -1070,10 +1072,6 @@
           "when": "three or four parallel items in a scannable grid"
         },
         {
-          "name": "cards-wide",
-          "when": "three or four rows with more substantial per-card body"
-        },
-        {
           "name": "cards-side",
           "when": "exactly two items in left-right balance"
         },
@@ -1083,114 +1081,6 @@
         }
       ],
       "galleryHref": "../../lib/components/inventory/cards-stack/cards-stack.gallery.light.pdf"
-    },
-    {
-      "name": "cards-wide",
-      "bucket": "inventory",
-      "function": "inventory",
-      "form": "stack",
-      "substance": "structure",
-      "tags": [
-        "overview",
-        "showcase",
-        "reference"
-      ],
-      "description": "Three or four wide rows, each a full-width card.",
-      "purpose": "Use when each item has enough body text to want its own row but the slide should still scan top-to-bottom.",
-      "variants": [],
-      "effectiveVariants": [
-        "accent",
-        "archived",
-        "compact",
-        "confidential",
-        "dark",
-        "draft",
-        "loose",
-        "mark-orbit",
-        "mark-threads",
-        "no-footer",
-        "no-header",
-        "no-paginate",
-        "no-period",
-        "pinned",
-        "redacted",
-        "revised",
-        "scale-2xl",
-        "scale-l",
-        "scale-xl",
-        "silent",
-        "tbd",
-        "tint-corner at-tl",
-        "tint-edge at-right",
-        "tint-vignette",
-        "tone-fail",
-        "tone-pass",
-        "tone-skip",
-        "tone-warn",
-        "treatment-none",
-        "wip",
-        "with-period"
-      ],
-      "slots": {
-        "title": {
-          "selector": "h2",
-          "required": true,
-          "description": "Slide heading."
-        },
-        "cards": {
-          "selector": "ul > li",
-          "required": true,
-          "description": "Three or four list items, each one wide row. Lead each with **Card Title.** then 1–2 sentences."
-        }
-      },
-      "skeleton": "<!-- _class: cards-wide -->\n\n## Slide heading.\n\n- First row title\n  - Body text for the first wide row, one or two sentences.\n- Second row title\n  - Body text for the second wide row.\n- Third row title\n  - Body text for the third wide row.\n",
-      "whenToUse": [
-        {
-          "title": "Substantial per-row body",
-          "body": "Each item carries one to two sentences — more than a cards-grid card can hold without crowding. The wide row gives the body real estate."
-        },
-        {
-          "title": "Top-to-bottom reading",
-          "body": "The audience absorbs one row at a time rather than the whole set at a glance. Use when sequence-of-reading matters even if items are parallel."
-        },
-        {
-          "title": "Three or four rows",
-          "body": "The layout is sized for three or four wide cards. Past four the slide gets dense; for longer reference lists move to list-tabular."
-        }
-      ],
-      "antiPatterns": [
-        {
-          "title": "Five or more rows",
-          "body": "The slide tips into wall-of-text past four rows. Move to list-tabular for reference density, or split across two cards-wide slides."
-        },
-        {
-          "title": "One-line rows",
-          "body": "If each row is a short phrase the wide cards look padded. Drop to `list` or `tldr` and let the short text speak for itself."
-        },
-        {
-          "title": "Comparison framing",
-          "body": "cards-wide is parallel inventory, not comparison. If the rows are weighed against shared criteria, use compare-table or verdict-grid."
-        }
-      ],
-      "related": [
-        {
-          "name": "cards-stack",
-          "when": "two or three rows with shorter body per card"
-        },
-        {
-          "name": "cards-grid",
-          "when": "four or fewer parallel items in a scannable grid"
-        },
-        {
-          "name": "list-tabular",
-          "when": "five or more reference-style rows"
-        },
-        {
-          "name": "list-steps",
-          "when": "rows carry an explicit, ordered sequence"
-        }
-      ],
-      "galleryHref": "../../lib/components/inventory/cards-wide/cards-wide.gallery.light.pdf"
     },
     {
       "name": "checklist",
@@ -3709,11 +3599,11 @@
       "antiPatterns": [
         {
           "title": "Three or fewer rows",
-          "body": "The ledger needs density to justify its shape. For two or three items, reach for cards-stack or cards-wide — the rows get the room to breathe."
+          "body": "The ledger needs density to justify its shape. For two or three items, reach for cards-stack — the rows get the room to breathe."
         },
         {
           "title": "Long per-row prose",
-          "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-wide or split across slides."
+          "body": "Each row is a name plus a sentence. If the description runs two or three sentences, move to cards-stack or split across slides."
         },
         {
           "title": "Stacking two primary variants",

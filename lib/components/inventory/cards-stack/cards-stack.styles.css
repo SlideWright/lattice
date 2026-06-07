@@ -24,9 +24,16 @@ section.cards-stack .card {
   background:var(--bg-alt); border:1px solid var(--border);
   border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);
   margin:0; flex:1; list-style:none;
-  font-size:var(--fs-body); line-height:var(--lh-relaxed); color:var(--text-body);
+  font-size:var(--fs-body); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
 }
 section.cards-stack > ul > li::marker, section.cards-stack > ol > li::marker { content:''; }
+/* — card body (nested list) — */
+section.cards-stack > ul > li > ul, section.cards-stack > ul > li > ol,
+section.cards-stack > ol > li > ul, section.cards-stack > ol > li > ol,
+section.cards-stack .card > ul, section.cards-stack .card > ol { list-style:none; padding:0; margin:var(--sp-xs) 0 0 0; }
+section.cards-stack > ul > li > ul > li, section.cards-stack > ul > li > ol > li,
+section.cards-stack > ol > li > ul > li, section.cards-stack > ol > li > ol > li,
+section.cards-stack .card > ul > li, section.cards-stack .card > ol > li { font-size:var(--fs-body); font-weight:400; color:var(--text-body); line-height:var(--lh-base); }
 
 /* ── numbered cards (ol): flush corner tag — same recipe as cards-grid.
  * Author writes `1. **Title.** body…`; CSS pins a counter badge in the
@@ -60,23 +67,30 @@ section.cards-stack .cards-stack-inner--ordered > .card::before {
 }
 
 
-/* ── Cards-stack horizontal modifier — appended Phase 7 ──
- */
-/* ────────────────────────────────────────────────────────────────────────
- * Layout-specific modifiers — cards-stack horizontal
- * Reference: proposals.md §2.2 cards-stack
- *
- * Default cards-stack flows the cards as a vertical stack (one per row).
- * `horizontal` flips to a horizontal row, useful when cards are short and
- * the slide reads left-to-right rather than top-to-bottom.
+/* ── Layout-specific modifiers ────────────────────────────────────────────
+ * vertical  — explicit alias for the default stacking direction.
+ * horizontal — flip cards to a left-to-right row.
+ * Both are intentionally authored via class; the list type (ul vs ol) is
+ * the only way to get unordered vs numbered — no magic modifier needed.
  * ──────────────────────────────────────────────────────────────────────── */
+
+section.cards-stack.vertical > ul,
+section.cards-stack.vertical > ol,
+section.cards-stack.vertical .cards-stack-inner { flex-direction: column; }
 
 section.cards-stack.horizontal > ul,
 section.cards-stack.horizontal > ol,
-section.cards-stack.horizontal .cards-stack-inner {
-  flex-direction: row;
-  align-items: stretch;
-}
+section.cards-stack.horizontal .cards-stack-inner { flex-direction: row; align-items: stretch; }
+
+/* ── compact override ──────────────────────────────────────────────────────
+ * The global compact modifier scales tokens to ~75%. For cards-stack, the
+ * card padding and title-to-body gap should be explicitly halved instead. */
+section.cards-stack.compact > ul > li,
+section.cards-stack.compact > ol > li,
+section.cards-stack.compact .card { padding: calc(var(--sp-sm) / 2) calc(var(--sp-md) / 2); }
+section.cards-stack.compact > ul > li > ul, section.cards-stack.compact > ul > li > ol,
+section.cards-stack.compact > ol > li > ul, section.cards-stack.compact > ol > li > ol,
+section.cards-stack.compact .card > ul, section.cards-stack.compact .card > ol { margin-top: var(--sp-2xs); }
 
 
 /* Hardening: element siblings of <strong> in a card li don't inherit

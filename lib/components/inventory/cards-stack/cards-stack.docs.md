@@ -16,7 +16,7 @@ Use when the items want vertical reading order — sequential exploration rather
 
 ## When NOT to use
 
-- **Four or more items.** The stack overflows past three. For four parallel items reach for cards-grid four; for richer per-item bodies, cards-wide handles three or four rows.
+- **Four or more items.** The stack overflows past four. For five or more rows reach for list-tabular.
 - **One-line cards.** If each card is a single short phrase, the stack reads as a padded list. Drop to `list` or `tldr` and reclaim the vertical space.
 - **Forced sequence.** Cards-stack is parallel content read in vertical order, not a numbered sequence. For explicit steps, use list-steps or list-criteria.
 
@@ -62,6 +62,23 @@ Use when the items want vertical reading order — sequential exploration rather
 
 ## Variants (layout-specific)
 
+### `vertical` — Vertical stack
+
+Explicit alias for the default stacking direction — cards flow top-to-bottom. Use when the source needs the orientation to be self-documenting, or when a slide pairs a vertical and a horizontal variant side by side in a build.
+
+```markdown
+<!-- _class: cards-stack vertical -->
+
+## Three forces are compressing the differentiation window.
+
+- Infrastructure has commoditized.
+  - The platform work that took us two years is now a managed service a competitor can switch on in an afternoon. The moat is no longer the stack.
+- Release cycles have collapsed.
+  - What used to ship annually now ships monthly. A visible advantage is matched before the next board meeting.
+- Switching costs are rising.
+  - Customers consolidate vendors and sign longer contracts. The window to win an account is shorter, and losing one lasts longer.
+```
+
 ### `horizontal` — Horizontal cards
 
 Stacked rows pivot to a left-aligned title column with the body to its right — useful when the card titles are short labels and the body carries the weight.
@@ -93,7 +110,7 @@ Authored as `ol` (`1.` source). Each row carries a flush corner number — use w
 2. Vertical real estate
    - Each stacked card needs ~30% of the slide height to breathe. Four cards force you to shrink the cards until they stop reading as cards.
 3. Build path symmetry
-   - cards-stack pairs with cards-grid (3-4 items) and cards-wide (3-4 rows). Keeping cards-stack at 2-3 keeps the family's choices clean.
+   - cards-stack pairs with cards-grid (3-4 grid items) and cards-side (exactly 2). Keeping cards-stack at 2-4 keeps the family's choices clean.
 ```
 
 ## Universal modifiers
@@ -103,7 +120,6 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 ## Related components
 
 - [`cards-grid`](../../inventory/cards-grid/cards-grid.docs.md) — three or four parallel items in a scannable grid
-- [`cards-wide`](../../inventory/cards-wide/cards-wide.docs.md) — three or four rows with more substantial per-card body
 - [`cards-side`](../../inventory/cards-side/cards-side.docs.md) — exactly two items in left-right balance
 - [`list-steps`](../../progression/list-steps/list-steps.docs.md) — items carry an explicit, ordered sequence
 
