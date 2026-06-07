@@ -77,7 +77,7 @@
    *   Card / list / inline prose    → --fs-body          (default; 18pt projection)
    *   Dense table / grid cell       → --fs-body-compact  (tables, glossary, matrix; 16pt)
    *   Slide-level statement body    → --fs-message       (statement, quote, lead, divider sub)
-   *   Lead / key-insight callout    → --fs-emphasis      (one block per slide)
+   *   Key-insight / below-note      → --fs-body          (callout panel; same register as body)
    *   Chrome and labels             → --fs-meta          (pagination, footer, eyebrow)
    *   KPI / watermark / display     → --fs-hero          (class-driven, never on h*) */
 

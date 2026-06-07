@@ -1,0 +1,353 @@
+/* faq — FAQ layout family. Five spatial forms, one component.
+ *
+ * Base:     faq          — Panel: dark left panel + right stacked Q&A ledger (DEFAULT)
+ * Variants: faq.ledger   — Ledger: two-column hairline rows
+ *           faq.cards    — Card grid: 2×N Q+A cards with accent top bar
+ *           faq.indexed  — Indexed stack: full-width cards with accent number tab
+ *           faq.focused  — Statement: single Q+A at statement scale
+ *
+ * Authoring (faq, faq.ledger, faq.cards, faq.indexed):
+ *   - Question text?
+ *     - Answer sentence or two.
+ *
+ * Authoring (faq.focused):
+ *   ## The question on everyone's mind?
+ *   Answer in one or two confident sentences.
+ *
+ * All list-based variants are in CARD_STYLE_LAYOUTS (lib/components/index.js).
+ * Authors must use the nested format — inline `- **Q.** answer` is flagged.
+ */
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 1. FAQ — PANEL (DEFAULT)
+ * Dark left panel (34%) + right stacked Q&A ledger.
+ * High authority. 3–5 items. M&A / board / executive briefing.
+ * CSS-grid layout — no transform required.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) {
+  display:grid;
+  grid-template-columns:34% 1fr;
+  grid-template-rows:1fr;
+  padding:0; position:relative;
+  /* Header and footer readable against the dark left panel */
+  --marp-slide-header-color: var(--on-dark-secondary);
+  --marp-slide-footer-color: var(--on-dark-secondary);
+}
+
+/* Dark accent panel background */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused)::before {
+  content:''; position:absolute;
+  top:0; left:0; bottom:0; width:34%;
+  background:var(--accent); z-index:0;
+}
+
+/* Oversized "?" letterform watermark in the left panel */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused)::after {
+  content:'?';
+  position:absolute;
+  font-family:var(--font-display);
+  font-size:calc(11.46cqi * var(--fs-scale));
+  font-weight:700;
+  color:var(--on-accent-watermark);
+  top:3.125cqi; left:1.5625cqi;
+  line-height:1; pointer-events:none; z-index:1;
+}
+
+/* Panel heading — bottom-left of the dark panel */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) h2 {
+  grid-column:1; grid-row:1;
+  align-self:end;
+  padding:0 var(--sp-lg) var(--sp-xl);
+  z-index:2; position:relative;
+  color:var(--on-accent, var(--on-dark-primary, #fff));
+  font-size:var(--fs-emphasis); line-height:var(--lh-tight); margin:0;
+}
+
+/* Right panel: stacked Q&A ledger */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul {
+  grid-column:2; grid-row:1;
+  padding:var(--sp-xl) var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  display:flex; flex-direction:column; justify-content:center;
+  list-style:none; margin:0; gap:0;
+}
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li {
+  display:flex; flex-direction:column;
+  padding:var(--sp-xs) 0;
+  border-bottom:1px solid var(--border);
+  list-style:none;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li:first-child {
+  border-top:1px solid var(--border);
+}
+
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul {
+  list-style:none; padding:0; margin:var(--sp-2xs) 0 0 0;
+}
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* Strong siblings in panel list don't inherit bold */
+section.faq:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > strong ~ * {
+  font-weight:400;
+}
+
+/* compact: tighter right-panel rows */
+section.faq.compact:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li {
+  padding:calc(var(--sp-2xs) + var(--sp-3xs)) 0;
+  font-size:var(--fs-body-compact);
+}
+section.faq.compact:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul > li > ul > li {
+  font-size:var(--fs-body-compact);
+}
+
+/* mirror: panel on the right */
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) {
+  grid-template-columns:1fr 34%;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused)::before {
+  left:auto; right:0; width:34%;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused)::after {
+  left:auto; right:1.5625cqi;
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) h2 {
+  grid-column:2; grid-row:1;
+  padding:0 var(--sp-lg) var(--sp-xl) var(--sp-lg);
+}
+section.faq.mirror:not(.ledger):not(.cards):not(.indexed):not(.focused) > ul {
+  grid-column:1; grid-row:1;
+  padding:var(--sp-xl) var(--sp-lg) var(--sp-xl) var(--sp-xl);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 2. FAQ.LEDGER — TWO-COLUMN HAIRLINE ROWS
+ * Question bold left (36%), answer right (64%).
+ * Reference-density. 4–6 items. Investor / legal / policy Q&A.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.ledger { display:flex; flex-direction:column; }
+section.faq.ledger h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.ledger > ul {
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+  flex:1; justify-content:center;
+}
+
+section.faq.ledger > ul > li {
+  display:grid;
+  grid-template-columns:36% 1fr;
+  column-gap:var(--sp-xl);
+  padding:var(--sp-sm) 0;
+  border-bottom:1px solid var(--border);
+  list-style:none; align-items:baseline;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+section.faq.ledger > ul > li:first-child { border-top:1px solid var(--border); }
+
+/* Answer: placed in column 2 via grid */
+section.faq.ledger > ul > li > ul {
+  grid-column:2; grid-row:1;
+  list-style:none; padding:0; margin:0;
+}
+section.faq.ledger > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* compact: tighter rows, body-compact text — fits 6–8 items */
+section.faq.ledger.compact > ul > li {
+  padding:var(--sp-xs) 0;
+  font-size:var(--fs-body-compact);
+}
+section.faq.ledger.compact > ul > li > ul > li { font-size:var(--fs-body-compact); }
+
+/* accent: accent color on question text + 2px left rail per row */
+section.faq.ledger.accent > ul > li {
+  padding-left:var(--sp-sm);
+  border-left:2px solid var(--accent);
+  color:var(--accent);
+}
+section.faq.ledger.accent > ul > li > ul > li { color:var(--text-body); }
+
+/* Strong siblings: body text after strong in li doesn't inherit bold */
+section.faq.ledger > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 3. FAQ.CARDS — CARD GRID
+ * 2×N grid. Each card = one Q+A. Accent 3px top bar per card.
+ * Visual, structured. 4–6 cards. Product / service FAQ.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.cards { display:flex; flex-direction:column; }
+section.faq.cards h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.cards > ul {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-auto-rows:1fr; gap:var(--sp-md);
+  list-style:none; padding:0; margin:0; flex:1;
+}
+
+section.faq.cards > ul > li {
+  position:relative;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  /* extra top padding clears the 4px accent bar */
+  padding:calc(var(--sp-sm) + 0.3125cqi) var(--sp-md) var(--sp-sm);
+  display:flex; flex-direction:column;
+  list-style:none;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+
+/* 4px accent bar pinned to card top */
+section.faq.cards > ul > li::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height:0.3125cqi;
+  background:var(--accent);
+  border-radius:var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* Answer body */
+section.faq.cards > ul > li > ul {
+  flex:1; list-style:none; padding:0; margin:var(--sp-xs) 0 0 0;
+}
+section.faq.cards > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* Lone last card spans full width */
+section.faq.cards > ul > li:last-child:nth-child(odd) { grid-column:1 / -1; }
+
+/* Hardening: siblings of strong in a card don't inherit bold */
+section.faq.cards > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 4. FAQ.INDEXED — INDEXED STACK
+ * Full-width cards with accent number badge (left tab). Q bold, A below.
+ * Deliberate, sequential. 3–5 items. Onboarding / compliance FAQ.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.indexed { display:flex; flex-direction:column; }
+section.faq.indexed h2 { font-size:var(--fs-emphasis); margin-bottom:var(--sp-md); }
+
+section.faq.indexed > ul {
+  counter-reset:faq-idx;
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:var(--sp-sm);
+  flex:1; justify-content:center;
+}
+
+section.faq.indexed > ul > li {
+  counter-increment:faq-idx;
+  position:relative;
+  background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  /* left padding clears the 4.6875cqi (60px at HD) number badge */
+  padding:var(--sp-sm) var(--sp-md) var(--sp-sm) calc(4.6875cqi + var(--sp-md));
+  display:flex; flex-direction:column;
+  list-style:none; overflow:hidden;
+  font-size:var(--fs-body); font-weight:700;
+  color:var(--text-heading); line-height:var(--lh-snug);
+}
+
+/* Accent number badge — full-height left tab */
+section.faq.indexed > ul > li::before {
+  content:counter(faq-idx, decimal-leading-zero);
+  position:absolute; top:0; left:0; bottom:0;
+  width:4.6875cqi;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono);
+  font-size:1.5625cqi; font-weight:800; letter-spacing:0.04em; line-height:1;
+  color:var(--on-accent, var(--on-dark-primary, #fff));
+  background:var(--accent);
+  border-radius:var(--radius-md) 0 0 var(--radius-md);
+}
+
+/* Answer body */
+section.faq.indexed > ul > li > ul {
+  list-style:none; padding:0; margin:var(--sp-2xs) 0 0 0;
+}
+section.faq.indexed > ul > li > ul > li {
+  font-size:var(--fs-body); font-weight:400;
+  color:var(--text-body); line-height:var(--lh-base);
+}
+
+/* compact: tighter cards, fits 5 items comfortably */
+section.faq.indexed.compact > ul { gap:var(--sp-xs); }
+section.faq.indexed.compact > ul > li {
+  padding-top:var(--sp-xs); padding-bottom:var(--sp-xs);
+  font-size:var(--fs-body-compact);
+}
+section.faq.indexed.compact > ul > li > ul > li { font-size:var(--fs-body-compact); }
+
+/* Strong siblings in indexed cards don't inherit bold */
+section.faq.indexed > ul > li > strong ~ * { font-weight:400; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * 5. FAQ.FOCUSED — STATEMENT
+ * One Q+A at statement scale. Objection-handling / key concern.
+ * Authoring: ## Question? \n\n Answer paragraph.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+section.faq.focused {
+  display:flex; flex-direction:column;
+  justify-content:center;
+  position:relative; overflow:hidden;
+}
+
+/* Oversized "?" letterform — right-edge crop, border color for subtlety */
+section.faq.focused::before {
+  content:'?';
+  position:absolute; right:0; top:50%;
+  transform:translateY(-55%);
+  font-family:var(--font-display);
+  font-size:38cqi; font-weight:700;
+  color:var(--border);
+  line-height:1; z-index:0; pointer-events:none;
+}
+
+/* Question heading */
+section.faq.focused h2 {
+  font-size:var(--fs-emphasis);
+  color:var(--text-heading);
+  line-height:var(--lh-tight);
+  max-width:72%;
+  position:relative; z-index:1;
+  margin-bottom:0;
+}
+
+/* Accent rule separator between question and answer */
+section.faq.focused h2::after {
+  content:'';
+  display:block;
+  width:2.34375cqi;
+  height:0.15625cqi;
+  background:var(--accent);
+  margin-top:var(--sp-lg);
+  border-radius:1px;
+}
+
+/* Answer paragraph */
+section.faq.focused p {
+  font-size:var(--fs-message);
+  color:var(--text-body);
+  line-height:var(--lh-relaxed);
+  max-width:68%;
+  position:relative; z-index:1;
+  margin-top:var(--sp-lg);
+}

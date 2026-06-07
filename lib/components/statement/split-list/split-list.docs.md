@@ -11,13 +11,13 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 ## When to use
 
 - **Thesis plus proof.** One bold claim deserves dedicated visual weight on the left; supporting points sit to the right. Use when the audience needs to hear the claim before the evidence.
-- **Section openers with substance.** More substantive than a divider, but still anchored by a single statement. Three to four supporting points keep the panel from feeling cluttered.
+- **Section openers with substance.** More substantive than a divider, but still anchored by a single statement. Three to five supporting points keep the panel from feeling cluttered.
 - **Mirror for image-heavy decks.** The `mirror` variant flips the panel to the right. Useful when the deck's visual rhythm wants accents on alternating sides.
 
 ## When NOT to use
 
-- **Longer than four points.** If the right side runs past four points, the panel and list lose balance. Move to `cards-stack` for longer lists or split into two slides.
-- **No panel headline.** The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide.
+- **Longer than five points — hard limit.** The layout holds exactly 3–5 points. This is a structural constraint, not a preference: beyond five the panel and list lose balance and the right column overflows. Move to `cards-stack` for longer lists or split into two slides. Do not stretch to six.
+- **No panel headline.** The dark panel exists to carry a statement. An empty or generic heading wastes the strongest visual real estate on the slide. The `panel-heading` slot is required; there is no valid rendering without it.
 - **Stacking many split-list slides in a row.** The dark sidebar is a strong visual signal. Three split-list slides back-to-back numbs the audience to it. Intersperse with content or stats.
 
 ## Authoring
@@ -43,7 +43,8 @@ Use when one prominent statement deserves a dark sidebar and the right side carr
 |---|---|---|---|
 | `panel-heading` | `h2` | yes | Heading shown in the dark left panel. |
 | `panel-eyebrow` | `h3` | no | Optional rubric — a section label that renders in the RIGHT content panel above the points list (despite the slot name, it is not a left-panel eyebrow). |
-| `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. |
+| `intro` | `p` | no | Optional framing sentence in the right panel, between the section rubric and the list. One sentence maximum, 1–2 lines. More than two lines crowds the list and should become a separate slide. |
+| `points` | `ul > li` | yes | Right-side supporting points. Lead each with **Label.** then body text. Hard limit: 3–5 items. Fewer than three feels sparse; more than five breaks the panel-to-list balance — use `cards-stack` instead. |
 | `meta` | `section :is(ul,ol) + ul` | no | Optional metadata footer. A SECOND bullet list placed after the points list (separate the two with an HTML comment so markdown does not merge them). Its first two items pin to the bottom of the right panel with injected 'Audience ·' and 'Intent ·' labels. |
 
 ## Anatomy
@@ -81,6 +82,50 @@ Flips the dark accent panel from the left to the right. Use when the deck's visu
   - Pair a default split-list and a mirrored one across a section to keep the eye moving.
 - Right-to-left framing
   - The argument reads more naturally when the claim follows the evidence rather than preceding it.
+```
+
+### `dense` — Dense — strip card chrome, hairline separators
+
+Removes background, border, and border-radius from items; replaces card chrome with thin hairline separators. Shifts register from 'substantive points' to 'index / table of contents'. Fits 7–8 items comfortably.
+
+```markdown
+<!-- _class: split-list dense -->
+
+## Seven items without chrome.
+
+### Index register
+
+1. First item
+   - One-line description.
+2. Second item
+   - One-line description.
+3. Third item
+   - One-line description.
+```
+
+### `columns` — Columns — two-column right panel
+
+Places list items in a two-column grid. Capacity doubles. Read order is top-to-bottom within each column, left column then right. Use for 6–8 parallel items of similar length.
+
+```markdown
+<!-- _class: split-list columns -->
+
+## Eight items across two columns.
+
+### Column layout
+
+- First
+  - One line.
+- Second
+  - One line.
+- Third
+  - One line.
+- Fourth
+  - One line.
+- Fifth
+  - One line.
+- Sixth
+  - One line.
 ```
 
 ## Universal modifiers

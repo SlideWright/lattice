@@ -137,3 +137,105 @@ section.split-list:not(:has(.panel-left)) > :is(ul,ol) + ul > li:nth-child(2)::b
  * target text nodes); the manifest validator catches that case at
  * lint time. See CARD_STYLE_LAYOUTS in lib/components/index.js. */
 section.split-list :is(ul,ol) > li > strong ~ * { font-weight: 400; }
+
+
+/* ── OPTION A: compact — tighten panel padding + gap + card padding ──────
+ * Extends the universal compact modifier with split-list-specific tightening.
+ * Reduces panel-right padding (the main overhead source) plus item gap and
+ * card padding. ul cards: reduce padding. ol items: reduce content padding. */
+section.split-list.compact .panel-left  { padding: var(--sp-lg) var(--sp-md); }
+section.split-list.compact .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-md) var(--sp-md); }
+section.split-list.compact :is(ul,ol) { gap: var(--sp-xs); }
+section.split-list.compact ul > li { padding: 0.46875cqi 0.78125cqi; }
+section.split-list.compact ol > li > :is(strong,span,p,em) { padding-top: 0.3125cqi; padding-bottom: 0.15625cqi; }
+section.split-list.compact ol > li > :is(strong,span,p,em):last-child { padding-bottom: 0.3125cqi; }
+section.split-list.compact ol > li > :is(ul,ol) { padding-bottom: 0.3125cqi; }
+
+
+/* ── OPTION B: dense — strip card chrome, hairline separators ────────────
+ * Drops background/border/radius from cards; uses thin border-bottom
+ * separators and tighter padding. 20/80 split ratio, --lh-tight throughout,
+ * reduced h3 + paragraph gaps. Sub-text at --fs-body-compact. Fits 7–8 items. */
+section.split-list.dense .panel-left  { width: 25%; padding: var(--sp-lg) var(--sp-md); }
+section.split-list.dense .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-sm) var(--sp-md); }
+section.split-list.dense .panel-right h3 { margin-bottom: var(--sp-2xs); }
+section.split-list.dense .panel-right p  { line-height: var(--lh-tight); margin-bottom: var(--sp-xs); }
+section.split-list.dense :is(ul,ol) { gap: 0; }
+section.split-list.dense ul > li {
+  background: none; border: none; border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0.3125cqi 0;
+  line-height: var(--lh-tight);
+}
+section.split-list.dense ul > li:last-child { border-bottom: none; }
+section.split-list.dense ul > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); line-height: var(--lh-tight); }
+section.split-list.dense ol > li {
+  grid-template-columns: 2.5cqi 1fr;
+  border-bottom: 1px solid var(--border);
+}
+section.split-list.dense ol > li:last-child { border-bottom: none; }
+section.split-list.dense ol > li::before { font-size: 1.1cqi; }
+section.split-list.dense ol > li > :is(strong,span,p,em) { padding: 0.3125cqi 0.625cqi 0.15625cqi; line-height: var(--lh-tight); }
+section.split-list.dense ol > li > :is(strong,span,p,em):last-child { padding-bottom: 0.3125cqi; }
+section.split-list.dense ol > li > :is(ul,ol) { padding: 0 0.625cqi 0.3125cqi; }
+section.split-list.dense ol > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); line-height: var(--lh-tight); }
+section.split-list:not(:has(.panel-left)).dense { grid-template-columns: 20% 1fr; }
+
+
+/* ── OPTION C: columns — two-column right panel grid ────────────────────
+ * ul: places bullet cards in a 2-column grid — capacity doubles, chrome
+ * intact, no wrapping issue. ol: counter badge is too wide for narrow
+ * columns; columns variant uses a compact inline counter instead. */
+section.split-list.columns .panel-right { padding: var(--sp-md) var(--sp-lg) var(--sp-md) var(--sp-md); }
+section.split-list.columns ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm);
+  align-content: start;
+}
+/* ol columns: replace the wide badge with a compact inline number prefix */
+section.split-list.columns ol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm);
+  align-content: start;
+  counter-reset: panel-counter;
+}
+section.split-list.columns ol > li {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: unset;
+  column-gap: unset;
+  padding: 0.78125cqi 1.09375cqi;
+  overflow: visible;
+}
+section.split-list.columns ol > li::before {
+  content: counter(panel-counter);
+  grid-column: unset; grid-row: unset;
+  align-self: unset;
+  display: inline-block;
+  background: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 800;
+  margin-bottom: 0.15625cqi;
+  width: auto; height: auto;
+  justify-content: unset;
+}
+section.split-list.columns ol > li > :is(strong,span,p,em) {
+  grid-column: unset;
+  padding: 0;
+  font-size: var(--fs-body);
+}
+section.split-list.columns ol > li > :is(ul,ol) {
+  grid-column: unset;
+  padding: 0.3125cqi 0 0 0;
+}
+section.split-list.columns ol > li > :is(ul,ol) > li { font-size: var(--fs-body-compact); }
+section.split-list:not(:has(.panel-left)).columns > ul {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); align-content: start;
+}
+section.split-list:not(:has(.panel-left)).columns > ol {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); align-content: start; counter-reset: panel-counter;
+}
