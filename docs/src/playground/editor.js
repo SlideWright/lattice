@@ -9,8 +9,15 @@
 // esbuild step — the CodeMirror packages live in docs/package.json.
 
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { css } from '@codemirror/lang-css';
+import { html } from '@codemirror/lang-html';
+import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
-import { bracketMatching, HighlightStyle, indentOnInput, LanguageDescription, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
+import { python } from '@codemirror/lang-python';
+import { sql } from '@codemirror/lang-sql';
+import { yaml } from '@codemirror/lang-yaml';
+import { bracketMatching, HighlightStyle, indentOnInput, LanguageDescription, LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
 import { EditorState } from '@codemirror/state';
 import { drawSelection, EditorView, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
@@ -121,11 +128,27 @@ const mermaidParser = {
 		return emit(null);
 	},
 };
-// A Language (not LanguageSupport): lang-markdown's codeLanguages function form
-// reads `.parser` off the returned value, which a Language has but a
-// LanguageSupport does not (its parser is at .language.parser). Returning the
-// Language directly is what makes the nested ```mermaid parse actually run.
 const mermaidLang = StreamLanguage.define(mermaidParser);
+
+// Fenced-code highlighting. The languages Lattice authors actually use (per the
+// component samples: js, python, sql, plus mermaid and the common config/markup
+// formats) are bundled EAGERLY as ready LanguageDescriptions, so ```fences
+// highlight immediately — no first-use lag while a lazy chunk loads. Everything
+// else falls back to @codemirror/language-data's full lazy-loaded set. lang-
+// markdown matches a fence's info string against these by name/alias in order,
+// so the eager entries win for the languages we care about.
+const EAGER_LANGUAGES = [
+	LanguageDescription.of({ name: 'mermaid', alias: ['mmd'], support: new LanguageSupport(mermaidLang) }),
+	LanguageDescription.of({ name: 'javascript', alias: ['js', 'jsx', 'node'], support: javascript() }),
+	LanguageDescription.of({ name: 'typescript', alias: ['ts'], support: javascript({ typescript: true }) }),
+	LanguageDescription.of({ name: 'tsx', support: javascript({ typescript: true, jsx: true }) }),
+	LanguageDescription.of({ name: 'python', alias: ['py'], support: python() }),
+	LanguageDescription.of({ name: 'sql', support: sql() }),
+	LanguageDescription.of({ name: 'json', alias: ['json5'], support: json() }),
+	LanguageDescription.of({ name: 'yaml', alias: ['yml'], support: yaml() }),
+	LanguageDescription.of({ name: 'css', support: css() }),
+	LanguageDescription.of({ name: 'html', alias: ['htm'], support: html() }),
+];
 
 // Highlight palette mapped onto Lattice CSS tokens. CodeMirror needs concrete
 // colours per tag, but we point them at var(--token) so they track the palette.
@@ -214,12 +237,9 @@ export function createEditor({ parent, doc = '', onChange, autoHeight = false })
 				syntaxHighlighting(latticeHighlight),
 				markdown({
 					base: markdownLanguage,
-					codeLanguages: (info) => {
-						if (/^mermaid$/i.test(info)) return mermaidLang;
-						// LanguageDescription matches return async-loaders; the markdown
-						// package handles those. We only special-case mermaid (bundled).
-						return LanguageDescription.matchLanguageName(languages, info, true) || null;
-					},
+					// Eager (immediate) languages first, then the full lazy-loaded set
+					// from language-data as a fallback for anything else.
+					codeLanguages: [...EAGER_LANGUAGES, ...languages],
 				}),
 				EditorView.lineWrapping,
 				latticeTheme,

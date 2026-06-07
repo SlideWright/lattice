@@ -182,6 +182,7 @@ const pgData = JSON.stringify({
 				var paletteSel = document.getElementById('palette');
 				var modeBtn = document.getElementById('mode-toggle');
 				var tmplSel = document.getElementById('pg-template');
+				var varSel = document.getElementById('pg-variant');
 
 				// Source accessors: prefer the CodeMirror adapter (window.__pgEditor),
 				// fall back to the textarea if the editor module hasn't loaded yet or
@@ -324,12 +325,13 @@ const pgData = JSON.stringify({
 
 				// Wire change events. CodeMirror reports edits via its onChange
 				// adapter; until/if it loads, the textarea's input event covers it.
-				function onEdit() { saveSource(); scheduleRender(); }
+				function onEdit() { saveSource(); syncPickers(); scheduleRender(); }
 				function wireEditorEvents() {
 					if (window.__pgEditor) {
 						window.__pgEditor.onChange(onEdit);
 						// Restore persisted source into the live editor, then render it.
 						try { var saved = localStorage.getItem(SOURCE_KEY); if (saved != null) setSource(saved); } catch (e) {}
+						syncPickers();
 						render();
 					}
 				}
@@ -338,8 +340,6 @@ const pgData = JSON.stringify({
 				// Fallback: textarea input (only fires if CodeMirror never replaced it).
 				var taEl = document.getElementById('editor');
 				if (taEl) taEl.addEventListener('input', onEdit);
-
-				var varSel = document.getElementById('pg-variant');
 
 				// Fill the Variant dropdown for the picked component: 'default' (the
 				// base sample) plus each documented modifier. Disabled when the
@@ -371,6 +371,36 @@ const pgData = JSON.stringify({
 					varSel.value = 'default';
 				}
 
+				// Detect which component (and variant) the current source is, from the
+				// first `<!-- _class: ... -->`: the first class token that names a
+				// component, with any remaining token that matches one of its variant
+				// keys. Lets the pickers reflect a deck loaded via the "Open in
+				// Playground" handoff, a reload, or a paste — instead of sitting on
+				// "Pick a component…".
+				function detectComponent(src) {
+					var m = /<!--\s*_class:\s*([^>]*?)\s*-->/.exec(src || '');
+					if (!m) return null;
+					var tokens = m[1].trim().split(/\s+/).filter(Boolean);
+					var name = null;
+					for (var i = 0; i < tokens.length; i++) { if (catalog[tokens[i]]) { name = tokens[i]; break; } }
+					if (!name) return null;
+					var variant = 'default';
+					var vs = (catalog[name].variants || []);
+					for (var j = 0; j < vs.length; j++) { if (tokens.indexOf(vs[j].key) >= 0) { variant = vs[j].key; break; } }
+					return { name: name, variant: variant };
+				}
+
+				// Sync the Template + Variant pickers to whatever the editor holds.
+				function syncPickers() {
+					var det = detectComponent(getSource());
+					if (!det) return;
+					if (tmplSel.value !== det.name) { tmplSel.value = det.name; populateVariants(det.name); }
+					else if (varSel.disabled && (catalog[det.name].variants || []).length) { populateVariants(det.name); }
+					for (var i = 0; i < varSel.options.length; i++) {
+						if (varSel.options[i].value === det.variant) { varSel.value = det.variant; break; }
+					}
+				}
+
 				tmplSel.addEventListener('change', function () {
 					var name = tmplSel.value;
 					if (name && catalog[name]) { setSource(catalog[name].sample); populateVariants(name); saveSource(); render(); }
@@ -396,7 +426,9 @@ const pgData = JSON.stringify({
 					if (name && catalog[name]) { setSource(catalog[name].skeleton); populateVariants(name); saveSource(); render(); }
 					else setStatus('Pick a component first.', true);
 				});
-				populateVariants(tmplSel.value);
+				// Reflect whatever the editor currently holds (starter deck, restored
+				// handoff, or persisted source) in the Template + Variant pickers.
+				syncPickers();
 
 				paletteSel.addEventListener('change', function () {
 					root.setAttribute('data-palette', paletteSel.value);
