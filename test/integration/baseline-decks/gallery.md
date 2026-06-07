@@ -84,10 +84,14 @@ flowchart LR
 
 `Measured against pre-framework baseline, same teams, same market conditions.`
 
-1. **73%** faster close
-2. **4.2×** signal recall
-3. **18** decisions logged
-4. **91%** team alignment
+1. 73%
+   - faster close
+2. 4.2×
+   - signal recall
+3. 18
+   - decisions logged
+4. 91%
+   - team alignment
 
 ---
 

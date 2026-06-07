@@ -91,6 +91,19 @@ describe('deck linter', () => {
     assert.equal(lintText(two, { vocab }).filter((x) => x.rule.startsWith('split-')).length, 0);
   });
 
+  test('warns on a kpi/stats item with no nested label (warning)', () => {
+    const src = `${FM}<!-- _class: stats -->\n\n## Results.\n\n1. 73%\n2. 4.2×\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'number-slot-bodyless-item');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'warning');
+    assert.equal(f.classToken, 'stats');
+  });
+
+  test('accepts the nested number+label shape on kpi/stats', () => {
+    const src = `${FM}<!-- _class: kpi -->\n\n## Q4.\n\n1. $2.4B\n   - Total revenue\n2. 42%\n   - Gross margin\n`;
+    assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'number-slot-bodyless-item').length, 0);
+  });
+
   test('flags an unknown class token (warning)', () => {
     const src = `${FM}<!-- _class: card-grid -->\n\n## Typo.\n`;
     const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-class');

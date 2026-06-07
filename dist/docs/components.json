@@ -3094,10 +3094,10 @@
         "kpis": {
           "selector": "ol > li",
           "required": true,
-          "description": "One li per KPI, authored as an ordered list (`1.`). Lead with **Metric name** then nested bullets for value, target, trend, status."
+          "description": "One li per KPI, authored as an ordered list (`1.`). The lead is the metric value (the big number) — it renders in display type automatically (no `**…**` needed); follow it with nested bullets for the metric name, target/trend, and status pills. A bare value with no nested bullets won't render as the number."
         }
       },
-      "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. **$2.4B**\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. **42%**\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. **$1.1B**\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
+      "skeleton": "<!-- _class: kpi -->\n\n### Financial · Q4 2026\n## Revenue ahead of plan; margin and cash both expanded.\n\n1. $2.4B\n   - Total revenue\n   - target $2.2B · +9% `On plan` `Board`\n2. 42%\n   - Gross margin\n   - +2pp QoQ `On plan` `Audit`\n3. $1.1B\n   - Cash & equivalents\n   - +$180M QoQ `On plan` `Investor`\n",
       "whenToUse": [
         {
           "title": "Status framing matters as much as the number",
@@ -3109,7 +3109,7 @@
         },
         {
           "title": "One contract across all five",
-          "body": "Every modifier reads the same `### eyebrow / ## headline / 1. **value** / nested bullets / status pills` authoring contract. Switching modifiers should never require rewriting the prose."
+          "body": "Every modifier reads the same `### eyebrow / ## headline / 1. value / nested bullets / status pills` authoring contract. Switching modifiers should never require rewriting the prose."
         }
       ],
       "antiPatterns": [
@@ -5990,10 +5990,10 @@
         "tiles": {
           "selector": "ol > li",
           "required": true,
-          "description": "One li per stat tile, authored as an ordered list (`1.`). Format: **Number** then the caption text on the same line (e.g. `1. **73%** faster close`)."
+          "description": "One li per stat tile, authored as an ordered list (`1.`). The lead is the number (it renders in display type automatically — no `**…**` needed); the caption is a nested bullet beneath it:\n\n    1. 73%\n       - faster close\n\nA bare number with no nested caption won't render as the big number."
         }
       },
-      "skeleton": "<!-- _class: stats -->\n\n`Impact · Pilot Results`\n\n## Six months of results across four product teams.\n\n`Measured against pre-framework baseline, same teams, same market conditions.`\n\n1. **73%** faster close\n2. **4.2×** signal recall\n3. **$1.2M** prevented losses\n4. **−18d** avg cycle time\n",
+      "skeleton": "<!-- _class: stats -->\n\n`Impact · Pilot Results`\n\n## Six months of results across four product teams.\n\n`Measured against pre-framework baseline, same teams, same market conditions.`\n\n1. 73%\n   - faster close\n2. 4.2×\n   - signal recall\n3. $1.2M\n   - prevented losses\n4. −18d\n   - avg cycle time\n",
       "whenToUse": [
         {
           "title": "Three to five headline metrics",

@@ -60,10 +60,14 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 `Measured against pre-framework baseline, same teams, same conditions, same spreadsheet.`
 
-1. **73%** faster decision close
-2. **4.2×** signal recall
-3. **18** decisions logged
-4. **91%** team alignment
+1. 73%
+   - faster decision close
+2. 4.2×
+   - signal recall
+3. 18
+   - decisions logged
+4. 91%
+   - team alignment
 
 ---
 
