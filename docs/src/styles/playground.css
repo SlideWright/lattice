@@ -133,6 +133,13 @@
 #editor:focus {
 	outline: none;
 }
+/* Match the editor's coarse-pointer bump so the pre-hydration textarea also
+   avoids iOS focus-zoom (font-size must be >= 16px). */
+@media (pointer: coarse) {
+	#editor {
+		font-size: 16px;
+	}
+}
 .pg-preview-wrap {
 	flex: 1;
 	min-height: 0;
