@@ -57,6 +57,40 @@ describe('deck linter', () => {
     assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'split-bodyless-item').length, 0);
   });
 
+  test('warns when an h2-anchored split slide has no `## ` headline', () => {
+    const src = `${FM}<!-- _class: split-metric -->\n\n\`Unit\`\n\nContext only, no headline.\n\n- Title\n  - body.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-missing-headline');
+    assert.ok(f, JSON.stringify(lintText(src, { vocab })));
+    assert.equal(f.severity, 'warning');
+    assert.equal(f.classToken, 'split-metric');
+  });
+
+  test('does NOT warn split-statement for a missing `## ` (blockquote-anchored)', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n> Quote.\n\n\`Speaker\`\n\n- A\n  - b.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-missing-headline');
+    assert.ok(!f, 'split-statement should not require an h2');
+  });
+
+  test('warns when split-statement has no `> ` blockquote', () => {
+    const src = `${FM}<!-- _class: split-statement -->\n\n\`Speaker\`\n\n- A\n  - b.\n`;
+    const f = lintText(src, { vocab }).find((x) => x.rule === 'split-statement-missing-quote');
+    assert.ok(f);
+    assert.equal(f.severity, 'warning');
+  });
+
+  test('warns when split-compare does not have exactly two options', () => {
+    const three = `${FM}<!-- _class: split-compare -->\n\n## H.\n\n- One\n  - a.\n- Two\n  - b.\n- Three\n  - c.\n`;
+    const f = lintText(three, { vocab }).find((x) => x.rule === 'split-compare-option-count');
+    assert.ok(f);
+    assert.equal(f.severity, 'warning');
+    assert.match(f.message, /found 3/);
+  });
+
+  test('accepts a well-formed split-compare two-up', () => {
+    const two = `${FM}<!-- _class: split-compare -->\n\n## H.\n\n- One\n  - a.\n- Two\n  - b.\n`;
+    assert.equal(lintText(two, { vocab }).filter((x) => x.rule.startsWith('split-')).length, 0);
+  });
+
   test('flags an unknown class token (warning)', () => {
     const src = `${FM}<!-- _class: card-grid -->\n\n## Typo.\n`;
     const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-class');
