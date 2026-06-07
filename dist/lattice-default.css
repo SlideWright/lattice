@@ -4567,6 +4567,52 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-right: 10px solid transparent;
 }
 
+
+/* ── timeline variant — former `timeline` component (progression.list-steps.timeline) ──
+ * Dots-on-a-spine: ordered stages as labelled nodes along one horizontal axis.
+ * ol → numbered discs; ul → plain dots. Resets the list-steps card + STEP-badge
+ * + arrow-connector chrome. Merged from the standalone timeline on 2026-06-07.
+ * Lifted to <strong> by the timeline token in the shared slot-label-lift paths. */
+section.list-steps.timeline { justify-content:center; align-items:center; }
+section.list-steps.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
+section.list-steps.timeline > :is(ol,ul) {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  width:100%; position:relative; flex:0 1 auto;
+  padding:0 var(--sp-xl); gap:0; box-sizing:border-box; margin:0;
+}
+section.list-steps.timeline > :is(ol,ul)::before {
+  content:''; position:absolute; top:1.015625cqi;
+  left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
+  height:3px; background:var(--spectrum); border-radius:2px;
+}
+section.list-steps.timeline > :is(ol,ul) > li {
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center;
+  width:14.0625cqi; text-align:center; position:relative; z-index:1;
+  background:none; border:none; border-radius:0; padding:0;
+  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+}
+section.list-steps.timeline > ol { counter-reset:ls-timeline-counter; }
+section.list-steps.timeline > ol > li::before {
+  counter-increment:ls-timeline-counter;
+  content:counter(ls-timeline-counter);
+  display:flex; align-items:center; justify-content:center;
+  width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
+  margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > ul > li::before {
+  content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); border:3px solid var(--bg);
+  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > :is(ol,ul) > li:not(:last-child)::after { content:none; }
+section.list-steps.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
+
 /* === lib/components/inventory/list-tabular/list-tabular.styles.css === */
 /* list-tabular — extracted from lib/_legacy.css (batch 6).
  * See lib/components/list-tabular/list-tabular.manifest.json for the component contract.
@@ -8725,122 +8771,6 @@ section.statute-stack.lane td:last-child {
   white-space:nowrap;
 }
 
-/* === lib/components/progression/timeline/timeline.styles.css === */
-/* timeline — extracted from lib/_legacy.css (batch 7).
- * See lib/components/timeline/timeline.manifest.json for the component contract.
- */
-
-/* ── TIMELINE ──
- * ol = numbered circles (sequential steps)
- * ul = plain dot circles (non-sequential)
- * Each li: a label on its own line (lifted to <strong> automatically by
- * slotLabelLift — authors need not type `**…**`), then - *description* as nested ul
- */
-section.timeline { justify-content:center; align-items:center; }
-section.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
-section.timeline > :is(ol,ul) {
-  list-style:none;
-  display:flex; justify-content:space-between;
-  width:100%; position:relative;
-  padding:0 var(--sp-xl); box-sizing:border-box; margin:0;
-}
-section.timeline > :is(ol,ul)::before {
-  content:''; position:absolute; top:1.015625cqi;
-  left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
-  height:3px; background:var(--spectrum); border-radius:2px;
-}
-section.timeline > :is(ol,ul) > li {
-  display:flex; flex-direction:column; align-items:center;
-  width:14.0625cqi; text-align:center; position:relative; z-index:1;
-  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
-}
-section.timeline > ol { counter-reset:timeline-counter; }
-section.timeline > ol > li::before {
-  counter-increment:timeline-counter;
-  content:counter(timeline-counter);
-  display:flex; align-items:center; justify-content:center;
-  width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
-  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
-  margin-bottom:1.09375cqi; flex-shrink:0;
-}
-section.timeline > ul > li::before {
-  content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
-  background:var(--accent); border:3px solid var(--bg);
-  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
-}
-section.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
-section.timeline > :is(ol,ul) > li > ul { list-style:none; padding:0; margin:0; }
-section.timeline > :is(ol,ul) > li > ul > li { font-weight:400; }
-section.timeline > :is(ol,ul) > li > ul > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }
-
-
-
-
-
-
-
-
-
-
-
-/* ── TIMELINE BAND CYCLE (shifted) ──
- * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
- * so the FIRST timeline section gets `section--1`, the second gets
- * `section-0`, and so on. The general band-cycle rules above pin BOTH
- * `section--1` AND `section-0` to band-1 (because that's the correct map
- * for mindmap and other diagrams where `section-0` is the first), which
- * means every timeline renders its first two sections in the same band.
- * Visible on the gallery's Phase 01 / Phase 02 (both blue) and on
- * diagram-tokens' Discover / Frame (both blue) where the deck's footer
- * literally claims "8 sections cycling --c1..8-light".
- *
- * Timeline groups wrap each section in <g class="timeline-node section-N">.
- * Re-pin the cycle one band up for `.timeline-node` only so timeline
- * sections cycle c1-light (section--1), c2-light (section-0), c3-light
- * (section-1), …, c12-light (section-10). Higher specificity than the
- * generic `.section-N` rules above wins automatically. Other diagram
- * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
- * their existing mappings.
- */
-section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
-section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
-
-/* ── TIMELINE EVENT WRAPPER ──
- * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
- * `filter: brightness(120%)` on the class. Their intent is to lighten the
- * event tile so it reads as "inside" the period header above it, but the
- * band cycle already sits at L≈83 — pushing it +20% lightness clamps the
- * G/B channels to 255 and collapses every band into a near-cyan wash
- * (band-1 #BCD5EC → ~#E1FEFE, band-2 #C1E4D5 → ~#E7FEFE — indistinguishable
- * from band-1). Drop the filter so event tiles match their section's band
- * exactly. The size difference (event tile is narrower than the period
- * header above it) is enough to keep the visual hierarchy.
- */
-section .eventWrapper { filter: none !important; }
-
 /* === lib/components/chart/timeline-list/timeline-list.styles.css === */
 /* timeline-list — extracted from lib/_legacy.css (batch 9).
  * See lib/components/timeline-list/timeline-list.manifest.json for the component contract.
@@ -12510,6 +12440,68 @@ section svg.mindmapDiagram .section-edge-4 { stroke: color-mix(in srgb, var(--c5
 section svg.mindmapDiagram .section-edge-5 { stroke: color-mix(in srgb, var(--c6-dark) 78%, var(--c-ink-light)) !important; }
 section svg.mindmapDiagram .section-edge-6 { stroke: color-mix(in srgb, var(--c1-dark) 78%, var(--c-ink-light)) !important; }
 section svg.mindmapDiagram .section-edge-7 { stroke: color-mix(in srgb, var(--c2-dark) 78%, var(--c-ink-light)) !important; }
+
+
+/* ── TIMELINE diagram overrides (Mermaid) — relocated from the retired
+ * timeline component on 2026-06-07 when timeline merged into list-steps.
+ * These target Mermaid-emitted SVG (.timeline-node, .eventWrapper), not the
+ * list-steps.timeline layout variant. */
+/* ── TIMELINE BAND CYCLE (shifted) ──
+ * Mermaid's timeline renderer uses `f = r % h - 1` for its section index,
+ * so the FIRST timeline section gets `section--1`, the second gets
+ * `section-0`, and so on. The general band-cycle rules above pin BOTH
+ * `section--1` AND `section-0` to band-1 (because that's the correct map
+ * for mindmap and other diagrams where `section-0` is the first), which
+ * means every timeline renders its first two sections in the same band.
+ * Visible on the gallery's Phase 01 / Phase 02 (both blue) and on
+ * diagram-tokens' Discover / Frame (both blue) where the deck's footer
+ * literally claims "8 sections cycling --c1..8-light".
+ *
+ * Timeline groups wrap each section in <g class="timeline-node section-N">.
+ * Re-pin the cycle one band up for `.timeline-node` only so timeline
+ * sections cycle c1-light (section--1), c2-light (section-0), c3-light
+ * (section-1), …, c12-light (section-10). Higher specificity than the
+ * generic `.section-N` rules above wins automatically. Other diagram
+ * types that use bare `.section-N` (mindmap, kanban via .cluster) keep
+ * their existing mappings.
+ */
+section .timeline-node.section--1 rect, section .timeline-node.section--1 path, section .timeline-node.section--1 circle { fill: var(--c1-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section--1 text, section .timeline-node.section--1 tspan, section .timeline-node.section--1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-0 rect, section .timeline-node.section-0 path, section .timeline-node.section-0 circle { fill: var(--c2-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-0 text, section .timeline-node.section-0 tspan, section .timeline-node.section-0 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-1 rect, section .timeline-node.section-1 path, section .timeline-node.section-1 circle { fill: var(--c3-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-1 text, section .timeline-node.section-1 tspan, section .timeline-node.section-1 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-2 rect, section .timeline-node.section-2 path, section .timeline-node.section-2 circle { fill: var(--c4-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-2 text, section .timeline-node.section-2 tspan, section .timeline-node.section-2 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-3 rect, section .timeline-node.section-3 path, section .timeline-node.section-3 circle { fill: var(--c5-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-3 text, section .timeline-node.section-3 tspan, section .timeline-node.section-3 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-4 rect, section .timeline-node.section-4 path, section .timeline-node.section-4 circle { fill: var(--c6-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-4 text, section .timeline-node.section-4 tspan, section .timeline-node.section-4 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-5 rect, section .timeline-node.section-5 path, section .timeline-node.section-5 circle { fill: var(--c7-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-5 text, section .timeline-node.section-5 tspan, section .timeline-node.section-5 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-6 rect, section .timeline-node.section-6 path, section .timeline-node.section-6 circle { fill: var(--c8-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-6 text, section .timeline-node.section-6 tspan, section .timeline-node.section-6 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-7 rect, section .timeline-node.section-7 path, section .timeline-node.section-7 circle { fill: var(--c9-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-7 text, section .timeline-node.section-7 tspan, section .timeline-node.section-7 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-8 rect, section .timeline-node.section-8 path, section .timeline-node.section-8 circle { fill: var(--c10-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-8 text, section .timeline-node.section-8 tspan, section .timeline-node.section-8 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-9 rect, section .timeline-node.section-9 path, section .timeline-node.section-9 circle { fill: var(--c11-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-9 text, section .timeline-node.section-9 tspan, section .timeline-node.section-9 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+section .timeline-node.section-10 rect, section .timeline-node.section-10 path, section .timeline-node.section-10 circle { fill: var(--c12-light) !important; stroke: var(--c-stroke) !important; }
+section .timeline-node.section-10 text, section .timeline-node.section-10 tspan, section .timeline-node.section-10 span { fill: var(--c-ink-light) !important; color: var(--c-ink-light) !important; }
+
+/* ── TIMELINE EVENT WRAPPER ──
+ * Mermaid wraps every timeline event in <g class="eventWrapper"> and pins
+ * `filter: brightness(120%)` on the class. Their intent is to lighten the
+ * event tile so it reads as "inside" the period header above it, but the
+ * band cycle already sits at L≈83 — pushing it +20% lightness clamps the
+ * G/B channels to 255 and collapses every band into a near-cyan wash
+ * (band-1 #BCD5EC → ~#E1FEFE, band-2 #C1E4D5 → ~#E7FEFE — indistinguishable
+ * from band-1). Drop the filter so event tiles match their section's band
+ * exactly. The size difference (event tile is narrower than the period
+ * header above it) is enough to keep the visual hierarchy.
+ */
+section .eventWrapper { filter: none !important; }
 
 /* === default palette: themes/cuoio.css (engine import resolved) === */
 /* Zero-specificity light default — see the long comment in the next

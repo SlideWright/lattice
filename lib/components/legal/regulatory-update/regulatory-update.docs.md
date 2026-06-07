@@ -193,7 +193,7 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 - [`authority-chain`](../../legal/authority-chain/authority-chain.docs.md) — single rule walked statute → regulation → guidance → case
 - [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — flat enumeration of requirements without dates or citations
-- [`timeline`](../../progression/timeline/timeline.docs.md) — chronological sequence of events on a single axis
+- [`timeline`](../timeline/timeline.docs.md) — chronological sequence of events on a single axis
 - [`list-tabular`](../../inventory/list-tabular/list-tabular.docs.md) — structured metadata per row but no regulatory framing
 
 ## Demo deck

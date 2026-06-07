@@ -2,7 +2,7 @@
 
 # progression
 
-`6 components`
+`5 components`
 
 Progression — ordered movement through stages or time.
 
@@ -89,18 +89,3 @@ Four weeks. Shared definition of the problem before any solution work begins.
    - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
 4. Scope Confirmation
    - Written sign-off on what is in, what is out, and what requires a separate decision.
-
----
-
-<!-- _class: timeline -->
-
-## From first pilot to general availability.
-
-1. Pilot
-   - *Four product teams run the framework for a quarter against a shared baseline.*
-2. Calibrate
-   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
-3. Roll out
-   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
-4. GA
-   - *The framework leaves pilot status and ships as the default for new initiatives.*

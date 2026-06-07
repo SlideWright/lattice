@@ -27,6 +27,14 @@ in patch versions.
 
 ### Removed
 
+- **Breaking: the `timeline` layout is removed.** It was `list-steps` with
+  lighter, shorter rows — the same ordered-steps data shape, dots-on-a-spine
+  instead of step cards — so it is now the `timeline` variant of `list-steps`:
+  migrate `<!-- _class: timeline -->` to `<!-- _class: list-steps timeline -->`
+  (`ol` → numbered discs, `ul` → plain dots, same as before). The Mermaid
+  `timeline` *diagram* type and the `regulatory-update timeline` variant are
+  unaffected. Part of the layout-redundancy consolidation (see
+  `engineering/decisions/2026-06-07-layout-redundancy-analysis.md`).
 - **Breaking: the `cards-side` layout is removed.** It was `compare-prose`
   minus the comparison chrome — the same two-co-equal-card data shape (title +
   nested body) — so it is dropped with no alias. Migrate

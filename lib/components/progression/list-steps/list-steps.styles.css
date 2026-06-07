@@ -89,3 +89,48 @@ section.list-steps.vertical ol > li:not(:last-child)::after {
   border-right: 10px solid transparent;
 }
 
+
+/* ── timeline variant — former `timeline` component (progression.list-steps.timeline) ──
+ * Dots-on-a-spine: ordered stages as labelled nodes along one horizontal axis.
+ * ol → numbered discs; ul → plain dots. Resets the list-steps card + STEP-badge
+ * + arrow-connector chrome. Merged from the standalone timeline on 2026-06-07.
+ * Lifted to <strong> by the timeline token in the shared slot-label-lift paths. */
+section.list-steps.timeline { justify-content:center; align-items:center; }
+section.list-steps.timeline h2 { margin-bottom:var(--sp-xl); text-align:center; }
+section.list-steps.timeline > :is(ol,ul) {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  width:100%; position:relative; flex:0 1 auto;
+  padding:0 var(--sp-xl); gap:0; box-sizing:border-box; margin:0;
+}
+section.list-steps.timeline > :is(ol,ul)::before {
+  content:''; position:absolute; top:1.015625cqi;
+  left:calc(var(--sp-xl) + 7.03125cqi); right:calc(var(--sp-xl) + 7.03125cqi);
+  height:3px; background:var(--spectrum); border-radius:2px;
+}
+section.list-steps.timeline > :is(ol,ul) > li {
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center;
+  width:14.0625cqi; text-align:center; position:relative; z-index:1;
+  background:none; border:none; border-radius:0; padding:0;
+  font-size:var(--fs-meta); line-height:var(--lh-snug); font-weight:700; color:var(--text-heading);
+}
+section.list-steps.timeline > ol { counter-reset:ls-timeline-counter; }
+section.list-steps.timeline > ol > li::before {
+  counter-increment:ls-timeline-counter;
+  content:counter(ls-timeline-counter);
+  display:flex; align-items:center; justify-content:center;
+  width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); color:var(--on-accent, var(--on-dark-primary));
+  font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:700; line-height:1;
+  margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > ul > li::before {
+  content:''; display:block; width:2.03125cqi; height:2.03125cqi; border-radius:50%;
+  background:var(--accent); border:3px solid var(--bg);
+  box-shadow:0 0 0 1px var(--border); margin-bottom:1.09375cqi; flex-shrink:0;
+}
+section.list-steps.timeline > :is(ol,ul) > li:not(:last-child)::after { content:none; }
+section.list-steps.timeline > :is(ol,ul) > li > strong { display:block; margin-bottom:0.3125cqi; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) { list-style:none; padding:0; margin:0; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li { font-weight:400; }
+section.list-steps.timeline > :is(ol,ul) > li > :is(ul,ol) > li em { font-size:var(--fs-meta); color:var(--text-body); line-height:var(--lh-snug); font-style:normal; }

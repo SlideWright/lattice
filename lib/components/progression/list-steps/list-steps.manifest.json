@@ -9,6 +9,7 @@
   "purpose": "Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.",
   "variants": [
     "vertical",
+    "timeline",
     "phase",
     "milestone",
     "lettered",
@@ -35,7 +36,7 @@
   "whenToUse": [
     {
       "title": "Steps need a sentence each",
-      "body": "When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels live in `timeline`; richer descriptions belong here."
+      "body": "When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels use the `timeline` variant; richer descriptions belong on the default cards."
     },
     {
       "title": "Three to five steps",
@@ -49,7 +50,7 @@
   "antiPatterns": [
     {
       "title": "Light labels, no body",
-      "body": "If each step is a single label with no description, use `timeline`. list-steps earns its chrome only when the body adds substance."
+      "body": "If each step is a single label with no description, use the `timeline` variant (dots on a spine). The default step cards earn their chrome only when the body adds substance."
     },
     {
       "title": "Parallel options",
@@ -61,10 +62,6 @@
     }
   ],
   "related": [
-    {
-      "name": "timeline",
-      "when": "shorter labels per step, horizontal axis instead of vertical cards"
-    },
     {
       "name": "list-criteria",
       "when": "gating requirements rather than a sequence of actions"
@@ -78,11 +75,16 @@
       "when": "phased grid across multiple workstreams"
     },
     {
-      "name": "principles",
-      "when": "tenets or values rather than a procedural sequence"
+      "name": "list",
+      "when": "tenets or values (the `principles` variant) rather than a sequence"
     }
   ],
   "variantDocs": {
+    "timeline": {
+      "label": "Timeline — dots on a horizontal spine",
+      "caption": "Renders the steps as labelled nodes along a single horizontal axis — `ol` gives numbered discs, `ul` gives plain dots. Lighter than the default step cards: use when each stage needs only a short label and a one-line description. Absorbed the standalone `timeline` component on 2026-06-07.",
+      "sample": "<!-- _class: list-steps timeline -->\n\n## From first pilot to general availability.\n\n1. Pilot\n   - *Four product teams run the framework for a quarter against a shared baseline.*\n2. Calibrate\n   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*\n3. Roll out\n   - *Every product team onboards and the weekly signal review joins the operating rhythm.*\n4. GA\n   - *The framework leaves pilot status and ships as the default for new initiatives.*\n"
+    },
     "vertical": {
       "label": "Vertical — strip flips row to column",
       "caption": "Flips the step strip from the default horizontal row into a vertical stack; arrow connectors rotate to down-arrows. Pairs well with `compact` for three-step decks where each step needs body-paragraph room.",

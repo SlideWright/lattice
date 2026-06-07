@@ -878,24 +878,6 @@
     ],
     "description": "Citation hierarchy — federal / state / local rows with citation, headline obligation, and status."
   },
-  "lattice: timeline": {
-    "prefix": "lattice-timeline",
-    "body": [
-      "<!-- _class: timeline -->",
-      "",
-      "## How the process flows.",
-      "",
-      "1. First stage",
-      "   - *Short description of what happens here.*",
-      "2. Second stage",
-      "   - *Short description.*",
-      "3. Third stage",
-      "   - *Short description.*",
-      "4. Fourth stage",
-      "   - *Short description.*"
-    ],
-    "description": "Horizontal ordered steps along a single axis, each a labeled dot."
-  },
   "lattice: timeline-list": {
     "prefix": "lattice-timeline-list",
     "body": [

@@ -47,6 +47,23 @@ Horizontal row of ordered step cards, each with a full description body (the `ve
 
 ---
 
+<!-- _class: list-steps timeline -->
+<!-- _footer: "Timeline — dots on a horizontal spine · list-steps timeline" -->
+
+## From first pilot to general availability.
+
+1. Pilot
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. Calibrate
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. Roll out
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. GA
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
+
+
+---
+
 <!-- _class: list-steps phase -->
 <!-- _footer: "Phase — badge prefix becomes PHASE · list-steps phase" -->
 
@@ -210,7 +227,7 @@ Horizontal row of ordered step cards, each with a full description body (the `ve
 
 ## When NOT to reach for list-steps.
 
-- **Light labels, no body.** If each step is a single label with no description, use `timeline`. list-steps earns its chrome only when the body adds substance.
+- **Light labels, no body.** If each step is a single label with no description, use the `timeline` variant (dots on a spine). The default step cards earn their chrome only when the body adds substance.
 - **Parallel options.** If the rows are alternatives the audience compares, use `cards-grid` or `verdict-grid`. The numbered prefix here reads as sequence — using it for parallel items mis-cues the audience.
 - **Author-typed step numbers.** Don't write `**STEP 01**` into the markdown. The badge is CSS-generated from the `ol` counter; manual numbering double-stamps and breaks on reordering.
 
@@ -222,8 +239,7 @@ Horizontal row of ordered step cards, each with a full description body (the `ve
 
 `Related components`
 
-- `timeline` — shorter labels per step, horizontal axis instead of vertical cards
 - `list-criteria` — gating requirements rather than a sequence of actions
 - `split-steps` — phase label + heading on the left, steps on the right
 - `roadmap` — phased grid across multiple workstreams
-- `principles` — tenets or values rather than a procedural sequence
+- `list` — tenets or values (the `principles` variant) rather than a sequence

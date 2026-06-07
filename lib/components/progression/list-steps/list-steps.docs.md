@@ -10,13 +10,13 @@ Use for richer sequential processes where each step needs a paragraph rather tha
 
 ## When to use
 
-- **Steps need a sentence each.** When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels live in `timeline`; richer descriptions belong here.
+- **Steps need a sentence each.** When each step carries a label plus a sentence of description. Lighter rosters of steps with short labels use the `timeline` variant; richer descriptions belong on the default cards.
 - **Three to five steps.** Two steps wastes the layout's ledger feel; six begins to crowd. Group adjacent steps or split the process at a natural phase break.
 - **Prefix word names the unit.** The default `STEP` prefix can swap to `PHASE`, `STAGE`, `MILESTONE`, `RANK`, or `TIER`. Pick the noun that matches how the audience already thinks about the process.
 
 ## When NOT to use
 
-- **Light labels, no body.** If each step is a single label with no description, use `timeline`. list-steps earns its chrome only when the body adds substance.
+- **Light labels, no body.** If each step is a single label with no description, use the `timeline` variant (dots on a spine). The default step cards earn their chrome only when the body adds substance.
 - **Parallel options.** If the rows are alternatives the audience compares, use `cards-grid` or `verdict-grid`. The numbered prefix here reads as sequence — using it for parallel items mis-cues the audience.
 - **Author-typed step numbers.** Don't write `**STEP 01**` into the markdown. The badge is CSS-generated from the `ol` counter; manual numbering double-stamps and breaks on reordering.
 
@@ -73,6 +73,25 @@ Flips the step strip from the default horizontal row into a vertical stack; arro
    - Half-day workshop to align on root cause. Output is a ranked problem statement and a request for a second workshop.
 3. Decide
    - Written sign-off on what is in scope, what is out, and what requires a separate decision we will defer.
+```
+
+### `timeline` — Timeline — dots on a horizontal spine
+
+Renders the steps as labelled nodes along a single horizontal axis — `ol` gives numbered discs, `ul` gives plain dots. Lighter than the default step cards: use when each stage needs only a short label and a one-line description. Absorbed the standalone `timeline` component on 2026-06-07.
+
+```markdown
+<!-- _class: list-steps timeline -->
+
+## From first pilot to general availability.
+
+1. Pilot
+   - *Four product teams run the framework for a quarter against a shared baseline.*
+2. Calibrate
+   - *Scoring weights are tuned against real outcomes; the decision log becomes mandatory.*
+3. Roll out
+   - *Every product team onboards and the weekly signal review joins the operating rhythm.*
+4. GA
+   - *The framework leaves pilot status and ships as the default for new initiatives.*
 ```
 
 ### `phase` — Phase — badge prefix becomes PHASE
@@ -202,11 +221,10 @@ This layout accepts all universal variants (`dark`, `compact`, `loose`, `accent`
 
 ## Related components
 
-- [`timeline`](../../progression/timeline/timeline.docs.md) — shorter labels per step, horizontal axis instead of vertical cards
 - [`list-criteria`](../../progression/list-criteria/list-criteria.docs.md) — gating requirements rather than a sequence of actions
 - [`split-steps`](../../progression/split-steps/split-steps.docs.md) — phase label + heading on the left, steps on the right
 - [`roadmap`](../../progression/roadmap/roadmap.docs.md) — phased grid across multiple workstreams
-- [`principles`](../principles/principles.docs.md) — tenets or values rather than a procedural sequence
+- [`list`](../../inventory/list/list.docs.md) — tenets or values (the `principles` variant) rather than a sequence
 
 ## Demo deck
 

@@ -54,7 +54,7 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ---
 
-<!-- _class: timeline -->
+<!-- _class: list-steps timeline -->
 <!-- _footer: "Accent nodes · timeline" -->
 
 ## How the accent ink resolves.

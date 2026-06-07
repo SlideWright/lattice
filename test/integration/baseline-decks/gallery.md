@@ -188,7 +188,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ---
 
-<!-- _class: timeline -->
+<!-- _class: list-steps timeline -->
 <!-- _footer: "Horizontal timeline · timeline" -->
 
 ## How a decision moves through the framework.
